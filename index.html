@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Long Road</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="viewport">
+    <div id="world">
+      <div id="road"></div>
+
+      <div id="npc" class="entity">
+        <div class="label">Nanay Sakay</div>
+        <div class="sprite npc-sprite"></div>
+      </div>
+
+      <div id="player" class="entity">
+        <div class="sprite player-sprite"></div>
+      </div>
+
+      <div id="interact-hint" class="hidden">Press E to talk</div>
+    </div>
+  </div>
+
+  <div id="dialogue-box" class="hidden">
+    <div id="dialogue-speaker"></div>
+    <div id="dialogue-text"></div>
+    <div id="dialogue-continue">tap / press E to continue</div>
+  </div>
+
+  <!-- Mobile controls -->
+  <div id="mobile-controls">
+    <div class="dpad">
+      <button id="btn-left" class="touch-btn">A</button>
+      <button id="btn-right" class="touch-btn">D</button>
+    </div>
+    <button id="btn-interact" class="touch-btn interact-btn">E</button>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
