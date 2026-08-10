@@ -27,7 +27,7 @@ html, body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 3600px; /* the "big world" — keep in sync with WORLD_WIDTH in game.js */
+  width: 4400px; /* the "big world" — keep in sync with WORLD_WIDTH in game.js */
   height: 100%;
   will-change: transform;
 }
@@ -132,6 +132,22 @@ html, body {
   top: -28px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* Sloped ramps connecting ground level up to the platform's top surface */
+.stage-slope {
+  position: absolute;
+  bottom: 180px; /* same base as the ground band */
+  height: 40px; /* matches PLATFORM_HEIGHT */
+  background: #5a3d26;
+}
+
+.stage-slope-left {
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.stage-slope-right {
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
 }
 
 /* Blackout overlay for the cutscene */

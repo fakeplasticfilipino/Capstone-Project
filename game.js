@@ -14,10 +14,11 @@ const btnInteract = document.getElementById("btn-interact");
 const questListEl = document.getElementById("quest-list");
 const giftBtn = document.getElementById("gift-btn");
 
-const WORLD_WIDTH = 3600;
+const WORLD_WIDTH = 4400;
 const PLAYER_WIDTH = 40;
 const SPEED = 5;
 const INTERACT_DISTANCE = 90;
+const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
 
 // --- Game state ----------------------------------------------------------
 const state = {
@@ -175,8 +176,9 @@ NPCS.forEach((npc) => {
 // NOTE: the lines below are placeholder poetry — swap in your own
 // text (or a verified historical quote) whenever you're ready.
 const STAGE = {
-  x: 3200,
+  x: 3900,
   width: 260,
+  rampWidth: 50,
   label: "Entablado",
   poemLines: [
     { speaker: "Macario", text: "Hindi ako magnanakaw, hindi ako tulisan." },
@@ -192,6 +194,39 @@ stageEl.style.left = STAGE.x - STAGE.width / 2 + "px";
 stageEl.style.width = STAGE.width + "px";
 stageEl.innerHTML = `<div class="label">${STAGE.label}</div>`;
 world.appendChild(stageEl);
+
+// Sloped ramps on both sides so Macario can visually walk up onto the stage
+const slopeLeft = document.createElement("div");
+slopeLeft.className = "stage-slope stage-slope-left";
+slopeLeft.style.left = STAGE.x - STAGE.width / 2 - STAGE.rampWidth + "px";
+slopeLeft.style.width = STAGE.rampWidth + "px";
+world.appendChild(slopeLeft);
+
+const slopeRight = document.createElement("div");
+slopeRight.className = "stage-slope stage-slope-right";
+slopeRight.style.left = STAGE.x + STAGE.width / 2 + "px";
+slopeRight.style.width = STAGE.rampWidth + "px";
+world.appendChild(slopeRight);
+
+// How high (0 to PLATFORM_HEIGHT) the player should be lifted at world-x
+function getPlatformOffset(x) {
+  const half = STAGE.width / 2;
+  const left = STAGE.x - half;
+  const right = STAGE.x + half;
+  const rampLeftStart = left - STAGE.rampWidth;
+  const rampRightEnd = right + STAGE.rampWidth;
+
+  if (x >= left && x <= right) return PLATFORM_HEIGHT;
+  if (x >= rampLeftStart && x < left) {
+    const t = (x - rampLeftStart) / STAGE.rampWidth;
+    return t * PLATFORM_HEIGHT;
+  }
+  if (x > right && x <= rampRightEnd) {
+    const t = (rampRightEnd - x) / STAGE.rampWidth;
+    return t * PLATFORM_HEIGHT;
+  }
+  return 0;
+}
 
 // --- Player sprite animation ---------------------------------------------
 // Idle.png: 6 frames, Walk.png: 10 frames — both spritesheets laid out
@@ -514,6 +549,7 @@ function gameLoop(now) {
   updateAnimFrame(now || 0);
 
   player.style.left = posX + "px";
+  player.style.bottom = 170 + getPlatformOffset(posX) + "px";
 
   // Camera: keep player centered in the viewport, clamped to world bounds
   const viewportWidth = viewport.clientWidth;
