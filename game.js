@@ -226,8 +226,9 @@ setupNpcAnimation({ src: "Horse.png", frames: 22, fps: 10 }, horseSpriteEl, 70);
 
 // --- The stage (entablado) -----------------------------------------------
 // Walk to the middle of the platform and press E to perform: Macario
-// recites a few lines, then the Dead.png animation plays, then a
-// blackout, then control returns to the player.
+// recites 2 lines, the scene fades to night, he recites 2 more lines,
+// then Dead.png plays, then a blackout, then control returns — with
+// the scene staying night from then on.
 // NOTE: the lines below are placeholder poetry — swap in your own
 // text (or a verified historical quote) whenever you're ready.
 const STAGE = {
@@ -235,9 +236,11 @@ const STAGE = {
   width: 260,
   rampWidth: 50,
   label: "Entablado",
-  poemLines: [
+  poemPart1: [
     { speaker: "Macario", text: "Hindi ako magnanakaw, hindi ako tulisan." },
     { speaker: "Macario", text: "Ipinaglaban ko lamang ang bayan kong sinilangan." },
+  ],
+  poemPart2: [
     { speaker: "Macario", text: "Kung ito ang wakas, tanggap ko nang buong puso." },
     { speaker: "Macario", text: "Mabuhay ang Pilipinas, mabuhay ang bayan ko." },
   ],
@@ -375,6 +378,7 @@ let activeMode = null; // "npc" | "gift" | "cutscene"
 let nearby = { type: null, ref: null }; // whichever NPC or the stage is in range
 
 const blackout = document.getElementById("blackout");
+const skylineNight = document.getElementById("skyline-night");
 
 const keysPressed = {};
 
@@ -499,8 +503,8 @@ function startPerformance() {
   if (cutscenePlaying) return;
   cutscenePlaying = true;
   activeNpc = null;
-  activeMode = "cutscene";
-  activeSet = { lines: STAGE.poemLines };
+  activeMode = "cutscene-part1";
+  activeSet = { lines: STAGE.poemPart1 };
   inDialogue = true;
   dialogueStep = 0;
   dialogueBox.classList.remove("hidden");
@@ -541,8 +545,12 @@ function endDialogue() {
         finishedNpc.stage++;
       }
     }
-  } else if (finishedMode === "cutscene") {
-    // dialogue box is closed; now play the death animation + blackout
+  } else if (finishedMode === "cutscene-part1") {
+    // First half of the poem is done — fade the scene to night,
+    // then continue with the second half.
+    runNightTransition();
+  } else if (finishedMode === "cutscene-part2") {
+    // Second half is done — now the death animation + blackout
     runDeathSequence();
   }
 
@@ -553,6 +561,24 @@ function endDialogue() {
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function runNightTransition() {
+  blackout.classList.add("visible");
+  await wait(900); // fade to black
+
+  skylineNight.classList.add("visible"); // swap happens while hidden behind black
+
+  await wait(400); // hold black briefly
+  blackout.classList.remove("visible");
+
+  await wait(900); // fade back in, revealing the night scene
+  activeMode = "cutscene-part2";
+  activeSet = { lines: STAGE.poemPart2 };
+  inDialogue = true;
+  dialogueStep = 0;
+  dialogueBox.classList.remove("hidden");
+  showDialogueStep();
 }
 
 async function runDeathSequence() {
@@ -566,7 +592,7 @@ async function runDeathSequence() {
   await wait(900); // fade to black + hold
   blackout.classList.remove("visible");
 
-  await wait(900); // fade back in
+  await wait(900); // fade back in — scene is now permanently night
   applyAnim("idle", true);
   cutscenePlaying = false;
 }
