@@ -134,26 +134,6 @@ html, body {
   left: 0px;
 }
 
-.label {
-  font-size: 12px;
-  margin-bottom: 4px;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-
-#interact-hint {
-  position: absolute;
-  bottom: calc(var(--ground-level) + 150px);
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.7);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
 .hidden {
   display: none !important;
 }
@@ -166,13 +146,6 @@ html, body {
   background: #5a3d26;
   border-top: 4px solid #7a5636;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
-}
-
-#stage-platform .label {
-  position: absolute;
-  top: -28px;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 /* Sloped ramps connecting ground level up to the platform's top surface */
@@ -273,30 +246,38 @@ html, body {
   background: #357a38;
 }
 
-/* Dialogue box */
+/* Dialogue box — a classic full-width bar flush against the bottom
+   of the screen, like a typical VN/RPG dialogue box, rather than a
+   floating centered card. */
 #dialogue-box {
   position: fixed;
-  left: 50%;
-  bottom: 90px;
-  transform: translateX(-50%);
-  width: min(90vw, 500px);
-  background: rgba(20, 20, 20, 0.92);
-  border: 2px solid #ffd54f;
-  border-radius: 8px;
-  padding: 14px 18px;
-  z-index: 10;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: rgba(15, 15, 15, 0.95);
+  border-top: 3px solid #ffd54f;
+  padding: 18px 24px 22px;
+  z-index: 25;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+#dialogue-inner {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 #dialogue-speaker {
   font-weight: bold;
   color: #ffd54f;
   margin-bottom: 6px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 #dialogue-text {
-  font-size: 15px;
-  line-height: 1.4;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 #dialogue-continue {
@@ -336,6 +317,8 @@ html, body {
   font-size: 18px;
   font-weight: bold;
   touch-action: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .touch-btn:active {
@@ -345,6 +328,17 @@ html, body {
 .interact-btn {
   pointer-events: auto;
   background: rgba(67, 160, 71, 0.55);
+  font-size: 13px;
+}
+
+/* Lights up gold and grows slightly whenever something interactable
+   (an NPC or the stage) is in range. */
+.interact-btn.active {
+  background: #ffd54f;
+  color: #202020;
+  border-color: #fff3c4;
+  box-shadow: 0 0 14px rgba(255, 213, 79, 0.85);
+  transform: scale(1.1);
 }
 
 /* Hide mobile controls on larger screens (desktop) by default;

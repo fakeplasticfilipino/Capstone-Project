@@ -1,7 +1,6 @@
 const world = document.getElementById("world");
 const viewport = document.getElementById("viewport");
 const player = document.getElementById("player");
-const interactHint = document.getElementById("interact-hint");
 
 const dialogueBox = document.getElementById("dialogue-box");
 const dialogueSpeaker = document.getElementById("dialogue-speaker");
@@ -10,6 +9,7 @@ const dialogueText = document.getElementById("dialogue-text");
 const btnLeft = document.getElementById("btn-left");
 const btnRight = document.getElementById("btn-right");
 const btnInteract = document.getElementById("btn-interact");
+const mobileControls = document.getElementById("mobile-controls");
 
 const questListEl = document.getElementById("quest-list");
 const giftBtn = document.getElementById("gift-btn");
@@ -169,7 +169,6 @@ NPCS.forEach((npc) => {
 
   if (npc.animation) {
     // Animated sprite sheet, same system as the player, same display size.
-    el.innerHTML = `<div class="label">${npc.label}</div>`;
     const spriteEl = document.createElement("div");
     spriteEl.className = "sprite npc-sprite npc-anim-sprite";
     el.appendChild(spriteEl);
@@ -177,10 +176,7 @@ NPCS.forEach((npc) => {
     setupNpcAnimation(npc.animation, spriteEl);
   } else {
     // Static image
-    el.innerHTML = `
-      <div class="label">${npc.label}</div>
-      <img class="sprite npc-sprite" src="${npc.img}" alt="${npc.label}" />
-    `;
+    el.innerHTML = `<img class="sprite npc-sprite" src="${npc.img}" alt="${npc.label}" />`;
     world.appendChild(el);
   }
 });
@@ -237,7 +233,6 @@ const stageEl = document.createElement("div");
 stageEl.id = "stage-platform";
 stageEl.style.left = STAGE.x - STAGE.width / 2 + "px";
 stageEl.style.width = STAGE.width + "px";
-stageEl.innerHTML = `<div class="label">${STAGE.label}</div>`;
 world.appendChild(stageEl);
 
 // Sloped ramps on both sides so Macario can visually walk up onto the stage
@@ -602,19 +597,19 @@ function gameLoop(now) {
   cameraX = Math.max(0, Math.min(cameraX, WORLD_WIDTH - viewportWidth));
   world.style.transform = `translateX(${-cameraX}px)`;
 
-  // Interact hint + gift button follow whichever NPC/stage is nearby
+  // Interact button + gift button follow whichever NPC/stage is nearby
   if (!inDialogue && !cutscenePlaying) {
+    mobileControls.classList.remove("hidden");
     nearby = findNearby();
     if (nearby.type === "npc") {
-      interactHint.textContent = `Press E to talk to ${nearby.ref.label}`;
-      interactHint.style.left = nearby.ref.x + PLAYER_WIDTH / 2 + "px";
-      interactHint.classList.remove("hidden");
+      btnInteract.textContent = "Usap";
+      btnInteract.classList.add("active");
     } else if (nearby.type === "stage") {
-      interactHint.textContent = "Press E to perform";
-      interactHint.style.left = STAGE.x + PLAYER_WIDTH / 2 + "px";
-      interactHint.classList.remove("hidden");
+      btnInteract.textContent = "Ganap";
+      btnInteract.classList.add("active");
     } else {
-      interactHint.classList.add("hidden");
+      btnInteract.textContent = "E";
+      btnInteract.classList.remove("active");
     }
 
     if (nearby.type === "npc" && canGiveGift(nearby.ref)) {
@@ -624,8 +619,12 @@ function gameLoop(now) {
       giftBtn.classList.add("hidden");
     }
   } else {
-    interactHint.classList.add("hidden");
+    // Dialogue is showing (or the cutscene is running) — tapping the
+    // dialogue box itself advances it, so tuck the controls away.
+    mobileControls.classList.add("hidden");
     giftBtn.classList.add("hidden");
+    btnInteract.textContent = "E";
+    btnInteract.classList.remove("active");
   }
 
   requestAnimationFrame(gameLoop);
