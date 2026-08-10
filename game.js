@@ -20,6 +20,7 @@ const SPEED = 5;
 const INTERACT_DISTANCE = 90;
 const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
 const GROUND_LEVEL = 60; // must match --ground-level in style.css
+const DISPLAY_HEIGHT = 134; // shared on-screen sprite height (player + animated NPCs)
 
 // --- Game state ----------------------------------------------------------
 const state = {
@@ -64,7 +65,7 @@ const NPCS = [
   {
     id: "nanay",
     x: 700,
-    img: "Nanay Sakay.jpg",
+    animation: { src: "Nanay.png", frames: 7, fps: 6 },
     label: "Nanay Sakay",
     stage: 0,
     dialogueSets: [
@@ -158,17 +159,60 @@ const NPCS = [
 ];
 
 // --- Build NPC elements dynamically -------------------------------------
+const npcAnimators = []; // animated NPC sprites get an .update(now) pushed here
+
 NPCS.forEach((npc) => {
   const el = document.createElement("div");
   el.className = "entity";
   el.id = "npc-" + npc.id;
   el.style.left = npc.x + "px";
-  el.innerHTML = `
-    <div class="label">${npc.label}</div>
-    <img class="sprite npc-sprite" src="${npc.img}" alt="${npc.label}" />
-  `;
-  world.appendChild(el);
+
+  if (npc.animation) {
+    // Animated sprite sheet, same system as the player, same display size.
+    el.innerHTML = `<div class="label">${npc.label}</div>`;
+    const spriteEl = document.createElement("div");
+    spriteEl.className = "sprite npc-sprite npc-anim-sprite";
+    el.appendChild(spriteEl);
+    world.appendChild(el);
+    setupNpcAnimation(npc.animation, spriteEl);
+  } else {
+    // Static image
+    el.innerHTML = `
+      <div class="label">${npc.label}</div>
+      <img class="sprite npc-sprite" src="${npc.img}" alt="${npc.label}" />
+    `;
+    world.appendChild(el);
+  }
 });
+
+function setupNpcAnimation(sheet, el) {
+  let currentFrame = 0;
+  let lastFrameTime = 0;
+
+  loadSpriteSheet(sheet).then(() => {
+    const scale = DISPLAY_HEIGHT / sheet.naturalHeight;
+    const displayFrameWidth = sheet.frameWidth * scale;
+
+    el.style.width = displayFrameWidth + "px";
+    el.style.height = DISPLAY_HEIGHT + "px";
+    el.style.backgroundImage = `url(${sheet.src})`;
+    el.style.backgroundSize =
+      sheet.naturalWidth * scale + "px " + DISPLAY_HEIGHT + "px";
+    el.style.backgroundPositionY = "0px";
+    el.style.backgroundPositionX = "0px";
+
+    npcAnimators.push({
+      update(now) {
+        const frameDuration = 1000 / sheet.fps;
+        if (now - lastFrameTime >= frameDuration) {
+          lastFrameTime = now;
+          currentFrame = (currentFrame + 1) % sheet.frames;
+          el.style.backgroundPositionX = -(currentFrame * displayFrameWidth) + "px";
+        }
+      },
+    });
+  });
+}
 
 // --- The stage (entablado) -----------------------------------------------
 // Walk to the middle of the platform and press E to perform: Macario
@@ -233,7 +277,6 @@ function getPlatformOffset(x) {
 // Idle.png: 6 frames, Walk.png: 10 frames — both spritesheets laid out
 // horizontally, expected to live in the same folder as index.html.
 const playerSpriteEl = player.querySelector(".player-sprite");
-const DISPLAY_HEIGHT = 134; // on-screen sprite height in px, width follows aspect ratio
 
 const SPRITE_SHEETS = {
   idle: { src: "Idle.png", frames: 6, fps: 6 },
@@ -548,6 +591,7 @@ function gameLoop(now) {
     applyAnim(isWalking ? "walk" : "idle");
   }
   updateAnimFrame(now || 0);
+  npcAnimators.forEach((animator) => animator.update(now || 0));
 
   player.style.left = posX + "px";
   player.style.bottom = GROUND_LEVEL + getPlatformOffset(posX) + "px";

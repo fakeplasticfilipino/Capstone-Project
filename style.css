@@ -72,14 +72,16 @@ html, body {
    skyline backdrop, right where characters stand. A dark gradient is
    layered on top so the very bottom row of tiles fades to black —
    gives it a natural sense of depth instead of a hard cutoff.
-   Bump GROUND_BAND_HEIGHT (and the matching value in game.js/CSS
-   comments) if you want a taller strip of visible tile. */
+   TILE_SIZE controls how big each tile renders, and the band height
+   is locked to exactly 2 rows (2 * TILE_SIZE) — bump TILE_SIZE if you
+   want the tiles bigger/smaller. Height matches --ground-level exactly
+   so the top of the tiles sits right at the character's feet. */
 #ground-tiles {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 180px;
+  height: 60px; /* 2 rows of 30px tiles, matches --ground-level */
   background-image: linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0) 0%,
@@ -88,7 +90,7 @@ html, body {
     ),
     url("Cement_Tile.png");
   background-repeat: no-repeat, repeat;
-  background-size: 100% 100%, auto;
+  background-size: 100% 100%, 30px 30px;
 }
 
 .entity {
@@ -117,6 +119,15 @@ html, body {
   height: 112px;
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
+}
+
+/* Animated NPC sprites (sprite sheets, same system as the player) —
+   sized via inline styles once loaded, so only paint properties here. */
+.npc-anim-sprite {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 
 #player {
