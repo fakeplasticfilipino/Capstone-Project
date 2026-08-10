@@ -19,6 +19,7 @@ const PLAYER_WIDTH = 40;
 const SPEED = 5;
 const INTERACT_DISTANCE = 90;
 const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
+const GROUND_LEVEL = 60; // must match --ground-level in style.css
 
 // --- Game state ----------------------------------------------------------
 const state = {
@@ -549,7 +550,7 @@ function gameLoop(now) {
   updateAnimFrame(now || 0);
 
   player.style.left = posX + "px";
-  player.style.bottom = 170 + getPlatformOffset(posX) + "px";
+  player.style.bottom = GROUND_LEVEL + getPlatformOffset(posX) + "px";
 
   // Camera: keep player centered in the viewport, clamped to world bounds
   const viewportWidth = viewport.clientWidth;

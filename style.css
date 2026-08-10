@@ -14,12 +14,26 @@ html, body {
   color: #eee;
 }
 
+/* Overall "camera personality" zoom — bakes in what you'd otherwise get
+   from manually zooming the browser. Everything (game world AND the UI)
+   scales together. Bump this up/down to taste; 1 = no zoom. */
+:root {
+  --zoom: 1.75;
+}
+
+#app-scale {
+  width: calc(100% / var(--zoom));
+  height: calc(100% / var(--zoom));
+  transform: scale(var(--zoom));
+  transform-origin: top left;
+}
+
 /* The viewport is what the player sees; the world is much bigger
    and gets shifted (via transform) to create the camera effect. */
 #viewport {
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -32,38 +46,54 @@ html, body {
   will-change: transform;
 }
 
-#road {
+:root {
+  /* How high off the very bottom of the screen characters' feet sit.
+     Tweak this if it doesn't line up with the road drawn in Tondo.jpg. */
+  --ground-level: 60px;
+}
+
+/* Tondo, Manila backdrop — replaces the sky/ground entirely.
+   The image (1024x285) is stretched to fill the full viewport height
+   and tiled horizontally to cover the whole (much wider) world. */
+#skyline {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("Tondo.jpg");
+  background-repeat: repeat-x;
+  background-position: bottom left;
+  background-size: auto 100%;
+  z-index: -1;
+}
+
+/* Ground: a repeating cement tile texture sitting in front of the
+   skyline backdrop, right where characters stand. A dark gradient is
+   layered on top so the very bottom row of tiles fades to black —
+   gives it a natural sense of depth instead of a hard cutoff.
+   Bump GROUND_BAND_HEIGHT (and the matching value in game.js/CSS
+   comments) if you want a taller strip of visible tile. */
+#ground-tiles {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
   height: 180px;
-  background: transparent;
-}
-
-/* Sky / ground filler so it doesn't look like a tunnel.
-   Fixed pixel ground height (not a % of viewport) keeps the ground
-   band low and consistent across different screen heights. */
-#world::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    to bottom,
-    #4a90d9 0,
-    #4a90d9 calc(100% - 180px),
-    #6b4c34 calc(100% - 180px),
-    #6b4c34 100%
-  );
-  z-index: -1;
+  background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0) 45%,
+      rgba(0, 0, 0, 0.95) 100%
+    ),
+    url("Cement_Tile.png");
+  background-repeat: no-repeat, repeat;
+  background-size: 100% 100%, auto;
 }
 
 .entity {
   position: absolute;
-  bottom: 170px; /* feet rest right at the top of the ground band */
+  bottom: var(--ground-level);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -104,7 +134,7 @@ html, body {
 
 #interact-hint {
   position: absolute;
-  bottom: 320px;
+  bottom: calc(var(--ground-level) + 150px);
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.7);
   padding: 4px 10px;
@@ -120,7 +150,7 @@ html, body {
 /* Stage / platform (entablado) */
 #stage-platform {
   position: absolute;
-  bottom: 180px; /* sits right on top of the ground band */
+  bottom: var(--ground-level); /* sits right on top of the ground line */
   height: 40px;
   background: #5a3d26;
   border-top: 4px solid #7a5636;
@@ -137,7 +167,7 @@ html, body {
 /* Sloped ramps connecting ground level up to the platform's top surface */
 .stage-slope {
   position: absolute;
-  bottom: 180px; /* same base as the ground band */
+  bottom: var(--ground-level); /* same base as the ground line */
   height: 40px; /* matches PLATFORM_HEIGHT */
   background: #5a3d26;
 }

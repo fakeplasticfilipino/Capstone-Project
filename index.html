@@ -7,43 +7,46 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Quest log -->
-  <div id="quest-log">
-    <div id="quest-log-title">Mga Gawain</div>
-    <ul id="quest-list"></ul>
-  </div>
+  <div id="app-scale">
+    <!-- Quest log -->
+    <div id="quest-log">
+      <div id="quest-log-title">Mga Gawain</div>
+      <ul id="quest-list"></ul>
+    </div>
 
-  <div id="viewport">
-    <div id="world">
-      <div id="road"></div>
+    <div id="viewport">
+      <div id="world">
+        <div id="skyline"></div>
+      <div id="ground-tiles"></div>
 
-      <!-- NPCs are created dynamically by game.js from the NPCS config -->
+        <!-- NPCs are created dynamically by game.js from the NPCS config -->
 
-      <div id="player" class="entity">
-        <div class="sprite player-sprite"></div>
+        <div id="player" class="entity">
+          <div class="sprite player-sprite"></div>
+        </div>
+
+        <div id="interact-hint" class="hidden">Press E to talk</div>
       </div>
-
-      <div id="interact-hint" class="hidden">Press E to talk</div>
     </div>
-  </div>
 
-  <button id="gift-btn" class="hidden"></button>
+    <button id="gift-btn" class="hidden"></button>
 
-  <div id="blackout"></div>
+    <div id="blackout"></div>
 
-  <div id="dialogue-box" class="hidden">
-    <div id="dialogue-speaker"></div>
-    <div id="dialogue-text"></div>
-    <div id="dialogue-continue">tap / press E to continue</div>
-  </div>
-
-  <!-- Mobile controls -->
-  <div id="mobile-controls">
-    <div class="dpad">
-      <button id="btn-left" class="touch-btn">A</button>
-      <button id="btn-right" class="touch-btn">D</button>
+    <div id="dialogue-box" class="hidden">
+      <div id="dialogue-speaker"></div>
+      <div id="dialogue-text"></div>
+      <div id="dialogue-continue">tap / press E to continue</div>
     </div>
-    <button id="btn-interact" class="touch-btn interact-btn">E</button>
+
+    <!-- Mobile controls -->
+    <div id="mobile-controls">
+      <div class="dpad">
+        <button id="btn-left" class="touch-btn">A</button>
+        <button id="btn-right" class="touch-btn">D</button>
+      </div>
+      <button id="btn-interact" class="touch-btn interact-btn">E</button>
+    </div>
   </div>
 
   <script src="game.js"></script>
