@@ -89,7 +89,7 @@ const NPCS = [
   {
     id: "stablehand",
     x: 1100,
-    img: "Stablehand.jpg",
+    animation: { src: "Stablehand.png", frames: 14, fps: 6 },
     label: "Stablehand",
     stage: 0,
     dialogueSets: [
@@ -181,19 +181,20 @@ NPCS.forEach((npc) => {
   }
 });
 
-function setupNpcAnimation(sheet, el) {
+function setupNpcAnimation(sheet, el, displayHeight) {
+  displayHeight = displayHeight || DISPLAY_HEIGHT;
   let currentFrame = 0;
   let lastFrameTime = 0;
 
   loadSpriteSheet(sheet).then(() => {
-    const scale = DISPLAY_HEIGHT / sheet.naturalHeight;
+    const scale = displayHeight / sheet.naturalHeight;
     const displayFrameWidth = sheet.frameWidth * scale;
 
     el.style.width = displayFrameWidth + "px";
-    el.style.height = DISPLAY_HEIGHT + "px";
+    el.style.height = displayHeight + "px";
     el.style.backgroundImage = `url(${sheet.src})`;
     el.style.backgroundSize =
-      sheet.naturalWidth * scale + "px " + DISPLAY_HEIGHT + "px";
+      sheet.naturalWidth * scale + "px " + displayHeight + "px";
     el.style.backgroundPositionY = "0px";
     el.style.backgroundPositionX = "0px";
 
@@ -209,6 +210,19 @@ function setupNpcAnimation(sheet, el) {
     });
   });
 }
+
+// --- Decorations (animated, but not interactable) -------------------------
+// The Horse.png sheet (22 frames) stands beside the Stablehand. Slightly
+// taller than the player/NPCs since horses are bigger than people.
+const horseEl = document.createElement("div");
+horseEl.className = "entity";
+horseEl.id = "horse";
+horseEl.style.left = "1220px"; // just to the right of the Stablehand (x: 1100)
+const horseSpriteEl = document.createElement("div");
+horseSpriteEl.className = "sprite npc-sprite npc-anim-sprite";
+horseEl.appendChild(horseSpriteEl);
+world.appendChild(horseEl);
+setupNpcAnimation({ src: "Horse.png", frames: 22, fps: 10 }, horseSpriteEl, 70);
 
 // --- The stage (entablado) -----------------------------------------------
 // Walk to the middle of the platform and press E to perform: Macario
