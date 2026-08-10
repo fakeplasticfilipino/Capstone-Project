@@ -35,13 +35,15 @@ html, body {
 #road {
   position: absolute;
   left: 0;
-  bottom: 30%;
+  bottom: 0;
   width: 100%;
-  height: 140px;
-  background: #8d6e4a;
+  height: 180px;
+  background: transparent;
 }
 
-/* Sky / ground filler so it doesn't look like a tunnel */
+/* Sky / ground filler so it doesn't look like a tunnel.
+   Fixed pixel ground height (not a % of viewport) keeps the ground
+   band low and consistent across different screen heights. */
 #world::before {
   content: "";
   position: absolute;
@@ -51,9 +53,9 @@ html, body {
   height: 100%;
   background: linear-gradient(
     to bottom,
-    #4a90d9 0%,
-    #4a90d9 55%,
-    #6b4c34 55%,
+    #4a90d9 0,
+    #4a90d9 calc(100% - 180px),
+    #6b4c34 calc(100% - 180px),
     #6b4c34 100%
   );
   z-index: -1;
@@ -61,7 +63,7 @@ html, body {
 
 .entity {
   position: absolute;
-  bottom: calc(30% + 20px);
+  bottom: 170px; /* feet rest right at the top of the ground band */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -73,13 +75,16 @@ html, body {
 }
 
 .player-sprite {
-  background: #e53935;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 
 /* NPC sprites are images; keep them proportioned and crisp */
 .npc-sprite {
-  width: 50px;
-  height: 70px;
+  width: 80px;
+  height: 112px;
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
 }
@@ -99,7 +104,7 @@ html, body {
 
 #interact-hint {
   position: absolute;
-  bottom: calc(30% + 90px);
+  bottom: 320px;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.7);
   padding: 4px 10px;
@@ -110,6 +115,72 @@ html, body {
 
 .hidden {
   display: none !important;
+}
+
+/* Quest log */
+#quest-log {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 15;
+  background: rgba(20, 20, 20, 0.75);
+  border: 2px solid #ffd54f;
+  border-radius: 8px;
+  padding: 10px 14px;
+  max-width: 260px;
+}
+
+#quest-log-title {
+  font-weight: bold;
+  color: #ffd54f;
+  font-size: 13px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#quest-list {
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#quest-list li {
+  position: relative;
+  padding-left: 16px;
+}
+
+#quest-list li::before {
+  content: "\2022";
+  position: absolute;
+  left: 0;
+}
+
+#quest-list li.completed {
+  text-decoration: line-through;
+  color: #8a8a8a;
+}
+
+/* Gift / item-giving button */
+#gift-btn {
+  position: fixed;
+  left: 50%;
+  bottom: 180px;
+  transform: translateX(-50%);
+  z-index: 15;
+  background: #43a047;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+#gift-btn:active {
+  background: #357a38;
 }
 
 /* Dialogue box */
