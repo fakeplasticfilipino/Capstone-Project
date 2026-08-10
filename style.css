@@ -27,7 +27,7 @@ html, body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 4000px; /* the "big world" */
+  width: 3600px; /* the "big world" — keep in sync with WORLD_WIDTH in game.js */
   height: 100%;
   will-change: transform;
 }

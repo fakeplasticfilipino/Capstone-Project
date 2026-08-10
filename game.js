@@ -11,7 +11,7 @@ const btnLeft = document.getElementById("btn-left");
 const btnRight = document.getElementById("btn-right");
 const btnInteract = document.getElementById("btn-interact");
 
-const WORLD_WIDTH = 3200;
+const WORLD_WIDTH = 3600;
 const PLAYER_WIDTH = 40;
 const SPEED = 5;
 const INTERACT_DISTANCE = 90;
@@ -31,8 +31,22 @@ const NPCS = [
     ],
   },
   {
+    id: "stablehand",
+    x: 1100,
+    img: "Stablehand.jpg",
+    label: "Stablehand",
+    lines: [
+      { speaker: "Stablehand", text: "Magandang umaga Macario" },
+      { speaker: "Ikaw", text: "Magandang umaga kaibigan, kamusta ang mga kabayo?" },
+      { speaker: "Stablehand", text: "Ayos lang, hinahanap ka na" },
+      { speaker: "Kabayo", text: "*neigh*" },
+      { speaker: "Ikaw", text: "*Hinaplos ni Macario*" },
+      { speaker: "Stablehand", text: "Sige na una na ko, mag ingat kayo!" },
+    ],
+  },
+  {
     id: "tailor",
-    x: 1500,
+    x: 1900,
     img: "Tailor.png",
     label: "Tailor",
     lines: [
@@ -46,7 +60,7 @@ const NPCS = [
   },
   {
     id: "barber",
-    x: 2300,
+    x: 2700,
     img: "Barber.jpg",
     label: "Barber",
     lines: [
