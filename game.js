@@ -168,6 +168,31 @@ NPCS.forEach((npc) => {
   world.appendChild(el);
 });
 
+// --- The stage (entablado) -----------------------------------------------
+// Walk to the middle of the platform and press E to perform: Macario
+// recites a few lines, then the Dead.png animation plays, then a
+// blackout, then control returns to the player.
+// NOTE: the lines below are placeholder poetry — swap in your own
+// text (or a verified historical quote) whenever you're ready.
+const STAGE = {
+  x: 3200,
+  width: 260,
+  label: "Entablado",
+  poemLines: [
+    { speaker: "Macario", text: "Hindi ako magnanakaw, hindi ako tulisan." },
+    { speaker: "Macario", text: "Ipinaglaban ko lamang ang bayan kong sinilangan." },
+    { speaker: "Macario", text: "Kung ito ang wakas, tanggap ko nang buong puso." },
+    { speaker: "Macario", text: "Mabuhay ang Pilipinas, mabuhay ang bayan ko." },
+  ],
+};
+
+const stageEl = document.createElement("div");
+stageEl.id = "stage-platform";
+stageEl.style.left = STAGE.x - STAGE.width / 2 + "px";
+stageEl.style.width = STAGE.width + "px";
+stageEl.innerHTML = `<div class="label">${STAGE.label}</div>`;
+world.appendChild(stageEl);
+
 // --- Player sprite animation ---------------------------------------------
 // Idle.png: 6 frames, Walk.png: 10 frames — both spritesheets laid out
 // horizontally, expected to live in the same folder as index.html.
@@ -177,6 +202,7 @@ const DISPLAY_HEIGHT = 134; // on-screen sprite height in px, width follows aspe
 const SPRITE_SHEETS = {
   idle: { src: "Idle.png", frames: 6, fps: 6 },
   walk: { src: "Walk.png", frames: 10, fps: 12 },
+  dead: { src: "Dead.png", frames: 5, fps: 6, loop: false },
 };
 
 function loadSpriteSheet(def) {
@@ -201,6 +227,7 @@ let facing = 1; // 1 = facing right, -1 = facing left
 Promise.all([
   loadSpriteSheet(SPRITE_SHEETS.idle),
   loadSpriteSheet(SPRITE_SHEETS.walk),
+  loadSpriteSheet(SPRITE_SHEETS.dead),
 ]).then(() => {
   spritesReady = true;
   applyAnim(currentAnim, true);
@@ -233,7 +260,12 @@ function updateAnimFrame(now) {
 
   if (now - lastFrameTime >= frameDuration) {
     lastFrameTime = now;
-    currentFrame = (currentFrame + 1) % sheet.frames;
+    if (sheet.loop === false) {
+      if (currentFrame < sheet.frames - 1) currentFrame++;
+      // else: hold on the last frame
+    } else {
+      currentFrame = (currentFrame + 1) % sheet.frames;
+    }
     const scale = DISPLAY_HEIGHT / sheet.naturalHeight;
     const displayFrameWidth = sheet.frameWidth * scale;
     playerSpriteEl.style.backgroundPositionX =
@@ -247,11 +279,14 @@ function updateAnimFrame(now) {
 
 let posX = 0;
 let inDialogue = false;
+let cutscenePlaying = false; // locks movement through the whole stage performance
 let dialogueStep = 0;
 let activeNpc = null; // the NPC currently in conversation
 let activeSet = null; // the dialogue set currently playing
-let activeIsGift = false; // whether the current dialogue is the gift-response line
-let nearbyNpc = null; // the NPC currently in interact range
+let activeMode = null; // "npc" | "gift" | "cutscene"
+let nearby = { type: null, ref: null }; // whichever NPC or the stage is in range
+
+const blackout = document.getElementById("blackout");
 
 const keysPressed = {};
 
@@ -301,23 +336,34 @@ btnInteract.addEventListener(
 
 giftBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  if (nearbyNpc && nearbyNpc.gift && canGiveGift(nearbyNpc)) {
-    startGift(nearbyNpc);
+  if (nearby.type === "npc" && nearby.ref.gift && canGiveGift(nearby.ref)) {
+    startGift(nearby.ref);
   }
 });
 
 // --- Interaction / dialogue ---
-function findNearbyNpc() {
+function findNearby() {
   let closest = null;
+  let closestType = null;
   let closestDist = Infinity;
+
   for (const npc of NPCS) {
     const dist = Math.abs(posX - npc.x);
     if (dist < INTERACT_DISTANCE && dist < closestDist) {
       closest = npc;
+      closestType = "npc";
       closestDist = dist;
     }
   }
-  return closest;
+
+  const stageDist = Math.abs(posX - STAGE.x);
+  if (stageDist < INTERACT_DISTANCE && stageDist < closestDist) {
+    closest = STAGE;
+    closestType = "stage";
+    closestDist = stageDist;
+  }
+
+  return { type: closestType, ref: closest };
 }
 
 function canGiveGift(npc) {
@@ -331,14 +377,18 @@ function canGiveGift(npc) {
 function handleInteractPress() {
   if (inDialogue) {
     advanceDialogue();
-  } else if (nearbyNpc) {
-    startDialogue(nearbyNpc);
+  } else if (cutscenePlaying) {
+    // ignore E while the performance/blackout sequence is running
+  } else if (nearby.type === "npc") {
+    startDialogue(nearby.ref);
+  } else if (nearby.type === "stage") {
+    startPerformance();
   }
 }
 
 function startDialogue(npc) {
   activeNpc = npc;
-  activeIsGift = false;
+  activeMode = "npc";
   const setIndex = Math.min(npc.stage, npc.dialogueSets.length - 1);
   activeSet = npc.dialogueSets[setIndex];
   inDialogue = true;
@@ -349,8 +399,20 @@ function startDialogue(npc) {
 
 function startGift(npc) {
   activeNpc = npc;
-  activeIsGift = true;
+  activeMode = "gift";
   activeSet = { lines: npc.gift.responseLines };
+  inDialogue = true;
+  dialogueStep = 0;
+  dialogueBox.classList.remove("hidden");
+  showDialogueStep();
+}
+
+function startPerformance() {
+  if (cutscenePlaying) return;
+  cutscenePlaying = true;
+  activeNpc = null;
+  activeMode = "cutscene";
+  activeSet = { lines: STAGE.poemLines };
   inDialogue = true;
   dialogueStep = 0;
   dialogueBox.classList.remove("hidden");
@@ -373,23 +435,52 @@ function advanceDialogue() {
 }
 
 function endDialogue() {
-  if (activeIsGift) {
-    const gift = activeNpc.gift;
-    state.flags[gift.givenFlag] = true;
-    if (gift.completesQuest) completeQuest(gift.completesQuest);
-  } else if (activeSet.onComplete) {
-    activeSet.onComplete();
-    const setIndex = Math.min(activeNpc.stage, activeNpc.dialogueSets.length - 1);
-    if (activeNpc.stage < activeNpc.dialogueSets.length - 1) {
-      activeNpc.stage++;
-    }
-  }
+  const finishedMode = activeMode;
+  const finishedNpc = activeNpc;
+  const finishedSet = activeSet;
 
   inDialogue = false;
+  dialogueBox.classList.add("hidden");
+
+  if (finishedMode === "gift") {
+    const gift = finishedNpc.gift;
+    state.flags[gift.givenFlag] = true;
+    if (gift.completesQuest) completeQuest(gift.completesQuest);
+  } else if (finishedMode === "npc") {
+    if (finishedSet.onComplete) {
+      finishedSet.onComplete();
+      if (finishedNpc.stage < finishedNpc.dialogueSets.length - 1) {
+        finishedNpc.stage++;
+      }
+    }
+  } else if (finishedMode === "cutscene") {
+    // dialogue box is closed; now play the death animation + blackout
+    runDeathSequence();
+  }
+
   activeNpc = null;
   activeSet = null;
-  activeIsGift = false;
-  dialogueBox.classList.add("hidden");
+  activeMode = null;
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function runDeathSequence() {
+  applyAnim("dead", true);
+  const deadSheet = SPRITE_SHEETS.dead;
+  const animMs = (deadSheet.frames / deadSheet.fps) * 1000;
+
+  await wait(animMs + 400); // let the animation finish and hold briefly
+  blackout.classList.add("visible");
+
+  await wait(900); // fade to black + hold
+  blackout.classList.remove("visible");
+
+  await wait(900); // fade back in
+  applyAnim("idle", true);
+  cutscenePlaying = false;
 }
 
 // Allow tapping the dialogue box itself to advance (nice for mobile)
@@ -401,7 +492,7 @@ dialogueBox.addEventListener("click", () => {
 function gameLoop(now) {
   let isWalking = false;
 
-  if (!inDialogue) {
+  if (!inDialogue && !cutscenePlaying) {
     if (keysPressed["a"]) {
       posX -= SPEED;
       facing = -1;
@@ -415,7 +506,11 @@ function gameLoop(now) {
     posX = Math.max(0, Math.min(posX, WORLD_WIDTH - PLAYER_WIDTH));
   }
 
-  applyAnim(isWalking ? "walk" : "idle");
+  // While the stage cutscene is running, leave whatever animation is
+  // already set (e.g. "dead") alone instead of switching to idle/walk.
+  if (!cutscenePlaying) {
+    applyAnim(isWalking ? "walk" : "idle");
+  }
   updateAnimFrame(now || 0);
 
   player.style.left = posX + "px";
@@ -426,19 +521,23 @@ function gameLoop(now) {
   cameraX = Math.max(0, Math.min(cameraX, WORLD_WIDTH - viewportWidth));
   world.style.transform = `translateX(${-cameraX}px)`;
 
-  // Interact hint + gift button follow whichever NPC is nearby
-  if (!inDialogue) {
-    nearbyNpc = findNearbyNpc();
-    if (nearbyNpc) {
-      interactHint.textContent = `Press E to talk to ${nearbyNpc.label}`;
-      interactHint.style.left = nearbyNpc.x + PLAYER_WIDTH / 2 + "px";
+  // Interact hint + gift button follow whichever NPC/stage is nearby
+  if (!inDialogue && !cutscenePlaying) {
+    nearby = findNearby();
+    if (nearby.type === "npc") {
+      interactHint.textContent = `Press E to talk to ${nearby.ref.label}`;
+      interactHint.style.left = nearby.ref.x + PLAYER_WIDTH / 2 + "px";
+      interactHint.classList.remove("hidden");
+    } else if (nearby.type === "stage") {
+      interactHint.textContent = "Press E to perform";
+      interactHint.style.left = STAGE.x + PLAYER_WIDTH / 2 + "px";
       interactHint.classList.remove("hidden");
     } else {
       interactHint.classList.add("hidden");
     }
 
-    if (nearbyNpc && canGiveGift(nearbyNpc)) {
-      giftBtn.textContent = nearbyNpc.gift.buttonLabel;
+    if (nearby.type === "npc" && canGiveGift(nearby.ref)) {
+      giftBtn.textContent = nearby.ref.gift.buttonLabel;
       giftBtn.classList.remove("hidden");
     } else {
       giftBtn.classList.add("hidden");
