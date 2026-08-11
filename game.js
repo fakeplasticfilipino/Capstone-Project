@@ -65,7 +65,7 @@ const NPCS = [
   {
     id: "nanay",
     x: 700,
-    animation: { src: "Nanay.png", frames: 7, fps: 6 },
+    animation: { src: "Assets/Nanay.png", frames: 7, fps: 6 },
     label: "Nanay Sakay",
     stage: 0,
     dialogueSets: [
@@ -89,7 +89,7 @@ const NPCS = [
   {
     id: "stablehand",
     x: 1100,
-    animation: { src: "Stablehand.png", frames: 14, fps: 6 },
+    animation: { src: "Assets/Stablehand.png", frames: 14, fps: 6 },
     label: "Stablehand",
     stage: 0,
     dialogueSets: [
@@ -108,7 +108,7 @@ const NPCS = [
   {
     id: "tailor",
     x: 1900,
-    img: "Tailor.png",
+    img: "Assets/Tailor.png",
     label: "Tailor",
     stage: 0,
     dialogueSets: [
@@ -127,7 +127,7 @@ const NPCS = [
   {
     id: "barber",
     x: 2700,
-    img: "Barber.jpg",
+    img: "Assets/Barber.jpg",
     label: "Barber",
     stage: 0,
     dialogueSets: [
@@ -162,7 +162,7 @@ const NPCS = [
     // NOTE: placeholder dialogue — swap in your own lines.
     id: "katipunan",
     x: WORLD_WIDTH - 300,
-    animation: { src: "Katipunan.png", frames: 11, fps: 6 },
+    animation: { src: "Assets/Katipunan.png", frames: 11, fps: 6 },
     label: "Katipunero",
     stage: 0,
     startsHidden: true,
@@ -202,11 +202,55 @@ NPCS.forEach((npc) => {
     world.appendChild(el);
     setupNpcAnimation(npc.animation, spriteEl);
   } else {
-    // Static image
-    el.innerHTML = `<img class="sprite npc-sprite" src="${npc.img}" alt="${npc.label}" />`;
+    // Static image — falls back to a placeholder box (showing the
+    // expected filename) if the file doesn't exist yet. <img> elements
+    // can't display text content, so on error we swap in a real div.
+    const img = document.createElement("img");
+    img.className = "sprite npc-sprite";
+    img.src = npc.img;
+    img.alt = npc.label;
+    img.onerror = () => {
+      const placeholder = document.createElement("div");
+      placeholder.className = "sprite npc-sprite";
+      showPlaceholder(placeholder, npc.img, 80, 112);
+      img.replaceWith(placeholder);
+    };
+    el.appendChild(img);
     world.appendChild(el);
   }
 });
+
+// --- Fallback checks for CSS-only background images -----------------------
+// These (skyline, night skyline, ground tiles) are set purely in CSS, so
+// we separately preload each here just to detect a missing file and swap
+// in a simple placeholder fill + label if it 404s.
+function checkBackgroundImage(el, src, label) {
+  const img = new Image();
+  img.onerror = () => {
+    el.style.backgroundImage = "none";
+    el.style.backgroundColor = "#333";
+    el.style.display = "flex";
+    el.style.alignItems = "center";
+    el.style.justifyContent = "center";
+    el.style.color = "#ffd54f";
+    el.style.fontSize = "14px";
+    el.style.border = "2px dashed #ffd54f";
+    el.textContent = label;
+  };
+  img.src = src;
+}
+
+checkBackgroundImage(document.getElementById("skyline"), "Assets/Tondo.png", "Assets/Tondo.png");
+checkBackgroundImage(
+  document.getElementById("skyline-night"),
+  "Assets/Tondo_Night.png",
+  "Assets/Tondo_Night.png"
+);
+checkBackgroundImage(
+  document.getElementById("ground-tiles"),
+  "Assets/Cement_Tile.png",
+  "Assets/Cement_Tile.png"
+);
 
 function setupNpcAnimation(sheet, el, displayHeight) {
   displayHeight = displayHeight || DISPLAY_HEIGHT;
@@ -214,6 +258,11 @@ function setupNpcAnimation(sheet, el, displayHeight) {
   let lastFrameTime = 0;
 
   loadSpriteSheet(sheet).then(() => {
+    if (sheet.failed) {
+      showPlaceholder(el, sheet.src, Math.round(displayHeight * 0.7), displayHeight);
+      return;
+    }
+
     const scale = displayHeight / sheet.naturalHeight;
     const displayFrameWidth = sheet.frameWidth * scale;
 
@@ -239,7 +288,7 @@ function setupNpcAnimation(sheet, el, displayHeight) {
 }
 
 // --- Decorations (animated, but not interactable) -------------------------
-// The Horse.png sheet (22 frames) stands beside the Stablehand. Slightly
+// The Assets/Horse.png sheet (22 frames) stands beside the Stablehand. Slightly
 // taller than the player/NPCs since horses are bigger than people.
 const horseEl = document.createElement("div");
 horseEl.className = "entity";
@@ -249,12 +298,12 @@ const horseSpriteEl = document.createElement("div");
 horseSpriteEl.className = "sprite npc-sprite npc-anim-sprite";
 horseEl.appendChild(horseSpriteEl);
 world.appendChild(horseEl);
-setupNpcAnimation({ src: "Horse.png", frames: 22, fps: 10 }, horseSpriteEl, 70);
+setupNpcAnimation({ src: "Assets/Horse.png", frames: 22, fps: 10 }, horseSpriteEl, 70);
 
 // --- The stage (entablado) -----------------------------------------------
 // Walk to the middle of the platform and press E to perform: Macario
 // recites 2 lines, the scene fades to night, he recites 2 more lines,
-// then Dead.png plays, then a blackout, then control returns — with
+// then Assets/Dead.png plays, then a blackout, then control returns — with
 // the scene staying night from then on.
 // NOTE: the lines below are placeholder poetry — swap in your own
 // text (or a verified historical quote) whenever you're ready.
@@ -294,6 +343,8 @@ world.appendChild(slopeRight);
 
 // How high (0 to PLATFORM_HEIGHT) the player should be lifted at world-x
 function getPlatformOffset(x) {
+  if (currentRoom !== "road") return 0; // the stage doesn't exist in other rooms
+
   const half = STAGE.width / 2;
   const left = STAGE.x - half;
   const right = STAGE.x + half;
@@ -313,14 +364,14 @@ function getPlatformOffset(x) {
 }
 
 // --- Player sprite animation ---------------------------------------------
-// Idle.png: 6 frames, Walk.png: 10 frames — both spritesheets laid out
+// Assets/Idle.png: 6 frames, Assets/Walk.png: 10 frames — both spritesheets laid out
 // horizontally, expected to live in the same folder as index.html.
 const playerSpriteEl = player.querySelector(".player-sprite");
 
 const SPRITE_SHEETS = {
-  idle: { src: "Idle.png", frames: 6, fps: 6 },
-  walk: { src: "Walk.png", frames: 10, fps: 12 },
-  dead: { src: "Dead.png", frames: 5, fps: 6, loop: false },
+  idle: { src: "Assets/Idle.png", frames: 6, fps: 6 },
+  walk: { src: "Assets/Walk.png", frames: 10, fps: 12 },
+  dead: { src: "Assets/Dead.png", frames: 5, fps: 6, loop: false },
 };
 
 function loadSpriteSheet(def) {
@@ -330,10 +381,47 @@ function loadSpriteSheet(def) {
       def.naturalWidth = img.naturalWidth;
       def.naturalHeight = img.naturalHeight;
       def.frameWidth = img.naturalWidth / def.frames;
+      def.failed = false;
       resolve(def);
+    };
+    img.onerror = () => {
+      def.failed = true;
+      resolve(def); // resolve (not reject) so Promise.all doesn't hang forever
     };
     img.src = def.src;
   });
+}
+
+// Turns any element into a dashed placeholder box showing the missing
+// filename — used whenever an expected image/sprite sheet fails to load.
+function showPlaceholder(el, filename, width, height) {
+  el.style.backgroundImage = "none";
+  el.style.width = width + "px";
+  el.style.height = height + "px";
+  el.style.display = "flex";
+  el.style.alignItems = "center";
+  el.style.justifyContent = "center";
+  el.style.textAlign = "center";
+  el.style.padding = "4px";
+  el.style.boxSizing = "border-box";
+  el.style.border = "2px dashed #ffd54f";
+  el.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+  el.style.color = "#ffd54f";
+  el.style.fontSize = "11px";
+  el.style.lineHeight = "1.3";
+  el.style.overflowWrap = "break-word";
+  el.textContent = filename;
+}
+
+// Undo showPlaceholder's inline styles so a real sprite can render cleanly.
+function clearPlaceholder(el) {
+  el.textContent = "";
+  el.style.display = "";
+  el.style.border = "";
+  el.style.backgroundColor = "";
+  el.style.color = "";
+  el.style.fontSize = "";
+  el.style.padding = "";
 }
 
 let spritesReady = false;
@@ -359,6 +447,13 @@ function applyAnim(name, force) {
   lastFrameTime = 0;
 
   const sheet = SPRITE_SHEETS[name];
+
+  if (sheet.failed) {
+    showPlaceholder(playerSpriteEl, sheet.src, 90, DISPLAY_HEIGHT);
+    return;
+  }
+
+  clearPlaceholder(playerSpriteEl);
   const scale = DISPLAY_HEIGHT / sheet.naturalHeight;
   const displayFrameWidth = sheet.frameWidth * scale;
 
@@ -374,6 +469,8 @@ function applyAnim(name, force) {
 function updateAnimFrame(now) {
   if (!spritesReady) return;
   const sheet = SPRITE_SHEETS[currentAnim];
+  if (sheet.failed) return; // nothing to step — placeholder box is static
+
   const frameDuration = 1000 / sheet.fps;
 
   if (now - lastFrameTime >= frameDuration) {
@@ -396,6 +493,7 @@ function updateAnimFrame(now) {
 
 
 let posX = 0;
+let currentRoom = "road"; // "road" (the main street) | "empty" (post-teleport room)
 let inDialogue = false;
 let cutscenePlaying = false; // locks movement through the whole stage performance
 let dialogueStep = 0;
@@ -462,6 +560,10 @@ giftBtn.addEventListener("click", (e) => {
 
 // --- Interaction / dialogue ---
 function findNearby() {
+  if (currentRoom !== "road") {
+    return { type: null, ref: null }; // nothing to interact with in other rooms
+  }
+
   let closest = null;
   let closestType = null;
   let closestDist = Infinity;
@@ -651,6 +753,7 @@ async function teleportToNewRoom() {
 
   posX = 0;
   facing = 1;
+  currentRoom = "empty"; // this room has no interactables at all — not just hidden ones
 
   await wait(300); // hold black briefly
   blackout.classList.remove("visible");
