@@ -156,6 +156,29 @@ const NPCS = [
       completesQuest: "give-buko",
     },
   },
+  {
+    // Waits at the far edge of the map — stays hidden until the stage
+    // performance (execution scene) finishes, then appears.
+    // NOTE: placeholder dialogue — swap in your own lines.
+    id: "katipunan",
+    x: WORLD_WIDTH - 300,
+    animation: { src: "Katipunan.png", frames: 11, fps: 6 },
+    label: "Katipunero",
+    stage: 0,
+    startsHidden: true,
+    dialogueSets: [
+      {
+        lines: [
+          { speaker: "Katipunero", text: "Kasama, dumating ka rin." },
+          { speaker: "Ikaw", text: "Handa na ako." },
+          { speaker: "Katipunero", text: "Sumama ka, may naghihintay pang laban." },
+        ],
+        onComplete: () => {
+          teleportToNewRoom();
+        },
+      },
+    ],
+  },
 ];
 
 // --- Build NPC elements dynamically -------------------------------------
@@ -166,6 +189,10 @@ NPCS.forEach((npc) => {
   el.className = "entity";
   el.id = "npc-" + npc.id;
   el.style.left = npc.x + "px";
+  if (npc.startsHidden) {
+    npc.hidden = true;
+    el.style.display = "none";
+  }
 
   if (npc.animation) {
     // Animated sprite sheet, same system as the player, same display size.
@@ -440,6 +467,7 @@ function findNearby() {
   let closestDist = Infinity;
 
   for (const npc of NPCS) {
+    if (npc.hidden) continue;
     const dist = Math.abs(posX - npc.x);
     if (dist < INTERACT_DISTANCE && dist < closestDist) {
       closest = npc;
@@ -594,6 +622,40 @@ async function runDeathSequence() {
 
   await wait(900); // fade back in — scene is now permanently night
   applyAnim("idle", true);
+  cutscenePlaying = false;
+
+  // The Katipunero was waiting at the edge of the map — reveal him now.
+  const katipunan = NPCS.find((npc) => npc.id === "katipunan");
+  if (katipunan) {
+    katipunan.hidden = false;
+    const katipunanEl = document.getElementById("npc-katipunan");
+    if (katipunanEl) katipunanEl.style.display = "";
+  }
+}
+
+async function teleportToNewRoom() {
+  cutscenePlaying = true;
+  blackout.classList.add("visible");
+  await wait(900); // fade to black
+
+  // Same background/road, just an empty scene — hide every character
+  // and object from the previous room.
+  NPCS.forEach((npc) => {
+    const el = document.getElementById("npc-" + npc.id);
+    if (el) el.style.display = "none";
+  });
+  horseEl.style.display = "none";
+  stageEl.style.display = "none";
+  slopeLeft.style.display = "none";
+  slopeRight.style.display = "none";
+
+  posX = 0;
+  facing = 1;
+
+  await wait(300); // hold black briefly
+  blackout.classList.remove("visible");
+
+  await wait(900); // fade back in to the empty room
   cutscenePlaying = false;
 }
 
