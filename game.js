@@ -30,6 +30,7 @@ const state = {
 // --- Quest system ----------------------------------------------------------
 const quests = []; // { id, text, done }
 let saveDirty = false; // used by the Supabase autosave system further down
+let saveDebounceTimer = null; // also used by the autosave system further down
 
 function addQuest(id, text) {
   if (quests.some((q) => q.id === id)) return;
@@ -982,8 +983,6 @@ function applyLoadedState(row) {
     slopeRight.style.display = "none";
   }
 }
-
-let saveDebounceTimer = null;
 
 function markDirty() {
   saveDirty = true;
