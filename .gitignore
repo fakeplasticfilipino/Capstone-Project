@@ -1,0 +1,9 @@
+# Admin-only tools — must NEVER be pushed to a public repo.
+# These are meant to run locally on your own machine only.
+create_accounts.js
+
+# Common places a secret key might accidentally end up.
+.env
+.env.local
+*.secret
+secret_key.txt

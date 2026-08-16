@@ -900,9 +900,11 @@ async function enterGameAsUser(userId) {
   authOverlay.classList.add("hidden");
   authGated = false;
   await loadProgress(userId);
+  // Backup safety-net save, in case something set saveDirty without
+  // going through markDirty()'s own debounce below.
   setInterval(() => {
     if (saveDirty) saveProgress();
-  }, 5000);
+  }, 10000);
 }
 
 async function loadProgress(userId) {
@@ -981,8 +983,14 @@ function applyLoadedState(row) {
   }
 }
 
+let saveDebounceTimer = null;
+
 function markDirty() {
   saveDirty = true;
+  clearTimeout(saveDebounceTimer);
+  saveDebounceTimer = setTimeout(() => {
+    if (saveDirty) saveProgress();
+  }, 800);
 }
 
 async function saveProgress() {
