@@ -513,13 +513,13 @@ const skylineNight = document.getElementById("skyline-night");
 const keysPressed = {};
 
 document.addEventListener("keydown", (e) => {
-  const key = e.key.toLowerCase();
+  const key = (e.key || "").toLowerCase();
   keysPressed[key] = true;
   if (key === "e") handleInteractPress();
 });
 
 document.addEventListener("keyup", (e) => {
-  keysPressed[e.key.toLowerCase()] = false;
+  keysPressed[(e.key || "").toLowerCase()] = false;
 });
 
 // --- Mobile controls ---
