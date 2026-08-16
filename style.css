@@ -203,6 +203,87 @@ html, body {
   pointer-events: auto;
 }
 
+/* Login / signup gate */
+#auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.92);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#auth-box {
+  width: min(90vw, 360px);
+  background: rgba(20, 20, 20, 0.97);
+  border: 2px solid #ffd54f;
+  border-radius: 10px;
+  padding: 24px 22px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+#auth-title {
+  color: #ffd54f;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+}
+
+#auth-subtitle {
+  color: #999;
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+
+#auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#auth-form input[type="text"],
+#auth-form input[type="email"],
+#auth-form input[type="password"] {
+  background: #111;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: #eee;
+  font-size: 14px;
+}
+
+#auth-submit {
+  margin-top: 4px;
+  background: #43a047;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 0;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#auth-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+#auth-status {
+  margin-top: 12px;
+  font-size: 12px;
+  text-align: center;
+  min-height: 16px;
+  color: #ff8a80;
+}
+
+#auth-status.success {
+  color: #a5d6a7;
+}
+
 /* Quest log */
 #quest-log {
   position: fixed;

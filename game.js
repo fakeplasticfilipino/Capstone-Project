@@ -29,17 +29,20 @@ const state = {
 
 // --- Quest system ----------------------------------------------------------
 const quests = []; // { id, text, done }
+let saveDirty = false; // used by the Supabase autosave system further down
 
 function addQuest(id, text) {
   if (quests.some((q) => q.id === id)) return;
   quests.push({ id, text, done: false });
   renderQuests();
+  markDirty();
 }
 
 function completeQuest(id) {
   const q = quests.find((q) => q.id === id);
   if (q) q.done = true;
   renderQuests();
+  markDirty();
 }
 
 function renderQuests() {
@@ -494,6 +497,7 @@ function updateAnimFrame(now) {
 
 let posX = 0;
 let currentRoom = "road"; // "road" (the main street) | "empty" (post-teleport room)
+let authGated = true; // true until the player is logged in
 let inDialogue = false;
 let cutscenePlaying = false; // locks movement through the whole stage performance
 let dialogueStep = 0;
@@ -597,6 +601,7 @@ function canGiveGift(npc) {
 }
 
 function handleInteractPress() {
+  if (authGated) return;
   if (inDialogue) {
     advanceDialogue();
   } else if (cutscenePlaying) {
@@ -667,6 +672,7 @@ function endDialogue() {
   if (finishedMode === "gift") {
     const gift = finishedNpc.gift;
     state.flags[gift.givenFlag] = true;
+    markDirty();
     if (gift.completesQuest) completeQuest(gift.completesQuest);
   } else if (finishedMode === "npc") {
     if (finishedSet.onComplete) {
@@ -698,6 +704,7 @@ async function runNightTransition() {
   await wait(900); // fade to black
 
   skylineNight.classList.add("visible"); // swap happens while hidden behind black
+  markDirty();
 
   await wait(400); // hold black briefly
   blackout.classList.remove("visible");
@@ -733,6 +740,10 @@ async function runDeathSequence() {
     const katipunanEl = document.getElementById("npc-katipunan");
     if (katipunanEl) katipunanEl.style.display = "";
   }
+
+  state.flags.deathSequenceDone = true;
+  markDirty();
+  saveProgress(); // save right away — don't rely on the next autosave tick
 }
 
 async function teleportToNewRoom() {
@@ -754,6 +765,8 @@ async function teleportToNewRoom() {
   posX = 0;
   facing = 1;
   currentRoom = "empty"; // this room has no interactables at all — not just hidden ones
+  markDirty();
+  saveProgress();
 
   await wait(300); // hold black briefly
   blackout.classList.remove("visible");
@@ -771,7 +784,7 @@ dialogueBox.addEventListener("click", () => {
 function gameLoop(now) {
   let isWalking = false;
 
-  if (!inDialogue && !cutscenePlaying) {
+  if (!inDialogue && !cutscenePlaying && !authGated) {
     if (keysPressed["a"]) {
       posX -= SPEED;
       facing = -1;
@@ -803,7 +816,7 @@ function gameLoop(now) {
   world.style.transform = `translateX(${-cameraX}px)`;
 
   // Interact button + gift button follow whichever NPC/stage is nearby
-  if (!inDialogue && !cutscenePlaying) {
+  if (!inDialogue && !cutscenePlaying && !authGated) {
     mobileControls.classList.remove("hidden");
     nearby = findNearby();
     if (nearby.type === "npc") {
@@ -836,3 +849,158 @@ function gameLoop(now) {
 }
 
 requestAnimationFrame(gameLoop);
+
+// =============================================================
+// AUTH + SAVE/LOAD (Supabase)
+// Login-only — accounts are pre-created by the dev via the admin
+// script (see create_accounts.js), not self-signup.
+// =============================================================
+
+const authForm = document.getElementById("auth-form");
+const authEmail = document.getElementById("auth-email");
+const authPassword = document.getElementById("auth-password");
+const authSubmit = document.getElementById("auth-submit");
+const authStatus = document.getElementById("auth-status");
+const authOverlay = document.getElementById("auth-overlay");
+
+let currentUserId = null;
+
+authForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  authSubmit.disabled = true;
+  authStatus.textContent = "Loading...";
+  authStatus.className = "";
+
+  const email = authEmail.value.trim();
+  const password = authPassword.value;
+
+  try {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    // On success, onAuthStateChange (below) takes it from here.
+  } catch (err) {
+    authStatus.textContent = err.message || "May error, subukan ulit.";
+    authStatus.className = "";
+  } finally {
+    authSubmit.disabled = false;
+  }
+});
+
+sb.auth.onAuthStateChange((_event, session) => {
+  if (session) enterGameAsUser(session.user.id);
+});
+
+sb.auth.getSession().then(({ data: { session } }) => {
+  if (session) enterGameAsUser(session.user.id);
+});
+
+async function enterGameAsUser(userId) {
+  if (currentUserId === userId) return; // already entered
+  currentUserId = userId;
+  authOverlay.classList.add("hidden");
+  authGated = false;
+  await loadProgress(userId);
+  setInterval(() => {
+    if (saveDirty) saveProgress();
+  }, 5000);
+}
+
+async function loadProgress(userId) {
+  let { data: row, error } = await sb
+    .from("game_progress")
+    .select("*")
+    .eq("student_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Load error:", error);
+    return;
+  }
+
+  if (!row) {
+    // First time playing — create a default save row.
+    const { data: inserted, error: insertError } = await sb
+      .from("game_progress")
+      .insert({ student_id: userId })
+      .select()
+      .single();
+    if (insertError) {
+      console.error("Insert error:", insertError);
+      return;
+    }
+    row = inserted;
+  }
+
+  applyLoadedState(row);
+}
+
+function applyLoadedState(row) {
+  const saved = row.save_state || {};
+
+  if (Array.isArray(saved.quests)) {
+    quests.length = 0;
+    quests.push(...saved.quests);
+    renderQuests();
+  }
+
+  if (saved.flags) {
+    Object.assign(state.flags, saved.flags);
+  }
+
+  if (typeof saved.posX === "number") {
+    posX = saved.posX;
+  }
+
+  currentRoom = row.current_room || "road";
+
+  if (row.is_night) {
+    skylineNight.classList.add("visible");
+  }
+
+  // Reveal Katipunan here if the save says the death sequence already happened.
+  if (state.flags.deathSequenceDone) {
+    const katipunan = NPCS.find((npc) => npc.id === "katipunan");
+    if (katipunan) {
+      katipunan.hidden = false;
+      const katipunanEl = document.getElementById("npc-katipunan");
+      if (katipunanEl) katipunanEl.style.display = "";
+    }
+  }
+
+  if (currentRoom !== "road") {
+    // Resuming inside the post-teleport empty room — hide everything
+    // instantly (no blackout needed, we're just restoring a save).
+    NPCS.forEach((npc) => {
+      const el = document.getElementById("npc-" + npc.id);
+      if (el) el.style.display = "none";
+    });
+    horseEl.style.display = "none";
+    stageEl.style.display = "none";
+    slopeLeft.style.display = "none";
+    slopeRight.style.display = "none";
+  }
+}
+
+function markDirty() {
+  saveDirty = true;
+}
+
+async function saveProgress() {
+  if (!currentUserId) return;
+  saveDirty = false;
+
+  const payload = {
+    student_id: currentUserId,
+    current_room: currentRoom,
+    is_night: skylineNight.classList.contains("visible"),
+    save_state: { quests, flags: state.flags, posX },
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error } = await sb.from("game_progress").upsert(payload);
+  if (error) console.error("Save error:", error);
+}
+
+window.addEventListener("beforeunload", () => {
+  if (saveDirty) saveProgress();
+});

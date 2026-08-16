@@ -48,8 +48,26 @@
       </div>
       <button id="btn-interact" class="touch-btn interact-btn">E</button>
     </div>
+
+    <!-- Login / signup gate -->
+    <div id="auth-overlay">
+      <div id="auth-box">
+        <h1 id="auth-title">MACARIO</h1>
+        <p id="auth-subtitle">Mag-log in gamit ang account na ibinigay sa iyo</p>
+
+        <form id="auth-form">
+          <input id="auth-email" type="email" placeholder="Email" required autocomplete="email" />
+          <input id="auth-password" type="password" placeholder="Password" required autocomplete="current-password" />
+          <button id="auth-submit" type="submit">Log In</button>
+        </form>
+
+        <div id="auth-status"></div>
+      </div>
+    </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabaseClient.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
