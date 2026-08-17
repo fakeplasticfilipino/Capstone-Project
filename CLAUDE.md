@@ -2,8 +2,12 @@
 
 Context file for AI assistants working on this project. Paste this at the
 start of a new session. It describes architecture, conventions, and
-constraints, all of which change rarely. Current build status lives in
-TRACKER.md, which is a separate file for that reason.
+constraints, all of which change rarely.
+
+Current build status is NOT in this file. It lives in TRACKER.md, which
+should be pasted alongside this one. If it was not provided, ask for it
+before planning any work, because this file will not tell you what has
+already been built.
 
 ## Source of truth
 
