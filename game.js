@@ -333,7 +333,7 @@ const playerSpriteEl = player.querySelector(".player-sprite");
 
 const SPRITE_SHEETS = {
   idle: { src: "Assets/Idle.png", frames: 6, fps: 6 },
-  walk: { src: "Assets/Walk.png", frames: 10, fps: 12 },
+  walk: { src: "Assets/Walk.png", frames: 5, fps: 6 },
   dead: { src: "Assets/Dead.png", frames: 5, fps: 6, loop: false },
 };
 
