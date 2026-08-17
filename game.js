@@ -1,3 +1,12 @@
+// =============================================================
+// MACARIO — game.js
+//
+// Block 1 applied: role routing. Teachers are redirected to
+// teacher.html instead of being dropped into the game world.
+// Every change is marked with "BLOCK 1:" so you can diff by eye.
+// Everything else is unchanged from your working version.
+// =============================================================
+
 const world = document.getElementById("world");
 const viewport = document.getElementById("viewport");
 const player = document.getElementById("player");
@@ -495,7 +504,6 @@ function updateAnimFrame(now) {
   playerSpriteEl.style.transform = `scaleX(${facing})`;
 }
 
-
 let posX = 0;
 let currentRoom = "road"; // "road" (the main street) | "empty" (post-teleport room)
 let authGated = true; // true until the player is logged in
@@ -866,6 +874,15 @@ const authOverlay = document.getElementById("auth-overlay");
 
 let currentUserId = null;
 
+// BLOCK 1: holds the logged-in student's profiles row. Not read yet —
+// the act controller (Block 2) and dashboard (Block 4) both want it,
+// so it's cheaper to populate here than to re-fetch later.
+let currentProfile = null;
+
+// BLOCK 1: guards against stacking a second autosave interval if
+// enterGameAsUser somehow runs twice for the same session.
+let autosaveTimer = null;
+
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   authSubmit.disabled = true;
@@ -897,15 +914,46 @@ sb.auth.getSession().then(({ data: { session } }) => {
 
 async function enterGameAsUser(userId) {
   if (currentUserId === userId) return; // already entered
+
+  // BLOCK 1: look up the role BEFORE doing anything student-specific.
+  // Previously a teacher logging in fell straight through into the
+  // game and had a game_progress row created for them, which then
+  // polluted their own class averages.
+  const { data: profile, error: profileError } = await sb
+    .from("profiles")
+    .select("id, role, full_name, class_id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Profile fetch failed:", profileError);
+    authStatus.textContent = "May error sa account. Subukan ulit.";
+    return;
+  }
+
+  if (profile && profile.role === "teacher") {
+    // Teachers never enter the game world.
+    authStatus.textContent = "Teacher account — inililipat sa dashboard...";
+    authStatus.className = "success";
+    window.location.replace("teacher.html");
+    return;
+  }
+
+  // --- Student path ---
   currentUserId = userId;
+  currentProfile = profile || null;
   authOverlay.classList.add("hidden");
   authGated = false;
+
   await loadProgress(userId);
+
   // Backup safety-net save, in case something set saveDirty without
   // going through markDirty()'s own debounce below.
-  setInterval(() => {
-    if (saveDirty) saveProgress();
-  }, 10000);
+  if (autosaveTimer === null) {
+    autosaveTimer = setInterval(() => {
+      if (saveDirty) saveProgress();
+    }, 10000);
+  }
 }
 
 async function loadProgress(userId) {

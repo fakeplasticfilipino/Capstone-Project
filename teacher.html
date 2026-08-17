@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MACARIO — Teacher Dashboard</title>
+  <link rel="stylesheet" href="teacher.css" />
+</head>
+<body>
+  <!-- Shown while we check the session + role. Prevents a flash of
+       dashboard content to someone who turns out to be a student. -->
+  <div id="gate">
+    <div id="gate-msg">Sinusuri ang account...</div>
+  </div>
+
+  <div id="dash" class="hidden">
+    <header id="dash-header">
+      <div>
+        <h1 id="dash-title">MACARIO</h1>
+        <p id="dash-subtitle">Teacher Dashboard</p>
+      </div>
+      <div id="dash-user">
+        <span id="dash-teacher-name"></span>
+        <button id="logout-btn">Log Out</button>
+      </div>
+    </header>
+
+    <main id="dash-body">
+      <!-- Block 4 renders the class picker, roster table, and
+           class averages into here. -->
+      <div id="dash-placeholder">
+        Dashboard content lands in Block 4.
+        <br /><br />
+        If you can read this as a teacher account — and the game
+        does <em>not</em> load behind it — Block 1 is working.
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabaseClient.js"></script>
+  <script src="teacher.js"></script>
+</body>
+</html>
