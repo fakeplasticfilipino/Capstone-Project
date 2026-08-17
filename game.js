@@ -36,6 +36,19 @@ const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
 const GROUND_LEVEL = 60; // must match --ground-level in style.css
 const DISPLAY_HEIGHT = 134; // shared sprite height (player + animated NPCs)
 
+// Bump this whenever ANY file in Assets/ is replaced.
+//
+// The v=N strings in index.html only cover scripts and stylesheets.
+// Images had no version at all, so browsers and the GitHub Pages CDN
+// kept serving stale sprites indefinitely after a file was swapped.
+// Every image load goes through assetUrl() so one number refreshes them all.
+const ASSET_VERSION = 2;
+
+function assetUrl(path) {
+  if (!path) return path;
+  return path + (path.includes("?") ? "&" : "?") + "v=" + ASSET_VERSION;
+}
+
 // --- Game state ----------------------------------------------------------
 const state = {
   flags: {}, // arbitrary story flags, e.g. hasBuko, bukoGiven
@@ -159,7 +172,7 @@ function buildNpcs(token) {
       // display text, so on error it is swapped for a real div.
       const img = document.createElement("img");
       img.className = "sprite npc-sprite";
-      img.src = npc.img;
+      img.src = assetUrl(npc.img);
       img.alt = npc.label;
       img.onerror = () => {
         const placeholder = document.createElement("div");
@@ -243,7 +256,7 @@ function checkBackgroundImage(el, src, label) {
     el.style.border = "2px dashed #ffd54f";
     el.textContent = label;
   };
-  img.src = src;
+  img.src = assetUrl(src);
 }
 
 checkBackgroundImage(
@@ -281,14 +294,18 @@ function setupNpcAnimation(sheet, el, displayHeight, token) {
       return;
     }
 
-    const scale = displayHeight / sheet.naturalHeight;
+    // Grid aware, matching the player. NPC sheets are single-row today,
+    // but the first multi-row sheet delivered would otherwise render
+    // at the wrong scale and walk off the right edge of the image.
+    const columns = sheet.columns || sheet.frames;
+    const scale = displayHeight / sheet.frameHeight;
     const displayFrameWidth = sheet.frameWidth * scale;
 
     el.style.width = displayFrameWidth + "px";
     el.style.height = displayHeight + "px";
-    el.style.backgroundImage = `url(${sheet.src})`;
+    el.style.backgroundImage = `url(${assetUrl(sheet.src)})`;
     el.style.backgroundSize =
-      sheet.naturalWidth * scale + "px " + displayHeight + "px";
+      sheet.naturalWidth * scale + "px " + sheet.naturalHeight * scale + "px";
     el.style.backgroundPositionY = "0px";
     el.style.backgroundPositionX = "0px";
 
@@ -298,7 +315,10 @@ function setupNpcAnimation(sheet, el, displayHeight, token) {
         if (now - lastTime >= frameDuration) {
           lastTime = now;
           frame = (frame + 1) % sheet.frames;
-          el.style.backgroundPositionX = -(frame * displayFrameWidth) + "px";
+          const column = frame % columns;
+          const row = Math.floor(frame / columns);
+          el.style.backgroundPositionX = -(column * displayFrameWidth) + "px";
+          el.style.backgroundPositionY = -(row * displayHeight) + "px";
         }
       },
     });
@@ -331,60 +351,38 @@ function getPlatformOffset(x) {
 // --- Player sprite animation ---------------------------------------------
 const playerSpriteEl = player.querySelector(".player-sprite");
 
+// columns is how many frames sit across one row of the sheet. Omit it
+// for a plain single-row strip and it defaults to the frame count.
+// Walk.png is a 5 + 5 + 2 grid, so 12 frames across 5 columns.
 const SPRITE_SHEETS = {
-  idle: {
-    src: "Assets/Idle.png",
-    frames: 6,
-    fps: 6,
-    columns: 6,
-  },
-
-  walk: {
-    src: "Assets/Walk.png",
-    frames: 12,
-    fps: 20,
-    columns: 5, // 5 + 5 + 2 layout
-  },
-
-  dead: {
-    src: "Assets/Dead.png",
-    frames: 5,
-    fps: 6,
-    columns: 5,
-    loop: false,
-  },
+  idle: { src: "Assets/Idle.png", frames: 6, fps: 6, columns: 6 },
+  walk: { src: "Assets/Walk.png", frames: 12, fps: 12, columns: 5 },
+  dead: { src: "Assets/Dead.png", frames: 5, fps: 6, columns: 5, loop: false },
 };
 
 function loadSpriteSheet(def) {
   return new Promise((resolve) => {
     const img = new Image();
-
     img.onload = () => {
       def.naturalWidth = img.naturalWidth;
       def.naturalHeight = img.naturalHeight;
 
-      // Number of columns in the sprite sheet.
+      // Grid geometry. A single-row strip is just the case where
+      // columns equals frames and rows works out to 1, so this stays
+      // backward compatible with every existing sheet.
       const columns = def.columns || def.frames;
-
-      // Calculate the size of ONE grid cell.
       def.frameWidth = img.naturalWidth / columns;
-
-      // Number of rows needed for all frames.
       def.rows = Math.ceil(def.frames / columns);
-
       def.frameHeight = img.naturalHeight / def.rows;
 
       def.failed = false;
-
       resolve(def);
     };
-
     img.onerror = () => {
       def.failed = true;
-      resolve(def);
+      resolve(def); // resolve, not reject, so Promise.all never hangs
     };
-
-    img.src = def.src;
+    img.src = assetUrl(def.src);
   });
 }
 
@@ -438,7 +436,6 @@ Promise.all([
 function applyAnim(name, force) {
   if (!spritesReady) return;
   if (currentAnim === name && !force) return;
-
   currentAnim = name;
   currentFrame = 0;
   lastFrameTime = 0;
@@ -452,66 +449,56 @@ function applyAnim(name, force) {
 
   clearPlaceholder(playerSpriteEl);
 
-  // Scale the sprite so its frame height becomes DISPLAY_HEIGHT.
+  // Scale so one FRAME is DISPLAY_HEIGHT tall, not the whole sheet.
+  // Scaling by naturalHeight would shrink the character to 1/rows size
+  // on any multi-row sheet.
   const scale = DISPLAY_HEIGHT / sheet.frameHeight;
-
   const displayFrameWidth = sheet.frameWidth * scale;
-  const displaySheetWidth = sheet.naturalWidth * scale;
-  const displaySheetHeight = sheet.naturalHeight * scale;
 
   playerSpriteEl.style.width = displayFrameWidth + "px";
   playerSpriteEl.style.height = DISPLAY_HEIGHT + "px";
-
-  playerSpriteEl.style.backgroundImage = `url(${sheet.src})`;
-
+  playerSpriteEl.style.backgroundImage = `url(${assetUrl(sheet.src)})`;
   playerSpriteEl.style.backgroundSize =
-    displaySheetWidth + "px " + displaySheetHeight + "px";
-
-  playerSpriteEl.style.backgroundPositionX = "0px";
+    sheet.naturalWidth * scale + "px " + sheet.naturalHeight * scale + "px";
   playerSpriteEl.style.backgroundPositionY = "0px";
+  playerSpriteEl.style.backgroundPositionX = "0px";
 }
 
 function updateAnimFrame(now) {
   if (!spritesReady) return;
-
   const sheet = SPRITE_SHEETS[currentAnim];
 
-  if (sheet.failed) return;
+  // A missing sheet has no frames to step, but the placeholder box
+  // should still face the right way, so the flip below is not skipped.
+  if (!sheet.failed) {
+    const frameDuration = 1000 / sheet.fps;
 
-  const frameDuration = 1000 / sheet.fps;
-
-  if (now - lastFrameTime >= frameDuration) {
-    lastFrameTime = now;
-
-    if (sheet.loop === false) {
-      if (currentFrame < sheet.frames - 1) {
-        currentFrame++;
+    if (now - lastFrameTime >= frameDuration) {
+      lastFrameTime = now;
+      if (sheet.loop === false) {
+        if (currentFrame < sheet.frames - 1) currentFrame++;
+        // else hold on the last frame
+      } else {
+        currentFrame = (currentFrame + 1) % sheet.frames;
       }
-    } else {
-      currentFrame = (currentFrame + 1) % sheet.frames;
+
+      // Frame index to grid position. For a 5-column Walk sheet,
+      // frame 5 wraps to column 0 of row 1 rather than running off
+      // the right edge of the image.
+      const columns = sheet.columns || sheet.frames;
+      const column = currentFrame % columns;
+      const row = Math.floor(currentFrame / columns);
+
+      const scale = DISPLAY_HEIGHT / sheet.frameHeight;
+      const displayFrameWidth = sheet.frameWidth * scale;
+
+      playerSpriteEl.style.backgroundPositionX =
+        -(column * displayFrameWidth) + "px";
+      playerSpriteEl.style.backgroundPositionY = -(row * DISPLAY_HEIGHT) + "px";
     }
-
-    // Convert the frame number into column + row.
-    //
-    // Walk:
-    // 0 1 2 3 4
-    // 5 6 7 8 9
-    // 10 11
-    //
-    const column = currentFrame % sheet.columns;
-    const row = Math.floor(currentFrame / sheet.columns);
-
-    const scale = DISPLAY_HEIGHT / sheet.frameHeight;
-    const displayFrameWidth = sheet.frameWidth * scale;
-
-    playerSpriteEl.style.backgroundPositionX =
-      -(column * displayFrameWidth) + "px";
-
-    playerSpriteEl.style.backgroundPositionY =
-      -(row * DISPLAY_HEIGHT) + "px";
   }
 
-  // Flip to face the direction of travel.
+  // Flip to face the direction of travel
   playerSpriteEl.style.transform = `scaleX(${facing})`;
 }
 

@@ -41,6 +41,22 @@ Act I gameplay: five NPCs, buko gift quest, stage performance cutscene with
 day to night transition and death animation, Katipunero reveal, save and
 resume. (COMPLETE)
 
+Sprite system: multi-row grid sheets via the columns field, scaling from
+frame height, and asset cache busting through ASSET_VERSION. (COMPLETE)
+
+## Art status
+
+Assets/ currently holds only Cement_Tile.png and the player Walk.png. Every
+other sprite and background was removed pending replacement art from
+classmates. Act I is fully playable but visually skeletal: the player shows
+a placeholder box while idle, all NPCs and both skylines are placeholder
+boxes, and the death animation in the stage cutscene is a placeholder. This
+is the fallback system working, not a fault.
+
+Confirm Walk.png is genuinely 12 frames in a 5 + 5 + 2 grid. If the cycle
+pauses or shows a sliver of the next frame, the columns value in
+SPRITE_SHEETS is wrong.
+
 ## In progress
 
 Block 2, act framework.

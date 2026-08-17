@@ -121,6 +121,32 @@ NPC shape:
 Talking to an NPC advances through dialogueSets one per conversation,
 holding on the last. onComplete fires once, when that conversation ends.
 
+## Sprite sheets
+
+Sheets may be a single horizontal strip or a grid. The optional columns
+field is how many frames sit across one row; omit it and it defaults to
+the frame count, which is the single-strip case.
+
+    { src: "Assets/Walk.png", frames: 12, fps: 12, columns: 5 }
+
+loadSpriteSheet derives frameWidth, rows, and frameHeight from that.
+Scaling is always from frameHeight, never naturalHeight, or a multi-row
+sheet renders at 1/rows size. Both the player animator and
+setupNpcAnimation handle grids.
+
+Every image load goes through assetUrl(), which appends the
+ASSET_VERSION constant in game.js. Images are not covered by the v=N
+strings in index.html, so without this the browser and the Pages CDN
+serve stale sprites indefinitely after a file is replaced. Bump
+ASSET_VERSION whenever anything in Assets/ changes, and bump the
+game.js script version too, since the browser must refetch game.js to
+learn the new asset version.
+
+Missing images do not break anything. They fall back to a dashed
+placeholder box showing the expected filename.
+
+## Objectives
+
 Objectives map to story flags in state.flags. Because flags persist inside
 game_progress.save_state, objective progress survives a reload without
 needing separate storage.
