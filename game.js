@@ -332,25 +332,58 @@ function getPlatformOffset(x) {
 const playerSpriteEl = player.querySelector(".player-sprite");
 
 const SPRITE_SHEETS = {
-  idle: { src: "Assets/Idle.png", frames: 6, fps: 6 },
-  walk: { src: "Assets/Walk.png", frames: 5, fps: 6 },
-  dead: { src: "Assets/Dead.png", frames: 5, fps: 6, loop: false },
+  idle: {
+    src: "Assets/Idle.png",
+    frames: 6,
+    fps: 6,
+    columns: 6,
+  },
+
+  walk: {
+    src: "Assets/Walk.png",
+    frames: 12,
+    fps: 20,
+    columns: 5, // 5 + 5 + 2 layout
+  },
+
+  dead: {
+    src: "Assets/Dead.png",
+    frames: 5,
+    fps: 6,
+    columns: 5,
+    loop: false,
+  },
 };
 
 function loadSpriteSheet(def) {
   return new Promise((resolve) => {
     const img = new Image();
+
     img.onload = () => {
       def.naturalWidth = img.naturalWidth;
       def.naturalHeight = img.naturalHeight;
-      def.frameWidth = img.naturalWidth / def.frames;
+
+      // Number of columns in the sprite sheet.
+      const columns = def.columns || def.frames;
+
+      // Calculate the size of ONE grid cell.
+      def.frameWidth = img.naturalWidth / columns;
+
+      // Number of rows needed for all frames.
+      def.rows = Math.ceil(def.frames / columns);
+
+      def.frameHeight = img.naturalHeight / def.rows;
+
       def.failed = false;
+
       resolve(def);
     };
+
     img.onerror = () => {
       def.failed = true;
-      resolve(def); // resolve, not reject, so Promise.all never hangs
+      resolve(def);
     };
+
     img.src = def.src;
   });
 }
@@ -405,6 +438,7 @@ Promise.all([
 function applyAnim(name, force) {
   if (!spritesReady) return;
   if (currentAnim === name && !force) return;
+
   currentAnim = name;
   currentFrame = 0;
   lastFrameTime = 0;
@@ -417,40 +451,67 @@ function applyAnim(name, force) {
   }
 
   clearPlaceholder(playerSpriteEl);
-  const scale = DISPLAY_HEIGHT / sheet.naturalHeight;
+
+  // Scale the sprite so its frame height becomes DISPLAY_HEIGHT.
+  const scale = DISPLAY_HEIGHT / sheet.frameHeight;
+
   const displayFrameWidth = sheet.frameWidth * scale;
+  const displaySheetWidth = sheet.naturalWidth * scale;
+  const displaySheetHeight = sheet.naturalHeight * scale;
 
   playerSpriteEl.style.width = displayFrameWidth + "px";
   playerSpriteEl.style.height = DISPLAY_HEIGHT + "px";
+
   playerSpriteEl.style.backgroundImage = `url(${sheet.src})`;
+
   playerSpriteEl.style.backgroundSize =
-    sheet.naturalWidth * scale + "px " + DISPLAY_HEIGHT + "px";
-  playerSpriteEl.style.backgroundPositionY = "0px";
+    displaySheetWidth + "px " + displaySheetHeight + "px";
+
   playerSpriteEl.style.backgroundPositionX = "0px";
+  playerSpriteEl.style.backgroundPositionY = "0px";
 }
 
 function updateAnimFrame(now) {
   if (!spritesReady) return;
+
   const sheet = SPRITE_SHEETS[currentAnim];
-  if (sheet.failed) return; // nothing to step, the placeholder is static
+
+  if (sheet.failed) return;
 
   const frameDuration = 1000 / sheet.fps;
 
   if (now - lastFrameTime >= frameDuration) {
     lastFrameTime = now;
+
     if (sheet.loop === false) {
-      if (currentFrame < sheet.frames - 1) currentFrame++;
-      // else hold on the last frame
+      if (currentFrame < sheet.frames - 1) {
+        currentFrame++;
+      }
     } else {
       currentFrame = (currentFrame + 1) % sheet.frames;
     }
-    const scale = DISPLAY_HEIGHT / sheet.naturalHeight;
+
+    // Convert the frame number into column + row.
+    //
+    // Walk:
+    // 0 1 2 3 4
+    // 5 6 7 8 9
+    // 10 11
+    //
+    const column = currentFrame % sheet.columns;
+    const row = Math.floor(currentFrame / sheet.columns);
+
+    const scale = DISPLAY_HEIGHT / sheet.frameHeight;
     const displayFrameWidth = sheet.frameWidth * scale;
+
     playerSpriteEl.style.backgroundPositionX =
-      -(currentFrame * displayFrameWidth) + "px";
+      -(column * displayFrameWidth) + "px";
+
+    playerSpriteEl.style.backgroundPositionY =
+      -(row * DISPLAY_HEIGHT) + "px";
   }
 
-  // Flip to face the direction of travel
+  // Flip to face the direction of travel.
   playerSpriteEl.style.transform = `scaleX(${facing})`;
 }
 
