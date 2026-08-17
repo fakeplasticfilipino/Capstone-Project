@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACARIO — Teacher Dashboard</title>
-  <link rel="stylesheet" href="teacher.css" />
+  <link rel="stylesheet" href="teacher.css?v=1" />
 </head>
 <body>
-  <!-- Shown while we check the session + role. Prevents a flash of
-       dashboard content to someone who turns out to be a student. -->
+  <!-- Covers the page until the session and role are confirmed, so a
+       student never briefly sees dashboard content before the bounce. -->
   <div id="gate">
     <div id="gate-msg">Sinusuri ang account...</div>
   </div>
@@ -26,19 +26,89 @@
     </header>
 
     <main id="dash-body">
-      <!-- Block 4 renders the class picker, roster table, and
-           class averages into here. -->
-      <div id="dash-placeholder">
-        Dashboard content lands in Block 4.
-        <br /><br />
-        If you can read this as a teacher account — and the game
-        does <em>not</em> load behind it — Block 1 is working.
+      <!-- Class picker. Hidden when the teacher owns only one class,
+           since a dropdown with a single option is just noise. -->
+      <div id="class-picker-row" class="hidden">
+        <label for="class-picker">Klase</label>
+        <select id="class-picker"></select>
       </div>
+
+      <!-- Shown when the teacher owns no classes at all. -->
+      <div id="no-class" class="notice hidden">
+        Walang klaseng nakatalaga sa account na ito.
+        <span class="notice-sub">
+          Create a class row in Supabase with teacher_id set to this
+          account, then reload.
+        </span>
+      </div>
+
+      <!-- Class-level summary figures. -->
+      <section id="summary" class="hidden">
+        <div class="stat">
+          <span class="stat-label">Mga Mag-aaral</span>
+          <span class="stat-value" id="stat-students">-</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Nagsimula Na</span>
+          <span class="stat-value" id="stat-started">-</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Ave. Pre-Test</span>
+          <span class="stat-value" id="stat-pre">-</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Ave. Post-Test</span>
+          <span class="stat-value" id="stat-post">-</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Ave. Gain</span>
+          <span class="stat-value" id="stat-gain">-</span>
+        </div>
+      </section>
+
+      <!-- Roster. -->
+      <section id="roster-section" class="hidden">
+        <h2 class="section-title">Talaan ng mga Mag-aaral</h2>
+        <div class="table-wrap">
+          <table id="roster">
+            <thead>
+              <tr>
+                <th>Pangalan</th>
+                <th>Kasalukuyang Act</th>
+                <th>Natapos</th>
+                <th>Act I Pre</th>
+                <th>Act I Post</th>
+                <th>Gain</th>
+                <th>Performance</th>
+                <th>Huling Aktibo</th>
+              </tr>
+            </thead>
+            <tbody id="roster-body"></tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          Ang gain ay ang pagkakaiba ng post-test at pre-test, nakabatay
+          sa porsyento. Ang gitling ay nangangahulugang wala pang datos.
+        </p>
+      </section>
+
+      <!-- Class exists but has no enrolled students. -->
+      <div id="no-students" class="notice hidden">
+        Walang mag-aaral na nakatala sa klaseng ito.
+        <span class="notice-sub">
+          Set profiles.class_id for the students who belong to this class.
+        </span>
+      </div>
+
+      <!-- Query failure. -->
+      <div id="load-error" class="notice error hidden"></div>
+
+      <div id="loading" class="notice">Kinukuha ang datos...</div>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabaseClient.js"></script>
-  <script src="teacher.js"></script>
+  <script src="teacher.js?v=1"></script>
 </body>
 </html>
