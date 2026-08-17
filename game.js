@@ -1,10 +1,16 @@
 // =============================================================
 // MACARIO — game.js
 //
-// Block 1 applied: role routing. Teachers are redirected to
-// teacher.html instead of being dropped into the game world.
-// Every change is marked with "BLOCK 1:" so you can diff by eye.
-// Everything else is unchanged from your working version.
+// Blocks applied:
+//   Block 1   role routing (teachers redirect to teacher.html)
+//   Block 2.1 Act I content extracted to content/act1.js
+//   Block 2.2 world building wrapped in loadAct() / unloadAct()
+//
+// game.js is now the ENGINE only. It knows how to render a world,
+// run dialogue, and animate sprites. It does not know what is in
+// any particular act. Act content lives in content/actN.js.
+//
+// REQUIRES: content/act1.js must load BEFORE this file.
 // =============================================================
 
 const world = document.getElementById("world");
@@ -23,13 +29,12 @@ const mobileControls = document.getElementById("mobile-controls");
 const questListEl = document.getElementById("quest-list");
 const giftBtn = document.getElementById("gift-btn");
 
-const WORLD_WIDTH = 4400;
 const PLAYER_WIDTH = 40;
 const SPEED = 5;
 const INTERACT_DISTANCE = 90;
 const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
 const GROUND_LEVEL = 60; // must match --ground-level in style.css
-const DISPLAY_HEIGHT = 134; // shared on-screen sprite height (player + animated NPCs)
+const DISPLAY_HEIGHT = 134; // shared sprite height (player + animated NPCs)
 
 // --- Game state ----------------------------------------------------------
 const state = {
@@ -38,8 +43,8 @@ const state = {
 
 // --- Quest system ----------------------------------------------------------
 const quests = []; // { id, text, done }
-let saveDirty = false; // used by the Supabase autosave system further down
-let saveDebounceTimer = null; // also used by the autosave system further down
+let saveDirty = false;
+let saveDebounceTimer = null;
 
 function addQuest(id, text) {
   if (quests.some((q) => q.id === id)) return;
@@ -65,178 +70,166 @@ function renderQuests() {
   });
 }
 
-// Starting quest
-addQuest("go-to-work", "Pumunta sa trabaho");
+// =============================================================
+// ACT LOADING
+//
+// Everything below is populated by loadAct() from an act data
+// file. These were previously hardcoded constants built once at
+// script load. Making them reloadable is what allows moving
+// between acts without a page refresh.
+// =============================================================
 
-// --- NPC configuration -------------------------------------------------
-// Images are expected to live in the same folder as index.html.
-// Positions (x) are left to right along the road.
-// Each NPC has one or more "dialogueSets" — the first time you talk you get
-// set 0, the next time set 1, and so on; it stays on the last set after that.
-// A set can define onComplete(), run once, right when that conversation ends.
-const NPCS = [
-  {
-    id: "nanay",
-    x: 700,
-    animation: { src: "Assets/Nanay.png", frames: 7, fps: 6 },
-    label: "Nanay Sakay",
-    stage: 0,
-    dialogueSets: [
-      {
-        lines: [
-          { speaker: "Nanay Sakay", text: "Kamusta trabaho nak?" },
-          { speaker: "Ikaw", text: "Late na ko 'ma" },
-          {
-            speaker: "Nanay Sakay",
-            text: "Paki-bigay itong buko sa barbero, nanghihingi siya kahapon",
-          },
-          { speaker: "Ikaw", text: "Sige Inay, ingat ka" },
-        ],
-        onComplete: () => {
-          state.flags.hasBuko = true;
-          addQuest("give-buko", "Ibigay ang buko sa barbero");
-        },
-      },
-    ],
-  },
-  {
-    id: "stablehand",
-    x: 1100,
-    animation: { src: "Assets/Stablehand.png", frames: 14, fps: 6 },
-    label: "Stablehand",
-    stage: 0,
-    dialogueSets: [
-      {
-        lines: [
-          { speaker: "Stablehand", text: "Magandang umaga Macario" },
-          { speaker: "Ikaw", text: "Magandang umaga kaibigan, kamusta ang mga kabayo?" },
-          { speaker: "Stablehand", text: "Ayos lang, hinahanap ka na" },
-          { speaker: "Kabayo", text: "*neigh*" },
-          { speaker: "Ikaw", text: "*Hinaplos ni Macario*" },
-          { speaker: "Stablehand", text: "Sige na una na ko, mag ingat kayo!" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "tailor",
-    x: 1900,
-    img: "Assets/Tailor.png",
-    label: "Tailor",
-    stage: 0,
-    dialogueSets: [
-      {
-        lines: [
-          { speaker: "Tailor", text: "Macario toy, Macario!" },
-          {
-            speaker: "Tailor",
-            text: "Hinahanap ka na ng mga suki ko, magta-trabaho ka ulit?",
-          },
-          { speaker: "Ikaw", text: "Di na muna kuya, masaya na ko sa trabaho ko" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "barber",
-    x: 2700,
-    img: "Assets/Barber.jpg",
-    label: "Barber",
-    stage: 0,
-    dialogueSets: [
-      {
-        lines: [
-          { speaker: "Barber", text: "Papagupit ka ba Sakay? Haba na ng buhok mo!" },
-          { speaker: "Ikaw", text: "Hahaha, sa susunod" },
-          { speaker: "Barber", text: "Balak mo ba mag-trabaho ulit dito?" },
-          { speaker: "Ikaw", text: "Hindi eh, maya na lang late na ko sa trabaho!" },
-          { speaker: "Barber", text: "Ingat ka Bingkul" },
-        ],
-      },
-    ],
-    // A giveable-item interaction, separate from normal E-to-talk dialogue.
-    gift: {
-      buttonLabel: "Ibigay ang buko",
-      // shown only when this flag is true and it hasn't been given yet
-      requiresFlag: "hasBuko",
-      givenFlag: "bukoGiven",
-      responseLines: [
-        {
-          speaker: "Barber",
-          text: "Maraming salamat Sakay, ingat ka paakyat ng entablado",
-        },
-      ],
-      completesQuest: "give-buko",
-    },
-  },
-  {
-    // Waits at the far edge of the map — stays hidden until the stage
-    // performance (execution scene) finishes, then appears.
-    // NOTE: placeholder dialogue — swap in your own lines.
-    id: "katipunan",
-    x: WORLD_WIDTH - 300,
-    animation: { src: "Assets/Katipunan.png", frames: 11, fps: 6 },
-    label: "Katipunero",
-    stage: 0,
-    startsHidden: true,
-    dialogueSets: [
-      {
-        lines: [
-          { speaker: "Katipunero", text: "Kasama, dumating ka rin." },
-          { speaker: "Ikaw", text: "Handa na ako." },
-          { speaker: "Katipunero", text: "Sumama ka, may naghihintay pang laban." },
-        ],
-        onComplete: () => {
-          teleportToNewRoom();
-        },
-      },
-    ],
-  },
-];
+let currentActData = null;
+let NPCS = []; // the current act's NPCs
+let STAGE = null; // the current act's stage, or null if it has none
+let WORLD_WIDTH = 4400; // overwritten per act
 
-// --- Build NPC elements dynamically -------------------------------------
-const npcAnimators = []; // animated NPC sprites get an .update(now) pushed here
+let stageEl = null;
+let slopeLeft = null;
+let slopeRight = null;
 
-NPCS.forEach((npc) => {
-  const el = document.createElement("div");
-  el.className = "entity";
-  el.id = "npc-" + npc.id;
-  el.style.left = npc.x + "px";
-  if (npc.startsHidden) {
-    npc.hidden = true;
-    el.style.display = "none";
-  }
+let actElements = []; // every DOM node loadAct created, for cleanup
+let decorationEls = [];
+let npcAnimators = []; // animated sprites needing an .update(now) each frame
 
-  if (npc.animation) {
-    // Animated sprite sheet, same system as the player, same display size.
+// Incremented on every load. setupNpcAnimation captures the value
+// and refuses to register itself if the act changed while its image
+// was still downloading, which would otherwise leave an animator
+// pointing at a removed element.
+let actLoadToken = 0;
+
+function loadAct(actData) {
+  unloadAct();
+
+  actLoadToken++;
+  const token = actLoadToken;
+
+  currentActData = actData;
+  NPCS = actData.npcs || [];
+  STAGE = actData.stage || null;
+  WORLD_WIDTH = actData.worldWidth || 4400;
+
+  buildNpcs(token);
+  buildDecorations(token);
+  buildStage();
+
+  posX = typeof actData.startX === "number" ? actData.startX : 0;
+  currentRoom = "road";
+
+  (actData.startingQuests || []).forEach((q) => addQuest(q.id, q.text));
+}
+
+function unloadAct() {
+  actElements.forEach((el) => el.remove());
+  actElements = [];
+  decorationEls = [];
+  npcAnimators = [];
+
+  stageEl = null;
+  slopeLeft = null;
+  slopeRight = null;
+
+  NPCS = [];
+  STAGE = null;
+  currentActData = null;
+}
+
+function buildNpcs(token) {
+  NPCS.forEach((npc) => {
+    // Reset per-load runtime state so replaying an act starts clean.
+    npc.stage = 0;
+    npc.hidden = Boolean(npc.startsHidden);
+
+    const el = document.createElement("div");
+    el.className = "entity";
+    el.id = "npc-" + npc.id;
+    el.style.left = npc.x + "px";
+    if (npc.hidden) el.style.display = "none";
+
+    if (npc.animation) {
+      // Animated sprite sheet, same system and display size as the player.
+      const spriteEl = document.createElement("div");
+      spriteEl.className = "sprite npc-sprite npc-anim-sprite";
+      el.appendChild(spriteEl);
+      world.appendChild(el);
+      setupNpcAnimation(npc.animation, spriteEl, DISPLAY_HEIGHT, token);
+    } else {
+      // Static image, falling back to a placeholder box showing the
+      // expected filename if the file is missing. An <img> cannot
+      // display text, so on error it is swapped for a real div.
+      const img = document.createElement("img");
+      img.className = "sprite npc-sprite";
+      img.src = npc.img;
+      img.alt = npc.label;
+      img.onerror = () => {
+        const placeholder = document.createElement("div");
+        placeholder.className = "sprite npc-sprite";
+        showPlaceholder(placeholder, npc.img, 80, 112);
+        img.replaceWith(placeholder);
+      };
+      el.appendChild(img);
+      world.appendChild(el);
+    }
+
+    actElements.push(el);
+  });
+}
+
+function buildDecorations(token) {
+  (currentActData.decorations || []).forEach((dec) => {
+    const el = document.createElement("div");
+    el.className = "entity";
+    el.id = "dec-" + dec.id;
+    el.style.left = dec.x + "px";
+
     const spriteEl = document.createElement("div");
     spriteEl.className = "sprite npc-sprite npc-anim-sprite";
     el.appendChild(spriteEl);
     world.appendChild(el);
-    setupNpcAnimation(npc.animation, spriteEl);
-  } else {
-    // Static image — falls back to a placeholder box (showing the
-    // expected filename) if the file doesn't exist yet. <img> elements
-    // can't display text content, so on error we swap in a real div.
-    const img = document.createElement("img");
-    img.className = "sprite npc-sprite";
-    img.src = npc.img;
-    img.alt = npc.label;
-    img.onerror = () => {
-      const placeholder = document.createElement("div");
-      placeholder.className = "sprite npc-sprite";
-      showPlaceholder(placeholder, npc.img, 80, 112);
-      img.replaceWith(placeholder);
-    };
-    el.appendChild(img);
-    world.appendChild(el);
-  }
-});
+
+    setupNpcAnimation(
+      dec.animation,
+      spriteEl,
+      dec.displayHeight || DISPLAY_HEIGHT,
+      token
+    );
+
+    actElements.push(el);
+    decorationEls.push(el);
+  });
+}
+
+function buildStage() {
+  if (!STAGE) return; // acts without a stage skip this entirely
+
+  stageEl = document.createElement("div");
+  stageEl.id = "stage-platform";
+  stageEl.style.left = STAGE.x - STAGE.width / 2 + "px";
+  stageEl.style.width = STAGE.width + "px";
+  world.appendChild(stageEl);
+  actElements.push(stageEl);
+
+  // Sloped ramps on both sides so the player visually walks up onto it.
+  slopeLeft = document.createElement("div");
+  slopeLeft.className = "stage-slope stage-slope-left";
+  slopeLeft.style.left = STAGE.x - STAGE.width / 2 - STAGE.rampWidth + "px";
+  slopeLeft.style.width = STAGE.rampWidth + "px";
+  world.appendChild(slopeLeft);
+  actElements.push(slopeLeft);
+
+  slopeRight = document.createElement("div");
+  slopeRight.className = "stage-slope stage-slope-right";
+  slopeRight.style.left = STAGE.x + STAGE.width / 2 + "px";
+  slopeRight.style.width = STAGE.rampWidth + "px";
+  world.appendChild(slopeRight);
+  actElements.push(slopeRight);
+}
 
 // --- Fallback checks for CSS-only background images -----------------------
-// These (skyline, night skyline, ground tiles) are set purely in CSS, so
-// we separately preload each here just to detect a missing file and swap
-// in a simple placeholder fill + label if it 404s.
+// The skyline, night skyline, and ground tiles are set purely in CSS and
+// are not act-specific, so they are checked once here rather than inside
+// loadAct. Each is preloaded only to detect a 404 and substitute a
+// labelled placeholder fill.
 function checkBackgroundImage(el, src, label) {
   const img = new Image();
   img.onerror = () => {
@@ -253,7 +246,11 @@ function checkBackgroundImage(el, src, label) {
   img.src = src;
 }
 
-checkBackgroundImage(document.getElementById("skyline"), "Assets/Tondo.png", "Assets/Tondo.png");
+checkBackgroundImage(
+  document.getElementById("skyline"),
+  "Assets/Tondo.png",
+  "Assets/Tondo.png"
+);
 checkBackgroundImage(
   document.getElementById("skyline-night"),
   "Assets/Tondo_Night.png",
@@ -265,14 +262,22 @@ checkBackgroundImage(
   "Assets/Cement_Tile.png"
 );
 
-function setupNpcAnimation(sheet, el, displayHeight) {
+function setupNpcAnimation(sheet, el, displayHeight, token) {
   displayHeight = displayHeight || DISPLAY_HEIGHT;
-  let currentFrame = 0;
-  let lastFrameTime = 0;
+  let frame = 0;
+  let lastTime = 0;
 
   loadSpriteSheet(sheet).then(() => {
+    // The act may have changed while this image was loading.
+    if (token !== undefined && token !== actLoadToken) return;
+
     if (sheet.failed) {
-      showPlaceholder(el, sheet.src, Math.round(displayHeight * 0.7), displayHeight);
+      showPlaceholder(
+        el,
+        sheet.src,
+        Math.round(displayHeight * 0.7),
+        displayHeight
+      );
       return;
     }
 
@@ -290,73 +295,20 @@ function setupNpcAnimation(sheet, el, displayHeight) {
     npcAnimators.push({
       update(now) {
         const frameDuration = 1000 / sheet.fps;
-        if (now - lastFrameTime >= frameDuration) {
-          lastFrameTime = now;
-          currentFrame = (currentFrame + 1) % sheet.frames;
-          el.style.backgroundPositionX = -(currentFrame * displayFrameWidth) + "px";
+        if (now - lastTime >= frameDuration) {
+          lastTime = now;
+          frame = (frame + 1) % sheet.frames;
+          el.style.backgroundPositionX = -(frame * displayFrameWidth) + "px";
         }
       },
     });
   });
 }
 
-// --- Decorations (animated, but not interactable) -------------------------
-// The Assets/Horse.png sheet (22 frames) stands beside the Stablehand. Slightly
-// taller than the player/NPCs since horses are bigger than people.
-const horseEl = document.createElement("div");
-horseEl.className = "entity";
-horseEl.id = "horse";
-horseEl.style.left = "1220px"; // just to the right of the Stablehand (x: 1100)
-const horseSpriteEl = document.createElement("div");
-horseSpriteEl.className = "sprite npc-sprite npc-anim-sprite";
-horseEl.appendChild(horseSpriteEl);
-world.appendChild(horseEl);
-setupNpcAnimation({ src: "Assets/Horse.png", frames: 22, fps: 10 }, horseSpriteEl, 70);
-
-// --- The stage (entablado) -----------------------------------------------
-// Walk to the middle of the platform and press E to perform: Macario
-// recites 2 lines, the scene fades to night, he recites 2 more lines,
-// then Assets/Dead.png plays, then a blackout, then control returns — with
-// the scene staying night from then on.
-// NOTE: the lines below are placeholder poetry — swap in your own
-// text (or a verified historical quote) whenever you're ready.
-const STAGE = {
-  x: 3900,
-  width: 260,
-  rampWidth: 50,
-  label: "Entablado",
-  poemPart1: [
-    { speaker: "Macario", text: "Hindi ako magnanakaw, hindi ako tulisan." },
-    { speaker: "Macario", text: "Ipinaglaban ko lamang ang bayan kong sinilangan." },
-  ],
-  poemPart2: [
-    { speaker: "Macario", text: "Kung ito ang wakas, tanggap ko nang buong puso." },
-    { speaker: "Macario", text: "Mabuhay ang Pilipinas, mabuhay ang bayan ko." },
-  ],
-};
-
-const stageEl = document.createElement("div");
-stageEl.id = "stage-platform";
-stageEl.style.left = STAGE.x - STAGE.width / 2 + "px";
-stageEl.style.width = STAGE.width + "px";
-world.appendChild(stageEl);
-
-// Sloped ramps on both sides so Macario can visually walk up onto the stage
-const slopeLeft = document.createElement("div");
-slopeLeft.className = "stage-slope stage-slope-left";
-slopeLeft.style.left = STAGE.x - STAGE.width / 2 - STAGE.rampWidth + "px";
-slopeLeft.style.width = STAGE.rampWidth + "px";
-world.appendChild(slopeLeft);
-
-const slopeRight = document.createElement("div");
-slopeRight.className = "stage-slope stage-slope-right";
-slopeRight.style.left = STAGE.x + STAGE.width / 2 + "px";
-slopeRight.style.width = STAGE.rampWidth + "px";
-world.appendChild(slopeRight);
-
-// How high (0 to PLATFORM_HEIGHT) the player should be lifted at world-x
+// How high (0 to PLATFORM_HEIGHT) the player is lifted at world-x.
 function getPlatformOffset(x) {
-  if (currentRoom !== "road") return 0; // the stage doesn't exist in other rooms
+  if (!STAGE) return 0; // this act has no stage
+  if (currentRoom !== "road") return 0; // the stage is not in other rooms
 
   const half = STAGE.width / 2;
   const left = STAGE.x - half;
@@ -377,8 +329,6 @@ function getPlatformOffset(x) {
 }
 
 // --- Player sprite animation ---------------------------------------------
-// Assets/Idle.png: 6 frames, Assets/Walk.png: 10 frames — both spritesheets laid out
-// horizontally, expected to live in the same folder as index.html.
 const playerSpriteEl = player.querySelector(".player-sprite");
 
 const SPRITE_SHEETS = {
@@ -399,14 +349,14 @@ function loadSpriteSheet(def) {
     };
     img.onerror = () => {
       def.failed = true;
-      resolve(def); // resolve (not reject) so Promise.all doesn't hang forever
+      resolve(def); // resolve, not reject, so Promise.all never hangs
     };
     img.src = def.src;
   });
 }
 
 // Turns any element into a dashed placeholder box showing the missing
-// filename — used whenever an expected image/sprite sheet fails to load.
+// filename. Used whenever an expected image or sprite sheet fails to load.
 function showPlaceholder(el, filename, width, height) {
   el.style.backgroundImage = "none";
   el.style.width = width + "px";
@@ -426,7 +376,7 @@ function showPlaceholder(el, filename, width, height) {
   el.textContent = filename;
 }
 
-// Undo showPlaceholder's inline styles so a real sprite can render cleanly.
+// Undo showPlaceholder's inline styles so a real sprite renders cleanly.
 function clearPlaceholder(el) {
   el.textContent = "";
   el.style.display = "";
@@ -482,7 +432,7 @@ function applyAnim(name, force) {
 function updateAnimFrame(now) {
   if (!spritesReady) return;
   const sheet = SPRITE_SHEETS[currentAnim];
-  if (sheet.failed) return; // nothing to step — placeholder box is static
+  if (sheet.failed) return; // nothing to step, the placeholder is static
 
   const frameDuration = 1000 / sheet.fps;
 
@@ -490,7 +440,7 @@ function updateAnimFrame(now) {
     lastFrameTime = now;
     if (sheet.loop === false) {
       if (currentFrame < sheet.frames - 1) currentFrame++;
-      // else: hold on the last frame
+      // else hold on the last frame
     } else {
       currentFrame = (currentFrame + 1) % sheet.frames;
     }
@@ -505,18 +455,22 @@ function updateAnimFrame(now) {
 }
 
 let posX = 0;
-let currentRoom = "road"; // "road" (the main street) | "empty" (post-teleport room)
+let currentRoom = "road"; // "road" (main street) | "empty" (post-teleport)
 let authGated = true; // true until the player is logged in
 let inDialogue = false;
-let cutscenePlaying = false; // locks movement through the whole stage performance
+let cutscenePlaying = false; // locks movement for the whole stage sequence
 let dialogueStep = 0;
-let activeNpc = null; // the NPC currently in conversation
-let activeSet = null; // the dialogue set currently playing
-let activeMode = null; // "npc" | "gift" | "cutscene"
-let nearby = { type: null, ref: null }; // whichever NPC or the stage is in range
+let activeNpc = null;
+let activeSet = null;
+let activeMode = null; // "npc" | "gift" | "cutscene-part1" | "cutscene-part2"
+let nearby = { type: null, ref: null };
 
 const blackout = document.getElementById("blackout");
 const skylineNight = document.getElementById("skyline-night");
+
+// Build the starting act. Block 2.5 replaces this with a lookup
+// against game_progress.current_act.
+loadAct(window.ACT_1);
 
 const keysPressed = {};
 
@@ -574,7 +528,7 @@ giftBtn.addEventListener("click", (e) => {
 // --- Interaction / dialogue ---
 function findNearby() {
   if (currentRoom !== "road") {
-    return { type: null, ref: null }; // nothing to interact with in other rooms
+    return { type: null, ref: null }; // nothing interactable in other rooms
   }
 
   let closest = null;
@@ -591,11 +545,13 @@ function findNearby() {
     }
   }
 
-  const stageDist = Math.abs(posX - STAGE.x);
-  if (stageDist < INTERACT_DISTANCE && stageDist < closestDist) {
-    closest = STAGE;
-    closestType = "stage";
-    closestDist = stageDist;
+  if (STAGE) {
+    const stageDist = Math.abs(posX - STAGE.x);
+    if (stageDist < INTERACT_DISTANCE && stageDist < closestDist) {
+      closest = STAGE;
+      closestType = "stage";
+      closestDist = stageDist;
+    }
   }
 
   return { type: closestType, ref: closest };
@@ -614,7 +570,7 @@ function handleInteractPress() {
   if (inDialogue) {
     advanceDialogue();
   } else if (cutscenePlaying) {
-    // ignore E while the performance/blackout sequence is running
+    // ignore E while the performance or blackout sequence runs
   } else if (nearby.type === "npc") {
     startDialogue(nearby.ref);
   } else if (nearby.type === "stage") {
@@ -691,11 +647,10 @@ function endDialogue() {
       }
     }
   } else if (finishedMode === "cutscene-part1") {
-    // First half of the poem is done — fade the scene to night,
-    // then continue with the second half.
+    // First half of the poem is done. Fade to night, then continue.
     runNightTransition();
   } else if (finishedMode === "cutscene-part2") {
-    // Second half is done — now the death animation + blackout
+    // Second half is done. Now the death animation and blackout.
     runDeathSequence();
   }
 
@@ -712,7 +667,7 @@ async function runNightTransition() {
   blackout.classList.add("visible");
   await wait(900); // fade to black
 
-  skylineNight.classList.add("visible"); // swap happens while hidden behind black
+  skylineNight.classList.add("visible"); // swap while hidden behind black
   markDirty();
 
   await wait(400); // hold black briefly
@@ -732,17 +687,17 @@ async function runDeathSequence() {
   const deadSheet = SPRITE_SHEETS.dead;
   const animMs = (deadSheet.frames / deadSheet.fps) * 1000;
 
-  await wait(animMs + 400); // let the animation finish and hold briefly
+  await wait(animMs + 400); // let the animation finish and hold
   blackout.classList.add("visible");
 
-  await wait(900); // fade to black + hold
+  await wait(900); // fade to black and hold
   blackout.classList.remove("visible");
 
-  await wait(900); // fade back in — scene is now permanently night
+  await wait(900); // fade back in, scene now permanently night
   applyAnim("idle", true);
   cutscenePlaying = false;
 
-  // The Katipunero was waiting at the edge of the map — reveal him now.
+  // The Katipunero was waiting at the edge of the map. Reveal him.
   const katipunan = NPCS.find((npc) => npc.id === "katipunan");
   if (katipunan) {
     katipunan.hidden = false;
@@ -752,7 +707,21 @@ async function runDeathSequence() {
 
   state.flags.deathSequenceDone = true;
   markDirty();
-  saveProgress(); // save right away — don't rely on the next autosave tick
+  saveProgress(); // save immediately rather than waiting for the next tick
+}
+
+// Hides every interactable and decoration in the current act. Used both
+// by the teleport cutscene and when restoring a save that was made
+// inside the empty room.
+function hideActWorld() {
+  NPCS.forEach((npc) => {
+    const el = document.getElementById("npc-" + npc.id);
+    if (el) el.style.display = "none";
+  });
+  decorationEls.forEach((el) => (el.style.display = "none"));
+  if (stageEl) stageEl.style.display = "none";
+  if (slopeLeft) slopeLeft.style.display = "none";
+  if (slopeRight) slopeRight.style.display = "none";
 }
 
 async function teleportToNewRoom() {
@@ -760,20 +729,12 @@ async function teleportToNewRoom() {
   blackout.classList.add("visible");
   await wait(900); // fade to black
 
-  // Same background/road, just an empty scene — hide every character
-  // and object from the previous room.
-  NPCS.forEach((npc) => {
-    const el = document.getElementById("npc-" + npc.id);
-    if (el) el.style.display = "none";
-  });
-  horseEl.style.display = "none";
-  stageEl.style.display = "none";
-  slopeLeft.style.display = "none";
-  slopeRight.style.display = "none";
+  // Same background and road, but an empty scene.
+  hideActWorld();
 
   posX = 0;
   facing = 1;
-  currentRoom = "empty"; // this room has no interactables at all — not just hidden ones
+  currentRoom = "empty"; // this room has no interactables at all
   markDirty();
   saveProgress();
 
@@ -784,7 +745,7 @@ async function teleportToNewRoom() {
   cutscenePlaying = false;
 }
 
-// Allow tapping the dialogue box itself to advance (nice for mobile)
+// Tapping the dialogue box advances it, which is easier on mobile.
 dialogueBox.addEventListener("click", () => {
   if (inDialogue) advanceDialogue();
 });
@@ -807,8 +768,8 @@ function gameLoop(now) {
     posX = Math.max(0, Math.min(posX, WORLD_WIDTH - PLAYER_WIDTH));
   }
 
-  // While the stage cutscene is running, leave whatever animation is
-  // already set (e.g. "dead") alone instead of switching to idle/walk.
+  // During the stage cutscene, leave whatever animation is already set
+  // (such as "dead") rather than switching back to idle or walk.
   if (!cutscenePlaying) {
     applyAnim(isWalking ? "walk" : "idle");
   }
@@ -818,13 +779,13 @@ function gameLoop(now) {
   player.style.left = posX + "px";
   player.style.bottom = GROUND_LEVEL + getPlatformOffset(posX) + "px";
 
-  // Camera: keep player centered in the viewport, clamped to world bounds
+  // Camera: centre the player, clamped to world bounds.
   const viewportWidth = viewport.clientWidth;
   let cameraX = posX - viewportWidth / 2 + PLAYER_WIDTH / 2;
   cameraX = Math.max(0, Math.min(cameraX, WORLD_WIDTH - viewportWidth));
   world.style.transform = `translateX(${-cameraX}px)`;
 
-  // Interact button + gift button follow whichever NPC/stage is nearby
+  // Interact and gift buttons follow whichever NPC or stage is nearby.
   if (!inDialogue && !cutscenePlaying && !authGated) {
     mobileControls.classList.remove("hidden");
     nearby = findNearby();
@@ -846,8 +807,8 @@ function gameLoop(now) {
       giftBtn.classList.add("hidden");
     }
   } else {
-    // Dialogue is showing (or the cutscene is running) — tapping the
-    // dialogue box itself advances it, so tuck the controls away.
+    // Dialogue or cutscene is showing. Tapping the dialogue box
+    // advances it, so tuck the movement controls away.
     mobileControls.classList.add("hidden");
     giftBtn.classList.add("hidden");
     btnInteract.textContent = "E";
@@ -861,8 +822,8 @@ requestAnimationFrame(gameLoop);
 
 // =============================================================
 // AUTH + SAVE/LOAD (Supabase)
-// Login-only — accounts are pre-created by the dev via the admin
-// script (see create_accounts.js), not self-signup.
+// Login only. Accounts are pre-created by the developer via the
+// admin script, not by self-signup.
 // =============================================================
 
 const authForm = document.getElementById("auth-form");
@@ -873,15 +834,8 @@ const authStatus = document.getElementById("auth-status");
 const authOverlay = document.getElementById("auth-overlay");
 
 let currentUserId = null;
-
-// BLOCK 1: holds the logged-in student's profiles row. Not read yet —
-// the act controller (Block 2) and dashboard (Block 4) both want it,
-// so it's cheaper to populate here than to re-fetch later.
-let currentProfile = null;
-
-// BLOCK 1: guards against stacking a second autosave interval if
-// enterGameAsUser somehow runs twice for the same session.
-let autosaveTimer = null;
+let currentProfile = null; // the logged-in student's profiles row
+let autosaveTimer = null; // guards against stacking a second interval
 
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -895,7 +849,7 @@ authForm.addEventListener("submit", async (e) => {
   try {
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    // On success, onAuthStateChange (below) takes it from here.
+    // On success, onAuthStateChange takes over.
   } catch (err) {
     authStatus.textContent = err.message || "May error, subukan ulit.";
     authStatus.className = "";
@@ -915,10 +869,9 @@ sb.auth.getSession().then(({ data: { session } }) => {
 async function enterGameAsUser(userId) {
   if (currentUserId === userId) return; // already entered
 
-  // BLOCK 1: look up the role BEFORE doing anything student-specific.
-  // Previously a teacher logging in fell straight through into the
-  // game and had a game_progress row created for them, which then
-  // polluted their own class averages.
+  // Look up the role before doing anything student-specific. A teacher
+  // reaching this point would otherwise be dropped into the game and
+  // given a game_progress row, polluting their own class averages.
   const { data: profile, error: profileError } = await sb
     .from("profiles")
     .select("id, role, full_name, class_id")
@@ -932,8 +885,7 @@ async function enterGameAsUser(userId) {
   }
 
   if (profile && profile.role === "teacher") {
-    // Teachers never enter the game world.
-    authStatus.textContent = "Teacher account — inililipat sa dashboard...";
+    authStatus.textContent = "Teacher account, inililipat sa dashboard...";
     authStatus.className = "success";
     window.location.replace("teacher.html");
     return;
@@ -947,8 +899,8 @@ async function enterGameAsUser(userId) {
 
   await loadProgress(userId);
 
-  // Backup safety-net save, in case something set saveDirty without
-  // going through markDirty()'s own debounce below.
+  // Safety-net save, in case something set saveDirty without going
+  // through markDirty's own debounce.
   if (autosaveTimer === null) {
     autosaveTimer = setInterval(() => {
       if (saveDirty) saveProgress();
@@ -969,7 +921,7 @@ async function loadProgress(userId) {
   }
 
   if (!row) {
-    // First time playing — create a default save row.
+    // First time playing. Create a default save row.
     const { data: inserted, error: insertError } = await sb
       .from("game_progress")
       .insert({ student_id: userId })
@@ -1008,7 +960,7 @@ function applyLoadedState(row) {
     skylineNight.classList.add("visible");
   }
 
-  // Reveal Katipunan here if the save says the death sequence already happened.
+  // Reveal the Katipunero if the save says the death sequence happened.
   if (state.flags.deathSequenceDone) {
     const katipunan = NPCS.find((npc) => npc.id === "katipunan");
     if (katipunan) {
@@ -1019,16 +971,9 @@ function applyLoadedState(row) {
   }
 
   if (currentRoom !== "road") {
-    // Resuming inside the post-teleport empty room — hide everything
-    // instantly (no blackout needed, we're just restoring a save).
-    NPCS.forEach((npc) => {
-      const el = document.getElementById("npc-" + npc.id);
-      if (el) el.style.display = "none";
-    });
-    horseEl.style.display = "none";
-    stageEl.style.display = "none";
-    slopeLeft.style.display = "none";
-    slopeRight.style.display = "none";
+    // Resuming inside the post-teleport empty room. Hide everything
+    // instantly, with no blackout, since this is a save restore.
+    hideActWorld();
   }
 }
 
