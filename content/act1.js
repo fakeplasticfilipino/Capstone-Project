@@ -27,14 +27,15 @@ window.ACT_1 = {
   worldWidth: ACT1_WORLD_WIDTH,
   startX: 0,
 
-  // Objectives are declared here but not yet wired up. Block 2.3
-  // uses them to compute act_progress.performance_score. The count
-  // of four matches objectives_total in the dashboard seed data.
+  // Objectives drive act_progress.performance_score. Each maps to a
+  // story flag in state.flags. Because flags are already persisted
+  // inside save_state, objective progress survives a reload for free
+  // rather than needing its own storage.
   objectives: [
-    { id: "talk-nanay", label: "Kausapin si Nanay" },
-    { id: "give-buko", label: "Ibigay ang buko sa barbero" },
-    { id: "perform-stage", label: "Umakyat sa entablado" },
-    { id: "meet-katipunero", label: "Kausapin ang Katipunero" },
+    { id: "talk-nanay", label: "Kausapin si Nanay", flag: "hasBuko" },
+    { id: "give-buko", label: "Ibigay ang buko sa barbero", flag: "bukoGiven" },
+    { id: "perform-stage", label: "Umakyat sa entablado", flag: "deathSequenceDone" },
+    { id: "meet-katipunero", label: "Kausapin ang Katipunero", flag: "metKatipunero" },
   ],
 
   startingQuests: [{ id: "go-to-work", text: "Pumunta sa trabaho" }],
@@ -175,6 +176,12 @@ window.ACT_1 = {
             },
           ],
           onComplete: () => {
+            // Fourth and final Act I objective. Setting this flag takes
+            // the count to 4 of 4, which makes checkObjectives() mark
+            // the act completed.
+            state.flags.metKatipunero = true;
+            markDirty();
+            if (window.Acts) Acts.checkObjectives();
             teleportToNewRoom();
           },
         },

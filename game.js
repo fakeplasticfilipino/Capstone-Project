@@ -899,6 +899,10 @@ async function enterGameAsUser(userId) {
 
   await loadProgress(userId);
 
+  // Must run AFTER loadProgress, since syncStart performs a catch-up
+  // objective count against the flags that were just restored.
+  if (window.Acts) await Acts.syncStart();
+
   // Safety-net save, in case something set saveDirty without going
   // through markDirty's own debounce.
   if (autosaveTimer === null) {
@@ -999,6 +1003,11 @@ async function saveProgress() {
 
   const { error } = await sb.from("game_progress").upsert(payload);
   if (error) console.error("Save error:", error);
+
+  // Recount objectives on the same cadence as the save rather than
+  // after every flag mutation. This early-returns when the count has
+  // not moved, so most calls cost nothing.
+  if (window.Acts) Acts.checkObjectives();
 }
 
 window.addEventListener("beforeunload", () => {
