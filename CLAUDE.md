@@ -1,13 +1,18 @@
 # CLAUDE.md
 
-Context file for AI assistants working on this project. Paste this at the
-start of a new session. It describes architecture, conventions, and
-constraints, all of which change rarely.
+Context file for AI assistants working on this project. It describes
+architecture, conventions, and constraints, all of which change rarely.
 
-Current build status is NOT in this file. It lives in TRACKER.md, which
-should be pasted alongside this one. If it was not provided, ask for it
-before planning any work, because this file will not tell you what has
-already been built.
+Current build status is NOT in this file. Read TRACKER.md before planning
+any work, because this file will not tell you what has already been built.
+Read PAPER_VS_BUILD.md before arguing about scope, because it records what
+the proposal promised and what was deliberately changed.
+
+Both sit next to this file in the repository and in the connected project
+folder, so read them directly rather than asking for them to be pasted.
+
+Read in this order at the start of a session: this file, then TRACKER.md,
+then PAPER_VS_BUILD.md only if scope is in question.
 
 ## Source of truth
 
