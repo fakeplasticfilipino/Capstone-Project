@@ -750,7 +750,8 @@ html, body {
 #hud {
   position: absolute;
   top: 10px;
-  right: 12px;
+  /* Clear of #btn-pause, which owns the corner from Block 7 on. */
+  right: 64px;
   z-index: 40;
 }
 
@@ -799,3 +800,240 @@ html, body {
 #btn-jump {
   font-size: 11px;
 }
+
+/* =============================================================
+   SHELL (Block 7)
+
+   The title screen, pause, settings, and the logout confirmation.
+   Styled from the same parts as #act-screen and #quiz rather than
+   introducing a third look: dark panel, amber border, green
+   primary button.
+
+   z-index sits at 110, above the auth overlay's 100, because the
+   title screen has to cover the login box until the student asks
+   for it. It is also above #quiz's 90, which matters on the resume
+   path: the pre-test is held back until entry, and a shell screen
+   must never end up underneath one.
+   ============================================================= */
+
+#shell {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.94);
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+#shell.hidden {
+  display: none;
+}
+
+#shell-box {
+  width: min(90vw, 380px);
+  max-height: 100%;
+  overflow-y: auto;
+  background: rgba(20, 20, 20, 0.97);
+  border: 2px solid #ffd54f;
+  border-radius: 10px;
+  padding: 24px 22px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+}
+
+.shell-panel.hidden {
+  display: none;
+}
+
+.shell-eyebrow {
+  color: #999;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.shell-heading {
+  color: #ffd54f;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 3px;
+  margin: 0 0 6px;
+}
+
+/* The wide tracking is for MACARIO on the title card. Longer headings
+   wrap at 412px with it, so the h2s take a tighter setting. */
+h2.shell-heading {
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.shell-sub {
+  color: #ccc;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+.shell-btn {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 0;
+  font-weight: bold;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.shell-btn:last-child {
+  margin-bottom: 0;
+}
+
+.shell-btn-primary {
+  background: #43a047;
+  color: #fff;
+}
+
+/* Secondary actions read as available without competing with the
+   one green thing the student is meant to tap. */
+.shell-btn-ghost {
+  background: transparent;
+  color: #ccc;
+  border: 1px solid #555;
+}
+
+.shell-btn-danger {
+  background: transparent;
+  color: #e57373;
+  border: 1px solid #7f1d1d;
+}
+
+.shell-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.shell-note {
+  color: #e57373;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 12px;
+  min-height: 1em;
+}
+
+.shell-field {
+  margin-bottom: 18px;
+}
+
+.shell-label {
+  color: #999;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.shell-choices {
+  display: flex;
+  gap: 6px;
+}
+
+/* 44px minimum touch target, matching the rule the mobile control
+   cluster already follows. */
+.shell-choice {
+  flex: 1;
+  min-height: 44px;
+  background: transparent;
+  color: #ccc;
+  border: 1px solid #555;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.shell-choice.active {
+  border-color: #ffd54f;
+  color: #ffd54f;
+  background: rgba(255, 213, 79, 0.12);
+}
+
+.shell-controls {
+  list-style: none;
+  font-size: 12px;
+  color: #ccc;
+  line-height: 1.8;
+}
+
+.shell-controls li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.shell-controls span:last-child {
+  color: #999;
+}
+
+/* Pause button. Top right, with the hearts shifted left to sit
+   beside it rather than under it. */
+#btn-pause {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 40;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #ffd54f;
+  background: rgba(0, 0, 0, 0.55);
+  color: #eee;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: inherit;
+  letter-spacing: 1px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#btn-pause.hidden {
+  display: none;
+}
+
+/* =============================================================
+   TEXT SIZE
+
+   The one setting in Block 7 that does something the moment it is
+   changed. Audio sliders are deliberately absent until Block 12
+   adds audio, since a volume control over silence is worse than
+   no control at all.
+
+   Scoped to the text a student reads rather than to everything:
+   the world is drawn at a fixed scale and resizing its labels
+   would push sprites around.
+   ============================================================= */
+
+body.text-sm #dialogue-text { font-size: 14px; }
+body.text-sm #dialogue-speaker { font-size: 13px; }
+body.text-sm #quest-list,
+body.text-sm #quest-log-title { font-size: 12px; }
+
+body.text-lg #dialogue-text { font-size: 19px; }
+body.text-lg #dialogue-speaker { font-size: 18px; }
+body.text-lg #quest-list,
+body.text-lg #quest-log-title { font-size: 15px; }
+
+body.text-lg #quiz-question,
+body.text-lg .shell-sub { font-size: 15px; }
+
+body.text-sm #quiz-question,
+body.text-sm .shell-sub { font-size: 12px; }

@@ -7,6 +7,8 @@
 //   Block 2.2 world building wrapped in loadAct() / unloadAct()
 //   Block 2.4 act transition replaces the empty-room ending
 //   Block 2.5 resume into the act recorded in game_progress
+//   Block 6   scenes, jump, health, stealth, combat
+//   Block 7   pause state and the shell facade
 //
 // game.js is now the ENGINE only. It knows how to render a world,
 // run dialogue, and animate sprites. It does not know what is in
@@ -27,6 +29,7 @@ const btnLeft = document.getElementById("btn-left");
 const btnRight = document.getElementById("btn-right");
 const btnInteract = document.getElementById("btn-interact");
 const mobileControls = document.getElementById("mobile-controls");
+const btnPause = document.getElementById("btn-pause");
 
 const questListEl = document.getElementById("quest-list");
 const giftBtn = document.getElementById("gift-btn");
@@ -1376,11 +1379,77 @@ dialogueBox.addEventListener("click", () => {
   if (inDialogue) advanceDialogue();
 });
 
+// =============================================================
+// PAUSE
+//
+// shell.js owns the pause SCREEN. This owns the pause STATE,
+// because everything that has to stop lives in this file.
+//
+// Drawing a panel over the world is not enough. Guards keep
+// patrolling behind it and a detection meter keeps filling, which
+// is exactly the unfairness the meter was introduced to prevent.
+// So the loop stops doing work at all rather than being hidden.
+//
+// The subtler half is the timers. Invulnerability and the attack
+// hold are both measured against performance.now(), which does not
+// stop for a pause screen. Left alone, a ten second pause silently
+// eats the one second invulnerability window, and a student who
+// paused mid-hold releases into a throw they never asked for. Both
+// are pushed forward by however long the pause actually lasted.
+// =============================================================
+
+let paused = false;
+let pausedAt = 0;
+
+function isPaused() {
+  return paused;
+}
+
+function setPaused(value) {
+  const next = Boolean(value);
+  if (next === paused) return next;
+
+  // Pausing mid-cutscene is refused rather than handled. The stage
+  // sequence is driven by awaited wait() promises, and no flag in
+  // here can suspend a setTimeout that has already been scheduled;
+  // allowing it would desynchronise the poem from the night
+  // transition. A cutscene is short and tapped through, so refusing
+  // costs little. The caller is told, so it can leave its screen
+  // closed rather than opening one over a game that never stopped.
+  if (next && cutscenePlaying) return false;
+
+  paused = next;
+
+  if (paused) {
+    pausedAt = performance.now();
+  } else {
+    const elapsed = performance.now() - pausedAt;
+    if (invulnUntil) invulnUntil += elapsed;
+    if (attackHoldStart) attackHoldStart += elapsed;
+
+    // Resume on a fresh delta. Without this, the first frame back
+    // integrates the entire pause in one step. It is clamped to
+    // three frames, so nothing falls through the floor, but it is
+    // still a visible jolt.
+    lastFrameNow = 0;
+    lastFrameTime = 0;
+  }
+
+  return paused;
+}
+
 // --- Game loop ---
 let lastFrameNow = 0;
 
 function gameLoop(now) {
   now = now || 0;
+
+  // A paused game does no work whatsoever. The next frame is still
+  // requested, so resuming is a flag flip rather than a restart.
+  if (paused) {
+    requestAnimationFrame(gameLoop);
+    return;
+  }
 
   // Frame delta expressed in 60fps frames, clamped so a tab returning from
   // the background does not integrate one huge step and drop the player
@@ -1446,6 +1515,11 @@ function gameLoop(now) {
   // Interact and gift buttons follow whichever NPC or stage is nearby.
   if (!inDialogue && !cutscenePlaying && !authGated && !uiBlocked) {
     mobileControls.classList.remove("hidden");
+    // The pause button rides along with the movement controls rather
+    // than tracking its own condition. The branch this sits in is
+    // already the exact definition of "the student is playing", and a
+    // second copy of it would be a second thing to keep in step.
+    if (btnPause) btnPause.classList.remove("hidden");
     nearby = findNearby();
     if (nearby.type === "npc") {
       btnInteract.textContent = "Usap";
@@ -1468,6 +1542,7 @@ function gameLoop(now) {
     // Dialogue or cutscene is showing. Tapping the dialogue box
     // advances it, so tuck the movement controls away.
     mobileControls.classList.add("hidden");
+    if (btnPause) btnPause.classList.add("hidden");
     giftBtn.classList.add("hidden");
     btnInteract.textContent = "E";
     btnInteract.classList.remove("active");
@@ -1585,7 +1660,9 @@ async function enterGameAsUser(userId) {
   // throw away the restored position.
   //
   // And syncStart has to run last, because its catch-up objective
-  // count reads the flags the save restores.
+  // count reads the flags the save restores, and because it is what
+  // resumes the pre-test, which must not begin until the shell has
+  // handed the screen over.
   const row = await loadProgress(userId);
   if (!row) return;
 
@@ -1608,6 +1685,33 @@ async function enterGameAsUser(userId) {
   applyLoadedState(row);
 
   saveReady = true;
+
+  // The world is built and the save is restored. Hand the screen to
+  // the shell and WAIT there for the student to tap Magpatuloy.
+  //
+  // This call is the only signal the shell gets, deliberately. An
+  // event was tried first and is the wrong mechanism: shell.js
+  // registers its listener inside its own DOMContentLoaded handler,
+  // which runs after this file's, and the browser drains microtasks
+  // between the two. A stored session can therefore have this function
+  // already running before the shell is listening at all. That is the
+  // same microtask hazard recorded in the pitfalls below, and calling
+  // the shell directly is immune to it.
+  //
+  // Waiting here, rather than letting syncStart run underneath, is the
+  // whole point. syncStart resumes the trivia card and the pre-test,
+  // and those open an overlay of their own. Started now, they would
+  // run behind the title screen, where a student can neither see them
+  // nor answer them, and the first thing they would meet on tapping
+  // Magpatuloy is a test already in progress.
+  //
+  // THIS IS THE ONE PLACE ANYTHING GUARDS ON window.Shell. Everywhere
+  // else a missing shell should fail loudly and immediately, because
+  // it is not optional the way assessment.js is. Here it would instead
+  // hang the login on a promise that nothing left on the page can ever
+  // resolve, and a student staring at a frozen screen cannot report
+  // what went wrong.
+  if (window.Shell) await Shell.awaitEntry();
 
   if (window.Acts) await Acts.syncStart(actNumber);
 
@@ -1725,3 +1829,33 @@ async function saveProgress() {
 window.addEventListener("beforeunload", () => {
   if (saveDirty) saveProgress();
 });
+
+// Logout has to await this. saveProgress is debounced by 800ms, so
+// signing out in the second after an objective registers would drop
+// it, and a shared classroom phone is exactly where logout gets used
+// one second after something happened.
+async function flushSave() {
+  clearTimeout(saveDebounceTimer);
+  if (saveDirty) await saveProgress();
+}
+
+// =============================================================
+// SHELL FACADE
+//
+// The whole of what shell.js is allowed to touch. Everything else
+// in this file stays private to it.
+//
+// Unlike window.Assessment, this is NOT optional, and nothing
+// should guard on its presence. assessment.js can be absent and the
+// act flow degrades honestly to playing then completed; a missing
+// shell means no way into the game at all. A guard there would turn
+// a load failure into a blank screen with nothing in the console.
+// =============================================================
+
+window.Game = {
+  setPaused,
+  isPaused,
+  flushSave,
+  setUiBlocked,
+  isSignedIn: () => Boolean(currentUserId),
+};

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=4" />
 </head>
 <body>
   <div id="app-scale">
@@ -39,6 +39,10 @@
     <div id="hud" class="hidden">
       <div id="hud-hearts"></div>
     </div>
+    <!-- Pause. Shown and hidden by the game loop alongside the mobile
+         controls, because that branch is already the exact definition
+         of "the student is playing". -->
+    <button id="btn-pause" class="hidden" type="button" aria-label="Pahinga">II</button>
     <div id="toast" class="hidden"></div>
 
     <!-- Mobile controls -->
@@ -83,6 +87,93 @@
       </div>
     </div>
 
+    <!-- Title screen, pause, settings, and logout confirmation.
+         Owned by shell.js. One overlay, four panels, because only
+         ever one of them is on screen and swapping a class is
+         cheaper than four overlays fighting over z-index.
+
+         Sits above the auth overlay in the stylesheet: the title
+         screen has to cover the login box until the student taps
+         Magsimula. -->
+    <div id="shell" class="hidden">
+      <div id="shell-box">
+
+        <div id="shell-title" class="shell-panel">
+          <div class="shell-eyebrow">Araling Panlipunan 8</div>
+          <h1 class="shell-heading">MACARIO</h1>
+          <p class="shell-sub">Ang buhay ni Macario Sakay</p>
+          <button id="shell-start" class="shell-btn shell-btn-primary" type="button">
+            Naglo-load...
+          </button>
+          <button id="shell-title-settings" class="shell-btn shell-btn-ghost" type="button">
+            Mga Setting
+          </button>
+          <div id="shell-title-note" class="shell-note"></div>
+        </div>
+
+        <div id="shell-pause" class="shell-panel hidden">
+          <div class="shell-eyebrow">MACARIO</div>
+          <h2 class="shell-heading">Naka-pause</h2>
+          <p class="shell-sub">Nakahinto ang laro.</p>
+          <button id="shell-resume" class="shell-btn shell-btn-primary" type="button">
+            Magpatuloy
+          </button>
+          <button id="shell-pause-settings" class="shell-btn shell-btn-ghost" type="button">
+            Mga Setting
+          </button>
+          <button id="shell-logout" class="shell-btn shell-btn-danger" type="button">
+            Mag-log Out
+          </button>
+        </div>
+
+        <div id="shell-settings" class="shell-panel hidden">
+          <div class="shell-eyebrow">MACARIO</div>
+          <h2 class="shell-heading">Mga Setting</h2>
+
+          <div class="shell-field">
+            <div class="shell-label">Laki ng teksto</div>
+            <div class="shell-choices" id="shell-textsize">
+              <button class="shell-choice" type="button" data-size="sm">Maliit</button>
+              <button class="shell-choice" type="button" data-size="md">Katamtaman</button>
+              <button class="shell-choice" type="button" data-size="lg">Malaki</button>
+            </div>
+          </div>
+
+          <div class="shell-field">
+            <div class="shell-label">Mga kontrol</div>
+            <ul class="shell-controls">
+              <li><span>Paggalaw</span><span>A / D</span></li>
+              <li><span>Talon</span><span>W / Space</span></li>
+              <li><span>Kausapin</span><span>E</span></li>
+              <li><span>Atake</span><span>J</span></li>
+              <li><span>Ibato</span><span>J, pindutin nang matagal</span></li>
+              <li><span>Pahinga</span><span>Esc</span></li>
+            </ul>
+          </div>
+
+          <button id="shell-settings-back" class="shell-btn shell-btn-primary" type="button">
+            Bumalik
+          </button>
+        </div>
+
+        <div id="shell-logout-confirm" class="shell-panel hidden">
+          <div class="shell-eyebrow">MACARIO</div>
+          <h2 class="shell-heading">Mag-log Out</h2>
+          <p class="shell-sub">
+            Mase-save muna ang iyong laro. Maaari kang bumalik anumang oras.
+          </p>
+          <button id="shell-logout-yes" class="shell-btn shell-btn-danger" type="button">
+            Oo, mag-log out
+          </button>
+          <button id="shell-logout-no" class="shell-btn shell-btn-ghost" type="button">
+            Hindi
+          </button>
+          <div id="shell-logout-note" class="shell-note"></div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- Login / signup gate -->
     <div id="auth-overlay">
       <div id="auth-box">
@@ -104,17 +195,23 @@
        all four to build its registry. Loading them in the wrong order
        gives a blank world and a console error.
 
-       assessment.js loads last and is optional: with it absent the
-       act flow collapses to playing then completed and the game still
-       runs, which is how Block 2 was tested before Block 3 existed. -->
+       assessment.js is optional: with it absent the act flow
+       collapses to playing then completed and the game still runs,
+       which is how Block 2 was tested before Block 3 existed.
+
+       shell.js loads last and is NOT optional. It owns the entry
+       point, so a missing shell means no way into the game at all.
+       It reads window.Game and window.Assessment; nothing reads it
+       back except the one guarded awaitEntry call in game.js. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabaseClient.js"></script>
   <script src="content/act1.js?v=4"></script>
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
-  <script src="game.js?v=9"></script>
+  <script src="game.js?v=10"></script>
   <script src="acts.js?v=3"></script>
   <script src="assessment.js?v=1"></script>
+  <script src="shell.js?v=1"></script>
 </body>
 </html>
