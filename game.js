@@ -5,6 +5,8 @@
 //   Block 1   role routing (teachers redirect to teacher.html)
 //   Block 2.1 Act I content extracted to content/act1.js
 //   Block 2.2 world building wrapped in loadAct() / unloadAct()
+//   Block 2.4 act transition replaces the empty-room ending
+//   Block 2.5 resume into the act recorded in game_progress
 //
 // game.js is now the ENGINE only. It knows how to render a world,
 // run dialogue, and animate sprites. It does not know what is in
@@ -59,6 +61,18 @@ const quests = []; // { id, text, done }
 let saveDirty = false;
 let saveDebounceTimer = null;
 
+// Saves are refused until the login sequence has finished resolving
+// which act the student is in.
+//
+// loadAct() runs once at parse time to draw the backdrop behind the
+// login box, and it adds that act's starting quests, which calls
+// markDirty(). The resulting debounced save would then fire partway
+// through login, while Acts.current is still its initial 1, and
+// write current_act = 1 over a student who was in Act III. The
+// slower the connection, the more reliably it happened, which is the
+// wrong way round for a phone on school wifi.
+let saveReady = false;
+
 function addQuest(id, text) {
   if (quests.some((q) => q.id === id)) return;
   quests.push({ id, text, done: false });
@@ -69,6 +83,14 @@ function addQuest(id, text) {
 function completeQuest(id) {
   const q = quests.find((q) => q.id === id);
   if (q) q.done = true;
+  renderQuests();
+  markDirty();
+}
+
+// Emptied on an act change. The log is "Mga Gawain", the tasks in
+// front of you now, not a permanent record of everything ever done.
+function clearQuests() {
+  quests.length = 0;
   renderQuests();
   markDirty();
 }
@@ -151,7 +173,13 @@ function buildNpcs(token) {
   NPCS.forEach((npc) => {
     // Reset per-load runtime state so replaying an act starts clean.
     npc.stage = 0;
-    npc.hidden = Boolean(npc.startsHidden);
+
+    // An NPC that starts hidden stays hidden until its flag is set.
+    // Checking the flag here rather than only on reveal means a
+    // reloaded save rebuilds the world in the right state without
+    // the engine knowing which NPC belongs to which act.
+    npc.hidden =
+      Boolean(npc.startsHidden) && !state.flags[npc.revealedByFlag];
 
     const el = document.createElement("div");
     el.className = "entity";
@@ -322,6 +350,24 @@ function setupNpcAnimation(sheet, el, displayHeight, token) {
         }
       },
     });
+  });
+}
+
+// Reveals every hidden NPC whose revealedByFlag is now set. Called
+// after a story beat fires and again after a save is restored.
+//
+// This replaced two hardcoded checks for npc.id === "katipunan",
+// which put Act I content knowledge inside the engine and meant
+// every later act would need its own copy of the same three lines.
+function revealNpcsByFlag() {
+  NPCS.forEach((npc) => {
+    if (!npc.revealedByFlag) return;
+    if (!state.flags[npc.revealedByFlag]) return;
+    if (!npc.hidden) return;
+
+    npc.hidden = false;
+    const el = document.getElementById("npc-" + npc.id);
+    if (el) el.style.display = "";
   });
 }
 
@@ -503,10 +549,20 @@ function updateAnimFrame(now) {
 }
 
 let posX = 0;
-let currentRoom = "road"; // "road" (main street) | "empty" (post-teleport)
+let currentRoom = "road"; // "road" always; "empty" only in legacy saves
 let authGated = true; // true until the player is logged in
 let inDialogue = false;
 let cutscenePlaying = false; // locks movement for the whole stage sequence
+
+// Raised while acts.js or assessment.js has a full-screen overlay up.
+// Kept separate from cutscenePlaying so a trivia card or a test does
+// not read as a cutscene to the animation code, which deliberately
+// leaves the current sprite alone during one.
+let uiBlocked = false;
+
+function setUiBlocked(value) {
+  uiBlocked = Boolean(value);
+}
 let dialogueStep = 0;
 let activeNpc = null;
 let activeSet = null;
@@ -516,8 +572,9 @@ let nearby = { type: null, ref: null };
 const blackout = document.getElementById("blackout");
 const skylineNight = document.getElementById("skyline-night");
 
-// Build the starting act. Block 2.5 replaces this with a lookup
-// against game_progress.current_act.
+// The pre-login backdrop. enterGameAsUser() reloads whichever act
+// game_progress.current_act names once the student is known; until
+// then the auth overlay covers this entirely.
 loadAct(window.ACT_1);
 
 const keysPressed = {};
@@ -614,7 +671,7 @@ function canGiveGift(npc) {
 }
 
 function handleInteractPress() {
-  if (authGated) return;
+  if (authGated || uiBlocked) return;
   if (inDialogue) {
     advanceDialogue();
   } else if (cutscenePlaying) {
@@ -745,53 +802,23 @@ async function runDeathSequence() {
   applyAnim("idle", true);
   cutscenePlaying = false;
 
-  // The Katipunero was waiting at the edge of the map. Reveal him.
-  const katipunan = NPCS.find((npc) => npc.id === "katipunan");
-  if (katipunan) {
-    katipunan.hidden = false;
-    const katipunanEl = document.getElementById("npc-katipunan");
-    if (katipunanEl) katipunanEl.style.display = "";
-  }
-
   state.flags.deathSequenceDone = true;
+
+  // The Katipunero was waiting at the edge of the map. He declares
+  // deathSequenceDone as his revealedByFlag, so setting it above is
+  // all this needs to know.
+  revealNpcsByFlag();
+
   markDirty();
   saveProgress(); // save immediately rather than waiting for the next tick
 }
 
-// Hides every interactable and decoration in the current act. Used both
-// by the teleport cutscene and when restoring a save that was made
-// inside the empty room.
-function hideActWorld() {
-  NPCS.forEach((npc) => {
-    const el = document.getElementById("npc-" + npc.id);
-    if (el) el.style.display = "none";
-  });
-  decorationEls.forEach((el) => (el.style.display = "none"));
-  if (stageEl) stageEl.style.display = "none";
-  if (slopeLeft) slopeLeft.style.display = "none";
-  if (slopeRight) slopeRight.style.display = "none";
-}
-
-async function teleportToNewRoom() {
-  cutscenePlaying = true;
-  blackout.classList.add("visible");
-  await wait(900); // fade to black
-
-  // Same background and road, but an empty scene.
-  hideActWorld();
-
-  posX = 0;
-  facing = 1;
-  currentRoom = "empty"; // this room has no interactables at all
-  markDirty();
-  saveProgress();
-
-  await wait(300); // hold black briefly
-  blackout.classList.remove("visible");
-
-  await wait(900); // fade back in to the empty room
-  cutscenePlaying = false;
-}
+// teleportToNewRoom() and hideActWorld() lived here. Both existed
+// only to serve the placeholder Act I ending, which faded to black
+// and left the player in an empty room with no interactables and no
+// way out. Acts.showTransition() replaces that, so both are gone
+// rather than kept as dead code. Saves written by the old ending are
+// migrated in applyLoadedState().
 
 // Tapping the dialogue box advances it, which is easier on mobile.
 dialogueBox.addEventListener("click", () => {
@@ -802,7 +829,7 @@ dialogueBox.addEventListener("click", () => {
 function gameLoop(now) {
   let isWalking = false;
 
-  if (!inDialogue && !cutscenePlaying && !authGated) {
+  if (!inDialogue && !cutscenePlaying && !authGated && !uiBlocked) {
     if (keysPressed["a"]) {
       posX -= SPEED;
       facing = -1;
@@ -834,7 +861,7 @@ function gameLoop(now) {
   world.style.transform = `translateX(${-cameraX}px)`;
 
   // Interact and gift buttons follow whichever NPC or stage is nearby.
-  if (!inDialogue && !cutscenePlaying && !authGated) {
+  if (!inDialogue && !cutscenePlaying && !authGated && !uiBlocked) {
     mobileControls.classList.remove("hidden");
     nearby = findNearby();
     if (nearby.type === "npc") {
@@ -906,13 +933,32 @@ authForm.addEventListener("submit", async (e) => {
   }
 });
 
-sb.auth.onAuthStateChange((_event, session) => {
-  if (session) enterGameAsUser(session.user.id);
-});
+// AUTH BOOTSTRAP RUNS AFTER EVERY SCRIPT TAG HAS PARSED.
+//
+// This used to run at parse time, and that was a real bug rather
+// than a style point. acts.js and assessment.js load AFTER this
+// file, by design, but enterGameAsUser needs both. When a session
+// is already in storage, getSession() resolves on a microtask,
+// which runs before the browser reaches the next script tag. The
+// act lookup was therefore skipped on every single reload, the
+// window.Acts guards silently swallowed it, and the student was
+// dropped into Act I no matter what current_act said.
+//
+// DOMContentLoaded fires after all synchronous scripts at the end
+// of body have executed, so by here the whole page is assembled.
+// The listener is registered rather than called directly because
+// this file is not last in the document.
+document.addEventListener("DOMContentLoaded", startAuth);
 
-sb.auth.getSession().then(({ data: { session } }) => {
-  if (session) enterGameAsUser(session.user.id);
-});
+function startAuth() {
+  sb.auth.onAuthStateChange((_event, session) => {
+    if (session) enterGameAsUser(session.user.id);
+  });
+
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) enterGameAsUser(session.user.id);
+  });
+}
 
 async function enterGameAsUser(userId) {
   if (currentUserId === userId) return; // already entered
@@ -945,11 +991,38 @@ async function enterGameAsUser(userId) {
   authOverlay.classList.add("hidden");
   authGated = false;
 
-  await loadProgress(userId);
+  // ORDER HERE IS LOAD BEARING, in three separate ways.
+  //
+  // The act_progress map has to be read before the act is chosen,
+  // because Acts.resolveAct cannot tell a locked act from an open
+  // one without it.
+  //
+  // The act has to be loaded before the save is applied, because
+  // loadAct() resets posX to that act's startX and would otherwise
+  // throw away the restored position.
+  //
+  // And syncStart has to run last, because its catch-up objective
+  // count reads the flags the save restores.
+  const row = await loadProgress(userId);
+  if (!row) return;
 
-  // Must run AFTER loadProgress, since syncStart performs a catch-up
-  // objective count against the flags that were just restored.
-  if (window.Acts) await Acts.syncStart();
+  let actNumber = 1;
+  if (window.Acts) {
+    await Acts.loadProgressMap();
+    actNumber = Acts.resolveAct(row.current_act);
+
+    // Set before saves are unblocked, so nothing can write a stale
+    // current_act in the window before syncStart runs.
+    Acts.current = actNumber;
+
+    if (actNumber !== 1) loadAct(Acts.getAct(actNumber));
+  }
+
+  applyLoadedState(row);
+
+  saveReady = true;
+
+  if (window.Acts) await Acts.syncStart(actNumber);
 
   // Safety-net save, in case something set saveDirty without going
   // through markDirty's own debounce.
@@ -969,7 +1042,7 @@ async function loadProgress(userId) {
 
   if (error) {
     console.error("Load error:", error);
-    return;
+    return null;
   }
 
   if (!row) {
@@ -981,12 +1054,14 @@ async function loadProgress(userId) {
       .single();
     if (insertError) {
       console.error("Insert error:", insertError);
-      return;
+      return null;
     }
     row = inserted;
   }
 
-  applyLoadedState(row);
+  // Returns rather than applying. The caller has to load the right
+  // act in between reading this row and restoring it.
+  return row;
 }
 
 function applyLoadedState(row) {
@@ -1012,20 +1087,20 @@ function applyLoadedState(row) {
     skylineNight.classList.add("visible");
   }
 
-  // Reveal the Katipunero if the save says the death sequence happened.
-  if (state.flags.deathSequenceDone) {
-    const katipunan = NPCS.find((npc) => npc.id === "katipunan");
-    if (katipunan) {
-      katipunan.hidden = false;
-      const katipunanEl = document.getElementById("npc-katipunan");
-      if (katipunanEl) katipunanEl.style.display = "";
-    }
-  }
+  // Any NPC whose reveal flag is already set in the restored save.
+  revealNpcsByFlag();
 
+  // LEGACY SAVES.
+  //
+  // The previous build ended Act I by fading to black and stranding
+  // the player in an empty room with nothing in it. That room is
+  // gone, so a save still pointing at it is migrated back onto the
+  // road. Acts.resume() sees the act as completed and puts up the
+  // transition screen, which is where those students should have
+  // been all along.
   if (currentRoom !== "road") {
-    // Resuming inside the post-teleport empty room. Hide everything
-    // instantly, with no blackout, since this is a save restore.
-    hideActWorld();
+    currentRoom = "road";
+    markDirty();
   }
 }
 
@@ -1038,12 +1113,16 @@ function markDirty() {
 }
 
 async function saveProgress() {
-  if (!currentUserId) return;
+  if (!currentUserId || !saveReady) return;
   saveDirty = false;
 
   const payload = {
     student_id: currentUserId,
     current_room: currentRoom,
+    // Without this the column keeps its default of 1 forever, the
+    // dashboard's Act column is meaningless, and there is nothing
+    // for the next login to resume into.
+    current_act: window.Acts ? Acts.current : 1,
     is_night: skylineNight.classList.contains("visible"),
     save_state: { quests, flags: state.flags, posX },
     updated_at: new Date().toISOString(),

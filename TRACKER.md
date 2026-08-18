@@ -8,7 +8,7 @@ every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED)
 
-Last updated: after Block 2.3.
+Last updated: after Block 3.
 
 ## Milestone
 
@@ -17,6 +17,10 @@ final defense with student data collection is not yet confirmed, and that
 answer changes the plan below. If data collection is expected, the software
 must be finished roughly ten days before the date to allow for scheduling a
 session at Imus NHS and analysing what comes back.
+
+Every priority 0 item is now built. The remaining blocker on data
+collection is not code, it is validation of the assessment items by the
+resource person. See documentation debt.
 
 Hosting for the testing window is GitHub Pages, which is sufficient for a
 month of student testing and requires no migration. Deploying elsewhere
@@ -33,9 +37,11 @@ never receive a game_progress row. (COMPLETE)
 Teacher dashboard. Roster, act completion, pre and post scores, gain,
 performance, class averages, and all empty and error states. (COMPLETE)
 
-Act framework 2.1 through 2.3. Act I extracted to content/act1.js,
-world building wrapped in loadAct and unloadAct, act state machine writing
-to act_progress with completion scoring. (COMPLETE)
+Act framework, Block 2 in full. Act I extracted to content/act1.js, world
+building wrapped in loadAct and unloadAct, act state machine writing to
+act_progress, stub content files for Acts II through IV, ordered unlocking,
+act title card and act transition screen, and resume into the act recorded
+in game_progress.current_act. (COMPLETE)
 
 Act I gameplay: five NPCs, buko gift quest, stage performance cutscene with
 day to night transition and death animation, Katipunero reveal, save and
@@ -43,6 +49,13 @@ resume. (COMPLETE)
 
 Sprite system: multi-row grid sheets via the columns field, scaling from
 frame height, and asset cache busting through ASSET_VERSION. (COMPLETE)
+
+Assessment module, Block 3. Trivia card, pre-test, and post-test in
+assessment.js, one question per screen with a back control, submitting
+through submit_assessment. Handles an already recorded attempt, an act with
+no items seeded, and network failure, none of which strand the student.
+The teacher dashboard's pre-test, post-test, and gain columns now populate
+with no changes to teacher.js. (COMPLETE)
 
 ## Art status
 
@@ -57,24 +70,7 @@ Confirm Walk.png is genuinely 12 frames in a 5 + 5 + 2 grid. If the cycle
 pauses or shows a sliver of the next frame, the columns value in
 SPRITE_SHEETS is wrong.
 
-## In progress
-
-Block 2, act framework.
-
-  2.4 Act stubs for II through IV, registration in Acts.registry, act
-      transition screen on completion, refusal of locked acts. Replaces the
-      current ending, which still calls teleportToNewRoom. (NOT STARTED)
-
-  2.5 Read game_progress.current_act on load and load the matching act.
-      Existing saves default to 1. (NOT STARTED)
-
 ## Next
-
-Block 3, assessment module. The last priority 0 item. Trivia card,
-pre-test, act, post-test, writing through submit_assessment. Database side
-is already built and tested, so this is interface and wiring. Once done,
-the pre-test, post-test, and gain columns on the teacher dashboard populate
-with no changes to teacher.js. (NOT STARTED)
 
 Combat and stealth, deliberately minimal. Tap to attack, hold for ranged,
 detection radius with no line of sight. Built and tuned inside Act II,
@@ -86,11 +82,16 @@ requirements specify movement and jump; only lateral movement exists.
 (NOT STARTED)
 
 Act II content, The Long Shadow of War. Script, dialogue, assessment items,
-and art. This is the long pole and it is human work, not code. It does not
-block on the framework and should proceed in parallel. (NOT STARTED)
+and art. This is the long pole and it is human work, not code. The
+framework is finished and waiting: content/act2.js is a registered, loadable
+act with an empty npcs array, so filling it in requires no engine change.
+(NOT STARTED)
 
 Act III, The Republic in the Shadows. Act IV, The Bitter Harvest.
 Planned as thin content against a complete framework. (NOT STARTED)
+
+Seed assessment items and a trivia fact for Acts II through IV. Until then
+those acts skip their tests with a notice, which is deliberate. (NOT STARTED)
 
 ## Deferred
 
@@ -105,6 +106,10 @@ Dynamic difficulty scaling across acts.
 In-game logout, pause, and settings screens.
 Dashboard export and per-question item analysis.
 Offline and save-conflict handling.
+Persisting partial test answers. A student who reloads mid-test currently
+restarts that test from question one. No answers are recorded until the
+whole test is submitted, so nothing is lost and no partial attempt is
+counted, but the questions are asked again.
 
 ## Housekeeping
 
@@ -119,6 +124,29 @@ both placeholders. (NOT STARTED)
 
 Re-export the capstone proposal as a real PDF. The current file is a ZIP
 archive of page images. (NOT STARTED)
+
+## Pitfalls found in Block 2 and 3
+
+These are recorded because each cost real debugging time and each would
+have shipped silently.
+
+The auth bootstrap must stay inside the DOMContentLoaded listener in
+game.js. It used to run at parse time, and because acts.js and
+assessment.js load after game.js, a student with a stored session hit
+getSession() resolving on a microtask before acts.js had executed. The
+window.Acts guards then swallowed the whole act lookup, so every reload
+landed in Act I regardless of current_act. Nothing appeared in the console.
+
+saveProgress refuses to write until saveReady is set at the end of the
+login sequence. The parse-time loadAct call adds Act I's starting quest,
+which marks the save dirty, and the resulting debounced write fired
+mid-login with Acts.current still at its initial 1, overwriting the stored
+act. A slower connection made it more likely, not less.
+
+Assessment checks for an existing score before showing any questions rather
+than relying on submit_assessment raising ALREADY_SUBMITTED. The constraint
+is still the real guarantee, but discovering the clash at submit time meant
+the student answered every question for nothing.
 
 ## Documentation debt
 
@@ -135,7 +163,9 @@ Either revise it or annotate the remainder as future scope. (NOT STARTED)
 
 Obtain validation of the assessment item bank from Ms. Donadillo-Espiritu,
 already listed in Appendix A as the resource person. This is the answer to
-questions about instrument validity. (NOT STARTED)
+questions about instrument validity, and it is now the blocking item rather
+than a nice to have: the items are live and will be sat by real students
+the moment testing starts. (NOT STARTED)
 
 Document server-side grading. The answer key never reaches the client,
 which is a design strength worth stating. (NOT STARTED)

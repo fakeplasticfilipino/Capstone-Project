@@ -13,9 +13,10 @@
 // index.html, since game.js reads window.ACT_1 on startup.
 //
 // The onComplete callbacks below reference globals defined in
-// game.js (state, addQuest, teleportToNewRoom). That is safe even
-// though this file loads first, because the callbacks are not
-// invoked until the player actually finishes that conversation.
+// game.js (state, addQuest, markDirty) and in acts.js (Acts). That
+// is safe even though this file loads first, because the callbacks
+// are not invoked until the player actually finishes that
+// conversation.
 // =============================================================
 
 const ACT1_WORLD_WIDTH = 4400;
@@ -165,6 +166,10 @@ window.ACT_1 = {
       label: "Katipunero",
       stage: 0,
       startsHidden: true,
+      // Set by the stage cutscene. The engine reveals any hidden NPC
+      // whose flag is set, both when the beat fires and when a save
+      // is restored, so this one field covers both cases.
+      revealedByFlag: "deathSequenceDone",
       dialogueSets: [
         {
           lines: [
@@ -177,12 +182,17 @@ window.ACT_1 = {
           ],
           onComplete: () => {
             // Fourth and final Act I objective. Setting this flag takes
-            // the count to 4 of 4, which makes checkObjectives() mark
-            // the act completed.
+            // the count to 4 of 4, which is what makes checkObjectives()
+            // run the post-test, mark the act completed, and put up the
+            // transition screen into Act II.
+            //
+            // This used to call teleportToNewRoom() as well, which
+            // stranded the player in an empty room. Ending the act is
+            // the controller's job, not the content's; all this file
+            // does now is report that the last objective is met.
             state.flags.metKatipunero = true;
             markDirty();
             if (window.Acts) Acts.checkObjectives();
-            teleportToNewRoom();
           },
         },
       ],

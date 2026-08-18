@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body>
   <div id="app-scale">
@@ -42,6 +42,35 @@
       </div>
       <button id="btn-interact" class="touch-btn interact-btn">E</button>
     </div>
+    <!-- Act title card and act transition screen.
+         One overlay, two uses: acts.js fills in the slots and shows
+         it on entering an act and again on finishing one. -->
+    <div id="act-screen" class="hidden">
+      <div id="act-screen-box">
+        <div id="act-screen-eyebrow"></div>
+        <h2 id="act-screen-title"></h2>
+        <p id="act-screen-body"></p>
+        <button id="act-screen-btn" type="button"></button>
+      </div>
+    </div>
+
+    <!-- Trivia card, pre-test, and post-test.
+         Owned by assessment.js. Kept separate from the act screen
+         above because this one holds a question and answer choices
+         and has to scroll on a small phone; that one never does. -->
+    <div id="quiz" class="hidden">
+      <div id="quiz-box">
+        <div id="quiz-eyebrow"></div>
+        <h2 id="quiz-title"></h2>
+        <div id="quiz-progress"></div>
+        <p id="quiz-question"></p>
+        <div id="quiz-choices"></div>
+        <div id="quiz-note"></div>
+        <button id="quiz-btn" type="button"></button>
+        <button id="quiz-back" type="button" class="hidden">Bumalik</button>
+      </div>
+    </div>
+
     <!-- Login / signup gate -->
     <div id="auth-overlay">
       <div id="auth-box">
@@ -59,12 +88,21 @@
 
   <!-- SCRIPT ORDER MATTERS.
        Act content files must load BEFORE game.js, because game.js
-       reads window.ACT_1 on startup. Loading them in the wrong order
-       gives a blank world and a console error. -->
+       reads window.ACT_1 on startup, and BEFORE acts.js, which reads
+       all four to build its registry. Loading them in the wrong order
+       gives a blank world and a console error.
+
+       assessment.js loads last and is optional: with it absent the
+       act flow collapses to playing then completed and the game still
+       runs, which is how Block 2 was tested before Block 3 existed. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabaseClient.js"></script>
-  <script src="content/act1.js?v=2"></script>
-  <script src="game.js?v=7"></script>
-  <script src="acts.js?v=1"></script>
+  <script src="content/act1.js?v=3"></script>
+  <script src="content/act2.js?v=1"></script>
+  <script src="content/act3.js?v=1"></script>
+  <script src="content/act4.js?v=1"></script>
+  <script src="game.js?v=8"></script>
+  <script src="acts.js?v=2"></script>
+  <script src="assessment.js?v=1"></script>
 </body>
 </html>

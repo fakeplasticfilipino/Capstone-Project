@@ -64,7 +64,9 @@ nothing.
     index.html            student entry point, the game
     game.js               engine: rendering, dialogue, animation, save/load
     acts.js               act flow controller, owns act_progress writes
+    assessment.js         trivia card, pre-test, post-test
     content/act1.js       Act I as data: NPCs, stage, objectives
+    content/act2.js       Acts II to IV, registered but not yet written
     style.css             game styles
 
     teacher.html          teacher entry point
@@ -83,7 +85,7 @@ nothing.
     TRACKER.md            current build status
 
 Script order in index.html matters. Act content files must load before
-game.js, and acts.js must load after it.
+game.js, acts.js must load after it, and assessment.js after that.
 
 ## Assessment integrity
 
@@ -95,4 +97,8 @@ they cannot be read from developer tools.
 
 ## Status
 
-See TRACKER.md. Act I is playable. Acts II through IV are in development.
+See TRACKER.md. Act I is playable end to end: trivia card, pre-test, the
+act itself, post-test, then a transition into Act II. Acts II through IV
+are registered and loadable but have no content yet, so they present their
+title and an empty world. Progress is recorded per act and resumed on the
+next login.

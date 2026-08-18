@@ -82,21 +82,38 @@ act data through loadAct().
 Controller, in acts.js. Owns the act lifecycle and is the only file that
 writes to act_progress.
 
+Assessment, in assessment.js. Owns the trivia card and both tests, and the
+only file that calls get_assessment_items or submit_assessment. It reports
+back by resolving a promise and never writes act_progress itself. It is
+optional: acts.js checks window.Assessment before calling it, and the flow
+collapses to playing then completed without it.
+
 Load order in index.html, which is load bearing:
 
     supabase CDN
     supabaseClient.js
     content/act1.js      before game.js, which reads window.ACT_1 on start
+    content/act2.js      through act4.js, before acts.js builds its registry
     game.js
     acts.js              after game.js
+    assessment.js        after acts.js
 
 Getting content and engine the wrong way round produces a blank world and
 an undefined property error.
+
+The auth bootstrap in game.js is registered on DOMContentLoaded rather than
+called at parse time, and must stay that way. acts.js and assessment.js
+load after game.js, but enterGameAsUser needs both. A student with a stored
+session has getSession() resolve on a microtask, before the browser reaches
+the next script tag, so calling it at parse time skips the entire act
+lookup and silently drops everyone into Act I.
 
 ## Act data format
 
     window.ACT_N = {
       number, title,
+      titleTagalog,                              shown on the title card
+      developmentNotice,                         optional; marks a stub
       worldWidth, startX,
       objectives: [{ id, label, flag }],
       startingQuests: [{ id, text }],
@@ -105,6 +122,10 @@ an undefined property error.
       decorations: [...]
     }
 
+An act with an empty objectives array can never complete, which is how
+Acts II through IV are kept from reporting progress they have not made.
+That also means the act after it stays locked, which is correct.
+
 NPC shape:
 
     {
@@ -112,6 +133,7 @@ NPC shape:
       img: "Assets/X.png"                        static, or
       animation: { src, frames, fps },           sprite sheet
       startsHidden: true,                        optional
+      revealedByFlag: "someFlag",                optional; unhides when set
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete() }],
       gift: { buttonLabel, requiresFlag, givenFlag,
@@ -212,9 +234,19 @@ per query. Class sizes of 40 to 50 make the extra round trips immaterial.
 The dashboard uses plain tables with no charting library, matching the
 documented limitation that it provides basic summaries only.
 
-The act_progress schema allows trivia, pretest, and posttest states. These
-are deliberately unused until the assessment module exists, so that no
-state is written that nothing can exit.
+The act_progress state machine is locked, trivia, pretest, playing,
+posttest, completed. Every state can be resumed into and exited from, which
+was the condition for writing any of them.
+
+Acts unlock in order: act N requires act N-1 completed, checked against
+act_progress rather than a story flag. This is a teaching tool, not a
+competitive game, so a console-level bypass is not worth defending against.
+RLS protects the data that matters.
+
+Assessment checks for an existing score row before rendering any questions.
+submit_assessment raising ALREADY_SUBMITTED is still the real guarantee,
+but on its own it means a student answers a whole test before being told it
+will not be recorded.
 
 Combat and stealth are deliberately minimal by decision: tap to attack,
 hold for ranged, and a simple detection radius with no line of sight
@@ -238,6 +270,12 @@ If students have no class_id, every teacher policy returns zero rows
 silently, with no error. Check this first when the dashboard looks empty.
 
 Adding a filename to .gitignore does not untrack an already committed file.
+
+saveProgress refuses to write until saveReady is set, at the end of the
+login sequence. loadAct runs once at parse time to draw the backdrop behind
+the login box and adds that act's starting quests, which marks the save
+dirty; the debounced write then fires mid-login with Acts.current still at
+1 and overwrites the student's stored act.
 
 ## Accounts
 
