@@ -8,7 +8,7 @@ every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED)
 
-Last updated: after Block 3.
+Last updated: after Block 6.
 
 ## Milestone
 
@@ -57,7 +57,24 @@ no items seeded, and network failure, none of which strand the student.
 The teacher dashboard's pre-test, post-test, and gain columns now populate
 with no changes to teacher.js. (COMPLETE)
 
+Block 6, movement and conflict systems. Scenes, so an act can hold more
+than one location. Jump with gravity, terminal velocity and one-way
+platforms. Health with invulnerability frames and respawn, no game over.
+Stealth guards with patrol, a detection meter, hide spots and stationary
+sentries. Combat with melee, takedown from behind, and a thrown projectile.
+(COMPLETE)
+
+Act I outpost. The Katipunero now sends Macario to a Spanish outpost rather
+than ending the act. Two patrolling guards, three crates, two platforms,
+and a kasama to deliver the message to. Delivering it is the fifth
+objective, which is what runs the post-test and the transition into Act II.
+(COMPLETE)
+
 ## Art status
+
+The outpost needs two new sprites that do not exist yet: Assets/Guard.png
+and Assets/Kasama.png. Both fall back to labelled placeholder boxes, so the
+scene is fully playable without them.
 
 Assets/ currently holds only Cement_Tile.png and the player Walk.png. Every
 other sprite and background was removed pending replacement art from
@@ -72,14 +89,14 @@ SPRITE_SHEETS is wrong.
 
 ## Next
 
-Combat and stealth, deliberately minimal. Tap to attack, hold for ranged,
-detection radius with no line of sight. Built and tuned inside Act II,
-because a system with no level to exercise it cannot be tested.
-(NOT STARTED)
+Balance pass on the outpost. The guard tuning numbers were chosen to be
+readable rather than tested against a player. detectRadius is generous
+because there is no line of sight, so a guard sees through a crate unless
+the player is inside it; alertRate is what actually sets the difficulty.
+Watch a student play it before trusting any of them. (NOT STARTED)
 
-Jump and health. Prerequisites for combat. Note that the functional
-requirements specify movement and jump; only lateral movement exists.
-(NOT STARTED)
+Dynamic difficulty scaling across acts, now that there is a difficulty to
+scale. (NOT STARTED)
 
 Act II content, The Long Shadow of War. Script, dialogue, assessment items,
 and art. This is the long pole and it is human work, not code. The

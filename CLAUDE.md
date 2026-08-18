@@ -110,17 +110,41 @@ lookup and silently drops everyone into Act I.
 
 ## Act data format
 
+An act is a list of scenes. Objectives and quests belong to the act; the
+world belongs to the scene.
+
     window.ACT_N = {
       number, title,
       titleTagalog,                              shown on the title card
       developmentNotice,                         optional; marks a stub
-      worldWidth, startX,
       objectives: [{ id, label, flag }],
       startingQuests: [{ id, text }],
+      scenes: [ {...}, {...} ]
+    }
+
+Scene shape:
+
+    {
+      id,                                        persisted as current_room
+      worldWidth, startX,
+      dangerous: true,                           optional; shows the hearts
       npcs: [...],
       stage: {...} | omitted,
-      decorations: [...]
+      decorations: [...],
+      platforms: [{ x, y, width }],              optional; one-way
+      hideSpots: [{ x, width }],                 optional; suppress detection
+      guards: [{ id, x, patrolFrom, patrolTo,    optional
+                 speed, facing, detectRadius,
+                 alertRate, decayRate, img }]
     }
+
+Acts written before scenes existed declare worldWidth, startX, npcs, stage
+and decorations directly on the act. scenesFor() wraps those in a single
+implicit scene, so content/act2.js through act4.js need no changes. Do not
+"modernise" them; the fallback is the compatibility guarantee.
+
+A guard whose patrolFrom and patrolTo are within 1px of each other is a
+stationary sentry and keeps its given facing.
 
 An act with an empty objectives array can never complete, which is how
 Acts II through IV are kept from reporting progress they have not made.
@@ -166,6 +190,14 @@ learn the new asset version.
 
 Missing images do not break anything. They fall back to a dashed
 placeholder box showing the expected filename.
+
+## Scenes
+
+Scenes are changed with Acts.gotoScene(id), which is distinct from
+Acts.enterAct: the act, its objectives and its act_progress row are
+unchanged, only the location moves. The scene id is persisted in
+game_progress.current_room, and an unknown id, including the "empty" that
+pre-scene saves hold, falls back to the act's first scene.
 
 ## Objectives
 
@@ -252,6 +284,28 @@ Combat and stealth are deliberately minimal by decision: tap to attack,
 hold for ranged, and a simple detection radius with no line of sight
 calculation.
 
+Detection is a meter rather than a switch. A bar that is visibly filling
+is what teaches the mechanic; an instant catch teaches only that the level
+is unfair.
+
+Melee reads the guard's facing. From behind an unalerted guard it is a
+takedown; from the front it alerts the guard and costs a health point.
+That is what makes stealth and combat interlock rather than sit beside
+each other, and it means a corridor can be solved two ways.
+
+There is no game over. Reaching zero health returns the player to the
+start of the scene at full health. A fail state that ejects a Grade 8
+student from the lesson serves nobody.
+
+Health is not persisted and restores to full on load. A student who closed
+the tab on one heart should not be punished for a bus arriving.
+
+Platforms are one-way: passed through from below, landed on from above.
+
+Physics is integrated against the real frame delta rather than counted in
+frames. The target device will not hold 60fps and a frame-counted jump
+would reach half its height at 30.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -270,6 +324,12 @@ If students have no class_id, every teacher policy returns zero rows
 silently, with no error. Check this first when the dashboard looks empty.
 
 Adding a filename to .gitignore does not untrack an already committed file.
+
+loadAct() runs at parse time, near the top of game.js, and reaches deep
+into the file through loadScene. Anything it touches must be a hoisted
+function declaration, not a const declared further down, or it throws on
+the temporal dead zone before the login box ever renders. The HUD lookups
+use a cache hung off the function itself for exactly this reason.
 
 saveProgress refuses to write until saveReady is set, at the end of the
 login sequence. loadAct runs once at parse time to draw the backdrop behind

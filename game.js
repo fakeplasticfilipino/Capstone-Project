@@ -38,6 +38,22 @@ const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
 const GROUND_LEVEL = 60; // must match --ground-level in style.css
 const DISPLAY_HEIGHT = 134; // shared sprite height (player + animated NPCs)
 
+// --- Physics -------------------------------------------------------------
+// Tuned per 60fps frame, then scaled by the real frame delta in the loop.
+// The target device is a low-end Android phone that will not hold 60fps,
+// and a frame-counted jump would reach half its height at 30fps.
+const GRAVITY = 0.8;
+const JUMP_VELOCITY = 14;
+const TERMINAL_VELOCITY = -22; // clamp the descent so a long fall stays readable
+
+// --- Health --------------------------------------------------------------
+const MAX_HEALTH = 3;
+const INVULN_MS = 1000;
+
+// There is no game over. Reaching zero returns Macario to the start of the
+// scene at full health. A fail state that ejects a Grade 8 student from the
+// lesson serves nobody, and being caught already costs them the walk back.
+
 // Bump this whenever ANY file in Assets/ is replaced.
 //
 // The v=N strings in index.html only cover scripts and stylesheets.
@@ -115,9 +131,16 @@ function renderQuests() {
 // =============================================================
 
 let currentActData = null;
-let NPCS = []; // the current act's NPCs
-let STAGE = null; // the current act's stage, or null if it has none
-let WORLD_WIDTH = 4400; // overwritten per act
+let SCENES = []; // every scene in the current act
+let currentScene = null; // the scene data currently built
+let currentSceneId = null;
+
+let NPCS = []; // the current SCENE's NPCs
+let STAGE = null; // the current scene's stage, or null if it has none
+let WORLD_WIDTH = 4400; // overwritten per scene
+let PLATFORMS = []; // one-way platforms, jumped up through and landed on
+let GUARDS = []; // patrolling guards, empty outside stealth scenes
+let HIDE_SPOTS = []; // regions that suppress guard detection
 
 let stageEl = null;
 let slopeLeft = null;
@@ -133,28 +156,75 @@ let npcAnimators = []; // animated sprites needing an .update(now) each frame
 // pointing at a removed element.
 let actLoadToken = 0;
 
-function loadAct(actData) {
+// An act is a list of scenes. Acts that predate scenes, which is every
+// act except Act I, declare their world directly on the act object; those
+// are wrapped in a single implicit scene here rather than being rewritten.
+// content/act2.js through act4.js therefore need no changes at all.
+function scenesFor(actData) {
+  if (Array.isArray(actData.scenes) && actData.scenes.length) {
+    return actData.scenes;
+  }
+  return [
+    {
+      id: "road",
+      worldWidth: actData.worldWidth,
+      startX: actData.startX,
+      npcs: actData.npcs,
+      stage: actData.stage,
+      decorations: actData.decorations,
+    },
+  ];
+}
+
+function loadAct(actData, sceneId) {
   unloadAct();
+
+  currentActData = actData;
+  SCENES = scenesFor(actData);
+
+  // Quests belong to the act, not the scene, so they are added once here
+  // rather than being re-added every time the player changes room.
+  (actData.startingQuests || []).forEach((q) => addQuest(q.id, q.text));
+
+  loadScene(sceneId);
+}
+
+// Builds one scene. Everything that used to be per-act is now per-scene;
+// the act above it only decides which scene is current.
+function loadScene(sceneId) {
+  unloadScene();
 
   actLoadToken++;
   const token = actLoadToken;
 
-  currentActData = actData;
-  NPCS = actData.npcs || [];
-  STAGE = actData.stage || null;
-  WORLD_WIDTH = actData.worldWidth || 4400;
+  const scene =
+    SCENES.find((candidate) => candidate.id === sceneId) || SCENES[0];
+
+  currentScene = scene;
+  currentSceneId = scene.id;
+  currentRoom = scene.id; // persisted through game_progress.current_room
+
+  NPCS = scene.npcs || [];
+  STAGE = scene.stage || null;
+  WORLD_WIDTH = scene.worldWidth || 4400;
+  PLATFORMS = scene.platforms || [];
+  HIDE_SPOTS = scene.hideSpots || [];
 
   buildNpcs(token);
   buildDecorations(token);
   buildStage();
+  buildPlatforms();
+  buildHideSpots();
+  buildGuards(token);
 
-  posX = typeof actData.startX === "number" ? actData.startX : 0;
-  currentRoom = "road";
+  posX = typeof scene.startX === "number" ? scene.startX : 0;
+  posY = groundHeightAt(posX);
+  velY = 0;
 
-  (actData.startingQuests || []).forEach((q) => addQuest(q.id, q.text));
+  updateHudVisibility();
 }
 
-function unloadAct() {
+function unloadScene() {
   actElements.forEach((el) => el.remove());
   actElements = [];
   decorationEls = [];
@@ -166,6 +236,16 @@ function unloadAct() {
 
   NPCS = [];
   STAGE = null;
+  PLATFORMS = [];
+  GUARDS = [];
+  HIDE_SPOTS = [];
+  currentScene = null;
+  currentSceneId = null;
+}
+
+function unloadAct() {
+  unloadScene();
+  SCENES = [];
   currentActData = null;
 }
 
@@ -217,7 +297,7 @@ function buildNpcs(token) {
 }
 
 function buildDecorations(token) {
-  (currentActData.decorations || []).forEach((dec) => {
+  ((currentScene && currentScene.decorations) || []).forEach((dec) => {
     const el = document.createElement("div");
     el.className = "entity";
     el.id = "dec-" + dec.id;
@@ -371,10 +451,49 @@ function revealNpcsByFlag() {
   });
 }
 
+// =============================================================
+// TERRAIN
+//
+// Two surfaces exist. The stage ramp, which predates all of this and
+// is a continuous height function of x, and scene platforms, which are
+// discrete rectangles. floorHeightAt covers the first; platforms are
+// resolved separately because landing on one depends on falling onto
+// it rather than merely standing at that x.
+// =============================================================
+
+function floorHeightAt(x) {
+  return GROUND_LEVEL + getPlatformOffset(x);
+}
+
+// The highest platform top at x that the player is at or above. Only
+// consulted while descending, which is what makes platforms one-way:
+// a jump from below passes through and lands on top.
+function platformTopUnder(x, fromY) {
+  let best = null;
+  const centre = x + PLAYER_WIDTH / 2;
+
+  PLATFORMS.forEach((plat) => {
+    if (centre < plat.x || centre > plat.x + plat.width) return;
+    const top = plat.y;
+    if (fromY < top - 1) return; // still below it, keep rising through
+    if (best === null || top > best) best = top;
+  });
+
+  return best;
+}
+
+// The surface the player should rest on at x, given where they are now.
+function groundHeightAt(x, fromY) {
+  const floor = floorHeightAt(x);
+  if (fromY === undefined) return floor;
+
+  const plat = platformTopUnder(x, fromY);
+  return plat !== null && plat > floor ? plat : floor;
+}
+
 // How high (0 to PLATFORM_HEIGHT) the player is lifted at world-x.
 function getPlatformOffset(x) {
-  if (!STAGE) return 0; // this act has no stage
-  if (currentRoom !== "road") return 0; // the stage is not in other rooms
+  if (!STAGE) return 0; // this scene has no stage
 
   const half = STAGE.width / 2;
   const left = STAGE.x - half;
@@ -549,7 +668,14 @@ function updateAnimFrame(now) {
 }
 
 let posX = 0;
-let currentRoom = "road"; // "road" always; "empty" only in legacy saves
+let posY = GROUND_LEVEL; // distance from the bottom of the world, in px
+let velY = 0;
+let onGround = true;
+
+let health = MAX_HEALTH;
+let invulnUntil = 0; // timestamp; damage before this is ignored
+
+let currentRoom = "road"; // the current scene id, persisted as-is
 let authGated = true; // true until the player is logged in
 let inDialogue = false;
 let cutscenePlaying = false; // locks movement for the whole stage sequence
@@ -581,9 +707,30 @@ const keysPressed = {};
 
 document.addEventListener("keydown", (e) => {
   const key = (e.key || "").toLowerCase();
+  const wasDown = keysPressed[key];
   keysPressed[key] = true;
+
   if (key === "e") handleInteractPress();
+
+  // Guarded on wasDown so holding a key does not re-fire on autorepeat.
+  if (!wasDown && (key === " " || key === "w" || key === "arrowup")) {
+    e.preventDefault();
+    handleJumpPress();
+  }
+
+  if (!wasDown && key === "j") startAttackHold();
 });
+
+document.addEventListener("keyup", (e) => {
+  if ((e.key || "").toLowerCase() === "j") endAttackHold();
+});
+
+function handleJumpPress() {
+  if (authGated || uiBlocked || inDialogue || cutscenePlaying) return;
+  if (!onGround) return; // single jump, no double jump by decision
+  velY = JUMP_VELOCITY;
+  onGround = false;
+}
 
 document.addEventListener("keyup", (e) => {
   keysPressed[(e.key || "").toLowerCase()] = false;
@@ -610,6 +757,37 @@ function bindHold(button, key) {
 bindHold(btnLeft, "a");
 bindHold(btnRight, "d");
 
+const btnJump = document.getElementById("btn-jump");
+const btnAttack = document.getElementById("btn-attack");
+
+if (btnJump) {
+  const jump = (e) => {
+    e.preventDefault();
+    handleJumpPress();
+  };
+  btnJump.addEventListener("touchstart", jump, { passive: false });
+  btnJump.addEventListener("mousedown", jump);
+}
+
+// Attack is press-and-release rather than click, because the hold
+// duration is what chooses between a swing and a throw.
+if (btnAttack) {
+  const down = (e) => {
+    e.preventDefault();
+    startAttackHold();
+  };
+  const up = (e) => {
+    e.preventDefault();
+    endAttackHold();
+  };
+  btnAttack.addEventListener("touchstart", down, { passive: false });
+  btnAttack.addEventListener("touchend", up);
+  btnAttack.addEventListener("touchcancel", up);
+  btnAttack.addEventListener("mousedown", down);
+  btnAttack.addEventListener("mouseup", up);
+  btnAttack.addEventListener("mouseleave", up);
+}
+
 btnInteract.addEventListener("click", (e) => {
   e.preventDefault();
   handleInteractPress();
@@ -632,10 +810,6 @@ giftBtn.addEventListener("click", (e) => {
 
 // --- Interaction / dialogue ---
 function findNearby() {
-  if (currentRoom !== "road") {
-    return { type: null, ref: null }; // nothing interactable in other rooms
-  }
-
   let closest = null;
   let closestType = null;
   let closestDist = Infinity;
@@ -820,39 +994,448 @@ async function runDeathSequence() {
 // rather than kept as dead code. Saves written by the old ending are
 // migrated in applyLoadedState().
 
+// =============================================================
+// SCENE FURNITURE
+// =============================================================
+
+function buildPlatforms() {
+  PLATFORMS.forEach((plat, i) => {
+    const el = document.createElement("div");
+    el.className = "platform";
+    el.id = "plat-" + i;
+    el.style.left = plat.x + "px";
+    el.style.width = plat.width + "px";
+    el.style.bottom = plat.y + "px";
+    el.style.height = "14px";
+    world.appendChild(el);
+    actElements.push(el);
+  });
+}
+
+function buildHideSpots() {
+  HIDE_SPOTS.forEach((spot, i) => {
+    const el = document.createElement("div");
+    el.className = "hide-spot";
+    el.id = "hide-" + i;
+    el.style.left = spot.x + "px";
+    el.style.width = spot.width + "px";
+    world.appendChild(el);
+    actElements.push(el);
+  });
+}
+
+// Guards carry their own runtime state, reset on every scene load so a
+// respawn starts them where the level designer put them rather than
+// wherever they happened to be standing.
+function buildGuards(token) {
+  GUARDS = ((currentScene && currentScene.guards) || []).map((def) =>
+    Object.assign({}, def, {
+      pos: def.x,
+      facing: def.facing || 1,
+      alert: 0,
+      disabled: false,
+    })
+  );
+
+  GUARDS.forEach((guard) => {
+    const el = document.createElement("div");
+    el.className = "entity guard";
+    el.id = "guard-" + guard.id;
+    el.style.left = guard.pos + "px";
+
+    const meter = document.createElement("div");
+    meter.className = "guard-meter";
+    const fill = document.createElement("div");
+    fill.className = "guard-meter-fill";
+    meter.appendChild(fill);
+    el.appendChild(meter);
+
+    if (guard.animation) {
+      const sprite = document.createElement("div");
+      sprite.className = "sprite npc-sprite npc-anim-sprite";
+      el.appendChild(sprite);
+      world.appendChild(el);
+      setupNpcAnimation(guard.animation, sprite, DISPLAY_HEIGHT, token);
+    } else {
+      const sprite = document.createElement("div");
+      sprite.className = "sprite npc-sprite";
+      showPlaceholder(sprite, guard.img || "Guard", 80, 112);
+      el.appendChild(sprite);
+      world.appendChild(el);
+    }
+
+    guard.el = el;
+    guard.fillEl = fill;
+    actElements.push(el);
+  });
+}
+
+function inHideSpot(x) {
+  const centre = x + PLAYER_WIDTH / 2;
+  return HIDE_SPOTS.some(
+    (spot) => centre >= spot.x && centre <= spot.x + spot.width
+  );
+}
+
+// =============================================================
+// STEALTH
+//
+// Detection is a meter rather than a switch. A bar that is visibly
+// filling is what teaches the mechanic; an instant catch teaches only
+// that the level is unfair. No line of sight calculation, per the
+// decision already on record: being in front and within radius is the
+// whole test.
+// =============================================================
+
+function updateGuards(step) {
+  if (!GUARDS.length) return;
+
+  const hidden = inHideSpot(posX);
+
+  GUARDS.forEach((guard) => {
+    if (guard.disabled) {
+      guard.alert = 0;
+      if (guard.fillEl) guard.fillEl.style.width = "0%";
+      if (guard.el) guard.el.classList.add("guard-down");
+      return;
+    }
+
+    // Patrol. A guard whose bounds collapse to a point is a stationary
+    // sentry and keeps the facing the level gave it. Without this it
+    // reaches its limit every frame and flips constantly, which reads as
+    // a twitching guard that can never actually catch anyone.
+    const route = (guard.patrolTo || 0) - (guard.patrolFrom || 0);
+    if (route >= 1) {
+      const speed = (guard.speed || 1.4) * step;
+      guard.pos += speed * guard.facing;
+      if (guard.pos <= guard.patrolFrom) {
+        guard.pos = guard.patrolFrom;
+        guard.facing = 1;
+      } else if (guard.pos >= guard.patrolTo) {
+        guard.pos = guard.patrolTo;
+        guard.facing = -1;
+      }
+      guard.el.style.left = guard.pos + "px";
+    }
+
+    // Detection.
+    const dx = posX - guard.pos;
+    const inFront = Math.sign(dx) === guard.facing || dx === 0;
+    const inRange = Math.abs(dx) <= (guard.detectRadius || 240);
+    const seen = inFront && inRange && !hidden && !playerIsSafe();
+
+    if (seen) {
+      guard.alert = Math.min(1, guard.alert + (guard.alertRate || 0.012) * step);
+    } else {
+      guard.alert = Math.max(0, guard.alert - (guard.decayRate || 0.02) * step);
+    }
+
+    guard.fillEl.style.width = Math.round(guard.alert * 100) + "%";
+    guard.el.classList.toggle("guard-alerted", guard.alert >= 1);
+
+    if (guard.alert >= 1) caughtBy(guard);
+  });
+}
+
+// Dialogue, cutscenes and overlays all suspend detection. Being spotted
+// while unable to move is not a mechanic, it is a bug report.
+function playerIsSafe() {
+  return inDialogue || cutscenePlaying || uiBlocked || authGated;
+}
+
+function caughtBy(guard) {
+  guard.alert = 0;
+  damagePlayer("Nakita ka ng bantay!");
+}
+
+// =============================================================
+// HEALTH
+// =============================================================
+
+// Looked up lazily rather than held in consts at this point in the file.
+// loadAct() runs at parse time, above here, and reaches updateHudVisibility
+// on its way through loadScene; a const declared below would still be in
+// its temporal dead zone and throw before the login box ever appeared.
+// Cached on the function itself rather than in a module-level const.
+// Function declarations hoist; a const at this point in the file would
+// still be in its temporal dead zone when loadAct() runs at parse time
+// several hundred lines above, and would throw before the login box ever
+// rendered.
+function hudEls() {
+  if (!hudEls.cache) {
+    hudEls.cache = {
+      root: document.getElementById("hud"),
+      hearts: document.getElementById("hud-hearts"),
+      toast: document.getElementById("toast"),
+    };
+  }
+  return hudEls.cache;
+}
+
+function updateHudVisibility() {
+  const hudEl = hudEls().root;
+  if (!hudEl) return;
+  // Hearts only appear where something can take them.
+  const dangerous = Boolean(currentScene && currentScene.dangerous);
+  hudEl.classList.toggle("hidden", !dangerous);
+  if (dangerous) renderHearts();
+}
+
+function renderHearts() {
+  const heartsEl = hudEls().hearts;
+  if (!heartsEl) return;
+  heartsEl.innerHTML = "";
+  for (let i = 0; i < MAX_HEALTH; i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart" + (i < health ? "" : " heart-empty");
+    heartsEl.appendChild(heart);
+  }
+}
+
+function showToast(text) {
+  const toastEl = hudEls().toast;
+  if (!toastEl) return;
+  toastEl.textContent = text;
+  toastEl.classList.remove("hidden");
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => toastEl.classList.add("hidden"), 1600);
+}
+
+function damagePlayer(reason) {
+  const now = performance.now();
+  if (now < invulnUntil) return; // still in the grace window
+  invulnUntil = now + INVULN_MS;
+
+  health -= 1;
+  renderHearts();
+  player.classList.add("player-hurt");
+  setTimeout(() => player.classList.remove("player-hurt"), 400);
+
+  if (health <= 0) {
+    showToast(reason ? reason + " Ulitin natin." : "Ulitin natin.");
+    respawnInScene();
+  } else if (reason) {
+    showToast(reason);
+    respawnInScene();
+  }
+}
+
+// Back to the start of the scene, guards reset to their posts. Health is
+// only restored when it ran out, so a player on one heart still feels it.
+function respawnInScene() {
+  const scene = currentScene;
+  posX = scene && typeof scene.startX === "number" ? scene.startX : 0;
+  posY = floorHeightAt(posX);
+  velY = 0;
+  facing = 1;
+
+  if (health <= 0) {
+    health = MAX_HEALTH;
+    renderHearts();
+  }
+
+  GUARDS.forEach((guard) => {
+    if (guard.disabled) return;
+    guard.pos = guard.x;
+    guard.facing = guard.facingStart || 1;
+    guard.alert = 0;
+    if (guard.fillEl) guard.fillEl.style.width = "0%";
+    if (guard.el) guard.el.style.left = guard.pos + "px";
+  });
+}
+
+// =============================================================
+// COMBAT
+//
+// Deliberately minimal, per the decision on record: tap to attack,
+// hold for ranged, no combos.
+//
+// The interesting part is not the swing, it is that melee reads the
+// guard's facing. From behind an unalerted guard it is a takedown;
+// from the front it gets Macario seen and costs him a health point.
+// That is what makes stealth and combat interlock rather than sit
+// beside each other, and it means the corridor can be solved two
+// ways, which is worth more than either route alone.
+// =============================================================
+
+const MELEE_RANGE = 70;
+const ATTACK_HOLD_MS = 400; // beyond this, release throws instead of swings
+const PROJECTILE_SPEED = 12;
+const PROJECTILE_RANGE = 520;
+
+let attackHoldStart = 0;
+let projectile = null; // at most one in flight
+
+function startAttackHold() {
+  if (authGated || uiBlocked || inDialogue || cutscenePlaying) return;
+  attackHoldStart = performance.now();
+}
+
+function endAttackHold() {
+  if (!attackHoldStart) return;
+  const held = performance.now() - attackHoldStart;
+  attackHoldStart = 0;
+
+  if (authGated || uiBlocked || inDialogue || cutscenePlaying) return;
+
+  if (held >= ATTACK_HOLD_MS) throwProjectile();
+  else meleeAttack();
+}
+
+function flashAttack() {
+  player.classList.add("player-attack");
+  setTimeout(() => player.classList.remove("player-attack"), 180);
+}
+
+function meleeAttack() {
+  flashAttack();
+
+  const reach = posX + facing * MELEE_RANGE;
+  const lo = Math.min(posX, reach);
+  const hi = Math.max(posX, reach);
+
+  for (const guard of GUARDS) {
+    if (guard.disabled) continue;
+    if (guard.pos < lo || guard.pos > hi) continue;
+
+    // Behind means the guard is facing away from Macario.
+    const behind = Math.sign(guard.pos - posX) === guard.facing;
+
+    if (behind && guard.alert < 1) {
+      disableGuard(guard, "Natumba ang bantay.");
+    } else {
+      guard.alert = 1;
+      damagePlayer("Nakita ka ng bantay!");
+    }
+    return; // one target per swing
+  }
+}
+
+function disableGuard(guard, message) {
+  guard.disabled = true;
+  guard.alert = 0;
+  if (guard.fillEl) guard.fillEl.style.width = "0%";
+  if (guard.el) guard.el.classList.add("guard-down");
+  if (message) showToast(message);
+}
+
+function throwProjectile() {
+  if (projectile) return; // one at a time
+  flashAttack();
+
+  const el = document.createElement("div");
+  el.className = "projectile";
+  world.appendChild(el);
+  actElements.push(el);
+
+  projectile = {
+    el: el,
+    x: posX + facing * 30,
+    y: posY + 60,
+    dir: facing,
+    travelled: 0,
+  };
+
+  el.style.left = projectile.x + "px";
+  el.style.bottom = projectile.y + "px";
+}
+
+function updateProjectile(step) {
+  if (!projectile) return;
+
+  const distance = PROJECTILE_SPEED * step;
+  projectile.x += distance * projectile.dir;
+  projectile.travelled += distance;
+  projectile.el.style.left = projectile.x + "px";
+
+  for (const guard of GUARDS) {
+    if (guard.disabled) continue;
+    if (Math.abs(guard.pos - projectile.x) > 40) continue;
+    disableGuard(guard, "Tinamaan ang bantay.");
+    destroyProjectile();
+    return;
+  }
+
+  if (
+    projectile.travelled >= PROJECTILE_RANGE ||
+    projectile.x < 0 ||
+    projectile.x > WORLD_WIDTH
+  ) {
+    destroyProjectile();
+  }
+}
+
+function destroyProjectile() {
+  if (!projectile) return;
+  projectile.el.remove();
+  projectile = null;
+}
+
 // Tapping the dialogue box advances it, which is easier on mobile.
 dialogueBox.addEventListener("click", () => {
   if (inDialogue) advanceDialogue();
 });
 
 // --- Game loop ---
-function gameLoop(now) {
-  let isWalking = false;
+let lastFrameNow = 0;
 
-  if (!inDialogue && !cutscenePlaying && !authGated && !uiBlocked) {
+function gameLoop(now) {
+  now = now || 0;
+
+  // Frame delta expressed in 60fps frames, clamped so a tab returning from
+  // the background does not integrate one huge step and drop the player
+  // through the floor. The target device will not hold 60fps, and a
+  // frame-counted jump would reach half its height at 30.
+  const step = lastFrameNow ? Math.min((now - lastFrameNow) / 16.67, 3) : 1;
+  lastFrameNow = now;
+
+  let isWalking = false;
+  const canAct = !inDialogue && !cutscenePlaying && !authGated && !uiBlocked;
+
+  if (canAct) {
     if (keysPressed["a"]) {
-      posX -= SPEED;
+      posX -= SPEED * step;
       facing = -1;
       isWalking = true;
     }
     if (keysPressed["d"]) {
-      posX += SPEED;
+      posX += SPEED * step;
       facing = 1;
       isWalking = true;
     }
     posX = Math.max(0, Math.min(posX, WORLD_WIDTH - PLAYER_WIDTH));
   }
 
+  // Vertical motion resolves every frame regardless of canAct, so a player
+  // who triggers dialogue mid-air still lands rather than hanging there.
+  velY -= GRAVITY * step;
+  if (velY < TERMINAL_VELOCITY) velY = TERMINAL_VELOCITY;
+
+  const previousY = posY;
+  posY += velY * step;
+
+  const surface = groundHeightAt(posX, previousY);
+  if (posY <= surface) {
+    posY = surface;
+    velY = 0;
+    onGround = true;
+  } else {
+    onGround = false;
+  }
+
+  if (canAct) updateGuards(step);
+  updateProjectile(step);
+
   // During the stage cutscene, leave whatever animation is already set
   // (such as "dead") rather than switching back to idle or walk.
   if (!cutscenePlaying) {
-    applyAnim(isWalking ? "walk" : "idle");
+    applyAnim(isWalking && onGround ? "walk" : "idle");
   }
-  updateAnimFrame(now || 0);
-  npcAnimators.forEach((animator) => animator.update(now || 0));
+  updateAnimFrame(now);
+  npcAnimators.forEach((animator) => animator.update(now));
 
   player.style.left = posX + "px";
-  player.style.bottom = GROUND_LEVEL + getPlatformOffset(posX) + "px";
+  player.style.bottom = posY + "px";
 
   // Camera: centre the player, clamped to world bounds.
   const viewportWidth = viewport.clientWidth;
@@ -1015,7 +1598,11 @@ async function enterGameAsUser(userId) {
     // current_act in the window before syncStart runs.
     Acts.current = actNumber;
 
-    if (actNumber !== 1) loadAct(Acts.getAct(actNumber));
+    // Always reload, even for Act I, because the stored scene may not be
+    // the one the parse-time load built. An unknown scene id, including
+    // the "empty" that old saves hold, falls back to the act's first
+    // scene inside loadScene, which is the whole legacy migration.
+    loadAct(Acts.getAct(actNumber), row.current_room);
   }
 
   applyLoadedState(row);
@@ -1079,9 +1666,14 @@ function applyLoadedState(row) {
 
   if (typeof saved.posX === "number") {
     posX = saved.posX;
+    // Drop to whatever surface is under the restored position, rather
+    // than resuming at the height the previous scene happened to use.
+    posY = floorHeightAt(posX);
+    velY = 0;
   }
 
-  currentRoom = row.current_room || "road";
+  // currentRoom is set by loadScene, which has already run and has
+  // already resolved an unknown or legacy scene id to a real one.
 
   if (row.is_night) {
     skylineNight.classList.add("visible");
@@ -1090,18 +1682,11 @@ function applyLoadedState(row) {
   // Any NPC whose reveal flag is already set in the restored save.
   revealNpcsByFlag();
 
-  // LEGACY SAVES.
-  //
-  // The previous build ended Act I by fading to black and stranding
-  // the player in an empty room with nothing in it. That room is
-  // gone, so a save still pointing at it is migrated back onto the
-  // road. Acts.resume() sees the act as completed and puts up the
-  // transition screen, which is where those students should have
-  // been all along.
-  if (currentRoom !== "road") {
-    currentRoom = "road";
-    markDirty();
-  }
+  // Health is deliberately not restored. A student who closed the tab on
+  // one heart resumes at full, because punishing them for a bus arriving
+  // is not a mechanic worth having.
+  health = MAX_HEALTH;
+  updateHudVisibility();
 }
 
 function markDirty() {
