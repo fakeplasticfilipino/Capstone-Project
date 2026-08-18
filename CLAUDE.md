@@ -33,9 +33,8 @@ is no build step. Student testing runs against the live URL:
 
     https://fakeplasticfilipino.github.io/Capstone-Project/
 
-This is adequate for the project's needs and should not be migrated
-mid-testing without reason. Every script and stylesheet carries a v=N query
-string because browser caching is aggressive on Pages.
+Every script and stylesheet carries a v=N query string because browser
+caching is aggressive on Pages.
 
 ## Project
 
@@ -48,12 +47,23 @@ Three stated objectives, which are what the panel will assess against:
 1. A 2D narrative RPG presenting Sakay's life across four acts.
 2. Gameplay mechanics including dynamic difficulty, health, equipment, and
    cosmetic rewards.
-3. Integrated assessment with per-act pre-tests and post-tests, and a
-   teacher dashboard for monitoring.
+3. Integrated assessment with per-act pre-tests and post-tests, in-game
+   performance scoring, optional user feedback, and a teacher dashboard.
 
-Target device is a low-end Android phone in Chrome. This constraint is the
-justification for the entire technical approach and should not be traded
-away for convenience.
+Target device is a low-end Android phone in Chrome, with PC browsers used
+for development and testing. This constraint is the justification for the
+entire technical approach and should not be traded away for convenience.
+
+## Content is placeholder, mechanics are the foundation
+
+Only Act I has content, and that is deliberate. Acts II through IV are
+registered, loadable stubs waiting to be written.
+
+Act I's script is itself placeholder and is expected to be rewritten in
+full once the mechanics are finished. Do not treat the current dialogue as
+settled, do not optimise around it, and do not build systems that depend on
+a particular line existing. The build order is mechanics first, then
+content written against whatever mechanics exist.
 
 ## Stack
 
@@ -61,32 +71,40 @@ Vanilla HTML, CSS, and JavaScript. No build step, no bundler, no framework,
 no ES modules. Plain script tags in document order.
 
 Supabase for auth, Postgres, and row level security. Hosted on GitHub Pages.
+Visual Studio Code as the editor.
 
-The proposal document specifies Unity. The implementation does not use it.
-This deviation is deliberate and is argued from the study's own literature
-review, where a comparable project was constrained by 3D performance on
-low-end devices. Do not reintroduce heavier tooling.
+The proposal document specifies Unity and C#. The implementation uses
+neither, deliberately, and is argued from the study's own literature review:
+a comparable project was constrained by 3D performance on low-end devices,
+and a lightweight browser application addresses that gap directly. Do not
+reintroduce heavier tooling.
 
 ## Architecture
 
-Three layers, with a strict dependency direction.
+Four layers, with a strict dependency direction.
 
-Content, in content/actN.js. Pure data. NPCs, stage, decorations,
-objectives, starting quests. Contains no engine logic. Registers itself as
-window.ACT_N.
+Content, in content/actN.js and content/items.js. Pure data. NPCs, stage,
+decorations, objectives, starting quests, hazards, pickups, item and
+cosmetic definitions. Contains no engine logic. Registers itself on window.
 
 Engine, in game.js. Renders worlds, runs dialogue, animates sprites, and
-handles auth and save/load. Knows nothing about what an act means. Reads
-act data through loadAct().
+handles auth, physics, health, stealth, combat and save/load. Knows nothing
+about what an act means. Reads act data through loadAct().
 
 Controller, in acts.js. Owns the act lifecycle and is the only file that
 writes to act_progress.
 
-Assessment, in assessment.js. Owns the trivia card and both tests, and the
-only file that calls get_assessment_items or submit_assessment. It reports
-back by resolving a promise and never writes act_progress itself. It is
-optional: acts.js checks window.Assessment before calling it, and the flow
-collapses to playing then completed without it.
+Assessment, in assessment.js. Owns the trivia card, both tests, and the
+optional feedback form, and is the only file that calls
+get_assessment_items or submit_assessment. It reports back by resolving a
+promise and never writes act_progress itself. It is optional: acts.js
+checks window.Assessment before calling it, and the flow collapses to
+playing then completed without it.
+
+Shell, in shell.js. Owns every screen that is not the game world: title,
+pause, settings, inventory, logout. Unlike assessment.js it is NOT optional
+and nothing should guard on window.Shell, with one documented exception at
+the awaitEntry call in game.js.
 
 Load order in index.html, which is load bearing:
 
@@ -94,19 +112,43 @@ Load order in index.html, which is load bearing:
     supabaseClient.js
     content/act1.js      before game.js, which reads window.ACT_1 on start
     content/act2.js      through act4.js, before acts.js builds its registry
+    content/items.js     before shell.js, which renders the inventory
     game.js
     acts.js              after game.js
     assessment.js        after acts.js
+    shell.js             last
 
 Getting content and engine the wrong way round produces a blank world and
 an undefined property error.
 
 The auth bootstrap in game.js is registered on DOMContentLoaded rather than
-called at parse time, and must stay that way. acts.js and assessment.js
-load after game.js, but enterGameAsUser needs both. A student with a stored
-session has getSession() resolve on a microtask, before the browser reaches
-the next script tag, so calling it at parse time skips the entire act
-lookup and silently drops everyone into Act I.
+called at parse time, and must stay that way. acts.js, assessment.js and
+shell.js load after game.js, but enterGameAsUser needs all of them. A
+student with a stored session has getSession() resolve on a microtask,
+before the browser reaches the next script tag, so calling it at parse time
+skips the entire act lookup and silently drops everyone into Act I.
+
+## The engine to shell contract
+
+game.js exposes window.Game and nothing else:
+
+    setPaused(bool)      returns false if refused, which it is mid-cutscene
+    isPaused()
+    flushSave()          awaitable; logout must await it
+    setUiBlocked(bool)   suppresses world input while a screen is open
+    isSignedIn()
+
+shell.js exposes window.Shell.awaitEntry(), which game.js awaits after the
+world is built and before Acts.syncStart runs.
+
+That ordering is deliberate. syncStart resumes the trivia card and the
+pre-test, both of which open an overlay. Started before the student has
+tapped through the title screen, they would run behind it.
+
+The signal is a direct call rather than an event. shell.js registers its
+listeners inside its own DOMContentLoaded handler, which runs after
+game.js's, and the browser drains microtasks between the two, so a
+dispatched event can be sent before anyone is listening.
 
 ## Act data format
 
@@ -133,6 +175,8 @@ Scene shape:
       decorations: [...],
       platforms: [{ x, y, width }],              optional; one-way
       hideSpots: [{ x, width }],                 optional; suppress detection
+      hazards: [{ x, width }],                   optional; costs one health
+      pickups: [{ id, x, type: "heart" }],       optional; restores one health
       guards: [{ id, x, patrolFrom, patrolTo,    optional
                  speed, facing, detectRadius,
                  alertRate, decayRate, img }]
@@ -167,6 +211,29 @@ NPC shape:
 Talking to an NPC advances through dialogueSets one per conversation,
 holding on the last. onComplete fires once, when that conversation ends.
 
+## Item data format
+
+Items are pure content, in content/items.js as window.ITEMS. They hold no
+secret and are identical for every student, so a database round trip on a
+low-end phone would buy nothing. Only ownership is stored.
+
+    {
+      id, name, description,
+      kind: "equipment" | "cosmetic",
+      slot: "weapon" | "accessory" | "outfit",
+      price,                                     in-game currency
+      img,
+      effect: { projectileCooldown: 0.6 }        equipment only
+            | { maxHealthBonus: 1 }
+    }
+
+Effects are deliberately small and few. A faster projectile and one extra
+heart are the whole design brief; anything that needs a balance spreadsheet
+is out of scope.
+
+Cosmetics are period-correct outfits and change the player sprite only.
+They never affect gameplay.
+
 ## Sprite sheets
 
 Sheets may be a single horizontal strip or a grid. The optional columns
@@ -180,13 +247,12 @@ Scaling is always from frameHeight, never naturalHeight, or a multi-row
 sheet renders at 1/rows size. Both the player animator and
 setupNpcAnimation handle grids.
 
-Every image load goes through assetUrl(), which appends the
-ASSET_VERSION constant in game.js. Images are not covered by the v=N
-strings in index.html, so without this the browser and the Pages CDN
-serve stale sprites indefinitely after a file is replaced. Bump
-ASSET_VERSION whenever anything in Assets/ changes, and bump the
-game.js script version too, since the browser must refetch game.js to
-learn the new asset version.
+Every image load goes through assetUrl(), which appends the ASSET_VERSION
+constant in game.js. Images are not covered by the v=N strings in
+index.html, so without this the browser and the Pages CDN serve stale
+sprites indefinitely after a file is replaced. Bump ASSET_VERSION whenever
+anything in Assets/ changes, and bump the game.js script version too, since
+the browser must refetch game.js to learn the new asset version.
 
 Missing images do not break anything. They fall back to a dashed
 placeholder box showing the expected filename.
@@ -207,8 +273,9 @@ needing separate storage.
 
 ## Database
 
-Tables: profiles, classes, game_progress, assessment_scores, act_progress,
-assessment_items, act_trivia.
+Tables: profiles, classes, game_progress, act_progress, assessment_items,
+assessment_scores, act_trivia, player_inventory, player_equipment,
+game_sessions, feedback.
 
 Functions: my_role, my_class_id, is_teacher_of, get_assessment_items,
 submit_assessment.
@@ -216,11 +283,15 @@ submit_assessment.
 Row level security is the actual security boundary. Client-side role checks
 are usability guards only and must never be described as security.
 
-Two policy rules that were learned the hard way:
+Three policy rules that were learned the hard way:
 
 Policies that query each other across tables cause infinite recursion. Use
 security definer helper functions instead. Never name one current_role,
 which is a reserved SQL keyword.
+
+Do not write a policy that looks a student up through another table that has
+policies of its own. Carry student_id on the row instead, even when it
+duplicates a column reachable by join.
 
 Assessment items have RLS enabled with no student read policy. Questions
 are served by get_assessment_items, which omits correct_index, and grading
@@ -247,17 +318,37 @@ see, and what failure looks like, before they test.
 Additive work is preferred over refactors when both would work. Refactors
 of working code require a commit first.
 
+Simple beats complete. This is a capstone with a fixed defense date, not a
+commercial game. When a requirement can be met by a small mechanic that is
+honestly described, build that rather than the full version.
+
 ## Decisions on record
 
-Class assignment is administrator-assigned. The join_code column exists but
-no student-facing join screen is built.
+Class assignment is administrator-assigned. Students cannot self-register.
+The join_code column exists but no student-facing join screen is built.
+This is a deliberate change from the proposal's User Authentication
+requirement and is the right one for supervised classroom sessions.
 
 Assessments allow one attempt per act per test type. Enforced by a unique
-constraint and by submit_assessment.
+constraint and by submit_assessment. A pilot run on a study account
+therefore consumes that student's attempt, so pilot and study accounts must
+be separate.
 
-performance_score is currently completion percentage only. It becomes a
-weighted sum once stealth and combat exist. Worth stating in documentation,
-since the name implies more than it currently measures.
+Assessment items live in the database because the table holds the answer
+key. Item and cosmetic definitions live in code because they hold no
+secret. Only ownership needs a table.
+
+The trivia card must not contain the answer to any pre-test item. It is
+shown before the pre-test, so a fact drawn from the tested content inflates
+the pre-test and shrinks the measured gain.
+
+Pre-test and post-test items are matched pairs: same topic, same difficulty,
+different wording, key in a different position.
+
+game_progress.currency is client written. A student with the console open
+can set it to anything, which is acceptable because currency buys cosmetics
+only and touches nothing the dashboard reports. State this in the
+documentation rather than letting a panel find it.
 
 The teacher dashboard runs four scoped queries and stitches results in
 JavaScript rather than using a joined view or RPC. RLS enforces correctness
@@ -275,11 +366,6 @@ act_progress rather than a story flag. This is a teaching tool, not a
 competitive game, so a console-level bypass is not worth defending against.
 RLS protects the data that matters.
 
-Assessment checks for an existing score row before rendering any questions.
-submit_assessment raising ALREADY_SUBMITTED is still the real guarantee,
-but on its own it means a student answers a whole test before being told it
-will not be recorded.
-
 Combat and stealth are deliberately minimal by decision: tap to attack,
 hold for ranged, and a simple detection radius with no line of sight
 calculation.
@@ -290,21 +376,56 @@ is unfair.
 
 Melee reads the guard's facing. From behind an unalerted guard it is a
 takedown; from the front it alerts the guard and costs a health point.
-That is what makes stealth and combat interlock rather than sit beside
-each other, and it means a corridor can be solved two ways.
+That is what makes stealth and combat interlock rather than sit beside each
+other, and it means a corridor can be solved two ways.
 
-There is no game over. Reaching zero health returns the player to the
-start of the scene at full health. A fail state that ejects a Grade 8
-student from the lesson serves nobody.
+Dynamic difficulty is guard speed, scaled by act number, and nothing else.
+Speed changes the detection window, the cost of a mistimed run, and how much
+ground a patrol covers, so one lever moves the whole difficulty curve. A
+system with more knobs would need tuning data this project will never
+collect.
+
+There is no game over. Reaching zero health returns the player to the start
+of the scene at full health. A fail state that ejects a Grade 8 student
+from the lesson serves nobody.
 
 Health is not persisted and restores to full on load. A student who closed
 the tab on one heart should not be punished for a bus arriving.
+
+Hazards are scene regions that cost one health on contact, subject to the
+same invulnerability window as a guard catch. Heart pickups restore one
+health and do not respawn within a visit to a scene.
 
 Platforms are one-way: passed through from below, landed on from above.
 
 Physics is integrated against the real frame delta rather than counted in
 frames. The target device will not hold 60fps and a frame-counted jump
 would reach half its height at 30.
+
+Pause halts the loop rather than covering it, and offsets the
+invulnerability and attack-hold timers, which are measured against
+performance.now() and do not stop for a screen.
+
+Logout reloads the page rather than returning to the title screen. The
+engine holds per-student state in a dozen places and missing one means the
+next student on a shared classroom phone sees the previous student's
+progress.
+
+Settings persist to localStorage, not the database. They are a device
+preference rather than student data.
+
+Performance score is a weighted sum of objective completion, survival, and
+stealth. Time taken is recorded but not scored, because a timer rewards
+skipping the dialogue, which is the entire lesson.
+
+User feedback is optional and skippable. A required form after a post-test
+would be answered by a student who wants to leave, which is worse than no
+data.
+
+The ERD is revised to match what is built rather than the reverse.
+PlayerAction and the achievement entities are dropped: a per-action replay
+log costs writes on a phone on mobile data and would never be queried, and
+achievements add nothing that currency and cosmetics do not already cover.
 
 ## Pitfalls
 
@@ -336,6 +457,13 @@ login sequence. loadAct runs once at parse time to draw the backdrop behind
 the login box and adds that act's starting quests, which marks the save
 dirty; the debounced write then fires mid-login with Acts.current still at
 1 and overwrites the student's stored act.
+
+The same debounce is why logout awaits Game.flushSave() before signing out.
+On a shared classroom phone, logout is used seconds after something
+happened, which is exactly the window the debounce would drop.
+
+Acts.syncStart awaits the entire pre-act flow, trivia card and pre-test
+included. Anything that gates entry has to sit before it, not after.
 
 ## Accounts
 
