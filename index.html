@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="style.css?v=8" />
+  <link rel="stylesheet" href="style.css?v=9" />
 </head>
 <body>
   <div id="app-scale">
@@ -221,6 +221,18 @@
       </div>
     </div>
 
+    <!-- Rotate notice. Shown by CSS whenever a phone-sized screen is
+         held in portrait, above everything else including the title
+         screen. shell.js mirrors it into uiBlocked so the world does
+         not run behind it. -->
+    <div id="rotate-notice">
+      <div id="rotate-notice-inner">
+        <div id="rotate-icon">&#9648;</div>
+        <h2>Ipahalang ang telepono</h2>
+        <p>Mas maganda ang laro kapag pahalang ang hawak mo sa telepono.</p>
+      </div>
+    </div>
+
     <!-- Login / signup gate -->
     <div id="auth-overlay">
       <div id="auth-box">
@@ -267,6 +279,6 @@
   <script src="acts.js?v=6"></script>
   <script src="inventory.js?v=2"></script>
   <script src="assessment.js?v=2"></script>
-  <script src="shell.js?v=3"></script>
+  <script src="shell.js?v=4"></script>
 </body>
 </html>

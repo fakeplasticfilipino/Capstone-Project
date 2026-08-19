@@ -20,7 +20,7 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 11 was built and passed the harness.
+Last updated: after the first device pass on a real Android phone.
 
 ## Right now
 
@@ -43,30 +43,46 @@ its section passes.
 
 The automated suite passes at 208 checks, 0 failures.
 
-What is not done is everything that does not depend on writing more
-engine code: the game has never run on a real phone, the assessment
-item bank has not been validated, and there is no replacement art.
-Two of those three are waiting on other people.
+The game has now run on a real Android phone, a 4GB device, and the
+result is the single most important thing in this file: performance
+is fine. Smooth, at least 30fps, no problem. That is the answer to
+the panel question the entire technical approach rests on, and it is
+now measured rather than argued.
+
+The same pass found three faults, all fixed and all covered by
+checks. Atake and Talon did nothing at all, because .action-cluster
+never set pointer-events: auto inside a control bar that is
+pointer-events: none. The camera was a desktop setting applied to
+every screen: at 412px wide it showed 235 world pixels, about two and
+a half Macarios across. And the game is meant to be held sideways,
+which was never written down anywhere, so portrait is now a rotate
+notice rather than a layout to fix.
+
+What is left is the assessment item bank, which is unblocked and
+waiting to be run, and the replacement art.
 
 ## Next action
 
-One thing, and it is not a block.
+Run db/macario_items_v3.sql against the live project.
 
-Send the validation packet to Ms. Donadillo-Espiritu.
-MACARIO_Act1_Instrument_Validation.docx is written and ready.
+It is unblocked. Ms. Donadillo-Espiritu declined to fill in the
+validation form and told the proponents to make the game, on the
+understanding that events stay as historically accurate as the
+available data allows. The assessment items are ours to write. The
+packet is therefore closed, and the item bank stops waiting on
+anybody.
 
-It goes first because it is the longest external dependency in the
-project and because macario_items_v3.sql cannot be run until it comes
-back. The item bank is what the entire learning gain finding rests
-on, and the returned form is the Appendix exhibit and the answer to
-any question about instrument validity.
+Run it as written. It was already revised once, against the leak
+where the Act I trivia fact handed students three pre-test answers.
+Items can still be edited afterwards, because nothing is collected
+until the session runs.
 
-Checkpoint: the packet is sent and the date is written into the Run
-log below. Failure is another week passing with it still in the
-folder.
+Checkpoint: macario_items_v3.sql moves to RUN in the Run log with its
+date, and a full Act I run finally shows real questions in the
+pre-test and the post-test instead of the empty-bank notice.
 
-After that, in order: a device pass on a real Android phone, then
-Block 11.
+After that, in order: ask her for the written note described below,
+a device pass on a real Android phone, then Block 12.
 
 ## The milestone
 
@@ -97,10 +113,14 @@ stable once the accounts exist, because the code is the student's identity
 for the whole study.
 
 Content authority: the resource person has left the assessment questions and
-the storyline to the proponents, on the condition that both stay faithful to
-the source material she provided. That makes the Act I rewrite a writing
-task rather than an approval loop, but the source is the standard it will be
-judged against. That source is a physical book rather than a file, so it
+the storyline to the proponents, and has confirmed it a second time by
+declining to complete the instrument validation form and telling them to
+make the game. The condition is unchanged and is the whole of what she asked
+for: both stay faithful to the source material she provided, as historically
+accurate as the available data allows. That makes the Act I rewrite and the
+item bank writing tasks rather than approval loops, but the source is the
+standard both will be judged against, and there is now no external reviewer
+standing between a wrong item and the defense. That source is a physical book rather than a file, so it
 cannot be put in the repository. The proponents will work through it with
 the session at the time of the rewrite; do not go looking for it on disk.
 
@@ -114,8 +134,8 @@ when. A fresh session should trust this over any memory of a chat.
     db/applied/macario_schema_v3.sql    RUN
     db/applied/macario_schema_v4.sql    RUN, 19 Aug 2026
 
-    db/macario_items_v3.sql             NOT RUN. Waits on the
-                                        validation packet coming back.
+    db/macario_items_v3.sql             NOT RUN. No longer blocked;
+                                        this is the next action.
 
     db/db_healthcheck.sql               read-only, run any time
     db/reset_test_accounts.sql          run before any full-flow test.
@@ -180,20 +200,21 @@ The paper specifies ten.
 
 | Requirement | Status |
 |---|---|
-| Performance | (BUILT) No build step, no framework, plain script tags. Never measured on a real device |
+| Performance | (BUILT) No build step, no framework, plain script tags. Measured on a 4GB Android phone: smooth, at least 30fps |
 | Reliability | (BUILT) Debounced save, ten second autosave backstop, beforeunload flush, logout flush |
-| Usability | (PARTIAL) Tagalog throughout and 44px touch targets, but the mobile control cluster overflows the viewport at phone width. Currently not met on the target device |
-| Accessibility | (PARTIAL) Runs in Chrome on Android by design. Never opened on an Android phone |
+| Usability | (BUILT) Tagalog throughout, 44px touch targets, and the whole control row fits in landscape down to 740px. Portrait shows a rotate notice rather than a broken layout |
+| Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
-| Compatibility | (PARTIAL) Never tested across Android screen sizes |
+| Compatibility | (PARTIAL) Confirmed on one Android phone. Not yet tested across screen sizes; the harness proves the layout down to 740 by 360 only |
 | Maintainability | (BUILT) Four layers with a strict dependency direction, documented in CLAUDE.md |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
 
-Three of the four PARTIAL entries are the same fact stated four ways:
-nothing has ever run on a real phone. One device pass moves all of
-them.
+Three of those entries used to be the same fact stated four ways:
+nothing had ever run on a real phone. The device pass moved all of
+them. What is left of Compatibility is genuinely a second phone
+rather than a first one.
 
 ## Blocks done
 
@@ -286,8 +307,18 @@ Failure looks like a balance that grows on reload, a total that does
 not match the score, a purchase that charges twice, or a player
 sprite that does not come back after unequipping.
 
-Block 12, polish. The mobile control overflow, the outpost balance
-pass, and audio if there is time. (NOT STARTED)
+Block 12, polish. (IN PROGRESS)
+
+Done, from the device pass: pointer-events on .action-cluster so
+Atake and Talon work, --zoom at 1.25 for phone landscape, and the
+rotate notice that makes portrait a prompt rather than a layout. All
+three are covered by checks in sections AA, AB and AC.
+
+Left: the outpost balance pass, now that the camera shows more than
+two Macarios of the corridor and the equipment from Block 10 exists.
+Assets/Cement_Tile.png is 1.4MB for a repeating floor tile and should
+be shrunk before anyone measures a load time. Audio if there is
+time, which is still the first thing to cut.
 
 Rewrite Act I in full against the finished mechanics, then write Acts
 II through IV. Content work, done once the systems stop moving.
@@ -302,8 +333,20 @@ those acts skip their tests with a notice, which is deliberate.
 These cannot be compressed at the end and do not depend on any block.
 Start them before writing more code.
 
-Send the validation packet to Ms. Donadillo-Espiritu. The packet is
-written and ready. See Next action. (READY TO SEND)
+Get Ms. Donadillo-Espiritu's delegation in writing. One paragraph is
+enough: that she reviewed the scope, delegated the assessment items
+and the storyline to the proponents, and trusts them to stay faithful
+to the source material she provided.
+
+This replaces MACARIO_Act1_Instrument_Validation.docx, which she
+declined to complete. That form was going to be the Appendix exhibit
+and the answer to any question about instrument validity, and without
+a substitute there is now no external evidence of either. A panel
+asking who checked the questions would otherwise be told a story
+rather than shown a document.
+
+The same rule already applies to the consent waiver, and for the same
+reason: get it in writing and keep the two together. (NOT STARTED)
 
 Chase the replacement art. Assets/ holds only a floor tile and the
 player walk cycle. Everything else falls back to a labelled
@@ -325,15 +368,11 @@ sets must be separate. (NOT STARTED)
 
 ## Known problems
 
-Nothing has ever run on a real phone. Every test to date is a desktop
-browser or headless Chromium at phone dimensions. This is the largest
-untested assumption in the project, and it sits directly under the
-argument that justifies the entire technical approach. (NOT STARTED)
-
-The mobile control cluster overflows the viewport at phone width.
-Block 6 added a jump button and an attack button to a row that
-already held three, and at 1.75 zoom the interact button runs off the
-right edge of a 412px screen. Scheduled for Block 12. (NOT STARTED)
+Only one phone has been tested, a 4GB Android device. It ran well and
+every control works, but nothing is known about how the layout holds
+on a much narrower or much wider screen. The harness covers 823 by
+412 and 740 by 360 in landscape, which is a floor rather than a
+survey. (PARTIAL)
 
 Assets/Cement_Tile.png is 1.4 MB for a repeating floor tile. On a
 project whose stated justification is low-end Android performance
@@ -365,12 +404,17 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-208 checks. Anything other than "0 failed" is a regression.
+226 checks. Anything other than "0 failed" is a regression.
 
 It drives the shipping index.html with a stubbed Supabase client and
-Playwright against Chromium at phone dimensions, so it cannot pass
-against a page students no longer load. It never touches the live
-project.
+Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it
+cannot pass against a page students no longer load. It never touches
+the live project.
+
+It ran portrait until the device pass, which was wrong in a way that
+hid faults for four blocks. Do not move it back. A check that clicks
+an on-screen button is worth more than one that reads its style: the
+dead Atake button would have passed any style assertion.
 
 Add checks in the same block that adds the system. A suite that lags
 the build is worse than none, because it reports green on code it
@@ -442,6 +486,17 @@ describes seventeen, so it needs correcting regardless. PlayerAction
 and the achievement entities are dropped, GameScore folds into
 ActProgress, and all three have a stated reason. The database now
 matches. (NOT STARTED)
+
+Document how the assessment items were validated, given that no
+external validation form exists. The resource person declined to
+complete one and delegated the items to the proponents, so the
+Appendix carries the method instead: items written from the source
+material she provided, matched pre and post pairs on the same topic
+and difficulty with the key in a different position, and the trivia
+card checked so it cannot hand students a pre-test answer. Her
+written delegation, once obtained, sits alongside it. This is the
+answer to a panel asking who checked the questions, and it needs
+writing before anyone asks. (NOT STARTED)
 
 Document server-side grading. The answer key never reaches the
 client, which is a design strength worth stating. (NOT STARTED)

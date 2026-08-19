@@ -60,8 +60,15 @@ const visible = (page, sel) => page.evaluate((s) => {
   // a page that loaded without one of its optional files. Serving empty
   // rather than 404 keeps the console clean, so a real error still
   // stands out in the pageerror handler above.
-  async function newPage(testState, block) {
-    const ctx = await browser.newContext({ viewport: { width: 412, height: 823 } });
+  // 823 x 412, phone LANDSCAPE. The suite used to run portrait, which was
+  // wrong in a way that hid two faults for four blocks: the game is a
+  // side-scroller meant to be held sideways, and portrait is now a rotate
+  // notice rather than a supported layout. A portrait context here would
+  // now open every test behind that notice.
+  async function newPage(testState, block, viewport) {
+    const ctx = await browser.newContext({
+      viewport: viewport || { width: 823, height: 412 },
+    });
     const page = await ctx.newPage();
     page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
 
@@ -1323,6 +1330,140 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.waitForTimeout(100);
     ok("resuming from the shop path still works",
        !(await page.evaluate(() => Game.isPaused())));
+
+    await ctx.close();
+  }
+
+  // -----------------------------------------------------------------
+  // Block 12. The device pass findings.
+  // -----------------------------------------------------------------
+
+  console.log("\nAA. The touch controls");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    const pe = await page.evaluate(() => {
+      const at = (s) => getComputedStyle(document.querySelector(s)).pointerEvents;
+      return { bar: at("#mobile-controls"), dpad: at(".dpad"),
+               cluster: at(".action-cluster"), attack: at("#btn-attack"),
+               jump: at("#btn-jump"), interact: at("#btn-interact") };
+    });
+    ok("the control bar itself stays transparent to taps",
+       pe.bar === "none", pe);
+    ok("every cluster inside it takes taps",
+       pe.dpad === "auto" && pe.cluster === "auto", pe);
+    ok("Atake and Talon are tappable",
+       pe.attack === "auto" && pe.jump === "auto", pe);
+
+    // Functional, not just computed. Playwright hit-tests before it
+    // clicks, so a button behind pointer-events: none fails here rather
+    // than passing a style assertion and shipping dead.
+    const jumped = await page.evaluate(() => { velY = 0; onGround = true; return true; })
+      .then(() => page.click("#btn-jump"))
+      .then(() => page.evaluate(() => ({ velY, onGround })));
+    ok("tapping Talon actually jumps", jumped.velY > 0, jumped);
+
+    // A long press on Atake throws, which is the hold path the whole
+    // press-and-release binding exists for.
+    await page.evaluate(() => { destroyProjectile(); });
+    await page.click("#btn-attack", { delay: 600 });
+    ok("holding Atake throws the spear",
+       await page.evaluate(() => projectile !== null));
+
+    // A short tap swings instead, and a swing from behind takes a guard
+    // down. This is the tap path of the same binding.
+    const swung = await page.evaluate(() => {
+      destroyProjectile();
+      const guard = GUARDS[0];
+      guard.disabled = false;
+      guard.alert = 0;
+      guard.facing = 1;
+      posX = guard.pos - 40; // behind a guard facing away
+      facing = 1;
+      return guard.id;
+    }).then(() => page.click("#btn-attack"))
+      .then(() => page.evaluate(() => GUARDS[0].disabled));
+    ok("tapping Atake swings", swung === true, swung);
+
+    await ctx.close();
+  }
+
+  console.log("\nAB. Camera and control fit");
+  {
+    // The camera is screen width divided by --zoom, and nothing else.
+    const framing = async (viewport) => {
+      const { ctx, page } = await newPage(atOutpost(), null, viewport);
+      await page.waitForTimeout(700);
+      await page.click("#shell-start");
+      await page.waitForTimeout(300);
+      const m = await page.evaluate(() => {
+        const zoom = parseFloat(
+          getComputedStyle(document.documentElement).getPropertyValue("--zoom"));
+        const right = (s) =>
+          Math.round(document.querySelector(s).getBoundingClientRect().right);
+        const left = (s) =>
+          Math.round(document.querySelector(s).getBoundingClientRect().left);
+        return { zoom,
+                 worldWidth: Math.round(window.innerWidth / zoom),
+                 screen: window.innerWidth,
+                 leftmost: left("#btn-left"),
+                 rightmost: right("#btn-interact") };
+      });
+      await ctx.close();
+      return m;
+    };
+
+    const phone = await framing({ width: 823, height: 412 });
+    ok("phone landscape drops the zoom to 1.25", phone.zoom === 1.25, phone);
+    ok("which shows 658 world pixels across",
+       phone.worldWidth === 658, phone.worldWidth);
+    ok("the whole control row fits on screen",
+       phone.leftmost >= 0 && phone.rightmost <= phone.screen, phone);
+
+    // A smaller phone. The overflow this replaces was found at 412px, so
+    // the narrow case is the one that has to keep working.
+    const small = await framing({ width: 740, height: 360 });
+    ok("a smaller phone keeps the same camera", small.zoom === 1.25, small);
+    ok("and still fits every button",
+       small.leftmost >= 0 && small.rightmost <= small.screen, small);
+
+    // Desktop is untouched. Nothing anyone has been looking at changes.
+    const desktop = await framing({ width: 1440, height: 900 });
+    ok("desktop keeps 1.75", desktop.zoom === 1.75, desktop);
+
+    await Promise.resolve();
+  }
+
+  console.log("\nAC. Portrait is a prompt, not a layout");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    ok("no notice while the phone is sideways",
+       !(await visible(page, "#rotate-notice")));
+
+    // The real scenario: a student turns the phone mid-play.
+    await page.setViewportSize({ width: 412, height: 823 });
+    await page.waitForTimeout(250);
+
+    ok("turning it upright shows the notice",
+       await visible(page, "#rotate-notice"));
+    ok("and the world stops behind it",
+       await page.evaluate(() => uiBlocked === true));
+
+    // Stopped means stopped: no patrols, no hazards, and no play time
+    // counted against a student staring at a rotate prompt.
+    const idled = await page.evaluate(() => new Promise((r) => {
+      const before = Game.stats().playMs;
+      setTimeout(() => r(Game.stats().playMs - before), 600);
+    }));
+    ok("play time does not accrue in portrait", idled < 50, idled);
+
+    await page.setViewportSize({ width: 823, height: 412 });
+    await page.waitForTimeout(250);
+    ok("turning it back hides the notice",
+       !(await visible(page, "#rotate-notice")));
+    ok("and the world runs again",
+       await page.evaluate(() => uiBlocked === false));
 
     await ctx.close();
   }

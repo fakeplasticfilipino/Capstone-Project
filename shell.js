@@ -74,6 +74,8 @@ const Shell = {
     // used by assessment.js, so there is no second concept here.
     if (window.Game) Game.setUiBlocked(true);
 
+    this._watchOrientation();
+
     this._showPanel("title");
     this.el.overlay.classList.remove("hidden");
     this._probeSession();
@@ -187,6 +189,39 @@ const Shell = {
   },
 
   // -----------------------------------------------------------
+  // Orientation
+  //
+  // The rotate notice itself is drawn by CSS, so there is no state
+  // here that can leave it up on a screen that has already been
+  // turned. This only mirrors the same media query into uiBlocked,
+  // which is what stops guards patrolling and hazards biting behind
+  // a screen the student cannot see past.
+  //
+  // It touches uiBlocked ONLY while the state is playing. A quiz, a
+  // shell panel or the login box already blocks the world, and
+  // clearing the flag here would unblock it underneath one of them.
+  // -----------------------------------------------------------
+
+  PORTRAIT_QUERY: "(orientation: portrait) and (max-width: 900px)",
+
+  isPortrait() {
+    if (!window.matchMedia) return false;
+    return window.matchMedia(this.PORTRAIT_QUERY).matches;
+  },
+
+  _applyOrientation() {
+    if (this.state !== "playing") return;
+    if (!window.Game) return;
+    Game.setUiBlocked(this.isPortrait());
+  },
+
+  _watchOrientation() {
+    const apply = () => this._applyOrientation();
+    window.addEventListener("resize", apply);
+    window.addEventListener("orientationchange", apply);
+  },
+
+  // -----------------------------------------------------------
   // Entry gate
   // -----------------------------------------------------------
 
@@ -290,6 +325,7 @@ const Shell = {
     this.state = "playing";
     this.el.overlay.classList.add("hidden");
     if (window.Game) Game.setUiBlocked(false);
+    this._applyOrientation();
   },
 
   // -----------------------------------------------------------
@@ -320,6 +356,7 @@ const Shell = {
       Game.setUiBlocked(false);
       Game.setPaused(false);
     }
+    this._applyOrientation();
   },
 
   // -----------------------------------------------------------

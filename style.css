@@ -16,9 +16,26 @@ html, body {
 
 /* Overall "camera personality" zoom — bakes in what you'd otherwise get
    from manually zooming the browser. Everything (game world AND the UI)
-   scales together. Bump this up/down to taste; 1 = no zoom. */
+   scales together. Bump this up/down to taste; 1 = no zoom.
+
+   1.75 is the desktop setting and was applied to every screen until a
+   phone was finally held in someone's hand. At 412px wide it left 235
+   world pixels visible, which is about two and a half Macarios across,
+   and the control row ran off the right edge. The visible world is
+   always screen width divided by this number, which is the only piece
+   of arithmetic needed to reason about it. */
 :root {
   --zoom: 1.75;
+}
+
+/* Phone landscape, which is how this game is meant to be held. Short
+   viewport, wide screen. 1.25 shows 658 x 330 world pixels on a 823 x
+   412 screen, with Macario at 41% of the height and all five buttons
+   fitting with room to spare. */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --zoom: 1.25;
+  }
 }
 
 #app-scale {
@@ -918,6 +935,14 @@ html, body {
   display: flex;
   gap: 8px;
   align-items: center;
+
+  /* #mobile-controls is pointer-events: none, so taps land on the world
+     between the buttons rather than on the invisible bar holding them.
+     Every cluster inside it has to turn pointer events back on. .dpad
+     does and .interact-btn does; this one did not, which is why Atake
+     and Talon did nothing at all on a phone. Nobody caught it on a
+     desktop because a desktop plays with J and Space. */
+  pointer-events: auto;
 }
 
 #btn-attack,
@@ -1220,6 +1245,70 @@ h2.shell-heading {
   font-size: 12px;
   color: #777;
   line-height: 1.6;
+}
+
+/* =============================================================
+   ROTATE NOTICE
+
+   The game is a side-scroller and is meant to be held sideways.
+   Portrait is therefore not a second supported layout, it is a
+   prompt: turn the phone. That decision is what removes the control
+   overflow from the work rather than fixing it, because the overflow
+   only ever happened in portrait.
+
+   Visibility is pure CSS, so there is no JavaScript state to get
+   wrong and no way for the notice to be left up on a screen that has
+   already been rotated. shell.js only mirrors it into uiBlocked, so
+   the world does not run underneath it.
+
+   z-index above the shell's 110, because a student in portrait needs
+   this before they need the title screen.
+   ============================================================= */
+
+#rotate-notice {
+  display: none;
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  #rotate-notice {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 130;
+    background: #202020;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}
+
+#rotate-notice-inner {
+  max-width: 280px;
+}
+
+#rotate-icon {
+  font-size: 40px;
+  color: #ffd54f;
+  margin-bottom: 16px;
+  /* Nudges rather than spins. A looping animation on a screen a student
+     is meant to leave within two seconds is noise. */
+  transform: rotate(90deg);
+}
+
+#rotate-notice h2 {
+  color: #ffd54f;
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin: 0 0 10px;
+}
+
+#rotate-notice p {
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* Pause button. Top right, with the hearts shifted left to sit

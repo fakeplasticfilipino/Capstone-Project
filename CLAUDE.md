@@ -56,9 +56,16 @@ Three stated objectives, which are what the panel will assess against:
 3. Integrated assessment with per-act pre-tests and post-tests, in-game
    performance scoring, optional user feedback, and a teacher dashboard.
 
-Target device is a low-end Android phone in Chrome, with PC browsers used
-for development and testing. This constraint is the justification for the
-entire technical approach and should not be traded away for convenience.
+Target device is a low-end Android phone in Chrome, HELD SIDEWAYS, with PC
+browsers used for development and testing. This constraint is the
+justification for the entire technical approach and should not be traded
+away for convenience.
+
+Landscape is the intended orientation and portrait is not a second
+supported layout. A phone held upright gets a rotate notice instead. That
+one decision is what removed the mobile control overflow from the work
+rather than fixing it, because the overflow only ever happened in
+portrait.
 
 ## Content is placeholder, mechanics are the foundation
 
@@ -630,6 +637,19 @@ Purchases are optimistic and refunded on a failed write, like equipping.
 Being charged for an item the database never recorded is the one failure
 in this system a student would actually notice.
 
+The camera is one number, --zoom in style.css, and the visible world is
+always screen width divided by it. 1.75 on desktop, 1.25 on a phone in
+landscape, which shows 658 by 330 world pixels on an 823 by 412 screen with
+Macario at 41% of the height. 1.75 was a desktop taste applied to every
+screen until a phone was actually held: at 412px wide it left 235 world
+pixels visible, about two and a half Macarios across.
+
+Portrait shows a rotate notice, and its visibility is pure CSS. There is no
+JavaScript state that can leave it up on a screen that has already been
+turned. shell.js only mirrors the same media query into uiBlocked, so
+guards do not patrol and hazards do not bite behind a screen the student
+cannot see past, and no play time is counted against it.
+
 The ERD is revised to match what is built rather than the reverse.
 PlayerAction and the achievement entities are dropped: a per-action replay
 log costs writes on a phone on mobile data and would never be queried, and
@@ -653,6 +673,15 @@ If students have no class_id, every teacher policy returns zero rows
 silently, with no error. Check this first when the dashboard looks empty.
 
 Adding a filename to .gitignore does not untrack an already committed file.
+
+#mobile-controls is pointer-events: none, so taps land on the world between
+the buttons rather than on the invisible bar holding them. Every cluster
+inside it therefore has to set pointer-events: auto. .action-cluster did
+not, and Atake and Talon did nothing at all on a phone for four blocks.
+Nobody caught it because a desktop plays with J and Space, and the harness
+drove keys too. Any new cluster added to that bar needs the same line, and
+any new on-screen button needs a check that clicks it rather than one that
+reads its style.
 
 loadAct() runs at parse time, near the top of game.js, and reaches deep
 into the file through loadScene. Anything it touches must be a hoisted
