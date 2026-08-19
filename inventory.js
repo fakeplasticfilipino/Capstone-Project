@@ -25,13 +25,11 @@
 // =============================================================
 
 const Inventory = {
-  // Slots the inventory screen draws, in order. "outfit" exists in the
-  // item format and in the database, and is deliberately absent here:
-  // Block 11 adds the cosmetics that would go in it, and a slot with
-  // nothing that can ever fill it is a dead row on a 412px screen.
+  // Slots the inventory screen draws, in order.
   SLOTS: [
     { id: "weapon", label: "Sandata" },
     { id: "accessory", label: "Anting-anting" },
+    { id: "outfit", label: "Damit" },
   ],
 
   ownedIds: [],
@@ -83,6 +81,18 @@ const Inventory = {
   // no definition is dropped rather than drawn as a blank row.
   ownedItems() {
     return this.catalogue().filter((entry) => this.owns(entry.id));
+  },
+
+  // What the shop lists: everything with a price, owned or not. An owned
+  // one still shows, marked as owned, so a student can see what they
+  // already have rather than watching rows disappear.
+  forSale() {
+    return this.catalogue().filter((entry) => (entry.price || 0) > 0);
+  },
+
+  balance() {
+    if (window.Game && Game.currency) return Game.currency();
+    return 0;
   },
 
   // -----------------------------------------------------------
@@ -255,6 +265,51 @@ const Inventory = {
     }
   },
 
+  // -----------------------------------------------------------
+  // Buying
+  //
+  // Currency is spent through the engine facade, because game.js owns
+  // game_progress and is the only thing that writes it. The balance
+  // check and the deduction are the same call, so there is no window
+  // between them in which a second tap could spend the same coins.
+  //
+  // Optimistic like equipping, and refunded on a failed write. A
+  // student who is charged for an item the database never recorded is
+  // the one failure here that would actually matter to them.
+  // -----------------------------------------------------------
+
+  async buy(id) {
+    const item = this.item(id);
+    if (!item || !currentUserId) return false;
+    if (this.owns(id)) return false;
+
+    const price = Math.max(0, item.price || 0);
+    if (!window.Game || !Game.spendCurrency) return false;
+    if (!Game.spendCurrency(price)) return false;
+
+    this.ownedIds.push(id);
+    this._changed();
+
+    try {
+      const { error } = await sb
+        .from("player_inventory")
+        .upsert(
+          { student_id: currentUserId, item_id: id, quantity: 1 },
+          { onConflict: "student_id,item_id" }
+        );
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.error("purchase failed:", err);
+
+      if (Game.addCurrency) Game.addCurrency(price);
+      const at = this.ownedIds.indexOf(id);
+      if (at !== -1) this.ownedIds.splice(at, 1);
+      this._changed();
+      return false;
+    }
+  },
+
   // Convenience for the screen: tapping the item you are wearing takes
   // it off, tapping any other one puts it on.
   async toggle(id) {
@@ -293,6 +348,18 @@ const Inventory = {
 
   applyEffects() {
     if (window.Game && Game.setEffects) Game.setEffects(this.effects());
+    this.applyOutfit();
+  },
+
+  // The outfit slot changes the sprite and nothing else, so it is applied
+  // beside the numeric effects rather than through them. Passing nothing
+  // restores the base sheets, which is also what a student wearing an
+  // outfit whose art has since been deleted gets: the sheet fails to
+  // load, applyAnim draws the placeholder, and the game keeps running.
+  applyOutfit() {
+    if (!window.Game || !Game.setOutfit) return;
+    const worn = this.item(this.equipped("outfit"));
+    Game.setOutfit(worn && worn.sheets ? worn.sheets : null);
   },
 };
 

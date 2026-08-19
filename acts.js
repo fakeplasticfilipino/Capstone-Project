@@ -183,6 +183,47 @@ const Acts = {
   },
 
   // -----------------------------------------------------------
+  // Currency
+  //
+  // An act pays exactly its rounded performance score, in two parts
+  // that sum to it.
+  //
+  // The completion term of the score is worth 50, so the drip below
+  // is that term paid as it is earned, one objective at a time, and
+  // the payment at the end is the survival and stealth half. It
+  // explains itself to a student in a sentence: you are paid for
+  // what you finish, and paid again for how well you did it.
+  //
+  // Paying during the act rather than only at the end is what makes
+  // the shop reachable inside one class period. Act I has five
+  // objectives, so a student holds 50 before the outpost is over,
+  // which is the price of the cheaper outfit.
+  //
+  // NOTHING NEW IS STORED to make this idempotent. The amount already
+  // dripped is the per-objective rate times objectives_done, and
+  // objectives_done is already in act_progress, so a student who
+  // reloads cannot be paid twice for the same objective.
+  // -----------------------------------------------------------
+
+  COMPLETION_POOL: 50, // matches the completion weight in scoreFor
+
+  perObjective(total) {
+    if (!total) return 0;
+    return Math.floor(this.COMPLETION_POOL / total);
+  },
+
+  award(amount, toast) {
+    const n = Math.max(0, Math.round(amount || 0));
+    if (!n) return 0;
+    if (!window.Game || !Game.addCurrency) return 0;
+    Game.addCurrency(n);
+    if (toast && typeof showToast === "function") {
+      showToast(`+${n} barya`);
+    }
+    return n;
+  },
+
+  // -----------------------------------------------------------
   // Sessions
   //
   // acts.js is the only writer, because acts.js owns the act
@@ -202,6 +243,7 @@ const Acts = {
   // -----------------------------------------------------------
 
   _sessionId: null,
+  _lastAward: 0,
 
   async startSession(n) {
     if (!currentUserId) return;
@@ -465,6 +507,30 @@ const Acts = {
         return; // leave _lastDone alone so the next save retries
       }
 
+      // AFTER the write returned without error, and before _lastDone
+      // moves. A failed write returns above without touching _lastDone
+      // so the next save retries the objective; paying out before that
+      // point would pay for the retry as well.
+      //
+      // _lastDone of -1 means this session does not yet know what the
+      // student had already finished, and therefore does not know what
+      // has already been paid for. It pays nothing and records the
+      // baseline instead.
+      //
+      // That guard is load bearing rather than defensive. saveProgress
+      // calls this on its own cadence, and the debounced save fires
+      // between saveReady and syncStart on every login. Without it, a
+      // student resuming an act four objectives in is paid forty barya
+      // for those four objectives again, every single time they log in.
+      // The harness caught exactly that.
+      //
+      // Nothing is lost on the enterAct path, where _lastDone is also
+      // -1: a freshly entered act has no objectives done, so there is
+      // nothing owed at that moment anyway.
+      if (this._lastDone >= 0) {
+        this.award(this.perObjective(total) * (done - this._lastDone), true);
+      }
+
       this._lastDone = done;
       if (this.progress[n]) this.progress[n].objectives_done = done;
     } finally {
@@ -562,6 +628,21 @@ const Acts = {
     this.status = "completed";
     this._lastDone = done;
     this.progress[n] = { status: "completed", objectives_done: done };
+
+    // Whatever the act owes beyond what the objectives already paid.
+    // Floored at zero: a student who took enough damage to zero both
+    // the survival and stealth terms has already been paid the whole
+    // score by the drip, and an act must never claw currency back.
+    //
+    // Held for the transition screen rather than toasted, because the
+    // completion write is followed by the post-test and the feedback
+    // form, and a toast fired now would be gone before the student
+    // looks at the world again.
+    const dripped = this.perObjective(total) * done;
+    this._lastAward = this.award(
+      Math.max(0, this.scoreFor(done, total, stats) - dripped),
+      false
+    );
 
     await this.endSession();
 
@@ -701,11 +782,20 @@ const Acts = {
     const next = fromAct + 1;
     const nextAct = this.getAct(next);
 
+    // Read once and cleared, so a transition shown twice does not claim
+    // the award twice.
+    const award = this._lastAward || 0;
+    this._lastAward = 0;
+
+    const earned = award ? `Nakakuha ka ng ${award} barya. ` : "";
+
     if (!nextAct) {
       await this._screen({
         eyebrow: `Natapos: ${ACT_ORDINALS[fromAct] || "Yugto " + fromAct}`,
         title: "Wakas",
-        body: "Natapos mo ang buong kuwento. Maraming salamat sa paglalaro.",
+        body:
+          earned +
+          "Natapos mo ang buong kuwento. Maraming salamat sa paglalaro.",
         button: "",
       });
       return;
@@ -714,7 +804,7 @@ const Acts = {
     await this._screen({
       eyebrow: `Natapos: ${ACT_ORDINALS[fromAct] || "Yugto " + fromAct}`,
       title: "Magaling!",
-      body: `Susunod: ${nextAct.titleTagalog || nextAct.title}`,
+      body: `${earned}Susunod: ${nextAct.titleTagalog || nextAct.title}`,
       button: `Magpatuloy sa ${ACT_ORDINALS[next] || "Yugto " + next}`,
     });
 

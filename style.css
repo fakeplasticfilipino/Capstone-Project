@@ -1185,6 +1185,37 @@ h2.shell-heading {
   margin-top: 4px;
 }
 
+/* The balance. Amber, because it is the number the shop screen is
+   about, and repeated on both panels so a student never has to go
+   back a screen to find out what they can afford. */
+.inv-balance {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.inv-balance span {
+  color: #ffd54f;
+  font-weight: bold;
+}
+
+/* An owned or unaffordable row stays visible and stops responding,
+   rather than vanishing. A list that shrinks as you buy from it
+   leaves a student wondering what they missed. */
+.inv-item:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.inv-item-owned {
+  border-color: #43a047;
+}
+
+.inv-item-owned .inv-item-action {
+  color: #81c784;
+}
+
 .inv-empty {
   font-size: 12px;
   color: #777;

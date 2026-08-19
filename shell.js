@@ -88,6 +88,7 @@ const Shell = {
         pause: document.getElementById("shell-pause"),
         settings: document.getElementById("shell-settings"),
         inventory: document.getElementById("shell-inventory"),
+        shop: document.getElementById("shell-shop"),
         logout: document.getElementById("shell-logout-confirm"),
       },
       startBtn: document.getElementById("shell-start"),
@@ -106,6 +107,12 @@ const Shell = {
       inventoryNote: document.getElementById("shell-inventory-note"),
       slots: document.getElementById("shell-slots"),
       items: document.getElementById("shell-items"),
+      balance: document.getElementById("shell-balance"),
+      shopOpen: document.getElementById("shell-shop-open"),
+      shopBack: document.getElementById("shell-shop-back"),
+      shopList: document.getElementById("shell-shop-list"),
+      shopNote: document.getElementById("shell-shop-note"),
+      shopBalance: document.getElementById("shell-shop-balance"),
       pauseBtn: document.getElementById("btn-pause"),
     };
   },
@@ -139,10 +146,17 @@ const Shell = {
       );
       this.el.items.addEventListener("click", (e) => this._onItemTap(e));
 
+      this.el.shopOpen.addEventListener("click", () => this._openShop());
+      this.el.shopBack.addEventListener("click", () => this._closeShop());
+      this.el.shopList.addEventListener("click", (e) => this._onBuyTap(e));
+
       // inventory.js owns the state and tells the screen when it moved,
       // including when it puts an optimistic change back after a failed
       // write. The shell only ever draws what it is told.
-      Inventory.onChange(() => this._renderInventory());
+      Inventory.onChange(() => {
+        this._renderInventory();
+        if (this.state === "shop") this._renderShop();
+      });
     }
 
     this.el.settingsBack.addEventListener("click", () => this._closeSettings());
@@ -168,6 +182,7 @@ const Shell = {
       else if (this.state === "paused") this.closePause();
       else if (this.state === "settings") this._closeSettings();
       else if (this.state === "inventory") this._closeInventory();
+      else if (this.state === "shop") this._closeShop();
     });
   },
 
@@ -412,6 +427,7 @@ const Shell = {
     if (!this.el.slots) return;
 
     this.el.inventoryNote.textContent = "";
+    this.el.balance.textContent = String(Inventory.balance());
 
     this.el.slots.innerHTML = "";
     Inventory.SLOTS.forEach((slot) => {
@@ -488,6 +504,95 @@ const Shell = {
       this.el.inventoryNote.textContent = wrote
         ? ""
         : "Hindi na-save. Suriin ang koneksyon.";
+    });
+  },
+
+  // -----------------------------------------------------------
+  // Shop
+  //
+  // A panel off the inventory rather than off pause. The two belong
+  // together, and the pause screen already carries four buttons at a
+  // width where a fifth starts to push the logout button off a phone.
+  // -----------------------------------------------------------
+
+  _openShop() {
+    if (!window.Inventory) return;
+    if (this.state !== "inventory") return;
+    this.state = "shop";
+    this._renderShop();
+    this._showPanel("shop");
+  },
+
+  _closeShop() {
+    if (this.state !== "shop") return;
+    this.state = "inventory";
+    this._renderInventory();
+    this._showPanel("inventory");
+  },
+
+  // Every priced item, owned or not. An owned one stays on the list
+  // marked as owned rather than disappearing, so a student can see
+  // what they already have instead of wondering where it went.
+  //
+  // A row whose art has not been drawn yet is still bought and still
+  // worn. The missing sheet falls back to the dashed placeholder the
+  // same way every other missing image in this game does, which is
+  // one behaviour to explain rather than two.
+  _renderShop() {
+    if (!window.Inventory) return;
+    if (!this.el.shopList) return;
+
+    this.el.shopNote.textContent = "";
+
+    const balance = Inventory.balance();
+    this.el.shopBalance.textContent = String(balance);
+
+    this.el.shopList.innerHTML = "";
+
+    Inventory.forSale().forEach((item) => {
+      const owned = Inventory.owns(item.id);
+      const price = item.price || 0;
+      const affordable = balance >= price;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "inv-item" + (owned ? " inv-item-owned" : "");
+      btn.dataset.buyId = item.id;
+      btn.disabled = owned || !affordable;
+
+      const name = document.createElement("div");
+      name.className = "inv-item-name";
+      name.textContent = item.name;
+
+      const action = document.createElement("span");
+      action.className = "inv-item-action";
+      action.textContent = owned
+        ? "Pag-aari"
+        : affordable
+        ? `Bilhin: ${price}`
+        : `Kulang: ${price}`;
+      name.appendChild(action);
+
+      const desc = document.createElement("div");
+      desc.className = "inv-item-desc";
+      desc.textContent = item.description || "";
+
+      btn.appendChild(name);
+      btn.appendChild(desc);
+      this.el.shopList.appendChild(btn);
+    });
+  },
+
+  _onBuyTap(e) {
+    const btn = e.target.closest("[data-buy-id]");
+    if (!btn || !window.Inventory) return;
+
+    Inventory.buy(btn.dataset.buyId).then((bought) => {
+      if (this.state !== "shop") return;
+      this._renderShop();
+      this.el.shopNote.textContent = bought
+        ? ""
+        : "Hindi natuloy ang pagbili.";
     });
   },
 

@@ -743,12 +743,25 @@ const visible = (page, sel) => page.evaluate((s) => {
         (i) => i.id && i.kind && i.slot && i.name
       ),
       slots: window.ITEMS.map((i) => i.slot),
+      equipment: window.ITEMS.filter((i) => i.kind === "equipment").length,
+      cosmetics: window.ITEMS.filter((i) => i.kind === "cosmetic").length,
+      // A cosmetic that carries an effect is not a cosmetic. This is the
+      // check that stops the outfit slot quietly becoming a third
+      // equipment slot.
+      cosmeticsAreInert: window.ITEMS
+        .filter((i) => i.kind === "cosmetic")
+        .every((i) => !i.effect),
+      granted: window.ITEMS.filter((i) => i.grantedOnAct === 1).length,
+      priced: window.ITEMS.filter((i) => (i.price || 0) > 0).length,
     }));
-    ok("the catalogue loaded", shape.count === 2, shape.count);
+    ok("the catalogue loaded", shape.count >= 4, shape.count);
     ok("every item has an id, kind, slot and name", shape.wellFormed, shape);
     ok("one weapon and one accessory",
        shape.slots.includes("weapon") && shape.slots.includes("accessory"),
        shape.slots);
+    ok("two granted equipment items", shape.equipment === 2 && shape.granted === 2, shape);
+    ok("two priced cosmetics", shape.cosmetics === 2 && shape.priced === 2, shape);
+    ok("cosmetics carry no effect", shape.cosmeticsAreInert, shape);
 
     await ctx.close();
   }
@@ -988,6 +1001,328 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("the act still completes with no inventory module",
        status === "completed", status);
+
+    await ctx.close();
+  }
+
+  // -----------------------------------------------------------------
+  // Block 11. Currency and cosmetics.
+  // -----------------------------------------------------------------
+
+  console.log("\nV. The currency award");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    // The regression this section exists for. This student resumes four
+    // objectives into Act I, and the debounced save fires between
+    // saveReady and syncStart on every login. Paying on that pass would
+    // hand out forty barya per login for work done in an earlier session.
+    ok("resuming an act part-done pays nothing for it",
+       (await page.evaluate(() => Game.currency())) === 0,
+       await page.evaluate(() => Game.currency()));
+
+    ok("the rate is the completion pool split across the objectives",
+       (await page.evaluate(() => Acts.perObjective(5))) === 10);
+    ok("an act with no objectives pays nothing per objective",
+       (await page.evaluate(() => Acts.perObjective(0))) === 0);
+
+    // The outpost save arrives four objectives in, and completing the
+    // fifth would run the whole end-of-act flow. finishAct is stubbed and
+    // the flags are cleared so this section measures the drip and nothing
+    // else; the sum of both payments has its own section below.
+    const dripped = await page.evaluate(async () => {
+      Acts.finishAct = async function () {};
+      Acts.objectivesFor(1).forEach((o) => { delete state.flags[o.flag]; });
+      Acts._lastDone = -1;
+      Acts.status = "playing";
+
+      // Settles _lastDone at zero. Nothing is owed for objectives nobody
+      // completed, which is the -1 clamp being exercised rather than
+      // assumed.
+      await Acts.checkObjectives();
+      const settled = Game.currency();
+
+      state.flags[Acts.objectivesFor(1)[0].flag] = true;
+      await Acts.checkObjectives();
+      return { settled, after: Game.currency() };
+    });
+    ok("a fresh act pays nothing for objectives nobody completed",
+       dripped.settled === 0, dripped);
+    ok("completing an objective pays the rate",
+       dripped.after - dripped.settled === 10, dripped);
+
+    // And only once. A second recount with nothing new must pay nothing,
+    // which is what stops the autosave cadence paying every ten seconds.
+    const again = await page.evaluate(async () => {
+      const before = Game.currency();
+      await Acts.checkObjectives();
+      return { before, after: Game.currency() };
+    });
+    ok("a recount with nothing new pays nothing",
+       again.after === again.before, again);
+
+    // A failed act_progress write must not pay. _lastDone is left alone
+    // on that path so the next save retries the objective, and paying
+    // here would pay for the retry twice over.
+    const failed = await page.evaluate(async () => {
+      const realFrom = sb.from;
+      sb.from = function (table) {
+        if (table !== "act_progress") return realFrom.call(sb, table);
+        return {
+          upsert: () => Promise.resolve({ error: { message: "simulated" } }),
+        };
+      };
+
+      state.flags[Acts.objectivesFor(1)[1].flag] = true;
+      const before = Game.currency();
+      await Acts.checkObjectives();
+      const after = Game.currency();
+
+      sb.from = realFrom;
+      await Acts.checkObjectives(); // the retry, which does land
+      return { before, after, retried: Game.currency() };
+    });
+    ok("a failed write pays nothing", failed.after === failed.before, failed);
+    ok("the retried objective is paid once it lands",
+       failed.retried - failed.before === 10, failed);
+
+    await ctx.close();
+  }
+
+  console.log("\nW. The award sums to the score");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    const totals = await page.evaluate(async () => {
+      // finishAct runs the post-test, the feedback form and the
+      // transition, none of which this section is about. complete() is
+      // called directly instead, which is the write those steps wrap.
+      Acts.finishAct = async function () {};
+      Acts.showTransition = function () {};
+
+      Game.resetStats();
+      Acts.objectivesFor(1).forEach((o) => { delete state.flags[o.flag]; });
+      Acts._lastDone = -1;
+      Acts.status = "playing";
+      await Acts.checkObjectives();
+
+      const before = Game.currency();
+      Acts.objectivesFor(1).forEach((o) => { state.flags[o.flag] = true; });
+      await Acts.checkObjectives(); // drips the completion half
+      const afterDrip = Game.currency();
+      await Acts.complete();        // pays the remainder
+
+      const total = Acts.objectivesFor(1).length;
+      const row = __DB.act_progress.find((r) => r.act_number === 1);
+      return {
+        dripped: afterDrip - before,
+        paid: Game.currency() - before,
+        score: row.performance_score,
+        total,
+        award: Acts._lastAward,
+      };
+    });
+    ok("the drip is the completion half",
+       totals.dripped === 50, totals);
+    ok("the total paid is the rounded score",
+       totals.paid === Math.round(totals.score), totals);
+    ok("an act cannot pay more than 100",
+       totals.paid <= 100, totals);
+    ok("the completion award is held for the transition screen",
+       totals.award === totals.paid - totals.dripped, totals);
+
+    await ctx.close();
+  }
+
+  console.log("\nX. Spending");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    const short = await page.evaluate(async () => {
+      const bought = await Inventory.buy("damit-magsasaka");
+      return { bought, currency: Game.currency(),
+               owns: Inventory.owns("damit-magsasaka"),
+               rows: __DB.player_inventory.length };
+    });
+    ok("buying with no money is refused", short.bought === false, short);
+    ok("a refused purchase writes nothing", short.rows === 2, short);
+    ok("and does not hand over the item", !short.owns, short);
+
+    const bought = await page.evaluate(async () => {
+      Game.addCurrency(100);
+      const ok1 = await Inventory.buy("damit-magsasaka");
+      return { ok1, currency: Game.currency(),
+               rows: __DB.player_inventory.length,
+               owns: Inventory.owns("damit-magsasaka") };
+    });
+    ok("buying what you can afford works", bought.ok1 === true, bought);
+    ok("the price is deducted once", bought.currency === 50, bought);
+    ok("one inventory row is written", bought.rows === 3, bought);
+    ok("the item is owned afterwards", bought.owns, bought);
+
+    const twice = await page.evaluate(async () => {
+      const again = await Inventory.buy("damit-magsasaka");
+      return { again, currency: Game.currency(),
+               rows: __DB.player_inventory.length };
+    });
+    ok("buying it again is refused", twice.again === false, twice);
+    ok("and does not charge twice", twice.currency === 50, twice);
+    ok("and writes no second row", twice.rows === 3, twice);
+
+    // A failed write must refund. Being charged for an item the database
+    // never recorded is the one failure here a student would notice.
+    const refunded = await page.evaluate(async () => {
+      const realFrom = sb.from;
+      sb.from = function (table) {
+        if (table !== "player_inventory") return realFrom.call(sb, table);
+        return { upsert: () => Promise.resolve({ error: { message: "simulated" } }) };
+      };
+      const before = Game.currency();
+      const ok2 = await Inventory.buy("damit-katipunero");
+      sb.from = realFrom;
+      return { ok2, before, after: Game.currency(),
+               owns: Inventory.owns("damit-katipunero") };
+    });
+    ok("a failed purchase reports failure", refunded.ok2 === false, refunded);
+    ok("a failed purchase refunds", refunded.after === refunded.before, refunded);
+    ok("and does not leave the item owned", !refunded.owns, refunded);
+
+    // The balance has to survive a save and a reload, or a student is
+    // paid for an act twice over across two sessions.
+    await page.evaluate(async () => { await Game.flushSave(); });
+    const saved = await page.evaluate(() =>
+      __DB.game_progress[0].currency);
+    ok("the balance is written to game_progress", saved === 50, saved);
+
+    await ctx.close();
+  }
+
+  console.log("\nY. Outfits");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    // Walk.png is the one sprite sheet that actually exists, so it stands
+    // in for an outfit here. When the artist delivers, the only thing
+    // that changes is the src in content/items.js.
+    // Deliberately a src that is NOT the base sheet, or the assertion
+    // passes just as well when the outfit is ignored entirely.
+    const swapped = await page.evaluate(async () => {
+      await Game.setOutfit({
+        walk: { src: "Assets/Skin_Test_Walk.png", frames: 12, fps: 12, columns: 5 },
+      });
+      return { src: SPRITE_SHEETS.walk.src, idle: SPRITE_SHEETS.idle.src };
+    });
+    ok("an outfit replaces the sheet it declares",
+       swapped.src === "Assets/Skin_Test_Walk.png", swapped);
+    ok("and leaves the sheets it does not declare alone",
+       swapped.idle === "Assets/Idle.png", swapped);
+
+    // Walk.png is the one sheet that actually exists, so it stands in for
+    // an outfit whose art has been drawn.
+    const painted = await page.evaluate(async () => {
+      await Game.setOutfit({
+        walk: { src: "Assets/Walk.png", frames: 12, fps: 12, columns: 5 },
+      });
+      applyAnim("walk", true);
+      return playerSpriteEl.style.backgroundImage;
+    });
+    ok("an outfit whose art exists repaints the player",
+       painted.includes("Walk.png"), painted);
+
+    const restored = await page.evaluate(async () => {
+      await Game.setOutfit(null);
+      return SPRITE_SHEETS.walk.src;
+    });
+    ok("passing nothing restores the base sheets",
+       restored === "Assets/Walk.png", restored);
+
+    // An outfit whose art has not been drawn is bought, worn, and shown
+    // as the dashed placeholder, exactly like every other missing image.
+    // No special case, and nothing hidden from the student.
+    const missing = await page.evaluate(async () => {
+      Game.addCurrency(100);
+      const bought = await Inventory.buy("damit-magsasaka");
+      const wore = await Inventory.equip("damit-magsasaka");
+      await new Promise((r) => setTimeout(r, 300));
+      applyAnim("walk", true);
+      return {
+        bought, wore,
+        equipped: Inventory.equipped("outfit"),
+        failed: SPRITE_SHEETS.walk.failed,
+        placeholder: playerSpriteEl.textContent,
+      };
+    });
+    ok("an outfit with no art is still purchasable", missing.bought, missing);
+    ok("and still equippable", missing.wore && missing.equipped === "damit-magsasaka",
+       missing);
+    ok("its missing sheet falls back to the placeholder",
+       missing.failed === true, missing);
+    ok("the placeholder names the file the artist owes",
+       missing.placeholder.includes("Skin_Walk.png"), missing.placeholder);
+
+    // Taking it off has to put the working sprite back.
+    const off = await page.evaluate(async () => {
+      await Inventory.unequip("outfit");
+      await new Promise((r) => setTimeout(r, 300));
+      return { src: SPRITE_SHEETS.walk.src, failed: SPRITE_SHEETS.walk.failed };
+    });
+    ok("unequipping restores the base walk cycle",
+       off.src === "Assets/Walk.png" && !off.failed, off);
+
+    await ctx.close();
+  }
+
+  console.log("\nZ. The shop screen");
+  {
+    const { ctx, page } = await enterOutpost();
+    await page.evaluate(() => Game.addCurrency(60));
+
+    await page.click("#btn-pause");
+    await page.waitForTimeout(150);
+    await page.click("#shell-inventory-open");
+    await page.waitForTimeout(100);
+    ok("the balance shows on the inventory screen",
+       (await page.textContent("#shell-balance")).trim() === "60");
+
+    await page.click("#shell-shop-open");
+    await page.waitForTimeout(100);
+    ok("the shop opens", await visible(page, "#shell-shop"));
+    ok("shell state is shop",
+       (await page.evaluate(() => Shell.state)) === "shop");
+    ok("both cosmetics are listed",
+       (await page.evaluate(() =>
+         document.querySelectorAll("#shell-shop-list .inv-item").length)) === 2);
+    ok("the one you cannot afford is disabled",
+       await page.isDisabled('[data-buy-id="damit-katipunero"]'));
+    ok("the one you can afford is not",
+       !(await page.isDisabled('[data-buy-id="damit-magsasaka"]')));
+
+    await page.click('[data-buy-id="damit-magsasaka"]');
+    await page.waitForTimeout(200);
+    ok("buying deducts from the shown balance",
+       (await page.textContent("#shell-shop-balance")).trim() === "10");
+    ok("the bought row reads as owned",
+       (await page.textContent('[data-buy-id="damit-magsasaka"]')).includes("Pag-aari"));
+    ok("the bought row stops responding",
+       await page.isDisabled('[data-buy-id="damit-magsasaka"]'));
+    ok("no failure note on a good purchase",
+       (await page.textContent("#shell-shop-note")).trim() === "");
+
+    await page.click("#shell-shop-back");
+    await page.waitForTimeout(100);
+    ok("back returns to the inventory", await visible(page, "#shell-inventory"));
+    ok("the new outfit is in the owned list",
+       (await page.evaluate(() =>
+         document.querySelectorAll("#shell-items .inv-item").length)) === 3);
+    ok("the inventory balance kept up",
+       (await page.textContent("#shell-balance")).trim() === "10");
+
+    await page.click("#shell-inventory-back");
+    await page.waitForTimeout(100);
+    await page.click("#shell-resume");
+    await page.waitForTimeout(100);
+    ok("resuming from the shop path still works",
+       !(await page.evaluate(() => Game.isPaused())));
 
     await ctx.close();
   }

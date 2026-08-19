@@ -588,11 +588,18 @@ const playerSpriteEl = player.querySelector(".player-sprite");
 // columns is how many frames sit across one row of the sheet. Omit it
 // for a plain single-row strip and it defaults to the frame count.
 // Walk.png is a 5 + 5 + 2 grid, so 12 frames across 5 columns.
-const SPRITE_SHEETS = {
+// The sheets Macario wears with nothing equipped. An outfit replaces
+// whichever of the three it declares and leaves the rest alone, so a
+// cosmetic that only redraws the walk cycle is a complete outfit.
+const BASE_SPRITE_SHEETS = {
   idle: { src: "Assets/Idle.png", frames: 6, fps: 6, columns: 6 },
   walk: { src: "Assets/Walk.png", frames: 12, fps: 12, columns: 5 },
   dead: { src: "Assets/Dead.png", frames: 5, fps: 6, columns: 5, loop: false },
 };
+
+// The set actually in use. Reassigned by setOutfit, which is why this is
+// a let; everything that draws the player reads it rather than the base.
+let SPRITE_SHEETS = BASE_SPRITE_SHEETS;
 
 function loadSpriteSheet(def) {
   return new Promise((resolve) => {
@@ -666,6 +673,38 @@ Promise.all([
   spritesReady = true;
   applyAnim(currentAnim, true);
 });
+
+// Swaps the player's sheets for an outfit's, or back to the base set when
+// passed nothing. inventory.js is the only caller.
+//
+// A sheet that fails to load is NOT special-cased. It goes through the same
+// dashed placeholder every other missing image in this project goes
+// through, showing the filename it wanted, which is how the artist finds
+// out what to draw. Hiding an outfit until its art exists would mean two
+// behaviours for one situation.
+async function setOutfit(sheets) {
+  const next = Object.assign({}, BASE_SPRITE_SHEETS);
+
+  if (sheets) {
+    ["idle", "walk", "dead"].forEach((name) => {
+      if (sheets[name] && sheets[name].src) next[name] = sheets[name];
+    });
+  }
+
+  SPRITE_SHEETS = next;
+
+  // loadSpriteSheet caches its geometry onto the def, so re-loading the
+  // base sheets costs a cache hit and nothing else. It resolves rather
+  // than rejects on a missing file, so this never hangs.
+  await Promise.all([
+    loadSpriteSheet(next.idle),
+    loadSpriteSheet(next.walk),
+    loadSpriteSheet(next.dead),
+  ]);
+
+  spritesReady = true;
+  applyAnim(currentAnim, true);
+}
 
 function applyAnim(name, force) {
   if (!spritesReady) return;
@@ -759,6 +798,18 @@ let invulnUntil = 0; // timestamp; damage before this is ignored
 let damageTaken = 0;
 let detections = 0;
 let playMs = 0; // unpaused, unblocked play time
+
+// --- Currency ------------------------------------------------------------
+// Lives here because game.js is the only writer of game_progress, and
+// currency is save state exactly like quests, flags and position. acts.js
+// awards it and inventory.js spends it, both through the facade; neither
+// touches the column.
+//
+// Client written, per the decision on record. A student with the console
+// open can set it to anything, which is acceptable because it buys
+// cosmetics only and touches nothing the teacher dashboard reports. That
+// belongs in the documentation rather than in a defence nobody asked for.
+let currency = 0;
 
 let currentRoom = "road"; // the current scene id, persisted as-is
 let authGated = true; // true until the player is logged in
@@ -2073,6 +2124,8 @@ function applyLoadedState(row) {
     }
   }
 
+  if (typeof row.currency === "number") currency = row.currency;
+
   if (typeof saved.posX === "number") {
     posX = saved.posX;
     // Drop to whatever surface is under the restored position, rather
@@ -2118,6 +2171,7 @@ async function saveProgress() {
     // for the next login to resume into.
     current_act: window.Acts ? Acts.current : 1,
     is_night: skylineNight.classList.contains("visible"),
+    currency,
     save_state: {
       quests,
       flags: state.flags,
@@ -2179,6 +2233,33 @@ window.Game = {
   // a bonus and a multiplier and never learns what produced them, which is
   // the same line game.js holds against acts.js.
   setEffects,
+
+  // Swaps the player's sprite sheets for an outfit's. Awaitable, because
+  // the sheets have to load before the swap is visible.
+  setOutfit,
+
+  // Currency. acts.js awards it, inventory.js spends it, and the column
+  // itself is written by saveProgress along with everything else, so an
+  // award costs no extra round trip.
+  currency: () => currency,
+
+  addCurrency(amount) {
+    const n = Math.max(0, Math.round(Number(amount) || 0));
+    if (!n) return currency;
+    currency += n;
+    markDirty();
+    return currency;
+  },
+
+  // Returns false and changes nothing when the student is short, so a
+  // caller can treat it as the whole of the affordability check.
+  spendCurrency(amount) {
+    const n = Math.max(0, Math.round(Number(amount) || 0));
+    if (n > currency) return false;
+    currency -= n;
+    markDirty();
+    return true;
+  },
 
   // Called from Acts.enterAct, so the counters are per act. NOT called on
   // respawn, on a scene change, or on death: being sent back to the start

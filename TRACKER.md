@@ -20,7 +20,7 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 10 was built and passed the harness.
+Last updated: after Block 11 was built and passed the harness.
 
 ## Right now
 
@@ -29,14 +29,19 @@ run against the live database, the client is pushed, and Act I plays
 end to end on a desktop browser with hazards, pickups, the weighted
 performance score and the optional feedback form all working.
 
-Block 10 is written and passes the harness at 156 checks, and has NOT
-yet been run against the live database or pushed. It needed no
-migration: schema v3 already created player_inventory and
-player_equipment with their policies, so there is nothing to run in
-the SQL editor and nothing to add to the Run log. It moves to done
-below once the live checkpoint in its section passes.
+Block 10 is built, verified against the live database and live. It
+needed no migration: schema v3 already created player_inventory and
+player_equipment with their policies, so there is nothing in the Run
+log for it.
 
-The automated suite passes at 156 checks, 0 failures.
+Block 11 is written and passes the harness at 208 checks, and has NOT
+yet been run against the live database or pushed. It needed no
+migration either: game_progress.currency arrived in schema v3 and the
+ownership tables were already there, so there is nothing to run in
+the SQL editor. It moves to done below once the live checkpoint in
+its section passes.
+
+The automated suite passes at 208 checks, 0 failures.
 
 What is not done is everything that does not depend on writing more
 engine code: the game has never run on a real phone, the assessment
@@ -61,7 +66,7 @@ log below. Failure is another week passing with it still in the
 folder.
 
 After that, in order: a device pass on a real Android phone, then
-Block 10.
+Block 11.
 
 ## The milestone
 
@@ -134,9 +139,11 @@ Framework complete. Only Act I has content, and that content is
 placeholder pending a rewrite.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
-equipment, cosmetic rewards. (IN PROGRESS) Difficulty and health are
-complete. Equipment is built and awaiting its live check. Cosmetics
-are Block 11.
+equipment, cosmetic rewards. (IN PROGRESS) Difficulty, health and
+equipment are complete. The cosmetic system is built and awaiting its
+live check. After that, the only thing between this objective and
+(COMPLETE) is outfit art, which is a drawing task rather than a code
+one.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and
 post-tests, server-side grading, in-game performance scoring,
@@ -158,8 +165,8 @@ work through.
 | Narrative Delivery | (PARTIAL) Built for Act I only |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified in the harness; no act beyond Act I has guards yet |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups |
-| Equipment System | (BUILT, NOT LIVE) Two items, weapon and accessory slots, an inventory screen on pause. Harness green; not yet run against the live database |
-| Cosmetic Reward | (NOT BUILT) Currency column exists in schema v3. Block 11 |
+| Equipment System | (BUILT) Two items, weapon and accessory slots, an inventory screen on pause. Items are granted on act entry; the shop is Block 11 |
+| Cosmetic Reward | (BUILT, NOT LIVE) Currency awarded per act and scaled by performance, a shop inside the inventory, two priced outfits. Harness green. Outfits render as the placeholder box until their sheets are drawn |
 | Trivia | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Act Assessment | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded but not scored |
@@ -230,6 +237,13 @@ counters persisted in save_state, play time that excludes pauses, the
 weighted performance score, game_sessions rows, and the optional
 feedback form after the post-test. (COMPLETE)
 
+Block 10, inventory and equipment. content/items.js as the catalogue,
+inventory.js owning both ownership tables, an inventory screen on the
+pause panel, weapon and accessory slots, and two effects: a faster
+spear and one extra heart. Items are granted on entering the act
+whose content names them, because the shop is Block 11. No migration
+was needed. (COMPLETE)
+
 Act I content. Two scenes: the road and the outpost. Two patrolling
 guards, three crates, two platforms, two bamboo stake hazards, one
 heart pickup, and a kasama to deliver the message to. Placeholder
@@ -246,36 +260,31 @@ db/macario_items_v3.sql. (COMPLETE, NOT RUN)
 
 ## Blocks remaining
 
-Block 10, inventory and equipment. content/items.js as pure data,
-inventory.js owning both ownership tables, an inventory screen on the
-pause panel, weapon and accessory slots, and two effects: a faster
-spear and one extra heart. Items are granted on entering Act I rather
-than bought, because the shop is Block 11. No migration; schema v3
-already had the tables. (IN PROGRESS, awaiting the live check)
+Block 11, currency and cosmetics. Currency in game_progress, awarded
+as objectives land and topped up on completion so an act pays exactly
+its rounded performance score. A shop panel off the inventory screen,
+two outfits at 50 and 90, and a sprite swap that replaces whichever
+sheets an outfit declares. No migration was needed.
+(IN PROGRESS, awaiting the live check)
 
-The live checkpoint, in order. Run db/reset_test_accounts.sql, which
-now clears player_inventory and player_equipment too. Log in as
-hi@example.com and enter Act I. Pause, open Imbentaryo: two items
-listed, both slots reading Wala. Tap Agimat: the slot fills and the
-HUD shows four hearts with the fourth full. Resume, take a hazard
-hit: three of four. Reload and resume: still four hearts at full, and
-that is the check that equipment is being read back at login. Equip
-the sibat and hold attack: the spear crosses the outpost visibly
-faster and the next throw comes sooner. Set health to four and
-unequip the Agimat: three hearts, health clamped, not a fourth heart
-the HUD cannot draw. In Supabase, player_inventory holds two rows for
-the student and player_equipment never holds two rows for one slot.
-Teacher login in incognito is unchanged.
+The live checkpoint, in order. Run db/reset_test_accounts.sql. Log in
+as hi@example.com and enter Act I with a balance of zero. Complete an
+objective: a toast reads plus 10 and the inventory screen shows 10.
+Reload and resume: the balance is unchanged, and this is the check
+that matters most, because paying again on every login was a real bug
+the harness caught rather than a hypothetical. Finish the act: the
+transition names the award, and the total paid equals the
+performance_score on the act_progress row, rounded. Open Tindahan:
+Damit ng Magsasaka is buyable at 50 and Uniporme ng Katipunero reads
+Kulang until you can afford it. Buy one: the balance drops once, the
+row reads Pag-aari, and it appears in the owned list. Wear it: the
+player becomes a dashed placeholder box naming Skin_Walk.png, which
+is correct until that file exists. Take it off: the walk cycle comes
+back.
 
-Failure looks like a fourth heart that renders empty, a heart count
-that does not survive a reload, or an inventory screen that is empty
-after entering the act.
-
-Block 11, currency and cosmetics. Currency awarded on act completion
-and scaled by performance score, a simple shop inside the inventory
-screen, and period-correct outfits that change the player sprite.
-Closes the Cosmetic Reward requirement and the second objective.
-(NOT STARTED)
+Failure looks like a balance that grows on reload, a total that does
+not match the score, a purchase that charges twice, or a player
+sprite that does not come back after unequipping.
 
 Block 12, polish. The mobile control overflow, the outpost balance
 pass, and audio if there is time. (NOT STARTED)
@@ -299,8 +308,14 @@ written and ready. See Next action. (READY TO SEND)
 Chase the replacement art. Assets/ holds only a floor tile and the
 player walk cycle. Everything else falls back to a labelled
 placeholder box, so the game is fully playable and visually skeletal.
-That is the fallback system working, not a fault. Block 11's cosmetic
-system is pointless to demonstrate without at least two real outfits.
+That is the fallback system working, not a fault.
+
+Block 11 adds two named files to that list: Skin_Walk.png and
+Skin_Uniporme_Walk.png, the two outfits. Both are bought and worn
+today and both render as the placeholder, so the cosmetic system is
+complete in code and invisible on screen until they are drawn. The
+filenames and the sheet geometry are one line of content each in
+content/items.js; rename them to match whatever the artist delivers.
 (NOT STARTED)
 
 Provision student accounts for the session, and pilot with two or
@@ -350,7 +365,7 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-156 checks. Anything other than "0 failed" is a regression.
+208 checks. Anything other than "0 failed" is a regression.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at phone dimensions, so it cannot pass

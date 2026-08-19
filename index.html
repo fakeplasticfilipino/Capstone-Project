@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="style.css?v=7" />
+  <link rel="stylesheet" href="style.css?v=8" />
 </head>
 <body>
   <div id="app-scale">
@@ -163,6 +163,8 @@
           <div class="shell-eyebrow">MACARIO</div>
           <h2 class="shell-heading">Imbentaryo</h2>
 
+          <div class="inv-balance">Barya: <span id="shell-balance">0</span></div>
+
           <div class="shell-field">
             <div class="shell-label">Nakasuot</div>
             <div id="shell-slots" class="inv-slots"></div>
@@ -175,7 +177,28 @@
 
           <div id="shell-inventory-note" class="shell-note"></div>
 
+          <button id="shell-shop-open" class="shell-btn shell-btn-ghost" type="button">
+            Tindahan
+          </button>
           <button id="shell-inventory-back" class="shell-btn shell-btn-primary" type="button">
+            Bumalik
+          </button>
+        </div>
+
+        <div id="shell-shop" class="shell-panel hidden">
+          <div class="shell-eyebrow">MACARIO</div>
+          <h2 class="shell-heading">Tindahan</h2>
+
+          <div class="inv-balance">Barya: <span id="shell-shop-balance">0</span></div>
+
+          <div class="shell-field">
+            <div class="shell-label">Mabibili</div>
+            <div id="shell-shop-list" class="inv-items"></div>
+          </div>
+
+          <div id="shell-shop-note" class="shell-note"></div>
+
+          <button id="shell-shop-back" class="shell-btn shell-btn-primary" type="button">
             Bumalik
           </button>
         </div>
@@ -239,11 +262,11 @@
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
-  <script src="content/items.js?v=1"></script>
-  <script src="game.js?v=13"></script>
-  <script src="acts.js?v=5"></script>
-  <script src="inventory.js?v=1"></script>
+  <script src="content/items.js?v=2"></script>
+  <script src="game.js?v=14"></script>
+  <script src="acts.js?v=6"></script>
+  <script src="inventory.js?v=2"></script>
   <script src="assessment.js?v=2"></script>
-  <script src="shell.js?v=2"></script>
+  <script src="shell.js?v=3"></script>
 </body>
 </html>

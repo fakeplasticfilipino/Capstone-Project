@@ -108,7 +108,7 @@ checks window.Assessment before calling it, and the flow collapses to
 playing then completed without it.
 
 Inventory, in inventory.js. Owns player_inventory and player_equipment and
-is the only file that reads or writes either. It reduces the student's
+is the only file that reads or writes either, and owns the shop. It reduces the student's
 equipped items to plain numbers and hands them to the engine through
 Game.setEffects, so game.js never learns that an item exists. Optional the
 same way assessment.js is: acts.js checks window.Inventory before calling
@@ -158,6 +158,16 @@ game.js exposes window.Game and nothing else:
     stats()              { damageTaken, detections, playMs }, a copy
     resetStats()         called by Acts.enterAct, and by nothing else
     setEffects(obj)      { maxHealthBonus, projectileSpeedMult }
+    setOutfit(sheets)    awaitable; null restores the base sprites
+    currency()
+    addCurrency(n)
+    spendCurrency(n)     false and no change when the student is short
+
+Currency lives in game.js because game.js is the only writer of
+game_progress, and currency is save state exactly like quests, flags and
+position. acts.js awards it, inventory.js spends it, and neither touches
+the column. An award therefore costs no extra round trip: it rides the
+save that was going to happen anyway.
 
 setEffects takes numbers rather than items, deliberately. The engine applies
 a bonus and a multiplier and never learns what produced them, which is the
@@ -266,7 +276,13 @@ low-end phone would buy nothing. Only ownership is stored.
                                                  entering that act
       effect: { projectileSpeedMult: 1.5 }       equipment only
             | { maxHealthBonus: 1 }
+      sheets: { walk: {...} }                    cosmetic only; any of
+                                                 idle, walk, dead
     }
+
+A cosmetic's sheets take the sprite sheet shape below. An outfit replaces
+whichever of the three it declares and leaves the rest alone, so a skin
+that only redraws the walk cycle is a complete outfit.
 
 An earlier draft of this section named the effect projectileCooldown. There
 is no cooldown in the engine and never was: the limiter is one projectile in
@@ -280,8 +296,16 @@ is out of scope. Bonuses add and multipliers multiply, so an item with
 neither contributes nothing, which is what makes a cosmetic a cosmetic.
 
 Cosmetics are period-correct outfits and change the player sprite only.
-They never affect gameplay. None exist yet; the outfit slot is in the
-format and in the database, and Block 11 fills it.
+They never affect gameplay, and carry no effect object at all, which is
+what makes them cosmetic.
+
+The outfit art does not exist yet. A missing sheet falls back to the
+dashed placeholder box naming the file it wanted, exactly like every other
+missing image in this project, including Idle.png and Dead.png today. An
+outfit with no art is still bought, still worn, and still shown that way.
+There is deliberately no gate hiding it until the art lands: one behaviour
+for a missing image is easier to explain than two, and the placeholder is
+how the artist finds out what to draw.
 
 An item id is a text key with no foreign key behind it. An item deleted
 from the content file leaves an orphan ownership row that inventory.js
@@ -581,6 +605,31 @@ term measures damage taken rather than hearts remaining, so it stays
 comparable between students either way, and re-tuning a budget that was
 chosen rather than measured would only move the arbitrariness.
 
+An act pays exactly its rounded performance score, in two parts that sum
+to it. The completion term of the score is worth 50, so that half is
+dripped as objectives land, floor(50 / objectives_total) each, and the
+remainder is paid on completion. A student is paid for what they finish
+and paid again for how well they did it.
+
+Paying during the act rather than only at the end is what makes the shop
+reachable inside one class period. Act I has five objectives, so a student
+holds 50 before the outpost is over, which is the price of the cheaper
+outfit. Data collection covers Act I only, so an award that arrived after
+the post-test would never be spent by anyone in the study.
+
+Nothing new is stored to keep the drip idempotent. The amount already paid
+is the per-objective rate times objectives_done, which act_progress
+already holds, so a reload cannot be paid twice.
+
+Outfit prices are set against what one act pays. 50 and 90, against an
+award of 50 to 100, so every student who completes an act can afford the
+cheaper one and a strong run affords the better one. A shop that is a
+locked door to a student who struggled contradicts the no-game-over rule.
+
+Purchases are optimistic and refunded on a failed write, like equipping.
+Being charged for an item the database never recorded is the one failure
+in this system a student would actually notice.
+
 The ERD is revised to match what is built rather than the reverse.
 PlayerAction and the achievement entities are dropped: a per-action replay
 log costs writes on a phone on mobile data and would never be queried, and
@@ -623,6 +672,14 @@ happened, which is exactly the window the debounce would drop.
 
 Acts.syncStart awaits the entire pre-act flow, trivia card and pre-test
 included. Anything that gates entry has to sit before it, not after.
+
+The currency drip in checkObjectives pays nothing while _lastDone is -1,
+and that guard is load bearing rather than defensive. saveProgress calls
+checkObjectives on its own cadence, and the debounced save fires between
+saveReady and syncStart on every login, before syncStart has read what the
+student had already finished. Without the guard, a student resuming an act
+four objectives in is paid for those four objectives again on every single
+login. The harness caught it; nothing appeared in the console.
 
 ## Accounts
 
