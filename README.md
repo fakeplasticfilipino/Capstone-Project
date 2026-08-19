@@ -108,6 +108,10 @@ nothing.
     enrollment_setup.sql   role and class assignment helper
     create_accounts.js     admin script, runs locally only
 
+    _dev/test.js          headless test suite, 55 checks
+    _dev/sb-stub.js       fake Supabase client used by the suite
+    _dev/README.md        how to run it
+
     CLAUDE.md             architecture and conventions
     TRACKER.md            current build status
     PAPER_VS_BUILD.md     audit of the proposal against the code
@@ -126,3 +130,13 @@ they cannot be read from developer tools.
 
 Each student may take each test once per act, enforced by a unique
 constraint and by the grading function.
+
+## Tests
+
+    npm install -D playwright
+    npx playwright install chromium
+    node _dev/test.js
+
+Serves the repository, opens index.html in headless Chromium at phone
+dimensions, and drives the real game against a fake in-memory database. It
+never touches the live Supabase project. See _dev/README.md.

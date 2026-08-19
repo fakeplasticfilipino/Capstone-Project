@@ -231,13 +231,22 @@ that for three of five items.
 
 ## Testing
 
-There is a development harness that is not in the repository: a stubbed
-Supabase client and Playwright suites driving Chromium at phone dimensions
-against a fake database. Block 7 adds 55 checks covering the entry gate on
-both the fresh and resuming paths, pause halting guard patrol and the
-detection meter, the invulnerability offset, settings persistence, logout
-confirmation, the legacy current_room fallback, and a stalled load offering
-a way out.
+The test harness now lives in the repository at _dev/, so it no longer has
+to be rebuilt from scratch each session. Run it with node _dev/test.js from
+the repository root; see _dev/README.md for setup.
+
+55 checks covering the entry gate on both the fresh and resuming paths,
+pause halting guard patrol and the detection meter, the invulnerability
+offset, settings persistence, logout confirmation, the legacy current_room
+fallback, and a stalled load offering a way out.
+
+It drives the shipping index.html rather than a copy, by intercepting the
+request for supabaseClient.js and swapping in a fake client. The suite
+therefore cannot pass against a page that students no longer load.
+
+Add checks in the same block that adds the system. A suite that lags behind
+the build is worse than none, because it reports green on code it never
+exercised.
 
 It is not a substitute for a device pass. Nothing has ever run on a real
 phone.

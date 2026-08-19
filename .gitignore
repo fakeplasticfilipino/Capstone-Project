@@ -7,3 +7,8 @@ create_accounts.js
 .env.local
 *.secret
 secret_key.txt
+
+# Test tooling dependencies. _dev/ itself IS tracked; only the
+# installed packages are not.
+node_modules/
+package-lock.json
