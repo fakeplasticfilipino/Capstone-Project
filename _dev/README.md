@@ -8,15 +8,14 @@ without rebuilding a test rig first.
 
 From the repository root:
 
-    npm install -D playwright
-    npx playwright install chromium
+    npm install
     node _dev/test.js
 
 Expected output ends with a count. Anything other than "0 failed" is a
 regression.
 
-The install steps are one-time. Add node_modules/ to .gitignore before
-running them.
+The install is one-time. node_modules/ and package-lock.json are already
+in .gitignore; _dev/ itself is tracked.
 
 ## What it does
 
@@ -37,26 +36,17 @@ index.html, in its real script order, and cannot drift away from it.
 
 ## What it covers
 
-55 checks across five scenarios.
+Deliberately not listed scenario by scenario here. That list went stale
+twice, and a tooling README that misstates coverage is worse than one that
+does not try. The suite prints its own count, and the scenario headings in
+test.js are the inventory.
 
-A. A fresh student with no stored session: title screen offers Magsimula,
-the login box appears only after tapping it, the pre-act flow runs, and a
-game_progress row is created.
+The shape is: a fresh student with no stored session, a returning student
+mid Act I at the outpost, settings persistence across a reload, backward
+compatibility with pre-scene saves, a shell that never receives a world,
+and one block per gameplay system added since Block 6.
 
-B. A returning student mid Act I at the outpost: the title screen offers
-Magpatuloy and holds the student there, the stored scene resumes rather
-than restarting Act I, pause freezes guard patrol and the detection meter,
-the invulnerability window survives a pause, Escape toggles pause, the
-settings round trip returns to the right screen, and logout asks first.
-
-C. Settings persist across a reload.
-
-D. Backward compatibility: a legacy current_room of "empty" falls back to
-the first scene, and Acts II to IV still register with no objectives.
-
-E. A shell that never receives a world: the title screen stays up, the
-button stays disabled, and a stalled load eventually offers a way out
-rather than hanging forever.
+TRACKER.md's Verification section carries the current check count.
 
 ## Adding checks
 

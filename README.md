@@ -22,22 +22,26 @@ a post-test, so learning gain is measured per act rather than only at the
 end.
 
 Gameplay is movement and jump, stealth past patrols with a detection meter,
-melee and thrown-projectile combat, and a health system with hazards and
-pickups. Completing objectives earns currency, which buys period-correct
-cosmetic outfits, and equipment can be found and equipped for small effects.
+melee and thrown-projectile combat, and a health system with environmental
+hazards and collectible restoratives. Guard speed scales with the act
+number. Equipment and cosmetic outfits are designed and scheduled but not
+yet built; see TRACKER.md.
 
 Teachers get a separate dashboard showing their class roster, act
 completion, assessment results, gain scores, and class averages.
 
 ## Status
 
-See TRACKER.md, which is the only file to trust on what is and is not
-built.
+See TRACKER.md, which is the only file in this repository that describes
+status. Anything about progress stated anywhere else, including here, may
+be out of date.
 
 In short: the framework is complete across all four acts and Act I is
-playable end to end across two scenes. Acts II through IV are registered
-and loadable but have no content yet, which is deliberate. Act I's script is
-also placeholder and will be rewritten once the mechanics are finished.
+playable end to end across two scenes, with assessment, performance
+scoring and the teacher dashboard working. Acts II through IV are
+registered and loadable but have no content yet, which is deliberate. Act
+I's script is also placeholder and will be rewritten once the mechanics
+are finished.
 
 ## Stack
 
@@ -87,11 +91,11 @@ nothing.
     acts.js               act flow controller, owns act_progress writes
     assessment.js         trivia card, pre-test, post-test, feedback
     shell.js              title screen, pause, settings, inventory, logout
-    content/act1.js       Act I as data: scenes, NPCs, guards, objectives
+    content/act1.js       Act I as data: scenes, NPCs, guards, hazards,
+                          pickups, objectives
     content/act2.js       Acts II to IV, registered but not yet written
     content/act3.js
     content/act4.js
-    content/items.js      equipment and cosmetic definitions
     style.css             game styles
 
     teacher.html          teacher entry point
@@ -101,24 +105,23 @@ nothing.
     supabaseClient.js     shared Supabase client
     Assets/               sprite sheets and backgrounds
 
-    macario_schema.sql     initial schema, already applied
-    macario_schema_v2.sql  act tables, item bank, grading functions
-    macario_schema_v3.sql  inventory, equipment, sessions, currency
-    macario_items_v3.sql   revised Act I item bank, ten matched pairs
-    enrollment_setup.sql   role and class assignment helper
-    create_accounts.js     admin script, runs locally only
+    db/applied/           migrations already run against the live project
+    db/macario_items_v3.sql     revised Act I item bank, matched pairs
+    db/db_healthcheck.sql       read-only; checks tables, RLS and columns
+    db/reset_test_accounts.sql  clears test account play data
+    db/enrollment_setup.sql     role and class assignment helper
+    create_accounts.js    admin script, runs locally only, not in git
 
-    _dev/test.js          headless test suite, 55 checks
+    _dev/test.js          headless test suite
     _dev/sb-stub.js       fake Supabase client used by the suite
     _dev/README.md        how to run it
 
     CLAUDE.md             architecture and conventions
-    TRACKER.md            current build status
-    PAPER_VS_BUILD.md     audit of the proposal against the code
+    TRACKER.md            status, next action, and what has been run
 
-Script order in index.html matters. Act and item content files must load
-before game.js, acts.js must load after it, then assessment.js, then
-shell.js last.
+Script order in index.html matters. Act content files must load before
+game.js, acts.js must load after it, then assessment.js, then shell.js
+last.
 
 ## Assessment integrity
 
@@ -133,8 +136,7 @@ constraint and by the grading function.
 
 ## Tests
 
-    npm install -D playwright
-    npx playwright install chromium
+    npm install
     node _dev/test.js
 
 Serves the repository, opens index.html in headless Chromium at phone

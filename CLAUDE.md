@@ -3,16 +3,17 @@
 Context file for AI assistants working on this project. It describes
 architecture, conventions, and constraints, all of which change rarely.
 
-Current build status is NOT in this file. Read TRACKER.md before planning
-any work, because this file will not tell you what has already been built.
-Read PAPER_VS_BUILD.md before arguing about scope, because it records what
-the proposal promised and what was deliberately changed.
+Current build status is NOT in this file, and neither is the requirement
+scoreboard. Both live in TRACKER.md, which is the only file that describes
+status. Read it before planning any work.
 
-Both sit next to this file in the repository and in the connected project
-folder, so read them directly rather than asking for them to be pasted.
+Two files, and they do not overlap. This one is how the thing is built and
+changes rarely. TRACKER.md is where the build is and changes every session.
+Nothing else in the repository describes either.
 
-Read in this order at the start of a session: this file, then TRACKER.md,
-then PAPER_VS_BUILD.md only if scope is in question.
+Read in this order at the start of a session: this file, then TRACKER.md.
+Both sit in the repository, so read them directly rather than asking for
+them to be pasted.
 
 ## Source of truth
 
@@ -88,9 +89,10 @@ reintroduce heavier tooling.
 
 Four layers, with a strict dependency direction.
 
-Content, in content/actN.js and content/items.js. Pure data. NPCs, stage,
-decorations, objectives, starting quests, hazards, pickups, item and
-cosmetic definitions. Contains no engine logic. Registers itself on window.
+Content, in content/actN.js. Pure data. NPCs, stage, decorations,
+objectives, starting quests, hazards, pickups. Contains no engine logic.
+Registers itself on window. content/items.js joins this layer in Block 10
+and does not exist yet.
 
 Engine, in game.js. Renders worlds, runs dialogue, animates sprites, and
 handles auth, physics, health, stealth, combat and save/load. Knows nothing
@@ -107,9 +109,9 @@ checks window.Assessment before calling it, and the flow collapses to
 playing then completed without it.
 
 Shell, in shell.js. Owns every screen that is not the game world: title,
-pause, settings, inventory, logout. Unlike assessment.js it is NOT optional
-and nothing should guard on window.Shell, with one documented exception at
-the awaitEntry call in game.js.
+pause, settings, logout, and the inventory when Block 10 adds it. Unlike
+assessment.js it is NOT optional and nothing should guard on window.Shell,
+with one documented exception at the awaitEntry call in game.js.
 
 Load order in index.html, which is load bearing:
 
@@ -117,7 +119,6 @@ Load order in index.html, which is load bearing:
     supabaseClient.js
     content/act1.js      before game.js, which reads window.ACT_1 on start
     content/act2.js      through act4.js, before acts.js builds its registry
-    content/items.js     before shell.js, which renders the inventory
     game.js
     acts.js              after game.js
     assessment.js        after acts.js
@@ -232,6 +233,10 @@ Talking to an NPC advances through dialogueSets one per conversation,
 holding on the last. onComplete fires once, when that conversation ends.
 
 ## Item data format
+
+NOT BUILT YET. This is the agreed shape for Block 10, recorded here so the
+decision does not have to be retaken. content/items.js does not exist and
+index.html does not reference it.
 
 Items are pure content, in content/items.js as window.ITEMS. They hold no
 secret and are identical for every student, so a database round trip on a
@@ -545,3 +550,7 @@ guro@example.com, teacher.
 hi@example.com, student, enrolled in class MAC8-RIZAL.
 
 Supabase project reference: rkfnovfkroajottpmxxq
+
+Migrations and database tooling live in db/. Those already applied are in
+db/applied/. TRACKER.md's Run log records which have actually been run
+against the live project; trust it over a filename.

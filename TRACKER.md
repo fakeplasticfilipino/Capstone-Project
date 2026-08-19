@@ -1,168 +1,268 @@
 # TRACKER.md
 
-Current build status. Architecture and conventions live in CLAUDE.md.
-The audit of the proposal against the code lives in PAPER_VS_BUILD.md.
+The single source of truth for status. If you are a session starting
+work on this project, read this file first and read all of it.
 
-This file records present state, not history. When something is finished,
-compress it to a line rather than accumulating detail. A tracker that grows
-every session stops being useful.
+Two files carry context, and they do not overlap:
 
-Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED)
+    CLAUDE.md     how the thing is built. Architecture, conventions,
+                  data formats, decisions on record. Changes rarely.
+    TRACKER.md    where the build is. Status, next action, what has
+                  been run, what is blocked. Changes every session.
 
-Last updated: after the paper audit and the scope decisions taken from it.
+Nothing else in this repository describes status. README.md is the
+public face on GitHub and is written for a reader who is not working
+on the code.
 
-## Milestone
+This file records present state, not history. When something is
+finished, compress it to a line rather than accumulating detail. A
+tracker that grows every session stops being useful.
 
-Final defense with student data collection, confirmed. Grade 8 students at
-Imus NHS play the game and sit both tests. More than six weeks out. School
-and parental permissions are secured.
+Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Data collection covers Act I, since Acts II through IV have no content yet.
+Last updated: after Block 9 shipped and the repository was tidied.
 
-Freeze the software roughly ten days before the defense to leave room for
-scheduling the session and analysing the results.
+## Right now
 
-## Scope, settled
+Blocks 1 through 9 are built, verified and live. Schema v4 has been
+run against the live database, the client is pushed, and Act I plays
+end to end on a desktop browser with hazards, pickups, the weighted
+performance score and the optional feedback form all working.
 
-Every open question from the paper audit now has an answer. These are
-decisions, not proposals, and the reasoning for each is in CLAUDE.md.
+The automated suite passes at 114 checks, 0 failures.
 
-Kept as changed from the proposal: administrator-created accounts rather
-than self-registration, and a hard online requirement rather than deferred
-synchronisation.
+What is not done is everything that does not depend on writing more
+engine code: the game has never run on a real phone, the assessment
+item bank has not been validated, and there is no replacement art.
+Two of those three are waiting on other people.
 
-Built simply on purpose: dynamic difficulty is guard speed scaled by act and
-nothing else. Equipment effects are a faster projectile and one extra heart.
-Cosmetics are period-correct outfits that change the sprite only.
+## Next action
 
-Added because the paper asks for them and they were missing: environmental
-hazards, heart pickups, a completed performance score, and an optional user
-feedback form.
+One thing, and it is not a block.
 
-Dropped from the ERD rather than built: PlayerAction, because a per-action
-replay log costs writes on a phone on mobile data and would never be
-queried, and the achievement entities, because currency and cosmetics
-already cover reward. GameScore is folded into act_progress rather than
-given its own table.
+Send the validation packet to Ms. Donadillo-Espiritu.
+MACARIO_Act1_Instrument_Validation.docx is written and ready.
 
-Content is placeholder throughout, including Act I, and will be written
-after the mechanics are finished.
+It goes first because it is the longest external dependency in the
+project and because macario_items_v3.sql cannot be run until it comes
+back. The item bank is what the entire learning gain finding rests
+on, and the returned form is the Appendix exhibit and the answer to
+any question about instrument validity.
 
-## Done
+Checkpoint: the packet is sent and the date is written into the Run
+log below. Failure is another week passing with it still in the
+folder.
 
-Schema v2 and v3: RLS recursion fix, act_progress, assessment_items,
-act_trivia, server-side grading, inventory, equipment and session tables,
-and a currency column. (COMPLETE)
+After that, in order: a device pass on a real Android phone, then
+Block 10.
 
-Role routing and class enrollment. Teachers redirect to teacher.html and
-never receive a game_progress row. (COMPLETE)
+## Run log
+
+What has actually been applied to the live Supabase project, and
+when. A fresh session should trust this over any memory of a chat.
+
+    db/applied/macario_schema.sql       RUN
+    db/applied/macario_schema_v2.sql    RUN
+    db/applied/macario_schema_v3.sql    RUN
+    db/applied/macario_schema_v4.sql    RUN, 19 Aug 2026
+
+    db/macario_items_v3.sql             NOT RUN. Waits on the
+                                        validation packet coming back.
+
+    db/db_healthcheck.sql               read-only, run any time
+    db/reset_test_accounts.sql          run before any full-flow test
+    db/enrollment_setup.sql             only needed for a fresh database
+
+Supabase project reference: rkfnovfkroajottpmxxq
+
+The database holds eleven tables, matching the revised ERD. Confirm
+with db/db_healthcheck.sql, which checks all eleven, confirms the two
+v4 drops happened, and verifies every migration column.
+
+## The three stated objectives
+
+What the panel assesses against.
+
+Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
+Framework complete. Only Act I has content, and that content is
+placeholder pending a rewrite.
+
+Objective 2, gameplay mechanics: dynamic difficulty, health,
+equipment, cosmetic rewards. (IN PROGRESS) Difficulty and health are
+complete. Equipment is Block 10, cosmetics are Block 11.
+
+Objective 3, integrated assessment. (COMPLETE) Pre-tests and
+post-tests, server-side grading, in-game performance scoring,
+optional feedback, and the teacher dashboard are all built.
+
+## Functional requirements
+
+The paper specifies seventeen. This is the scoreboard a panel will
+work through.
+
+| Requirement | Status |
+|---|---|
+| User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created |
+| Chapter Progression | (PARTIAL) All four registered and unlock in order. Only Act I has content |
+| Player Movement | (BUILT) |
+| Combat Mechanics | (BUILT) Melee, takedown from behind, thrown projectile as the special attack |
+| Stealth Mechanics | (BUILT) Patrols, detection meter, hide spots |
+| Interaction System | (BUILT) |
+| Narrative Delivery | (PARTIAL) Built for Act I only |
+| Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified in the harness; no act beyond Act I has guards yet |
+| Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups |
+| Equipment System | (NOT BUILT) Tables exist in schema v3. Block 10 |
+| Cosmetic Reward | (NOT BUILT) Currency column exists in schema v3. Block 11 |
+| Trivia | (BUILT) Act I seeded; Acts II to IV not seeded |
+| Act Assessment | (BUILT) Act I seeded; Acts II to IV not seeded |
+| Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded but not scored |
+| Progress Tracking | (BUILT) Completion, scores, damage taken, detections, elapsed time |
+| Teacher Monitoring | (BUILT) |
+| Data Synchronization | (CHANGED) Writes go straight to Supabase and the game requires a connection. There is no offline queue, so "upon internet availability" is not implemented as worded |
+
+## Non-functional requirements
+
+The paper specifies ten.
+
+| Requirement | Status |
+|---|---|
+| Performance | (BUILT) No build step, no framework, plain script tags. Never measured on a real device |
+| Reliability | (BUILT) Debounced save, ten second autosave backstop, beforeunload flush, logout flush |
+| Usability | (PARTIAL) Tagalog throughout and 44px touch targets, but the mobile control cluster overflows the viewport at phone width. Currently not met on the target device |
+| Accessibility | (PARTIAL) Runs in Chrome on Android by design. Never opened on an Android phone |
+| Online Functionality | (BUILT) |
+| Compatibility | (PARTIAL) Never tested across Android screen sizes |
+| Maintainability | (BUILT) Four layers with a strict dependency direction, documented in CLAUDE.md |
+| Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
+| Connectivity | (BUILT) |
+| Readability | (BUILT) Plus a text size setting the paper does not ask for |
+
+Three of the four PARTIAL entries are the same fact stated four ways:
+nothing has ever run on a real phone. One device pass moves all of
+them.
+
+## Blocks done
+
+Schema v2 and v3. RLS recursion fix, act tables, assessment items and
+trivia, server-side grading, inventory, equipment and session tables,
+currency column. (COMPLETE)
+
+Role routing and class enrollment. Teachers redirect to teacher.html
+and never receive a game_progress row. (COMPLETE)
 
 Teacher dashboard. Roster, act completion, pre and post scores, gain,
-performance, class averages, and all empty and error states. (COMPLETE)
-
-Act framework across four acts: content extracted to content/actN.js, world
-building wrapped in loadAct and unloadAct, the act state machine, ordered
-unlocking, title cards, transition screens, and resume into the stored act.
+performance, class averages, and all empty and error states.
 (COMPLETE)
 
-Assessment module. Trivia card, pre-test and post-test, one question per
-screen, submitting through submit_assessment. Handles an already recorded
-attempt, an act with no items seeded, and network failure. (COMPLETE)
+Act framework across four acts. Content extracted to content/actN.js,
+loadAct and unloadAct, the act state machine, ordered unlocking, title
+cards, transition screens, resume into the stored act. (COMPLETE)
+
+Assessment module. Trivia card, pre-test and post-test, one question
+per screen, submitting through submit_assessment. Handles an already
+recorded attempt, an act with no items, and network failure.
+(COMPLETE)
 
 Block 6, movement and conflict. Scenes, jump with gravity and one-way
-platforms, health with invulnerability and respawn, stealth guards with a
-detection meter and hide spots, and combat with melee, takedown from behind,
-and a thrown projectile. (COMPLETE)
+platforms, health with invulnerability and respawn, stealth guards
+with a detection meter and hide spots, combat with melee, takedown
+from behind, and a thrown projectile. (COMPLETE)
 
-Block 7, schema v3 and the game shell. Title screen with an entry gate,
-pause that halts the loop and offsets wall-clock timers, settings persisted
-to localStorage, and logout with a save flush. (COMPLETE)
+Block 7, schema v3 and the game shell. Title screen with an entry
+gate, pause that halts the loop and offsets wall-clock timers,
+settings persisted to localStorage, logout with a save flush.
+(COMPLETE)
 
 Block 8, hazards, pickups and difficulty. Hazard regions that cost one
 health and knock the player clear rather than respawning them, heart
-pickups that restore one and are refused at full health, and guard speed
-scaled by act number. Closes the Health System and Dynamic Difficulty
-requirements. (COMPLETE)
+pickups that restore one and are refused at full health, guard speed
+scaled by act number. (COMPLETE)
 
-Block 9, schema v4 and measurement. Per-act damage and detection counters
-persisted in save_state, play time that excludes pauses, the weighted
-performance score, game_sessions rows, and the optional feedback form
-after the post-test. Closes Performance Scoring, Progress Tracking and the
-user feedback half of the third objective. The client is written and the
-migration is written; macario_schema_v4.sql has NOT been run.
-(COMPLETE, MIGRATION NOT RUN)
+Block 9, schema v4 and measurement. Per-act damage and detection
+counters persisted in save_state, play time that excludes pauses, the
+weighted performance score, game_sessions rows, and the optional
+feedback form after the post-test. (COMPLETE)
 
-Act I outpost. Two patrolling guards, three crates, two platforms, two
-bamboo stake hazards, one heart pickup, and a kasama to deliver the
-message to. (COMPLETE)
+Act I content. Two scenes: the road and the outpost. Two patrolling
+guards, three crates, two platforms, two bamboo stake hazards, one
+heart pickup, and a kasama to deliver the message to. Placeholder
+script throughout. (COMPLETE)
 
-Paper audit. Seventeen functional requirements, ten non-functional, five
-modules, seventeen ERD entities and all four act storyboards checked against
-the code. (COMPLETE)
+Paper audit. Seventeen functional requirements, ten non-functional,
+five modules, seventeen ERD entities and all four act storyboards
+checked against the code. Its findings are the two scoreboards above.
+(COMPLETE)
 
-Revised Act I item bank, ten matched pre and post pairs, plus a trivia fact
-that no longer leaks pre-test answers. Written as macario_items_v3.sql and
-NOT yet run; it goes in after the validation packet comes back. (COMPLETE,
-NOT RUN)
+Revised Act I item bank. Ten matched pre and post pairs plus a trivia
+fact that no longer leaks pre-test answers, written as
+db/macario_items_v3.sql. (COMPLETE, NOT RUN)
 
-## Next
-
-Ordered by dependency and by how much of a stated objective each closes.
-Blocks 10 and 11 finish the second stated objective. Block 9 finished the
-third, subject to its migration being run.
-
-Run macario_schema_v4.sql in the Supabase SQL editor. Everything Block 9
-writes goes to columns and a table that do not exist until it does, and a
-write to a missing column fails in the console while the score still looks
-correct in memory. Do this before pushing. (NOT STARTED)
+## Blocks remaining
 
 Block 10, inventory and equipment. content/items.js as pure data, an
-inventory screen in the shell, weapon and accessory slots, and two effects:
-a faster projectile and one extra heart. Closes the Equipment System
-requirement. (NOT STARTED)
+inventory screen in the shell, weapon and accessory slots, and two
+effects: a faster projectile and one extra heart. Closes the Equipment
+System requirement. (NOT STARTED)
 
-Block 11, currency and cosmetics. Currency awarded on act completion and
-scaled by performance score, a simple shop inside the inventory screen, and
-period-correct outfits that change the player sprite. Closes the Cosmetic
-Reward requirement. (NOT STARTED)
+Block 11, currency and cosmetics. Currency awarded on act completion
+and scaled by performance score, a simple shop inside the inventory
+screen, and period-correct outfits that change the player sprite.
+Closes the Cosmetic Reward requirement and the second objective.
+(NOT STARTED)
 
-Block 12, polish. Mobile control layout fix, the outpost balance pass, and
-audio if there is time. (NOT STARTED)
+Block 12, polish. The mobile control overflow, the outpost balance
+pass, and audio if there is time. (NOT STARTED)
 
-Send the validation packet to Ms. Donadillo-Espiritu, then run
-macario_items_v3.sql once it comes back. External turnaround, so it goes out
-first regardless of what else is happening. (NOT STARTED)
+Rewrite Act I in full against the finished mechanics, then write Acts
+II through IV. Content work, done once the systems stop moving.
+(NOT STARTED)
 
-Chase the replacement art. External turnaround and cannot be compressed at
-the end. (NOT STARTED)
+Seed trivia and assessment items for Acts II through IV. Until then
+those acts skip their tests with a notice, which is deliberate.
+(NOT STARTED)
 
-Rewrite Act I in full against the finished mechanics, then write Acts II
-through IV. Content work, done once the systems stop moving. (NOT STARTED)
+## Blocked on other people
 
-Seed trivia and assessment items for Acts II through IV. Until then those
-acts skip their tests with a notice, which is deliberate. (NOT STARTED)
+These cannot be compressed at the end and do not depend on any block.
+Start them before writing more code.
 
-Provision student accounts for the session and pilot with two or three
-students who are not part of the study, since a pilot run on a study account
-uses up that student's one attempt. (NOT STARTED)
+Send the validation packet to Ms. Donadillo-Espiritu. The packet is
+written and ready. See Next action. (READY TO SEND)
 
-## Art status
+Chase the replacement art. Assets/ holds only a floor tile and the
+player walk cycle. Everything else falls back to a labelled
+placeholder box, so the game is fully playable and visually skeletal.
+That is the fallback system working, not a fault. Block 11's cosmetic
+system is pointless to demonstrate without at least two real outfits.
+(NOT STARTED)
 
-The outpost needs Assets/Guard.png and Assets/Kasama.png. Both fall back to
-labelled placeholder boxes, so the scene is fully playable without them.
+Provision student accounts for the session, and pilot with two or
+three students who are not part of the study. A pilot run on a study
+account consumes that student's one attempt permanently, so the two
+sets must be separate. (NOT STARTED)
 
-Assets/ currently holds only Cement_Tile.png and the player Walk.png. Every
-other sprite and background was removed pending replacement art. Act I is
-fully playable but visually skeletal. This is the fallback system working,
-not a fault.
+## Known problems
 
-Blocks 10 and 11 add two more art needs: equipment icons and period-correct
-outfit sprites. Both fall back to placeholders, but the cosmetic system is
-pointless to demonstrate without at least two real outfits.
+Nothing has ever run on a real phone. Every test to date is a desktop
+browser or headless Chromium at phone dimensions. This is the largest
+untested assumption in the project, and it sits directly under the
+argument that justifies the entire technical approach. (NOT STARTED)
 
-Confirm Walk.png is genuinely 12 frames in a 5 + 5 + 2 grid. If the cycle
-pauses or shows a sliver of the next frame, the columns value in
-SPRITE_SHEETS is wrong.
+The mobile control cluster overflows the viewport at phone width.
+Block 6 added a jump button and an attack button to a row that
+already held three, and at 1.75 zoom the interact button runs off the
+right edge of a 412px screen. Scheduled for Block 12. (NOT STARTED)
+
+Assets/Cement_Tile.png is 1.4 MB for a repeating floor tile. On a
+project whose stated justification is low-end Android performance
+over mobile data, this is worth fixing before anyone measures a load
+time. (NOT STARTED)
+
+Dynamic difficulty cannot be demonstrated in the running game,
+because only Act I has guards and Act I is the 1.00 multiplier. The
+formula is documented and the harness proves it against a fabricated
+act. The honest answer to a panel is that the lever is built and the
+acts it scales are not written yet. (BY DESIGN)
 
 ## Deferred
 
@@ -171,29 +271,34 @@ administrator-assigned.
 Multiple save slots.
 Dashboard export and per-question item analysis.
 Offline and save-conflict handling.
-Persisting partial test answers. A student who reloads mid-test restarts
-that test from question one. Nothing is recorded until submission, so no
-answers are lost, but the questions are asked again.
+Persisting partial test answers. A student who reloads mid-test
+restarts that test from question one. Nothing is recorded until
+submission, so no answers are lost, but the questions are asked
+again.
 
-## Bugs
+## Verification
 
-The mobile control cluster overflows the viewport at phone width. Block 6
-added a jump button and an attack button to a row that already held three
-controls, and at the 1.75 zoom the interact button runs off the right edge
-of a 412px screen. Everything is reachable on a desktop browser, which is
-where it was tested. Scheduled for Block 12. (NOT STARTED)
+The harness lives at _dev/. Run it from the repository root:
 
-## Housekeeping
+    npm install
+    node _dev/test.js
 
-create_accounts.js is listed in .gitignore but was committed before that
-rule existed, so it remains publicly visible. It holds only placeholder text
-at present, but a real secret key pasted in later would publish to a public
-repository and would bypass every RLS policy. Fix with
-git rm --cached create_accounts.js. (NOT STARTED)
+114 checks. Anything other than "0 failed" is a regression.
 
-Capstone_Project_Proposal.pdf is 2.8 MB and sits in a public repository
-without being used by the application. Harmless, but worth a decision.
-(NOT STARTED)
+It drives the shipping index.html with a stubbed Supabase client and
+Playwright against Chromium at phone dimensions, so it cannot pass
+against a page students no longer load. It never touches the live
+project.
+
+Add checks in the same block that adds the system. A suite that lags
+the build is worse than none, because it reports green on code it
+never exercised.
+
+Two checks exist to protect the study rather than the code: that
+complete runs before the feedback form opens, and that an act still
+completes when the feedback module is absent.
+
+It is not a substitute for a device pass.
 
 ## Pitfalls found the hard way
 
@@ -236,77 +341,43 @@ The trivia card is shown before the pre-test, so a trivia fact drawn from
 the tested content hands students the answers. The Act I fact did exactly
 that for three of five items.
 
-## Testing
-
-The test harness now lives in the repository at _dev/, so it no longer has
-to be rebuilt from scratch each session. Run it with node _dev/test.js from
-the repository root; see _dev/README.md for setup.
-
-114 checks covering the entry gate on both the fresh and resuming paths,
-pause halting guard patrol and the detection meter, the invulnerability
-offset, settings persistence, logout confirmation, the legacy current_room
-fallback, a stalled load offering a way out, hazard damage and knockback,
-pickup collection and its refusal at full health, the collected set
-surviving a respawn, guard speed at act 1 against act 3, the score formula
-at both bounds, counters restored from a stored save and reset only on act
-entry, session rows opening and closing, and the feedback form skipping,
-submitting and refusing a second submission.
-
-Two of those checks exist to protect the study rather than the code: that
-complete runs before the feedback form opens, and that an act still
-completes when the feedback module is absent.
-
-Difficulty scaling is verified only here. No act with guards beyond Act I
-has content, so there is nothing in the running game that demonstrates it.
-
-It drives the shipping index.html rather than a copy, by intercepting the
-request for supabaseClient.js and swapping in a fake client. The suite
-therefore cannot pass against a page that students no longer load.
-
-Add checks in the same block that adds the system. A suite that lags behind
-the build is worse than none, because it reports green on code it never
-exercised.
-
-It is not a substitute for a device pass. Nothing has ever run on a real
-phone.
-
 ## Documentation debt
 
-These will be raised at the defense and are tracked separately from code.
+Raised at the defense, tracked separately from code.
 
-Justify Unity and C# to vanilla JavaScript and Supabase, argued from the
-existing literature review: a comparable project was constrained by 3D
-performance on low-end devices, and a lightweight browser application
-addresses that gap directly. Frame as responding to an identified limitation
-rather than as reduced scope. (NOT STARTED)
-
-Revise the ERD to match what is built. The paper says fifteen entities and
-then describes seventeen, so it needs correcting regardless. The revised
-diagram has eleven, and the three entities dropped or folded each have a
-stated reason. (NOT STARTED)
-
-Obtain validation of the assessment item bank from Ms. Donadillo-Espiritu.
-The packet is written and ready to send. The returned form is the Appendix
-exhibit and the answer to any question about instrument validity. (READY TO
-SEND)
-
-Document server-side grading. The answer key never reaches the client, which
-is a design strength worth stating. (NOT STARTED)
-
-Document the dashboard query approach and its RLS enforcement, since a panel
-may ask how one teacher is prevented from reading another class's data.
+Justify vanilla JavaScript and Supabase over Unity and C#, argued
+from the study's own literature review: a comparable project was
+constrained by 3D performance on low-end devices, and a lightweight
+browser application addresses that gap directly. Frame as responding
+to an identified limitation rather than as reduced scope.
 (NOT STARTED)
 
-Document that game_progress.currency is client written and why that is
-acceptable. (NOT STARTED)
+Revise the ERD to eleven entities. The paper says fifteen and then
+describes seventeen, so it needs correcting regardless. PlayerAction
+and the achievement entities are dropped, GameScore folds into
+ActProgress, and all three have a stated reason. The database now
+matches. (NOT STARTED)
 
-Document the performance score formula and its weights, including why time
-is recorded but not scored. (NOT STARTED)
+Document server-side grading. The answer key never reaches the
+client, which is a design strength worth stating. (NOT STARTED)
 
-Revise Technical Background. Aseprite, Audacity and Figma remain accurate.
-Unity and C# should be removed. Visual Studio should be corrected to Visual
-Studio Code. GitHub Pages and Supabase should be added, since neither
-appears in the tools list despite both being central. (NOT STARTED)
+Document the dashboard query approach and its RLS enforcement, since
+a panel may ask how one teacher is prevented from reading another
+class's data. (NOT STARTED)
+
+Document that game_progress.currency is client written and why that
+is acceptable. (NOT STARTED)
+
+Document the performance score formula and its weights, including
+why time is recorded but not scored. The formula is in CLAUDE.md.
+(NOT STARTED)
+
+Revise Technical Background. Aseprite, Audacity and Figma remain
+accurate. Unity and C# should be removed. Visual Studio should be
+corrected to Visual Studio Code. GitHub Pages and Supabase should be
+added, since neither appears despite both being central.
+(NOT STARTED)
 
 Credit any licensed art assets used for enemies, outfits, or combat
 animations. (NOT STARTED)
+
