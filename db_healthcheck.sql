@@ -13,11 +13,23 @@
 -- that lets the teacher dashboard show anything.
 -- =============================================================
 
+-- The eleven tables of the revised ERD, as of schema v4.
+-- player_actions and player_achievements were DROPPED in v4 and are
+-- deliberately absent; section 1b below checks they are really gone.
 with expected_tables(name) as (
   values ('profiles'),('classes'),('game_progress'),('act_progress'),
          ('assessment_items'),('assessment_scores'),('act_trivia'),
-         ('player_inventory'),('player_equipment'),('player_achievements'),
-         ('game_sessions'),('player_actions')
+         ('player_inventory'),('player_equipment'),('game_sessions'),
+         ('feedback')
+),
+dropped_tables(name) as (
+  values ('player_actions'),('player_achievements')
+),
+expected_columns(tbl, col, added_by) as (
+  values ('game_progress','currency','v3'),
+         ('act_progress','damage_taken','v4'),
+         ('act_progress','detections','v4'),
+         ('act_progress','elapsed_ms','v4')
 ),
 expected_funcs(name) as (
   values ('my_role'),('my_class_id'),('is_teacher_of'),
@@ -36,14 +48,30 @@ left join pg_tables t
 
 union all
 
--- 2. Did schema v3 add the currency column?
-select '2 column', 'game_progress.currency',
+-- 1b. Are the two v4 drops actually gone? A row reading STILL
+--     PRESENT means macario_schema_v4.sql has not been run, or was
+--     stopped by the safety guard in its PART 3.
+select '1b dropped', d.name,
+       case when t.tablename is null then 'ok, gone'
+            else 'STILL PRESENT' end
+from dropped_tables d
+left join pg_tables t
+  on t.schemaname = 'public' and t.tablename = d.name
+
+union all
+
+-- 2. Did the migrations add their columns? Any v4 row reading
+--    MISSING means Block 9 will write to a column that does not
+--    exist: the write fails in the console while the score still
+--    looks correct in memory, which is the worst way to find out.
+select '2 column', e.added_by || ' ' || e.tbl || '.' || e.col,
        case when exists (
          select 1 from information_schema.columns
          where table_schema = 'public'
-           and table_name   = 'game_progress'
-           and column_name  = 'currency'
+           and table_name   = e.tbl
+           and column_name  = e.col
        ) then 'ok' else 'MISSING' end
+from expected_columns e
 
 union all
 
@@ -96,5 +124,17 @@ union all
 --    per act per test type is enforced.
 select '8 scores', 'assessment_scores rows', count(*)::text
 from public.assessment_scores
+
+union all
+
+-- 9. Block 9 write targets. Both are expected to be 0 until an act
+--    has actually been played through on this database.
+select '9 block 9', 'game_sessions rows', count(*)::text
+from public.game_sessions
+
+union all
+
+select '9 block 9', 'feedback rows', count(*)::text
+from public.feedback
 
 order by 1, 2;

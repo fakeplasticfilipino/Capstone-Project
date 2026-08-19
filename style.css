@@ -663,6 +663,75 @@ html, body {
 }
 
 /* =============================================================
+   BLOCK 9: FEEDBACK FORM
+   ============================================================= */
+
+.feedback-scale {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 4px 0 6px;
+}
+
+.feedback-star {
+  flex: 1;
+  max-width: 56px;
+  padding: 12px 0;
+  font-family: inherit;
+  font-size: 16px;
+  color: #ddd;
+  background: #1c1c1c;
+  border: 2px solid #444;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.feedback-star.on {
+  background: #4a3c12;
+  border-color: #c9a227;
+  color: #f5e3a3;
+}
+
+.feedback-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.feedback-comment {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #eee;
+  background: #1c1c1c;
+  border: 1px solid #444;
+  border-radius: 6px;
+  resize: none;
+}
+
+.feedback-counter {
+  text-align: right;
+  font-size: 11px;
+  color: #777;
+  margin-top: 4px;
+}
+
+/* Skip is an equal choice, not a way out styled to be avoided. A skip
+   button made deliberately unattractive is a dark pattern, and this is a
+   research instrument rather than a growth funnel. */
+#quiz-back.feedback-skip {
+  color: #ddd;
+  border-color: #666;
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+/* =============================================================
    BLOCK 8: HAZARDS AND PICKUPS
    ============================================================= */
 

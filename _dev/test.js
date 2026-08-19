@@ -438,6 +438,288 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  // -----------------------------------------------------------------
+  // Block 9. Measurement, sessions and feedback.
+  // -----------------------------------------------------------------
+
+  console.log("\nI. Counters");
+  {
+    const { ctx, page } = await enterOutpost();
+    await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
+
+    const zeroed = await page.evaluate(() => {
+      Game.resetStats();
+      return Game.stats();
+    });
+    ok("resetStats zeroes all three",
+       zeroed.damageTaken === 0 && zeroed.detections === 0 && zeroed.playMs === 0, zeroed);
+
+    // A hit inside the grace window must not be counted twice.
+    const doubled = await page.evaluate(() => {
+      Game.resetStats();
+      invulnUntil = 0;
+      health = 3;
+      damagePlayer("t", false);
+      damagePlayer("t", false); // inside the invulnerability window
+      return Game.stats().damageTaken;
+    });
+    ok("damage inside the grace window is not counted", doubled === 1, doubled);
+
+    const caught = await page.evaluate(() => {
+      Game.resetStats();
+      invulnUntil = 0;
+      health = 3;
+      caughtBy(GUARDS[0]);
+      return Game.stats();
+    });
+    ok("a catch counts as both a detection and damage",
+       caught.detections === 1 && caught.damageTaken === 1, caught);
+
+    // playMs must not advance across a pause.
+    const paused = await page.evaluate(async () => {
+      Game.resetStats();
+      Game.setPaused(true);
+      const before = Game.stats().playMs;
+      await new Promise((r) => setTimeout(r, 700));
+      const after = Game.stats().playMs;
+      Game.setPaused(false);
+      return { before, after };
+    });
+    ok("playMs does not advance while paused",
+       paused.after - paused.before < 50, paused);
+
+    const ran = await page.evaluate(() => new Promise((r) => {
+      const before = Game.stats().playMs;
+      setTimeout(() => r(Game.stats().playMs - before), 500);
+    }));
+    ok("playMs advances while playing", ran > 200, ran);
+
+    await ctx.close();
+  }
+
+  console.log("\nJ. Counter persistence");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    await page.evaluate(async () => {
+      Game.resetStats();
+      invulnUntil = 0;
+      health = 3;
+      damagePlayer("t", false);
+      detections = 2;
+      markDirty();
+      await Game.flushSave();
+    });
+
+    const stored = await page.evaluate(() =>
+      __DB.game_progress[0].save_state.stats);
+    ok("counters are written into save_state",
+       stored && stored.damageTaken === 1 && stored.detections === 2, stored);
+
+    await ctx.close();
+  }
+
+  // The other half of persistence, and the whole reason it exists: a
+  // student who resumes must NOT be handed a clean survival and stealth
+  // record for the part of the act they already played.
+  //
+  // Tested by seeding a save that already holds counters rather than by
+  // reloading the page, because the stub reseeds its database on reload
+  // and would discard the write the previous section just made.
+  {
+    const seeded = atOutpost();
+    seeded.game_progress[0].save_state.stats = {
+      damageTaken: 4, detections: 3, playMs: 91000,
+    };
+    const { ctx, page } = await newPage(seeded);
+    await page.waitForTimeout(700);
+    await page.click("#shell-start");
+    await page.waitForTimeout(400);
+
+    const restored = await page.evaluate(() => Game.stats());
+    ok("counters are restored from a stored save",
+       restored.damageTaken === 4 && restored.detections === 3, restored);
+    ok("stored play time is restored too", restored.playMs >= 91000, restored.playMs);
+
+    // Resuming must not reset them. syncStart deliberately does not call
+    // resetStats; only enterAct does.
+    const afterSync = await page.evaluate(() => Acts.status && Game.stats());
+    ok("resuming does not zero the counters", afterSync.damageTaken === 4, afterSync);
+
+    // Entering a DIFFERENT act does reset them, because they are per act.
+    const afterEnter = await page.evaluate(async () => {
+      Assessment.runTest = async function () {};
+      Acts.showActTitle = async function () {};
+      Acts.progress[1] = { status: "completed", objectives_done: 5 };
+      await Acts.enterAct(2);
+      return Game.stats();
+    });
+    ok("entering a new act resets the counters",
+       afterEnter.damageTaken === 0 && afterEnter.detections === 0, afterEnter);
+
+    await ctx.close();
+  }
+
+  console.log("\nK. The weighted score");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    const perfect = await page.evaluate(() =>
+      Acts.scoreFor(5, 5, { damageTaken: 0, detections: 0 }));
+    ok("full completion, untouched, scores 100", perfect === 100, perfect);
+
+    const worst = await page.evaluate(() =>
+      Acts.scoreFor(5, 5, { damageTaken: 6, detections: 5 }));
+    ok("full completion with both budgets spent scores 50", worst === 50, worst);
+
+    const clamped = await page.evaluate(() =>
+      Acts.scoreFor(5, 5, { damageTaken: 40, detections: 40 }));
+    ok("terms clamp rather than going negative", clamped === 50, clamped);
+
+    const worked = await page.evaluate(() =>
+      Acts.scoreFor(5, 5, { damageTaken: 3, detections: 2 }));
+    ok("the worked example from the spec reads 77.5", worked === 77.5, worked);
+
+    const none = await page.evaluate(() =>
+      Acts.scoreFor(0, 5, { damageTaken: 0, detections: 0 }));
+    ok("no objectives done still scores the other two terms", none === 50, none);
+
+    const stub = await page.evaluate(() =>
+      Acts.scoreFor(0, 0, { damageTaken: 0, detections: 0 }));
+    ok("a stub act with no objectives scores 0", stub === 0, stub);
+
+    const missing = await page.evaluate(() => Acts.scoreFor(5, 5));
+    ok("missing stats do not throw", missing === 100, missing);
+
+    await ctx.close();
+  }
+
+  console.log("\nL. Sessions");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    const opened = await page.evaluate(() => __DB.game_sessions || []);
+    ok("a session row is written on entry", opened.length === 1, opened.length);
+    ok("the session is left open", opened[0] && opened[0].ended_at === undefined);
+    ok("the session records the act", opened[0] && opened[0].act_number === 1);
+
+    const closed = await page.evaluate(async () => {
+      await Acts.endSession();
+      return __DB.game_sessions[0].ended_at;
+    });
+    ok("ending the session sets ended_at", Boolean(closed), closed);
+
+    // A second entry opens a second row rather than reusing the first.
+    const second = await page.evaluate(async () => {
+      await Acts.startSession(1);
+      return __DB.game_sessions.length;
+    });
+    ok("a second entry opens a second row", second === 2, second);
+
+    await ctx.close();
+  }
+
+  console.log("\nM. Feedback");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    // Skipping must write nothing and must not block the flow.
+    const skipped = await page.evaluate(async () => {
+      const p = Assessment.runFeedback(1);
+      await new Promise((r) => setTimeout(r, 150));
+      const shown = !document.getElementById("quiz").classList.contains("hidden");
+      document.getElementById("quiz-back").click();
+      await p;
+      return { shown, rows: (__DB.feedback || []).length };
+    });
+    ok("the feedback form opens", skipped.shown);
+    ok("skipping writes no row", skipped.rows === 0, skipped.rows);
+
+    // Submit requires a rating, then writes exactly one row.
+    const submitted = await page.evaluate(async () => {
+      const p = Assessment.runFeedback(1);
+      await new Promise((r) => setTimeout(r, 150));
+      const lockedOut = document.getElementById("quiz-btn").disabled;
+      document.querySelectorAll(".feedback-star")[3].click();
+      const freed = !document.getElementById("quiz-btn").disabled;
+      document.getElementById("quiz-btn").click();
+      await p;
+      return { lockedOut, freed, rows: __DB.feedback || [] };
+    });
+    ok("submit is disabled until a rating is chosen", submitted.lockedOut);
+    ok("choosing a rating enables submit", submitted.freed);
+    ok("submitting writes one row", submitted.rows.length === 1, submitted.rows.length);
+    ok("the chosen rating is what is stored", submitted.rows[0].rating === 4,
+       submitted.rows[0].rating);
+
+    // Already answered: no second form, no second row.
+    const again = await page.evaluate(async () => {
+      await Assessment.runFeedback(1);
+      return {
+        hidden: document.getElementById("quiz").classList.contains("hidden"),
+        rows: __DB.feedback.length,
+      };
+    });
+    ok("a second call shows nothing", again.hidden);
+    ok("and writes nothing", again.rows === 1, again.rows);
+
+    await ctx.close();
+  }
+
+  console.log("\nN. Completion is written before feedback is offered");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    // The ordering that protects the study: if the student closes the
+    // tab on the form, the act is already recorded.
+    const order = await page.evaluate(async () => {
+      const seen = [];
+      // The post-test renders a screen and awaits a tap. This section is
+      // about ordering, not about the test, so it is stubbed out.
+      Assessment.runTest = async function () { seen.push("posttest"); };
+      const realComplete = Acts.complete.bind(Acts);
+      Acts.complete = async function () {
+        seen.push("complete");
+        return realComplete();
+      };
+      Assessment.runFeedback = async function () {
+        seen.push("feedback");
+        seen.push("status:" + Acts.status);
+      };
+      Acts.showTransition = function () { seen.push("transition"); };
+      await Acts.finishAct();
+      return seen;
+    });
+    ok("complete runs before feedback",
+       order.indexOf("complete") < order.indexOf("feedback"), order);
+    ok("the act is already completed when the form opens",
+       order.includes("status:completed"), order);
+    ok("the transition still runs after feedback",
+       order.indexOf("transition") > order.indexOf("feedback"), order);
+
+    await ctx.close();
+  }
+
+  console.log("\nO. Feedback is optional to the flow");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    // An assessment.js without runFeedback, or none at all, must still
+    // complete the act. This is the guard that keeps assessment.js
+    // optional.
+    const withoutIt = await page.evaluate(async () => {
+      Assessment.runTest = async function () {};
+      delete Assessment.runFeedback;
+      Acts.showTransition = function () {};
+      await Acts.finishAct();
+      return Acts.status;
+    });
+    ok("the act still completes with no feedback module",
+       withoutIt === "completed", withoutIt);
+
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

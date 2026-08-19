@@ -142,6 +142,11 @@ game.js exposes window.Game and nothing else:
     flushSave()          awaitable; logout must await it
     setUiBlocked(bool)   suppresses world input while a screen is open
     isSignedIn()
+    stats()              { damageTaken, detections, playMs }, a copy
+    resetStats()         called by Acts.enterAct, and by nothing else
+
+The engine counts; acts.js reads and writes. game.js still knows nothing
+about what an act is, and acts.js knows nothing about how damage happens.
 
 shell.js exposes window.Shell.awaitEntry(), which game.js awaits after the
 world is built and before Acts.syncStart runs.
@@ -308,6 +313,10 @@ Do not write a policy that looks a student up through another table that has
 policies of its own. Carry student_id on the row instead, even when it
 duplicates a column reachable by join.
 
+feedback has no update and no delete policy, deliberately. A student who
+wants to change their answer has no mechanism, which is correct for a
+research instrument.
+
 Assessment items have RLS enabled with no student read policy. Questions
 are served by get_assessment_items, which omits correct_index, and grading
 runs in submit_assessment. The answer key must never be sent to the client.
@@ -448,9 +457,40 @@ progress.
 Settings persist to localStorage, not the database. They are a device
 preference rather than student data.
 
-Performance score is a weighted sum of objective completion, survival, and
-stealth. Time taken is recorded but not scored, because a timer rewards
-skipping the dialogue, which is the entire lesson.
+Performance score is a weighted sum:
+
+    score = 50 * completion + 25 * survival + 25 * stealth
+
+    survival = 1 - min(1, damageTaken / 6)
+    stealth  = 1 - min(1, detections / 5)
+
+Completion carries half the weight so that a student who finishes every
+objective scores at least 50 however badly they played, because completion
+is what the two tests measure against and the performance score should not
+contradict them. The two budgets are chosen, not measured; this project
+will never collect the playtesting data to justify a different pair.
+
+Time taken is recorded but not scored, because a timer rewards skipping the
+dialogue, which is the entire lesson.
+
+A guard catch increments both damageTaken and detections. The two terms are
+correlated by design: being seen is a stealth failure and it costs a health
+point, which is how the game already treats it.
+
+The counters are persisted inside game_progress.save_state, unlike health.
+Health is a moment-to-moment resource and restoring it on load is a
+kindness; the counters are a record, and a student who resumes an act would
+otherwise read as having played the replayed half flawlessly.
+
+Act completion is written before the feedback form opens. A student who
+closes the tab on an optional form must not lose a completed act and a
+graded post-test.
+
+game_sessions rows are written by acts.js and by nothing else, per act
+entry rather than per login. A NULL ended_at means the session was
+abandoned, which is data rather than a defect. There is deliberately no
+beforeunload handler closing them: beforeunload is unreliable on mobile
+Chrome, and a half-working close would make NULL mean two things.
 
 User feedback is optional and skippable. A required form after a post-test
 would be answered by a student who wants to leave, which is worse than no

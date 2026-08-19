@@ -135,15 +135,115 @@ const Acts = {
     return this.highestEnterable();
   },
 
-  // performance_score is currently completion only.
+  // performance_score, the weighted sum the paper asks for: objective
+  // completion, stealth effectiveness and combat efficiency.
   //
-  // When stealth and combat exist this becomes a weighted sum, with
-  // completion as one term among three. It is worth being explicit
-  // about that in the documentation, because "performance score"
-  // implies more than completion percentage and a panel may ask.
-  scoreFor(done, total) {
-    if (!total) return 0;
-    return Math.round((done / total) * 1000) / 10; // one decimal place
+  //   score = 50 * completion + 25 * survival + 25 * stealth
+  //
+  // Completion carries half the weight on purpose. A student who
+  // finishes every objective scores at least 50 however badly they
+  // played, because completion is what the pre-test and post-test
+  // measure against and the performance score should not contradict
+  // them. A student who plays flawlessly and finishes nothing also
+  // scores 50, which is the honest reading of that: skill demonstrated,
+  // nothing learned.
+  //
+  // Time is recorded but NOT scored. A timer rewards skipping the
+  // dialogue, which is the entire lesson.
+  //
+  // The two budgets below are CHOSEN, NOT MEASURED. This project will
+  // never collect the playtesting data to justify a different pair, and
+  // saying so is better than implying the numbers came from somewhere.
+  // They sit a little above what a careful first run of the Act I
+  // outpost costs, so both terms discriminate without bottoming out.
+  DAMAGE_BUDGET: 6,
+  DETECTION_BUDGET: 5,
+
+  scoreFor(done, total, stats) {
+    if (!total) return 0; // a stub act scores nothing and writes nothing
+
+    const s = stats || { damageTaken: 0, detections: 0 };
+    const completion = done / total;
+
+    // Clamped, so heavy damage floors the term at zero rather than
+    // dragging the whole score negative.
+    const survival = 1 - Math.min(1, (s.damageTaken || 0) / this.DAMAGE_BUDGET);
+    const stealth = 1 - Math.min(1, (s.detections || 0) / this.DETECTION_BUDGET);
+
+    const score = 50 * completion + 25 * survival + 25 * stealth;
+    return Math.round(score * 10) / 10; // one decimal place
+  },
+
+  // The engine holds the counters. This is the only place that reads
+  // them, and it tolerates a missing Game so the file still works if
+  // game.js ever fails to load.
+  currentStats() {
+    if (window.Game && Game.stats) return Game.stats();
+    return { damageTaken: 0, detections: 0, playMs: 0 };
+  },
+
+  // -----------------------------------------------------------
+  // Sessions
+  //
+  // acts.js is the only writer, because acts.js owns the act
+  // lifecycle. Nothing in the game ever reads these rows back.
+  //
+  // Every write here is fire and forget. A telemetry write that
+  // fails, or that is slow on a bad connection, must never block
+  // gameplay or surface an error to a student.
+  //
+  // A NULL ended_at means the session was abandoned rather than
+  // finished: the tab was closed, the battery died, the period
+  // ended. That is data, not a defect. There is deliberately no
+  // beforeunload handler closing these; beforeunload is unreliable
+  // on mobile Chrome, which is the target device, and a
+  // half-working close would make NULL mean two different things
+  // instead of one honest one.
+  // -----------------------------------------------------------
+
+  _sessionId: null,
+
+  async startSession(n) {
+    if (!currentUserId) return;
+
+    // The id is generated here rather than read back from the
+    // insert, which saves a round trip on a phone. The column
+    // still defaults to gen_random_uuid() for anything else that
+    // ever inserts.
+    const id =
+      window.crypto && crypto.randomUUID
+        ? crypto.randomUUID()
+        : "sess-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+
+    this._sessionId = id;
+
+    try {
+      const { error } = await sb.from("game_sessions").insert({
+        id,
+        student_id: currentUserId,
+        act_number: n,
+        started_at: new Date().toISOString(),
+      });
+      if (error) console.error("game_sessions insert failed:", error);
+    } catch (err) {
+      console.error("game_sessions insert threw:", err);
+    }
+  },
+
+  async endSession() {
+    if (!currentUserId || !this._sessionId) return;
+    const id = this._sessionId;
+    this._sessionId = null;
+
+    try {
+      const { error } = await sb
+        .from("game_sessions")
+        .update({ ended_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) console.error("game_sessions close failed:", error);
+    } catch (err) {
+      console.error("game_sessions close threw:", err);
+    }
   },
 
   // -----------------------------------------------------------
@@ -195,6 +295,16 @@ const Acts = {
     const row = this.progress[this.current];
     this.status = (row && row.status) || "playing";
     this._lastDone = row ? row.objectives_done : -1;
+
+    // A resuming student opens a session too. Sessions are per act
+    // ENTRY rather than per login, so a student who reloads mid-act
+    // produces a second row with the first left open. Both rows are
+    // correct and both are legible.
+    //
+    // The counters are NOT reset here. They were restored from
+    // save_state a moment ago, and zeroing them is precisely the bug
+    // that persisting them exists to prevent.
+    await this.startSession(this.current);
 
     await this.resume();
   },
@@ -320,12 +430,16 @@ const Acts = {
 
     this._writing = true;
     try {
+      const stats = this.currentStats();
       const payload = {
         student_id: currentUserId,
         act_number: n,
         objectives_total: total,
         objectives_done: done,
-        performance_score: this.scoreFor(done, total),
+        performance_score: this.scoreFor(done, total, stats),
+        damage_taken: stats.damageTaken,
+        detections: stats.detections,
+        elapsed_ms: Math.round(stats.playMs),
         updated_at: new Date().toISOString(),
       };
 
@@ -370,6 +484,27 @@ const Acts = {
       }
 
       await this.complete();
+
+      // AFTER the completion write, deliberately. A student who
+      // closes the tab on an optional form has already had their act
+      // recorded and their post-test graded. The other ordering loses
+      // a completed act to a form the student was free to skip, which
+      // is indefensible in a study where each student gets one
+      // attempt.
+      //
+      // Guarded the same way the tests are, so an assessment.js
+      // without it, or none at all, collapses the flow to complete
+      // then transition exactly as before.
+      if (window.Assessment && Assessment.runFeedback) {
+        try {
+          await Assessment.runFeedback(n);
+        } catch (err) {
+          // Never let an optional form stand between a student and
+          // the transition screen they just earned.
+          console.error("feedback flow failed:", err);
+        }
+      }
+
       this.showTransition(n);
     } finally {
       this._flowRunning = false;
@@ -387,6 +522,8 @@ const Acts = {
     const total = this.objectivesFor(n).length;
     const done = this.countDone(n);
 
+    const stats = this.currentStats();
+
     const { error } = await sb.from("act_progress").upsert(
       {
         student_id: currentUserId,
@@ -394,7 +531,10 @@ const Acts = {
         status: "completed",
         objectives_total: total,
         objectives_done: done,
-        performance_score: this.scoreFor(done, total),
+        performance_score: this.scoreFor(done, total, stats),
+        damage_taken: stats.damageTaken,
+        detections: stats.detections,
+        elapsed_ms: Math.round(stats.playMs),
         completed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
@@ -410,7 +550,13 @@ const Acts = {
     this._lastDone = done;
     this.progress[n] = { status: "completed", objectives_done: done };
 
-    console.log(`Act ${n} completed: ${done}/${total} objectives`);
+    await this.endSession();
+
+    console.log(
+      `Act ${n} completed: ${done}/${total} objectives, ` +
+        `score ${this.scoreFor(done, total, stats)}, ` +
+        `${stats.damageTaken} damage, ${stats.detections} detections`
+    );
   },
 
   // -----------------------------------------------------------
@@ -427,6 +573,15 @@ const Acts = {
     }
 
     const act = this.getAct(n);
+
+    // Close the outgoing act's session before the counters that
+    // belong to it are thrown away.
+    await this.endSession();
+
+    // Counters are per act. Reset before the world is built, so
+    // nothing that happens during loadAct can be charged to the
+    // student.
+    if (window.Game && Game.resetStats) Game.resetStats();
 
     this.current = n;
     this.status = "locked";
@@ -447,6 +602,8 @@ const Acts = {
 
     await this._ensureRow(n);
     this.status = this.progress[n].status;
+
+    await this.startSession(n);
 
     await this.showActTitle(n);
     await this.runPreActFlow();

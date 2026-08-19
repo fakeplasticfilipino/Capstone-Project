@@ -1,7 +1,7 @@
 # Paper versus build
 
 An audit of Capstone_Project_Proposal.pdf (74 pages, May 2026) against the
-code as it stands after Block 8.
+code as it stands after Block 9.
 
 Purpose is to know exactly what was promised, what exists, what was added
 that nobody wrote down, and what quietly went away. Every deviation listed
@@ -65,8 +65,8 @@ The paper specifies seventeen.
 | Cosmetic Reward | In-game currency for objectives, unlocking period-correct outfits | (NOT BUILT) Currency column exists in schema v3. Block 11 |
 | Trivia | Historical trivia fact before each act's pre-test | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Act Assessment | Pre-test and post-test before and after each chapter | (BUILT) Act I seeded; Acts II to IV not seeded |
-| Performance Scoring | Score from objective completion, stealth effectiveness, and combat efficiency | (PARTIAL) Objective completion percentage only. No stealth or combat terms. Block 9 |
-| Progress Tracking | Record act completion, assessment scores, gameplay performance | (BUILT) Completion and scores. Gameplay performance only as completion percentage. Block 9 |
+| Performance Scoring | Score from objective completion, stealth effectiveness, and combat efficiency | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded but not scored |
+| Progress Tracking | Record act completion, assessment scores, gameplay performance | (BUILT) Completion, scores, damage taken, detections and elapsed time |
 | Teacher Monitoring | View student progress, act completion, assessment results, performance scores | (BUILT) |
 | Data Synchronization | Synchronize progress and assessment results to the teacher interface upon internet availability | (CHANGED) Writes go straight to Supabase and the game requires a connection. There is no offline queue, so "upon internet availability" is not implemented as worded |
 
@@ -260,9 +260,9 @@ The four Act I story beats listed in section 6.
 Three items listed as dropped when this audit was first written have since
 been reinstated rather than abandoned, because each traces to a stated
 requirement and none is expensive. Environmental hazards and collectible
-items that restore health were built in Block 8. User feedback collection,
-which appears in both the Assessment module description and the third
-specific objective, is scheduled in Block 9. They are recorded
+items that restore health were built in Block 8, and user feedback
+collection, which appears in both the Assessment module description and the
+third specific objective, was built in Block 9. They are recorded
 here so that a reader of an earlier copy of this file is not left
 believing the project chose to lose them.
 
@@ -272,7 +272,6 @@ Everything outstanding traces back to a stated requirement.
 
 | Block | Closes |
 |---|---|
-| Block 9, schema v4 and measurement | Performance Scoring and Progress Tracking requirements, user feedback collection, GameSession entity |
 | Block 10, inventory and equipment | Equipment System requirement, Equipment and PlayerEquipment entities |
 | Block 11, currency and cosmetics | Cosmetic Reward requirement, CosmeticReward and UserCosmetic entities |
 | Block 12, polish | The mobile control overflow, the outpost tuning, and Audacity in the tools list |

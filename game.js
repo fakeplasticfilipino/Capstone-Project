@@ -729,6 +729,22 @@ let onGround = true;
 let health = MAX_HEALTH;
 let invulnUntil = 0; // timestamp; damage before this is ignored
 
+// --- Measurement ---------------------------------------------------------
+// Per-act counters. The engine counts; acts.js reads them through
+// Game.stats() and writes them to act_progress. game.js still knows
+// nothing about what an act is, which is the point.
+//
+// Unlike health, these are PERSISTED, inside game_progress.save_state.
+// Health is a moment-to-moment resource and restoring it on load is a
+// kindness. These are a record, and a student who closes the tab halfway
+// through an act and resumes later would otherwise restart both counters
+// at zero, making their survival and stealth terms read perfect for the
+// half they replayed. On a shared classroom phone that is not an edge
+// case, and the whole point of these numbers is that they are trusted.
+let damageTaken = 0;
+let detections = 0;
+let playMs = 0; // unpaused, unblocked play time
+
 let currentRoom = "road"; // the current scene id, persisted as-is
 let authGated = true; // true until the player is logged in
 let inDialogue = false;
@@ -1247,8 +1263,13 @@ function playerIsSafe() {
   return inDialogue || cutscenePlaying || uiBlocked || authGated;
 }
 
+// A catch increments BOTH counters, and that is intended rather than an
+// oversight. Being seen is a stealth failure and it costs a health point,
+// so it is counted in both terms. The two are correlated by design; the
+// documentation says so rather than leaving a panel to notice.
 function caughtBy(guard) {
   guard.alert = 0;
+  detections += 1;
   damagePlayer("Nakita ka ng bantay!", true);
 }
 
@@ -1325,6 +1346,10 @@ function damagePlayer(reason, respawn) {
   const now = performance.now();
   if (now < invulnUntil) return false; // still in the grace window
   invulnUntil = now + INVULN_MS;
+
+  // Counted here rather than at each call site, so the grace window
+  // that stops the damage also stops the count.
+  damageTaken += 1;
 
   health -= 1;
   renderHearts();
@@ -1646,6 +1671,18 @@ function gameLoop(now) {
   // through the floor. The target device will not hold 60fps, and a
   // frame-counted jump would reach half its height at 30.
   const step = lastFrameNow ? Math.min((now - lastFrameNow) / 16.67, 3) : 1;
+
+  // Play time in real milliseconds, from the same delta the physics uses
+  // and clamped the same way. Paused frames never reach here because the
+  // loop returns early above, so pause is excluded for free; the login
+  // screen and any open overlay are excluded explicitly.
+  //
+  // This is deliberately not the difference between two wall-clock
+  // timestamps, which would count the minutes a student spent with the
+  // tab in their pocket.
+  const deltaMs = lastFrameNow ? Math.min(now - lastFrameNow, 50) : 0;
+  if (!authGated && !uiBlocked) playMs += deltaMs;
+
   lastFrameNow = now;
 
   let isWalking = false;
@@ -1965,6 +2002,22 @@ function applyLoadedState(row) {
     Object.assign(state.flags, saved.flags);
   }
 
+  // Absent on any save written before Block 9, which is why each field is
+  // checked rather than the object being assigned wholesale. An older
+  // save resumes with zeroed counters, which is the best that can be done
+  // for data that was never recorded.
+  if (saved.stats) {
+    if (typeof saved.stats.damageTaken === "number") {
+      damageTaken = saved.stats.damageTaken;
+    }
+    if (typeof saved.stats.detections === "number") {
+      detections = saved.stats.detections;
+    }
+    if (typeof saved.stats.playMs === "number") {
+      playMs = saved.stats.playMs;
+    }
+  }
+
   if (typeof saved.posX === "number") {
     posX = saved.posX;
     // Drop to whatever surface is under the restored position, rather
@@ -2010,7 +2063,12 @@ async function saveProgress() {
     // for the next login to resume into.
     current_act: window.Acts ? Acts.current : 1,
     is_night: skylineNight.classList.contains("visible"),
-    save_state: { quests, flags: state.flags, posX },
+    save_state: {
+      quests,
+      flags: state.flags,
+      posX,
+      stats: { damageTaken, detections, playMs },
+    },
     updated_at: new Date().toISOString(),
   };
 
@@ -2055,4 +2113,19 @@ window.Game = {
   flushSave,
   setUiBlocked,
   isSignedIn: () => Boolean(currentUserId),
+
+  // Read by acts.js, which is the only thing that writes them anywhere.
+  // Returned as a copy so a caller cannot mutate the engine's counters by
+  // holding onto the object.
+  stats: () => ({ damageTaken, detections, playMs }),
+
+  // Called from Acts.enterAct, so the counters are per act. NOT called on
+  // respawn, on a scene change, or on death: being sent back to the start
+  // of the outpost is the cost of being caught, and wiping the record of
+  // it would make the score measure the last attempt rather than the act.
+  resetStats() {
+    damageTaken = 0;
+    detections = 0;
+    playMs = 0;
+  },
 };

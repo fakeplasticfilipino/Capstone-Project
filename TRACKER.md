@@ -84,6 +84,14 @@ pickups that restore one and are refused at full health, and guard speed
 scaled by act number. Closes the Health System and Dynamic Difficulty
 requirements. (COMPLETE)
 
+Block 9, schema v4 and measurement. Per-act damage and detection counters
+persisted in save_state, play time that excludes pauses, the weighted
+performance score, game_sessions rows, and the optional feedback form
+after the post-test. Closes Performance Scoring, Progress Tracking and the
+user feedback half of the third objective. The client is written and the
+migration is written; macario_schema_v4.sql has NOT been run.
+(COMPLETE, MIGRATION NOT RUN)
+
 Act I outpost. Two patrolling guards, three crates, two platforms, two
 bamboo stake hazards, one heart pickup, and a kasama to deliver the
 message to. (COMPLETE)
@@ -100,16 +108,13 @@ NOT RUN)
 ## Next
 
 Ordered by dependency and by how much of a stated objective each closes.
-Blocks 9 through 11 finish the second stated objective. Block 9 also
-finishes the third.
+Blocks 10 and 11 finish the second stated objective. Block 9 finished the
+third, subject to its migration being run.
 
-Block 9, schema v4 and measurement. Adds damage_taken, detections and
-elapsed time to act_progress, turns performance_score into a weighted sum of
-objective completion, survival and stealth, writes game_sessions rows, adds
-a feedback table, and drops player_actions and player_achievements. Also
-adds the optional feedback form after the post-test. Closes Performance
-Scoring, Progress Tracking and the user feedback half of the third
-objective. (NOT STARTED)
+Run macario_schema_v4.sql in the Supabase SQL editor. Everything Block 9
+writes goes to columns and a table that do not exist until it does, and a
+write to a missing column fails in the console while the score still looks
+correct in memory. Do this before pushing. (NOT STARTED)
 
 Block 10, inventory and equipment. content/items.js as pure data, an
 inventory screen in the shell, weapon and accessory slots, and two effects:
@@ -237,12 +242,19 @@ The test harness now lives in the repository at _dev/, so it no longer has
 to be rebuilt from scratch each session. Run it with node _dev/test.js from
 the repository root; see _dev/README.md for setup.
 
-80 checks covering the entry gate on both the fresh and resuming paths,
+114 checks covering the entry gate on both the fresh and resuming paths,
 pause halting guard patrol and the detection meter, the invulnerability
 offset, settings persistence, logout confirmation, the legacy current_room
 fallback, a stalled load offering a way out, hazard damage and knockback,
 pickup collection and its refusal at full health, the collected set
-surviving a respawn, and guard speed at act 1 against act 3.
+surviving a respawn, guard speed at act 1 against act 3, the score formula
+at both bounds, counters restored from a stored save and reset only on act
+entry, session rows opening and closing, and the feedback form skipping,
+submitting and refusing a second submission.
+
+Two of those checks exist to protect the study rather than the code: that
+complete runs before the feedback form opens, and that an act still
+completes when the feedback module is absent.
 
 Difficulty scaling is verified only here. No act with guards beyond Act I
 has content, so there is nothing in the running game that demonstrates it.
