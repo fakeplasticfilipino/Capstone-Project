@@ -47,10 +47,19 @@ begin
   -- session count after the next run is unambiguous.
   delete from public.game_sessions      where student_id = any(ids);
 
+  -- Equipment before inventory: a slot row refers to an item the
+  -- student owns, and clearing ownership first would leave the
+  -- account wearing something it no longer has. Both are cleared so
+  -- the next full-flow test starts from an empty inventory screen and
+  -- sees the Act I grant happen, which is the whole point of running
+  -- the flow again.
+  delete from public.player_equipment   where student_id = any(ids);
+  delete from public.player_inventory   where student_id = any(ids);
+
   raise notice 'Reset play data for % account(s).', array_length(ids, 1);
 end $$;
 
--- Expect five zeros. Scoped to the two test accounts, so this stays
+-- Expect seven zeros. Scoped to the two test accounts, so this stays
 -- correct once real student accounts exist alongside them. A non-zero
 -- row means the delete above did not reach that table.
 with test_ids as (
@@ -72,4 +81,10 @@ from public.feedback where student_id in (select id from test_ids)
 union all
 select 'game_sessions', count(*)::text
 from public.game_sessions where student_id in (select id from test_ids)
+union all
+select 'player_inventory', count(*)::text
+from public.player_inventory where student_id in (select id from test_ids)
+union all
+select 'player_equipment', count(*)::text
+from public.player_equipment where student_id in (select id from test_ids)
 order by 1;

@@ -89,10 +89,9 @@ reintroduce heavier tooling.
 
 Four layers, with a strict dependency direction.
 
-Content, in content/actN.js. Pure data. NPCs, stage, decorations,
-objectives, starting quests, hazards, pickups. Contains no engine logic.
-Registers itself on window. content/items.js joins this layer in Block 10
-and does not exist yet.
+Content, in content/actN.js and content/items.js. Pure data. NPCs, stage,
+decorations, objectives, starting quests, hazards, pickups, and the item
+catalogue. Contains no engine logic. Registers itself on window.
 
 Engine, in game.js. Renders worlds, runs dialogue, animates sprites, and
 handles auth, physics, health, stealth, combat and save/load. Knows nothing
@@ -108,10 +107,21 @@ promise and never writes act_progress itself. It is optional: acts.js
 checks window.Assessment before calling it, and the flow collapses to
 playing then completed without it.
 
+Inventory, in inventory.js. Owns player_inventory and player_equipment and
+is the only file that reads or writes either. It reduces the student's
+equipped items to plain numbers and hands them to the engine through
+Game.setEffects, so game.js never learns that an item exists. Optional the
+same way assessment.js is: acts.js checks window.Inventory before calling
+it and shell.js hides the inventory button without it.
+
 Shell, in shell.js. Owns every screen that is not the game world: title,
-pause, settings, logout, and the inventory when Block 10 adds it. Unlike
-assessment.js it is NOT optional and nothing should guard on window.Shell,
-with one documented exception at the awaitEntry call in game.js.
+pause, settings, inventory and logout. Unlike assessment.js it is NOT
+optional and nothing should guard on window.Shell, with one documented
+exception at the awaitEntry call in game.js.
+
+The one exception inside shell.js is window.Inventory, which it does guard
+on, because that module is optional and the screen it draws is not the way
+into the game.
 
 Load order in index.html, which is load bearing:
 
@@ -119,8 +129,10 @@ Load order in index.html, which is load bearing:
     supabaseClient.js
     content/act1.js      before game.js, which reads window.ACT_1 on start
     content/act2.js      through act4.js, before acts.js builds its registry
+    content/items.js     before inventory.js, which reads window.ITEMS
     game.js
     acts.js              after game.js
+    inventory.js         after acts.js, which is what calls it
     assessment.js        after acts.js
     shell.js             last
 
@@ -145,6 +157,11 @@ game.js exposes window.Game and nothing else:
     isSignedIn()
     stats()              { damageTaken, detections, playMs }, a copy
     resetStats()         called by Acts.enterAct, and by nothing else
+    setEffects(obj)      { maxHealthBonus, projectileSpeedMult }
+
+setEffects takes numbers rather than items, deliberately. The engine applies
+a bonus and a multiplier and never learns what produced them, which is the
+same line game.js holds against acts.js. inventory.js is the only caller.
 
 The engine counts; acts.js reads and writes. game.js still knows nothing
 about what an act is, and acts.js knows nothing about how damage happens.
@@ -234,10 +251,6 @@ holding on the last. onComplete fires once, when that conversation ends.
 
 ## Item data format
 
-NOT BUILT YET. This is the agreed shape for Block 10, recorded here so the
-decision does not have to be retaken. content/items.js does not exist and
-index.html does not reference it.
-
 Items are pure content, in content/items.js as window.ITEMS. They hold no
 secret and are identical for every student, so a database round trip on a
 low-end phone would buy nothing. Only ownership is stored.
@@ -246,18 +259,34 @@ low-end phone would buy nothing. Only ownership is stored.
       id, name, description,
       kind: "equipment" | "cosmetic",
       slot: "weapon" | "accessory" | "outfit",
-      price,                                     in-game currency
+      price,                                     in-game currency; 0 is
+                                                 not for sale
       img,
-      effect: { projectileCooldown: 0.6 }        equipment only
+      grantedOnAct: 1,                           optional; handed over on
+                                                 entering that act
+      effect: { projectileSpeedMult: 1.5 }       equipment only
             | { maxHealthBonus: 1 }
     }
 
+An earlier draft of this section named the effect projectileCooldown. There
+is no cooldown in the engine and never was: the limiter is one projectile in
+flight at a time. The built effect is projectileSpeedMult, which scales
+PROJECTILE_SPEED, and because a faster spear also clears that limiter sooner
+it makes the throw both quicker and more frequent from one lever.
+
 Effects are deliberately small and few. A faster projectile and one extra
 heart are the whole design brief; anything that needs a balance spreadsheet
-is out of scope.
+is out of scope. Bonuses add and multipliers multiply, so an item with
+neither contributes nothing, which is what makes a cosmetic a cosmetic.
 
 Cosmetics are period-correct outfits and change the player sprite only.
-They never affect gameplay.
+They never affect gameplay. None exist yet; the outfit slot is in the
+format and in the database, and Block 11 fills it.
+
+An item id is a text key with no foreign key behind it. An item deleted
+from the content file leaves an orphan ownership row that inventory.js
+ignores, which is the correct failure: a student's save is not corrupted by
+an edit to a content file.
 
 ## Sprite sheets
 
@@ -334,6 +363,19 @@ tradeoffs; match that register.
 
 Whole-file replacements, not hand-applied patches. The user has asked for
 this explicitly. Present complete files.
+
+Do not write a block's technical plan into the repository, or into the
+connected project, as its own document. Plan in the session, present the
+plan in the conversation, and keep the reasoning in context while the block
+is built. A spec file per block is a third status document by another name:
+it is accurate for about a day, it goes stale the moment the block ships,
+and it then has to be corrected alongside everything else.
+
+What outlives a block goes in one of two places and nowhere else. Decisions
+and formats that shape future work go in this file, under Decisions on
+record. Status, next action and what has been run go in TRACKER.md. If a
+piece of the plan fits in neither, it was working material and belongs in
+the conversation only.
 
 Documentation style: plain professional prose. No emoji, no checkboxes, no
 bold, no em dashes, no horizontal rules. Status markers in parentheses:
@@ -500,6 +542,44 @@ Chrome, and a half-working close would make NULL mean two things.
 User feedback is optional and skippable. A required form after a post-test
 would be answered by a student who wants to leave, which is worse than no
 data.
+
+Items are granted on entering the act whose content names them, through
+grantedOnAct and Inventory.grantForAct. Block 10 has no shop, and an
+equipment system a student cannot reach during the only act with content
+would close a requirement on paper and demonstrate nothing. Block 11's
+purchase path sits beside this rather than replacing it.
+
+The grant runs from both Acts.syncStart and Acts.enterAct. A fresh student
+logging into Act I never reaches enterAct, so the login path needs its own
+call. It is idempotent twice over: the in-memory check saves the round trip
+and the unique constraint on (student_id, item_id) is the real guarantee.
+
+Equipment writes are optimistic, unlike act_progress and unlike the session
+rows. The screen changes first and the row follows; a failed write puts the
+screen back and says so in Tagalog. Equipment is not study data, and a
+student on a classroom phone should not watch a spinner to put on an
+amulet. act_progress gets the opposite treatment for the opposite reason.
+
+A raised maximum health arrives full. A fourth heart that renders empty
+until the student happens to find a pickup reads as a broken item rather
+than a reward. Unequipping clamps health down to the new maximum.
+
+Equipment effects derive from player_equipment and are not written into
+save_state. There is no second copy of the truth to fall out of step.
+
+The inventory screen is reached from pause and from nowhere else. The
+mobile control cluster already overflows the viewport at 412px, which is a
+known problem scheduled for Block 12, and a sixth button in that row would
+make a documented fault worse to save one tap. Opening from pause also
+means the game is stopped for the whole visit, so an effect can never
+change under a running frame.
+
+The Agimat's extra heart is not compensated for in the performance score.
+DAMAGE_BUDGET of 6 was chosen against a three-heart run, so a student
+wearing the amulet can absorb more before the survival term moves. The
+term measures damage taken rather than hearts remaining, so it stays
+comparable between students either way, and re-tuning a budget that was
+chosen rather than measured would only move the arbitrariness.
 
 The ERD is revised to match what is built rather than the reverse.
 PlayerAction and the achievement entities are dropped: a per-action replay

@@ -50,8 +50,23 @@ const JUMP_VELOCITY = 14;
 const TERMINAL_VELOCITY = -22; // clamp the descent so a long fall stays readable
 
 // --- Health --------------------------------------------------------------
-const MAX_HEALTH = 3;
+// The floor, before equipment. Everything that reads a maximum reads
+// maxHealth, which an accessory can raise; this constant is only ever
+// the starting point that setEffects adds a bonus to.
+const BASE_MAX_HEALTH = 3;
+let maxHealth = BASE_MAX_HEALTH;
 const INVULN_MS = 1000;
+
+// --- Equipment effects ---------------------------------------------------
+// Plain numbers, handed in by inventory.js through Game.setEffects. The
+// engine never learns that an item exists: it is told a maximum health
+// bonus and a projectile speed multiplier, and applies them. That is what
+// keeps equipment out of this file the way acts are.
+//
+// Declared here rather than beside the other mutable state further down,
+// because loadAct() runs at parse time and reaches into the HUD, and
+// anything it can touch has to be initialised above it.
+let equipEffects = { maxHealthBonus: 0, projectileSpeedMult: 1 };
 
 // The little hop that comes with a hazard shove. Without being moved
 // clear the player is left standing in the band, the invulnerability
@@ -726,7 +741,7 @@ let posY = GROUND_LEVEL; // distance from the bottom of the world, in px
 let velY = 0;
 let onGround = true;
 
-let health = MAX_HEALTH;
+let health = maxHealth;
 let invulnUntil = 0; // timestamp; damage before this is ignored
 
 // --- Measurement ---------------------------------------------------------
@@ -1318,11 +1333,48 @@ function renderHearts() {
   const heartsEl = hudEls().hearts;
   if (!heartsEl) return;
   heartsEl.innerHTML = "";
-  for (let i = 0; i < MAX_HEALTH; i++) {
+  for (let i = 0; i < maxHealth; i++) {
     const heart = document.createElement("div");
     heart.className = "heart" + (i < health ? "" : " heart-empty");
     heartsEl.appendChild(heart);
   }
+}
+
+// The whole of what equipment does to the engine. Called by inventory.js
+// on sync and on every equip or unequip, including the optimistic one it
+// reverts a moment later if the write fails.
+//
+// Defensive about its input on purpose: it is the boundary between a file
+// that may be absent and one that must never throw. A missing or nonsense
+// multiplier falls back to 1 rather than making the projectile stand still.
+function setEffects(next) {
+  const e = next || {};
+
+  const mult = Number(e.projectileSpeedMult);
+  equipEffects.projectileSpeedMult = isFinite(mult) && mult > 0 ? mult : 1;
+
+  const bonus = Number(e.maxHealthBonus);
+  equipEffects.maxHealthBonus =
+    isFinite(bonus) && bonus > 0 ? Math.floor(bonus) : 0;
+
+  setMaxHealth(BASE_MAX_HEALTH + equipEffects.maxHealthBonus);
+}
+
+// A raised maximum arrives FULL. A fourth heart that renders empty until
+// the student happens to find a pickup reads as a broken item rather than
+// a reward, and the amulet is the reward for reaching the outpost.
+//
+// Lowering it clamps, which is the taking-it-off case: a student wearing
+// four hearts who unequips at full health drops to three rather than
+// keeping a heart the HUD can no longer draw.
+function setMaxHealth(next) {
+  const previous = maxHealth;
+  maxHealth = Math.max(1, next);
+
+  if (maxHealth > previous) health += maxHealth - previous;
+  if (health > maxHealth) health = maxHealth;
+
+  renderHearts();
 }
 
 function showToast(text) {
@@ -1377,7 +1429,7 @@ function respawnInScene() {
   facing = 1;
 
   if (health <= 0) {
-    health = MAX_HEALTH;
+    health = maxHealth;
     renderHearts();
   }
 
@@ -1451,12 +1503,12 @@ function updatePickups() {
     // who walks over the last heart before the corridor should not lose it
     // for having been careful, and a pickup that vanishes with no effect
     // teaches that pickups are worthless.
-    if (health >= MAX_HEALTH) return;
+    if (health >= maxHealth) return;
 
     collectedPickups.add(pickup.id);
     if (pickup.el) pickup.el.remove();
 
-    health = Math.min(MAX_HEALTH, health + 1);
+    health = Math.min(maxHealth, health + 1);
     renderHearts();
     showToast("Nakakuha ka ng puso!");
   });
@@ -1561,7 +1613,10 @@ function throwProjectile() {
 function updateProjectile(step) {
   if (!projectile) return;
 
-  const distance = PROJECTILE_SPEED * step;
+  // The multiplier is the whole of the weapon slot. A faster spear also
+  // clears the one-in-flight limiter sooner, so the same lever makes the
+  // throw both quicker and more frequent.
+  const distance = PROJECTILE_SPEED * equipEffects.projectileSpeedMult * step;
   projectile.x += distance * projectile.dir;
   projectile.travelled += distance;
   projectile.el.style.left = projectile.x + "px";
@@ -2039,7 +2094,7 @@ function applyLoadedState(row) {
   // Health is deliberately not restored. A student who closed the tab on
   // one heart resumes at full, because punishing them for a bus arriving
   // is not a mechanic worth having.
-  health = MAX_HEALTH;
+  health = maxHealth;
   updateHudVisibility();
 }
 
@@ -2118,6 +2173,12 @@ window.Game = {
   // Returned as a copy so a caller cannot mutate the engine's counters by
   // holding onto the object.
   stats: () => ({ damageTaken, detections, playMs }),
+
+  // Set by inventory.js from the student's equipped items, and by nothing
+  // else. Takes numbers rather than items deliberately: the engine applies
+  // a bonus and a multiplier and never learns what produced them, which is
+  // the same line game.js holds against acts.js.
+  setEffects,
 
   // Called from Acts.enterAct, so the counters are per act. NOT called on
   // respawn, on a scene change, or on death: being sent back to the start

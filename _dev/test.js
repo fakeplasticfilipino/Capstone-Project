@@ -56,7 +56,11 @@ const visible = (page, sel) => page.evaluate((s) => {
   await new Promise((r) => server.listen(PORT, r));
   const browser = await chromium.launch();
 
-  async function newPage(testState) {
+  // block is a URL pattern to serve empty, which is how the suite tests
+  // a page that loaded without one of its optional files. Serving empty
+  // rather than 404 keeps the console clean, so a real error still
+  // stands out in the pageerror handler above.
+  async function newPage(testState, block) {
     const ctx = await browser.newContext({ viewport: { width: 412, height: 823 } });
     const page = await ctx.newPage();
     page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
@@ -68,6 +72,11 @@ const visible = (page, sel) => page.evaluate((s) => {
       route.fulfill({ body: STUB, contentType: "text/javascript" }));
     await page.route("**/cdn.jsdelivr.net/**", (route) =>
       route.fulfill({ body: "", contentType: "text/javascript" }));
+
+    if (block) {
+      await page.route(block, (route) =>
+        route.fulfill({ body: "", contentType: "text/javascript" }));
+    }
 
     await page.addInitScript((s) => { window.__TEST = s; }, testState);
     await page.goto("http://localhost:" + PORT + "/index.html");
@@ -257,8 +266,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 4 }],
   });
 
-  async function enterOutpost() {
-    const { ctx, page } = await newPage(atOutpost());
+  async function enterOutpost(block) {
+    const { ctx, page } = await newPage(atOutpost(), block);
     await page.waitForTimeout(700);
     await page.click("#shell-start");
     await page.waitForTimeout(400);
@@ -716,6 +725,269 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("the act still completes with no feedback module",
        withoutIt === "completed", withoutIt);
+
+    await ctx.close();
+  }
+
+  // -----------------------------------------------------------------
+  // Block 10. Inventory and equipment.
+  // -----------------------------------------------------------------
+
+  console.log("\nP. The item catalogue");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    const shape = await page.evaluate(() => ({
+      count: window.ITEMS.length,
+      wellFormed: window.ITEMS.every(
+        (i) => i.id && i.kind && i.slot && i.name
+      ),
+      slots: window.ITEMS.map((i) => i.slot),
+    }));
+    ok("the catalogue loaded", shape.count === 2, shape.count);
+    ok("every item has an id, kind, slot and name", shape.wellFormed, shape);
+    ok("one weapon and one accessory",
+       shape.slots.includes("weapon") && shape.slots.includes("accessory"),
+       shape.slots);
+
+    await ctx.close();
+  }
+
+  console.log("\nQ. Granting");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    ok("both Act I items were granted on entry",
+       (await page.evaluate(() => __DB.player_inventory.length)) === 2,
+       await page.evaluate(() => __DB.player_inventory));
+    ok("the rows belong to the student",
+       await page.evaluate(() =>
+         __DB.player_inventory.every((r) => r.student_id === "u1")));
+    ok("Inventory reports both as owned",
+       (await page.evaluate(() => Inventory.ownedItems().length)) === 2);
+
+    // Re-entering must not hand them out again. The unique constraint is
+    // the real guarantee; this checks the client does not lean on it.
+    const again = await page.evaluate(async () => {
+      await Inventory.grantForAct(1);
+      return __DB.player_inventory.length;
+    });
+    ok("a second grant writes nothing", again === 2, again);
+
+    await ctx.close();
+  }
+
+  console.log("\nR. Equipping");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    const worn = await page.evaluate(async () => {
+      const wrote = await Inventory.equip("agimat");
+      return {
+        wrote,
+        rows: __DB.player_equipment.length,
+        slot: __DB.player_equipment[0] && __DB.player_equipment[0].slot,
+        item: __DB.player_equipment[0] && __DB.player_equipment[0].item_id,
+      };
+    });
+    ok("equipping writes a row", worn.wrote && worn.rows === 1, worn);
+    ok("the row names the slot and the item",
+       worn.slot === "accessory" && worn.item === "agimat", worn);
+
+    // A second item in the same slot must replace rather than add. Only
+    // one weapon exists in the catalogue, so the test supplies a second
+    // rather than the content file carrying one it does not need.
+    const replaced = await page.evaluate(async () => {
+      window.ITEMS.push({ id: "sibat-2", name: "Pangalawa", kind: "equipment",
+                          slot: "weapon", price: 0, effect: {} });
+      Inventory.ownedIds.push("sibat-2");
+      await Inventory.equip("sibat");
+      await Inventory.equip("sibat-2");
+      const weapons = __DB.player_equipment.filter((r) => r.slot === "weapon");
+      return { rows: weapons.length, item: weapons[0] && weapons[0].item_id };
+    });
+    ok("one row per slot, not one per equip", replaced.rows === 1, replaced);
+    ok("the slot holds the newer item", replaced.item === "sibat-2", replaced);
+
+    const off = await page.evaluate(async () => {
+      await Inventory.unequip("accessory");
+      return {
+        rows: __DB.player_equipment.length,
+        accessory: Inventory.equipped("accessory"),
+      };
+    });
+    ok("unequipping deletes the row", off.rows === 1, off);
+    ok("the slot reads empty afterwards", off.accessory === null, off);
+
+    await ctx.close();
+  }
+
+  console.log("\nS. Equipment effects");
+  {
+    const { ctx, page } = await enterOutpost();
+    await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
+
+    const hearts = () => page.evaluate(() => ({
+      max: maxHealth,
+      health: health,
+      drawn: document.querySelectorAll("#hud-hearts .heart").length,
+      empty: document.querySelectorAll("#hud-hearts .heart-empty").length,
+    }));
+
+    await page.evaluate(() => { health = 3; });
+    const before = await hearts();
+    ok("three hearts with nothing equipped",
+       before.max === 3 && before.drawn === 3, before);
+
+    await page.evaluate(() => Inventory.equip("agimat"));
+    const boosted = await hearts();
+    ok("the amulet raises the maximum", boosted.max === 4, boosted);
+    ok("the HUD draws the fourth heart", boosted.drawn === 4, boosted);
+    ok("the new heart arrives full",
+       boosted.health === 4 && boosted.empty === 0, boosted);
+
+    // Damage still costs exactly one, which is the check that the bonus
+    // did not quietly become a damage reduction.
+    const hurt = await page.evaluate(() => {
+      invulnUntil = 0;
+      damagePlayer("t", false);
+      return { health, empty: document.querySelectorAll("#hud-hearts .heart-empty").length };
+    });
+    ok("a hit still costs one heart of four", hurt.health === 3, hurt);
+    ok("the lost heart renders empty", hurt.empty === 1, hurt);
+
+    // Taking it off at full health must clamp rather than leave health
+    // above a maximum the HUD can no longer draw.
+    const clamped = await page.evaluate(async () => {
+      health = 4;
+      await Inventory.unequip("accessory");
+      return { max: maxHealth, health,
+               drawn: document.querySelectorAll("#hud-hearts .heart").length };
+    });
+    ok("unequipping drops the maximum back", clamped.max === 3, clamped);
+    ok("health is clamped to it",
+       clamped.health === 3 && clamped.drawn === 3, clamped);
+
+    // The projectile multiplier, measured on one step of the real update
+    // rather than trusted from the constant.
+    const thrown = await page.evaluate(() => {
+      const step = () => {
+        destroyProjectile();
+        posX = 400;
+        facing = 1;
+        throwProjectile();
+        const start = projectile.x;
+        updateProjectile(1);
+        const moved = projectile.x - start;
+        destroyProjectile();
+        return moved;
+      };
+      Game.setEffects({});
+      const base = step();
+      Game.setEffects({ projectileSpeedMult: 1.5 });
+      const fast = step();
+      Game.setEffects(Inventory.effects());
+      return { base, fast };
+    });
+    ok("the spear multiplies projectile speed",
+       Math.abs(thrown.fast - thrown.base * 1.5) < 0.001, thrown);
+
+    // A missing or nonsense multiplier must not stop the projectile.
+    const guarded = await page.evaluate(() => {
+      Game.setEffects({ projectileSpeedMult: 0 });
+      const zero = equipEffects.projectileSpeedMult;
+      Game.setEffects({ maxHealthBonus: -2 });
+      const negative = maxHealth;
+      Game.setEffects(Inventory.effects());
+      return { zero, negative };
+    });
+    ok("a zero multiplier falls back to 1", guarded.zero === 1, guarded);
+    ok("a negative bonus cannot shrink the maximum",
+       guarded.negative === 3, guarded);
+
+    await ctx.close();
+  }
+
+  console.log("\nT. The inventory screen");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    await page.click("#btn-pause");
+    await page.waitForTimeout(150);
+    ok("the inventory button is offered on pause",
+       await visible(page, "#shell-inventory-open"));
+
+    await page.click("#shell-inventory-open");
+    await page.waitForTimeout(100);
+    ok("the inventory panel opens", await visible(page, "#shell-inventory"));
+    ok("shell state is inventory",
+       (await page.evaluate(() => Shell.state)) === "inventory");
+    ok("both owned items are listed",
+       (await page.evaluate(() =>
+         document.querySelectorAll("#shell-items .inv-item").length)) === 2);
+    ok("the game is still paused behind it",
+       await page.evaluate(() => Game.isPaused()));
+
+    await page.click('[data-item-id="agimat"]');
+    await page.waitForTimeout(150);
+    ok("tapping an item equips it",
+       (await page.evaluate(() => Inventory.equipped("accessory"))) === "agimat");
+    ok("the slot row shows the item name",
+       (await page.textContent("#shell-slots")).includes("Agimat"));
+    ok("the row offers to take it off now",
+       (await page.textContent('[data-item-id="agimat"]')).includes("Tanggalin"));
+    ok("no failure note on a good write",
+       (await page.textContent("#shell-inventory-note")).trim() === "");
+
+    await page.click('[data-item-id="agimat"]');
+    await page.waitForTimeout(150);
+    ok("tapping it again takes it off",
+       (await page.evaluate(() => Inventory.equipped("accessory"))) === null);
+
+    await page.click("#shell-inventory-back");
+    await page.waitForTimeout(100);
+    ok("back returns to pause, not to the world",
+       await visible(page, "#shell-pause"));
+    ok("and the game is still paused",
+       await page.evaluate(() => Game.isPaused()));
+
+    await page.click("#shell-resume");
+    await page.waitForTimeout(100);
+    ok("resuming from there still works",
+       !(await page.evaluate(() => Game.isPaused())));
+
+    await ctx.close();
+  }
+
+  console.log("\nU. Inventory is optional to the flow");
+  {
+    const { ctx, page } = await enterOutpost("**/inventory.js*");
+
+    ok("the module really is absent",
+       await page.evaluate(() => !window.Inventory));
+    ok("nothing threw during the act flow",
+       (await page.evaluate(() => Acts.current)) === 1);
+    ok("the engine keeps its three hearts",
+       (await page.evaluate(() => maxHealth)) === 3);
+
+    await page.click("#btn-pause");
+    await page.waitForTimeout(150);
+    ok("no inventory button without the module",
+       !(await visible(page, "#shell-inventory-open")));
+    await page.click("#shell-resume");
+    await page.waitForTimeout(100);
+
+    // The check that protects the study rather than the feature. Equipment
+    // is a stated objective; the act flow is the finding.
+    const status = await page.evaluate(async () => {
+      Assessment.runTest = async function () {};
+      delete Assessment.runFeedback;
+      Acts.showTransition = function () {};
+      await Acts.finishAct();
+      return Acts.status;
+    });
+    ok("the act still completes with no inventory module",
+       status === "completed", status);
 
     await ctx.close();
   }

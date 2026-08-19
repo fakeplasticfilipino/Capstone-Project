@@ -306,6 +306,19 @@ const Acts = {
     // that persisting them exists to prevent.
     await this.startSession(this.current);
 
+    // Equipment belongs to the student rather than to the act, so it
+    // loads once per login rather than on every act entry. equip()
+    // applies its own effect the moment it runs, so nothing downstream
+    // needs a second sync.
+    //
+    // Both calls are guarded. inventory.js is optional the same way
+    // assessment.js is: without it the act flow is untouched and the
+    // study still collects everything it needs.
+    if (window.Inventory) {
+      await Inventory.sync();
+      await Inventory.grantForAct(this.current);
+    }
+
     await this.resume();
   },
 
@@ -604,6 +617,11 @@ const Acts = {
     this.status = this.progress[n].status;
 
     await this.startSession(n);
+
+    // Whatever this act's content says it hands over. A no-op after the
+    // first entry, and the unique constraint on (student_id, item_id) is
+    // the real guarantee behind that rather than the memory check.
+    if (window.Inventory) await Inventory.grantForAct(n);
 
     await this.showActTitle(n);
     await this.runPreActFlow();

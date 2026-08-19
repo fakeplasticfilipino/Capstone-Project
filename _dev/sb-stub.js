@@ -20,6 +20,8 @@
     ],
     game_progress: T.game_progress || [],
     act_progress: T.act_progress || [],
+    player_inventory: T.player_inventory || [],
+    player_equipment: T.player_equipment || [],
   };
   let session = T.session || null;
   const listeners = [];
@@ -70,6 +72,14 @@
           data = list;
         } else if (op === "update") {
           match(rows, filters).forEach((r) => Object.assign(r, payload));
+        } else if (op === "delete") {
+          // Unequipping is a delete rather than a null item_id, because
+          // player_equipment.item_id is not null and an empty slot is
+          // the absence of a row. The stub needs the verb for that.
+          match(rows, filters).forEach((r) => {
+            const at = rows.indexOf(r);
+            if (at !== -1) rows.splice(at, 1);
+          });
         }
       } catch (err) {
         return Promise.resolve({ data: null, error: { message: String(err) } });
@@ -95,6 +105,7 @@
         insert(p) { return builder(table, "insert", p); },
         upsert(p, o) { return builder(table, "upsert", p, o); },
         update(p) { return builder(table, "update", p); },
+        delete() { return builder(table, "delete"); },
       };
     },
     rpc(name) {

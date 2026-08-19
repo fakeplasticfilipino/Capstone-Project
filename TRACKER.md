@@ -20,7 +20,7 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 9 shipped and the repository was tidied.
+Last updated: after Block 10 was built and passed the harness.
 
 ## Right now
 
@@ -29,7 +29,14 @@ run against the live database, the client is pushed, and Act I plays
 end to end on a desktop browser with hazards, pickups, the weighted
 performance score and the optional feedback form all working.
 
-The automated suite passes at 114 checks, 0 failures.
+Block 10 is written and passes the harness at 156 checks, and has NOT
+yet been run against the live database or pushed. It needed no
+migration: schema v3 already created player_inventory and
+player_equipment with their policies, so there is nothing to run in
+the SQL editor and nothing to add to the Run log. It moves to done
+below once the live checkpoint in its section passes.
+
+The automated suite passes at 156 checks, 0 failures.
 
 What is not done is everything that does not depend on writing more
 engine code: the game has never run on a real phone, the assessment
@@ -56,6 +63,42 @@ folder.
 After that, in order: a device pass on a real Android phone, then
 Block 10.
 
+## The milestone
+
+Final defense with student data collection, confirmed. Grade 8 students at
+Imus National High School play the game and sit both tests. School approval
+is secured.
+
+Parental consent was waived by the guidance office and the resource person,
+on the grounds that the session runs about an hour and that identifiable
+results stay with the teacher while the proponents receive only aggregate
+figures. Get that waiver in writing and keep it with the validation form. A
+panel asking about consent wants a document, not a recollection.
+
+Data collection covers Act I, since Acts II through IV have no content yet.
+Act I quality and the assessment instrument therefore outrank Act II content
+entirely.
+
+Freeze the software roughly ten days before the defense, to leave room for
+scheduling the session, running it, and analysing what comes back.
+
+Students are identified by a code, never by name. create_accounts.js issues
+mag-aaral01 through however many the session needs, with a matching coded
+email, and the teacher keeps the code to name mapping on paper. The database
+therefore holds nothing identifying, which is what makes the consent waiver's
+premise literally true: this Supabase project is owned by the proponents, and
+row level security does not restrict a project owner. Numbering must stay
+stable once the accounts exist, because the code is the student's identity
+for the whole study.
+
+Content authority: the resource person has left the assessment questions and
+the storyline to the proponents, on the condition that both stay faithful to
+the source material she provided. That makes the Act I rewrite a writing
+task rather than an approval loop, but the source is the standard it will be
+judged against. That source is a physical book rather than a file, so it
+cannot be put in the repository. The proponents will work through it with
+the session at the time of the rewrite; do not go looking for it on disk.
+
 ## Run log
 
 What has actually been applied to the live Supabase project, and
@@ -70,7 +113,10 @@ when. A fresh session should trust this over any memory of a chat.
                                         validation packet coming back.
 
     db/db_healthcheck.sql               read-only, run any time
-    db/reset_test_accounts.sql          run before any full-flow test
+    db/reset_test_accounts.sql          run before any full-flow test.
+                                        Clears inventory and equipment
+                                        as of Block 10, so a retest
+                                        sees the Act I grant happen
     db/enrollment_setup.sql             only needed for a fresh database
 
 Supabase project reference: rkfnovfkroajottpmxxq
@@ -89,7 +135,8 @@ placeholder pending a rewrite.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
 equipment, cosmetic rewards. (IN PROGRESS) Difficulty and health are
-complete. Equipment is Block 10, cosmetics are Block 11.
+complete. Equipment is built and awaiting its live check. Cosmetics
+are Block 11.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and
 post-tests, server-side grading, in-game performance scoring,
@@ -111,7 +158,7 @@ work through.
 | Narrative Delivery | (PARTIAL) Built for Act I only |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified in the harness; no act beyond Act I has guards yet |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups |
-| Equipment System | (NOT BUILT) Tables exist in schema v3. Block 10 |
+| Equipment System | (BUILT, NOT LIVE) Two items, weapon and accessory slots, an inventory screen on pause. Harness green; not yet run against the live database |
 | Cosmetic Reward | (NOT BUILT) Currency column exists in schema v3. Block 11 |
 | Trivia | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Act Assessment | (BUILT) Act I seeded; Acts II to IV not seeded |
@@ -199,10 +246,30 @@ db/macario_items_v3.sql. (COMPLETE, NOT RUN)
 
 ## Blocks remaining
 
-Block 10, inventory and equipment. content/items.js as pure data, an
-inventory screen in the shell, weapon and accessory slots, and two
-effects: a faster projectile and one extra heart. Closes the Equipment
-System requirement. (NOT STARTED)
+Block 10, inventory and equipment. content/items.js as pure data,
+inventory.js owning both ownership tables, an inventory screen on the
+pause panel, weapon and accessory slots, and two effects: a faster
+spear and one extra heart. Items are granted on entering Act I rather
+than bought, because the shop is Block 11. No migration; schema v3
+already had the tables. (IN PROGRESS, awaiting the live check)
+
+The live checkpoint, in order. Run db/reset_test_accounts.sql, which
+now clears player_inventory and player_equipment too. Log in as
+hi@example.com and enter Act I. Pause, open Imbentaryo: two items
+listed, both slots reading Wala. Tap Agimat: the slot fills and the
+HUD shows four hearts with the fourth full. Resume, take a hazard
+hit: three of four. Reload and resume: still four hearts at full, and
+that is the check that equipment is being read back at login. Equip
+the sibat and hold attack: the spear crosses the outpost visibly
+faster and the next throw comes sooner. Set health to four and
+unequip the Agimat: three hearts, health clamped, not a fourth heart
+the HUD cannot draw. In Supabase, player_inventory holds two rows for
+the student and player_equipment never holds two rows for one slot.
+Teacher login in incognito is unchanged.
+
+Failure looks like a fourth heart that renders empty, a heart count
+that does not survive a reload, or an inventory screen that is empty
+after entering the act.
 
 Block 11, currency and cosmetics. Currency awarded on act completion
 and scaled by performance score, a simple shop inside the inventory
@@ -283,7 +350,7 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-114 checks. Anything other than "0 failed" is a regression.
+156 checks. Anything other than "0 failed" is a regression.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at phone dimensions, so it cannot pass
@@ -294,9 +361,12 @@ Add checks in the same block that adds the system. A suite that lags
 the build is worse than none, because it reports green on code it
 never exercised.
 
-Two checks exist to protect the study rather than the code: that
-complete runs before the feedback form opens, and that an act still
-completes when the feedback module is absent.
+Three checks exist to protect the study rather than the code: that
+complete runs before the feedback form opens, that an act still
+completes when the feedback module is absent, and that it still
+completes when the inventory module is absent. Section U blocks
+inventory.js at the network layer to prove the last one, rather than
+trusting the guards by reading them.
 
 It is not a substitute for a device pass.
 

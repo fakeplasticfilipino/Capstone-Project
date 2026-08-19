@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="style.css?v=6" />
+  <link rel="stylesheet" href="style.css?v=7" />
 </head>
 <body>
   <div id="app-scale">
@@ -118,6 +118,9 @@
           <button id="shell-resume" class="shell-btn shell-btn-primary" type="button">
             Magpatuloy
           </button>
+          <button id="shell-inventory-open" class="shell-btn shell-btn-ghost hidden" type="button">
+            Imbentaryo
+          </button>
           <button id="shell-pause-settings" class="shell-btn shell-btn-ghost" type="button">
             Mga Setting
           </button>
@@ -152,6 +155,27 @@
           </div>
 
           <button id="shell-settings-back" class="shell-btn shell-btn-primary" type="button">
+            Bumalik
+          </button>
+        </div>
+
+        <div id="shell-inventory" class="shell-panel hidden">
+          <div class="shell-eyebrow">MACARIO</div>
+          <h2 class="shell-heading">Imbentaryo</h2>
+
+          <div class="shell-field">
+            <div class="shell-label">Nakasuot</div>
+            <div id="shell-slots" class="inv-slots"></div>
+          </div>
+
+          <div class="shell-field">
+            <div class="shell-label">Mga gamit</div>
+            <div id="shell-items" class="inv-items"></div>
+          </div>
+
+          <div id="shell-inventory-note" class="shell-note"></div>
+
+          <button id="shell-inventory-back" class="shell-btn shell-btn-primary" type="button">
             Bumalik
           </button>
         </div>
@@ -199,6 +223,12 @@
        collapses to playing then completed and the game still runs,
        which is how Block 2 was tested before Block 3 existed.
 
+       inventory.js is optional in the same way assessment.js is:
+       acts.js checks window.Inventory before calling it and shell.js
+       hides the inventory button without it, so a page that fails to
+       load it still plays an act end to end. content/items.js is the
+       catalogue it reads and loads with the other content files.
+
        shell.js loads last and is NOT optional. It owns the entry
        point, so a missing shell means no way into the game at all.
        It reads window.Game and window.Assessment; nothing reads it
@@ -209,9 +239,11 @@
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
-  <script src="game.js?v=12"></script>
-  <script src="acts.js?v=4"></script>
+  <script src="content/items.js?v=1"></script>
+  <script src="game.js?v=13"></script>
+  <script src="acts.js?v=5"></script>
+  <script src="inventory.js?v=1"></script>
   <script src="assessment.js?v=2"></script>
-  <script src="shell.js?v=1"></script>
+  <script src="shell.js?v=2"></script>
 </body>
 </html>

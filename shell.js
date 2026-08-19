@@ -34,9 +34,9 @@
 const Shell = {
   el: {},
 
-  // title -> auth -> playing, with paused and settings hanging off
-  // playing. Kept as one string rather than several booleans so an
-  // impossible combination cannot be represented.
+  // title -> auth -> playing, with paused, settings and inventory
+  // hanging off playing. Kept as one string rather than several
+  // booleans so an impossible combination cannot be represented.
   state: "title",
 
   // The engine has reached the gate and the world is built.
@@ -87,6 +87,7 @@ const Shell = {
         title: document.getElementById("shell-title"),
         pause: document.getElementById("shell-pause"),
         settings: document.getElementById("shell-settings"),
+        inventory: document.getElementById("shell-inventory"),
         logout: document.getElementById("shell-logout-confirm"),
       },
       startBtn: document.getElementById("shell-start"),
@@ -100,6 +101,11 @@ const Shell = {
       logoutConfirm: document.getElementById("shell-logout-yes"),
       logoutCancel: document.getElementById("shell-logout-no"),
       logoutNote: document.getElementById("shell-logout-note"),
+      inventoryOpen: document.getElementById("shell-inventory-open"),
+      inventoryBack: document.getElementById("shell-inventory-back"),
+      inventoryNote: document.getElementById("shell-inventory-note"),
+      slots: document.getElementById("shell-slots"),
+      items: document.getElementById("shell-items"),
       pauseBtn: document.getElementById("btn-pause"),
     };
   },
@@ -118,6 +124,26 @@ const Shell = {
     this.el.logoutBtn.addEventListener("click", () =>
       this._showPanel("logout")
     );
+
+    // The only guard on window.Inventory in this file, and it is the
+    // same shape as the act flow's guard on window.Assessment: with the
+    // module absent the button never appears, and every other screen
+    // behaves exactly as it did before Block 10.
+    if (window.Inventory) {
+      this.el.inventoryOpen.classList.remove("hidden");
+      this.el.inventoryOpen.addEventListener("click", () =>
+        this._openInventory()
+      );
+      this.el.inventoryBack.addEventListener("click", () =>
+        this._closeInventory()
+      );
+      this.el.items.addEventListener("click", (e) => this._onItemTap(e));
+
+      // inventory.js owns the state and tells the screen when it moved,
+      // including when it puts an optimistic change back after a failed
+      // write. The shell only ever draws what it is told.
+      Inventory.onChange(() => this._renderInventory());
+    }
 
     this.el.settingsBack.addEventListener("click", () => this._closeSettings());
     this.el.logoutCancel.addEventListener("click", () =>
@@ -141,6 +167,7 @@ const Shell = {
       if (this.state === "playing") this.openPause();
       else if (this.state === "paused") this.closePause();
       else if (this.state === "settings") this._closeSettings();
+      else if (this.state === "inventory") this._closeInventory();
     });
   },
 
@@ -344,6 +371,123 @@ const Shell = {
     const buttons = this.el.textSizeGroup.querySelectorAll("[data-size]");
     buttons.forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.size === size);
+    });
+  },
+
+  // -----------------------------------------------------------
+  // Inventory
+  //
+  // Reached from pause and from nowhere else. The mobile control
+  // cluster already overflows the viewport at 412px, which is a known
+  // problem scheduled for Block 12, and a sixth button in that row
+  // would make a documented fault worse in order to save one tap.
+  //
+  // Opening it from pause also means the game is stopped for the whole
+  // visit, so an effect can never change under a running frame.
+  // -----------------------------------------------------------
+
+  _openInventory() {
+    if (!window.Inventory) return;
+    if (this.state !== "paused") return; // pause is the only way in
+    this.state = "inventory";
+    this._renderInventory();
+    this._showPanel("inventory");
+  },
+
+  // Back to pause rather than back to the world. The student paused to
+  // get here, and resuming out from under them would hide the effect
+  // they just equipped before they saw the hearts change.
+  _closeInventory() {
+    if (this.state !== "inventory") return;
+    this.state = "paused";
+    this._showPanel("pause");
+  },
+
+  // Slots first, then everything owned. Both are redrawn whole rather
+  // than patched: the list is two items long on a screen that is only
+  // ever open while the game is paused, so the simple thing costs
+  // nothing and cannot drift out of step with Inventory's state.
+  _renderInventory() {
+    if (!window.Inventory) return;
+    if (!this.el.slots) return;
+
+    this.el.inventoryNote.textContent = "";
+
+    this.el.slots.innerHTML = "";
+    Inventory.SLOTS.forEach((slot) => {
+      const item = Inventory.item(Inventory.equipped(slot.id));
+
+      const row = document.createElement("div");
+      row.className = "inv-slot";
+
+      const label = document.createElement("span");
+      label.textContent = slot.label;
+
+      const value = document.createElement("span");
+      value.className = item ? "inv-slot-filled" : "inv-slot-empty";
+      value.textContent = item ? item.name : "Wala";
+
+      row.appendChild(label);
+      row.appendChild(value);
+      this.el.slots.appendChild(row);
+    });
+
+    this.el.items.innerHTML = "";
+    const owned = Inventory.ownedItems();
+
+    if (!owned.length) {
+      const empty = document.createElement("div");
+      empty.className = "inv-empty";
+      empty.textContent = "Wala ka pang gamit.";
+      this.el.items.appendChild(empty);
+      return;
+    }
+
+    owned.forEach((item) => {
+      const worn = Inventory.equipped(item.slot) === item.id;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "inv-item" + (worn ? " inv-item-worn" : "");
+      btn.dataset.itemId = item.id;
+
+      const name = document.createElement("div");
+      name.className = "inv-item-name";
+      name.textContent = item.name;
+
+      const action = document.createElement("span");
+      action.className = "inv-item-action";
+      action.textContent = worn ? "Tanggalin" : "Isuot";
+      name.appendChild(action);
+
+      const desc = document.createElement("div");
+      desc.className = "inv-item-desc";
+      desc.textContent = item.description || "";
+
+      btn.appendChild(name);
+      btn.appendChild(desc);
+      this.el.items.appendChild(btn);
+    });
+  },
+
+  // Tapping what you are wearing takes it off; tapping anything else
+  // puts it on. One gesture, which is as much as a Grade 8 student on
+  // a phone should have to learn for a screen this small.
+  //
+  // Not awaited. Inventory applies the change to memory and fires its
+  // listener before the write leaves, so the screen has already moved;
+  // awaiting here would only add a stall on a slow connection. The
+  // failure path re-fires the listener with the old state, and the
+  // note below is what tells the student it did not take.
+  _onItemTap(e) {
+    const btn = e.target.closest("[data-item-id]");
+    if (!btn || !window.Inventory) return;
+
+    Inventory.toggle(btn.dataset.itemId).then((wrote) => {
+      if (this.state !== "inventory") return;
+      this.el.inventoryNote.textContent = wrote
+        ? ""
+        : "Hindi na-save. Suriin ang koneksyon.";
     });
   },
 

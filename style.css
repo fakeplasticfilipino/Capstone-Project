@@ -1108,6 +1108,89 @@ h2.shell-heading {
   color: #999;
 }
 
+/* Inventory (Block 10).
+   Built from the same parts as the settings screen rather than a new
+   look: uppercase label, dark rows, amber for the thing that is
+   active. The item rows are buttons at 44px minimum, matching the
+   rule the mobile control cluster already follows. */
+
+.inv-slots {
+  font-size: 12px;
+  color: #ccc;
+  line-height: 1.8;
+}
+
+.inv-slot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.inv-slot-filled {
+  color: #ffd54f;
+}
+
+.inv-slot-empty {
+  color: #777;
+}
+
+.inv-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inv-item {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  background: transparent;
+  color: #ccc;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.inv-item-worn {
+  border-color: #ffd54f;
+  background: rgba(255, 213, 79, 0.12);
+}
+
+.inv-item-name {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #eee;
+}
+
+/* The verb, not a state badge. A row that says "Nakasuot" leaves the
+   student guessing what tapping it does; one that says "Tanggalin"
+   answers that before they try. */
+.inv-item-action {
+  font-weight: normal;
+  font-size: 11px;
+  color: #ffd54f;
+  white-space: nowrap;
+}
+
+.inv-item-desc {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #999;
+  margin-top: 4px;
+}
+
+.inv-empty {
+  font-size: 12px;
+  color: #777;
+  line-height: 1.6;
+}
+
 /* Pause button. Top right, with the hearts shifted left to sit
    beside it rather than under it. */
 #btn-pause {
