@@ -53,6 +53,41 @@ const TERMINAL_VELOCITY = -22; // clamp the descent so a long fall stays readabl
 const MAX_HEALTH = 3;
 const INVULN_MS = 1000;
 
+// The little hop that comes with a hazard shove. Without being moved
+// clear the player is left standing in the band, the invulnerability
+// lapses, and all three hearts go while they are holding still.
+const HAZARD_RECOIL_VELOCITY = 7;
+
+// --- Pickups -------------------------------------------------------------
+// Drawn at PICKUP_SIZE square. PICKUP_REACH is generous on both axes
+// because the target device is a phone and a pixel-exact collectible on a
+// 412px screen is a collectible nobody collects.
+const PICKUP_SIZE = 22;
+const PICKUP_REACH = 46;
+
+// --- Difficulty ----------------------------------------------------------
+// Guard speed scaled by act number, and nothing else. One lever moves the
+// whole curve: speed sets the detection window, the cost of a mistimed
+// run, and how much ground a patrol covers. A system with more knobs
+// would need tuning data this project will never collect.
+//
+// alertRate is deliberately NOT scaled. It is the per-guard lever the
+// content uses to make one sentry harder than the one beside it, and
+// scaling both would make the two indistinguishable.
+//
+//   Act I 1.00   Act II 1.15   Act III 1.30   Act IV 1.45
+//
+// The ceiling matters. Act I's faster guard is 1.4, which reaches 2.03 in
+// Act IV against a player SPEED of 5. Scaled guard speed must stay well
+// under SPEED or a corridor stops being solvable by running, which is the
+// one route a struggling student reliably finds.
+const DIFFICULTY_STEP = 0.15;
+
+function difficultyMultiplier(actNumber) {
+  const n = Number(actNumber) || 1;
+  return 1 + (n - 1) * DIFFICULTY_STEP;
+}
+
 // There is no game over. Reaching zero returns Macario to the start of the
 // scene at full health. A fail state that ejects a Grade 8 student from the
 // lesson serves nobody, and being caught already costs them the walk back.
@@ -144,6 +179,15 @@ let WORLD_WIDTH = 4400; // overwritten per scene
 let PLATFORMS = []; // one-way platforms, jumped up through and landed on
 let GUARDS = []; // patrolling guards, empty outside stealth scenes
 let HIDE_SPOTS = []; // regions that suppress guard detection
+let HAZARDS = []; // ground regions that cost one health on contact
+let PICKUPS = []; // collectibles; currently only hearts
+
+// Ids collected during this visit to the scene. Created by loadScene and
+// cleared only by loadScene, never by respawnInScene, so a heart already
+// spent cannot be farmed by dying on purpose. Leaving the scene and
+// coming back does restore them, which matches health not being
+// persisted either.
+let collectedPickups = new Set();
 
 let stageEl = null;
 let slopeLeft = null;
@@ -212,12 +256,17 @@ function loadScene(sceneId) {
   WORLD_WIDTH = scene.worldWidth || 4400;
   PLATFORMS = scene.platforms || [];
   HIDE_SPOTS = scene.hideSpots || [];
+  HAZARDS = scene.hazards || [];
+  PICKUPS = scene.pickups || [];
+  collectedPickups = new Set();
 
   buildNpcs(token);
   buildDecorations(token);
   buildStage();
   buildPlatforms();
   buildHideSpots();
+  buildHazards();
+  buildPickups();
   buildGuards(token);
 
   posX = typeof scene.startX === "number" ? scene.startX : 0;
@@ -242,6 +291,8 @@ function unloadScene() {
   PLATFORMS = [];
   GUARDS = [];
   HIDE_SPOTS = [];
+  HAZARDS = [];
+  PICKUPS = [];
   currentScene = null;
   currentSceneId = null;
 }
@@ -1031,10 +1082,26 @@ function buildHideSpots() {
 // respawn starts them where the level designer put them rather than
 // wherever they happened to be standing.
 function buildGuards(token) {
+  // The act number comes from the act data in hand, NOT from window.Acts.
+  // loadAct runs at parse time to draw the backdrop behind the login box,
+  // and acts.js has not executed yet at that point, so Acts.current would
+  // be undefined on the first build and every guard would be created
+  // unscaled.
+  const speedScale = difficultyMultiplier(
+    currentActData && currentActData.number
+  );
+
   GUARDS = ((currentScene && currentScene.guards) || []).map((def) =>
     Object.assign({}, def, {
       pos: def.x,
+      baseSpeed: def.speed || 1.4,
+      speed: (def.speed || 1.4) * speedScale,
       facing: def.facing || 1,
+      // Kept separately because respawnInScene needs the facing the level
+      // gave this guard, not the one it happened to be walking in. Without
+      // it every guard resets to facing right, including the outpost
+      // sentry the content deliberately faces left.
+      facingStart: def.facing || 1,
       alert: 0,
       disabled: false,
     })
@@ -1070,6 +1137,40 @@ function buildGuards(token) {
     guard.el = el;
     guard.fillEl = fill;
     actElements.push(el);
+  });
+}
+
+// Hazards are drawn rather than invisible, for the same reason the hide
+// spots are drawn as crates: a mechanic that has to be learned without a
+// tutorial has to be visible before it is felt.
+function buildHazards() {
+  HAZARDS.forEach((hazard, i) => {
+    const el = document.createElement("div");
+    el.className = "hazard";
+    el.id = "hazard-" + i;
+    el.style.left = hazard.x + "px";
+    el.style.width = hazard.width + "px";
+    world.appendChild(el);
+    actElements.push(el);
+  });
+}
+
+// Pickups reuse the HUD heart shape rather than an image. Art is an
+// external blocker on this project, and a pickup that renders as a
+// dashed placeholder box teaches nothing.
+function buildPickups() {
+  PICKUPS.forEach((pickup) => {
+    const el = document.createElement("div");
+    el.className = "pickup pickup-" + (pickup.type || "heart");
+    el.id = "pickup-" + pickup.id;
+    el.style.left = pickup.x + "px";
+    // y is optional and defaults to the floor, so a heart can be put on a
+    // platform to make the jump worth using.
+    el.style.bottom =
+      (typeof pickup.y === "number" ? pickup.y : GROUND_LEVEL) + "px";
+    world.appendChild(el);
+    actElements.push(el);
+    pickup.el = el;
   });
 }
 
@@ -1148,7 +1249,7 @@ function playerIsSafe() {
 
 function caughtBy(guard) {
   guard.alert = 0;
-  damagePlayer("Nakita ka ng bantay!");
+  damagePlayer("Nakita ka ng bantay!", true);
 }
 
 // =============================================================
@@ -1178,8 +1279,16 @@ function hudEls() {
 function updateHudVisibility() {
   const hudEl = hudEls().root;
   if (!hudEl) return;
-  // Hearts only appear where something can take them.
-  const dangerous = Boolean(currentScene && currentScene.dangerous);
+  // Hearts only appear where something can take them. Derived rather than
+  // read straight off the flag, because a scene that declares a hazard and
+  // forgets the flag would take a heart the student cannot see, and that
+  // failure is silent. The explicit flag still works and still wins.
+  const dangerous = Boolean(
+    currentScene &&
+      (currentScene.dangerous ||
+        (currentScene.guards && currentScene.guards.length) ||
+        (currentScene.hazards && currentScene.hazards.length))
+  );
   hudEl.classList.toggle("hidden", !dangerous);
   if (dangerous) renderHearts();
 }
@@ -1204,9 +1313,17 @@ function showToast(text) {
   showToast._timer = setTimeout(() => toastEl.classList.add("hidden"), 1600);
 }
 
-function damagePlayer(reason) {
+// respawn says whether surviving the hit also sends the player back to
+// the start of the scene. A guard catch does; the walk back is the cost
+// of being seen. A hazard does not, because being returned to the
+// entrance for one heart turns a small mistake into a two minute one,
+// and a Grade 8 student meeting that twice simply stops trying.
+//
+// Running out of health always respawns regardless, since that path
+// restores health and there is nowhere else to put the player.
+function damagePlayer(reason, respawn) {
   const now = performance.now();
-  if (now < invulnUntil) return; // still in the grace window
+  if (now < invulnUntil) return false; // still in the grace window
   invulnUntil = now + INVULN_MS;
 
   health -= 1;
@@ -1217,10 +1334,12 @@ function damagePlayer(reason) {
   if (health <= 0) {
     showToast(reason ? reason + " Ulitin natin." : "Ulitin natin.");
     respawnInScene();
-  } else if (reason) {
-    showToast(reason);
-    respawnInScene();
+  } else {
+    if (reason) showToast(reason);
+    if (respawn) respawnInScene();
   }
+
+  return true; // the hit landed, so the caller may knock the player back
 }
 
 // Back to the start of the scene, guards reset to their posts. Health is
@@ -1244,6 +1363,77 @@ function respawnInScene() {
     guard.alert = 0;
     if (guard.fillEl) guard.fillEl.style.width = "0%";
     if (guard.el) guard.el.style.left = guard.pos + "px";
+  });
+}
+
+// =============================================================
+// HAZARDS AND PICKUPS
+// =============================================================
+
+// Contact is tested against the base floor rather than onGround, because
+// onGround is also true on a platform, and the outpost has platforms
+// above and beside the hazards. Using onGround would take a heart from a
+// player standing safely on a crate, which is the exact case the
+// platforms were placed to reward.
+function updateHazards() {
+  if (!HAZARDS.length) return;
+  if (playerIsSafe()) return; // dialogue, cutscene, overlay, or not logged in
+
+  const onFloor = posY <= floorHeightAt(posX) + 1;
+  if (!onFloor) return; // jumped it
+
+  const centre = posX + PLAYER_WIDTH / 2;
+  const hazard = HAZARDS.find(
+    (h) => centre >= h.x && centre <= h.x + h.width
+  );
+  if (!hazard) return;
+
+  const hit = damagePlayer(hazard.reason || "Nasugatan ka!", false);
+
+  // Only shove when the hit actually landed. Knocking the player back
+  // during the invulnerability window would push them across the level a
+  // frame at a time while they stood still.
+  if (!hit) return;
+  if (health <= 0) return; // damagePlayer already respawned them
+
+  const goingRight = facing >= 0;
+  posX = goingRight
+    ? hazard.x - PLAYER_WIDTH - 2
+    : hazard.x + hazard.width + 2;
+  posX = Math.max(0, Math.min(posX, WORLD_WIDTH - PLAYER_WIDTH));
+  velY = HAZARD_RECOIL_VELOCITY;
+}
+
+// Collected by walking into them. No button: the interact button already
+// means NPC and stage, and a third meaning would be a worse tutorial than
+// no pickup at all.
+function updatePickups() {
+  if (!PICKUPS.length) return;
+  if (playerIsSafe()) return;
+
+  const centre = posX + PLAYER_WIDTH / 2;
+  const footY = posY;
+
+  PICKUPS.forEach((pickup) => {
+    if (collectedPickups.has(pickup.id)) return;
+
+    const px = pickup.x;
+    const py = typeof pickup.y === "number" ? pickup.y : GROUND_LEVEL;
+    if (Math.abs(centre - (px + PICKUP_SIZE / 2)) > PICKUP_REACH) return;
+    if (Math.abs(footY - py) > PICKUP_REACH) return;
+
+    // A pickup is refused at full health rather than consumed. A student
+    // who walks over the last heart before the corridor should not lose it
+    // for having been careful, and a pickup that vanishes with no effect
+    // teaches that pickups are worthless.
+    if (health >= MAX_HEALTH) return;
+
+    collectedPickups.add(pickup.id);
+    if (pickup.el) pickup.el.remove();
+
+    health = Math.min(MAX_HEALTH, health + 1);
+    renderHearts();
+    showToast("Nakakuha ka ng puso!");
   });
 }
 
@@ -1493,6 +1683,13 @@ function gameLoop(now) {
   }
 
   if (canAct) updateGuards(step);
+
+  // After the vertical resolution, so the ground test sees where the
+  // player actually ended up this frame rather than where they were
+  // mid-fall.
+  updateHazards();
+  updatePickups();
+
   updateProjectile(step);
 
   // During the stage cutscene, leave whatever animation is already set

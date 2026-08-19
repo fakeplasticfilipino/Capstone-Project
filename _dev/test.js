@@ -244,6 +244,200 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  // -----------------------------------------------------------------
+  // Block 8. Hazards, pickups and difficulty.
+  // -----------------------------------------------------------------
+
+  // Puts a resuming student in the outpost with the world already built,
+  // which is where all three Block 8 systems live.
+  const atOutpost = () => ({
+    session: { user: { id: "u1" } },
+    game_progress: [{ student_id: "u1", current_act: 1, current_room: "kuta", is_night: true,
+      save_state: { quests: [], flags: { hasBuko: true, bukoGiven: true, deathSequenceDone: true, metKatipunero: true }, posX: 300 } }],
+    act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 4 }],
+  });
+
+  async function enterOutpost() {
+    const { ctx, page } = await newPage(atOutpost());
+    await page.waitForTimeout(700);
+    await page.click("#shell-start");
+    await page.waitForTimeout(400);
+    return { ctx, page };
+  }
+
+  // Drops the player onto the floor inside the first hazard band and lets
+  // a few frames run. Returns the state the engine settled on.
+  const standInHazard = (page) => page.evaluate(() => {
+    const h = HAZARDS[0];
+    invulnUntil = 0;
+    health = 3;
+    facing = 1;
+    posX = h.x + h.width / 2 - 20;
+    posY = floorHeightAt(posX);
+    velY = 0;
+    return new Promise((r) => setTimeout(() => r({
+      health, posX, room: currentRoom, startX: currentScene.startX,
+      hazardX: h.x, hazardWidth: h.width,
+    }), 250));
+  });
+
+  console.log("\nF. Hazards");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    // Guards are switched off for this section. The knockback from the
+    // first band lands the player inside bantay-1's detection radius, so
+    // leaving them on measures the stealth system rather than the hazard
+    // one. Guards have their own checks in section H.
+    await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
+
+    ok("hazards were built", (await page.evaluate(() => HAZARDS.length)) === 2);
+    ok("hazard elements are in the world",
+       (await page.evaluate(() => document.querySelectorAll(".hazard").length)) === 2);
+
+    const hit = await standInHazard(page);
+    ok("hazard costs exactly one health", hit.health === 2, hit.health);
+    ok("hazard does not change the scene", hit.room === "kuta", hit.room);
+    ok("hazard does not respawn the player at startX",
+       Math.abs(hit.posX - hit.startX) > 100, { posX: hit.posX, startX: hit.startX });
+    ok("knockback clears the band",
+       hit.posX + 20 < hit.hazardX || hit.posX > hit.hazardX + hit.hazardWidth,
+       { posX: hit.posX, band: [hit.hazardX, hit.hazardX + hit.hazardWidth] });
+
+    // Standing still after the shove must not drain the remaining hearts.
+    const after = await page.evaluate(() => new Promise((r) =>
+      setTimeout(() => r(health), 2500)));
+    ok("no repeat damage while standing still after the knockback", after === 2, after);
+
+    // Above the band, on a platform, is safe. Uses the real platform so
+    // the check fails if the ground test regresses to onGround.
+    const onPlatform = await page.evaluate(() => {
+      invulnUntil = 0;
+      health = 3;
+      const plat = PLATFORMS[0];
+      posX = plat.x + 20;
+      posY = plat.y;
+      velY = 0;
+      return new Promise((r) => setTimeout(() => r(health), 400));
+    });
+    ok("standing on a platform takes no hazard damage", onPlatform === 3, onPlatform);
+
+    // Blocked UI must suspend hazards for the same reason it suspends
+    // guards: damage taken while unable to move is not a mechanic.
+    const blocked = await page.evaluate(() => {
+      invulnUntil = 0;
+      health = 3;
+      Game.setUiBlocked(true);
+      const h = HAZARDS[0];
+      posX = h.x + h.width / 2 - 20;
+      posY = floorHeightAt(posX);
+      velY = 0;
+      return new Promise((r) => setTimeout(() => {
+        Game.setUiBlocked(false);
+        r(health);
+      }, 400));
+    });
+    ok("hazard ignored while the UI is blocked", blocked === 3, blocked);
+
+    await ctx.close();
+  }
+
+  console.log("\nG. Pickups");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    ok("pickup was built", (await page.evaluate(() => PICKUPS.length)) === 1);
+    ok("pickup element is in the world",
+       (await page.evaluate(() => document.querySelectorAll(".pickup").length)) === 1);
+
+    // Refused at full health, and still there afterwards.
+    const full = await page.evaluate(() => {
+      health = 3;
+      const p = PICKUPS[0];
+      posX = p.x;
+      posY = p.y;
+      velY = 0;
+      return new Promise((r) => setTimeout(() => r({
+        health, collected: collectedPickups.size,
+        stillThere: !!document.querySelector(".pickup"),
+      }), 300));
+    });
+    ok("pickup refused at full health", full.health === 3 && full.collected === 0, full);
+    ok("refused pickup stays in the world", full.stillThere);
+
+    // Collected when hurt.
+    const taken = await page.evaluate(() => {
+      health = 1;
+      const p = PICKUPS[0];
+      posX = p.x;
+      posY = p.y;
+      velY = 0;
+      return new Promise((r) => setTimeout(() => r({
+        health, collected: collectedPickups.size,
+        stillThere: !!document.querySelector(".pickup"),
+      }), 300));
+    });
+    ok("pickup restores one health", taken.health === 2, taken.health);
+    ok("pickup recorded as collected", taken.collected === 1, taken.collected);
+    ok("collected pickup leaves the world", !taken.stillThere);
+
+    // A respawn must not hand it back, or the corridor can be farmed by
+    // dying on purpose.
+    const afterRespawn = await page.evaluate(() => {
+      respawnInScene();
+      return { collected: collectedPickups.size, stillThere: !!document.querySelector(".pickup") };
+    });
+    ok("collected set survives a respawn", afterRespawn.collected === 1, afterRespawn.collected);
+    ok("pickup does not return on respawn", !afterRespawn.stillThere);
+
+    // Leaving and re-entering the scene does restore it.
+    const afterReload = await page.evaluate(() => {
+      loadScene("road");
+      loadScene("kuta");
+      return { collected: collectedPickups.size, stillThere: !!document.querySelector(".pickup") };
+    });
+    ok("loadScene clears the collected set", afterReload.collected === 0, afterReload.collected);
+    ok("pickup returns on a fresh visit", afterReload.stillThere);
+
+    await ctx.close();
+  }
+
+  console.log("\nH. Dynamic difficulty and guard reset");
+  {
+    const { ctx, page } = await enterOutpost();
+
+    const act1 = await page.evaluate(() => GUARDS.map((g) => ({ speed: g.speed, base: g.baseSpeed })));
+    ok("act I guards run at the content speed",
+       act1.every((g) => Math.abs(g.speed - g.base) < 1e-9), act1);
+
+    // The only proof this project will have that difficulty scales, since
+    // no act with guards beyond Act I has content yet.
+    const act3 = await page.evaluate(() => {
+      const fake = {
+        number: 3, title: "T", titleTagalog: "T", objectives: [], startingQuests: [],
+        scenes: [{ id: "t", worldWidth: 1200, startX: 0, dangerous: true,
+          guards: [{ id: "g", x: 100, patrolFrom: 100, patrolTo: 600, speed: 2, facing: -1 }] }],
+      };
+      loadAct(fake, "t");
+      return { speed: GUARDS[0].speed, base: GUARDS[0].baseSpeed, facing: GUARDS[0].facing };
+    });
+    ok("act III scales guard speed by 1.30",
+       Math.abs(act3.speed - 2 * 1.3) < 1e-9, act3);
+    ok("the content speed is preserved alongside it", act3.base === 2, act3.base);
+    ok("scaled speed stays under player SPEED",
+       await page.evaluate(() => GUARDS.every((g) => g.speed < SPEED)));
+
+    // The facingStart fix. A left-facing sentry must still face left.
+    const facingAfter = await page.evaluate(() => {
+      GUARDS[0].facing = 1;
+      respawnInScene();
+      return GUARDS[0].facing;
+    });
+    ok("respawn restores the guard's authored facing", facingAfter === -1, facingAfter);
+
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

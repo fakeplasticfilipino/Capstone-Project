@@ -663,6 +663,61 @@ html, body {
 }
 
 /* =============================================================
+   BLOCK 8: HAZARDS AND PICKUPS
+   ============================================================= */
+
+/* Hazards are visible on purpose. The same reasoning as the crates: this
+   is learned without a tutorial, so it has to be readable before it is
+   felt. The jagged top edge is what says "do not walk here" at a glance
+   on a small screen. */
+.hazard {
+  position: absolute;
+  bottom: var(--ground-level);
+  height: 18px;
+  background: #7f1d1d;
+  border-top: 3px solid #b71c1c;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.35);
+}
+
+.hazard::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -9px;
+  height: 10px;
+  background: repeating-linear-gradient(
+    135deg,
+    #b71c1c 0 6px,
+    transparent 6px 12px
+  );
+}
+
+/* Pickups reuse the HUD heart's shape and colour so the connection is
+   made without a caption, and they bob so they read as collectible
+   rather than as scenery. No image, because art is an external blocker
+   and a placeholder box would teach nothing. */
+.pickup {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  z-index: 30;
+  animation: pickup-bob 1.4s ease-in-out infinite;
+}
+
+.pickup-heart {
+  background: #e53935;
+  border: 2px solid #7f1d1d;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(229, 57, 53, 0.55);
+}
+
+@keyframes pickup-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* =============================================================
    BLOCK 6: TERRAIN, STEALTH, HEALTH, COMBAT
    ============================================================= */
 

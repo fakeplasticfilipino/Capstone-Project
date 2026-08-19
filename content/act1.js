@@ -326,6 +326,26 @@ window.ACT_1 = {
         { x: 1500, y: 190, width: 170 },
       ],
 
+      // Sharpened bamboo stakes set around the outpost. Costs one health
+      // on contact and knocks Macario clear; it does not send him back to
+      // the entrance, because a hazard is a small mistake and being
+      // returned would make it a large one. Jumpable, and the platform
+      // above the first band is a second route for a player who would
+      // rather not time the jump.
+      //
+      // These coordinates are content, not engine. The balance pass in
+      // Block 12 may move them freely.
+      hazards: [
+        { x: 1290, width: 70, reason: "Natusok ka ng kawayan!" },
+        { x: 2200, width: 80, reason: "Natusok ka ng kawayan!" },
+      ],
+
+      // One heart, on the higher platform, between the two patrols. It
+      // rewards the jump, it sits where a player is most likely to have
+      // lost a heart already, and reaching it costs roughly the time the
+      // nearer patrol needs to come back around.
+      pickups: [{ id: "kuta-heart-1", x: 1560, y: 190, type: "heart" }],
+
       npcs: [
         {
           id: "kasama",

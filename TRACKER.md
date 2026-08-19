@@ -78,8 +78,15 @@ Block 7, schema v3 and the game shell. Title screen with an entry gate,
 pause that halts the loop and offsets wall-clock timers, settings persisted
 to localStorage, and logout with a save flush. (COMPLETE)
 
-Act I outpost. Two patrolling guards, three crates, two platforms, and a
-kasama to deliver the message to. (COMPLETE)
+Block 8, hazards, pickups and difficulty. Hazard regions that cost one
+health and knock the player clear rather than respawning them, heart
+pickups that restore one and are refused at full health, and guard speed
+scaled by act number. Closes the Health System and Dynamic Difficulty
+requirements. (COMPLETE)
+
+Act I outpost. Two patrolling guards, three crates, two platforms, two
+bamboo stake hazards, one heart pickup, and a kasama to deliver the
+message to. (COMPLETE)
 
 Paper audit. Seventeen functional requirements, ten non-functional, five
 modules, seventeen ERD entities and all four act storyboards checked against
@@ -93,13 +100,8 @@ NOT RUN)
 ## Next
 
 Ordered by dependency and by how much of a stated objective each closes.
-Blocks 8 through 11 finish the second stated objective. Block 9 also
+Blocks 9 through 11 finish the second stated objective. Block 9 also
 finishes the third.
-
-Block 8, hazards, pickups and difficulty. Scene-level hazard regions that
-cost one health, heart pickups that restore one, and guard speed scaled by
-act number. No schema change and no new screens. Closes the Health System
-and Dynamic Difficulty requirements outright. (NOT STARTED)
 
 Block 9, schema v4 and measurement. Adds damage_taken, detections and
 elapsed time to act_progress, turns performance_score into a weighted sum of
@@ -235,10 +237,15 @@ The test harness now lives in the repository at _dev/, so it no longer has
 to be rebuilt from scratch each session. Run it with node _dev/test.js from
 the repository root; see _dev/README.md for setup.
 
-55 checks covering the entry gate on both the fresh and resuming paths,
+80 checks covering the entry gate on both the fresh and resuming paths,
 pause halting guard patrol and the detection meter, the invulnerability
 offset, settings persistence, logout confirmation, the legacy current_room
-fallback, and a stalled load offering a way out.
+fallback, a stalled load offering a way out, hazard damage and knockback,
+pickup collection and its refusal at full health, the collected set
+surviving a respawn, and guard speed at act 1 against act 3.
+
+Difficulty scaling is verified only here. No act with guards beyond Act I
+has content, so there is nothing in the running game that demonstrates it.
 
 It drives the shipping index.html rather than a copy, by intercepting the
 request for supabaseClient.js and swapping in a fake client. The suite

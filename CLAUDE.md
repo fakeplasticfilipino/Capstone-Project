@@ -180,8 +180,8 @@ Scene shape:
       decorations: [...],
       platforms: [{ x, y, width }],              optional; one-way
       hideSpots: [{ x, width }],                 optional; suppress detection
-      hazards: [{ x, width }],                   optional; costs one health
-      pickups: [{ id, x, type: "heart" }],       optional; restores one health
+      hazards: [{ x, width, reason }],           optional; costs one health
+      pickups: [{ id, x, y, type: "heart" }],    optional; restores one health
       guards: [{ id, x, patrolFrom, patrolTo,    optional
                  speed, facing, detectRadius,
                  alertRate, decayRate, img }]
@@ -194,6 +194,16 @@ implicit scene, so content/act2.js through act4.js need no changes. Do not
 
 A guard whose patrolFrom and patrolTo are within 1px of each other is a
 stationary sentry and keeps its given facing.
+
+A hazard's reason is the Tagalog toast shown on contact and defaults to
+"Nasugatan ka!". Hazards sit on the base floor and are cleared by jumping;
+there is no y. A pickup's y is optional and defaults to the floor, so a
+heart can be placed on a platform.
+
+A scene counts as dangerous, and therefore shows the hearts, if it declares
+dangerous, or declares any guard, or declares any hazard. The explicit flag
+still wins. The derivation exists because a scene that adds a hazard and
+forgets the flag would take a heart the student cannot see.
 
 An act with an empty objectives array can never complete, which is how
 Acts II through IV are kept from reporting progress they have not made.
@@ -400,6 +410,25 @@ the tab on one heart should not be punished for a bus arriving.
 Hazards are scene regions that cost one health on contact, subject to the
 same invulnerability window as a guard catch. Heart pickups restore one
 health and do not respawn within a visit to a scene.
+
+A guard catch respawns the player at the start of the scene. A hazard does
+not; it knocks them clear of the band instead. Being returned to the
+entrance for one heart turns a small mistake into a large one, and the
+knockback is load bearing rather than decorative: without it the player
+stands in the band and loses every heart while holding still. damagePlayer
+takes a respawn argument for this, and running out of health respawns
+regardless of it.
+
+A pickup is refused, not consumed, at full health. A student who walks over
+the last heart before the corridor should not lose it for having been
+careful.
+
+Dynamic difficulty is the formula 1 + (act - 1) * 0.15, applied to the
+content's guard speed once in buildGuards rather than every frame in
+updateGuards. Act I is 1.00 and Act IV is 1.45. The act number is read from
+currentActData.number and never from window.Acts, because loadAct runs at
+parse time before acts.js has executed. Scaled speed must stay well under
+the player's SPEED of 5 or a corridor stops being solvable by running.
 
 Platforms are one-way: passed through from below, landed on from above.
 

@@ -1,7 +1,7 @@
 # Paper versus build
 
 An audit of Capstone_Project_Proposal.pdf (74 pages, May 2026) against the
-code as it stands after Block 7.
+code as it stands after Block 8.
 
 Purpose is to know exactly what was promised, what exists, what was added
 that nobody wrote down, and what quietly went away. Every deviation listed
@@ -59,14 +59,14 @@ The paper specifies seventeen.
 | Stealth Mechanics | Stealth actions to avoid enemy detection during designated missions | (BUILT) Patrols, detection meter, hide spots |
 | Interaction System | Interact with NPCs, dialogue prompts, scripted objects | (BUILT) |
 | Narrative Delivery | Dialogue, scripted sequences, cutscene storytelling | (PARTIAL) Built for Act I only |
-| Dynamic Difficulty | Progressively increase mission complexity, detection windows and combat challenge from Act I to Act IV | (NOT BUILT) Block 10 |
-| Health System | Track health, deplete on enemy attacks or environmental hazards, restore through collectible items | (PARTIAL) Health, damage, invulnerability and respawn built. No environmental hazards, no collectible restoratives |
-| Equipment System | Equip items that alter combat effectiveness and survivability | (NOT BUILT) Tables exist in schema v3. Block 8 |
-| Cosmetic Reward | In-game currency for objectives, unlocking period-correct outfits | (NOT BUILT) Currency column exists in schema v3. Block 9 |
+| Dynamic Difficulty | Progressively increase mission complexity, detection windows and combat challenge from Act I to Act IV | (BUILT) Guard speed scaled by act number, 1.00 through 1.45. Verified in the test harness; no act beyond Act I has guards yet |
+| Health System | Track health, deplete on enemy attacks or environmental hazards, restore through collectible items | (BUILT) Health, damage, invulnerability, respawn, environmental hazards and heart pickups |
+| Equipment System | Equip items that alter combat effectiveness and survivability | (NOT BUILT) Tables exist in schema v3. Block 10 |
+| Cosmetic Reward | In-game currency for objectives, unlocking period-correct outfits | (NOT BUILT) Currency column exists in schema v3. Block 11 |
 | Trivia | Historical trivia fact before each act's pre-test | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Act Assessment | Pre-test and post-test before and after each chapter | (BUILT) Act I seeded; Acts II to IV not seeded |
-| Performance Scoring | Score from objective completion, stealth effectiveness, and combat efficiency | (PARTIAL) Objective completion percentage only. No stealth or combat terms |
-| Progress Tracking | Record act completion, assessment scores, gameplay performance | (BUILT) Completion and scores. Gameplay performance only as completion percentage |
+| Performance Scoring | Score from objective completion, stealth effectiveness, and combat efficiency | (PARTIAL) Objective completion percentage only. No stealth or combat terms. Block 9 |
+| Progress Tracking | Record act completion, assessment scores, gameplay performance | (BUILT) Completion and scores. Gameplay performance only as completion percentage. Block 9 |
 | Teacher Monitoring | View student progress, act completion, assessment results, performance scores | (BUILT) |
 | Data Synchronization | Synchronize progress and assessment results to the teacher interface upon internet availability | (CHANGED) Writes go straight to Supabase and the game requires a connection. There is no offline queue, so "upon internet availability" is not implemented as worded |
 
@@ -131,7 +131,7 @@ Twelve tables exist after schema v3.
 | ActObjective | Not a table. Lives in the act data files |
 | PlayerProgress | game_progress plus act_progress |
 | Enemy | Not a table. Guards are scene data in the act files |
-| Equipment | Not a table by decision. Will be content/items.js in Block 8 |
+| Equipment | Not a table by decision. Will be content/items.js in Block 10 |
 | PlayerEquipment | player_equipment (created in v3) |
 | CosmeticReward | Not a table by decision. Will be content/items.js |
 | UserCosmetic | player_inventory covers it |
@@ -253,16 +253,18 @@ Araling Panlipunan curriculum as part of Philippine-American War resistance.
 
 Unity, C# and Visual Studio.
 
-Collectible items that restore health.
-
-Environmental hazards as a damage source.
-
 Offline tolerance and deferred synchronization.
 
-User feedback collection to measure engagement, which appears in both the
-Assessment module description and the third specific objective.
-
 The four Act I story beats listed in section 6.
+
+Three items listed as dropped when this audit was first written have since
+been reinstated rather than abandoned, because each traces to a stated
+requirement and none is expensive. Environmental hazards and collectible
+items that restore health were built in Block 8. User feedback collection,
+which appears in both the Assessment module description and the third
+specific objective, is scheduled in Block 9. They are recorded
+here so that a reader of an earlier copy of this file is not left
+believing the project chose to lose them.
 
 ## 11. Still to build, mapped to the paper
 
@@ -270,15 +272,23 @@ Everything outstanding traces back to a stated requirement.
 
 | Block | Closes |
 |---|---|
-| Block 8, inventory and equipment | Equipment System requirement, Equipment and PlayerEquipment entities |
-| Block 9, currency and cosmetics | Cosmetic Reward requirement, CosmeticReward and UserCosmetic entities |
-| Block 10, dynamic difficulty | Dynamic Difficulty requirement |
-| Block 11, telemetry and achievements | GameSession, PlayerAction, Achievement and UserAchievement entities |
-| Block 12, audio and balance | Audacity in the tools list, and the outpost tuning |
+| Block 9, schema v4 and measurement | Performance Scoring and Progress Tracking requirements, user feedback collection, GameSession entity |
+| Block 10, inventory and equipment | Equipment System requirement, Equipment and PlayerEquipment entities |
+| Block 11, currency and cosmetics | Cosmetic Reward requirement, CosmeticReward and UserCosmetic entities |
+| Block 12, polish | The mobile control overflow, the outpost tuning, and Audacity in the tools list |
 | Acts II to IV content | Chapter Progression requirement and three storyboards |
 | Seed items for Acts II to IV | Act Assessment and Trivia requirements beyond Act I |
-| Not yet scheduled | User feedback collection |
-| Not yet scheduled | Performance scoring with stealth and combat terms |
+
+The block numbers above follow TRACKER.md, which was renumbered after the
+scope decisions taken from this audit. An earlier copy of this file had
+Block 8 as inventory and equipment and Block 10 as dynamic difficulty.
+TRACKER.md is the authority on what a block number means.
+
+PlayerAction, Achievement and UserAchievement no longer appear in this
+table. They were dropped from the ERD rather than scheduled: a per-action
+replay log costs writes on a phone on mobile data and would never be
+queried, and achievements add nothing that currency and cosmetics do not
+already cover.
 
 ## 12. Stale content in the context files
 
