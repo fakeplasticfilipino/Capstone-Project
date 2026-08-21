@@ -34,14 +34,14 @@ needed no migration: schema v3 already created player_inventory and
 player_equipment with their policies, so there is nothing in the Run
 log for it.
 
-Block 11 is written and passes the harness at 208 checks, and has NOT
-yet been run against the live database or pushed. It needed no
-migration either: game_progress.currency arrived in schema v3 and the
-ownership tables were already there, so there is nothing to run in
-the SQL editor. It moves to done below once the live checkpoint in
-its section passes.
+Block 11 is written, pushed, and live on Pages, and passes the
+harness. What it has NOT had is its live checkpoint: nobody has
+confirmed the currency award and the shop against the real database.
+It needed no migration either, since game_progress.currency arrived
+in schema v3 and the ownership tables were already there. It moves to
+done below once that checkpoint passes.
 
-The automated suite passes at 208 checks, 0 failures.
+The automated suite passes at 226 checks, 0 failures.
 
 The game has now run on a real Android phone, a 4GB device, and the
 result is the single most important thing in this file: performance
