@@ -1407,7 +1407,9 @@ const visible = (page, sel) => page.evaluate((s) => {
         // the zoom multiplies them and the 44px minimum is a thumb
         // against glass, not a number in a stylesheet.
         const btn = document.querySelector("#btn-interact").getBoundingClientRect();
+        const move = document.querySelector("#btn-left").getBoundingClientRect();
         return { zoom,
+                 moveSize: Math.round(Math.min(move.width, move.height)),
                  worldWidth: Math.round(window.innerWidth / zoom),
                  screen: window.innerWidth,
                  leftmost: left("#btn-left"),
@@ -1419,18 +1421,20 @@ const visible = (page, sel) => page.evaluate((s) => {
     };
 
     const phone = await framing({ width: 823, height: 412 });
-    ok("phone landscape drops the zoom to 1", phone.zoom === 1, phone);
-    ok("which shows 823 world pixels across",
-       phone.worldWidth === 823, phone.worldWidth);
+    ok("phone landscape drops the zoom to 0.7", phone.zoom === 0.7, phone);
+    ok("which shows 1176 world pixels across",
+       phone.worldWidth === 1176, phone.worldWidth);
     ok("the whole control row fits on screen",
        phone.leftmost >= 0 && phone.rightmost <= phone.screen, phone);
     ok("the touch targets clear 44px on screen",
        phone.btnSize >= 44, phone.btnSize);
+    ok("and the movement buttons are the biggest of them",
+       phone.moveSize > phone.btnSize, phone);
 
     // A smaller phone. The overflow this replaces was found at 412px, so
     // the narrow case is the one that has to keep working.
     const small = await framing({ width: 740, height: 360 });
-    ok("a smaller phone keeps the same camera", small.zoom === 1, small);
+    ok("a smaller phone keeps the same camera", small.zoom === 0.7, small);
     ok("and still fits every button",
        small.leftmost >= 0 && small.rightmost <= small.screen, small);
     ok("and still clears 44px", small.btnSize >= 44, small.btnSize);
@@ -1438,6 +1442,36 @@ const visible = (page, sel) => page.evaluate((s) => {
     // Desktop is untouched. Nothing anyone has been looking at changes.
     const desktop = await framing({ width: 1440, height: 900 });
     ok("desktop keeps 1.75", desktop.zoom === 1.75, desktop);
+
+    // The camera distance was chosen from the jump, so the jump is what
+    // checks it. At zoom 1 a single jump put Macario's head at 90% of the
+    // screen and the world read as a corridor with a ceiling.
+    const headroom = await (async () => {
+      const { ctx, page } = await enterOutpost();
+      const m = await page.evaluate(() => new Promise((r) => {
+        GUARDS.forEach((g) => { g.disabled = true; });
+        posX = 300;
+        posY = floorHeightAt(300);
+        velY = 0;
+        onGround = true;
+        handleJumpPress();
+
+        let peak = 0;
+        const tick = setInterval(() => { if (posY > peak) peak = posY; }, 8);
+        setTimeout(() => {
+          clearInterval(tick);
+          const zoom = parseFloat(getComputedStyle(document.documentElement)
+            .getPropertyValue("--zoom"));
+          r({ headTop: Math.round(peak + DISPLAY_HEIGHT + GROUND_LEVEL),
+              visible: Math.round(window.innerHeight / zoom) });
+        }, 1500);
+      }));
+      await ctx.close();
+      return m;
+    })();
+    const used = headroom.headTop / headroom.visible;
+    ok("a single jump leaves sky above it", used < 0.75,
+       { ...headroom, percent: Math.round(used * 100) });
 
     await Promise.resolve();
   }

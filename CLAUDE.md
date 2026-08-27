@@ -638,19 +638,26 @@ Being charged for an item the database never recorded is the one failure
 in this system a student would actually notice.
 
 The camera is one number, --zoom in style.css, and the visible world is
-always screen width divided by it. 1.75 on desktop, 1 on a phone in
-landscape, which shows the world at 1:1 with Macario at 33% of the screen
-height. 1.75 was a desktop taste applied to every screen until a phone was
-actually held: at 412px wide it left 235 world pixels visible, about two
-and a half Macarios across. 1.25 was the first correction and still read as
-zoomed in on the device, menus included, because every screen in this game
-lives inside #app-scale and scales with this number.
+always screen size divided by it. 1.75 on desktop, 0.7 on a phone in
+landscape.
 
-At zoom 1 the touch buttons render at 46 and 50 on screen, which still
-clears the 44px minimum this project holds itself to. Any further
-reduction of --zoom would put them under it, so the phone-landscape button
-sizes would have to rise to compensate. A check measures the rendered
-button rather than the stylesheet, so that cannot ship unnoticed.
+The phone number came from the jump rather than from taste. JUMP_VELOCITY
+of 14 against GRAVITY of 0.8 puts Macario's head 370 world pixels up at the
+apex. At zoom 1 that was 90% of the screen height, so a single jump reached
+the top and the world read as a corridor with a ceiling. At 0.7 it is 63%.
+1.75, 1.25 and 1 were each tried on the device and each still read as
+zoomed in, menus included, because every screen in this game lives inside
+#app-scale and scales with this number.
+
+Below 1 the zoom shrinks rather than magnifies, and the controls shrink
+with it. The phone-landscape block therefore states button sizes for that
+context and picks them so the RENDERED result is right: movement at 96
+lands at 67 on glass, the action buttons at 76 land at 53, both clear of
+the 44px minimum. Movement is deliberately the largest, because it is the
+control a thumb rests on for a whole act. Changing --zoom means redoing
+that arithmetic. Two checks measure the rendered button rather than the
+stylesheet, and one jumps and measures the headroom, so neither can ship
+wrong.
 
 Every placeholder box is DISPLAY_HEIGHT tall and 70% of that wide, at all
 four call sites: the player, animated NPCs, static-image NPCs and guards.

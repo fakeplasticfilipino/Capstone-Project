@@ -41,7 +41,7 @@ It needed no migration either, since game_progress.currency arrived
 in schema v3 and the ownership tables were already there. It moves to
 done below once that checkpoint passes.
 
-The automated suite passes at 228 checks, 0 failures.
+The automated suite passes at 230 checks, 0 failures.
 
 The game has now run on a real Android phone, a 4GB device, and the
 result is the single most important thing in this file: performance
@@ -49,9 +49,12 @@ is fine. Smooth, at least 30fps, no problem. That is the answer to
 the panel question the entire technical approach rests on, and it is
 now measured rather than argued.
 
-A second pass on the fixed build confirmed everything works and
-asked for one more thing: still too zoomed in, menus included. The
-camera is now 1 on a phone in landscape rather than 1.25.
+Later passes on the fixed build confirmed everything works and took
+the camera back in stages, 1.25 then 1 then 0.7, each time still
+reading as too close on glass. 0.7 is set from the jump rather than
+from taste: at zoom 1 a single jump put Macario's head at 90% of the
+screen height, and at 0.7 it is 63%. The movement buttons are the
+largest control on screen at 67px, with the action buttons at 53.
 
 Pulling it back exposed an older fault. Static NPC and guard
 placeholders were 80 by 112 while the player's was 134, so Macario
@@ -213,7 +216,7 @@ The paper specifies ten.
 |---|---|
 | Performance | (BUILT) No build step, no framework, plain script tags. Measured on a 4GB Android phone: smooth, at least 30fps |
 | Reliability | (BUILT) Debounced save, ten second autosave backstop, beforeunload flush, logout flush |
-| Usability | (BUILT) Tagalog throughout, touch targets measured on screen at 56px, and the whole control row fits in landscape down to 740px. Portrait shows a rotate notice rather than a broken layout. Camera and menu scale confirmed on a real phone |
+| Usability | (BUILT) Tagalog throughout, movement targets measured on screen at 67px and action targets at 53px, and the whole control row fits in landscape down to 740px. Portrait shows a rotate notice rather than a broken layout |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. Not yet tested across screen sizes; the harness proves the layout down to 740 by 360 only |
@@ -321,10 +324,11 @@ sprite that does not come back after unequipping.
 Block 12, polish. (IN PROGRESS)
 
 Done, from the device passes: pointer-events on .action-cluster so
-Atake and Talon work, --zoom at 1 for phone landscape with the touch
-buttons resized to hold the 44px minimum on their own, and the rotate
-notice that makes portrait a prompt rather than a layout. All are
-covered by checks in sections AA, AB and AC.
+Atake and Talon work, --zoom at 0.7 for phone landscape with the
+control sizes stated for that context so they render right on glass,
+the placeholder height fix that stopped Macario standing a head above
+everyone, and the rotate notice that makes portrait a prompt rather
+than a layout. All are covered by checks in sections AA, AB and AC.
 
 Left: the outpost balance pass, now that the camera shows more than
 two Macarios of the corridor and the equipment from Block 10 exists.
@@ -416,7 +420,7 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-228 checks. Anything other than "0 failed" is a regression.
+230 checks. Anything other than "0 failed" is a regression.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it

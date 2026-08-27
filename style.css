@@ -31,16 +31,53 @@ html, body {
 /* Phone landscape, which is how this game is meant to be held. Short
    viewport, wide screen.
 
-   1 shows 823 x 412 world pixels on a 823 x 412 screen, with Macario at
-   33% of the height. 1.25 was tried first on the device and still read as
-   zoomed in, menus included, because every screen in this game lives
-   inside #app-scale and scales with this number.
+   0.7 shows 1176 x 589 world pixels on a 823 x 412 screen. The number
+   came from the jump, which is the honest measure of how far back the
+   camera needs to be: JUMP_VELOCITY of 14 against GRAVITY of 0.8 puts
+   Macario's head 370 world pixels up at the apex. At zoom 1 that was 90%
+   of the screen height, so a single jump reached the ceiling and the
+   world felt like a corridor. At 0.7 it is 63%, and the jump reads as a
+   jump with sky above it.
 
-   The button sizes further down are left alone. At zoom 1 they render at
-   46 and 50 on screen, which still clears the 44px minimum. */
+   1.75, then 1.25, then 1 were each tried on the device and each still
+   read as zoomed in, menus included, because every screen in this game
+   lives inside #app-scale and scales with this number.
+
+   BELOW 1 THE ZOOM SHRINKS RATHER THAN MAGNIFIES, and the controls go
+   with it. At 0.7 the old 46px button would render at 32 on glass, well
+   under the 44px minimum this project holds itself to, and the labels
+   would be unreadable. The sizes below are therefore stated for this
+   context and chosen so the rendered result is right: movement at 96
+   lands at 67 on screen, the action buttons at 76 land at 53.
+
+   Anyone changing --zoom here has to redo that arithmetic. A check
+   measures the rendered button rather than the stylesheet so it cannot
+   ship wrong. */
 @media (orientation: landscape) and (max-height: 500px) {
   :root {
-    --zoom: 1;
+    --zoom: 0.7;
+  }
+
+  /* Movement is the control a thumb rests on for the whole act, so it
+     gets the bigger target of the two. Specificity beats the plain
+     .touch-btn rules further down without depending on source order. */
+  .dpad .touch-btn {
+    width: 96px;
+    height: 96px;
+    font-size: 30px;
+  }
+
+  .action-cluster .touch-btn {
+    width: 76px;
+    height: 76px;
+    font-size: 20px;
+  }
+
+  /* These two carry words rather than a letter, and they are set from an
+     id further down, which no class selector can outrank. */
+  #btn-attack,
+  #btn-jump {
+    font-size: 18px;
   }
 }
 
