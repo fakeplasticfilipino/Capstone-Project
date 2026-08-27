@@ -41,7 +41,7 @@ It needed no migration either, since game_progress.currency arrived
 in schema v3 and the ownership tables were already there. It moves to
 done below once that checkpoint passes.
 
-The automated suite passes at 226 checks, 0 failures.
+The automated suite passes at 228 checks, 0 failures.
 
 The game has now run on a real Android phone, a 4GB device, and the
 result is the single most important thing in this file: performance
@@ -49,7 +49,13 @@ is fine. Smooth, at least 30fps, no problem. That is the answer to
 the panel question the entire technical approach rests on, and it is
 now measured rather than argued.
 
-The same pass found three faults, all fixed and all covered by
+A second pass on the fixed build confirmed everything works and
+asked for one more thing: still too zoomed in, menus included. The
+camera is now 1 on a phone in landscape rather than 1.25, and the
+touch buttons carry their own 44px minimum because the zoom no longer
+multiplies them.
+
+The first pass found three faults, all fixed and all covered by
 checks. Atake and Talon did nothing at all, because .action-cluster
 never set pointer-events: auto inside a control bar that is
 pointer-events: none. The camera was a desktop setting applied to
@@ -202,7 +208,7 @@ The paper specifies ten.
 |---|---|
 | Performance | (BUILT) No build step, no framework, plain script tags. Measured on a 4GB Android phone: smooth, at least 30fps |
 | Reliability | (BUILT) Debounced save, ten second autosave backstop, beforeunload flush, logout flush |
-| Usability | (BUILT) Tagalog throughout, 44px touch targets, and the whole control row fits in landscape down to 740px. Portrait shows a rotate notice rather than a broken layout |
+| Usability | (BUILT) Tagalog throughout, touch targets measured on screen at 56px, and the whole control row fits in landscape down to 740px. Portrait shows a rotate notice rather than a broken layout. Camera and menu scale confirmed on a real phone |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. Not yet tested across screen sizes; the harness proves the layout down to 740 by 360 only |
@@ -309,10 +315,11 @@ sprite that does not come back after unequipping.
 
 Block 12, polish. (IN PROGRESS)
 
-Done, from the device pass: pointer-events on .action-cluster so
-Atake and Talon work, --zoom at 1.25 for phone landscape, and the
-rotate notice that makes portrait a prompt rather than a layout. All
-three are covered by checks in sections AA, AB and AC.
+Done, from the device passes: pointer-events on .action-cluster so
+Atake and Talon work, --zoom at 1 for phone landscape with the touch
+buttons resized to hold the 44px minimum on their own, and the rotate
+notice that makes portrait a prompt rather than a layout. All are
+covered by checks in sections AA, AB and AC.
 
 Left: the outpost balance pass, now that the camera shows more than
 two Macarios of the corridor and the equipment from Block 10 exists.
@@ -404,7 +411,7 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-226 checks. Anything other than "0 failed" is a regression.
+228 checks. Anything other than "0 failed" is a regression.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it

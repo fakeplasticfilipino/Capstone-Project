@@ -1403,29 +1403,37 @@ const visible = (page, sel) => page.evaluate((s) => {
           Math.round(document.querySelector(s).getBoundingClientRect().right);
         const left = (s) =>
           Math.round(document.querySelector(s).getBoundingClientRect().left);
+        // Buttons measured on screen rather than in CSS pixels, because
+        // the zoom multiplies them and the 44px minimum is a thumb
+        // against glass, not a number in a stylesheet.
+        const btn = document.querySelector("#btn-interact").getBoundingClientRect();
         return { zoom,
                  worldWidth: Math.round(window.innerWidth / zoom),
                  screen: window.innerWidth,
                  leftmost: left("#btn-left"),
-                 rightmost: right("#btn-interact") };
+                 rightmost: right("#btn-interact"),
+                 btnSize: Math.round(Math.min(btn.width, btn.height)) };
       });
       await ctx.close();
       return m;
     };
 
     const phone = await framing({ width: 823, height: 412 });
-    ok("phone landscape drops the zoom to 1.25", phone.zoom === 1.25, phone);
-    ok("which shows 658 world pixels across",
-       phone.worldWidth === 658, phone.worldWidth);
+    ok("phone landscape drops the zoom to 1", phone.zoom === 1, phone);
+    ok("which shows 823 world pixels across",
+       phone.worldWidth === 823, phone.worldWidth);
     ok("the whole control row fits on screen",
        phone.leftmost >= 0 && phone.rightmost <= phone.screen, phone);
+    ok("the touch targets clear 44px on screen",
+       phone.btnSize >= 44, phone.btnSize);
 
     // A smaller phone. The overflow this replaces was found at 412px, so
     // the narrow case is the one that has to keep working.
     const small = await framing({ width: 740, height: 360 });
-    ok("a smaller phone keeps the same camera", small.zoom === 1.25, small);
+    ok("a smaller phone keeps the same camera", small.zoom === 1, small);
     ok("and still fits every button",
        small.leftmost >= 0 && small.rightmost <= small.screen, small);
+    ok("and still clears 44px", small.btnSize >= 44, small.btnSize);
 
     // Desktop is untouched. Nothing anyone has been looking at changes.
     const desktop = await framing({ width: 1440, height: 900 });

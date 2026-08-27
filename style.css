@@ -29,12 +29,20 @@ html, body {
 }
 
 /* Phone landscape, which is how this game is meant to be held. Short
-   viewport, wide screen. 1.25 shows 658 x 330 world pixels on a 823 x
-   412 screen, with Macario at 41% of the height and all five buttons
-   fitting with room to spare. */
+   viewport, wide screen.
+
+   1 shows 823 x 412 world pixels on a 823 x 412 screen, with Macario at
+   33% of the height. 1.25 was tried first on the device and still read as
+   zoomed in, menus included, because every screen in this game lives
+   inside #app-scale and scales with this number.
+
+   Below 1 the touch buttons would fall under the 44px minimum this
+   project holds itself to, so the phone-landscape rules further down
+   raise their CSS size to compensate. Zoom and thumb size are pulling in
+   opposite directions here, and the buttons win. */
 @media (orientation: landscape) and (max-height: 500px) {
   :root {
-    --zoom: 1.25;
+    --zoom: 1;
   }
 }
 
@@ -479,9 +487,13 @@ html, body {
     padding: 0 24px;
   }
 
+  /* Sized in CSS pixels, which the zoom then multiplies. At --zoom 1 on
+     a phone these numbers ARE the on-screen size, so they carry the 44px
+     touch minimum on their own rather than inheriting it from a zoom
+     that no longer magnifies anything. */
   .touch-btn {
-    width: 50px;
-    height: 50px;
+    width: 54px;
+    height: 54px;
     font-size: 16px;
   }
 
@@ -496,9 +508,12 @@ html, body {
     bottom: 6px;
   }
 
+  /* Was 46, which was fine while --zoom multiplied it to 57 on screen.
+     At zoom 1 it would have shipped a 46px target, two pixels above the
+     minimum, on the shortest screens in the study. */
   .touch-btn {
-    width: 46px;
-    height: 46px;
+    width: 56px;
+    height: 56px;
   }
 }
 

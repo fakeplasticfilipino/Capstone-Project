@@ -638,11 +638,20 @@ Being charged for an item the database never recorded is the one failure
 in this system a student would actually notice.
 
 The camera is one number, --zoom in style.css, and the visible world is
-always screen width divided by it. 1.75 on desktop, 1.25 on a phone in
-landscape, which shows 658 by 330 world pixels on an 823 by 412 screen with
-Macario at 41% of the height. 1.75 was a desktop taste applied to every
-screen until a phone was actually held: at 412px wide it left 235 world
-pixels visible, about two and a half Macarios across.
+always screen width divided by it. 1.75 on desktop, 1 on a phone in
+landscape, which shows the world at 1:1 with Macario at 33% of the screen
+height. 1.75 was a desktop taste applied to every screen until a phone was
+actually held: at 412px wide it left 235 world pixels visible, about two
+and a half Macarios across. 1.25 was the first correction and still read as
+zoomed in on the device, menus included, because every screen in this game
+lives inside #app-scale and scales with this number.
+
+Below 1 the number stops magnifying and starts shrinking, and the touch
+buttons go with it. They are therefore sized in the phone-landscape media
+queries to carry the 44px minimum on their own, 54px and 56px, rather than
+relying on a zoom that no longer multiplies. Any further reduction of
+--zoom has to raise those two numbers again. A check measures the rendered
+button, not the stylesheet, for exactly this reason.
 
 Portrait shows a rotate notice, and its visibility is pure CSS. There is no
 JavaScript state that can leave it up on a screen that has already been
