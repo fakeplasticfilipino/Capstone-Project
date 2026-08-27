@@ -36,10 +36,8 @@ html, body {
    zoomed in, menus included, because every screen in this game lives
    inside #app-scale and scales with this number.
 
-   Below 1 the touch buttons would fall under the 44px minimum this
-   project holds itself to, so the phone-landscape rules further down
-   raise their CSS size to compensate. Zoom and thumb size are pulling in
-   opposite directions here, and the buttons win. */
+   The button sizes further down are left alone. At zoom 1 they render at
+   46 and 50 on screen, which still clears the 44px minimum. */
 @media (orientation: landscape) and (max-height: 500px) {
   :root {
     --zoom: 1;
@@ -487,13 +485,9 @@ html, body {
     padding: 0 24px;
   }
 
-  /* Sized in CSS pixels, which the zoom then multiplies. At --zoom 1 on
-     a phone these numbers ARE the on-screen size, so they carry the 44px
-     touch minimum on their own rather than inheriting it from a zoom
-     that no longer magnifies anything. */
   .touch-btn {
-    width: 54px;
-    height: 54px;
+    width: 50px;
+    height: 50px;
     font-size: 16px;
   }
 
@@ -508,12 +502,9 @@ html, body {
     bottom: 6px;
   }
 
-  /* Was 46, which was fine while --zoom multiplied it to 57 on screen.
-     At zoom 1 it would have shipped a 46px target, two pixels above the
-     minimum, on the shortest screens in the study. */
   .touch-btn {
-    width: 56px;
-    height: 56px;
+    width: 46px;
+    height: 46px;
   }
 }
 

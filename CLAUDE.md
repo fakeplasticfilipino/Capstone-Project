@@ -646,12 +646,18 @@ and a half Macarios across. 1.25 was the first correction and still read as
 zoomed in on the device, menus included, because every screen in this game
 lives inside #app-scale and scales with this number.
 
-Below 1 the number stops magnifying and starts shrinking, and the touch
-buttons go with it. They are therefore sized in the phone-landscape media
-queries to carry the 44px minimum on their own, 54px and 56px, rather than
-relying on a zoom that no longer multiplies. Any further reduction of
---zoom has to raise those two numbers again. A check measures the rendered
-button, not the stylesheet, for exactly this reason.
+At zoom 1 the touch buttons render at 46 and 50 on screen, which still
+clears the 44px minimum this project holds itself to. Any further
+reduction of --zoom would put them under it, so the phone-landscape button
+sizes would have to rise to compensate. A check measures the rendered
+button rather than the stylesheet, so that cannot ship unnoticed.
+
+Every placeholder box is DISPLAY_HEIGHT tall and 70% of that wide, at all
+four call sites: the player, animated NPCs, static-image NPCs and guards.
+The last two were 80 by 112 until the camera was pulled back far enough to
+show Macario standing next to somebody, at which point he was visibly a
+head taller than every character in the game. A placeholder is a stand-in
+for a sprite, so it has to occupy the space that sprite will.
 
 Portrait shows a rotate notice, and its visibility is pure CSS. There is no
 JavaScript state that can leave it up on a screen that has already been

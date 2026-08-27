@@ -354,7 +354,17 @@ function buildNpcs(token) {
       img.onerror = () => {
         const placeholder = document.createElement("div");
         placeholder.className = "sprite npc-sprite";
-        showPlaceholder(placeholder, npc.img, 80, 112);
+        // Same box every other character gets. 80 by 112 was written
+        // here before anything else used a placeholder, and it left
+        // Macario a head taller than every NPC and guard on screen.
+        // Nobody saw it while the camera was zoomed in far enough to
+        // show him alone.
+        showPlaceholder(
+          placeholder,
+          npc.img,
+          Math.round(DISPLAY_HEIGHT * 0.7),
+          DISPLAY_HEIGHT
+        );
         img.replaceWith(placeholder);
       };
       el.appendChild(img);
@@ -716,7 +726,12 @@ function applyAnim(name, force) {
   const sheet = SPRITE_SHEETS[name];
 
   if (sheet.failed) {
-    showPlaceholder(playerSpriteEl, sheet.src, 90, DISPLAY_HEIGHT);
+    showPlaceholder(
+      playerSpriteEl,
+      sheet.src,
+      Math.round(DISPLAY_HEIGHT * 0.7),
+      DISPLAY_HEIGHT
+    );
     return;
   }
 
@@ -1211,7 +1226,12 @@ function buildGuards(token) {
     } else {
       const sprite = document.createElement("div");
       sprite.className = "sprite npc-sprite";
-      showPlaceholder(sprite, guard.img || "Guard", 80, 112);
+      showPlaceholder(
+        sprite,
+        guard.img || "Guard",
+        Math.round(DISPLAY_HEIGHT * 0.7),
+        DISPLAY_HEIGHT
+      );
       el.appendChild(sprite);
       world.appendChild(el);
     }

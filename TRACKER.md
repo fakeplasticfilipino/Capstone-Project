@@ -51,9 +51,14 @@ now measured rather than argued.
 
 A second pass on the fixed build confirmed everything works and
 asked for one more thing: still too zoomed in, menus included. The
-camera is now 1 on a phone in landscape rather than 1.25, and the
-touch buttons carry their own 44px minimum because the zoom no longer
-multiplies them.
+camera is now 1 on a phone in landscape rather than 1.25.
+
+Pulling it back exposed an older fault. Static NPC and guard
+placeholders were 80 by 112 while the player's was 134, so Macario
+stood a head taller than every character in the game. All four
+placeholder call sites now use DISPLAY_HEIGHT. It had been true since
+those lines were written and was invisible while the camera was
+zoomed in far enough to show him alone.
 
 The first pass found three faults, all fixed and all covered by
 checks. Atake and Talon did nothing at all, because .action-cluster
