@@ -20,7 +20,7 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after the first device pass on a real Android phone.
+Last updated: after the device passes settled the camera and controls.
 
 ## Right now
 
@@ -49,12 +49,17 @@ is fine. Smooth, at least 30fps, no problem. That is the answer to
 the panel question the entire technical approach rests on, and it is
 now measured rather than argued.
 
-Later passes on the fixed build confirmed everything works and took
-the camera back in stages, 1.25 then 1 then 0.7, each time still
-reading as too close on glass. 0.7 is set from the jump rather than
-from taste: at zoom 1 a single jump put Macario's head at 90% of the
-screen height, and at 0.7 it is 63%. The movement buttons are the
-largest control on screen at 67px, with the action buttons at 53.
+Later passes took the camera back in stages, 1.25 then 1 then 0.7,
+each earlier value still reading as too close on glass. 0.7 is set
+from the jump rather than from taste: at zoom 1 a single jump put
+Macario's head at 90% of the screen height, and at 0.7 it is 63%. The
+movement buttons are the largest control on screen at 67px, with the
+action buttons at 53.
+
+0.7 is CONFIRMED ON THE DEVICE and is the settled value. Do not
+change it without a phone in hand; three checks in section AB will
+fail if anyone does, including one that jumps and measures the
+headroom.
 
 Pulling it back exposed an older fault. Static NPC and guard
 placeholders were 80 by 112 while the player's was 134, so Macario
@@ -330,11 +335,17 @@ the placeholder height fix that stopped Macario standing a head above
 everyone, and the rotate notice that makes portrait a prompt rather
 than a layout. All are covered by checks in sections AA, AB and AC.
 
-Left: the outpost balance pass, now that the camera shows more than
-two Macarios of the corridor and the equipment from Block 10 exists.
-Assets/Cement_Tile.png is 1.4MB for a repeating floor tile and should
-be shrunk before anyone measures a load time. Audio if there is
-time, which is still the first thing to cut.
+The device work is done and confirmed. What is left of this block is
+not: the outpost balance pass, now that the camera shows the corridor
+rather than two Macarios of it and the equipment from Block 10
+exists. Assets/Cement_Tile.png is 1.4MB for a repeating floor tile
+and should be shrunk before anyone measures a load time. Audio if
+there is time, which is still the first thing to cut.
+
+One thing to watch on the next device session rather than change
+blind: the dialogue text and quest log shrank with the camera. The
+text size setting in the pause menu has sm, md and lg. Try lg before
+raising any base sizes.
 
 Rewrite Act I in full against the finished mechanics, then write Acts
 II through IV. Content work, done once the systems stop moving.
