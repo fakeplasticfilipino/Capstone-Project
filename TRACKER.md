@@ -20,7 +20,8 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after the device passes settled the camera and controls.
+Last updated: after the item bank was run and Block 11 passed its
+live check.
 
 ## Right now
 
@@ -34,12 +35,13 @@ needed no migration: schema v3 already created player_inventory and
 player_equipment with their policies, so there is nothing in the Run
 log for it.
 
-Block 11 is written, pushed, and live on Pages, and passes the
-harness. What it has NOT had is its live checkpoint: nobody has
-confirmed the currency award and the shop against the real database.
-It needed no migration either, since game_progress.currency arrived
-in schema v3 and the ownership tables were already there. It moves to
-done below once that checkpoint passes.
+Block 11 is done. Currency, the award formula and the shop were
+confirmed against the live database in a full Act I run. It needed no
+migration, since game_progress.currency arrived in schema v3 and the
+ownership tables were already there.
+
+The Act I item bank is seeded. Both tests now serve ten matched items
+and the dashboard reports a real pre, post and gain.
 
 The automated suite passes at 230 checks, 0 failures.
 
@@ -82,26 +84,36 @@ waiting to be run, and the replacement art.
 
 ## Next action
 
-Run db/macario_items_v3.sql against the live project.
+Rewrite Act I so that it teaches what the item bank tests.
 
-It is unblocked. Ms. Donadillo-Espiritu declined to fill in the
-validation form and told the proponents to make the game, on the
-understanding that events stay as historically accurate as the
-available data allows. The assessment items are ours to write. The
-packet is therefore closed, and the item bank stops waiting on
-anybody.
+Every system the study needs is now built, live and confirmed on a
+real phone. The instrument is seeded and the pipeline records a pre
+score, a post score and a gain. What is missing is the middle: the
+Act I script is placeholder dialogue about buko and errands, and it
+does not state a single one of the five learning objectives the ten
+item pairs measure.
 
-Run it as written. It was already revised once, against the leak
-where the Act I trivia fact handed students three pre-test answers.
-Items can still be edited afterwards, because nothing is collected
-until the session runs.
+    LO1  Sakay's origins and social class
+    LO2  Theatre experience and public speaking
+    LO3  The Katipunan, when joined, and its aim
+    LO4  Secrecy and communication in the movement
+    LO5  Personal cost, and who the Katipunan was
 
-Checkpoint: macario_items_v3.sql moves to RUN in the Run log with its
-date, and a full Act I run finally shows real questions in the
-pre-test and the post-test instead of the empty-bank notice.
+Until the script carries these, a gain measures what a student
+already knew and how they guessed the second time, not anything the
+game did. That is the finding the whole study rests on, so this is
+the critical path and everything else is smaller.
 
-After that, in order: ask her for the written note described below,
-a device pass on a real Android phone, then Block 12.
+This is a writing task against the resource person's source
+material, which is a physical book. It cannot be done from the
+repository, and the proponents work through it with the session at
+the time of the rewrite.
+
+Checkpoint: a student who knew nothing at the pre-test can answer
+each of the ten post-test items from something Act I actually showed
+them.
+
+After that: Block 12's remaining polish, then the pilot.
 
 ## The milestone
 
@@ -153,8 +165,7 @@ when. A fresh session should trust this over any memory of a chat.
     db/applied/macario_schema_v3.sql    RUN
     db/applied/macario_schema_v4.sql    RUN, 19 Aug 2026
 
-    db/macario_items_v3.sql             NOT RUN. No longer blocked;
-                                        this is the next action.
+    db/macario_items_v3.sql             RUN, 28 Aug 2026
 
     db/db_healthcheck.sql               read-only, run any time
     db/reset_test_accounts.sql          run before any full-flow test.
@@ -178,11 +189,9 @@ Framework complete. Only Act I has content, and that content is
 placeholder pending a rewrite.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
-equipment, cosmetic rewards. (IN PROGRESS) Difficulty, health and
-equipment are complete. The cosmetic system is built and awaiting its
-live check. After that, the only thing between this objective and
-(COMPLETE) is outfit art, which is a drawing task rather than a code
-one.
+equipment, cosmetic rewards. (IN PROGRESS) All four are built and
+confirmed live. The only thing between this objective and (COMPLETE)
+is outfit art, which is a drawing task rather than a code one.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and
 post-tests, server-side grading, in-game performance scoring,
@@ -205,7 +214,7 @@ work through.
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified in the harness; no act beyond Act I has guards yet |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups |
 | Equipment System | (BUILT) Two items, weapon and accessory slots, an inventory screen on pause. Items are granted on act entry; the shop is Block 11 |
-| Cosmetic Reward | (BUILT, NOT LIVE) Currency awarded per act and scaled by performance, a shop inside the inventory, two priced outfits. Harness green. Outfits render as the placeholder box until their sheets are drawn |
+| Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop inside the inventory, two priced outfits. Confirmed live. Outfits render as the placeholder box until their sheets are drawn |
 | Trivia | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Act Assessment | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded but not scored |
@@ -284,6 +293,12 @@ spear and one extra heart. Items are granted on entering the act
 whose content names them, because the shop is Block 11. No migration
 was needed. (COMPLETE)
 
+Block 11, currency and cosmetics. Currency in game_progress, awarded
+as objectives land and topped up on completion so an act pays exactly
+its rounded performance score. A shop panel off the inventory screen,
+two outfits at 50 and 90, and a sprite swap that replaces whichever
+sheets an outfit declares. No migration was needed. (COMPLETE)
+
 Act I content. Two scenes: the road and the outpost. Two patrolling
 guards, three crates, two platforms, two bamboo stake hazards, one
 heart pickup, and a kasama to deliver the message to. Placeholder
@@ -295,36 +310,10 @@ checked against the code. Its findings are the two scoreboards above.
 (COMPLETE)
 
 Revised Act I item bank. Ten matched pre and post pairs plus a trivia
-fact that no longer leaks pre-test answers, written as
-db/macario_items_v3.sql. (COMPLETE, NOT RUN)
+fact that no longer leaks pre-test answers. Seeded and confirmed
+serving ten questions per test. (COMPLETE)
 
 ## Blocks remaining
-
-Block 11, currency and cosmetics. Currency in game_progress, awarded
-as objectives land and topped up on completion so an act pays exactly
-its rounded performance score. A shop panel off the inventory screen,
-two outfits at 50 and 90, and a sprite swap that replaces whichever
-sheets an outfit declares. No migration was needed.
-(IN PROGRESS, awaiting the live check)
-
-The live checkpoint, in order. Run db/reset_test_accounts.sql. Log in
-as hi@example.com and enter Act I with a balance of zero. Complete an
-objective: a toast reads plus 10 and the inventory screen shows 10.
-Reload and resume: the balance is unchanged, and this is the check
-that matters most, because paying again on every login was a real bug
-the harness caught rather than a hypothetical. Finish the act: the
-transition names the award, and the total paid equals the
-performance_score on the act_progress row, rounded. Open Tindahan:
-Damit ng Magsasaka is buyable at 50 and Uniporme ng Katipunero reads
-Kulang until you can afford it. Buy one: the balance drops once, the
-row reads Pag-aari, and it appears in the owned list. Wear it: the
-player becomes a dashed placeholder box naming Skin_Walk.png, which
-is correct until that file exists. Take it off: the walk cycle comes
-back.
-
-Failure looks like a balance that grows on reload, a total that does
-not match the score, a purchase that charges twice, or a player
-sprite that does not come back after unequipping.
 
 Block 12, polish. (IN PROGRESS)
 
