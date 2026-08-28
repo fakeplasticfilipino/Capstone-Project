@@ -127,12 +127,12 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nB. Returning student, mid Act I at the outpost");
+  console.log("\nB. Returning student, mid Act I in the test room");
   {
     const state = {
       session: { user: { id: "u1" } },
-      game_progress: [{ student_id: "u1", current_act: 1, current_room: "kuta", is_night: true,
-        save_state: { quests: [], flags: { hasBuko: true, bukoGiven: true, deathSequenceDone: true, metKatipunero: true }, posX: 300 } }],
+      game_progress: [{ student_id: "u1", current_act: 1, current_room: "silid", is_night: true,
+        save_state: { quests: [], flags: { nakausapAngGabay: true, naibigayAngPakete: true, deathSequenceDone: true }, posX: 300 } }],
       act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 4 }],
     };
     const { ctx, page } = await newPage(state);
@@ -141,13 +141,13 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("start button reads Magpatuloy", (await page.textContent("#shell-start")).trim() === "Magpatuloy",
        (await page.textContent("#shell-start")).trim());
     ok("still gated, not yet playing", (await page.evaluate(() => Shell.state)) === "title");
-    ok("resumed into the outpost scene, not the road",
-       (await page.evaluate(() => currentRoom)) === "kuta", await page.evaluate(() => currentRoom));
+    ok("resumed into the stored scene rather than the first one",
+       (await page.evaluate(() => currentRoom)) === "silid", await page.evaluate(() => currentRoom));
 
     await page.click("#shell-start");
     await page.waitForTimeout(400);
     ok("entered the world", (await page.evaluate(() => Shell.state)) === "playing");
-    ok("still in kuta after entry", (await page.evaluate(() => currentRoom)) === "kuta");
+    ok("still in silid after entry", (await page.evaluate(() => currentRoom)) === "silid");
     ok("act is still 1", (await page.evaluate(() => Acts.current)) === 1);
     ok("hearts shown in a dangerous scene", await visible(page, "#hud"));
     ok("guards were built", (await page.evaluate(() => GUARDS.length)) > 0);
@@ -241,7 +241,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.click("#shell-start");
     await page.waitForTimeout(300);
     ok("legacy 'empty' room falls back to the first scene",
-       (await page.evaluate(() => currentRoom)) === "road", await page.evaluate(() => currentRoom));
+       (await page.evaluate(() => currentRoom)) === "silid", await page.evaluate(() => currentRoom));
     ok("acts II-IV still registered", await page.evaluate(() => [2,3,4].every(n => !!Acts.getAct(n))));
     ok("act II still has no objectives", (await page.evaluate(() => Acts.objectivesFor(2).length)) === 0);
     await ctx.close();
@@ -264,17 +264,20 @@ const visible = (page, sel) => page.evaluate((s) => {
   // Block 8. Hazards, pickups and difficulty.
   // -----------------------------------------------------------------
 
-  // Puts a resuming student in the outpost with the world already built,
-  // which is where all three Block 8 systems live.
-  const atOutpost = () => ({
+  // Puts a resuming student in the test room with the world already
+  // built. Act I is a test stage rather than the story: one room
+  // holding one example of every system, plus a bare second room. The
+  // flags seeded here are the ones that stage sets, so the student
+  // arrives three objectives in with the hidden NPC already revealed.
+  const atTestRoom = () => ({
     session: { user: { id: "u1" } },
-    game_progress: [{ student_id: "u1", current_act: 1, current_room: "kuta", is_night: true,
-      save_state: { quests: [], flags: { hasBuko: true, bukoGiven: true, deathSequenceDone: true, metKatipunero: true }, posX: 300 } }],
+    game_progress: [{ student_id: "u1", current_act: 1, current_room: "silid", is_night: true,
+      save_state: { quests: [], flags: { nakausapAngGabay: true, naibigayAngPakete: true, deathSequenceDone: true }, posX: 300 } }],
     act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 4 }],
   });
 
-  async function enterOutpost(block) {
-    const { ctx, page } = await newPage(atOutpost(), block);
+  async function enterTestRoom(block) {
+    const { ctx, page } = await newPage(atTestRoom(), block);
     await page.waitForTimeout(700);
     await page.click("#shell-start");
     await page.waitForTimeout(400);
@@ -299,7 +302,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nF. Hazards");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     // Guards are switched off for this section. The knockback from the
     // first band lands the player inside bantay-1's detection radius, so
@@ -307,13 +310,13 @@ const visible = (page, sel) => page.evaluate((s) => {
     // one. Guards have their own checks in section H.
     await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
 
-    ok("hazards were built", (await page.evaluate(() => HAZARDS.length)) === 2);
+    ok("hazards were built", (await page.evaluate(() => HAZARDS.length)) === 1);
     ok("hazard elements are in the world",
-       (await page.evaluate(() => document.querySelectorAll(".hazard").length)) === 2);
+       (await page.evaluate(() => document.querySelectorAll(".hazard").length)) === 1);
 
     const hit = await standInHazard(page);
     ok("hazard costs exactly one health", hit.health === 2, hit.health);
-    ok("hazard does not change the scene", hit.room === "kuta", hit.room);
+    ok("hazard does not change the scene", hit.room === "silid", hit.room);
     ok("hazard does not respawn the player at startX",
        Math.abs(hit.posX - hit.startX) > 100, { posX: hit.posX, startX: hit.startX });
     ok("knockback clears the band",
@@ -360,7 +363,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nG. Pickups");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     ok("pickup was built", (await page.evaluate(() => PICKUPS.length)) === 1);
     ok("pickup element is in the world",
@@ -408,8 +411,8 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     // Leaving and re-entering the scene does restore it.
     const afterReload = await page.evaluate(() => {
-      loadScene("road");
-      loadScene("kuta");
+      loadScene("labasan");
+      loadScene("silid");
       return { collected: collectedPickups.size, stillThere: !!document.querySelector(".pickup") };
     });
     ok("loadScene clears the collected set", afterReload.collected === 0, afterReload.collected);
@@ -420,7 +423,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nH. Dynamic difficulty and guard reset");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     const act1 = await page.evaluate(() => GUARDS.map((g) => ({ speed: g.speed, base: g.baseSpeed })));
     ok("act I guards run at the content speed",
@@ -460,7 +463,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nI. Counters");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
 
     const zeroed = await page.evaluate(() => {
@@ -515,7 +518,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nJ. Counter persistence");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     await page.evaluate(async () => {
       Game.resetStats();
@@ -543,7 +546,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // reloading the page, because the stub reseeds its database on reload
   // and would discard the write the previous section just made.
   {
-    const seeded = atOutpost();
+    const seeded = atTestRoom();
     seeded.game_progress[0].save_state.stats = {
       damageTaken: 4, detections: 3, playMs: 91000,
     };
@@ -578,7 +581,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nK. The weighted score");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     const perfect = await page.evaluate(() =>
       Acts.scoreFor(5, 5, { damageTaken: 0, detections: 0 }));
@@ -612,7 +615,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nL. Sessions");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     const opened = await page.evaluate(() => __DB.game_sessions || []);
     ok("a session row is written on entry", opened.length === 1, opened.length);
@@ -637,7 +640,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nM. Feedback");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     // Skipping must write nothing and must not block the flow.
     const skipped = await page.evaluate(async () => {
@@ -684,7 +687,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nN. Completion is written before feedback is offered");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     // The ordering that protects the study: if the student closes the
     // tab on the form, the act is already recorded.
@@ -718,7 +721,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nO. Feedback is optional to the flow");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     // An assessment.js without runFeedback, or none at all, must still
     // complete the act. This is the guard that keeps assessment.js
@@ -742,7 +745,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nP. The item catalogue");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     const shape = await page.evaluate(() => ({
       count: window.ITEMS.length,
@@ -775,7 +778,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nQ. Granting");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     ok("both Act I items were granted on entry",
        (await page.evaluate(() => __DB.player_inventory.length)) === 2,
@@ -799,7 +802,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nR. Equipping");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     const worn = await page.evaluate(async () => {
       const wrote = await Inventory.equip("agimat");
@@ -844,7 +847,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nS. Equipment effects");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
 
     const hearts = () => page.evaluate(() => ({
@@ -930,7 +933,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nT. The inventory screen");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     await page.click("#btn-pause");
     await page.waitForTimeout(150);
@@ -981,7 +984,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nU. Inventory is optional to the flow");
   {
-    const { ctx, page } = await enterOutpost("**/inventory.js*");
+    const { ctx, page } = await enterTestRoom("**/inventory.js*");
 
     ok("the module really is absent",
        await page.evaluate(() => !window.Inventory));
@@ -1018,7 +1021,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nV. The currency award");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     // The regression this section exists for. This student resumes four
     // objectives into Act I, and the debounced save fires between
@@ -1098,7 +1101,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nW. The award sums to the score");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     const totals = await page.evaluate(async () => {
       // finishAct runs the post-test, the feedback form and the
@@ -1143,7 +1146,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nX. Spending");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     const short = await page.evaluate(async () => {
       const bought = await Inventory.buy("damit-magsasaka");
@@ -1206,7 +1209,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nY. Outfits");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     // Walk.png is the one sprite sheet that actually exists, so it stands
     // in for an outfit here. When the artist delivers, the only thing
@@ -1281,7 +1284,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nZ. The shop screen");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => Game.addCurrency(60));
 
     await page.click("#btn-pause");
@@ -1340,7 +1343,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nAA. The touch controls");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     const pe = await page.evaluate(() => {
       const at = (s) => getComputedStyle(document.querySelector(s)).pointerEvents;
@@ -1392,7 +1395,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   {
     // The camera is screen width divided by --zoom, and nothing else.
     const framing = async (viewport) => {
-      const { ctx, page } = await newPage(atOutpost(), null, viewport);
+      const { ctx, page } = await newPage(atTestRoom(), null, viewport);
       await page.waitForTimeout(700);
       await page.click("#shell-start");
       await page.waitForTimeout(300);
@@ -1447,7 +1450,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     // checks it. At zoom 1 a single jump put Macario's head at 90% of the
     // screen and the world read as a corridor with a ceiling.
     const headroom = await (async () => {
-      const { ctx, page } = await enterOutpost();
+      const { ctx, page } = await enterTestRoom();
       const m = await page.evaluate(() => new Promise((r) => {
         GUARDS.forEach((g) => { g.disabled = true; });
         posX = 300;
@@ -1478,7 +1481,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nAC. Portrait is a prompt, not a layout");
   {
-    const { ctx, page } = await enterOutpost();
+    const { ctx, page } = await enterTestRoom();
 
     ok("no notice while the phone is sideways",
        !(await visible(page, "#rotate-notice")));

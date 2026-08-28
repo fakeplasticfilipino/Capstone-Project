@@ -185,8 +185,9 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-Framework complete. Only Act I has content, and that content is
-placeholder pending a rewrite.
+Framework complete and proven by a test stage in Act I. No story is
+written yet, and that is now the whole of the remaining work on this
+objective.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
 equipment, cosmetic rewards. (IN PROGRESS) All four are built and
@@ -205,12 +206,12 @@ work through.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created |
-| Chapter Progression | (PARTIAL) All four registered and unlock in order. Only Act I has content |
+| Chapter Progression | (PARTIAL) All four registered and unlock in order. Act I holds a test stage; no act has story content yet |
 | Player Movement | (BUILT) |
 | Combat Mechanics | (BUILT) Melee, takedown from behind, thrown projectile as the special attack |
 | Stealth Mechanics | (BUILT) Patrols, detection meter, hide spots |
 | Interaction System | (BUILT) |
-| Narrative Delivery | (PARTIAL) Built for Act I only |
+| Narrative Delivery | (PARTIAL) The delivery system is built and exercised by the test stage. No narrative is written yet |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified in the harness; no act beyond Act I has guards yet |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups |
 | Equipment System | (BUILT) Two items, weapon and accessory slots, an inventory screen on pause. Items are granted on act entry; the shop is Block 11 |
@@ -299,10 +300,13 @@ its rounded performance score. A shop panel off the inventory screen,
 two outfits at 50 and 90, and a sprite swap that replaces whichever
 sheets an outfit declares. No migration was needed. (COMPLETE)
 
-Act I content. Two scenes: the road and the outpost. Two patrolling
-guards, three crates, two platforms, two bamboo stake hazards, one
-heart pickup, and a kasama to deliver the message to. Placeholder
-script throughout. (COMPLETE)
+Act I test stage. The old road and outpost content is deleted, in git
+history, and not to be restored. content/act1.js now holds one room
+with one example of every system, dialogue with two conversations, a
+gift, a stage cutscene, a hidden NPC revealed by flag, a patrolling
+guard, a hide spot, a one-way platform, a heart pickup, a hazard and a
+decoration, plus a bare second room reached by scene transport. Five
+objectives, so the currency drip is a round 10 each. (COMPLETE)
 
 Paper audit. Seventeen functional requirements, ten non-functional,
 five modules, seventeen ERD entities and all four act storyboards
@@ -336,9 +340,9 @@ blind: the dialogue text and quest log shrank with the camera. The
 text size setting in the pause menu has sm, md and lg. Try lg before
 raising any base sizes.
 
-Rewrite Act I in full against the finished mechanics, then write Acts
-II through IV. Content work, done once the systems stop moving.
-(NOT STARTED)
+Write the real Act I against the finished mechanics, replacing the
+test stage, then write Acts II through IV. This is the next action;
+see above. (NOT STARTED)
 
 Seed trivia and assessment items for Acts II through IV. Until then
 those acts skip their tests with a notice, which is deliberate.

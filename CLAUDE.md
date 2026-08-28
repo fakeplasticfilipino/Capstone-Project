@@ -67,16 +67,29 @@ one decision is what removed the mobile control overflow from the work
 rather than fixing it, because the overflow only ever happened in
 portrait.
 
-## Content is placeholder, mechanics are the foundation
+## Act I is currently a TEST STAGE, not the story
 
-Only Act I has content, and that is deliberate. Acts II through IV are
-registered, loadable stubs waiting to be written.
+content/act1.js holds a proving ground rather than a narrative. One room
+with exactly one example of every system the engine has, plus a bare second
+room to prove scene transport. The road through Tondo and the Spanish
+outpost that used to live there were placeholder from the start and have
+been deleted; they are in git history and should not be restored.
 
-Act I's script is itself placeholder and is expected to be rewritten in
-full once the mechanics are finished. Do not treat the current dialogue as
-settled, do not optimise around it, and do not build systems that depend on
-a particular line existing. The build order is mechanics first, then
-content written against whatever mechanics exist.
+The rule for that file is one example of each mechanic and no more. If a
+mechanic ends up represented twice, delete one. A person should be able to
+walk it in two minutes and see everything the engine can do.
+
+The test stage deliberately teaches nothing. The seeded item bank tests
+five learning objectives and the stage states none of them, so a gain
+measured against it reflects prior knowledge and a second look at the
+questions. The real Act I, written against the resource person's source
+material and against the ten item pairs in db/macario_items_v3.sql,
+replaces this file wholesale.
+
+Acts II through IV are registered, loadable stubs waiting to be written.
+
+The build order is mechanics first, then content written against whatever
+mechanics exist. The mechanics have stopped moving, so content is next.
 
 ## Stack
 
