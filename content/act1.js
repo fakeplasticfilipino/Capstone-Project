@@ -35,7 +35,12 @@
 // doubles as the shopping list for whoever draws them.
 // =============================================================
 
-const TEST_ROOM_WIDTH = 2400;
+// A phone in landscape shows 1176 world pixels across at --zoom 0.7, so
+// the room below is a shade over three screens wide. The spacing that
+// follows is stated in those terms rather than in raw pixels, because the
+// old layout was built for a camera that showed 470 and everything in it
+// arrived on screen at once when the camera was pulled back.
+const TEST_ROOM_WIDTH = 3600;
 const TEST_EXIT_WIDTH = 900;
 
 window.ACT_1 = {
@@ -82,6 +87,11 @@ window.ACT_1 = {
       startX: 60,
       dangerous: true,
 
+      // The first screen holds the Gabay, a decoration and the
+      // entablado. Those are fine to see all at once, because it is the
+      // introduction and nothing in it is a threat. The guard, the
+      // hazard and the exit each get a stretch of their own further
+      // right, so they arrive one problem at a time.
       npcs: [
         {
           // EXAMPLE: dialogue, multiple conversations, and a gift.
@@ -149,7 +159,7 @@ window.ACT_1 = {
           // moment it is set and when a save is restored, so this one
           // field covers a fresh run and a reload alike.
           id: "tagapagbantay",
-          x: 2150,
+          x: 3350,
           img: "Assets/Tagapagbantay.png",
           label: "Tagapagbantay",
           stage: 0,
@@ -195,7 +205,7 @@ window.ACT_1 = {
       // rather than here, so the objective above has to match that
       // spelling exactly. Worth knowing before anyone renames it.
       stage: {
-        x: 760,
+        x: 900,
         width: 260,
         rampWidth: 50,
         label: "Entablado",
@@ -211,16 +221,21 @@ window.ACT_1 = {
 
       // EXAMPLE: a hide spot. Standing inside one suppresses detection
       // entirely, which is the counter to the guard below.
-      hideSpots: [{ x: 1180, width: 96 }],
+      //
+      // Placed INSIDE the patrol rather than before it. Cover that sits
+      // outside the route is scenery; cover you have to reach while
+      // being hunted is the mechanic.
+      hideSpots: [{ x: 2400, width: 110 }],
 
       // EXAMPLE: a one-way platform. Passed through from below, landed
-      // on from above.
-      platforms: [{ x: 1320, y: 150, width: 190 }],
+      // on from above. Sits on the approach, before the guard, so the
+      // jump is learned somewhere safe.
+      platforms: [{ x: 1500, y: 150, width: 220 }],
 
       // EXAMPLE: a heart pickup, placed on the platform so it also
       // proves a pickup can sit somewhere other than the floor.
       // Refused rather than consumed at full health.
-      pickups: [{ id: "test-heart", x: 1380, y: 150, type: "heart" }],
+      pickups: [{ id: "test-heart", x: 1580, y: 150, type: "heart" }],
 
       // EXAMPLE: a patrolling guard with a detection meter.
       //
@@ -232,16 +247,32 @@ window.ACT_1 = {
       //
       // Speed is scaled by act number inside the engine, so 1.4 here
       // is 1.4 in play, Act I being the 1.00 multiplier.
+      //
+      // TUNED AGAINST THE 1176 PIXEL CAMERA. The previous numbers were
+      // set when a phone showed 470 pixels across, where a 400 pixel
+      // patrol crossed most of the screen and a 240 radius covered half
+      // of it. At 1176 the same numbers read as a twitch in the corner.
+      //
+      //   patrol 800   two thirds of a screen, so the route is legible
+      //                as a route rather than a pace
+      //   radius 300   about a quarter of a screen. Deliberately well
+      //                under half: there is no line of sight test, so a
+      //                guard that owned most of the screen would be
+      //                unfair rather than tense
+      //   alert 0.010  1.7 seconds inside the radius before a catch.
+      //                Crossing the 600 pixel zone head on at the
+      //                player's 300 px/s takes 2 seconds, so a straight
+      //                run still loses and the hide spot still matters
       guards: [
         {
           id: "bantay",
-          x: 1600,
-          patrolFrom: 1450,
-          patrolTo: 1850,
+          x: 2300,
+          patrolFrom: 2000,
+          patrolTo: 2800,
           speed: 1.4,
           facing: 1,
-          detectRadius: 240,
-          alertRate: 0.012,
+          detectRadius: 300,
+          alertRate: 0.01,
           decayRate: 0.02,
           img: "Assets/Guard.png",
         },
@@ -250,13 +281,15 @@ window.ACT_1 = {
       // EXAMPLE: a hazard. One health on contact, then a shove clear
       // of the band rather than a trip back to the entrance. Cleared
       // with a jump.
-      hazards: [{ x: 1950, width: 70, reason: "Natusok ka! Pagsubok na hazard." }],
+      // Past the patrol, on its own stretch, so it is met as its own
+      // problem rather than while a guard is closing.
+      hazards: [{ x: 3050, width: 90, reason: "Natusok ka! Pagsubok na hazard." }],
 
       // EXAMPLE: a decoration. Animated, and not interactable.
       decorations: [
         {
           id: "dekorasyon",
-          x: 520,
+          x: 560,
           animation: { src: "Assets/Dekorasyon.png", frames: 4, fps: 6 },
           displayHeight: 70,
         },

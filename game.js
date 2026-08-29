@@ -113,7 +113,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 2;
+const ASSET_VERSION = 3;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -122,7 +122,7 @@ function assetUrl(path) {
 
 // --- Game state ----------------------------------------------------------
 const state = {
-  flags: {}, // arbitrary story flags, e.g. hasBuko, bukoGiven
+  flags: {}, // arbitrary story flags, named by whatever content is loaded
 };
 
 // --- Quest system ----------------------------------------------------------
@@ -1129,9 +1129,10 @@ async function runDeathSequence() {
 
   state.flags.deathSequenceDone = true;
 
-  // The Katipunero was waiting at the edge of the map. He declares
-  // deathSequenceDone as his revealedByFlag, so setting it above is
-  // all this needs to know.
+  // Content may hide an NPC behind this moment by declaring
+  // deathSequenceDone as its revealedByFlag, so setting the flag above
+  // is all this needs to know. The engine does not know which NPC, or
+  // whether there is one at all.
   revealNpcsByFlag();
 
   markDirty();

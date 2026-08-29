@@ -711,8 +711,8 @@ const Acts = {
 
   // Moves between scenes inside the current act. Distinct from
   // enterAct: the act, its objectives and its act_progress row are
-  // unchanged, only the location moves. Act I uses this to send
-  // Macario from the road to the outpost after the Katipunero.
+  // unchanged, only the location moves. Content calls this from an
+  // NPC's onComplete when a conversation should change the location.
   async gotoScene(sceneId) {
     loadScene(sceneId);
     markDirty();

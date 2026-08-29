@@ -199,7 +199,10 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.click("#shell-resume");
     await page.waitForTimeout(100);
 
-    await page.evaluate(() => { state.flags.messageDelivered = true; markDirty(); });
+    // Marks the save dirty so logout has something to flush. A flag that
+    // is deliberately NOT an objective: setting a real one here would
+    // complete the act and run the entire end-of-act flow mid-test.
+    await page.evaluate(() => { state.flags.__dirtyProbe = true; markDirty(); });
     await page.click("#btn-pause");
     await page.waitForTimeout(100);
     await page.click("#shell-logout");

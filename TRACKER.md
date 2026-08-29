@@ -306,7 +306,8 @@ with one example of every system, dialogue with two conversations, a
 gift, a stage cutscene, a hidden NPC revealed by flag, a patrolling
 guard, a hide spot, a one-way platform, a heart pickup, a hazard and a
 decoration, plus a bare second room reached by scene transport. Five
-objectives, so the currency drip is a round 10 each. (COMPLETE)
+objectives, so the currency drip is a round 10 each. Laid out and
+tuned against the 1176 pixel camera. (COMPLETE)
 
 Paper audit. Seventeen functional requirements, ten non-functional,
 five modules, seventeen ERD entities and all four act storyboards
@@ -328,12 +329,33 @@ the placeholder height fix that stopped Macario standing a head above
 everyone, and the rotate notice that makes portrait a prompt rather
 than a layout. All are covered by checks in sections AA, AB and AC.
 
-The device work is done and confirmed. What is left of this block is
-not: the outpost balance pass, now that the camera shows the corridor
-rather than two Macarios of it and the equipment from Block 10
-exists. Assets/Cement_Tile.png is 1.4MB for a repeating floor tile
-and should be shrunk before anyone measures a load time. Audio if
-there is time, which is still the first thing to cut.
+The device work is done and confirmed.
+
+The balance pass is done, against the test stage rather than the
+outpost, which no longer exists. The old numbers were set for a
+camera showing 470 world pixels and read as a twitch in the corner at
+1176. The room went from 2400 wide to 3600, about three screens, so
+the guard, the hazard and the exit each arrive as their own problem.
+The patrol went from 400 to 800, two thirds of a screen, so a route
+reads as a route. The detection radius went from 240 to 300, about a
+quarter of a screen and deliberately well under half, because there
+is no line of sight test and a guard owning most of the screen would
+be unfair rather than tense. alertRate went from 0.012 to 0.010, so
+crossing the zone head on at the player's 300 px/s still loses and
+the hide spot still matters. The hide spot moved inside the patrol,
+because cover outside the route is scenery.
+
+Those numbers get copied into the real acts, so they are written as
+fractions of what is visible rather than as raw pixels.
+
+Assets/Cement_Tile.png is done. It was 1640 by 656 and 1.37MB to draw
+a tile the stylesheet renders at 30 by 30. It is now 120 by 120 and
+21.7KB, a 98% cut, indistinguishable on screen and still four times
+the resolution the CSS asks for. ASSET_VERSION went to 3, and game.js
+with it, since the browser has to refetch game.js to learn the new
+asset version.
+
+Left: audio if there is time, which is still the first thing to cut.
 
 One thing to watch on the next device session rather than change
 blind: the dialogue text and quest log shrank with the camera. The
@@ -394,10 +416,8 @@ on a much narrower or much wider screen. The harness covers 823 by
 412 and 740 by 360 in landscape, which is a floor rather than a
 survey. (PARTIAL)
 
-Assets/Cement_Tile.png is 1.4 MB for a repeating floor tile. On a
-project whose stated justification is low-end Android performance
-over mobile data, this is worth fixing before anyone measures a load
-time. (NOT STARTED)
+Assets/Cement_Tile.png was 1.4 MB for a repeating floor tile. Now 120
+by 120 and 21.7 KB. (COMPLETE)
 
 Dynamic difficulty cannot be demonstrated in the running game,
 because only Act I has guards and Act I is the 1.00 multiplier. The

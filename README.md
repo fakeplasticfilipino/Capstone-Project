@@ -24,8 +24,9 @@ end.
 Gameplay is movement and jump, stealth past patrols with a detection meter,
 melee and thrown-projectile combat, and a health system with environmental
 hazards and collectible restoratives. Guard speed scales with the act
-number. Equipment and cosmetic outfits are designed and scheduled but not
-yet built; see TRACKER.md.
+number. Equipment and cosmetic outfits are built: an inventory and a shop
+reached from the pause screen, in-game currency awarded per act and scaled
+by performance, and outfits that change the player sprite.
 
 Teachers get a separate dashboard showing their class roster, act
 completion, assessment results, gain scores, and class averages.
@@ -36,12 +37,15 @@ See TRACKER.md, which is the only file in this repository that describes
 status. Anything about progress stated anywhere else, including here, may
 be out of date.
 
-In short: the framework is complete across all four acts and Act I is
-playable end to end across two scenes, with assessment, performance
-scoring and the teacher dashboard working. Acts II through IV are
-registered and loadable but have no content yet, which is deliberate. Act
-I's script is also placeholder and will be rewritten once the mechanics
-are finished.
+In short: every system is built, live, and confirmed on a real Android
+phone. Assessment, performance scoring, equipment, currency, cosmetics and
+the teacher dashboard all work end to end.
+
+No story is written yet. Act I currently holds a TEST STAGE rather than a
+narrative: one room containing one example of every mechanic, plus a bare
+second room that proves scene transport. Acts II through IV are registered
+and loadable but empty. Writing the four acts against the source material
+is the remaining work.
 
 ## Stack
 
@@ -91,11 +95,13 @@ nothing.
     acts.js               act flow controller, owns act_progress writes
     assessment.js         trivia card, pre-test, post-test, feedback
     shell.js              title screen, pause, settings, inventory, logout
-    content/act1.js       Act I as data: scenes, NPCs, guards, hazards,
-                          pickups, objectives
+    inventory.js          inventory, equipment and the shop
+    content/act1.js       Act I as data. Currently a test stage: scenes,
+                          NPCs, guards, hazards, pickups, objectives
     content/act2.js       Acts II to IV, registered but not yet written
     content/act3.js
     content/act4.js
+    content/items.js      the item catalogue, equipment and cosmetics
     style.css             game styles
 
     teacher.html          teacher entry point
