@@ -1,0 +1,1872 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #202020;
+  font-family: sans-serif;
+  color: #eee;
+}
+
+/* Overall "camera personality" zoom — bakes in what you'd otherwise get
+   from manually zooming the browser. Everything (game world AND the UI)
+   scales together. Bump this up/down to taste; 1 = no zoom.
+
+   1.75 is the desktop setting and was applied to every screen until a
+   phone was finally held in someone's hand. At 412px wide it left 235
+   world pixels visible, which is about two and a half Macarios across,
+   and the control row ran off the right edge. The visible world is
+   always screen width divided by this number, which is the only piece
+   of arithmetic needed to reason about it. */
+:root {
+  --zoom: 1.75;
+}
+
+/* Phone landscape, which is how this game is meant to be held. Short
+   viewport, wide screen.
+
+   0.7 shows 1176 x 589 world pixels on a 823 x 412 screen. The number
+   came from the jump, which is the honest measure of how far back the
+   camera needs to be: JUMP_VELOCITY of 14 against GRAVITY of 0.8 puts
+   Macario's head 370 world pixels up at the apex. At zoom 1 that was 90%
+   of the screen height, so a single jump reached the ceiling and the
+   world felt like a corridor. At 0.7 it is 63%, and the jump reads as a
+   jump with sky above it.
+
+   1.75, then 1.25, then 1 were each tried on the device and each still
+   read as zoomed in, menus included, because every screen in this game
+   lives inside #app-scale and scales with this number.
+
+   BELOW 1 THE ZOOM SHRINKS RATHER THAN MAGNIFIES, and the controls go
+   with it. At 0.7 the old 46px button would render at 32 on glass, well
+   under the 44px minimum this project holds itself to, and the labels
+   would be unreadable. The sizes below are therefore stated for this
+   context and chosen so the rendered result is right: movement at 96
+   lands at 67 on screen, the action buttons at 76 land at 53.
+
+   Anyone changing --zoom here has to redo that arithmetic. A check
+   measures the rendered button rather than the stylesheet so it cannot
+   ship wrong. */
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --zoom: 0.7;
+  }
+
+  /* Movement is the control a thumb rests on for the whole act, so it
+     gets the bigger target of the two. Specificity beats the plain
+     .touch-btn rules further down without depending on source order. */
+  .dpad .touch-btn {
+    width: 96px;
+    height: 96px;
+    font-size: 30px;
+  }
+
+  .action-cluster .touch-btn {
+    width: 76px;
+    height: 76px;
+    font-size: 20px;
+  }
+
+  /* These two carry words rather than a letter, and they are set from an
+     id further down, which no class selector can outrank. */
+  #btn-attack,
+  #btn-jump {
+    font-size: 18px;
+  }
+
+  /* Block 12 stacks an icon over the label inside these circles. The
+     DIAMETERS DO NOT MOVE: 96 and 76, rendering at 67 and 53, are
+     what the touch-target checks measure. Only the type inside them
+     shrinks to make room.
+
+     Movement keeps a readable letter at 20px, which lands at 14 on
+     glass. The action buttons carry words, so 15px lands at 10.5 --
+     smaller than the 12.6 they had, and the reason the icon is there
+     to carry the meaning rather than decorate it. Anything larger
+     pushes the label out of a 76px circle. */
+  .dpad .touch-btn .ico svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .dpad .touch-btn .lbl {
+    font-size: 20px;
+  }
+
+  .action-cluster .touch-btn .ico svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .action-cluster .touch-btn .lbl {
+    font-size: 15px;
+  }
+
+  #btn-attack .lbl,
+  #btn-jump .lbl {
+    font-size: 15px;
+  }
+
+}
+
+#app-scale {
+  width: calc(100% / var(--zoom));
+  height: calc(100% / var(--zoom));
+  transform: scale(var(--zoom));
+  transform-origin: top left;
+}
+
+/* The viewport is what the player sees; the world is much bigger
+   and gets shifted (via transform) to create the camera effect. */
+#viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4400px; /* the "big world" — keep in sync with WORLD_WIDTH in game.js */
+  height: 100%;
+  will-change: transform;
+}
+
+:root {
+  /* How high off the very bottom of the screen characters' feet sit.
+     Tweak this if it doesn't line up with the road drawn in Assets/Tondo.png. */
+  --ground-level: 60px;
+}
+
+/* Tondo, Manila backdrop — replaces the sky/ground entirely.
+   The image (1024x285) is stretched to fill the full viewport height
+   and tiled horizontally to cover the whole (much wider) world. */
+#skyline {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("Assets/Tondo.png");
+  background-repeat: repeat-x;
+  background-position: bottom left;
+  background-size: auto 100%;
+  z-index: -1;
+}
+
+/* Night version, layered directly on top of the day skyline. Stays
+   fully transparent until switchToNight() adds .visible — then it
+   crossfades in and stays that way (the ending permanently shifts
+   the scene to night). */
+#skyline-night {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("Assets/Tondo_Night.png");
+  background-repeat: repeat-x;
+  background-position: bottom left;
+  background-size: auto 100%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#skyline-night.visible {
+  opacity: 1;
+}
+
+/* Ground: a repeating cement tile texture sitting in front of the
+   skyline backdrop, right where characters stand. A dark gradient is
+   layered on top so the very bottom row of tiles fades to black —
+   gives it a natural sense of depth instead of a hard cutoff.
+   TILE_SIZE controls how big each tile renders, and the band height
+   is locked to exactly 2 rows (2 * TILE_SIZE) — bump TILE_SIZE if you
+   want the tiles bigger/smaller. Height matches --ground-level exactly
+   so the top of the tiles sits right at the character's feet. */
+#ground-tiles {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 60px; /* 2 rows of 30px tiles, matches --ground-level */
+  background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0) 45%,
+      rgba(0, 0, 0, 0.95) 100%
+    ),
+    url("Assets/Cement_Tile.png");
+  background-repeat: no-repeat, repeat;
+  background-size: 100% 100%, 30px 30px;
+}
+
+.entity {
+  position: absolute;
+  bottom: var(--ground-level);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sprite {
+  width: 40px;
+  height: 40px;
+}
+
+.player-sprite {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* NPC sprites are images; keep them proportioned and crisp */
+.npc-sprite {
+  width: 80px;
+  height: 112px;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Animated NPC sprites (sprite sheets, same system as the player) —
+   sized via inline styles once loaded, so only paint properties here. */
+.npc-anim-sprite {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+#player {
+  left: 0px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Stage / platform (entablado) */
+#stage-platform {
+  position: absolute;
+  bottom: var(--ground-level); /* sits right on top of the ground line */
+  height: 40px;
+  background: #5a3d26;
+  border-top: 4px solid #7a5636;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Sloped ramps connecting ground level up to the platform's top surface */
+.stage-slope {
+  position: absolute;
+  bottom: var(--ground-level); /* same base as the ground line */
+  height: 40px; /* matches PLATFORM_HEIGHT */
+  background: #5a3d26;
+}
+
+.stage-slope-left {
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.stage-slope-right {
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+
+/* Blackout overlay for the cutscene */
+#blackout {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+  z-index: 60;
+}
+
+#blackout.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Login / signup gate */
+#auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.92);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#auth-box {
+  width: min(90vw, 360px);
+  background: rgba(20, 20, 20, 0.97);
+  border: 2px solid #ffd54f;
+  border-radius: 10px;
+  padding: 24px 22px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+#auth-title {
+  color: #ffd54f;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+}
+
+#auth-subtitle {
+  color: #999;
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+
+#auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#auth-form input[type="text"],
+#auth-form input[type="email"],
+#auth-form input[type="password"] {
+  background: #111;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: #eee;
+  font-size: 14px;
+}
+
+#auth-submit {
+  margin-top: 4px;
+  background: #43a047;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 0;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#auth-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+#auth-status {
+  margin-top: 12px;
+  font-size: 12px;
+  text-align: center;
+  min-height: 16px;
+  color: #ff8a80;
+}
+
+#auth-status.success {
+  color: #a5d6a7;
+}
+
+/* Quest log */
+#quest-log {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 15;
+  background: rgba(20, 20, 20, 0.75);
+  border: 2px solid #ffd54f;
+  border-radius: 8px;
+  padding: 10px 14px;
+  max-width: 260px;
+}
+
+#quest-log-title {
+  font-weight: bold;
+  color: #ffd54f;
+  font-size: 13px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#quest-list {
+  list-style: none;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#quest-list li {
+  position: relative;
+  padding-left: 16px;
+}
+
+#quest-list li::before {
+  content: "\2022";
+  position: absolute;
+  left: 0;
+}
+
+#quest-list li.completed {
+  text-decoration: line-through;
+  color: #8a8a8a;
+}
+
+/* Gift / item-giving button */
+#gift-btn {
+  position: fixed;
+  left: 50%;
+  bottom: 180px;
+  transform: translateX(-50%);
+  z-index: 15;
+  background: #43a047;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+#gift-btn:active {
+  background: #357a38;
+}
+
+/* Dialogue box — a classic full-width bar flush against the bottom
+   of the screen, like a typical VN/RPG dialogue box, rather than a
+   floating centered card. */
+#dialogue-box {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: rgba(15, 15, 15, 0.95);
+  border-top: 3px solid #ffd54f;
+  padding: 18px 24px 22px;
+  z-index: 25;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+#dialogue-inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+#dialogue-speaker {
+  font-weight: bold;
+  color: #ffd54f;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+#dialogue-text {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+#dialogue-continue {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #999;
+  text-align: right;
+}
+
+/* Mobile controls */
+#mobile-controls {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 16px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.dpad {
+  display: flex;
+  gap: 6px; /* A and D sit right next to each other for easy thumb reach */
+  pointer-events: auto;
+}
+
+.touch-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 2px solid #ffd54f;
+  background: rgba(0, 0, 0, 0.55);
+  color: #eee;
+  font-size: 18px;
+  font-weight: bold;
+  touch-action: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.touch-btn:active {
+  background: rgba(255, 213, 79, 0.4);
+}
+
+.interact-btn {
+  pointer-events: auto;
+  background: rgba(67, 160, 71, 0.55);
+  font-size: 13px;
+}
+
+/* Lights up gold and grows slightly whenever something interactable
+   (an NPC or the stage) is in range. */
+.interact-btn.active {
+  background: #ffd54f;
+  color: #202020;
+  border-color: #fff3c4;
+  box-shadow: 0 0 14px rgba(255, 213, 79, 0.85);
+  transform: scale(1.1);
+}
+
+/* Hide mobile controls on larger screens (desktop) by default;
+   shown always here for simplicity, but you can media-query this. */
+@media (min-width: 900px) {
+  #mobile-controls {
+    opacity: 0.6;
+  }
+}
+
+/* Android landscape phones: short viewport height, wide width.
+   Keep controls compact, low-profile, and within easy thumb reach
+   near the bottom corners instead of spread out. */
+@media (max-width: 950px) and (orientation: landscape) {
+  #mobile-controls {
+    bottom: 10px;
+    padding: 0 24px;
+  }
+
+  .touch-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .dpad {
+    gap: 8px;
+  }
+}
+
+/* Extra-short landscape (typical phone in-hand height) */
+@media (max-height: 420px) and (orientation: landscape) {
+  #mobile-controls {
+    bottom: 6px;
+  }
+
+  .touch-btn {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+/* =============================================================
+   ACT SCREEN AND ASSESSMENT OVERLAYS
+
+   Both sit inside #app-scale, which carries a transform, so a
+   fixed child is positioned against that element rather than the
+   real viewport. That is already how #auth-overlay behaves, and
+   #app-scale is sized to fill, so inset: 0 still covers the
+   screen. These deliberately copy that pattern rather than
+   inventing a second one.
+
+   z-index sits below the auth overlay's 100. A logged out student
+   should never see an act screen, but if the two ever raced, the
+   login box is the one that has to win.
+   ============================================================= */
+
+#act-screen,
+#quiz {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.94);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+#act-screen-box,
+#quiz-box {
+  width: min(90vw, 380px);
+  max-height: 100%;
+  overflow-y: auto;
+  background: rgba(20, 20, 20, 0.97);
+  border: 2px solid #ffd54f;
+  border-radius: 10px;
+  padding: 24px 22px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+}
+
+#act-screen-eyebrow,
+#quiz-eyebrow {
+  color: #999;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+#act-screen-title,
+#quiz-title {
+  color: #ffd54f;
+  text-align: center;
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin: 0 0 10px;
+}
+
+#act-screen-body {
+  color: #ccc;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+/* Shared button styling. Kept green to match #auth-submit, since
+   this is the same "the only thing to do here" affordance. */
+#act-screen-btn,
+#quiz-btn {
+  display: block;
+  width: 100%;
+  background: #43a047;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 0;
+  font-weight: bold;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#act-screen-btn:disabled,
+#quiz-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ---- Assessment specifics ---------------------------------- */
+
+#quiz-progress {
+  color: #ffd54f;
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+#quiz-question {
+  color: #eee;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+#quiz-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* 44px minimum is the smallest reliable touch target on the low
+   end Android phones this is built for. Choices are full width for
+   the same reason: a thumb should not have to aim. */
+.quiz-choice {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  background: #111;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 11px 12px;
+  color: #eee;
+  font-size: 13px;
+  line-height: 1.5;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.quiz-choice.selected {
+  border-color: #ffd54f;
+  background: #2a2411;
+  color: #ffd54f;
+}
+
+#quiz-note {
+  color: #999;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+#quiz-note.error {
+  color: #ef9a9a;
+}
+
+#quiz-note:empty {
+  display: none;
+}
+
+/* The trivia card and the score screen reuse #quiz-question for a
+   block of prose rather than a question, so it needs to be able to
+   centre when there are no choices under it. */
+#quiz-question.centered {
+  text-align: center;
+}
+
+/* Secondary action. Muted rather than green, because going back is
+   never the thing the student is meant to do next. */
+#quiz-back {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  background: transparent;
+  color: #999;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 10px 0;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* =============================================================
+   BLOCK 9: FEEDBACK FORM
+   ============================================================= */
+
+.feedback-scale {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 4px 0 6px;
+}
+
+.feedback-star {
+  flex: 1;
+  max-width: 56px;
+  padding: 12px 0;
+  font-family: inherit;
+  font-size: 16px;
+  color: #ddd;
+  background: #1c1c1c;
+  border: 2px solid #444;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.feedback-star.on {
+  background: #4a3c12;
+  border-color: #c9a227;
+  color: #f5e3a3;
+}
+
+.feedback-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.feedback-comment {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #eee;
+  background: #1c1c1c;
+  border: 1px solid #444;
+  border-radius: 6px;
+  resize: none;
+}
+
+.feedback-counter {
+  text-align: right;
+  font-size: 11px;
+  color: #777;
+  margin-top: 4px;
+}
+
+/* Skip is an equal choice, not a way out styled to be avoided. A skip
+   button made deliberately unattractive is a dark pattern, and this is a
+   research instrument rather than a growth funnel. */
+#quiz-back.feedback-skip {
+  color: #ddd;
+  border-color: #666;
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+/* =============================================================
+   BLOCK 8: HAZARDS AND PICKUPS
+   ============================================================= */
+
+/* Hazards are visible on purpose. The same reasoning as the crates: this
+   is learned without a tutorial, so it has to be readable before it is
+   felt. The jagged top edge is what says "do not walk here" at a glance
+   on a small screen. */
+.hazard {
+  position: absolute;
+  bottom: var(--ground-level);
+  height: 18px;
+  background: #7f1d1d;
+  border-top: 3px solid #b71c1c;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.35);
+}
+
+.hazard::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -9px;
+  height: 10px;
+  background: repeating-linear-gradient(
+    135deg,
+    #b71c1c 0 6px,
+    transparent 6px 12px
+  );
+}
+
+/* Pickups reuse the HUD heart's shape and colour so the connection is
+   made without a caption, and they bob so they read as collectible
+   rather than as scenery. No image, because art is an external blocker
+   and a placeholder box would teach nothing. */
+.pickup {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  z-index: 30;
+  animation: pickup-bob 1.4s ease-in-out infinite;
+}
+
+.pickup-heart {
+  background: #e53935;
+  border: 2px solid #7f1d1d;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(229, 57, 53, 0.55);
+}
+
+@keyframes pickup-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* =============================================================
+   BLOCK 6: TERRAIN, STEALTH, HEALTH, COMBAT
+   ============================================================= */
+
+.platform {
+  position: absolute;
+  background: #5d4037;
+  border-top: 3px solid #8d6e63;
+  border-radius: 2px;
+}
+
+/* Hide spots are drawn as crates. They read as cover rather than as an
+   invisible rule, which matters when the mechanic has to be learned
+   without a tutorial. */
+.hide-spot {
+  position: absolute;
+  bottom: var(--ground-level);
+  height: 78px;
+  background: #4e342e;
+  border: 3px solid #6d4c41;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.25);
+}
+
+.guard {
+  transition: none;
+}
+
+.guard-down {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+/* The meter sits above the guard so it is visible before the catch, not
+   after. A partially filled bar is the entire teaching signal here. */
+.guard-meter {
+  position: absolute;
+  bottom: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 46px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #777;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.guard-meter-fill {
+  width: 0%;
+  height: 100%;
+  background: #ffd54f;
+  transition: width 80ms linear;
+}
+
+.guard-alerted .guard-meter-fill {
+  background: #e53935;
+}
+
+.projectile {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #ffd54f;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 213, 79, 0.8);
+}
+
+/* ---- Player feedback --------------------------------------- */
+
+.player-hurt {
+  animation: hurt-flash 400ms steps(2, end) 3;
+}
+
+@keyframes hurt-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.player-attack .sprite {
+  filter: brightness(1.6);
+}
+
+/* ---- HUD ---------------------------------------------------- */
+
+#hud {
+  position: absolute;
+  top: 10px;
+  /* Clear of #btn-pause, which owns the corner from Block 7 on. */
+  right: 64px;
+  z-index: 40;
+}
+
+#hud-hearts {
+  display: flex;
+  gap: 6px;
+}
+
+.heart {
+  width: 18px;
+  height: 18px;
+  background: #e53935;
+  border: 2px solid #7f1d1d;
+  border-radius: 4px;
+}
+
+.heart-empty {
+  background: transparent;
+  border-color: #555;
+}
+
+#toast {
+  position: absolute;
+  top: 46px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid #ffd54f;
+  border-radius: 6px;
+  color: #ffd54f;
+  font-size: 12px;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+/* ---- Action buttons ----------------------------------------- */
+
+.action-cluster {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  /* #mobile-controls is pointer-events: none, so taps land on the world
+     between the buttons rather than on the invisible bar holding them.
+     Every cluster inside it has to turn pointer events back on. .dpad
+     does and .interact-btn does; this one did not, which is why Atake
+     and Talon did nothing at all on a phone. Nobody caught it on a
+     desktop because a desktop plays with J and Space. */
+  pointer-events: auto;
+}
+
+#btn-attack,
+#btn-jump {
+  font-size: 11px;
+}
+
+/* =============================================================
+   SHELL (Block 7)
+
+   The title screen, pause, settings, and the logout confirmation.
+   Styled from the same parts as #act-screen and #quiz rather than
+   introducing a third look: dark panel, amber border, green
+   primary button.
+
+   z-index sits at 110, above the auth overlay's 100, because the
+   title screen has to cover the login box until the student asks
+   for it. It is also above #quiz's 90, which matters on the resume
+   path: the pre-test is held back until entry, and a shell screen
+   must never end up underneath one.
+   ============================================================= */
+
+#shell {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.94);
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+#shell.hidden {
+  display: none;
+}
+
+#shell-box {
+  width: min(90vw, 380px);
+  max-height: 100%;
+  overflow-y: auto;
+  background: rgba(20, 20, 20, 0.97);
+  border: 2px solid #ffd54f;
+  border-radius: 10px;
+  padding: 24px 22px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+}
+
+.shell-panel.hidden {
+  display: none;
+}
+
+.shell-eyebrow {
+  color: #999;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.shell-heading {
+  color: #ffd54f;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 3px;
+  margin: 0 0 6px;
+}
+
+/* The wide tracking is for MACARIO on the title card. Longer headings
+   wrap at 412px with it, so the h2s take a tighter setting. */
+h2.shell-heading {
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.shell-sub {
+  color: #ccc;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+.shell-btn {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 0;
+  font-weight: bold;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.shell-btn:last-child {
+  margin-bottom: 0;
+}
+
+.shell-btn-primary {
+  background: #43a047;
+  color: #fff;
+}
+
+/* Secondary actions read as available without competing with the
+   one green thing the student is meant to tap. */
+.shell-btn-ghost {
+  background: transparent;
+  color: #ccc;
+  border: 1px solid #555;
+}
+
+.shell-btn-danger {
+  background: transparent;
+  color: #e57373;
+  border: 1px solid #7f1d1d;
+}
+
+.shell-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.shell-note {
+  color: #e57373;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 12px;
+  min-height: 1em;
+}
+
+.shell-field {
+  margin-bottom: 18px;
+}
+
+.shell-label {
+  color: #999;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.shell-choices {
+  display: flex;
+  gap: 6px;
+}
+
+/* 44px minimum touch target, matching the rule the mobile control
+   cluster already follows. */
+.shell-choice {
+  flex: 1;
+  min-height: 44px;
+  background: transparent;
+  color: #ccc;
+  border: 1px solid #555;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.shell-choice.active {
+  border-color: #ffd54f;
+  color: #ffd54f;
+  background: rgba(255, 213, 79, 0.12);
+}
+
+.shell-controls {
+  list-style: none;
+  font-size: 12px;
+  color: #ccc;
+  line-height: 1.8;
+}
+
+.shell-controls li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.shell-controls span:last-child {
+  color: #999;
+}
+
+/* Inventory (Block 10).
+   Built from the same parts as the settings screen rather than a new
+   look: uppercase label, dark rows, amber for the thing that is
+   active. The item rows are buttons at 44px minimum, matching the
+   rule the mobile control cluster already follows. */
+
+.inv-slots {
+  font-size: 12px;
+  color: #ccc;
+  line-height: 1.8;
+}
+
+.inv-slot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.inv-slot-filled {
+  color: #ffd54f;
+}
+
+.inv-slot-empty {
+  color: #777;
+}
+
+.inv-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inv-item {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  background: transparent;
+  color: #ccc;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.inv-item-worn {
+  border-color: #ffd54f;
+  background: rgba(255, 213, 79, 0.12);
+}
+
+.inv-item-name {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #eee;
+}
+
+/* The verb, not a state badge. A row that says "Nakasuot" leaves the
+   student guessing what tapping it does; one that says "Tanggalin"
+   answers that before they try. */
+.inv-item-action {
+  font-weight: normal;
+  font-size: 11px;
+  color: #ffd54f;
+  white-space: nowrap;
+}
+
+.inv-item-desc {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* The balance. Amber, because it is the number the shop screen is
+   about, and repeated on both panels so a student never has to go
+   back a screen to find out what they can afford. */
+.inv-balance {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.inv-balance span {
+  color: #ffd54f;
+  font-weight: bold;
+}
+
+/* An owned or unaffordable row stays visible and stops responding,
+   rather than vanishing. A list that shrinks as you buy from it
+   leaves a student wondering what they missed. */
+.inv-item:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.inv-item-owned {
+  border-color: #43a047;
+}
+
+.inv-item-owned .inv-item-action {
+  color: #81c784;
+}
+
+.inv-empty {
+  font-size: 12px;
+  color: #777;
+  line-height: 1.6;
+}
+
+/* =============================================================
+   ROTATE NOTICE
+
+   The game is a side-scroller and is meant to be held sideways.
+   Portrait is therefore not a second supported layout, it is a
+   prompt: turn the phone. That decision is what removes the control
+   overflow from the work rather than fixing it, because the overflow
+   only ever happened in portrait.
+
+   Visibility is pure CSS, so there is no JavaScript state to get
+   wrong and no way for the notice to be left up on a screen that has
+   already been rotated. shell.js only mirrors it into uiBlocked, so
+   the world does not run underneath it.
+
+   z-index above the shell's 110, because a student in portrait needs
+   this before they need the title screen.
+   ============================================================= */
+
+#rotate-notice {
+  display: none;
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  #rotate-notice {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 130;
+    background: #202020;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}
+
+#rotate-notice-inner {
+  max-width: 280px;
+}
+
+#rotate-icon {
+  font-size: 40px;
+  color: #ffd54f;
+  margin-bottom: 16px;
+  /* Nudges rather than spins. A looping animation on a screen a student
+     is meant to leave within two seconds is noise. */
+  transform: rotate(90deg);
+}
+
+#rotate-notice h2 {
+  color: #ffd54f;
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin: 0 0 10px;
+}
+
+#rotate-notice p {
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Pause button. Top right, with the hearts shifted left to sit
+   beside it rather than under it. */
+#btn-pause {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 40;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #ffd54f;
+  background: rgba(0, 0, 0, 0.55);
+  color: #eee;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: inherit;
+  letter-spacing: 1px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#btn-pause.hidden {
+  display: none;
+}
+
+/* =============================================================
+   TEXT SIZE
+
+   The one setting in Block 7 that does something the moment it is
+   changed. Audio sliders are deliberately absent until Block 12
+   adds audio, since a volume control over silence is worse than
+   no control at all.
+
+   Scoped to the text a student reads rather than to everything:
+   the world is drawn at a fixed scale and resizing its labels
+   would push sprites around.
+   ============================================================= */
+
+body.text-sm #dialogue-text { font-size: 14px; }
+body.text-sm #dialogue-speaker { font-size: 13px; }
+body.text-sm #quest-list,
+body.text-sm #quest-log-title { font-size: 12px; }
+
+body.text-lg #dialogue-text { font-size: 19px; }
+body.text-lg #dialogue-speaker { font-size: 18px; }
+body.text-lg #quest-list,
+body.text-lg #quest-log-title { font-size: 15px; }
+
+body.text-lg #quiz-question,
+body.text-lg .shell-sub { font-size: 15px; }
+
+body.text-sm #quiz-question,
+body.text-sm .shell-sub { font-size: 12px; }
+
+/* =============================================================
+   ICONS AND BUTTON CHROME (Block 12)
+
+   Every button in the game carries an icon beside its label. The
+   labels stay: a pictogram alone is a guess, and the audience is
+   Grade 8 students getting one attempt each, on a screen they have
+   never seen before.
+
+   The icons are inline <symbol>s in index.html, referenced with
+   <use>. They inherit currentColor, so nothing here sets an icon
+   colour: an icon is whatever colour its button already is.
+
+   REMEMBER THE ZOOM. Everything here lives inside #app-scale and
+   is multiplied by --zoom, which is 0.7 on the target phone. A size
+   set here is NOT what lands on glass. The numbers below are chosen
+   from the rendered result, the same way the button diameters were.
+   ============================================================= */
+
+.ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  /* Never squeezed by a long label; the label wraps instead. */
+  flex: none;
+}
+
+/* THE BUTTON IS ALWAYS THE HIT TARGET.
+
+   Without this the icon is what a tap lands on. The listeners are
+   bound to the buttons, so the event still bubbles and the game still
+   works -- which is precisely why this would have shipped unnoticed,
+   the same way the dead Atake button did. It broke the harness
+   immediately, because a click check refuses a button whose hit
+   target is a child, and that refusal is the whole value of writing
+   checks that click rather than checks that read a style.
+
+   It also keeps every e.target in this codebase pointing at the
+   button rather than at an svg inside it. */
+.ico,
+.lbl,
+.qbadge {
+  pointer-events: none;
+}
+
+.ico svg {
+  display: block;
+}
+
+/* ---- Panel buttons ------------------------------------------
+
+   The icon sits in a medallion at the left and the label ranges
+   beside it, which is what stops a column of these reading as a
+   web form. Centring the pair instead was tried and lost: with
+   labels of different lengths the icons landed in a different
+   place on every row.
+   ------------------------------------------------------------- */
+
+.shell-btn,
+#act-screen-btn,
+#quiz-btn,
+#quiz-back,
+#auth-submit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shell-btn {
+  justify-content: flex-start;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 213, 79, 0.35);
+  text-align: left;
+  letter-spacing: 0.6px;
+  /* A highlight on the top edge and a hard shadow under it. Two
+     lines of gradient are the whole difference between a plate and
+     a form control. */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+.shell-btn .ico {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 213, 79, 0.45);
+  background: rgba(255, 213, 79, 0.12);
+}
+
+.shell-btn-primary {
+  background: linear-gradient(#4caf50, #357a38);
+  border-color: #7bc47f;
+}
+
+.shell-btn-primary .ico {
+  background: rgba(0, 0, 0, 0.22);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.shell-btn-danger {
+  border-color: #7f1d1d;
+}
+
+.shell-btn-danger .ico {
+  border-color: #a33;
+  background: rgba(229, 115, 115, 0.12);
+}
+
+.shell-btn .ico svg,
+#act-screen-btn .ico svg,
+#quiz-btn .ico svg,
+#quiz-back .ico svg,
+#auth-submit .ico svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* The overlay buttons keep their centred label, because each of
+   those screens only ever offers one thing to do. */
+#act-screen-btn,
+#quiz-btn,
+#quiz-back,
+#auth-submit {
+  justify-content: center;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* The panel itself, so the buttons are not the only thing that
+   changed. */
+#shell-box {
+  border-width: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 213, 79, 0.18),
+    0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.shell-heading {
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* ---- Touch controls -----------------------------------------
+
+   Icon over label inside the existing circles. Stacking rather
+   than replacing: the letters A and D are what the keyboard uses
+   and what the settings screen documents, so an arrow ALONE would
+   make the two disagree.
+
+   THE DIAMETERS DO NOT CHANGE. 96px and 76px, rendering at 67 and
+   53 on glass, are load bearing and covered by checks that measure
+   the rendered button. Only the type inside them moves.
+   ------------------------------------------------------------- */
+
+.touch-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  border-width: 3px;
+  background: radial-gradient(
+    circle at 50% 32%,
+    rgba(255, 213, 79, 0.18),
+    rgba(0, 0, 0, 0.62) 70%
+  );
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.16),
+    0 3px 0 rgba(0, 0, 0, 0.5);
+}
+
+.touch-btn .lbl {
+  letter-spacing: 0.5px;
+}
+
+#btn-pause {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 3px;
+  background: radial-gradient(
+    circle at 50% 32%,
+    rgba(255, 213, 79, 0.18),
+    rgba(0, 0, 0, 0.62) 70%
+  );
+}
+
+#btn-pause .ico svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* The gift button is a world button rather than a screen one, so it
+   keeps its pill shape and takes the icon inline. */
+#gift-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#gift-btn .ico svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Base size, for the desktop camera. Deliberately ONE selector less
+   specific than the phone-landscape rules at the top of this file, so
+   those win on the target device whatever the source order. The
+   diameters next to them depend on order; these do not have to. */
+.touch-btn .ico svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Settings choices ---------------------------------------- */
+
+.shell-choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-width: 2px;
+}
+
+/* One letter at three sizes says what the setting does without a
+   word of explanation, which is the only icon on this screen that
+   could carry meaning on its own. */
+.shell-choice .ico svg {
+  width: 16px;
+  height: 16px;
+}
+
+.shell-choice[data-size="sm"] .ico svg {
+  width: 12px;
+  height: 12px;
+}
+
+.shell-choice[data-size="lg"] .ico svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Quiz answers -------------------------------------------
+
+   A lettered badge rather than a pictogram. There is no icon for
+   an arbitrary sentence, and a row of identical marks would be
+   decoration; A B C D is what a student is asked to pick between.
+   ------------------------------------------------------------- */
+
+.quiz-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.qbadge {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: 2px solid #555;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  color: #999;
+}
+
+.quiz-choice.selected .qbadge {
+  border-color: #ffd54f;
+  color: #ffd54f;
+}
+
+/* ---- Feedback scale ------------------------------------------ */
+
+.feedback-star {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.feedback-star .ico svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Inventory and shop rows --------------------------------- */
+
+.inv-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.inv-item > .ico {
+  margin-top: 2px;
+}
+
+.inv-item .ico svg {
+  width: 20px;
+  height: 20px;
+}
+
+.inv-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.inv-slot .ico {
+  margin-right: 6px;
+}
+
+.inv-slot .ico svg {
+  width: 14px;
+  height: 14px;
+}
+
+.inv-slot-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ---- The reset confirmation's keep list ----------------------
+
+   Stated as three things that survive rather than as one sentence
+   about what is deleted. A student reading a red screen wants to
+   know their test is safe, and a list they can count is a better
+   answer than a paragraph.
+   ------------------------------------------------------------- */
+
+.shell-keeps {
+  list-style: none;
+  margin: 0 0 18px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #ccc;
+}
+
+.shell-keeps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.shell-keeps .ico {
+  margin-top: 1px;
+  color: #7bc47f;
+}
+
+.shell-keeps .ico svg {
+  width: 14px;
+  height: 14px;
+}
+
+.shell-note.ok {
+  color: #7bc47f;
+}
+
+
+/* The pause button and the hearts, on the target device.
+
+   This has to sit at the END of the file rather than in the
+   phone-landscape block at the top, because #btn-pause is styled from
+   an id further down and an id inside a media query does not outrank
+   an identical id after it. Source order is the only thing that
+   settles it, the same way it settles the button diameters.
+
+   The button was 44px everywhere, which is the minimum in CSS pixels
+   and therefore 31 on glass once --zoom is applied. It has been under
+   the bar since the camera moved back and nothing caught it: the
+   checks that measure a rendered target only ever looked at the
+   control cluster. 64 lands at 44.8.
+
+   The hearts clear this button by a fixed distance rather than by
+   layout, so they move with it. */
+@media (orientation: landscape) and (max-height: 500px) {
+  #btn-pause {
+    width: 64px;
+    height: 64px;
+  }
+
+  #hud {
+    right: 88px;
+  }
+}
+
+/* EVERY TAPPABLE THING ON A SCREEN, at 44px on glass.
+
+   The control cluster's diameters were worked out against --zoom when
+   the camera moved back. Nothing else was. So the buttons a student
+   actually spends the lesson on -- the four answers to a test item,
+   the menu buttons, the text size choices, the items in the shop --
+   were all still stated as 44 CSS pixels, which is 30.8 once the zoom
+   is applied. The comment above .quiz-choice says 44 is the smallest
+   reliable target on a low end Android and it was right; the number
+   under it stopped meaning that the day --zoom went below 1.
+
+   63 lands at 44.1. It is set here rather than upstairs for the same
+   reason the pause button is: several of these are styled from ids,
+   and source order is what settles an id against an id.
+
+   These are heights rather than diameters, so the panels grow. The
+   shell box already scrolls, which is what makes that affordable, and
+   a taller answer button on a screen that scrolls is a better trade
+   than a 31px one that does not. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .shell-btn,
+  .shell-choice,
+  .quiz-choice,
+  .inv-item,
+  #quiz-btn,
+  #quiz-back,
+  #act-screen-btn,
+  #auth-submit {
+    min-height: 63px;
+  }
+
+  /* The five point scale is a row of five, so these stay square-ish
+     rather than becoming full width bars. */
+  .feedback-star {
+    min-width: 63px;
+    min-height: 63px;
+  }
+}
