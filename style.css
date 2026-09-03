@@ -79,6 +79,40 @@ html, body {
   #btn-jump {
     font-size: 18px;
   }
+
+  /* Block 12 stacks an icon over the label inside these circles. The
+     DIAMETERS DO NOT MOVE: 96 and 76, rendering at 67 and 53, are
+     what the touch-target checks measure. Only the type inside them
+     shrinks to make room.
+
+     Movement keeps a readable letter at 20px, which lands at 14 on
+     glass. The action buttons carry words, so 15px lands at 10.5 --
+     smaller than the 12.6 they had, and the reason the icon is there
+     to carry the meaning rather than decorate it. Anything larger
+     pushes the label out of a 76px circle. */
+  .dpad .touch-btn .ico svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .dpad .touch-btn .lbl {
+    font-size: 20px;
+  }
+
+  .action-cluster .touch-btn .ico svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .action-cluster .touch-btn .lbl {
+    font-size: 15px;
+  }
+
+  #btn-attack .lbl,
+  #btn-jump .lbl {
+    font-size: 15px;
+  }
+
 }
 
 #app-scale {
@@ -1407,3 +1441,432 @@ body.text-lg .shell-sub { font-size: 15px; }
 
 body.text-sm #quiz-question,
 body.text-sm .shell-sub { font-size: 12px; }
+
+/* =============================================================
+   ICONS AND BUTTON CHROME (Block 12)
+
+   Every button in the game carries an icon beside its label. The
+   labels stay: a pictogram alone is a guess, and the audience is
+   Grade 8 students getting one attempt each, on a screen they have
+   never seen before.
+
+   The icons are inline <symbol>s in index.html, referenced with
+   <use>. They inherit currentColor, so nothing here sets an icon
+   colour: an icon is whatever colour its button already is.
+
+   REMEMBER THE ZOOM. Everything here lives inside #app-scale and
+   is multiplied by --zoom, which is 0.7 on the target phone. A size
+   set here is NOT what lands on glass. The numbers below are chosen
+   from the rendered result, the same way the button diameters were.
+   ============================================================= */
+
+.ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  /* Never squeezed by a long label; the label wraps instead. */
+  flex: none;
+}
+
+/* THE BUTTON IS ALWAYS THE HIT TARGET.
+
+   Without this the icon is what a tap lands on. The listeners are
+   bound to the buttons, so the event still bubbles and the game still
+   works -- which is precisely why this would have shipped unnoticed,
+   the same way the dead Atake button did. It broke the harness
+   immediately, because a click check refuses a button whose hit
+   target is a child, and that refusal is the whole value of writing
+   checks that click rather than checks that read a style.
+
+   It also keeps every e.target in this codebase pointing at the
+   button rather than at an svg inside it. */
+.ico,
+.lbl,
+.qbadge {
+  pointer-events: none;
+}
+
+.ico svg {
+  display: block;
+}
+
+/* ---- Panel buttons ------------------------------------------
+
+   The icon sits in a medallion at the left and the label ranges
+   beside it, which is what stops a column of these reading as a
+   web form. Centring the pair instead was tried and lost: with
+   labels of different lengths the icons landed in a different
+   place on every row.
+   ------------------------------------------------------------- */
+
+.shell-btn,
+#act-screen-btn,
+#quiz-btn,
+#quiz-back,
+#auth-submit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shell-btn {
+  justify-content: flex-start;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 213, 79, 0.35);
+  text-align: left;
+  letter-spacing: 0.6px;
+  /* A highlight on the top edge and a hard shadow under it. Two
+     lines of gradient are the whole difference between a plate and
+     a form control. */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+.shell-btn .ico {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 213, 79, 0.45);
+  background: rgba(255, 213, 79, 0.12);
+}
+
+.shell-btn-primary {
+  background: linear-gradient(#4caf50, #357a38);
+  border-color: #7bc47f;
+}
+
+.shell-btn-primary .ico {
+  background: rgba(0, 0, 0, 0.22);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.shell-btn-danger {
+  border-color: #7f1d1d;
+}
+
+.shell-btn-danger .ico {
+  border-color: #a33;
+  background: rgba(229, 115, 115, 0.12);
+}
+
+.shell-btn .ico svg,
+#act-screen-btn .ico svg,
+#quiz-btn .ico svg,
+#quiz-back .ico svg,
+#auth-submit .ico svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* The overlay buttons keep their centred label, because each of
+   those screens only ever offers one thing to do. */
+#act-screen-btn,
+#quiz-btn,
+#quiz-back,
+#auth-submit {
+  justify-content: center;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* The panel itself, so the buttons are not the only thing that
+   changed. */
+#shell-box {
+  border-width: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 213, 79, 0.18),
+    0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.shell-heading {
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* ---- Touch controls -----------------------------------------
+
+   Icon over label inside the existing circles. Stacking rather
+   than replacing: the letters A and D are what the keyboard uses
+   and what the settings screen documents, so an arrow ALONE would
+   make the two disagree.
+
+   THE DIAMETERS DO NOT CHANGE. 96px and 76px, rendering at 67 and
+   53 on glass, are load bearing and covered by checks that measure
+   the rendered button. Only the type inside them moves.
+   ------------------------------------------------------------- */
+
+.touch-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  border-width: 3px;
+  background: radial-gradient(
+    circle at 50% 32%,
+    rgba(255, 213, 79, 0.18),
+    rgba(0, 0, 0, 0.62) 70%
+  );
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.16),
+    0 3px 0 rgba(0, 0, 0, 0.5);
+}
+
+.touch-btn .lbl {
+  letter-spacing: 0.5px;
+}
+
+#btn-pause {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 3px;
+  background: radial-gradient(
+    circle at 50% 32%,
+    rgba(255, 213, 79, 0.18),
+    rgba(0, 0, 0, 0.62) 70%
+  );
+}
+
+#btn-pause .ico svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* The gift button is a world button rather than a screen one, so it
+   keeps its pill shape and takes the icon inline. */
+#gift-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#gift-btn .ico svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Base size, for the desktop camera. Deliberately ONE selector less
+   specific than the phone-landscape rules at the top of this file, so
+   those win on the target device whatever the source order. The
+   diameters next to them depend on order; these do not have to. */
+.touch-btn .ico svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Settings choices ---------------------------------------- */
+
+.shell-choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-width: 2px;
+}
+
+/* One letter at three sizes says what the setting does without a
+   word of explanation, which is the only icon on this screen that
+   could carry meaning on its own. */
+.shell-choice .ico svg {
+  width: 16px;
+  height: 16px;
+}
+
+.shell-choice[data-size="sm"] .ico svg {
+  width: 12px;
+  height: 12px;
+}
+
+.shell-choice[data-size="lg"] .ico svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Quiz answers -------------------------------------------
+
+   A lettered badge rather than a pictogram. There is no icon for
+   an arbitrary sentence, and a row of identical marks would be
+   decoration; A B C D is what a student is asked to pick between.
+   ------------------------------------------------------------- */
+
+.quiz-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.qbadge {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: 2px solid #555;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  color: #999;
+}
+
+.quiz-choice.selected .qbadge {
+  border-color: #ffd54f;
+  color: #ffd54f;
+}
+
+/* ---- Feedback scale ------------------------------------------ */
+
+.feedback-star {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.feedback-star .ico svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Inventory and shop rows --------------------------------- */
+
+.inv-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.inv-item > .ico {
+  margin-top: 2px;
+}
+
+.inv-item .ico svg {
+  width: 20px;
+  height: 20px;
+}
+
+.inv-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.inv-slot .ico {
+  margin-right: 6px;
+}
+
+.inv-slot .ico svg {
+  width: 14px;
+  height: 14px;
+}
+
+.inv-slot-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ---- The reset confirmation's keep list ----------------------
+
+   Stated as three things that survive rather than as one sentence
+   about what is deleted. A student reading a red screen wants to
+   know their test is safe, and a list they can count is a better
+   answer than a paragraph.
+   ------------------------------------------------------------- */
+
+.shell-keeps {
+  list-style: none;
+  margin: 0 0 18px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #ccc;
+}
+
+.shell-keeps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.shell-keeps .ico {
+  margin-top: 1px;
+  color: #7bc47f;
+}
+
+.shell-keeps .ico svg {
+  width: 14px;
+  height: 14px;
+}
+
+.shell-note.ok {
+  color: #7bc47f;
+}
+
+
+/* The pause button and the hearts, on the target device.
+
+   This has to sit at the END of the file rather than in the
+   phone-landscape block at the top, because #btn-pause is styled from
+   an id further down and an id inside a media query does not outrank
+   an identical id after it. Source order is the only thing that
+   settles it, the same way it settles the button diameters.
+
+   The button was 44px everywhere, which is the minimum in CSS pixels
+   and therefore 31 on glass once --zoom is applied. It has been under
+   the bar since the camera moved back and nothing caught it: the
+   checks that measure a rendered target only ever looked at the
+   control cluster. 64 lands at 44.8.
+
+   The hearts clear this button by a fixed distance rather than by
+   layout, so they move with it. */
+@media (orientation: landscape) and (max-height: 500px) {
+  #btn-pause {
+    width: 64px;
+    height: 64px;
+  }
+
+  #hud {
+    right: 88px;
+  }
+}
+
+/* EVERY TAPPABLE THING ON A SCREEN, at 44px on glass.
+
+   The control cluster's diameters were worked out against --zoom when
+   the camera moved back. Nothing else was. So the buttons a student
+   actually spends the lesson on -- the four answers to a test item,
+   the menu buttons, the text size choices, the items in the shop --
+   were all still stated as 44 CSS pixels, which is 30.8 once the zoom
+   is applied. The comment above .quiz-choice says 44 is the smallest
+   reliable target on a low end Android and it was right; the number
+   under it stopped meaning that the day --zoom went below 1.
+
+   63 lands at 44.1. It is set here rather than upstairs for the same
+   reason the pause button is: several of these are styled from ids,
+   and source order is what settles an id against an id.
+
+   These are heights rather than diameters, so the panels grow. The
+   shell box already scrolls, which is what makes that affordable, and
+   a taller answer button on a screen that scrolls is a better trade
+   than a 31px one that does not. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .shell-btn,
+  .shell-choice,
+  .quiz-choice,
+  .inv-item,
+  #quiz-btn,
+  #quiz-back,
+  #act-screen-btn,
+  #auth-submit {
+    min-height: 63px;
+  }
+
+  /* The five point scale is a row of five, so these stay square-ish
+     rather than becoming full width bars. */
+  .feedback-star {
+    min-width: 63px;
+    min-height: 63px;
+  }
+}

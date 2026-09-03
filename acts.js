@@ -740,7 +740,8 @@ const Acts = {
       body.textContent = opts.body || "";
       body.classList.toggle("hidden", !opts.body);
 
-      btn.textContent = opts.button || "Magpatuloy";
+      // The label span, not the button: the button holds an icon.
+      setLabel(btn, opts.button || "Magpatuloy");
       btn.classList.toggle("hidden", !opts.button);
 
       setUiBlocked(true);

@@ -143,6 +143,20 @@ The one exception inside shell.js is window.Inventory, which it does guard
 on, because that module is optional and the screen it draws is not the way
 into the game.
 
+game.js also declares three global UI helpers, used by every file that
+writes a button: setLabel, setIcon and makeIcon. They are plain hoisted
+declarations rather than methods on window.Game, matching the other
+file-scope globals the harness already reads, and they live in game.js
+because it is the first file everything else loads after.
+
+Every button in the game is an icon plus a label, so writing a button's
+text means writing its .lbl span rather than the button. setLabel does
+that, and builds the span when a button carries an icon without one,
+because the old fallback of writing the button directly turned a markup
+mistake into an icon that vanished the first time the label changed.
+That is not hypothetical: it is what happened to the quiz button, whose
+label has never been in index.html.
+
 Load order in index.html, which is load bearing:
 
     supabase CDN
@@ -332,6 +346,51 @@ from the content file leaves an orphan ownership row that inventory.js
 ignores, which is the correct failure: a student's save is not corrupted by
 an edit to a content file.
 
+## Icons
+
+Every button carries an icon beside its label. The labels stay: a
+pictogram alone is a guess, and the audience is Grade 8 students
+getting one attempt each on a screen they have never seen.
+
+The icons are inline symbol definitions in index.html, referenced with
+use href="#i-name". They cost no request, cannot 404, and inherit
+currentColor, so an icon is whatever colour its button already is.
+That is why they are strokes rather than glyphs.
+
+There is no icon art and none can be invented. Assets/ holds a floor
+tile and a walk cycle, and a missing image renders as the dashed
+placeholder box naming the file, so referencing an icon PNG would fill
+the screen with those.
+
+Unicode and emoji were the cheaper option and were rejected on a render
+rather than on principle: the crossed swords fell back to a thin
+monochrome cross, the up arrow drew as a blue emoji tile, and the
+speech bubble stayed full colour, so one row of buttons carried three
+different presentations. Font coverage on a low-end Android is a
+different set again, and the failure would only have shown up with the
+phone in hand.
+
+The icon and the label are pointer-events: none, so the BUTTON is
+always the hit target. Without that a tap lands on the icon; the
+listeners are on the buttons, so the event still bubbles and the game
+still works, which is exactly how it would have shipped unnoticed, the
+same way the dead Atake button did. It broke the harness immediately,
+because a check that clicks refuses a button whose hit target is a
+child. It also keeps every e.target in this codebase pointing at a
+button rather than at an svg inside one.
+
+Two places take a badge rather than a pictogram. Quiz answers get
+A B C D, because there is no icon for an arbitrary sentence and four
+identical marks would be decoration; the letters are also what lets a
+teacher say "pindutin ang B" out loud. The text size choices get the
+same letter at three sizes, which is the one icon in this game that
+carries its meaning without a word beside it.
+
+A button whose label is written in JavaScript still declares an empty
+.lbl span in index.html. Adding an icon to a button with no span was
+what broke the quiz button; the empty span is the fix, and setLabel
+building one is the backstop.
+
 ## Sprite sheets
 
 Sheets may be a single horizontal strip or a grid. The optional columns
@@ -394,6 +453,30 @@ duplicates a column reachable by join.
 feedback has no update and no delete policy, deliberately. A student who
 wants to change their answer has no mechanism, which is correct for a
 research instrument.
+
+WHICH TABLES A STUDENT MAY DELETE FROM. A reset button is safe or
+unsafe entirely on this answer, so it is written down here:
+
+    player_inventory     delete policy exists
+    player_equipment     delete policy exists
+    game_progress        select, insert, update. No delete
+    act_progress         select, insert, update. No delete
+    game_sessions        select, insert, update. No delete
+    assessment_scores    select and insert only. No update, no delete
+    feedback             select and insert only. No update, no delete
+
+So the catastrophe a reset button invites is structurally impossible
+from a browser: an assessment score cannot be deleted or altered by the
+student who wrote it, which is what makes one attempt per act per test
+type mean what it says. Row level security is what makes that true, not
+any check in the client.
+
+act_progress is the row that could still be damaged, because it does
+carry an update policy. Rewriting it would destroy performance_score,
+objectives_done and the counters while leaving the scores stranded, and
+no replay could restore them, because assessment.js skips a test that
+already has a score. Nothing in the client writes act_progress back to
+an earlier state, and nothing should.
 
 Assessment items have RLS enabled with no student read policy. Questions
 are served by get_assessment_items, which omits correct_index, and grading
@@ -650,6 +733,46 @@ Purchases are optimistic and refunded on a failed write, like equipping.
 Being charged for an item the database never recorded is the one failure
 in this system a student would actually notice.
 
+The settings screen offers a reset, and its scope is the whole of what
+it may ever do: the text size in localStorage, plus player_inventory
+and player_equipment. Those two tables are the only ones a student's
+browser may delete from, so the scope is set by row level security
+rather than by a rule the client is trusted to keep. Currency stays,
+because a student who tidied up should not lose what they earned on the
+way to buying the thing they cleared. The act's granted items come
+straight back, so the end state is exactly a fresh entry into that act:
+granted items owned, nothing equipped, nothing purchased. Being left
+without the spear for the rest of an act already in progress would be a
+fault rather than a reset.
+
+The reset is awaited rather than optimistic, unlike equipping and
+buying. It is the one action on these screens a student cannot simply
+repeat to find out whether it took.
+
+It is offered to every student rather than gated to a pilot account,
+which is only defensible because of the scope above: there is nothing
+behind it that a study account could lose. It is NOT a substitute for
+db/reset_test_accounts.sql and cannot become one. A full-flow retest
+needs the assessment scores cleared, and no client can clear them. Any
+future version that could would need a security definer function, which
+is a schema change and a worse idea than the SQL file.
+
+Touch targets are 44px MEASURED ON GLASS, which after --zoom of 0.7
+means 63 CSS pixels for a height and the diameters already recorded for
+the control cluster. That arithmetic had only ever been done for the
+control cluster. Everything on a screen was still stated as 44 CSS
+pixels, which is 30.8 rendered: the four answers to a test item, every
+menu button, the text size choices, the shop rows, and the pause
+button, which was 44 everywhere. All of them now clear 44 on the
+device, and checks measure the rendered element rather than the
+stylesheet.
+
+Those overrides sit at the END of style.css rather than in the
+phone-landscape block at the top, because several of the elements are
+styled from ids further down and an id inside a media query does not
+outrank an identical id after it. Source order is the only thing that
+settles it, which is already true of the button diameters.
+
 The camera is one number, --zoom in style.css, and the visible world is
 always screen size divided by it. 1.75 on desktop, 0.7 on a phone in
 landscape.
@@ -717,6 +840,23 @@ Nobody caught it because a desktop plays with J and Space, and the harness
 drove keys too. Any new cluster added to that bar needs the same line, and
 any new on-screen button needs a check that clicks it rather than one that
 reads its style.
+
+An icon inside a button becomes the hit target unless it is set to
+pointer-events: none. The listeners are on the buttons, so the tap
+still bubbles and the game still works; only a check that CLICKS
+catches it. This is the same fault class as the dead Atake button and
+was caught the same way.
+
+Writing textContent on a button destroys its icon. Every label write
+goes through setLabel, into the .lbl span. There were six such sites
+and two of them were easy to miss: game.js writes the interact button
+every frame, including from the branch that runs while a screen is up,
+and assessment.js clones its button before writing it.
+
+A number stated in CSS pixels is not what lands on glass. Multiply by
+--zoom, which is 0.7 on the target device, before believing any size in
+this stylesheet. A 44px minimum written before the camera moved back
+now means 31.
 
 loadAct() runs at parse time, near the top of game.js, and reaches deep
 into the file through loadScene. Anything it touches must be a hoisted

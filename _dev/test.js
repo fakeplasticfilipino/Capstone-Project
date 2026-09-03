@@ -1516,6 +1516,457 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAD. Every button carries an icon");
+  {
+    const { ctx, page } = await enterTestRoom();
+
+    // The sprite has to be in the document, or every <use> in the page
+    // resolves to nothing and draws a blank square rather than erroring.
+    ok("the icon sprite is in the page",
+       (await page.evaluate(() => {
+         const s = document.getElementById("icon-sprite");
+         return !!s && s.querySelectorAll("symbol").length;
+       })) > 0);
+
+    // Walked as a list rather than asserted one at a time, so a button
+    // added later without an icon fails here instead of being noticed
+    // on a phone. A missing symbol id fails too: an href pointing at a
+    // symbol the sprite does not define renders nothing at all.
+    const audit = await page.evaluate(() => {
+      const ids = ["btn-left", "btn-right", "btn-attack", "btn-jump",
+        "btn-interact", "btn-pause", "gift-btn", "act-screen-btn",
+        "quiz-btn", "quiz-back", "shell-start", "shell-title-settings",
+        "shell-resume", "shell-inventory-open", "shell-pause-settings",
+        "shell-logout", "shell-settings-back", "shell-reset",
+        "shell-reset-yes", "shell-reset-no", "shell-shop-open",
+        "shell-inventory-back", "shell-shop-back", "shell-logout-yes",
+        "shell-logout-no", "auth-submit"];
+      const missing = [];
+      const dangling = [];
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) { missing.push(id + " (no such button)"); return; }
+        const use = el.querySelector(".ico use");
+        if (!use) { missing.push(id); return; }
+        const href = use.getAttribute("href") || "";
+        if (!document.querySelector(href)) dangling.push(id + " -> " + href);
+      });
+      return { missing, dangling, counted: ids.length };
+    });
+    ok("every button in the shipping page has one", audit.missing.length === 0, audit.missing);
+    ok("and every icon points at a symbol that exists",
+       audit.dangling.length === 0, audit.dangling);
+
+    // Icons go WITH labels. A pictogram alone is a guess, and the
+    // audience gets one attempt each.
+    const labelled = await page.evaluate(() =>
+      ["btn-attack", "btn-jump", "shell-resume", "shell-logout", "shell-reset"]
+        .filter((id) => {
+          const l = document.getElementById(id).querySelector(".lbl");
+          return !l || !l.textContent.trim();
+        }));
+    ok("the labels are still there beside them", labelled.length === 0, labelled);
+
+    // THE BUTTON IS THE HIT TARGET, not the icon inside it. This is the
+    // same fault class as the dead Atake button: the listeners are on
+    // the buttons, so a tap on the icon still bubbles and the game
+    // still works, which is exactly how it would have shipped.
+    const hits = await page.evaluate(() => {
+      const at = (id) => {
+        const b = document.getElementById(id);
+        const r = b.getBoundingClientRect();
+        const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return hit === b;
+      };
+      return { left: at("btn-left"), attack: at("btn-attack"),
+               jump: at("btn-jump"), pause: at("btn-pause") };
+    });
+    ok("a tap in the middle of a button lands on the button",
+       hits.left && hits.attack && hits.jump && hits.pause, hits);
+
+    // And functionally, because a hit test is still a reading. AA
+    // already clicks Atake and Talon; this is the pause button, which
+    // now carries an icon and nothing else.
+    await page.click("#btn-pause");
+    await page.waitForTimeout(150);
+    ok("the pause button still opens pause with an icon in it",
+       await visible(page, "#shell-pause"));
+    await page.click("#shell-resume");
+    await page.waitForTimeout(150);
+
+    // The one the game loop rewrites every frame. Writing textContent
+    // there wiped the icon on the first frame after the world was
+    // drawn, which is how this check came to exist.
+    const interact = await page.evaluate(() => new Promise((r) => {
+      setTimeout(() => {
+        const b = document.getElementById("btn-interact");
+        r({ icon: !!b.querySelector(".ico use"),
+            label: (b.querySelector(".lbl") || {}).textContent });
+      }, 400);
+    }));
+    ok("the interact button keeps its icon through the game loop",
+       interact.icon === true, interact);
+    ok("and still says what it does", !!interact.label, interact);
+
+    // The quiz button means two things, so its icon follows its label.
+    const swapped = await page.evaluate(() => {
+      Assessment._cache();
+      Assessment._onButton("Susunod", () => {}, "i-right");
+      const a = document.querySelector("#quiz-btn .ico use").getAttribute("href");
+      Assessment._onButton("Ipasa ang sagot", () => {}, "i-check");
+      const b = document.querySelector("#quiz-btn .ico use").getAttribute("href");
+      return { a, b, label: document.querySelector("#quiz-btn .lbl").textContent };
+    });
+    ok("the quiz button's icon follows its label",
+       swapped.a === "#i-right" && swapped.b === "#i-check", swapped);
+    ok("and the label survives the button being replaced",
+       swapped.label === "Ipasa ang sagot", swapped);
+
+    // The answers themselves. There is no icon for an arbitrary
+    // sentence, so a choice gets a lettered badge instead, which is
+    // also what lets a teacher say "pindutin ang B" out loud. Driven
+    // through the real render rather than a painted screen, because
+    // the badge is written by assessment.js and not by index.html.
+    const badges = await page.evaluate(() => {
+      Assessment._cache();
+      Assessment._askAll(
+        [{ id: 1, question: "Saan isinilang si Sakay?",
+           choices: ["Tondo", "Cavite", "Bulacan", "Batangas"] }],
+        "Pagsusulit"
+      );
+      const els = [...document.querySelectorAll(".quiz-choice")];
+      return {
+        count: els.length,
+        letters: els.map((e) => (e.querySelector(".qbadge") || {}).textContent),
+        labels: els.map((e) => (e.querySelector(".lbl") || {}).textContent),
+        hit: (() => {
+          const b = els[1];
+          const r = b.getBoundingClientRect();
+          return document.elementFromPoint(r.left + 20, r.top + r.height / 2) === b;
+        })(),
+      };
+    });
+    ok("every answer gets a letter", badges.letters.join("") === "ABCD", badges);
+    ok("and the answer text is still there",
+       badges.labels[0] === "Tondo", badges);
+    ok("a tap on an answer lands on the answer, not the badge",
+       badges.hit === true, badges);
+
+    await ctx.close();
+  }
+
+  console.log("\nAE. Sizes on the target device, with icons in");
+  {
+    const { ctx, page } = await enterTestRoom();
+
+    // The diameters must not have moved. These are the same numbers
+    // section AB measures; repeated here because stacking an icon over
+    // a label inside a circle is exactly the change that would shrink
+    // one without anyone noticing.
+    const size = await page.evaluate(() => {
+      const r = (s) => {
+        const b = document.querySelector(s).getBoundingClientRect();
+        return Math.round(Math.min(b.width, b.height));
+      };
+      return { move: r("#btn-left"), action: r("#btn-attack"),
+               interact: r("#btn-interact"), pause: r("#btn-pause") };
+    });
+    ok("movement still clears 44px on screen", size.move >= 44, size);
+    ok("the action buttons still do", size.action >= 44, size);
+    ok("and so does the interact button", size.interact >= 44, size);
+
+    // This one did NOT clear it before this block. 44 CSS pixels is 31
+    // on glass once --zoom is applied, and the checks that measure a
+    // rendered target only ever looked at the control cluster.
+    ok("the pause button now clears it too", size.pause >= 44, size);
+
+    // Labels shrank to make room for the icons, so they get a floor of
+    // their own rather than being left to whatever fits.
+    const type = await page.evaluate(() => {
+      const z = parseFloat(getComputedStyle(document.documentElement)
+        .getPropertyValue("--zoom")) || 1;
+      const f = (s) => parseFloat(getComputedStyle(document.querySelector(s)).fontSize) * z;
+      return { move: f("#btn-left .lbl"), action: f("#btn-attack .lbl"), zoom: z };
+    });
+    ok("the movement label is still legible", type.move >= 12, type);
+    ok("the action labels are still legible", type.action >= 10, type);
+
+    // The icons have to survive the zoom too. Below about 12 on glass
+    // a stroked pictogram stops reading as anything.
+    const icons = await page.evaluate(() => {
+      const z = parseFloat(getComputedStyle(document.documentElement)
+        .getPropertyValue("--zoom")) || 1;
+      const w = (s) => document.querySelector(s).getBoundingClientRect().width;
+      return { move: w("#btn-left .ico svg"), action: w("#btn-attack .ico svg"),
+               shell: z };
+    });
+    ok("the movement icon is big enough to read", icons.move >= 18, icons);
+    ok("and the action icon is", icons.action >= 14, icons);
+
+    // The row still has to fit, which is the check the extra content
+    // inside each button could have broken.
+    const fits = await page.evaluate(() => {
+      const bar = document.getElementById("mobile-controls");
+      const kids = [...bar.querySelectorAll("button")];
+      const left = Math.min(...kids.map((k) => k.getBoundingClientRect().left));
+      const right = Math.max(...kids.map((k) => k.getBoundingClientRect().right));
+      const top = Math.min(...kids.map((k) => k.getBoundingClientRect().top));
+      const bottom = Math.max(...kids.map((k) => k.getBoundingClientRect().bottom));
+      return { left, right, top, bottom, w: window.innerWidth, h: window.innerHeight };
+    });
+    ok("the whole control row still fits on screen",
+       fits.left >= 0 && fits.right <= fits.w + 1 &&
+       fits.top >= 0 && fits.bottom <= fits.h + 1, fits);
+
+    // EVERY TAPPABLE THING ON A SCREEN, measured rendered rather than
+    // read off the stylesheet. The four answers to a test item are the
+    // most important targets in the study and were stated as 44 CSS
+    // pixels, which is 30.8 once --zoom is applied. Nothing caught it
+    // because the checks that measure a rendered target only ever
+    // looked at the control cluster.
+    const screens = await page.evaluate(async () => {
+      const z = parseFloat(getComputedStyle(document.documentElement)
+        .getPropertyValue("--zoom")) || 1;
+      const h = (s) => {
+        const el = document.querySelector(s);
+        if (!el) return null;
+        return Math.round(el.getBoundingClientRect().height);
+      };
+      // Painted rather than driven: this is a measurement of the real
+      // stylesheet on the real elements, and the flow that fills them
+      // needs an item bank the stub does not carry.
+      const c = document.getElementById("quiz-choices");
+      c.innerHTML = "";
+      const b = document.createElement("button");
+      b.className = "quiz-choice";
+      b.textContent = "Sa Tondo";
+      c.appendChild(b);
+
+      // Shown one at a time in the running game, so each overlay is
+      // uncovered just long enough to be measured and put back.
+      const shown = ["quiz", "act-screen", "shell"].map((id) => {
+        const el = document.getElementById(id);
+        const was = el.classList.contains("hidden");
+        el.classList.remove("hidden");
+        return [el, was];
+      });
+      const settings = document.getElementById("shell-settings");
+      const wasSettings = settings.classList.contains("hidden");
+      settings.classList.remove("hidden");
+      await new Promise((r) => requestAnimationFrame(r));
+
+      const out = { zoom: z, answer: h(".quiz-choice"), quizBtn: h("#quiz-btn"),
+                    actBtn: h("#act-screen-btn"), choice: h(".shell-choice"),
+                    shellBtn: h("#shell-settings-back") };
+
+      if (wasSettings) settings.classList.add("hidden");
+      shown.forEach(([el, was]) => { if (was) el.classList.add("hidden"); });
+      c.innerHTML = "";
+      return out;
+    });
+    ok("a test answer clears 44px on screen", screens.answer >= 44, screens);
+    ok("the quiz button does", screens.quizBtn >= 44, screens);
+    ok("the act screen button does", screens.actBtn >= 44, screens);
+    ok("a text size choice does", screens.choice >= 44, screens);
+    ok("and a menu button does", screens.shellBtn >= 44, screens);
+
+    // The hearts were moved with the pause button. They must not end
+    // up underneath it.
+    const clear = await page.evaluate(() => {
+      const h = document.getElementById("hud").getBoundingClientRect();
+      const p = document.getElementById("btn-pause").getBoundingClientRect();
+      return { hudRight: h.right, pauseLeft: p.left };
+    });
+    ok("the hearts still clear the pause button",
+       clear.hudRight <= clear.pauseLeft + 1, clear);
+
+    await ctx.close();
+  }
+
+  console.log("\nAF. The reset button, and what it must not touch");
+  {
+    const { ctx, page } = await enterTestRoom();
+
+    await page.click("#btn-pause");
+    await page.waitForTimeout(120);
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(120);
+    ok("the reset offer is on the settings screen",
+       await visible(page, "#shell-reset"));
+
+    // It asks first. A single tap that deletes anything is not a thing
+    // to put in front of a Grade 8 student.
+    await page.click("#shell-reset");
+    await page.waitForTimeout(150);
+    ok("tapping it asks rather than doing it",
+       await visible(page, "#shell-reset-confirm"));
+    ok("and the settings screen is out of the way",
+       !(await visible(page, "#shell-settings"))); 
+
+    const rows = await page.evaluate(() => __DB.player_inventory.length);
+    await page.click("#shell-reset-no");
+    await page.waitForTimeout(150);
+    ok("Hindi goes back without deleting anything",
+       (await visible(page, "#shell-settings")) &&
+       (await page.evaluate(() => __DB.player_inventory.length)) === rows);
+
+    // Seed the tables a reset must leave alone. These are the study:
+    // one attempt per student per act per test type, and the row the
+    // dashboard reports a performance score from.
+    await page.evaluate(() => {
+      __DB.assessment_scores = [
+        { student_id: "u1", act_number: 1, test_type: "pretest", score: 4 },
+        { student_id: "u1", act_number: 1, test_type: "posttest", score: 8 },
+      ];
+      __DB.game_sessions = [{ student_id: "u1", act_number: 1, ended_at: null }];
+      __DB.feedback = [{ student_id: "u1", act_number: 1, rating: 4 }];
+      __DB.act_progress[0].performance_score = 82;
+      __DB.act_progress[0].objectives_done = 4;
+      __DB.game_progress[0].currency = 120;
+      // Something bought, and something worn, so there is a change to see.
+      __DB.player_equipment.length = 0;
+      __DB.player_equipment.push({ student_id: "u1", slot: "outfit", item_id: "damit-magsasaka" });
+      if (!__DB.player_inventory.some((r) => r.item_id === "damit-magsasaka")) {
+        __DB.player_inventory.push({ student_id: "u1", item_id: "damit-magsasaka", quantity: 1 });
+      }
+      Inventory.ownedIds = __DB.player_inventory.map((r) => r.item_id);
+      Inventory.equipment = { outfit: "damit-magsasaka" };
+      Shell.settings.textSize = "lg";
+      Shell._applySettings();
+      Shell._saveSettings();
+    });
+
+    await page.click("#shell-reset");
+    await page.waitForTimeout(120);
+    await page.click("#shell-reset-yes");
+    await page.waitForTimeout(600);
+
+    const after = await page.evaluate(() => ({
+      scores: __DB.assessment_scores.length,
+      score: __DB.act_progress[0].performance_score,
+      objectives: __DB.act_progress[0].objectives_done,
+      status: __DB.act_progress[0].status,
+      progressRows: __DB.game_progress.length,
+      currency: __DB.game_progress[0].currency,
+      sessions: __DB.game_sessions.length,
+      feedback: __DB.feedback.length,
+      equipment: __DB.player_equipment.length,
+      owned: __DB.player_inventory.map((r) => r.item_id).sort(),
+      textSize: Shell.settings.textSize,
+      stored: window.localStorage.getItem("macario:settings"),
+      panel: !document.getElementById("shell-settings").classList.contains("hidden"),
+    }));
+
+    // THE CHECKS THAT PROTECT THE STUDY. An attempt cannot be re-run,
+    // so a reset that reached these would destroy the finding for that
+    // student silently.
+    ok("both assessment scores survive the reset", after.scores === 2, after);
+    ok("the act's performance score survives", after.score === 82, after);
+    ok("its objective count survives", after.objectives === 4, after);
+    ok("the act is not knocked back to an earlier state",
+       after.status === "playing", after);
+    ok("the save row is not deleted", after.progressRows === 1, after);
+    ok("the session row survives", after.sessions === 1, after);
+    ok("the feedback survives", after.feedback === 1, after);
+
+    // Currency is deliberately kept. A student who tidied up should not
+    // lose what they earned on the way to buying the thing.
+    ok("the barya is kept", after.currency === 120, after);
+
+    // What it does do.
+    ok("nothing is left equipped", after.equipment === 0, after);
+    ok("the purchased outfit is gone",
+       after.owned.indexOf("damit-magsasaka") === -1, after);
+    ok("the act's granted items come straight back",
+       after.owned.indexOf("sibat") !== -1 && after.owned.indexOf("agimat") !== -1,
+       after);
+    ok("the text size is back to the default", after.textSize === "md", after);
+    ok("and the stored setting is cleared", after.stored === null, after);
+    ok("it returns to the settings screen", after.panel === true, after);
+
+    // The effects have to follow the equipment off, or a student keeps
+    // an extra heart they no longer own.
+    const eff = await page.evaluate(() => Inventory.effects());
+    ok("the effects come off with the equipment",
+       eff.maxHealthBonus === 0 && eff.projectileSpeedMult === 1, eff);
+
+    await ctx.close();
+  }
+
+  console.log("\nAG. Reset without inventory.js, and when the write fails");
+  {
+    // The module is optional, and this button is not guarded on it.
+    // Without it the reset still puts the text size back, which is the
+    // half that never leaves the device.
+    const { ctx, page } = await enterTestRoom("**/inventory.js*");
+
+    ok("no inventory button without the module",
+       !(await visible(page, "#shell-inventory-open")));
+
+    await page.click("#btn-pause");
+    await page.waitForTimeout(120);
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(120);
+    ok("the reset offer is still there", await visible(page, "#shell-reset"));
+
+    await page.evaluate(() => {
+      Shell.settings.textSize = "sm";
+      Shell._applySettings();
+      Shell._saveSettings();
+    });
+    await page.click("#shell-reset");
+    await page.waitForTimeout(120);
+    await page.click("#shell-reset-yes");
+    await page.waitForTimeout(400);
+    const local = await page.evaluate(() => ({
+      size: Shell.settings.textSize,
+      stored: window.localStorage.getItem("macario:settings"),
+      panel: !document.getElementById("shell-settings").classList.contains("hidden"),
+    }));
+    ok("it still resets the text size", local.size === "md", local);
+    ok("and still returns to settings", local.panel === true, local);
+
+    await ctx.close();
+  }
+
+  {
+    const { ctx, page } = await enterTestRoom();
+    await page.click("#btn-pause");
+    await page.waitForTimeout(120);
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(120);
+
+    // A failed delete must say so rather than leaving the student
+    // believing rows were cleared that are still there.
+    await page.evaluate(() => {
+      const realFrom = sb.from.bind(sb);
+      sb.from = (table) => {
+        if (table !== "player_equipment") return realFrom(table);
+        return { delete: () => ({
+          eq: () => Promise.resolve({ data: null, error: { message: "simulated" } }),
+        }) };
+      };
+    });
+
+    await page.click("#shell-reset");
+    await page.waitForTimeout(120);
+    await page.click("#shell-reset-yes");
+    await page.waitForTimeout(500);
+
+    const failed = await page.evaluate(() => ({
+      note: document.getElementById("shell-reset-note").textContent,
+      stillThere: !document.getElementById("shell-reset-confirm").classList.contains("hidden"),
+      owned: Inventory.ownedIds.length,
+      enabled: !document.getElementById("shell-reset-yes").disabled,
+    }));
+    ok("a failed reset says so in Tagalog", /koneksyon/.test(failed.note), failed);
+    ok("and stays on the confirmation to be retried",
+       failed.stillThere && failed.enabled, failed);
+    ok("and does not pretend the items are gone", failed.owned > 0, failed);
+
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

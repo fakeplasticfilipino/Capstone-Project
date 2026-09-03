@@ -28,6 +28,56 @@ const dialogueText = document.getElementById("dialogue-text");
 const btnLeft = document.getElementById("btn-left");
 const btnRight = document.getElementById("btn-right");
 const btnInteract = document.getElementById("btn-interact");
+
+// Every button in the game is now an icon plus a label, so writing a
+// button's text means writing the label SPAN rather than the button.
+// This one runs every frame on #btn-interact, and setting textContent
+// there wiped the icon on the first frame after the screen was drawn.
+//
+// A button that carries an icon but no span gets one built for it
+// rather than being written over. That case is a mistake in the
+// markup, and the old fallback of writing the button directly turned
+// it into an icon that vanished the first time the label changed --
+// which is exactly what happened to the quiz button, whose label has
+// never been in index.html. A button with no icon at all is written
+// directly, which is the honest fallback.
+function setLabel(el, text) {
+  if (!el) return;
+  let span = el.querySelector(".lbl");
+  if (!span && el.querySelector(".ico")) {
+    span = document.createElement("span");
+    span.className = "lbl";
+    el.appendChild(span);
+  }
+  (span || el).textContent = text;
+}
+
+// Points an existing button's icon at a different symbol. Used where
+// one button means two things depending on the screen, such as the
+// quiz button, which is an arrow on every question but the last and a
+// tick on that one.
+function setIcon(el, symbolId) {
+  if (!el || !symbolId) return;
+  const use = el.querySelector(".ico use");
+  if (use) use.setAttribute("href", "#" + symbolId);
+}
+
+// Builds one for a button that is created in JavaScript rather than
+// declared in index.html. SVG elements need the namespace; created
+// with createElement they parse as unknown HTML and draw nothing,
+// which is a blank square rather than an error.
+function makeIcon(symbolId) {
+  const NS = "http://www.w3.org/2000/svg";
+  const box = document.createElement("span");
+  box.className = "ico";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("aria-hidden", "true");
+  const use = document.createElementNS(NS, "use");
+  use.setAttribute("href", "#" + symbolId);
+  svg.appendChild(use);
+  box.appendChild(svg);
+  return box;
+}
 const mobileControls = document.getElementById("mobile-controls");
 const btnPause = document.getElementById("btn-pause");
 
@@ -1883,18 +1933,18 @@ function gameLoop(now) {
     if (btnPause) btnPause.classList.remove("hidden");
     nearby = findNearby();
     if (nearby.type === "npc") {
-      btnInteract.textContent = "Usap";
+      setLabel(btnInteract, "Usap");
       btnInteract.classList.add("active");
     } else if (nearby.type === "stage") {
-      btnInteract.textContent = "Ganap";
+      setLabel(btnInteract, "Ganap");
       btnInteract.classList.add("active");
     } else {
-      btnInteract.textContent = "E";
+      setLabel(btnInteract, "E");
       btnInteract.classList.remove("active");
     }
 
     if (nearby.type === "npc" && canGiveGift(nearby.ref)) {
-      giftBtn.textContent = nearby.ref.gift.buttonLabel;
+      setLabel(giftBtn, nearby.ref.gift.buttonLabel);
       giftBtn.classList.remove("hidden");
     } else {
       giftBtn.classList.add("hidden");
@@ -1905,7 +1955,7 @@ function gameLoop(now) {
     mobileControls.classList.add("hidden");
     if (btnPause) btnPause.classList.add("hidden");
     giftBtn.classList.add("hidden");
-    btnInteract.textContent = "E";
+    setLabel(btnInteract, "E");
     btnInteract.classList.remove("active");
   }
 

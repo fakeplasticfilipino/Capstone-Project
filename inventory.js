@@ -196,6 +196,66 @@ const Inventory = {
   },
 
   // -----------------------------------------------------------
+  // Resetting
+  //
+  // The settings screen offers this and nothing else touches it.
+  // Deliberately the ONLY tables it clears, because they are the only
+  // two a student's browser is allowed to delete from: player_inventory
+  // and player_equipment carry a student delete policy and every other
+  // table in this schema does not. assessment_scores has no delete
+  // policy and no update policy at all, so a score cannot be reached
+  // from here whatever this function is asked to do. That is the
+  // guarantee, not the wording of this comment.
+  //
+  // Currency stays. It lives in game_progress, which acts.js and
+  // game.js own, and a student who reset their gamit and lost the
+  // barya that bought it would have been punished for tidying up.
+  //
+  // The act's granted items come straight back, because being left
+  // without the spear for the rest of an act already in progress is a
+  // fault rather than a reset. The end state is exactly what a fresh
+  // entry into this act would give: the granted items owned, nothing
+  // equipped, nothing purchased.
+  //
+  // NOT optimistic, unlike equipping and buying. The screen says what
+  // happened after the write answers, because this is the one action
+  // here a student would want confirmed rather than assumed.
+  // -----------------------------------------------------------
+
+  async resetOwned(actNumber) {
+    if (!currentUserId) return false;
+
+    try {
+      const eq = await sb
+        .from("player_equipment")
+        .delete()
+        .eq("student_id", currentUserId);
+      if (eq.error) throw eq.error;
+
+      // Equipment before inventory, matching the order in
+      // db/reset_test_accounts.sql and for the same reason: a slot row
+      // names an item, and clearing ownership first would leave the
+      // account wearing something it no longer has.
+      const inv = await sb
+        .from("player_inventory")
+        .delete()
+        .eq("student_id", currentUserId);
+      if (inv.error) throw inv.error;
+    } catch (err) {
+      console.error("inventory reset failed:", err);
+      return false;
+    }
+
+    this.ownedIds = [];
+    this.equipment = {};
+    this.applyEffects();
+    this._changed();
+
+    if (typeof actNumber === "number") await this.grantForAct(actNumber);
+    return true;
+  },
+
+  // -----------------------------------------------------------
   // Equipping
   // -----------------------------------------------------------
 

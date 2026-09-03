@@ -68,10 +68,15 @@ const Assessment = {
   // Replaces the button's click handler outright rather than adding
   // another one. This screen is rebuilt on every question, and a
   // stale listener would advance two questions per tap.
-  _onButton(label, handler) {
+  // icon is a symbol id from the sprite in index.html. cloneNode
+  // carries the <use> across, so only its href moves; writing
+  // textContent here would have thrown the whole icon away, which is
+  // what it did before the label got its own span.
+  _onButton(label, handler, icon) {
     const btn = this.el.btn;
     const fresh = btn.cloneNode(true);
-    fresh.textContent = label;
+    setLabel(fresh, label);
+    setIcon(fresh, icon || "i-check");
     // cloneNode carries the disabled state across. A message screen
     // shown straight after an unanswered question would otherwise
     // render a button that cannot be tapped, with nothing on screen
@@ -82,9 +87,10 @@ const Assessment = {
     fresh.addEventListener("click", handler);
   },
 
-  _onBack(handler) {
+  _onBack(handler, icon) {
     const back = this.el.back;
     const fresh = back.cloneNode(true);
+    setIcon(fresh, icon || "i-back");
     back.replaceWith(fresh);
     this.el.back = fresh;
     if (handler) {
@@ -306,7 +312,22 @@ const Assessment = {
           btn.type = "button";
           btn.className = "quiz-choice";
           if (answers[item.id] === i) btn.classList.add("selected");
-          btn.textContent = choice;
+
+          // A lettered badge rather than a pictogram. There is no
+          // icon for an arbitrary sentence, and four identical marks
+          // would be decoration; A B C D is what the student is
+          // being asked to choose between, and it gives the teacher
+          // something to say out loud.
+          const badge = document.createElement("span");
+          badge.className = "qbadge";
+          badge.textContent = "ABCDEFGH".charAt(i) || String(i + 1);
+          btn.appendChild(badge);
+
+          const text = document.createElement("span");
+          text.className = "lbl";
+          text.textContent = choice;
+          btn.appendChild(text);
+
           btn.addEventListener("click", () => {
             answers[item.id] = i;
             render(); // repaint so the selection is visible
@@ -316,15 +337,22 @@ const Assessment = {
 
         const answered = answers[item.id] !== undefined;
 
-        this._onButton(isLast ? "Ipasa ang sagot" : "Susunod", () => {
-          if (answers[item.id] === undefined) return;
-          if (isLast) {
-            resolve(answers);
-          } else {
-            index++;
-            render();
-          }
-        });
+        // A tick on the last question and an arrow on the others, so
+        // the button says whether one more screen is coming without
+        // the student reading the label.
+        this._onButton(
+          isLast ? "Ipasa ang sagot" : "Susunod",
+          () => {
+            if (answers[item.id] === undefined) return;
+            if (isLast) {
+              resolve(answers);
+            } else {
+              index++;
+              render();
+            }
+          },
+          isLast ? "i-check" : "i-right"
+        );
         this.el.btn.disabled = !answered;
 
         this._onBack(
@@ -503,7 +531,11 @@ Assessment._askFeedback = function () {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "feedback-star" + (i <= rating ? " on" : "");
-        btn.textContent = String(i);
+        btn.appendChild(makeIcon("i-star"));
+        const num = document.createElement("span");
+        num.className = "lbl";
+        num.textContent = String(i);
+        btn.appendChild(num);
         btn.setAttribute("aria-label", i + " sa 5");
         btn.addEventListener("click", () => {
           rating = i;
@@ -555,8 +587,8 @@ Assessment._askFeedback = function () {
       // Skip is offered as an equal, not as a way out styled to be
       // avoided. A skip button made deliberately unattractive is a
       // dark pattern, and this is a research instrument.
-      this._onBack(() => resolve(null));
-      this.el.back.textContent = "Laktawan";
+      this._onBack(() => resolve(null), "i-cross");
+      setLabel(this.el.back, "Laktawan");
       this.el.back.classList.add("feedback-skip");
     };
 

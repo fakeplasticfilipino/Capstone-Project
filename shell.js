@@ -92,6 +92,7 @@ const Shell = {
         inventory: document.getElementById("shell-inventory"),
         shop: document.getElementById("shell-shop"),
         logout: document.getElementById("shell-logout-confirm"),
+        reset: document.getElementById("shell-reset-confirm"),
       },
       startBtn: document.getElementById("shell-start"),
       titleNote: document.getElementById("shell-title-note"),
@@ -116,6 +117,11 @@ const Shell = {
       shopNote: document.getElementById("shell-shop-note"),
       shopBalance: document.getElementById("shell-shop-balance"),
       pauseBtn: document.getElementById("btn-pause"),
+      settingsNote: document.getElementById("shell-settings-note"),
+      resetBtn: document.getElementById("shell-reset"),
+      resetConfirm: document.getElementById("shell-reset-yes"),
+      resetCancel: document.getElementById("shell-reset-no"),
+      resetNote: document.getElementById("shell-reset-note"),
     };
   },
 
@@ -162,6 +168,17 @@ const Shell = {
     }
 
     this.el.settingsBack.addEventListener("click", () => this._closeSettings());
+
+    // The reset offer is not guarded on window.Inventory. Without that
+    // module it still puts the text size back, which is the half of
+    // this that never leaves the device, and a button that vanishes
+    // when an optional file fails to load is worse than one that does
+    // less than its longest description.
+    this.el.resetBtn.addEventListener("click", () => this._openReset());
+    this.el.resetCancel.addEventListener("click", () =>
+      this._showPanel("settings")
+    );
+    this.el.resetConfirm.addEventListener("click", () => this._resetData());
     this.el.logoutCancel.addEventListener("click", () =>
       this._showPanel("pause")
     );
@@ -186,6 +203,7 @@ const Shell = {
       else if (this.state === "inventory") this._closeInventory();
       else if (this.state === "shop") this._closeShop();
     });
+
   },
 
   // -----------------------------------------------------------
@@ -258,8 +276,8 @@ const Shell = {
     // exit rather than a spinner.
     this.loadTimer = setTimeout(() => {
       if (this.ready) return;
-      this._setStart("Subukan Ulit", true);
       this.el.startBtn.dataset.action = "reload";
+      this._setStart("Subukan Ulit", true);
       this.el.titleNote.textContent =
         "Matagal ang pagbukas ng laro. Suriin ang koneksyon.";
     }, 12000);
@@ -368,6 +386,10 @@ const Shell = {
   // rather than assuming, since backing out of settings into the
   // wrong screen is how a student ends up unable to resume.
   _openSettings(from) {
+    if (this.el.settingsNote) {
+      this.el.settingsNote.textContent = "";
+      this.el.settingsNote.className = "shell-note";
+    }
     this.settingsReturn = from;
     this.state = "settings";
     this._showPanel("settings");
@@ -459,6 +481,15 @@ const Shell = {
   // than patched: the list is two items long on a screen that is only
   // ever open while the game is paused, so the simple thing costs
   // nothing and cannot drift out of step with Inventory's state.
+  // One symbol per slot. A fourth slot added to content later gets the
+  // bag rather than nothing, which is the same rule the placeholder
+  // box follows for a missing sprite: show something labelled.
+  SLOT_ICONS: { weapon: "i-blade", accessory: "i-star", outfit: "i-shirt" },
+
+  _slotIcon(slot) {
+    return this.SLOT_ICONS[slot] || "i-bag";
+  },
+
   _renderInventory() {
     if (!window.Inventory) return;
     if (!this.el.slots) return;
@@ -474,7 +505,11 @@ const Shell = {
       row.className = "inv-slot";
 
       const label = document.createElement("span");
-      label.textContent = slot.label;
+      label.className = "inv-slot-label";
+      label.appendChild(makeIcon(this._slotIcon(slot.id)));
+      const labelText = document.createElement("span");
+      labelText.textContent = slot.label;
+      label.appendChild(labelText);
 
       const value = document.createElement("span");
       value.className = item ? "inv-slot-filled" : "inv-slot-empty";
@@ -504,6 +539,14 @@ const Shell = {
       btn.className = "inv-item" + (worn ? " inv-item-worn" : "");
       btn.dataset.itemId = item.id;
 
+      // The slot's symbol, so a row says what kind of thing it is
+      // before the student reads the name. Outfit art does not exist
+      // yet, so this is also the only picture on the row.
+      btn.appendChild(makeIcon(this._slotIcon(item.slot)));
+
+      const body = document.createElement("div");
+      body.className = "inv-item-body";
+
       const name = document.createElement("div");
       name.className = "inv-item-name";
       name.textContent = item.name;
@@ -517,8 +560,9 @@ const Shell = {
       desc.className = "inv-item-desc";
       desc.textContent = item.description || "";
 
-      btn.appendChild(name);
-      btn.appendChild(desc);
+      body.appendChild(name);
+      body.appendChild(desc);
+      btn.appendChild(body);
       this.el.items.appendChild(btn);
     });
   },
@@ -597,6 +641,13 @@ const Shell = {
       btn.dataset.buyId = item.id;
       btn.disabled = owned || !affordable;
 
+      // A tick on what is already owned, the slot's symbol on what is
+      // not. The row's state is then readable before the price is.
+      btn.appendChild(makeIcon(owned ? "i-check" : this._slotIcon(item.slot)));
+
+      const body = document.createElement("div");
+      body.className = "inv-item-body";
+
       const name = document.createElement("div");
       name.className = "inv-item-name";
       name.textContent = item.name;
@@ -614,8 +665,9 @@ const Shell = {
       desc.className = "inv-item-desc";
       desc.textContent = item.description || "";
 
-      btn.appendChild(name);
-      btn.appendChild(desc);
+      body.appendChild(name);
+      body.appendChild(desc);
+      btn.appendChild(body);
       this.el.shopList.appendChild(btn);
     });
   },
@@ -631,6 +683,96 @@ const Shell = {
         ? ""
         : "Hindi natuloy ang pagbili.";
     });
+  },
+
+  // -----------------------------------------------------------
+  // Reset
+  //
+  // WHAT THIS CLEARS, and the reasoning, because a button that
+  // deletes anything in a study needs its scope written down next to
+  // the code rather than only in a document:
+  //
+  //   the text size, in localStorage
+  //   player_inventory  and  player_equipment
+  //
+  // AND NOTHING ELSE. Those two tables are the only ones in this
+  // schema carrying a student delete policy. assessment_scores has
+  // select and insert and nothing more, so the one attempt per act
+  // per test type cannot be reached from a browser at all; feedback
+  // is the same by an earlier deliberate decision; game_progress,
+  // act_progress and game_sessions have no delete policy either.
+  // Row level security is what makes that true, not this comment,
+  // and the harness proves the rows survive rather than trusting it.
+  //
+  // act_progress is the one that could have been damaged, because it
+  // does carry an update policy: rewriting it would destroy the
+  // performance score and the completion record while leaving the
+  // scores stranded, and no replay could restore them. So this does
+  // not write it.
+  //
+  // Currency stays too, so a student who resets does not lose what
+  // they earned on the way to buying the thing they just cleared.
+  // -----------------------------------------------------------
+
+  _openReset() {
+    this.el.resetNote.textContent = "";
+    this.el.resetNote.className = "shell-note";
+    this.el.resetConfirm.disabled = false;
+    this.el.resetCancel.disabled = false;
+    this._showPanel("reset");
+  },
+
+  // Awaited rather than optimistic, unlike equipping and buying. This
+  // is the one action on these screens a student would want confirmed
+  // instead of assumed, and it is the one they cannot simply repeat to
+  // find out whether it took.
+  async _resetData() {
+    this.el.resetConfirm.disabled = true;
+    this.el.resetCancel.disabled = true;
+    this.el.resetNote.className = "shell-note";
+    this.el.resetNote.textContent = "Nire-reset...";
+
+    // The device half first. It cannot fail and it cannot reach the
+    // network, so something visibly changes even on a dead connection.
+    this.settings = { textSize: "md" };
+    this._applySettings();
+    try {
+      window.localStorage.removeItem(this.STORAGE_KEY);
+    } catch (err) {
+      // Private browsing throws here rather than returning. The
+      // in-memory default is already applied, which is the part the
+      // student can see.
+      console.warn("Settings could not be cleared:", err);
+    }
+
+    let wrote = true;
+    if (window.Inventory) {
+      // The act the student is sitting in, so the grant that belongs
+      // to it comes straight back. Acts may be absent in a page that
+      // loaded without it; the reset still runs, it just grants
+      // nothing.
+      const act =
+        window.Acts && typeof Acts.current === "number" ? Acts.current : null;
+      wrote = await Inventory.resetOwned(act);
+    }
+
+    this.el.resetConfirm.disabled = false;
+    this.el.resetCancel.disabled = false;
+
+    if (!wrote) {
+      this.el.resetNote.className = "shell-note";
+      this.el.resetNote.textContent =
+        "Hindi nabura ang mga gamit. Suriin ang koneksyon.";
+      return;
+    }
+
+    // Back to the screen it was reached from, with the result stated
+    // there. Staying put would leave a Hindi button under a message
+    // saying the thing had already happened.
+    this.el.resetNote.textContent = "";
+    this.el.settingsNote.className = "shell-note ok";
+    this.el.settingsNote.textContent = "Tapos na ang pag-reset.";
+    this._showPanel("settings");
   },
 
   // -----------------------------------------------------------
@@ -683,8 +825,15 @@ const Shell = {
     });
   },
 
+  // The label span rather than the button, which now holds an icon.
+  // Subukan Ulit reloads the page, so it takes the reset arrow: the
+  // play triangle would promise a world that is not there yet.
   _setStart(label, enabled) {
-    this.el.startBtn.textContent = label;
+    setLabel(this.el.startBtn, label);
+    setIcon(
+      this.el.startBtn,
+      this.el.startBtn.dataset.action === "reload" ? "i-reset" : "i-play"
+    );
     this.el.startBtn.disabled = !enabled;
   },
 };

@@ -20,8 +20,8 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after the item bank was run and Block 11 passed its
-live check.
+Last updated: after Block 12's icon pass and the settings reset. Not
+yet confirmed on the device.
 
 ## Right now
 
@@ -43,7 +43,22 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite passes at 230 checks, 0 failures.
+The automated suite passes at 284 checks, 0 failures.
+
+The UI now reads as a game rather than a form. Every button carries an
+inline SVG icon beside its Tagalog label, the panels and the touch
+controls have a bevel and a rim rather than a flat fill, and the
+settings screen offers a reset. All of it is verified in the harness
+and NONE of it has been seen on the phone yet.
+
+That pass found something worth more than the icons. Touch targets
+were only ever worked out against --zoom for the control cluster.
+Everything on a screen was still stated as 44 CSS pixels, which is 30.8
+on glass: the four answers to a test item, every menu button, the text
+size choices, the shop rows, and the pause button. The four answers are
+the most important targets in the study and the ones a Grade 8 student
+taps ten times per test. They are all at 44 rendered now, measured by
+checks rather than read off the stylesheet.
 
 The game has now run on a real Android phone, a 4GB device, and the
 result is the single most important thing in this file: performance
@@ -113,7 +128,9 @@ Checkpoint: a student who knew nothing at the pre-test can answer
 each of the ten post-test items from something Act I actually showed
 them.
 
-After that: Block 12's remaining polish, then the pilot.
+After that: a device pass on the icon work, which has only been seen
+in a headless browser, then Block 12's remaining polish, then the
+pilot.
 
 ## The milestone
 
@@ -231,7 +248,7 @@ The paper specifies ten.
 |---|---|
 | Performance | (BUILT) No build step, no framework, plain script tags. Measured on a 4GB Android phone: smooth, at least 30fps |
 | Reliability | (BUILT) Debounced save, ten second autosave backstop, beforeunload flush, logout flush |
-| Usability | (BUILT) Tagalog throughout, movement targets measured on screen at 67px and action targets at 53px, and the whole control row fits in landscape down to 740px. Portrait shows a rotate notice rather than a broken layout |
+| Usability | (BUILT) Tagalog throughout. Every touch target measured on screen: movement 67px, action 53px, pause 45px, and every button on a screen including the four answers to a test item at 44px. Icons beside every label. The whole control row fits in landscape down to 740px. Portrait shows a rotate notice rather than a broken layout |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. Not yet tested across screen sizes; the harness proves the layout down to 740 by 360 only |
@@ -355,12 +372,47 @@ the resolution the CSS asks for. ASSET_VERSION went to 3, and game.js
 with it, since the browser has to refetch game.js to learn the new
 asset version.
 
+The icon pass is done. An inline SVG symbol sheet in index.html and a
+use reference per button, chosen over Unicode and emoji on a render:
+the crossed swords fell back to a thin monochrome cross and the up
+arrow drew as a blue emoji tile, so one row of buttons carried three
+presentations. Icons sit WITH their labels, never instead of them.
+
+It moved three things beyond the icons themselves. Every label write
+now goes into a .lbl span, because textContent on a button destroys
+its icon and two of the six write sites run every frame. The icon and
+label are pointer-events: none so the button stays the hit target,
+which the harness refused to click until it was. And the 44px rule was
+extended from the control cluster to every button on a screen, which
+is where it had never been applied.
+
+The settings reset is done. It clears the text size and the two
+ownership tables and nothing else, because those are the only tables a
+student's browser may delete from. Seven checks assert that the
+assessment scores, the act's performance score and objective count, the
+save row, the session row, the feedback and the barya all survive it.
+It is not a substitute for db/reset_test_accounts.sql and cannot
+become one: a full-flow retest needs the scores cleared and no client
+can clear them.
+
 Left: audio if there is time, which is still the first thing to cut.
+
+Left, and needing the phone rather than a decision: the action button
+labels shrank from 18px to 15px CSS to fit an icon above them, which
+is 12.6 to 10.5 on glass. Atake and Talon now lean on the icon to
+carry the meaning. Read them on the device before the pilot; if they
+are too small, the fix is to grow those buttons from 76px and re-run
+the control row fit check, not to drop the icons.
 
 One thing to watch on the next device session rather than change
 blind: the dialogue text and quest log shrank with the camera. The
 text size setting in the pause menu has sm, md and lg. Try lg before
 raising any base sizes.
+
+The same session should look at the panels. The taller buttons made
+the inventory screen scroll a little more than it did. The shell box
+has always scrolled and still does, so nothing is unreachable, but a
+student who has to scroll to find Bumalik is worth knowing about.
 
 Write the real Act I against the finished mechanics, replacing the
 test stage, then write Acts II through IV. This is the next action;
@@ -444,7 +496,7 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-230 checks. Anything other than "0 failed" is a regression.
+284 checks. Anything other than "0 failed" is a regression.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it
