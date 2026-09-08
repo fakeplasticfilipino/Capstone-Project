@@ -20,8 +20,8 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 12's icon pass and the settings reset. Not
-yet confirmed on the device.
+Last updated: after the Act I rewrite. The icon pass and the settings
+reset from Block 12 are still not yet confirmed on the device.
 
 ## Right now
 
@@ -100,19 +100,9 @@ a half Macarios across. And the game is meant to be held sideways,
 which was never written down anywhere, so portrait is now a rotate
 notice rather than a layout to fix.
 
-What is left is the assessment item bank, which is unblocked and
-waiting to be run, and the replacement art.
-
-## Next action
-
-Rewrite Act I so that it teaches what the item bank tests.
-
-Every system the study needs is now built, live and confirmed on a
-real phone. The instrument is seeded and the pipeline records a pre
-score, a post score and a gain. What is missing is the middle: the
-Act I script is placeholder dialogue about buko and errands, and it
-does not state a single one of the five learning objectives the ten
-item pairs measure.
+Act I is rewritten. content/act1.js now carries a real narrative,
+two scenes ("tondo" then "misyon"), written directly against the ten
+item pairs in db/macario_items_v3.sql:
 
     LO1  Sakay's origins and social class
     LO2  Theatre experience and public speaking
@@ -120,23 +110,34 @@ item pairs measure.
     LO4  Secrecy and communication in the movement
     LO5  Personal cost, and who the Katipunan was
 
-Until the script carries these, a gain measures what a student
-already knew and how they guessed the second time, not anything the
-game did. That is the finding the whole study rests on, so this is
-the critical path and everything else is smaller.
+Every one of the ten items traces to a specific stated line: Tondo
+and the tailor-and-barber trade from the neighbor, the moro-moro and
+the stage-to-public-speaking connection from the theatre beat, 1894
+and the Katipunan's aim from the recruiter, secrecy and the risk to
+a messenger from the mission briefing and the courier NPC, and the
+personal cost and the movement's ordinary-worker makeup from that
+same NPC's second conversation. See CLAUDE.md, Decisions on record,
+for the scene split and why the old hidden-NPC pattern was dropped.
 
-This is a writing task against the resource person's source
-material, which is a physical book. It cannot be done from the
-repository, and the proponents work through it with the session at
-the time of the rewrite.
+Every fact in the new script is one the item bank's own correct
+answers already commit to. No other date, name, or incident was
+added. The resource person's source material, a physical book, has
+not been read into this yet — if it says more or says something
+different, that is the next pass on this file, not a green light to
+leave it as written.
 
-Checkpoint: a student who knew nothing at the pre-test can answer
-each of the ten post-test items from something Act I actually showed
-them.
+_dev/test.js is updated alongside it: the room ids, objective flags
+and the two loadScene() calls in Block 8's fixtures now point at
+"tondo" and "misyon" rather than the old "silid" and "labasan". The
+suite is back to 289 passed, 0 failed, run twice to rule out
+flakiness from the new content's positions.
 
-After that: a device pass on the icon work, which has only been seen
-in a headless browser, then Block 12's remaining polish, then the
-pilot.
+## Next action
+
+A device pass on the icon work, which has only been seen in a
+headless browser, then Block 12's remaining polish, then the pilot.
+Writing Acts II through IV is the content work after that; see
+Blocks remaining.
 
 ## The milestone
 
@@ -216,9 +217,9 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-Framework complete and proven by a test stage in Act I. No story is
-written yet, and that is now the whole of the remaining work on this
-objective.
+Framework complete. Act I now carries real story content; Acts II
+through IV are still registered stubs with no content, and writing
+them is what remains of this objective.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
 equipment, cosmetic rewards. (IN PROGRESS) All four are built and
@@ -237,12 +238,12 @@ work through.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created |
-| Chapter Progression | (PARTIAL) All four registered and unlock in order. Act I holds a test stage; no act has story content yet |
+| Chapter Progression | (PARTIAL) All four registered and unlock in order. Act I now has real story content; Acts II through IV are still content-free stubs |
 | Player Movement | (BUILT) |
 | Combat Mechanics | (BUILT) Melee, takedown from behind, thrown projectile as the special attack |
 | Stealth Mechanics | (BUILT) Patrols, detection meter, hide spots |
 | Interaction System | (BUILT) |
-| Narrative Delivery | (PARTIAL) The delivery system is built and exercised by the test stage. No narrative is written yet |
+| Narrative Delivery | (PARTIAL) The delivery system is built. Act I now uses it for real narrative; Acts II through IV have none yet |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified in the harness; no act beyond Act I has guards yet |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups |
 | Equipment System | (BUILT) Two items, weapon and accessory slots, an inventory screen on pause. Items are granted on act entry; the shop is Block 11 |
@@ -331,14 +332,19 @@ its rounded performance score. A shop panel off the inventory screen,
 two outfits at 50 and 90, and a sprite swap that replaces whichever
 sheets an outfit declares. No migration was needed. (COMPLETE)
 
-Act I test stage. The old road and outpost content is deleted, in git
-history, and not to be restored. content/act1.js now holds one room
-with one example of every system, dialogue with two conversations, a
-gift, a stage cutscene, a hidden NPC revealed by flag, a patrolling
-guard, a hide spot, a one-way platform, a heart pickup, a hazard and a
-decoration, plus a bare second room reached by scene transport. Five
-objectives, so the currency drip is a round 10 each. Laid out and
-tuned against the 1176 pixel camera. (COMPLETE)
+Act I test stage, superseded by the real Act I below. The old road
+and outpost content, and the test stage after it, are both deleted,
+in git history, and not to be restored.
+
+Act I rewrite. content/act1.js replaced wholesale with a narrative
+written against the ten item pairs in db/macario_items_v3.sql: the
+scene "tondo" (safe) for origins, trade, the moro-moro and the
+recruitment, the scene "misyon" (dangerous) for the courier task and
+the farewell. Same five objectives and the same 10-barya drip as the
+test stage it replaces; the guard, hide spot, platform, pickup and
+hazard all carried over into "misyon" with the same tuning against
+the 1176 pixel camera. _dev/test.js updated to match. 289 passed, 0
+failed, run twice. (COMPLETE)
 
 Paper audit. Seventeen functional requirements, ten non-functional,
 five modules, seventeen ERD entities and all four act storyboards
@@ -438,9 +444,8 @@ the inventory screen scroll a little more than it did. The shell box
 has always scrolled and still does, so nothing is unreachable, but a
 student who has to scroll to find Bumalik is worth knowing about.
 
-Write the real Act I against the finished mechanics, replacing the
-test stage, then write Acts II through IV. This is the next action;
-see above. (NOT STARTED)
+Act I is rewritten against the finished mechanics; see Blocks done.
+Write Acts II through IV next. (NOT STARTED)
 
 Seed trivia and assessment items for Acts II through IV. Until then
 those acts skip their tests with a notice, which is deliberate.

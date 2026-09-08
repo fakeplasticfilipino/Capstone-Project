@@ -127,13 +127,13 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nB. Returning student, mid Act I in the test room");
+  console.log("\nB. Returning student, mid Act I in the misyon scene");
   {
     const state = {
       session: { user: { id: "u1" } },
-      game_progress: [{ student_id: "u1", current_act: 1, current_room: "silid", is_night: true,
-        save_state: { quests: [], flags: { nakausapAngGabay: true, naibigayAngPakete: true, deathSequenceDone: true }, posX: 300 } }],
-      act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 4 }],
+      game_progress: [{ student_id: "u1", current_act: 1, current_room: "misyon", is_night: true,
+        save_state: { quests: [], flags: { nalamanAngPinagmulan: true, deathSequenceDone: true, sumapiSaKatipunan: true }, posX: 200 } }],
+      act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 3 }],
     };
     const { ctx, page } = await newPage(state);
     await page.waitForTimeout(700);
@@ -142,12 +142,12 @@ const visible = (page, sel) => page.evaluate((s) => {
        (await page.textContent("#shell-start")).trim());
     ok("still gated, not yet playing", (await page.evaluate(() => Shell.state)) === "title");
     ok("resumed into the stored scene rather than the first one",
-       (await page.evaluate(() => currentRoom)) === "silid", await page.evaluate(() => currentRoom));
+       (await page.evaluate(() => currentRoom)) === "misyon", await page.evaluate(() => currentRoom));
 
     await page.click("#shell-start");
     await page.waitForTimeout(400);
     ok("entered the world", (await page.evaluate(() => Shell.state)) === "playing");
-    ok("still in silid after entry", (await page.evaluate(() => currentRoom)) === "silid");
+    ok("still in misyon after entry", (await page.evaluate(() => currentRoom)) === "misyon");
     ok("act is still 1", (await page.evaluate(() => Acts.current)) === 1);
     ok("hearts shown in a dangerous scene", await visible(page, "#hud"));
     ok("guards were built", (await page.evaluate(() => GUARDS.length)) > 0);
@@ -244,7 +244,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.click("#shell-start");
     await page.waitForTimeout(300);
     ok("legacy 'empty' room falls back to the first scene",
-       (await page.evaluate(() => currentRoom)) === "silid", await page.evaluate(() => currentRoom));
+       (await page.evaluate(() => currentRoom)) === "tondo", await page.evaluate(() => currentRoom));
     ok("acts II-IV still registered", await page.evaluate(() => [2,3,4].every(n => !!Acts.getAct(n))));
     ok("act II still has no objectives", (await page.evaluate(() => Acts.objectivesFor(2).length)) === 0);
     await ctx.close();
@@ -267,16 +267,17 @@ const visible = (page, sel) => page.evaluate((s) => {
   // Block 8. Hazards, pickups and difficulty.
   // -----------------------------------------------------------------
 
-  // Puts a resuming student in the test room with the world already
-  // built. Act I is a test stage rather than the story: one room
-  // holding one example of every system, plus a bare second room. The
-  // flags seeded here are the ones that stage sets, so the student
-  // arrives three objectives in with the hidden NPC already revealed.
+  // Puts a resuming student in the "misyon" scene with the world
+  // already built — the dangerous scene, which is where Act I's
+  // guard, hazard, hide spot and platform live. The flags seeded
+  // here are the three objectives that come before it (origins, the
+  // stage, joining the Katipunan), so the student arrives with the
+  // fourth objective, the message run, in front of them.
   const atTestRoom = () => ({
     session: { user: { id: "u1" } },
-    game_progress: [{ student_id: "u1", current_act: 1, current_room: "silid", is_night: true,
-      save_state: { quests: [], flags: { nakausapAngGabay: true, naibigayAngPakete: true, deathSequenceDone: true }, posX: 300 } }],
-    act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 4 }],
+    game_progress: [{ student_id: "u1", current_act: 1, current_room: "misyon", is_night: true,
+      save_state: { quests: [], flags: { nalamanAngPinagmulan: true, deathSequenceDone: true, sumapiSaKatipunan: true }, posX: 200 } }],
+    act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 3 }],
   });
 
   async function enterTestRoom(block) {
@@ -319,7 +320,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     const hit = await standInHazard(page);
     ok("hazard costs exactly one health", hit.health === 2, hit.health);
-    ok("hazard does not change the scene", hit.room === "silid", hit.room);
+    ok("hazard does not change the scene", hit.room === "misyon", hit.room);
     ok("hazard does not respawn the player at startX",
        Math.abs(hit.posX - hit.startX) > 100, { posX: hit.posX, startX: hit.startX });
     ok("knockback clears the band",
@@ -414,8 +415,8 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     // Leaving and re-entering the scene does restore it.
     const afterReload = await page.evaluate(() => {
-      loadScene("labasan");
-      loadScene("silid");
+      loadScene("tondo");
+      loadScene("misyon");
       return { collected: collectedPickups.size, stillThere: !!document.querySelector(".pickup") };
     });
     ok("loadScene clears the collected set", afterReload.collected === 0, afterReload.collected);

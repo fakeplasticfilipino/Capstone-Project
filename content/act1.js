@@ -1,189 +1,204 @@
 // =============================================================
 // MACARIO — content/act1.js
 //
-// ACT I: TEST STAGE. This is not the story.
+// ACT I: the real story. This replaces the test stage wholesale.
+// The old file was one room proving every engine system with
+// placeholder dialogue about buko and errands. It taught none of
+// the five learning objectives the item bank in
+// db/macario_items_v3.sql tests. This one is written directly
+// against those ten item pairs: every line of player-facing fact
+// below exists because a correct answer in that file requires the
+// student to have seen it.
 //
-// The previous contents of this file, the road through Tondo and the
-// Spanish outpost, have been deleted. They were placeholder from the
-// start and were always going to be rewritten once the mechanics
-// stopped moving. The mechanics have now stopped moving, so what sits
-// here in the meantime is a proving ground: one room holding exactly
-// one example of every system the engine has, plus a bare second room
-// to prove that scene transport works.
+// SOURCING. Every historical fact stated below — Tondo, the tailor
+// and barber trade, the moro-moro, 1894, the Katipunan's aim of
+// independence through revolution rather than reform, why it had
+// to stay secret, the danger to a messenger, and that its members
+// were ordinary workers — is stated because db/macario_items_v3.sql
+// already commits to it as the correct answer to a validated item.
+// Nothing here goes further than that: no other date, no other
+// named person, no invented incident. The connective tissue between
+// beats (a director noticing his stage presence, a recruiter naming
+// the year) is ordinary scene-setting for a game, not a claim about
+// what is documented. If the resource person's source material has
+// more to say, later passages sharpen or replace these beats; they
+// do not need to invent new ones to hit the ten items.
 //
-// The old content is in git history if anyone needs to read it. Do
-// not restore it. The real Act I is written against the resource
-// person's source material and against the ten item pairs in
-// db/macario_items_v3.sql, and neither of those is what this file is.
+// STRUCTURE. Two scenes, five objectives, matching the checkpoint:
+// a student who knew nothing at the pre-test should be able to
+// answer every post-test item from something this file showed them.
 //
-// WHAT THIS STAGE DELIBERATELY DOES NOT DO IS TEACH. The item bank
-// tests five learning objectives: Sakay's origins, the theatre years,
-// the Katipunan and 1894, secrecy, and personal cost. Nothing below
-// states any of them. A gain measured against this stage reflects
-// prior knowledge and a second look at the questions, and nothing
-// else. That is expected until the rewrite lands.
+//   Scene "tondo"   safe. Origins, trade, the theatre performance,
+//                   and the recruitment into the Katipunan.
+//   Scene "misyon"  dangerous. The first task as a Katipunero: get
+//                   a message past a patrol without being caught,
+//                   then the personal cost of what he just did.
 //
-// ONE EXAMPLE OF EACH, and no more. If a mechanic ends up represented
-// twice here, delete one. The point of this file is that a person can
-// walk it in two minutes and see everything the engine can do.
+// Five objectives keeps the currency drip unchanged from the test
+// stage: floor(50 / 5) = 10 barya each, so nothing in acts.js or
+// the award math needed to move.
 //
-// LOAD ORDER: before game.js, which reads window.ACT_1 on startup.
+// deathSequenceDone is not this file's name to choose. game.js sets
+// it directly when the stage cutscene's death animation finishes,
+// so the "entablado" objective below has to use that exact string
+// or it will never be marked done.
 //
-// SPRITES. Only Assets/Walk.png and Assets/Cement_Tile.png exist, so
-// every character below renders as a labelled placeholder box naming
-// the file it wants. That is the fallback system working, and it
-// doubles as the shopping list for whoever draws them.
+// The hidden-NPC pattern (startsHidden + revealedByFlag) the test
+// stage used is deliberately not reused here. The engine only calls
+// revealNpcsByFlag() after that same death sequence and on save
+// restore, so it only ever works when the flag in question IS
+// deathSequenceDone. A courier contact "hidden until you cross the
+// guard" would need a flag nothing re-checks. The guard corridor
+// itself is what makes reaching that NPC hard; hiding them behind a
+// flag would add nothing.
+//
+// SPRITES. Only Assets/Walk.png and Assets/Cement_Tile.png exist.
+// Every other filename below renders as the labelled placeholder
+// box, which is the fallback system working and the art shopping
+// list at once.
 // =============================================================
 
-// A phone in landscape shows 1176 world pixels across at --zoom 0.7, so
-// the room below is a shade over three screens wide. The spacing that
-// follows is stated in those terms rather than in raw pixels, because the
-// old layout was built for a camera that showed 470 and everything in it
-// arrived on screen at once when the camera was pulled back.
-const TEST_ROOM_WIDTH = 3600;
-const TEST_EXIT_WIDTH = 900;
+// A phone in landscape shows 1176 world pixels across at --zoom 0.7.
+// Both scenes below are sized as multiples of that rather than as
+// raw pixels, so they read the same way on the device they were
+// tuned for.
+const TONDO_WIDTH = Math.round(1176 * 2);      // 2 screens, 2352
+const MISYON_WIDTH = Math.round(1176 * 2.5);   // 2.5 screens, 2940
 
 window.ACT_1 = {
   number: 1,
-  title: "Test Stage",
-  titleTagalog: "Pagsubok na Yugto",
+  title: "Origins",
+  titleTagalog: "Ang Pinagmulan ni Macario",
 
-  // Five objectives, one per interaction worth proving. Five is also
-  // convenient arithmetic: the currency drip is floor(50 / total), so
-  // each one pays exactly 10 barya and a full run pays the completion
-  // half of the score in round numbers.
-  //
-  // Each maps to a flag in state.flags. Flags persist inside
-  // save_state, so objective progress survives a reload without any
-  // storage of its own.
+  // Each objective's flag is checked against state.flags by
+  // Acts.checkObjectives(), which also runs the currency drip. Five
+  // objectives, so each one pays 10 barya on the way to the 50 the
+  // completion half of the score is worth.
   objectives: [
-    { id: "talk", label: "Kausapin ang Gabay", flag: "nakausapAngGabay" },
-    { id: "gift", label: "Ibigay ang pakete", flag: "naibigayAngPakete" },
-    { id: "stage", label: "Umakyat sa entablado", flag: "deathSequenceDone" },
-    { id: "sneak", label: "Makalusot sa bantay", flag: "nakalusot" },
-    { id: "finish", label: "Tapusin ang pagsubok", flag: "natapos" },
+    { id: "pinagmulan", label: "Alamin ang pinagmulan", flag: "nalamanAngPinagmulan" },
+    { id: "entablado", label: "Umarte sa entablado", flag: "deathSequenceDone" },
+    { id: "katipunan", label: "Sumapi sa Katipunan", flag: "sumapiSaKatipunan" },
+    { id: "mensahe", label: "Ihatid ang lihim na mensahe", flag: "naihatidAngMensahe" },
+    { id: "pag-alis", label: "Magpaalam sa dating buhay", flag: "nagpaalam" },
   ],
 
-  startingQuests: [{ id: "talk", text: "Kausapin ang Gabay" }],
+  startingQuests: [{ id: "pinagmulan", text: "Kausapin ang kapitbahay" }],
 
   scenes: [
     // ===========================================================
-    // SCENE 1: the test room
+    // SCENE 1: Tondo
     //
-    // Left to right, the room is ordered so each mechanic is met once
-    // and in a sensible order: talk, give, perform, sneak, survive,
-    // then leave. Walking it end to end is the manual test.
-    //
-    // Marked dangerous, which is what puts the hearts on screen. A
-    // scene also counts as dangerous if it declares a guard or a
-    // hazard, and this one declares both, so the flag is redundant
-    // here. It is stated anyway, because relying on a derivation to
-    // show the health bar is how a scene ends up costing a heart the
-    // student never saw coming.
+    // Safe — no guard, no hazard, so the hearts stay off screen.
+    // Three beats, left to right: who Sakay is and what he does for
+    // a living (LO1), the moro-moro he performs in and what it
+    // trained in him (LO2), and the recruitment that puts him in
+    // the Katipunan in 1894 with a stated aim and a stated reason
+    // for secrecy (LO3, and the setup for LO4). The last beat sends
+    // the player to scene "misyon" with a task already assigned.
     // ===========================================================
     {
-      id: "silid",
-      worldWidth: TEST_ROOM_WIDTH,
-      startX: 60,
-      dangerous: true,
-
-      // The first screen holds the Gabay, a decoration and the
-      // entablado. Those are fine to see all at once, because it is the
-      // introduction and nothing in it is a threat. The guard, the
-      // hazard and the exit each get a stretch of their own further
-      // right, so they arrive one problem at a time.
+      id: "tondo",
+      worldWidth: TONDO_WIDTH,
+      startX: 80,
       npcs: [
         {
-          // EXAMPLE: dialogue, multiple conversations, and a gift.
-          //
-          // Two dialogueSets rather than one, because the engine
-          // advances one set per conversation and then holds on the
-          // last, and that behaviour is invisible with a single set.
-          // Talk to the Gabay twice and the second conversation is
-          // different.
-          id: "gabay",
-          x: 320,
-          img: "Assets/Gabay.png",
-          label: "Gabay",
+          // LO1, both pairs. The correct answers in the item bank
+          // are Tondo and "mananahi at barbero"; both are said in
+          // plain terms here rather than implied.
+          id: "kapitbahay",
+          x: 300,
+          img: "Assets/Kapitbahay.png",
+          label: "Kapitbahay",
           stage: 0,
           dialogueSets: [
             {
               lines: [
-                { speaker: "Gabay", text: "Pagsubok na yugto ito. Hindi pa ito ang kuwento." },
-                { speaker: "Ikaw", text: "Ano ang dapat kong gawin dito?" },
-                { speaker: "Gabay", text: "Subukan ang lahat. May isang halimbawa ng bawat bagay." },
-                { speaker: "Gabay", text: "May dala kang pakete. Ibigay mo sa akin kapag handa ka na." },
+                { speaker: "Kapitbahay", text: "Kumusta, Macario! Dito ka pa rin nananahi, dito sa Tondo?" },
+                { speaker: "Macario", text: "Oo, dito pa rin. Mananahi at barbero ako, tulad ng dati." },
+                { speaker: "Kapitbahay", text: "Karaniwang trabaho lang, pero sapat na para mabuhay dito sa atin." },
+                { speaker: "Kapitbahay", text: "Mamayang gabi may pagtatanghal sa entablado. Aakyat ka pa rin, di ba?" },
+                { speaker: "Macario", text: "Oo. Pupunta ako roon mamaya." },
               ],
               onComplete: () => {
-                state.flags.nakausapAngGabay = true;
-                completeQuest("talk");
-                addQuest("gift", "Ibigay ang pakete sa Gabay");
+                state.flags.nalamanAngPinagmulan = true;
+                completeQuest("pinagmulan");
+                addQuest("entablado", "Pumunta sa entablado");
                 markDirty();
                 if (window.Acts) Acts.checkObjectives();
               },
             },
             {
-              // The second conversation. Its only job is to prove that
-              // dialogueSets advance, so it is short and says so.
+              // Holds here on every later visit. Short, and not tied
+              // to any objective — the first conversation already
+              // did that.
               lines: [
-                { speaker: "Gabay", text: "Ibang usapan na ito. Umuusad ang dialogueSets." },
-                { speaker: "Gabay", text: "Sunod: ang entablado sa kanan." },
+                { speaker: "Kapitbahay", text: "Doon sa entablado, sa may tabi ng kalye. Hindi mo mamimintasan." },
               ],
-              onComplete: () => {
-                addQuest("stage", "Umakyat sa entablado");
-                markDirty();
-              },
+              onComplete: () => {},
             },
           ],
-
-          // EXAMPLE: the gift interaction, which is a separate button
-          // from E-to-talk. It appears only once requiresFlag is set,
-          // so it cannot be used before the first conversation.
-          gift: {
-            buttonLabel: "Ibigay ang pakete",
-            requiresFlag: "nakausapAngGabay",
-            givenFlag: "naibigayAngPakete",
-            responseLines: [
-              { speaker: "Gabay", text: "Natanggap. Gumagana ang gift button." },
-            ],
-            completesQuest: "gift",
-          },
         },
 
         {
-          // EXAMPLE: an NPC that starts hidden and is revealed by a
-          // flag, and EXAMPLE: scene transport.
-          //
-          // Hidden until the stage cutscene finishes. The engine
-          // reveals any hidden NPC whose flag is set, both at the
-          // moment it is set and when a save is restored, so this one
-          // field covers a fresh run and a reload alike.
-          id: "tagapagbantay",
-          x: 3350,
-          img: "Assets/Tagapagbantay.png",
-          label: "Tagapagbantay",
+          // LO2 pair 4. Meeting this NPC only makes sense placed
+          // after the stage, so it sits past it rather than being
+          // gated on deathSequenceDone — a player who somehow
+          // reaches this NPC before performing just hears the same
+          // lines a beat early, which costs nothing.
+          id: "direktor",
+          x: 1300,
+          img: "Assets/Direktor.png",
+          label: "Direktor ng Dulaan",
           stage: 0,
-          startsHidden: true,
-          revealedByFlag: "deathSequenceDone",
           dialogueSets: [
             {
               lines: [
-                { speaker: "Tagapagbantay", text: "Nakalusot ka sa bantay." },
-                { speaker: "Ikaw", text: "Kaunti na lang ang natitira." },
-                { speaker: "Tagapagbantay", text: "Dumaan ka sa pinto. Ibang silid iyon." },
+                { speaker: "Direktor", text: "Napanood kita sa entablado. Magaling kang umarte sa moro-moro." },
+                { speaker: "Macario", text: "Sanay na ako. Malimit akong gumanap sa mga dulang tulad niyan." },
+                { speaker: "Direktor", text: "Ang husay mong magsalita nang harapan sa napakaraming tao ay hindi karaniwan." },
+                { speaker: "Direktor", text: "Balang-araw, magagamit mo pa iyan — hindi lang sa entablado." },
+                { speaker: "Direktor", text: "May bulong-bulungan ngayon tungkol sa isang lihim na kapisanan. Baka may maghanap sa iyo." },
               ],
               onComplete: () => {
-                state.flags.nakalusot = true;
-                completeQuest("sneak");
-                addQuest("finish", "Tapusin ang pagsubok sa kabilang silid");
+                completeQuest("entablado");
+                addQuest("katipunan", "Kausapin ang naghihintay na tao sa dulo ng kalye");
+                markDirty();
+                if (window.Acts) Acts.checkObjectives();
+              },
+            },
+          ],
+        },
+
+        {
+          // LO3, both pairs, and the setup for LO4 pair 7. The year
+          // is stated as the scene's present ("ngayong taong 1894")
+          // and Macario's own line ("Sasapi ako") is what ties the
+          // date to him joining, rather than only to the recruiter
+          // having joined at some point.
+          id: "kasapi",
+          x: 2100,
+          img: "Assets/Kasapi.png",
+          label: "Kasapi ng Katipunan",
+          stage: 0,
+          dialogueSets: [
+            {
+              lines: [
+                { speaker: "Kasapi", text: "Ikaw si Macario Sakay? May nagsabing makikita kita rito." },
+                { speaker: "Macario", text: "Ako nga. Bakit mo ako hinahanap?" },
+                { speaker: "Kasapi", text: "Ngayong taong 1894, kami sa Katipunan ay naghahanap ng mga taong may tapang." },
+                { speaker: "Kasapi", text: "Lihim na samahan ito. Layunin naming makamit ang ganap na kalayaan ng Pilipinas sa pamamagitan ng himagsikan — hindi lamang reporma." },
+                { speaker: "Macario", text: "Sasapi ako. Ano ang dapat kong malaman?" },
+                { speaker: "Kasapi", text: "Ipinagbabawal ito ng mga awtoridad. Ang sinumang mahuli ay parurusahan, kaya dapat itago ang lahat — mga miyembro, mga pulong, lahat." },
+                { speaker: "Kasapi", text: "Bilang simula, dalhin mo itong mensahe sa isang kasama sa kabilang lansangan. Huwag hayaang makita ka ng mga bantay." },
+              ],
+              onComplete: () => {
+                state.flags.sumapiSaKatipunan = true;
+                completeQuest("katipunan");
+                addQuest("mensahe", "Ihatid ang lihim na mensahe nang hindi nahuhuli");
                 markDirty();
                 if (window.Acts) {
                   Acts.checkObjectives();
-                  // The scene change. The act, its objectives and its
-                  // act_progress row are all unchanged; only the
-                  // location moves, and the new scene id is persisted
-                  // in game_progress.current_room.
-                  Acts.gotoScene("labasan");
+                  Acts.gotoScene("misyon");
                 }
               },
             },
@@ -191,148 +206,90 @@ window.ACT_1 = {
         },
       ],
 
-      // EXAMPLE: the stage and its cutscene.
-      //
-      // Walk to the middle of the platform and press E. Two lines, a
-      // fade to night, two more lines, the death animation, a
-      // blackout, then control returns with the scene permanently
-      // night. It is the only thing in the game that locks movement
-      // outright, and it is the one place the pause screen refuses to
-      // open, because the sequence runs on awaited timers that no flag
-      // in the engine can suspend.
-      //
-      // The flag it sets, deathSequenceDone, is named in game.js
-      // rather than here, so the objective above has to match that
-      // spelling exactly. Worth knowing before anyone renames it.
+      // The stage and its cutscene carry LO2 pair 3: this is a
+      // moro-moro, stated in the lines themselves rather than only
+      // in the surrounding dialogue, so the fact stands even if a
+      // student never re-talks to the director.
       stage: {
         x: 900,
         width: 260,
         rampWidth: 50,
         label: "Entablado",
         poemPart1: [
-          { speaker: "Macario", text: "Pagsubok ang eksenang ito." },
-          { speaker: "Macario", text: "Titigil ang paggalaw hanggang matapos." },
+          { speaker: "Macario", text: "Ito na ang eksena ko sa moro-moro ngayong gabi." },
+          { speaker: "Macario", text: "Kailangan kong ipakita ang tapang ng tauhang ginagampanan ko." },
         ],
         poemPart2: [
-          { speaker: "Macario", text: "Magdidilim, at magiging gabi ang paligid." },
-          { speaker: "Macario", text: "Pagkatapos, babalik sa iyo ang kontrol." },
+          { speaker: "Macario", text: "Dito nagtatapos ang labanan sa dula — 'namamatay' ang tauhan ko sa entablado." },
+          { speaker: "Macario", text: "Pagtatanghal lamang ito. Ngunit sa totoong buhay, may hihintay pa sa akin." },
         ],
       },
 
-      // EXAMPLE: a hide spot. Standing inside one suppresses detection
-      // entirely, which is the counter to the guard below.
-      //
-      // Placed INSIDE the patrol rather than before it. Cover that sits
-      // outside the route is scenery; cover you have to reach while
-      // being hunted is the mechanic.
-      hideSpots: [{ x: 2400, width: 110 }],
-
-      // EXAMPLE: a one-way platform. Passed through from below, landed
-      // on from above. Sits on the approach, before the guard, so the
-      // jump is learned somewhere safe.
-      platforms: [{ x: 1500, y: 150, width: 220 }],
-
-      // EXAMPLE: a heart pickup, placed on the platform so it also
-      // proves a pickup can sit somewhere other than the floor.
-      // Refused rather than consumed at full health.
-      pickups: [{ id: "test-heart", x: 1580, y: 150, type: "heart" }],
-
-      // EXAMPLE: a patrolling guard with a detection meter.
-      //
-      // One guard, not two. The meter fills while it can see you and
-      // drains when it cannot, and a full meter is a catch: back to
-      // the start of the scene, one heart gone, and one detection on
-      // the record. From behind, with the meter empty, melee is a
-      // takedown instead. The thrown spear works at range.
-      //
-      // Speed is scaled by act number inside the engine, so 1.4 here
-      // is 1.4 in play, Act I being the 1.00 multiplier.
-      //
-      // TUNED AGAINST THE 1176 PIXEL CAMERA. The previous numbers were
-      // set when a phone showed 470 pixels across, where a 400 pixel
-      // patrol crossed most of the screen and a 240 radius covered half
-      // of it. At 1176 the same numbers read as a twitch in the corner.
-      //
-      //   patrol 800   two thirds of a screen, so the route is legible
-      //                as a route rather than a pace
-      //   radius 300   about a quarter of a screen. Deliberately well
-      //                under half: there is no line of sight test, so a
-      //                guard that owned most of the screen would be
-      //                unfair rather than tense
-      //   alert 0.010  1.7 seconds inside the radius before a catch.
-      //                Crossing the 600 pixel zone head on at the
-      //                player's 300 px/s takes 2 seconds, so a straight
-      //                run still loses and the hide spot still matters
-      guards: [
-        {
-          id: "bantay",
-          x: 2300,
-          patrolFrom: 2000,
-          patrolTo: 2800,
-          speed: 1.4,
-          facing: 1,
-          detectRadius: 300,
-          alertRate: 0.01,
-          decayRate: 0.02,
-          img: "Assets/Guard.png",
-        },
-      ],
-
-      // EXAMPLE: a hazard. One health on contact, then a shove clear
-      // of the band rather than a trip back to the entrance. Cleared
-      // with a jump.
-      // Past the patrol, on its own stretch, so it is met as its own
-      // problem rather than while a guard is closing.
-      hazards: [{ x: 3050, width: 90, reason: "Natusok ka! Pagsubok na hazard." }],
-
-      // EXAMPLE: a decoration. Animated, and not interactable.
       decorations: [
         {
-          id: "dekorasyon",
-          x: 560,
-          animation: { src: "Assets/Dekorasyon.png", frames: 4, fps: 6 },
+          id: "palengke",
+          x: 550,
+          animation: { src: "Assets/Palengke.png", frames: 4, fps: 6 },
           displayHeight: 70,
         },
       ],
     },
 
     // ===========================================================
-    // SCENE 2: the exit
+    // SCENE 2: Misyon
     //
-    // Deliberately bare. Its whole job is to prove that gotoScene
-    // moves the player, that current_room persists across a reload,
-    // and that the act can be finished from a scene other than the
-    // one it started in.
-    //
-    // NOT marked dangerous, and holding no guard and no hazard, so
-    // the hearts disappear on arrival. That contrast is itself part
-    // of the test: a safe room should not show a health bar.
+    // Dangerous — a guard, a hazard, a hide spot and a platform,
+    // the same mechanics the test stage exercised, now carrying the
+    // stakes LO4 pair 8 states in words: a courier caught here does
+    // not just cost Macario a heart, it exposes the whole movement.
+    // The contact at the far end is the destination the corridor
+    // makes hard to reach; nothing about them needs to be hidden.
     // ===========================================================
     {
-      id: "labasan",
-      worldWidth: TEST_EXIT_WIDTH,
-      startX: 60,
+      id: "misyon",
+      worldWidth: MISYON_WIDTH,
+      startX: 80,
+      dangerous: true,
 
       npcs: [
         {
-          id: "kasama",
-          x: 700,
-          img: "Assets/Kasama.png",
-          label: "Kasama",
+          // LO4 pair 8 on the first conversation, LO5 pairs 9 and
+          // 10 on the second. Both pairs land on the same NPC
+          // because both keyed answers are one fact each about the
+          // same two people: what Macario gave up, and that this
+          // contact — like him — is an ordinary worker.
+          id: "kasama-katipunero",
+          x: 2750,
+          img: "Assets/KasamangKatipunero.png",
+          label: "Kasamang Katipunero",
           stage: 0,
           dialogueSets: [
             {
               lines: [
-                { speaker: "Kasama", text: "Ito na ang huling bahagi ng pagsubok." },
-                { speaker: "Kasama", text: "Pagkatapos nito: ang post-test, ang feedback, at ang susunod na yugto." },
+                { speaker: "Kasamang Katipunero", text: "Ikaw ba ang ipinadala? Nasa iyo ba ang mensahe?" },
+                { speaker: "Macario", text: "Oo, narito. Hindi ako napansin ng mga bantay." },
+                { speaker: "Kasamang Katipunero", text: "Mabuti. Kung nahuli ka sana, malalaman ng mga Kastila ang buong kilusan — hindi lang tayong dalawa." },
+                { speaker: "Kasamang Katipunero", text: "Kaya kami, mga tagapaghatid, ay laging tago. Kami ang nagdadala ng balita nang hindi nabubunyag ang kilusan." },
               ],
               onComplete: () => {
-                // The fifth objective, which takes the count to 5 of 5.
-                // That is what runs the post-test, writes the
-                // completion, offers the feedback form and puts up the
-                // transition screen.
-                state.flags.natapos = true;
-                completeQuest("finish");
+                state.flags.naihatidAngMensahe = true;
+                completeQuest("mensahe");
+                addQuest("pag-alis", "Makipag-usap muli bago umalis");
+                markDirty();
+                if (window.Acts) Acts.checkObjectives();
+              },
+            },
+            {
+              lines: [
+                { speaker: "Kasamang Katipunero", text: "Kilala rin kita noon — ikaw ang mananahi sa palengke, hindi ba?" },
+                { speaker: "Macario", text: "Oo. Pero iniwan ko na ang aking pagtahi at pag-ahit para dito." },
+                { speaker: "Kasamang Katipunero", text: "Marami sa amin ay ganoon din. Mga karaniwang manggagawa lamang — mananahi, barbero, magsasaka." },
+                { speaker: "Macario", text: "Kung ganoon, hindi lang ilang tao ang kikilos — ang buong bayan." },
+                { speaker: "Kasamang Katipunero", text: "Iyan ang tunay na lakas ng Katipunan." },
+              ],
+              onComplete: () => {
+                state.flags.nagpaalam = true;
+                completeQuest("pag-alis");
                 markDirty();
                 if (window.Acts) Acts.checkObjectives();
               },
@@ -341,7 +298,48 @@ window.ACT_1 = {
         },
       ],
 
-      decorations: [],
+      // A route over the corridor rather than through it, and a
+      // heart on it — the same pairing the test stage used, kept
+      // because it still teaches the jump somewhere safe before the
+      // guard below is reached.
+      platforms: [{ x: 650, y: 150, width: 220 }],
+      pickups: [{ id: "misyon-puso", x: 730, y: 150, type: "heart" }],
+
+      // Patrol width 800 (two thirds of a screen) and detection
+      // radius 300 (about a quarter) are the test stage's tuned
+      // numbers, carried over unchanged — they were already fitted
+      // to this 1176 pixel camera and nothing here changes the
+      // reason they were chosen. The hide spot sits inside the
+      // patrol rather than before it, so it is cover you have to
+      // reach while being hunted rather than scenery.
+      guards: [
+        {
+          id: "guwardiya",
+          x: 1800,
+          patrolFrom: 1400,
+          patrolTo: 2200,
+          speed: 1.4,
+          facing: 1,
+          detectRadius: 300,
+          alertRate: 0.01,
+          decayRate: 0.02,
+          img: "Assets/Guwardiya.png",
+        },
+      ],
+      hideSpots: [{ x: 1650, width: 110 }],
+
+      // Past the patrol, its own stretch, so it reads as its own
+      // problem rather than piling onto the guard.
+      hazards: [{ x: 2500, width: 90, reason: "Nakita ka sandali ng bantay sa daan!" }],
+
+      decorations: [
+        {
+          id: "poste",
+          x: 300,
+          animation: { src: "Assets/Poste.png", frames: 4, fps: 6 },
+          displayHeight: 70,
+        },
+      ],
     },
   ],
 };

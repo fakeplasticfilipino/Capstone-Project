@@ -67,29 +67,21 @@ one decision is what removed the mobile control overflow from the work
 rather than fixing it, because the overflow only ever happened in
 portrait.
 
-## Act I is currently a TEST STAGE, not the story
+## Act I is the real story now
 
-content/act1.js holds a proving ground rather than a narrative. One room
-with exactly one example of every system the engine has, plus a bare second
-room to prove scene transport. The road through Tondo and the Spanish
-outpost that used to live there were placeholder from the start and have
-been deleted; they are in git history and should not be restored.
+content/act1.js was a proving ground, one room with one example of every
+engine system and placeholder dialogue about buko and errands. It has been
+replaced wholesale with a narrative written directly against the ten item
+pairs in db/macario_items_v3.sql. See Decisions on record for the scene
+structure and what each beat teaches.
 
-The rule for that file is one example of each mechanic and no more. If a
-mechanic ends up represented twice, delete one. A person should be able to
-walk it in two minutes and see everything the engine can do.
+The old test stage, and the earlier road-through-Tondo placeholder before
+it, are both in git history and should not be restored.
 
-The test stage deliberately teaches nothing. The seeded item bank tests
-five learning objectives and the stage states none of them, so a gain
-measured against it reflects prior knowledge and a second look at the
-questions. The real Act I, written against the resource person's source
-material and against the ten item pairs in db/macario_items_v3.sql,
-replaces this file wholesale.
-
-Acts II through IV are registered, loadable stubs waiting to be written.
-
-The build order is mechanics first, then content written against whatever
-mechanics exist. The mechanics have stopped moving, so content is next.
+Acts II through IV are still registered, loadable stubs waiting to be
+written. The next content pass is one of those, not another look at Act I,
+unless the resource person's source material turns up something the
+current script gets wrong.
 
 ## Stack
 
@@ -852,6 +844,42 @@ The ERD is revised to match what is built rather than the reverse.
 PlayerAction and the achievement entities are dropped: a per-action replay
 log costs writes on a phone on mobile data and would never be queried, and
 achievements add nothing that currency and cosmetics do not already cover.
+
+Act I is two scenes, not one. "tondo" is safe, no guard and no hazard, and
+covers origins, the trade, the moro-moro performance and the recruitment
+into the Katipunan. "misyon" is where dangerous is true: it holds the
+guard, hide spot, platform and hazard that used to live in the test
+stage's single room, now carrying the stakes of a courier task rather than
+proving the mechanic for its own sake. The split exists because the story
+has a safe half and a dangerous half, and forcing both into one room the
+way the test stage did was a testing convenience, not a narrative choice.
+
+Five objectives, unchanged from the test stage, so the currency drip stays
+floor(50 / 5) = 10 barya each without touching acts.js. Each objective's
+flag is chosen freely except one: deathSequenceDone is not content's name
+to pick. game.js sets it directly when the stage cutscene's death
+animation ends, so whichever objective is "the performance" has to use
+that exact string.
+
+The hidden-NPC pattern (startsHidden plus revealedByFlag) that the test
+stage used for its guarded NPC is deliberately not reused. game.js only
+calls revealNpcsByFlag() after the death sequence and on save restore, so
+that pattern only works when the reveal flag IS deathSequenceDone. A
+contact "hidden until the player gets past the guard" would need a flag
+nothing re-checks, and the guard corridor already makes reaching that NPC
+hard without it.
+
+Every historical fact stated in content/act1.js is stated because a
+correct answer in db/macario_items_v3.sql already commits to it: Tondo,
+the tailor-and-barber trade, the moro-moro, 1894, the Katipunan's aim of
+independence through revolution rather than reform, why it had to stay
+secret, the danger to a messenger, and that its members were ordinary
+workers. Nothing goes further than that on its own authority. The
+connective tissue between beats, such as a character noticing his stage
+presence or naming the year aloud, is ordinary scene-setting for a game
+and not a claim about what is documented. If the resource person's source
+material says something different or something more, later passages
+correct or extend these beats rather than the other way around.
 
 ## Pitfalls
 
