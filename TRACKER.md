@@ -346,6 +346,20 @@ hazard all carried over into "misyon" with the same tuning against
 the 1176 pixel camera. _dev/test.js updated to match. 289 passed, 0
 failed, run twice. (COMPLETE)
 
+Act I refinement pass. Placeholder sprites for the four NPCs, the
+guard, the two decorations and the Tondo day/night skyline — flat
+silhouette PNGs, Claude-drawn, ASSET_VERSION bumped to 4. Finding
+worth recording: buildGuards() in game.js has no code path that ever
+loads a static guard.img; that branch shows the placeholder box
+unconditionally. The guard's sprite in content/act1.js is declared as
+animation instead, which is the only way a guard renders as anything
+but a box — an engine fact, not a content choice, and worth knowing
+before anyone gives a future guard an img and wonders why nothing
+changes. Also rebalanced two dialogue exchanges that had no Macario
+line at all (the neighbor's revisit, the director's whole
+conversation). 289 passed, 0 failed, run twice after both changes.
+(COMPLETE)
+
 Paper audit. Seventeen functional requirements, ten non-functional,
 five modules, seventeen ERD entities and all four act storyboards
 checked against the code. Its findings are the two scoreboards above.
@@ -471,10 +485,15 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the replacement art. Assets/ holds only a floor tile and the
-player walk cycle. Everything else falls back to a labelled
-placeholder box, so the game is fully playable and visually skeletal.
-That is the fallback system working, not a fault.
+Chase the replacement art. Assets/ holds a floor tile, the player
+walk cycle, and — as of the Act I rewrite — Claude-drawn placeholder
+sprites for the four Act I NPCs, the guard, two decorations and the
+Tondo day/night skyline. These are flat silhouettes, deliberately
+simple so nobody mistakes them for finished art, and they are still
+what this line is asking to have replaced. The player's own Idle and
+Dead poses, both outfits, and everything in Acts II through IV are
+untouched and still fall back to the labelled placeholder box, which
+remains the fallback system working, not a fault.
 
 Block 11 adds two named files to that list: Skin_Walk.png and
 Skin_Uniporme_Walk.png, the two outfits. Both are bought and worn

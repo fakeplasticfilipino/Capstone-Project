@@ -163,7 +163,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 3;
+const ASSET_VERSION = 4;
 
 function assetUrl(path) {
   if (!path) return path;

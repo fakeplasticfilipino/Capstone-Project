@@ -350,9 +350,10 @@ currentColor, so an icon is whatever colour its button already is.
 That is why they are strokes rather than glyphs.
 
 There is no icon art and none can be invented. Assets/ holds a floor
-tile and a walk cycle, and a missing image renders as the dashed
-placeholder box naming the file, so referencing an icon PNG would fill
-the screen with those.
+tile, the player's walk cycle, and a set of Claude-drawn placeholder
+sprites for Act I (see Decisions on record). A missing image still
+renders as the dashed placeholder box naming the file, so referencing
+an icon PNG would fill the screen with those.
 
 Unicode and emoji were the cheaper option and were rejected on a render
 rather than on principle: the crossed swords fell back to a thin
@@ -952,6 +953,14 @@ saveReady and syncStart on every login, before syncStart has read what the
 student had already finished. Without the guard, a student resuming an act
 four objectives in is paid for those four objectives again on every single
 login. The harness caught it; nothing appeared in the console.
+
+A guard's img field is accepted by the act data format and does nothing.
+buildGuards() in game.js only loads art through the animation branch; the
+else branch calls showPlaceholder() unconditionally and never attempts to
+read guard.img at all. An NPC's img and a guard's img look like the same
+field and are not: give a guard a static image and it stays a box forever,
+silently, with no error. Declare a guard's sprite as animation or accept
+the placeholder.
 
 ## Accounts
 

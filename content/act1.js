@@ -52,10 +52,17 @@
 // itself is what makes reaching that NPC hard; hiding them behind a
 // flag would add nothing.
 //
-// SPRITES. Only Assets/Walk.png and Assets/Cement_Tile.png exist.
-// Every other filename below renders as the labelled placeholder
-// box, which is the fallback system working and the art shopping
-// list at once.
+// SPRITES. The four NPCs, the guard, the two decorations and the
+// Tondo day/night skyline now have placeholder art — flat silhouette
+// pieces, Claude-drawn, meant to be replaced rather than kept. They
+// exist so the scene reads as a place instead of a field of dashed
+// boxes; they are not a substitute for the commissioned art on
+// TRACKER's Blocked-on-other-people list, which still names what's
+// actually missing. Guards render ONLY through the animation path —
+// buildGuards() in game.js never attempts to load a static guard.img
+// at all, it shows the placeholder box unconditionally in that
+// branch — so Guwardiya.png below is declared as animation, not img,
+// or the art would sit in Assets/ and never be seen.
 // =============================================================
 
 // A phone in landscape shows 1176 world pixels across at --zoom 0.7.
@@ -133,6 +140,7 @@ window.ACT_1 = {
               // did that.
               lines: [
                 { speaker: "Kapitbahay", text: "Doon sa entablado, sa may tabi ng kalye. Hindi mo mamimintasan." },
+                { speaker: "Macario", text: "Aalis na ako. Baka mahuli ako sa simula." },
               ],
               onComplete: () => {},
             },
@@ -157,6 +165,7 @@ window.ACT_1 = {
                 { speaker: "Macario", text: "Sanay na ako. Malimit akong gumanap sa mga dulang tulad niyan." },
                 { speaker: "Direktor", text: "Ang husay mong magsalita nang harapan sa napakaraming tao ay hindi karaniwan." },
                 { speaker: "Direktor", text: "Balang-araw, magagamit mo pa iyan — hindi lang sa entablado." },
+                { speaker: "Macario", text: "Sa entablado lang naman ako natututong magsalita nang ganito." },
                 { speaker: "Direktor", text: "May bulong-bulungan ngayon tungkol sa isang lihim na kapisanan. Baka may maghanap sa iyo." },
               ],
               onComplete: () => {
@@ -312,6 +321,11 @@ window.ACT_1 = {
       // reason they were chosen. The hide spot sits inside the
       // patrol rather than before it, so it is cover you have to
       // reach while being hunted rather than scenery.
+      //
+      // animation, not img — see the SPRITES note at the top of this
+      // file. img is accepted by the act data format but buildGuards()
+      // has no code path that ever loads it; a guard is either
+      // animated or a placeholder box, nothing in between.
       guards: [
         {
           id: "guwardiya",
@@ -323,7 +337,7 @@ window.ACT_1 = {
           detectRadius: 300,
           alertRate: 0.01,
           decayRate: 0.02,
-          img: "Assets/Guwardiya.png",
+          animation: { src: "Assets/Guwardiya.png", frames: 4, fps: 4 },
         },
       ],
       hideSpots: [{ x: 1650, width: 110 }],
