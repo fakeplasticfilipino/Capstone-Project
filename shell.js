@@ -169,11 +169,9 @@ const Shell = {
 
     this.el.settingsBack.addEventListener("click", () => this._closeSettings());
 
-    // The reset offer is not guarded on window.Inventory. Without that
-    // module it still puts the text size back, which is the half of
-    // this that never leaves the device, and a button that vanishes
-    // when an optional file fails to load is worse than one that does
-    // less than its longest description.
+    // Not guarded on window.Inventory. The wipe happens in one
+    // database call that clears all seven tables, so it neither needs
+    // that module nor cares whether it loaded.
     this.el.resetBtn.addEventListener("click", () => this._openReset());
     this.el.resetCancel.addEventListener("click", () =>
       this._showPanel("settings")
@@ -390,6 +388,7 @@ const Shell = {
       this.el.settingsNote.textContent = "";
       this.el.settingsNote.className = "shell-note";
     }
+    this._refreshResetOffer();
     this.settingsReturn = from;
     this.state = "settings";
     this._showPanel("settings");
@@ -688,31 +687,41 @@ const Shell = {
   // -----------------------------------------------------------
   // Reset
   //
-  // WHAT THIS CLEARS, and the reasoning, because a button that
-  // deletes anything in a study needs its scope written down next to
-  // the code rather than only in a document:
+  // A full wipe: every row this student owns in all seven tables,
+  // through reset_my_play_data() in schema v5. The account, its class
+  // enrolment and its password survive, so the student stays logged
+  // in and starts the game from the very beginning.
   //
-  //   the text size, in localStorage
-  //   player_inventory  and  player_equipment
+  // NOT DOABLE FROM THE CLIENT, and that is the point. A browser
+  // cannot delete an assessment score: the table has a select policy
+  // and an insert policy and nothing else, which is what makes one
+  // attempt per act per test type mean what it says. The function is
+  // security definer, takes no arguments, and refuses any caller not
+  // on the list inside it, so a study account cannot wipe itself by
+  // tapping, by editing this file, or from the console.
   //
-  // AND NOTHING ELSE. Those two tables are the only ones in this
-  // schema carrying a student delete policy. assessment_scores has
-  // select and insert and nothing more, so the one attempt per act
-  // per test type cannot be reached from a browser at all; feedback
-  // is the same by an earlier deliberate decision; game_progress,
-  // act_progress and game_sessions have no delete policy either.
-  // Row level security is what makes that true, not this comment,
-  // and the harness proves the rows survive rather than trusting it.
-  //
-  // act_progress is the one that could have been damaged, because it
-  // does carry an update policy: rewriting it would destroy the
-  // performance score and the completion record while leaving the
-  // scores stranded, and no replay could restore them. So this does
-  // not write it.
-  //
-  // Currency stays too, so a student who resets does not lose what
-  // they earned on the way to buying the thing they just cleared.
+  // The button is hidden unless can_reset_my_data() says yes. That is
+  // a courtesy so a student is not offered something that will be
+  // refused; the refusal in the database is the guarantee.
   // -----------------------------------------------------------
+
+  // Asked once, on the way into settings rather than at login: it is
+  // one round trip and this screen is opened while the game is paused,
+  // so the wait costs nothing anyone will feel. A failure leaves the
+  // button hidden, which is the safe way to be wrong.
+  async _refreshResetOffer() {
+    if (!this.el.resetBtn) return;
+    this.el.resetBtn.classList.add("hidden");
+    if (!window.Game || !Game.isSignedIn()) return;
+
+    try {
+      const { data, error } = await sb.rpc("can_reset_my_data");
+      if (error) throw error;
+      if (data === true) this.el.resetBtn.classList.remove("hidden");
+    } catch (err) {
+      console.warn("Reset availability could not be read:", err);
+    }
+  },
 
   _openReset() {
     this.el.resetNote.textContent = "";
@@ -722,57 +731,56 @@ const Shell = {
     this._showPanel("reset");
   },
 
-  // Awaited rather than optimistic, unlike equipping and buying. This
-  // is the one action on these screens a student would want confirmed
-  // instead of assumed, and it is the one they cannot simply repeat to
-  // find out whether it took.
+  // Awaited, and then the page is reloaded rather than repainted.
+  //
+  // Reloading is not laziness. After the wipe there is no
+  // game_progress row and no act_progress row, and every module in
+  // memory is still holding the state of a student who no longer
+  // exists in the database. Rebuilding all of that in place would
+  // mean a reset path through every file, each one a chance to leave
+  // something behind. A reload runs the real login sequence, which
+  // already knows how to start a student who has never played.
+  //
+  // Game.stopSaving() first, or the debounce, the autosave and the
+  // beforeunload flush each put part of the old student straight
+  // back between the wipe and the reload.
   async _resetData() {
     this.el.resetConfirm.disabled = true;
     this.el.resetCancel.disabled = true;
     this.el.resetNote.className = "shell-note";
-    this.el.resetNote.textContent = "Nire-reset...";
+    this.el.resetNote.textContent = "Binubura...";
 
-    // The device half first. It cannot fail and it cannot reach the
-    // network, so something visibly changes even on a dead connection.
-    this.settings = { textSize: "md" };
-    this._applySettings();
+    if (window.Game && Game.stopSaving) Game.stopSaving();
+
     try {
-      window.localStorage.removeItem(this.STORAGE_KEY);
+      const { error } = await sb.rpc("reset_my_play_data");
+      if (error) throw error;
     } catch (err) {
-      // Private browsing throws here rather than returning. The
-      // in-memory default is already applied, which is the part the
-      // student can see.
-      console.warn("Settings could not be cleared:", err);
-    }
-
-    let wrote = true;
-    if (window.Inventory) {
-      // The act the student is sitting in, so the grant that belongs
-      // to it comes straight back. Acts may be absent in a page that
-      // loaded without it; the reset still runs, it just grants
-      // nothing.
-      const act =
-        window.Acts && typeof Acts.current === "number" ? Acts.current : null;
-      wrote = await Inventory.resetOwned(act);
-    }
-
-    this.el.resetConfirm.disabled = false;
-    this.el.resetCancel.disabled = false;
-
-    if (!wrote) {
-      this.el.resetNote.className = "shell-note";
+      console.error("Reset failed:", err);
+      this.el.resetConfirm.disabled = false;
+      this.el.resetCancel.disabled = false;
       this.el.resetNote.textContent =
-        "Hindi nabura ang mga gamit. Suriin ang koneksyon.";
+        /NOT_ALLOWED/.test(String(err && err.message))
+          ? "Hindi pinapayagan ang pagbura sa account na ito."
+          : "Hindi natuloy ang pagbura. Suriin ang koneksyon.";
+      // Saving stays off. The student is being invited to retry, and
+      // a write in between would be a write on behalf of a student
+      // the next attempt is about to delete anyway.
       return;
     }
 
-    // Back to the screen it was reached from, with the result stated
-    // there. Staying put would leave a Hindi button under a message
-    // saying the thing had already happened.
-    this.el.resetNote.textContent = "";
-    this.el.settingsNote.className = "shell-note ok";
-    this.el.settingsNote.textContent = "Tapos na ang pag-reset.";
-    this._showPanel("settings");
+    // The device settings go with it. This is the only part of a
+    // student's state that never reaches the database, so a wipe
+    // that left it behind would not be a fresh start.
+    try {
+      window.localStorage.removeItem(this.STORAGE_KEY);
+    } catch (err) {
+      console.warn("Settings could not be cleared:", err);
+    }
+
+    this.el.resetNote.className = "shell-note ok";
+    this.el.resetNote.textContent = "Tapos na. Magsisimula ulit ang laro...";
+    window.setTimeout(() => window.location.reload(), 600);
   },
 
   // -----------------------------------------------------------

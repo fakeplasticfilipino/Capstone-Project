@@ -43,13 +43,19 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite passes at 284 checks, 0 failures.
+The automated suite passes at 289 checks, 0 failures.
 
 The UI now reads as a game rather than a form. Every button carries an
-inline SVG icon beside its Tagalog label, the panels and the touch
-controls have a bevel and a rim rather than a flat fill, and the
-settings screen offers a reset. All of it is verified in the harness
-and NONE of it has been seen on the phone yet.
+inline SVG icon beside its Tagalog label, and the panels and the touch
+controls have a bevel and a rim rather than a flat fill. All of it is
+verified in the harness and NONE of it has been seen on the phone yet.
+
+The settings screen offers a full reset: every row the student owns,
+in all seven tables, so they start the game from the very beginning
+with their account and password intact. It needs schema v5, WHICH HAS
+NOT BEEN RUN. Until it is, the button never appears, because the
+function that decides whether to show it does not exist yet and the
+client treats that as no.
 
 That pass found something worth more than the icons. Touch targets
 were only ever worked out against --zoom for the control cluster.
@@ -181,6 +187,14 @@ when. A fresh session should trust this over any memory of a chat.
     db/applied/macario_schema_v2.sql    RUN
     db/applied/macario_schema_v3.sql    RUN
     db/applied/macario_schema_v4.sql    RUN, 19 Aug 2026
+
+    db/macario_schema_v5.sql            NOT RUN. Adds the three
+                                        functions behind the in-game
+                                        full reset. No tables, no
+                                        columns, no policy changes, so
+                                        the ERD stays at eleven. Move
+                                        it to db/applied/ once it has
+                                        been run and date this line
 
     db/macario_items_v3.sql             RUN, 28 Aug 2026
 
@@ -386,14 +400,24 @@ which the harness refused to click until it was. And the 44px rule was
 extended from the control cluster to every button on a screen, which
 is where it had never been applied.
 
-The settings reset is done. It clears the text size and the two
-ownership tables and nothing else, because those are the only tables a
-student's browser may delete from. Seven checks assert that the
-assessment scores, the act's performance score and objective count, the
-save row, the session row, the feedback and the barya all survive it.
-It is not a substitute for db/reset_test_accounts.sql and cannot
-become one: a full-flow retest needs the scores cleared and no client
-can clear them.
+The settings reset is written but NOT LIVE. It is a full wipe: all
+seven student-owned tables, so a pilot tester starts the game from the
+beginning with their account and password intact and can sit both
+tests again. That is impossible from a browser by design, since
+assessment_scores has no delete policy and must not get one, so it
+runs through reset_my_play_data() in db/macario_schema_v5.sql.
+
+RUN THAT MIGRATION BEFORE EXPECTING THE BUTTON TO APPEAR. Until it
+exists, can_reset_my_data() errors, shell.js treats that as no, and
+the offer is simply never drawn. That is the intended failure.
+
+Only named accounts may wipe. is_reset_allowed() currently lists
+hi@example.com and guro@example.com, matching what
+db/reset_test_accounts.sql already names. A study account is not on
+the list and must never be added: their one attempt is the data. The
+check is server side, so a study account cannot wipe itself by
+tapping, by editing the page, or from the console. Checks cover the
+refusal as well as the wipe.
 
 Left: audio if there is time, which is still the first thing to cut.
 
@@ -458,7 +482,14 @@ content/items.js; rename them to match whatever the artist delivers.
 Provision student accounts for the session, and pilot with two or
 three students who are not part of the study. A pilot run on a study
 account consumes that student's one attempt permanently, so the two
-sets must be separate. (NOT STARTED)
+sets must be separate.
+
+When those pilot accounts exist, add their addresses to
+is_reset_allowed() in the database and re-run that one statement. It
+is a create or replace, so no migration is needed and nothing else in
+schema v5 has to run again; record it here. That is what lets a pilot
+tester wipe themselves and run the whole flow a second time without a
+trip to the SQL editor. Do not add a study account. (NOT STARTED)
 
 ## Known problems
 
@@ -496,7 +527,7 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-284 checks. Anything other than "0 failed" is a regression.
+289 checks. Anything other than "0 failed" is a regression.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it

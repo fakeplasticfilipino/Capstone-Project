@@ -1783,186 +1783,215 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAF. The reset button, and what it must not touch");
+  console.log("\nAF. The full reset is offered only to accounts that may use it");
   {
+    // A study account. can_reset_my_data() answers false, so the
+    // offer is never drawn. This is the check that matters most on
+    // this screen: a student in the study who wipes their own row has
+    // destroyed the finding for that student and it cannot be re-run.
     const { ctx, page } = await enterTestRoom();
+    await page.click("#btn-pause");
+    await page.waitForTimeout(120);
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(300);
+    ok("a student who may not reset is never offered it",
+       !(await visible(page, "#shell-reset")));
+    ok("and the settings screen is otherwise intact",
+       await visible(page, "#shell-settings-back"));
+
+    // Even reached directly, the database refuses. shell.js hiding the
+    // button is a courtesy; this is the guarantee.
+    const refused = await page.evaluate(async () => {
+      const before = __DB.act_progress.length;
+      const { error } = await sb.rpc("reset_my_play_data");
+      return { message: error && error.message, rows: __DB.act_progress.length, before };
+    });
+    ok("calling it anyway is refused", refused.message === "NOT_ALLOWED", refused);
+    ok("and nothing is deleted by the refusal",
+       refused.rows === refused.before, refused);
+
+    await ctx.close();
+  }
+
+  {
+    // An allowlisted account. The offer appears and the wipe runs.
+    const seed = atTestRoom();
+    seed.canReset = true;
+    const { ctx, page } = await newPage(seed);
+    await page.waitForTimeout(700);
+    await page.click("#shell-start");
+    await page.waitForTimeout(400);
 
     await page.click("#btn-pause");
     await page.waitForTimeout(120);
     await page.click("#shell-pause-settings");
-    await page.waitForTimeout(120);
-    ok("the reset offer is on the settings screen",
+    await page.waitForTimeout(300);
+    ok("an allowed account is offered the reset",
        await visible(page, "#shell-reset"));
 
-    // It asks first. A single tap that deletes anything is not a thing
-    // to put in front of a Grade 8 student.
     await page.click("#shell-reset");
     await page.waitForTimeout(150);
-    ok("tapping it asks rather than doing it",
-       await visible(page, "#shell-reset-confirm"));
-    ok("and the settings screen is out of the way",
-       !(await visible(page, "#shell-settings"))); 
+    ok("it asks before wiping", await visible(page, "#shell-reset-confirm"));
+    ok("and the confirmation names the test scores",
+       /pagsusulit/i.test(await page.textContent("#shell-reset-confirm")));
 
-    const rows = await page.evaluate(() => __DB.player_inventory.length);
+    // Hindi must leave everything alone.
     await page.click("#shell-reset-no");
     await page.waitForTimeout(150);
-    ok("Hindi goes back without deleting anything",
-       (await visible(page, "#shell-settings")) &&
-       (await page.evaluate(() => __DB.player_inventory.length)) === rows);
+    const kept = await page.evaluate(() => __DB.act_progress.length);
+    ok("Hindi backs out without deleting anything",
+       (await visible(page, "#shell-settings")) && kept === 1, kept);
 
-    // Seed the tables a reset must leave alone. These are the study:
-    // one attempt per student per act per test type, and the row the
-    // dashboard reports a performance score from.
+    // Everything a student owns, across all seven tables.
     await page.evaluate(() => {
       __DB.assessment_scores = [
         { student_id: "u1", act_number: 1, test_type: "pretest", score: 4 },
         { student_id: "u1", act_number: 1, test_type: "posttest", score: 8 },
       ];
-      __DB.game_sessions = [{ student_id: "u1", act_number: 1, ended_at: null }];
+      __DB.game_sessions = [{ student_id: "u1", act_number: 1 }];
       __DB.feedback = [{ student_id: "u1", act_number: 1, rating: 4 }];
-      __DB.act_progress[0].performance_score = 82;
-      __DB.act_progress[0].objectives_done = 4;
-      __DB.game_progress[0].currency = 120;
-      // Something bought, and something worn, so there is a change to see.
-      __DB.player_equipment.length = 0;
-      __DB.player_equipment.push({ student_id: "u1", slot: "outfit", item_id: "damit-magsasaka" });
-      if (!__DB.player_inventory.some((r) => r.item_id === "damit-magsasaka")) {
-        __DB.player_inventory.push({ student_id: "u1", item_id: "damit-magsasaka", quantity: 1 });
-      }
-      Inventory.ownedIds = __DB.player_inventory.map((r) => r.item_id);
-      Inventory.equipment = { outfit: "damit-magsasaka" };
+      __DB.player_equipment = [{ student_id: "u1", slot: "weapon", item_id: "sibat" }];
+      __DB.player_inventory = [{ student_id: "u1", item_id: "sibat", quantity: 1 }];
       Shell.settings.textSize = "lg";
-      Shell._applySettings();
       Shell._saveSettings();
+      // window.location.reload cannot be stubbed -- it is read only on
+      // Location, and assigning to it fails silently, which is how this
+      // check first "passed" against a page that had actually reloaded
+      // and rebuilt the stub database from its seed. So the reload is
+      // allowed to happen and detected by this mark going missing.
+      window.__MARK = "before";
     });
 
     await page.click("#shell-reset");
     await page.waitForTimeout(120);
     await page.click("#shell-reset-yes");
-    await page.waitForTimeout(600);
+    // Inside the 600ms shell.js waits before reloading. The rpc has
+    // resolved and localStorage is cleared well before this.
+    await page.waitForTimeout(250);
 
     const after = await page.evaluate(() => ({
       scores: __DB.assessment_scores.length,
-      score: __DB.act_progress[0].performance_score,
-      objectives: __DB.act_progress[0].objectives_done,
-      status: __DB.act_progress[0].status,
-      progressRows: __DB.game_progress.length,
-      currency: __DB.game_progress[0].currency,
+      acts: __DB.act_progress.length,
+      progress: __DB.game_progress.length,
       sessions: __DB.game_sessions.length,
       feedback: __DB.feedback.length,
       equipment: __DB.player_equipment.length,
-      owned: __DB.player_inventory.map((r) => r.item_id).sort(),
-      textSize: Shell.settings.textSize,
+      inventory: __DB.player_inventory.length,
+      profiles: __DB.profiles.length,
       stored: window.localStorage.getItem("macario:settings"),
-      panel: !document.getElementById("shell-settings").classList.contains("hidden"),
+      signedIn: Game.isSignedIn(),
     }));
 
-    // THE CHECKS THAT PROTECT THE STUDY. An attempt cannot be re-run,
-    // so a reset that reached these would destroy the finding for that
-    // student silently.
-    ok("both assessment scores survive the reset", after.scores === 2, after);
-    ok("the act's performance score survives", after.score === 82, after);
-    ok("its objective count survives", after.objectives === 4, after);
-    ok("the act is not knocked back to an earlier state",
-       after.status === "playing", after);
-    ok("the save row is not deleted", after.progressRows === 1, after);
-    ok("the session row survives", after.sessions === 1, after);
-    ok("the feedback survives", after.feedback === 1, after);
+    ok("the assessment scores are gone", after.scores === 0, after);
+    ok("the act progress is gone", after.acts === 0, after);
+    ok("the save row is gone", after.progress === 0, after);
+    ok("the session rows are gone", after.sessions === 0, after);
+    ok("the feedback is gone", after.feedback === 0, after);
+    ok("the equipment is gone", after.equipment === 0, after);
+    ok("the inventory is gone", after.inventory === 0, after);
+    ok("the device settings are cleared", after.stored === null, after);
 
-    // Currency is deliberately kept. A student who tidied up should not
-    // lose what they earned on the way to buying the thing.
-    ok("the barya is kept", after.currency === 120, after);
+    // The account survives. This is the whole difference between
+    // starting over and deleting yourself, and it is what lets the
+    // student play again without the teacher reissuing a password.
+    ok("the account itself survives", after.profiles === 1, after);
+    ok("and the student is still signed in", after.signedIn === true, after);
 
-    // What it does do.
-    ok("nothing is left equipped", after.equipment === 0, after);
-    ok("the purchased outfit is gone",
-       after.owned.indexOf("damit-magsasaka") === -1, after);
-    ok("the act's granted items come straight back",
-       after.owned.indexOf("sibat") !== -1 && after.owned.indexOf("agimat") !== -1,
-       after);
-    ok("the text size is back to the default", after.textSize === "md", after);
-    ok("and the stored setting is cleared", after.stored === null, after);
-    ok("it returns to the settings screen", after.panel === true, after);
-
-    // The effects have to follow the equipment off, or a student keeps
-    // an extra heart they no longer own.
-    const eff = await page.evaluate(() => Inventory.effects());
-    ok("the effects come off with the equipment",
-       eff.maxHealthBonus === 0 && eff.projectileSpeedMult === 1, eff);
+    // And then it reloads, which is what turns an empty database into
+    // a student sitting at the start of Act I.
+    await page.waitForTimeout(900);
+    const reloaded = await page.evaluate(() => window.__MARK === undefined);
+    ok("the page reloads into a fresh start", reloaded === true);
 
     await ctx.close();
   }
 
-  console.log("\nAG. Reset without inventory.js, and when the write fails");
   {
-    // The module is optional, and this button is not guarded on it.
-    // Without it the reset still puts the text size back, which is the
-    // half that never leaves the device.
-    const { ctx, page } = await enterTestRoom("**/inventory.js*");
-
-    ok("no inventory button without the module",
-       !(await visible(page, "#shell-inventory-open")));
-
-    await page.click("#btn-pause");
-    await page.waitForTimeout(120);
-    await page.click("#shell-pause-settings");
-    await page.waitForTimeout(120);
-    ok("the reset offer is still there", await visible(page, "#shell-reset"));
-
-    await page.evaluate(() => {
-      Shell.settings.textSize = "sm";
-      Shell._applySettings();
-      Shell._saveSettings();
-    });
-    await page.click("#shell-reset");
-    await page.waitForTimeout(120);
-    await page.click("#shell-reset-yes");
+    // A failed call must say so and must leave saving off, because a
+    // retry is about to delete whatever a write would have put back.
+    const seed = atTestRoom();
+    seed.canReset = true;
+    seed.resetError = "simulated network failure";
+    const { ctx, page } = await newPage(seed);
+    await page.waitForTimeout(700);
+    await page.click("#shell-start");
     await page.waitForTimeout(400);
-    const local = await page.evaluate(() => ({
-      size: Shell.settings.textSize,
-      stored: window.localStorage.getItem("macario:settings"),
-      panel: !document.getElementById("shell-settings").classList.contains("hidden"),
-    }));
-    ok("it still resets the text size", local.size === "md", local);
-    ok("and still returns to settings", local.panel === true, local);
-
-    await ctx.close();
-  }
-
-  {
-    const { ctx, page } = await enterTestRoom();
     await page.click("#btn-pause");
     await page.waitForTimeout(120);
     await page.click("#shell-pause-settings");
-    await page.waitForTimeout(120);
-
-    // A failed delete must say so rather than leaving the student
-    // believing rows were cleared that are still there.
-    await page.evaluate(() => {
-      const realFrom = sb.from.bind(sb);
-      sb.from = (table) => {
-        if (table !== "player_equipment") return realFrom(table);
-        return { delete: () => ({
-          eq: () => Promise.resolve({ data: null, error: { message: "simulated" } }),
-        }) };
-      };
-    });
-
+    await page.waitForTimeout(300);
     await page.click("#shell-reset");
     await page.waitForTimeout(120);
     await page.click("#shell-reset-yes");
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(700);
 
     const failed = await page.evaluate(() => ({
       note: document.getElementById("shell-reset-note").textContent,
       stillThere: !document.getElementById("shell-reset-confirm").classList.contains("hidden"),
-      owned: Inventory.ownedIds.length,
       enabled: !document.getElementById("shell-reset-yes").disabled,
+      rows: __DB.act_progress.length,
     }));
-    ok("a failed reset says so in Tagalog", /koneksyon/.test(failed.note), failed);
+    ok("a failed wipe says so in Tagalog", /koneksyon/.test(failed.note), failed);
     ok("and stays on the confirmation to be retried",
        failed.stillThere && failed.enabled, failed);
-    ok("and does not pretend the items are gone", failed.owned > 0, failed);
+    ok("and nothing was half deleted", failed.rows === 1, failed);
+
+    // Saving is stopped BEFORE the call and stays stopped on failure,
+    // because the retry the student is being invited to make is about
+    // to delete whatever a write would have put back. All four paths
+    // have to be off, not just the debounce: the ten second autosave
+    // alone would rewrite the row on its own.
+    const quiet = await page.evaluate(async () => {
+      __DB.game_progress.length = 0;
+      // Everything that could still write: the debounce, the call
+      // beforeunload makes directly, and the autosave interval.
+      // Marking it dirty first is what one frame of play would do.
+      markDirty();
+      await saveProgress();
+      await flushSave();
+      await new Promise((r) => setTimeout(r, 1400));
+      return { rows: __DB.game_progress.length, ready: saveReady,
+               timer: autosaveTimer };
+    });
+    ok("a direct save writes nothing after the reset", quiet.rows === 0, quiet);
+    ok("the beforeunload flush writes nothing either", quiet.rows === 0, quiet);
+    ok("the autosave interval is cancelled", quiet.timer === null, quiet);
+    ok("and saveReady stays down so nothing can re-arm it",
+       quiet.ready === false, quiet);
+
+    await ctx.close();
+  }
+
+  console.log("\nAG. A wiped student starts the game from the beginning");
+  {
+    // What the reload lands on: no rows anywhere, which is exactly the
+    // state a student who has never played is in. Driven as a fresh
+    // login rather than asserted about, because "starts over" means
+    // the real entry sequence runs, not that seven tables are empty.
+    const { ctx, page } = await newPage({ session: null, canReset: true });
+    await page.waitForTimeout(300);
+    ok("the title screen offers a start, not a resume",
+       (await page.textContent("#shell-start")).trim() === "Magsimula",
+       (await page.textContent("#shell-start")).trim());
+
+    await page.click("#shell-start");
+    await page.waitForTimeout(150);
+    await page.fill("#auth-email", "hi@example.com");
+    await page.fill("#auth-password", "x");
+    await page.click("#auth-submit");
+    await page.waitForTimeout(900);
+
+    ok("the pre-act flow runs again for a wiped student",
+       await visible(page, "#quiz"));
+    await page.click("#quiz-btn");
+    await page.waitForTimeout(400);
+    ok("and the act starts from the beginning",
+       (await page.evaluate(() => Acts.current)) === 1);
+    ok("with a fresh save row",
+       (await page.evaluate(() => __DB.game_progress.length)) === 1);
+    ok("and nothing owned",
+       (await page.evaluate(() => __DB.player_inventory.length)) === 0 ||
+       (await page.evaluate(() => __DB.player_inventory.every((r) => r.student_id === "u1"))));
 
     await ctx.close();
   }

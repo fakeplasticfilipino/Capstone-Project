@@ -478,6 +478,15 @@ no replay could restore them, because assessment.js skips a test that
 already has a score. Nothing in the client writes act_progress back to
 an earlier state, and nothing should.
 
+Schema v5 adds the one deliberate exception, and adds it as a function
+rather than as a policy. reset_my_play_data() is security definer, so
+it runs with the privileges of its owner and row level security does
+not apply inside it. That is exactly why it takes no arguments and
+resolves the student from auth.uid(): the only thing a caller can ask
+for is their own erasure, and only if is_reset_allowed() names them.
+The table policies above are unchanged, so nothing else in the client
+gained any new power.
+
 Assessment items have RLS enabled with no student read policy. Questions
 are served by get_assessment_items, which omits correct_index, and grading
 runs in submit_assessment. The answer key must never be sent to the client.
@@ -733,29 +742,60 @@ Purchases are optimistic and refunded on a failed write, like equipping.
 Being charged for an item the database never recorded is the one failure
 in this system a student would actually notice.
 
-The settings screen offers a reset, and its scope is the whole of what
-it may ever do: the text size in localStorage, plus player_inventory
-and player_equipment. Those two tables are the only ones a student's
-browser may delete from, so the scope is set by row level security
-rather than by a rule the client is trusted to keep. Currency stays,
-because a student who tidied up should not lose what they earned on the
-way to buying the thing they cleared. The act's granted items come
-straight back, so the end state is exactly a fresh entry into that act:
-granted items owned, nothing equipped, nothing purchased. Being left
-without the spear for the rest of an act already in progress would be a
-fault rather than a reset.
+The settings screen offers a full reset: every row the student owns, in
+all seven tables, so they start the game from the very beginning. The
+account, its class enrolment and its password survive, so this is
+"start over" rather than "delete me", and the student stays logged in.
+
+It runs entirely in the database, through reset_my_play_data() in
+schema v5. It could not have been done any other way. A browser cannot
+delete an assessment score, because that table has a select policy and
+an insert policy and nothing else, and that must stay true: it is what
+makes one attempt per student per act per test type mean what it says.
+Adding delete policies would have been the smaller migration and the
+wrong one, since it would hand every student's browser the permanent
+ability to erase its own scores. A security definer function is
+narrower: it does one fixed thing and the caller cannot vary it. It
+takes no arguments, so there is no student_id in the request for
+anyone to edit.
+
+WHO MAY CALL IT is a named list inside is_reset_allowed(), copying the
+precedent in db/reset_test_accounts.sql, which names the two test
+accounts explicitly rather than taking a role. A role check would not
+work: pilot students and study students are both role 'student', and
+create_accounts.js issues both as mag-aaralNN@example.com, so no
+pattern separates them either. Only a list does. shell.js hides the
+button unless can_reset_my_data() says yes, but that is a courtesy so
+that nobody is offered something that will be refused. The guarantee is
+the function raising NOT_ALLOWED, which happens in the database and
+cannot be reached around by editing the page or using the console.
+
+Adding a pilot address later is one create or replace of
+is_reset_allowed and a line in the Run log, not a new migration.
 
 The reset is awaited rather than optimistic, unlike equipping and
 buying. It is the one action on these screens a student cannot simply
 repeat to find out whether it took.
 
-It is offered to every student rather than gated to a pilot account,
-which is only defensible because of the scope above: there is nothing
-behind it that a study account could lose. It is NOT a substitute for
-db/reset_test_accounts.sql and cannot become one. A full-flow retest
-needs the assessment scores cleared, and no client can clear them. Any
-future version that could would need a security definer function, which
-is a schema change and a worse idea than the SQL file.
+It reloads the page on success rather than repainting. After the wipe
+every module in memory still holds the state of a student who no longer
+exists in the database, and rebuilding that in place would mean a reset
+path through every file, each one a chance to leave something behind. A
+reload runs the real login sequence, which already knows how to start a
+student who has never played.
+
+Game.stopSaving() is called first, and exists only for this. All four
+write paths have to stop, not just the debounce: the pending timer, the
+ten second autosave, the beforeunload flush that reads saveDirty, and
+saveProgress itself, which is gated on saveReady. Anything that writes
+between the wipe and the reload puts part of the old student straight
+back, which is the difference between a fresh start and a half-wiped
+account that looks fine and is not.
+
+db/reset_test_accounts.sql stays. It clears the same seven tables for
+the named test accounts without anyone logging in, which is still the
+right tool when an account is wedged or when several need clearing at
+once.
 
 Touch targets are 44px MEASURED ON GLASS, which after --zoom of 0.7
 means 63 CSS pixels for a height and the diameters already recorded for
@@ -889,6 +929,12 @@ login. The harness caught it; nothing appeared in the console.
 
 guro@example.com, teacher.
 hi@example.com, student, enrolled in class MAC8-RIZAL.
+
+Both are named in two places that matter, and the two lists are the
+same list for the same reason: db/reset_test_accounts.sql, which
+clears them from the SQL editor, and is_reset_allowed() in schema v5,
+which is what lets the in-game reset run at all. A pilot account added
+for the session goes in both. A study account goes in neither, ever.
 
 Supabase project reference: rkfnovfkroajottpmxxq
 

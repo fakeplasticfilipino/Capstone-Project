@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="style.css?v=13" />
+  <link rel="stylesheet" href="style.css?v=14" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -211,8 +211,11 @@
 
           <div id="shell-settings-note" class="shell-note"></div>
 
-          <button id="shell-reset" class="shell-btn shell-btn-danger" type="button">
-            <span class="ico"><svg aria-hidden="true"><use href="#i-reset"></use></svg></span><span class="lbl">I-reset ang gamit</span>
+          <!-- Hidden until can_reset_my_data() says this account may.
+               A study account never sees it, and the database refuses
+               it even if it somehow did. -->
+          <button id="shell-reset" class="shell-btn shell-btn-danger hidden" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-reset"></use></svg></span><span class="lbl">Magsimula ulit</span>
           </button>
 
           <button id="shell-settings-back" class="shell-btn shell-btn-primary" type="button">
@@ -266,18 +269,20 @@
 
         <div id="shell-reset-confirm" class="shell-panel hidden">
           <div class="shell-eyebrow">MACARIO</div>
-          <h2 class="shell-heading">I-reset ang gamit</h2>
+          <h2 class="shell-heading">Magsimula ulit</h2>
           <p class="shell-sub">
-            Mabubura ang mga nabili at nasusuot mong gamit, at babalik sa
-            karaniwan ang laki ng teksto.
+            Mabubura ang LAHAT ng iyong laro. Babalik ka sa pinakasimula.
           </p>
-          <ul class="shell-keeps">
-            <li><span class="ico"><svg aria-hidden="true"><use href="#i-check"></use></svg></span><span>Mananatili ang iyong mga puntos sa pagsusulit</span></li>
-            <li><span class="ico"><svg aria-hidden="true"><use href="#i-check"></use></svg></span><span>Mananatili ang iyong progreso sa kuwento</span></li>
-            <li><span class="ico"><svg aria-hidden="true"><use href="#i-check"></use></svg></span><span>Mananatili ang iyong barya</span></li>
+          <ul class="shell-wipes">
+            <li><span class="ico"><svg aria-hidden="true"><use href="#i-cross"></use></svg></span><span>Mga sagot at puntos sa pagsusulit</span></li>
+            <li><span class="ico"><svg aria-hidden="true"><use href="#i-cross"></use></svg></span><span>Progreso sa kuwento, barya at mga gamit</span></li>
           </ul>
+          <ul class="shell-keeps">
+            <li><span class="ico"><svg aria-hidden="true"><use href="#i-check"></use></svg></span><span>Mananatili ang iyong account at password</span></li>
+          </ul>
+          <p class="shell-warn">Hindi na ito maibabalik.</p>
           <button id="shell-reset-yes" class="shell-btn shell-btn-danger" type="button">
-            <span class="ico"><svg aria-hidden="true"><use href="#i-reset"></use></svg></span><span class="lbl">Oo, i-reset</span>
+            <span class="ico"><svg aria-hidden="true"><use href="#i-reset"></use></svg></span><span class="lbl">Oo, burahin lahat</span>
           </button>
           <button id="shell-reset-no" class="shell-btn shell-btn-ghost" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-cross"></use></svg></span><span class="lbl">Hindi</span>
@@ -359,10 +364,10 @@
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=2"></script>
-  <script src="game.js?v=18"></script>
+  <script src="game.js?v=19"></script>
   <script src="acts.js?v=8"></script>
-  <script src="inventory.js?v=3"></script>
+  <script src="inventory.js?v=4"></script>
   <script src="assessment.js?v=3"></script>
-  <script src="shell.js?v=5"></script>
+  <script src="shell.js?v=6"></script>
 </body>
 </html>

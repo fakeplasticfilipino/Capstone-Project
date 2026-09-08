@@ -2274,6 +2274,30 @@ async function flushSave() {
   if (saveDirty) await saveProgress();
 }
 
+// The opposite of flushSave, and the only caller is the full reset.
+//
+// After reset_my_play_data() has run there is no game_progress row,
+// and every piece of state this file is holding describes a student
+// who no longer exists in the database. Anything that writes between
+// the wipe and the reload puts some of it straight back, which is
+// the difference between a fresh start and a half-wiped account that
+// looks fine and is not.
+//
+// All four write paths have to stop, not just the debounce: the
+// pending timer, the ten second autosave, the beforeunload flush
+// (which reads saveDirty), and saveProgress itself (which is gated
+// on saveReady). Clearing only the timer was the first version of
+// this and the autosave rewrote the row two seconds later.
+function stopSaving() {
+  saveReady = false;
+  saveDirty = false;
+  clearTimeout(saveDebounceTimer);
+  if (autosaveTimer !== null) {
+    clearInterval(autosaveTimer);
+    autosaveTimer = null;
+  }
+}
+
 // =============================================================
 // SHELL FACADE
 //
@@ -2291,6 +2315,10 @@ window.Game = {
   setPaused,
   isPaused,
   flushSave,
+
+  // Silences every save path. Called by shell.js immediately before
+  // the full reset, so nothing writes the wiped student back.
+  stopSaving,
   setUiBlocked,
   isSignedIn: () => Boolean(currentUserId),
 

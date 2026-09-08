@@ -1775,6 +1775,43 @@ body.text-sm .shell-sub { font-size: 12px; }
    answer than a paragraph.
    ------------------------------------------------------------- */
 
+/* What the wipe destroys, listed above what it keeps. A student
+   reading a red screen should see the loss first and the single
+   reassurance second, which is the opposite of the order a reset
+   that only cleared items wanted. */
+.shell-wipes {
+  list-style: none;
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #eee;
+}
+
+.shell-wipes li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.shell-wipes .ico {
+  margin-top: 1px;
+  color: #e57373;
+}
+
+.shell-wipes .ico svg {
+  width: 14px;
+  height: 14px;
+}
+
+.shell-warn {
+  color: #e57373;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 0 0 16px;
+}
+
 .shell-keeps {
   list-style: none;
   margin: 0 0 18px;

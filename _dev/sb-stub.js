@@ -115,6 +115,30 @@
       if (name === "get_assessment_items") {
         return Promise.resolve({ data: [], error: null });
       }
+
+      // Schema v5. The live functions are security definer and check
+      // a named allowlist; here the answer is seeded per test case, so
+      // the suite can drive an allowed account, a refused one, and a
+      // failing call without inventing a second stub.
+      if (name === "can_reset_my_data") {
+        return Promise.resolve({ data: T.canReset === true, error: null });
+      }
+      if (name === "reset_my_play_data") {
+        if (T.resetError) {
+          return Promise.resolve({ data: null, error: { message: T.resetError } });
+        }
+        if (T.canReset !== true) {
+          return Promise.resolve({ data: null, error: { message: "NOT_ALLOWED" } });
+        }
+        // Exactly the seven tables the function deletes from, in the
+        // order it deletes them. profiles is deliberately absent: the
+        // account survives a wipe.
+        ["feedback", "assessment_scores", "act_progress", "game_progress",
+         "game_sessions", "player_equipment", "player_inventory"]
+          .forEach((t) => { if (db[t]) db[t].length = 0; });
+        return Promise.resolve({ data: null, error: null });
+      }
+
       return Promise.resolve({ data: null, error: null });
     },
     auth: {
