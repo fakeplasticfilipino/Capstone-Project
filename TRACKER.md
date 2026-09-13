@@ -20,9 +20,14 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 14 (play-as-guest) and Block 15 (the Katipunan
-flag UI retheme). The icon pass and the settings reset from Block 12,
-and both of these new blocks, are still not yet confirmed on the device.
+Last updated: after a full sweep of the actual files on this device,
+following Block 14 (play-as-guest) and Block 15 (the Katipunan flag UI
+retheme). The sweep found the suite's true result against the real
+Assets/ folder is 326 passed, 1 failed, not the 0 failed reported when
+Block 15 was delivered — see Known problems, missing production art,
+for why, and read that entry before trusting a green run in a future
+session. The icon pass and the settings reset from Block 12, and both
+Blocks 14 and 15, are still not yet confirmed on the device.
 
 ## Right now
 
@@ -54,8 +59,11 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite passes at 327 checks, 0 failures, after Block 14
-added its own coverage (see Blocks done).
+The automated suite carries 327 checks after Block 14 added its own
+coverage (see Blocks done), but a full sweep against this device's real
+files shows 326 passed, 1 failed: Assets/Walk.png does not exist here,
+so the check that unequipping a cosmetic outfit restores the base walk
+cycle fails for real. See Known problems, missing production art.
 
 Block 13 is done: #btn-inventory and #btn-shop now sit next to
 #btn-pause in the main UI, so either screen is one tap from gameplay
@@ -82,6 +90,25 @@ copies of index.html, game.js, shell.js, style.css and _dev/test.js
 carry correctly bumped numbers (game.js v23, shell.js v8, style.css
 v16, content/act1.js v11, content/items.js v3); whatever pushes them
 to GitHub next should push all of them together, not file by file.
+
+A SECOND, separate "can't see Nanay" / "no questions at all" report
+came in later in that same chat, from a test account, and was NOT the
+same caching issue as the paragraph above: that account had already
+completed Act 1 under older content, so on login the game tried to
+resume into empty Act 2 rather than show Act 1 at all — which also
+explains "no questions", since Acts II through IV have no seeded
+trivia or assessment content. The in-game "start over" button could
+not fix this itself, because it needs schema v5, which per the Run log
+has never been run. The student ended the conversation saying the
+account was fixed ("everything worked") without this session
+confirming how — whether v5 was actually run, the stale rows were
+edited by hand in the Supabase dashboard, or something else. Do not
+assume from that line that v5 is now applied; check the Run log entry
+and the live Supabase project directly. Real, unrelated 404s surfaced
+during that same investigation, for root-level Assets/ files that
+turned out not to exist on this device at all — see Known problems,
+missing production art, which folds that finding in rather than
+repeating it here.
 
 The UI now reads as a game rather than a form. Every button carries an
 inline SVG icon beside its Tagalog label, and the panels and the touch
@@ -137,38 +164,6 @@ every screen: at 412px wide it showed 235 world pixels, about two and
 a half Macarios across. And the game is meant to be held sideways,
 which was never written down anywhere, so portrait is now a rotate
 notice rather than a layout to fix.
-
-Act I is rewritten. content/act1.js now carries a real narrative,
-two scenes ("tondo" then "misyon"), written directly against the ten
-item pairs in db/macario_items_v3.sql:
-
-    LO1  Sakay's origins and social class
-    LO2  Theatre experience and public speaking
-    LO3  The Katipunan, when joined, and its aim
-    LO4  Secrecy and communication in the movement
-    LO5  Personal cost, and who the Katipunan was
-
-Every one of the ten items traces to a specific stated line: Tondo
-and the tailor-and-barber trade from the neighbor, the moro-moro and
-the stage-to-public-speaking connection from the theatre beat, 1894
-and the Katipunan's aim from the recruiter, secrecy and the risk to
-a messenger from the mission briefing and the courier NPC, and the
-personal cost and the movement's ordinary-worker makeup from that
-same NPC's second conversation. See CLAUDE.md, Decisions on record,
-for the scene split and why the old hidden-NPC pattern was dropped.
-
-Every fact in the new script is one the item bank's own correct
-answers already commit to. No other date, name, or incident was
-added. The resource person's source material, a physical book, has
-not been read into this yet — if it says more or says something
-different, that is the next pass on this file, not a green light to
-leave it as written.
-
-_dev/test.js is updated alongside it: the room ids, objective flags
-and the two loadScene() calls in Block 8's fixtures now point at
-"tondo" and "misyon" rather than the old "silid" and "labasan". The
-suite is back to 289 passed, 0 failed, run twice to rule out
-flakiness from the new content's positions.
 
 ## Next action
 
@@ -231,13 +226,26 @@ when. A fresh session should trust this over any memory of a chat.
     db/applied/macario_schema_v3.sql    RUN
     db/applied/macario_schema_v4.sql    RUN, 19 Aug 2026
 
-    db/macario_schema_v5.sql            NOT RUN. Adds the three
-                                        functions behind the in-game
-                                        full reset. No tables, no
-                                        columns, no policy changes, so
-                                        the ERD stays at eleven. Move
-                                        it to db/applied/ once it has
-                                        been run and date this line
+    db/macario_schema_v5.sql            NOT RUN, per this file's own
+                                        bookkeeping (not present in
+                                        db/applied/ on this device). A
+                                        prior chat ended with a reset-
+                                        related problem reported fixed
+                                        ("everything worked") without
+                                        confirming here whether v5 was
+                                        actually the fix; a session
+                                        with no database tool cannot
+                                        verify the live project either
+                                        way. Check the Supabase SQL
+                                        editor directly for whether
+                                        can_reset_my_data() exists
+                                        before trusting this line. Adds
+                                        the three functions behind the
+                                        in-game full reset. No tables,
+                                        no columns, no policy changes,
+                                        so the ERD stays at eleven. Move
+                                        it to db/applied/ once confirmed
+                                        run and date this line
 
     db/macario_items_v3.sql             RUN, 28 Aug 2026
 
@@ -499,7 +507,9 @@ _dev/test.js gained a new section (AH, 17 checks) proving the button
 enters the world without a login box, that no row appears in any table
 across a played session, and that a reload lands back on a fresh title
 screen. See CLAUDE.md, Decisions on record, for the mechanism. 327
-passed, 0 failed. (COMPLETE)
+passed, 0 failed against a session-local copy of Assets/ — see Known
+problems, missing production art, for the true count on this device
+(326 passed, 1 failed, unrelated to this block). (COMPLETE)
 
 Block 15, UI retheme. The gold-on-black chrome replaced with a
 Katipunan flag palette (deep red, navy, cream, gold used sparingly for
@@ -512,8 +522,11 @@ style.css bumped (v16); no new test coverage needed since only color
 values changed and the existing suite already exercises every screen
 touched. Verified by hand against screenshots of the title screen,
 settings, pause, and inventory panels. 327 passed, 0 failed, re-run
-after the retheme. See CLAUDE.md, Decisions on record, for the one
-color (#7bc47f) that needed a context-dependent split rather than a
+after the retheme — but that run used a session-local stand-in copy of
+Assets/, not this device's real one; see Known problems, missing
+production art, for the true count (326 passed, 1 failed, for a reason
+unrelated to this block). See CLAUDE.md, Decisions on record, for the
+one color (#7bc47f) that needed a context-dependent split rather than a
 global swap. (COMPLETE)
 
 Paper audit. Seventeen functional requirements, ten non-functional,
@@ -614,8 +627,12 @@ the inventory screen scroll a little more than it did. The shell box
 has always scrolled and still does, so nothing is unreachable, but a
 student who has to scroll to find Bumalik is worth knowing about.
 
-Act I is rewritten against the finished mechanics; see Blocks done.
-Write Acts II through IV next. (NOT STARTED)
+Act I was rewritten once against the finished mechanics, then reset
+back to a one-scene, one-NPC blank slate because that draft was
+written ahead of the resource person's source material rather than
+against it; see Blocks done. Writing real content for Act I, and then
+for Acts II through IV, against the source material this time, is the
+content work that remains. (NOT STARTED)
 
 Seed trivia and assessment items for Acts II through IV. Until then
 those acts skip their tests with a notice, which is deliberate.
@@ -643,18 +660,27 @@ reason: get it in writing and keep the two together. (NOT STARTED)
 
 Chase the replacement art. Assets/ holds one real commissioned sprite
 today: Nanay, Macario's mother, the only NPC content/act1.js declares.
-Walk.png and Cement_Tile.png are technically present in Assets/, but
-their removal was confirmed intentional (see Blocks done); nobody has
-a tool that can delete them from here, so whether they stay or go is
-the student's call to make on the machine itself, not a content gap
-to chase. Everything the fuller Act I draft used to need art for — a
-director, a recruiter, a courier contact, a guard, decorations, the
-Tondo day/night skyline — is not currently declared as content at
-all, so there is nothing there to draw against yet; that list comes
-back once real content does. The player's own Idle and Dead poses and
-everything in Acts II through IV are untouched and still fall back to
-the labelled placeholder box, which remains the fallback system
-working, not a fault.
+CORRECTION, from a full sweep of this device's actual files: an
+earlier version of this paragraph claimed Walk.png and Cement_Tile.png
+were still technically present in Assets/, just unused. That is no
+longer true, if it ever was — a fresh check found neither file, nor
+Idle.png, Dead.png, Tondo.png, or Tondo_Night.png, anywhere on this
+device; Assets/Prefab/ is empty. See Known problems, missing
+production art, for the full list and what it breaks. Do not repeat
+this paragraph's old mistake: verify against the device directly
+(device_list_dir or equivalent) rather than trusting a session's own
+working copy, which can silently carry stand-in files that were never
+written back to the user's machine. Everything the fuller Act I draft
+used to need art for — a director, a recruiter, a courier contact, a
+guard, decorations, the Tondo day/night skyline — is not currently
+declared as content at all, so there is nothing there to draw against
+yet; that list comes back once real content does. The player's own
+Idle and Dead poses and everything in Acts II through IV are untouched
+and still fall back to the labelled placeholder box when the file is
+missing, which is the fallback system working, not a fault — but the
+base Walk/Idle/Dead files are not act-specific placeholders, they are
+what every act falls back TO, and right now that fallback is itself
+broken.
 
 Block 11's two outfits, Skin_Walk.png and Skin_Uniporme_Walk.png,
 are moot for now: content/items.js was reset to an empty catalogue in
@@ -687,7 +713,31 @@ on a much narrower or much wider screen. The harness covers 823 by
 survey. (PARTIAL)
 
 Assets/Cement_Tile.png was 1.4 MB for a repeating floor tile. Now 120
-by 120 and 21.7 KB. (COMPLETE)
+by 120 and 21.7 KB. (COMPLETE, but see the entry below — the file that
+was optimized here is not on this device anymore)
+
+Missing production art. A full sweep of this device's actual files
+(not a session's cached copy of them) found Assets/ holds only
+Act 1/Nanay.png; Assets/Prefab/ is empty. Six files the shipped code
+references do not exist anywhere on disk here: Cement_Tile.png (the
+ground tile referenced just above), Tondo.png and Tondo_Night.png (the
+day and night skyline backdrops), and Walk.png, Idle.png, Dead.png
+(Macario's own sprite sheets — not a cosmetic outfit's, the base
+ones every player, guest or not, falls back to). The live game as
+currently checked out on this device would show no backdrop, no
+ground, and no player animation beyond Nanay's own sprite. _dev/test.js
+catches exactly one symptom of this: the check that unequipping a
+cosmetic outfit restores the base walk cycle asserts against the real
+Assets/Walk.png rather than a fixture, and fails here (326 passed, 1
+failed — see Verification). The other five files have no automated
+coverage at all and are silently broken with the suite fully green
+around them. A Claude session cannot create real game art and has no
+way to know whether a working copy of these six files exists somewhere
+outside this project folder; the Cement_Tile.png line above confirms at
+least that one was optimized and present at some point, so check git
+history for a commit that still has it (`git log --all --full-history
+-- Assets/`) before concluding the art itself is lost. (KNOWN, BLOCKING
+A REAL DEVICE PASS ON BLOCKS 14 AND 15 AND ON ACT I GENERALLY)
 
 Dynamic difficulty cannot be demonstrated in the running game,
 because only Act I has guards and Act I is the 1.00 multiplier. The
@@ -733,7 +783,12 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-327 checks. Anything other than "0 failed" is a regression.
+327 checks. Anything other than "0 failed" is a regression, with one
+standing exception right now: "unequipping restores the base walk
+cycle" fails on this device because Assets/Walk.png is missing (see
+Known problems, missing production art). Restoring that file should
+turn the suite fully green again without a code change; any other
+failure is real.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it
