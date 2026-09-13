@@ -11,6 +11,21 @@
 // index.html in its real script order and cannot drift away from it.
 // Nothing here touches the live Supabase project.
 //
+// content/act1.js and content/items.js are ALSO intercepted, for tests
+// that need a populated gameplay scene or item catalogue. Shipped
+// content is a deliberate blank slate (see the header comments in
+// those two files); the guard, hazard, hideSpot, platform, pickup and
+// shop/equip mechanics they used to exercise are still real, finished
+// engine code and still deserve full coverage, so FIXTURE_ACT1_JS and
+// FIXTURE_ITEMS_JS below stand in for that content ONLY inside this
+// harness. They are not a second copy of production content to keep
+// in sync — they exist purely to give the engine something to chew on
+// and are free to diverge from whatever content/act1.js and
+// content/items.js actually ship. enterTestRoom() is the one place
+// that wires this substitution in; a test that wants the REAL shipped
+// content instead (Blocks A, C, D, E) calls newPage() directly and
+// never sees the fixtures.
+//
 // Requires: npm install -D playwright     (dev only, not shipped)
 // =============================================================
 
@@ -27,6 +42,76 @@ const MIME = {
   ".html": "text/html", ".js": "text/javascript", ".css": "text/css",
   ".png": "image/png", ".jpg": "image/jpeg",
 };
+
+// A gameplay skeleton equivalent to the misyon scene an earlier pass of
+// content/act1.js shipped: same guard, hazard, hideSpot, platform and
+// pickup tuning, so every downstream assertion built against those exact
+// numbers keeps meaning what it always meant. tondo is present only so
+// loadScene("tondo") (Block G) has somewhere to go; nothing here needs it
+// to carry an NPC. Five objectives, not one, because Acts.perObjective and
+// the drip math below are tuned against 50 dividing evenly across them.
+const FIXTURE_ACT1_JS = `
+window.ACT_1 = {
+  number: 1,
+  title: "Origins",
+  titleTagalog: "Ang Pinagmulan ni Macario",
+  objectives: [
+    { id: "pinagmulan", label: "Alamin ang pinagmulan", flag: "nalamanAngPinagmulan" },
+    { id: "entablado", label: "Umarte sa entablado", flag: "deathSequenceDone" },
+    { id: "katipunan", label: "Sumapi sa Katipunan", flag: "sumapiSaKatipunan" },
+    { id: "mensahe", label: "Ihatid ang lihim na mensahe", flag: "naihatidAngMensahe" },
+    { id: "pag-alis", label: "Magpaalam sa dating buhay", flag: "nagpaalam" },
+  ],
+  startingQuests: [{ id: "pinagmulan", text: "Test" }],
+  scenes: [
+    { id: "tondo", worldWidth: 2352, startX: 80, npcs: [] },
+    {
+      id: "misyon",
+      worldWidth: 2940,
+      startX: 80,
+      dangerous: true,
+      npcs: [],
+      platforms: [{ x: 650, y: 150, width: 220 }],
+      pickups: [{ id: "misyon-puso", x: 730, y: 150, type: "heart" }],
+      guards: [{
+        id: "guwardiya", x: 1800, patrolFrom: 1400, patrolTo: 2200,
+        speed: 1.4, facing: 1, detectRadius: 300, alertRate: 0.01, decayRate: 0.02,
+      }],
+      hideSpots: [{ x: 1650, width: 110 }],
+      hazards: [{ x: 2500, width: 90, reason: "Test hazard" }],
+    },
+  ],
+};
+`;
+
+// The item catalogue the shop/equip/effect sections (Block 10, P-Z) were
+// written against: two granted equipment items and two priced outfits,
+// same ids, prices and effects the assertions check by name. Kept
+// separate from content/items.js on purpose (see that file's header).
+const FIXTURE_ITEMS_JS = `
+window.ITEMS = [
+  {
+    id: "sibat", name: "Magaan na Sibat", kind: "equipment", slot: "weapon",
+    price: 0, img: "Assets/Sibat.png", grantedOnAct: 1,
+    effect: { projectileSpeedMult: 1.5 },
+  },
+  {
+    id: "agimat", name: "Agimat", kind: "equipment", slot: "accessory",
+    price: 0, img: "Assets/Agimat.png", grantedOnAct: 1,
+    effect: { maxHealthBonus: 1 },
+  },
+  {
+    id: "damit-magsasaka", name: "Damit ng Magsasaka", kind: "cosmetic",
+    slot: "outfit", price: 50, img: "Assets/Skin_Walk.png",
+    sheets: { walk: { src: "Assets/Skin_Walk.png", frames: 12, fps: 12, columns: 5 } },
+  },
+  {
+    id: "damit-katipunero", name: "Uniporme ng Katipunero", kind: "cosmetic",
+    slot: "outfit", price: 90, img: "Assets/Skin_Uniporme_Walk.png",
+    sheets: { walk: { src: "Assets/Skin_Uniporme_Walk.png", frames: 12, fps: 12, columns: 5 } },
+  },
+];
+`;
 
 const server = http.createServer((req, res) => {
   const rel = decodeURIComponent(req.url.split("?")[0]).replace(/^\/+/, "");
@@ -56,10 +141,12 @@ const visible = (page, sel) => page.evaluate((s) => {
   await new Promise((r) => server.listen(PORT, r));
   const browser = await chromium.launch();
 
-  // block is a URL pattern to serve empty, which is how the suite tests
-  // a page that loaded without one of its optional files. Serving empty
-  // rather than 404 keeps the console clean, so a real error still
-  // stands out in the pageerror handler above.
+  // block is either a URL pattern to serve empty (the original use: testing
+  // a page that loaded without one of its optional files, with empty rather
+  // than a 404 to keep the console clean so a real error still stands out
+  // in the pageerror handler above), or an array of { pattern, body }
+  // route specs for substituting real content — how enterTestRoom() below
+  // wires in the fixture scene and item catalogue.
   // 823 x 412, phone LANDSCAPE. The suite used to run portrait, which was
   // wrong in a way that hid two faults for four blocks: the game is a
   // side-scroller meant to be held sideways, and portrait is now a rotate
@@ -81,13 +168,33 @@ const visible = (page, sel) => page.evaluate((s) => {
       route.fulfill({ body: "", contentType: "text/javascript" }));
 
     if (block) {
-      await page.route(block, (route) =>
-        route.fulfill({ body: "", contentType: "text/javascript" }));
+      const specs = Array.isArray(block) ? block : [{ pattern: block, body: "" }];
+      for (const spec of specs) {
+        await page.route(spec.pattern, (route) =>
+          route.fulfill({ body: spec.body || "", contentType: "text/javascript" }));
+      }
     }
 
     await page.addInitScript((s) => { window.__TEST = s; }, testState);
     await page.goto("http://localhost:" + PORT + "/index.html");
     return { ctx, page };
+  }
+
+  // The two fixture routes enterTestRoom() always installs, so every
+  // section that resumes into a populated act gets the same gameplay
+  // skeleton and item catalogue regardless of what content/act1.js and
+  // content/items.js actually ship. extra appends further routes (Block
+  // U passes one to blackhole inventory.js itself) without replacing these.
+  function fixtureRoutes(extra) {
+    const routes = [
+      { pattern: "**/content/act1.js*", body: FIXTURE_ACT1_JS },
+      { pattern: "**/content/items.js*", body: FIXTURE_ITEMS_JS },
+    ];
+    if (extra) {
+      if (Array.isArray(extra)) routes.push(...extra);
+      else routes.push({ pattern: extra, body: "" });
+    }
+    return routes;
   }
 
   console.log("\nA. Fresh student, no stored session");
@@ -135,7 +242,7 @@ const visible = (page, sel) => page.evaluate((s) => {
         save_state: { quests: [], flags: { nalamanAngPinagmulan: true, deathSequenceDone: true, sumapiSaKatipunan: true }, posX: 200 } }],
       act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 3 }],
     };
-    const { ctx, page } = await newPage(state);
+    const { ctx, page } = await newPage(state, fixtureRoutes());
     await page.waitForTimeout(700);
     ok("title screen visible on resume", await visible(page, "#shell"));
     ok("start button reads Magpatuloy", (await page.textContent("#shell-start")).trim() === "Magpatuloy",
@@ -268,11 +375,13 @@ const visible = (page, sel) => page.evaluate((s) => {
   // -----------------------------------------------------------------
 
   // Puts a resuming student in the "misyon" scene with the world
-  // already built — the dangerous scene, which is where Act I's
-  // guard, hazard, hide spot and platform live. The flags seeded
-  // here are the three objectives that come before it (origins, the
-  // stage, joining the Katipunan), so the student arrives with the
-  // fourth objective, the message run, in front of them.
+  // already built — the dangerous scene, which is where the FIXTURE's
+  // guard, hazard, hide spot and platform live (see FIXTURE_ACT1_JS
+  // above; content/act1.js itself ships none of this right now). The
+  // flags seeded here are the three fixture objectives that come
+  // before it (origins, the stage, joining the Katipunan), so the
+  // student arrives with the fourth objective, the message run, in
+  // front of them.
   const atTestRoom = () => ({
     session: { user: { id: "u1" } },
     game_progress: [{ student_id: "u1", current_act: 1, current_room: "misyon", is_night: true,
@@ -280,8 +389,14 @@ const visible = (page, sel) => page.evaluate((s) => {
     act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 3 }],
   });
 
-  async function enterTestRoom(block) {
-    const { ctx, page } = await newPage(atTestRoom(), block);
+  // Always installs the fixture routes (see FIXTURE_ACT1_JS /
+  // FIXTURE_ITEMS_JS at the top of this file), so this fixture stays
+  // independent of whatever content/act1.js and content/items.js
+  // actually ship. extra is an additional block spec (Block U passes
+  // one to blackhole inventory.js) layered on top of the fixture
+  // routes rather than replacing them.
+  async function enterTestRoom(extra) {
+    const { ctx, page } = await newPage(atTestRoom(), fixtureRoutes(extra));
     await page.waitForTimeout(700);
     await page.click("#shell-start");
     await page.waitForTimeout(400);
@@ -554,7 +669,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     seeded.game_progress[0].save_state.stats = {
       damageTaken: 4, detections: 3, playMs: 91000,
     };
-    const { ctx, page } = await newPage(seeded);
+    const { ctx, page } = await newPage(seeded, fixtureRoutes());
     await page.waitForTimeout(700);
     await page.click("#shell-start");
     await page.waitForTimeout(400);
@@ -1231,17 +1346,21 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("and leaves the sheets it does not declare alone",
        swapped.idle === "Assets/Idle.png", swapped);
 
-    // Walk.png is the one sheet that actually exists, so it stands in for
-    // an outfit whose art has been drawn.
+    // A harness-owned fixture stands in for "an outfit whose art has been
+    // drawn" — deliberately NOT Assets/Walk.png. This section only needs
+    // to prove an outfit with real, loadable art actually repaints the
+    // player; it should not care whether the base walk cycle currently
+    // ships in Assets/ or not, and _dev/fixtures/test-outfit-walk.png
+    // stays put either way.
     const painted = await page.evaluate(async () => {
       await Game.setOutfit({
-        walk: { src: "Assets/Walk.png", frames: 12, fps: 12, columns: 5 },
+        walk: { src: "_dev/fixtures/test-outfit-walk.png", frames: 12, fps: 12, columns: 5 },
       });
       applyAnim("walk", true);
       return playerSpriteEl.style.backgroundImage;
     });
     ok("an outfit whose art exists repaints the player",
-       painted.includes("Walk.png"), painted);
+       painted.includes("test-outfit-walk.png"), painted);
 
     const restored = await page.evaluate(async () => {
       await Game.setOutfit(null);
@@ -1399,7 +1518,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   {
     // The camera is screen width divided by --zoom, and nothing else.
     const framing = async (viewport) => {
-      const { ctx, page } = await newPage(atTestRoom(), null, viewport);
+      const { ctx, page } = await newPage(atTestRoom(), fixtureRoutes(), viewport);
       await page.waitForTimeout(700);
       await page.click("#shell-start");
       await page.waitForTimeout(300);
@@ -1818,7 +1937,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     // An allowlisted account. The offer appears and the wipe runs.
     const seed = atTestRoom();
     seed.canReset = true;
-    const { ctx, page } = await newPage(seed);
+    const { ctx, page } = await newPage(seed, fixtureRoutes());
     await page.waitForTimeout(700);
     await page.click("#shell-start");
     await page.waitForTimeout(400);
@@ -1913,7 +2032,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     const seed = atTestRoom();
     seed.canReset = true;
     seed.resetError = "simulated network failure";
-    const { ctx, page } = await newPage(seed);
+    const { ctx, page } = await newPage(seed, fixtureRoutes());
     await page.waitForTimeout(700);
     await page.click("#shell-start");
     await page.waitForTimeout(400);

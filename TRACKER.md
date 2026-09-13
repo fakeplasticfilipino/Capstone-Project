@@ -20,10 +20,21 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Nanay's sprite went in. The icon pass and the
-settings reset from Block 12 are still not yet confirmed on the device.
+Last updated: after Act I and the item catalogue were reset to a blank
+slate. The icon pass and the settings reset from Block 12 are still not
+yet confirmed on the device.
 
 ## Right now
+
+content/act1.js and content/items.js were both just reset to a blank
+slate: Act I is one scene, one NPC (Nanay) and one exchange, and the
+item catalogue is empty. This was a deliberate rollback, not damage —
+see Blocks done for why and what stayed covered. Read that entry before
+assuming anything below about "Act I plays end to end with hazards,
+pickups..." describes what ships today: it describes the ENGINE, which
+is unchanged and still fully verified: the hazard, guard, pickup, stage
+and shop mechanics themselves are exactly as built and tested, just not
+currently wired into Act I's shipped content.
 
 Blocks 1 through 9 are built, verified and live. Schema v4 has been
 run against the live database, the client is pushed, and Act I plays
@@ -134,10 +145,13 @@ flakiness from the new content's positions.
 
 ## Next action
 
-A device pass on the icon work, which has only been seen in a
-headless browser, then Block 12's remaining polish, then the pilot.
-Writing Acts II through IV is the content work after that; see
-Blocks remaining.
+Get the resource person's source material in hand before writing any
+more of Act I — that is the whole reason it was just reset to a
+one-NPC skeleton rather than extended further. Alongside that: a
+device pass on the icon work, which has only been seen in a headless
+browser, then Block 12's remaining polish, then the pilot. Writing
+Acts II through IV, against the source material this time, is the
+content work after that; see Blocks remaining.
 
 ## The milestone
 
@@ -217,14 +231,21 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-Framework complete. Act I now carries real story content; Acts II
-through IV are still registered stubs with no content, and writing
-them is what remains of this objective.
+Framework complete. Act I is currently a one-scene, one-NPC skeleton,
+reset from a fuller draft that was written ahead of the resource
+person's source material rather than against it; Acts II through IV
+are still registered stubs with no content. Writing real content for
+all four, against the source material this time, is what remains of
+this objective.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
-equipment, cosmetic rewards. (IN PROGRESS) All four are built and
-confirmed live. The only thing between this objective and (COMPLETE)
-is outfit art, which is a drawing task rather than a code one.
+equipment, cosmetic rewards. (IN PROGRESS) All four are built, and
+were confirmed live against a fuller Act I draft that has since been
+reset to a blank slate; the mechanics themselves are unchanged and
+stay fully covered by _dev/test.js's own fixture, independent of what
+Act I currently ships. The only things between this objective and
+(COMPLETE) are outfit art and real content to carry the mechanics
+again, both drawing/writing tasks rather than code ones.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and
 post-tests, server-side grading, in-game performance scoring,
@@ -238,16 +259,16 @@ work through.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created |
-| Chapter Progression | (PARTIAL) All four registered and unlock in order. Act I now has real story content; Acts II through IV are still content-free stubs |
+| Chapter Progression | (PARTIAL) All four registered and unlock in order. Act I is a one-scene, one-NPC skeleton reset from a fuller draft written ahead of the source material; Acts II through IV are still content-free stubs |
 | Player Movement | (BUILT) |
-| Combat Mechanics | (BUILT) Melee, takedown from behind, thrown projectile as the special attack |
-| Stealth Mechanics | (BUILT) Patrols, detection meter, hide spots |
+| Combat Mechanics | (BUILT) Melee, takedown from behind, thrown projectile as the special attack. No act currently ships a guard to use it against |
+| Stealth Mechanics | (BUILT) Patrols, detection meter, hide spots. No act currently ships any of the three; verified in the harness against its own fixture, not shipped content |
 | Interaction System | (BUILT) |
-| Narrative Delivery | (PARTIAL) The delivery system is built. Act I now uses it for real narrative; Acts II through IV have none yet |
-| Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified in the harness; no act beyond Act I has guards yet |
+| Narrative Delivery | (PARTIAL) The delivery system is built. Act I uses it for one exchange; Acts II through IV have none yet |
+| Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified in the harness against its own fixture; no shipped act currently has guards |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups |
-| Equipment System | (BUILT) Two items, weapon and accessory slots, an inventory screen on pause. Items are granted on act entry; the shop is Block 11 |
-| Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop inside the inventory, two priced outfits. Confirmed live. Outfits render as the placeholder box until their sheets are drawn |
+| Equipment System | (BUILT) Weapon and accessory slots, an inventory screen on pause, granting and the shop mechanic. content/items.js currently ships zero items; mechanic verified against the harness's own fixture catalogue |
+| Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop inside the inventory, cosmetic outfit slot and sheet-swap. content/items.js currently ships zero outfits; mechanic verified against the harness's own fixture catalogue |
 | Trivia | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Act Assessment | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded but not scored |
@@ -368,11 +389,17 @@ opening neighbor NPC is now Nanay (Macario's mother) carrying the
 same two LO1 facts, since a mother stating her son's trade and their
 place in Tondo fits at least as well and Assets/ only had the one
 real sprite to place; see CLAUDE.md, Decisions on record. Two things
-found along the way, both fixed: Walk.png and Cement_Tile.png — the
-player's own walk cycle and the ground tile, neither Act-I-specific
-nor placeholder art — were missing from Assets/ entirely after the
-reorganisation and have been restored from an earlier staged copy;
-and setupNpcAnimation's and the player animator's CSS
+found along the way, both fixed at the time: Walk.png and
+Cement_Tile.png — the player's own walk cycle and the ground tile,
+neither Act-I-specific nor placeholder art — were missing from
+Assets/ entirely after the reorganisation and were restored from an
+earlier staged copy. CORRECTION, next session: that removal was
+confirmed intentional, part of the same start-fresh reset that later
+emptied content/act1.js and content/items.js. The restored copies are
+still sitting in Assets/ on the device because this session has no
+tool that can delete files there — only the student who owns the
+machine can remove Assets/Walk.png and Assets/Cement_Tile.png if they
+still want them gone. setupNpcAnimation's and the player animator's CSS
 background-image was built with an unquoted url(${...}), which is
 invalid the moment a path has a space in it, as "Assets/Act 1/" now
 does — it failed silently, with the sprite sheet reporting a
@@ -380,6 +407,43 @@ successful load and the correct frame geometry while never actually
 drawing. Both call sites in game.js now quote the url(). ASSET_VERSION
 bumped to 5. 289 passed, 0 failed, run twice after all of the above.
 (COMPLETE)
+
+Act I and the item catalogue reset to a blank slate. Deliberate, at
+the student's direction: the narrative-complete Act I and the two
+granted items plus two purchasable outfits were both content written
+ahead of the resource person's source material, not against it.
+content/act1.js is now one scene ("tondo"), one NPC (Nanay, real
+art), one exchange, one objective; content/items.js is now
+`window.ITEMS = []`. Both carry a header explaining the reset and
+pointing at git history for what used to be there.
+
+The harness was rebuilt rather than shrunk. Blocks 8 through 12's
+sections (F through AG, most of the suite) drove the engine's guard,
+hazard, hideSpot, platform, pickup and shop/equip/effect mechanics
+through what used to be real Act I content; deleting that content
+would have deleted their only test fixture along with it. Instead,
+_dev/test.js now carries its own private fixture (FIXTURE_ACT1_JS,
+FIXTURE_ITEMS_JS, defined near the top of the file) reproducing that
+same gameplay skeleton and item catalogue, routed in through
+enterTestRoom()'s fixtureRoutes() helper — a page.route interception
+of content/act1.js and content/items.js that applies ONLY inside the
+harness. Production content and the test fixture are now decoupled on
+purpose: neither constrains the other, and the engine mechanics stay
+under full regression coverage regardless of what Act I's real
+content looks like at any given moment. One new fixture asset,
+_dev/fixtures/test-outfit-walk.png, exists so the outfit-swap test
+(Y) has a real, always-loadable sprite sheet to swap in without
+depending on Assets/Walk.png, whose presence in Assets/ is no longer
+guaranteed (see the correction on the entry above). See CLAUDE.md,
+Decisions on record and Pitfalls, for the one trap this uncovered: a
+seed with objective flags already true, loaded against the REAL
+(non-fixture) content, now auto-completes Act I on entry, because the
+real act has only one objective and it is already satisfied — every
+call site that seeds those flags now routes through fixtureRoutes().
+content/act1.js and content/items.js bumped to v11 and v3. Verified
+by hand end to end (fresh student through Nanay's three-line exchange
+to the flag setting and the act completing into the post-test) as
+well as by the harness. 289 passed, 0 failed, run twice. (COMPLETE)
 
 Paper audit. Seventeen functional requirements, ten non-functional,
 five modules, seventeen ERD entities and all four act storyboards
@@ -506,25 +570,30 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the replacement art. Assets/ now holds a floor tile, the player
-walk cycle, and one real commissioned sprite: Nanay, Macario's mother,
-in the tondo scene. The rest of Act I — the director, the recruiter,
-the courier contact, the guard, both decorations and the Tondo
-day/night skyline — has no art file at all right now; the earlier
-Claude-drawn placeholder set was removed on purpose and was never a
-substitute for this line, only scaffolding while it was outstanding.
-The player's own Idle and Dead poses, both outfits, and everything in
-Acts II through IV are untouched and still fall back to the labelled
-placeholder box, which remains the fallback system working, not a
-fault.
+Chase the replacement art. Assets/ holds one real commissioned sprite
+today: Nanay, Macario's mother, the only NPC content/act1.js declares.
+Walk.png and Cement_Tile.png are technically present in Assets/, but
+their removal was confirmed intentional (see Blocks done); nobody has
+a tool that can delete them from here, so whether they stay or go is
+the student's call to make on the machine itself, not a content gap
+to chase. Everything the fuller Act I draft used to need art for — a
+director, a recruiter, a courier contact, a guard, decorations, the
+Tondo day/night skyline — is not currently declared as content at
+all, so there is nothing there to draw against yet; that list comes
+back once real content does. The player's own Idle and Dead poses and
+everything in Acts II through IV are untouched and still fall back to
+the labelled placeholder box, which remains the fallback system
+working, not a fault.
 
-Block 11 adds two named files to that list: Skin_Walk.png and
-Skin_Uniporme_Walk.png, the two outfits. Both are bought and worn
-today and both render as the placeholder, so the cosmetic system is
-complete in code and invisible on screen until they are drawn. The
-filenames and the sheet geometry are one line of content each in
-content/items.js; rename them to match whatever the artist delivers.
-(NOT STARTED)
+Block 11's two outfits, Skin_Walk.png and Skin_Uniporme_Walk.png,
+are moot for now: content/items.js was reset to an empty catalogue in
+the same pass that reset Act I (see Blocks done), so there is
+currently no cosmetic item in the shipped game to draw art for. The
+shop, equip and cosmetic-sheet-swap mechanics they used to exercise
+are unchanged and still fully tested against _dev/test.js's own
+fixture catalogue; only the shipped content is gone. Whoever writes
+real items back in can reuse these filenames or choose new ones — it
+is one line of content per item either way. (NOT STARTED)
 
 Provision student accounts for the session, and pilot with two or
 three students who are not part of the study. A pilot run on a study

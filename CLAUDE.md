@@ -67,21 +67,42 @@ one decision is what removed the mobile control overflow from the work
 rather than fixing it, because the overflow only ever happened in
 portrait.
 
-## Act I is the real story now
+## Act I is a deliberate blank slate
 
-content/act1.js was a proving ground, one room with one example of every
-engine system and placeholder dialogue about buko and errands. It has been
-replaced wholesale with a narrative written directly against the ten item
-pairs in db/macario_items_v3.sql. See Decisions on record for the scene
-structure and what each beat teaches.
+content/act1.js has gone through three shapes: a proving ground (one room,
+one example of every engine system, placeholder dialogue about buko and
+errands), a full narrative written directly against the ten item pairs in
+db/macario_items_v3.sql (two scenes, five objectives, a stage cutscene, a
+guard corridor), and now a reset back to one scene, one NPC (Nanay,
+Macario's mother, with real commissioned art) and one exchange. All three
+are in git history; none should be restored by copying old code back in
+without a reason.
 
-The old test stage, and the earlier road-through-Tondo placeholder before
-it, are both in git history and should not be restored.
+The reset was deliberate, not a regression: the narrative-complete version
+was written ahead of the resource person's source material rather than
+against it, and starting over from a real, working, minimal base was
+chosen over layering more content onto a story that might not survive
+contact with the source. content/items.js was reset the same way, back to
+an empty catalogue, for the same reason — the two granted equipment items
+and two purchasable outfits it carried were content decisions made without
+the source material either.
+
+None of this touched the ENGINE. Every mechanic the fuller version
+exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
+detection, hazards, hideSpots, platforms, pickups, the shop, equip and
+item-effect system — is unchanged, still fully implemented, and still
+fully covered by _dev/test.js, which now carries its own private fixture
+scene and item catalogue (FIXTURE_ACT1_JS / FIXTURE_ITEMS_JS, near the top
+of that file) so those mechanics stay tested independent of whatever
+content/act1.js and content/items.js actually ship. See Decisions on
+record for why the harness was rebuilt this way instead of shrinking
+alongside the content.
 
 Acts II through IV are still registered, loadable stubs waiting to be
-written. The next content pass is one of those, not another look at Act I,
-unless the resource person's source material turns up something the
-current script gets wrong.
+written. Once Act I's content comes back for real, it should be built one
+verified passage at a time against whatever the resource person's source
+material actually says, not reassembled from the version now sitting in
+git history.
 
 ## Stack
 
@@ -352,9 +373,9 @@ That is why they are strokes rather than glyphs.
 There is no icon art and none can be invented. Assets/ holds a floor
 tile, the player's walk cycle, and — as of the folder reorganisation
 into Assets/Act 1 and Assets/Prefab — one real commissioned sprite,
-Nanay (see Decisions on record). The earlier Claude-drawn placeholder
-set for Act I's other NPCs, the guard and the decorations has been
-removed on purpose and not replaced; those now render as the dashed
+Nanay, the only NPC content/act1.js currently declares (see Act I is
+a deliberate blank slate, and Decisions on record). Any future NPC,
+guard or decoration without real art falls back to the dashed
 placeholder box naming the file, same as any other missing image, so
 referencing an icon PNG would fill the screen with those.
 
@@ -900,6 +921,36 @@ their earlier Claude-drawn placeholder art in the same folder
 reorganisation and were deliberately not given new placeholders; they
 render as the engine's own dashed box until real art exists for them too.
 
+content/act1.js was then reset further, on purpose, back to just that one
+Nanay exchange: no second scene, no stage, no guard corridor, no other
+NPC. The narrative-complete version (two scenes, five objectives) was
+written ahead of the resource person's source material rather than
+against it; rather than keep extending a story that might not survive
+contact with the source, it was rolled back to a small, real, working
+base to build forward from once the source material is actually in hand.
+content/items.js was reset the same way, back to an empty catalogue — the
+two granted equipment items and two purchasable outfits it carried were
+likewise content decisions made without the source material.
+
+This time the reset did NOT shrink test coverage. Nearly every section
+from Block 8 onward (F through AG) drives the game through a "resuming
+student, mid Act I" fixture that used to mean the real misyon scene: its
+guard, hazard, hideSpot, platform and pickup, and the real item
+catalogue's shop/equip/effect behaviour. Rather than deleting all of that
+coverage along with the narrative, _dev/test.js now carries its own
+private fixture (FIXTURE_ACT1_JS and FIXTURE_ITEMS_JS, defined near the
+top of the file) reproducing that same gameplay skeleton and catalogue,
+served in place of content/act1.js and content/items.js ONLY inside the
+harness, via enterTestRoom()'s fixtureRoutes() helper. Production content
+and the test fixture are now intentionally decoupled: either can change
+without touching the other, and the mechanics (guard AI, hazard/pickup
+collision, the shop) stay under full regression coverage even while the
+shipped content is a blank slate. See Pitfalls for the one trap this
+uncovered: any test that resumes a save with objective flags already set,
+against the REAL (not fixture-routed) content, now risks auto-completing
+the act the instant it loads, because the real Act I has only the one
+objective and that flag is already true.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -992,6 +1043,21 @@ backgroundImage silently stays "none" and the sprite is an invisible box
 occupying the right size in the right place. Fixed by quoting both sites:
 url("${assetUrl(sheet.src)}"). Any future asset path with a space, a
 paren, or a comma needs this same quoting; it's cheap enough to always do.
+
+Seeding a save with objective flags already true and then loading it
+against the REAL content/act1.js (rather than through enterTestRoom(),
+which routes to the harness's own fixture) can auto-complete the act
+before the test gets to do anything. checkObjectives() runs on entry and
+compares the seeded flags against whatever objectives the loaded act
+actually declares; content/act1.js now declares exactly one, so a seed
+carrying { nalamanAngPinagmulan: true, ... } — written when Act I still
+had five objectives — reads as "1 of 1 done" the instant the real content
+loads, and the act silently finishes and jumps to the real post-test
+before #btn-pause or anything else in the test ever becomes visible. Every
+_dev/test.js call site that seeds atTestRoom()-shaped flags now passes
+fixtureRoutes() to newPage() for exactly this reason (see Decisions on
+record); a new call site that skips it and seeds those flags against the
+real content will hang on a `page.click` timeout with no other clue why.
 
 ## Accounts
 
