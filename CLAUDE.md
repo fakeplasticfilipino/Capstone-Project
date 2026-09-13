@@ -419,16 +419,42 @@ the frame count, which is the single-strip case.
     { src: "Assets/Walk.png", frames: 12, fps: 12, columns: 5 }
 
 loadSpriteSheet derives frameWidth, rows, and frameHeight from that.
-Scaling is always from frameHeight, never naturalHeight, or a multi-row
-sheet renders at 1/rows size. Both the player animator and
-setupNpcAnimation handle grids.
+frameHeight is always derived from naturalHeight divided by rows, never
+assumed, or a multi-row sheet renders at 1/rows size. Both the player
+animator and setupNpcAnimation handle grids.
+
+A sheet's frame is a fixed-size cell, not the size of the character drawn
+inside it, and real art rarely fills its cell edge to edge. Two more
+optional fields, contentTop and contentHeight, say where the character
+actually sits within that cell, in the sheet's own native pixels:
+
+    { src: "Assets/Prefab/Macario_Idle.png", frames: 16, fps: 6,
+      columns: 5, contentTop: 73, contentHeight: 106 }
+
+Measure both from the real art's alpha channel — the union of every
+frame's non-transparent bounding box, so no pose gets clipped — never by
+eye. spriteFit (in game.js, just above loadSpriteSheet) turns them into
+the scale and background-position shift that renders the CHARACTER, not
+the frame, at DISPLAY_HEIGHT tall with its feet on the box's bottom
+edge, which is what actually puts a character on the ground and makes
+its height comparable to any other sheet's. Omit both fields and a sheet
+falls back to the old behaviour exactly (the full frame scaled to
+DISPLAY_HEIGHT, feet wherever the frame's own bottom edge happens to
+be) — this is why cosmetics with no art yet and the test harness's own
+fixture sheets need no changes to keep working. See Decisions on record
+for the numbers measured for Macario and Nanay and why this was needed;
+the same measurement is owed to Dead.png and to any outfit's walk/idle/
+dead sheets once real art exists for them.
 
 Every image load goes through assetUrl(), which appends the ASSET_VERSION
 constant in game.js. Images are not covered by the v=N strings in
 index.html, so without this the browser and the Pages CDN serve stale
 sprites indefinitely after a file is replaced. Bump ASSET_VERSION whenever
 anything in Assets/ changes, and bump the game.js script version too, since
-the browser must refetch game.js to learn the new asset version.
+the browser must refetch game.js to learn the new asset version. A change
+to contentTop/contentHeight is a change to the CONTENT file that declares
+them (game.js for the player, content/actN.js for an NPC), not to the
+image, so it needs that file's own v=N bumped rather than ASSET_VERSION.
 
 Missing images do not break anything. They fall back to a dashed
 placeholder box showing the expected filename.
@@ -1067,6 +1093,41 @@ updated to the new paths, and the one check that had actually been failing
 against this device's real files because Assets/Walk.png never
 existed — "unequipping restores the base walk cycle" — now passes for
 real. 327 passed, 0 failed, run twice.
+
+Getting the real art on screen exposed a second, separate problem: every
+sheet was scaled and grounded by the size of its FRAME (always 256px
+tall here), not by the size of the character actually drawn inside that
+frame, and real art does not fill its frame edge to edge. Measuring each
+sheet's own alpha channel (union of every frame's non-transparent
+bounding box) found Nanay's drawing fills about two thirds of her frame
+(contentTop 45, contentHeight 166 of 256) while Macario's idle pose
+fills barely two fifths of his (contentTop 73, contentHeight 106) and
+his walk cycle a bit more (contentTop 60, contentHeight 127) — three
+different amounts of empty padding on three sheets that were all being
+scaled and grounded identically regardless. The visible symptoms were
+exactly that mismatch: Macario's idle pose rendered smaller than his own
+walk cycle, neither matched Nanay's height, and all three floated above
+the ground line by however much empty space sat below their feet,
+because the sprite box's bottom edge is the bottom of the FRAME, not
+the bottom of the drawing.
+
+The fix is spriteFit (game.js, just above loadSpriteSheet) plus two new
+optional fields on a sheet, contentTop and contentHeight — see Sprite
+sheets for the format and the measurement rule. It does not touch any
+image: every number above came from reading the existing PNGs' alpha
+channel, not from redrawing them, which is what the fix had to do
+without editing the art. BASE_SPRITE_SHEETS.idle and .walk in game.js
+and Nanay's animation def in content/act1.js now carry these fields; a
+sheet without them (Dead.png once it exists, any cosmetic outfit, the
+harness's own fixtures) renders exactly as before, since spriteFit
+falls back to the full frameHeight and a zero top offset when either
+field is absent. Confirmed by comparing the player's and Nanay's actual
+getBoundingClientRect() in a headless run: both now report the identical
+top, bottom and height, meaning both are DISPLAY_HEIGHT tall and both
+feet land on the same ground line, not just similar-looking in a
+screenshot. 327 passed, 0 failed, run twice; no existing check measured
+backgroundPosition or backgroundSize directly, so none needed updating,
+only the visual verification above.
 
 ## Pitfalls
 

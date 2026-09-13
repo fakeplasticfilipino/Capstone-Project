@@ -27,17 +27,34 @@ frames, same 5 by 4 grid with the last row only one frame full). game.js's
 BASE_SPRITE_SHEETS was repointed at these two real files, in place of the
 placeholder paths (Assets/Walk.png, Assets/Idle.png) that never actually
 existed on this device; ASSET_VERSION went to 6 and game.js's own script
-version to v24 so the browser refetches it. See Known problems, missing
+version, eventually, to v25 (see below). See Known problems, missing
 production art, for the detail and what is still outstanding (Dead.png,
-Cement_Tile.png, Tondo.png, Tondo_Night.png). The suite is fully green
-again as a result: 327 passed, 0 failed, run twice against these real
-files in a session with no device shell, by staging the repository into a
-disposable sandbox and running node _dev/test.js there — see Verification.
-A screenshot of a guest session idling and then walking, taken the same
-way, confirms the sprites actually paint correctly rather than just
-loading without error. NONE OF THIS HAS BEEN SEEN ON THE PHONE ITSELF yet,
-same as the icon pass, the settings reset from Block 12, and both Blocks
-14 and 15.
+Cement_Tile.png, Tondo.png, Tondo_Night.png).
+
+Getting that real art on screen surfaced a second problem in the same
+session: Macario's idle pose rendered visibly smaller than his own walk
+cycle, neither matched Nanay's height, and all three floated above the
+ground by different amounts, because every sheet was being scaled and
+grounded by its FRAME size (always 256px) rather than by how much of
+that frame the artist actually drew into — and real art fills a
+different fraction of its frame sheet to sheet. Fixed the same way, with
+no image edits: game.js gained spriteFit and two new optional per-sheet
+fields, contentTop and contentHeight, measured from each sheet's own
+alpha channel; see CLAUDE.md, Sprite sheets and Decisions on record, for
+the format and the exact numbers. game.js's script version went to v25
+and content/act1.js's (Nanay's animation def now carries the two new
+fields) to v12 as a result.
+
+Both fixes together: the suite is fully green, 327 passed, 0 failed, run
+twice against these real files in a session with no device shell, by
+staging the repository into a disposable sandbox and running
+node _dev/test.js there — see Verification. A screenshot of a guest
+session next to Nanay, and the two sprites' own getBoundingClientRect()
+read in that same headless run, confirm the player and Nanay now report
+an identical top, bottom and height rather than merely looking close in
+a screenshot. NONE OF THIS HAS BEEN SEEN ON THE PHONE ITSELF yet, same as
+the icon pass, the settings reset from Block 12, and both Blocks 14 and
+15.
 
 ## Right now
 
@@ -470,12 +487,30 @@ to 6, game.js's own script version to v24. The one test that hardcoded the
 old, nonexistent path and had been failing for real because of it —
 "unequipping restores the base walk cycle" — now passes, along with the
 two other Section Y assertions that hardcoded the old idle/walk paths and
-needed updating to match. 327 passed, 0 failed, run twice, from a
-disposable sandbox with the repository staged into it (this session had
-no shell on the device itself). Also confirmed by a headless screenshot of
-a guest session idling and then walking, so the frames are known to paint
-correctly and not just load without error. Dead.png is still missing and
-still falls back to the placeholder box. (COMPLETE)
+needed updating to match. Dead.png is still missing and still falls back
+to the placeholder box.
+
+Seeing the real art on screen surfaced a second fault in the same
+session: Macario's idle pose rendered smaller than his own walk cycle,
+neither matched Nanay's height, and all three floated above the ground
+by different amounts, because every sheet was scaled and grounded by
+its 256px FRAME rather than by how much of that frame the art actually
+fills, which varies sheet to sheet. Fixed without touching any image:
+game.js gained spriteFit and two new optional per-sheet fields,
+contentTop and contentHeight, measured from each sheet's own alpha
+channel (union of every frame's non-transparent bounding box) — Nanay
+45/166, Macario's idle 73/106, his walk 60/127, out of every 256px
+frame. See CLAUDE.md, Sprite sheets and Decisions on record. game.js
+bumped to v25 and content/act1.js (Nanay's animation def now carries
+the two fields) to v12.
+
+327 passed, 0 failed, run twice, from a disposable sandbox with the
+repository staged into it (this session had no shell on the device
+itself). Confirmed two ways beyond the suite: a headless screenshot of
+a guest session idling and walking next to Nanay, and reading the
+player's and Nanay's own getBoundingClientRect() in that same run, which
+report an identical top, bottom and height for both — not just similar
+in a screenshot, but the same box. (COMPLETE)
 
 Act I and the item catalogue reset to a blank slate. Deliberate, at
 the student's direction: the narrative-complete Act I and the two

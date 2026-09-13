@@ -541,10 +541,9 @@ function setupNpcAnimation(sheet, el, displayHeight, token) {
     // but the first multi-row sheet delivered would otherwise render
     // at the wrong scale and walk off the right edge of the image.
     const columns = sheet.columns || sheet.frames;
-    const scale = displayHeight / sheet.frameHeight;
-    const displayFrameWidth = sheet.frameWidth * scale;
+    const fit = spriteFit(sheet, displayHeight);
 
-    el.style.width = displayFrameWidth + "px";
+    el.style.width = fit.displayFrameWidth + "px";
     el.style.height = displayHeight + "px";
     // Quoted: an unquoted CSS url() breaks on the first space in the
     // path, and Assets/Act 1/Nanay.png has one. Without the quotes
@@ -554,8 +553,8 @@ function setupNpcAnimation(sheet, el, displayHeight, token) {
     // bug rather than the sprite never actually drawing.
     el.style.backgroundImage = `url("${assetUrl(sheet.src)}")`;
     el.style.backgroundSize =
-      sheet.naturalWidth * scale + "px " + sheet.naturalHeight * scale + "px";
-    el.style.backgroundPositionY = "0px";
+      sheet.naturalWidth * fit.scale + "px " + sheet.naturalHeight * fit.scale + "px";
+    el.style.backgroundPositionY = -fit.topOffset + "px";
     el.style.backgroundPositionX = "0px";
 
     npcAnimators.push({
@@ -566,8 +565,8 @@ function setupNpcAnimation(sheet, el, displayHeight, token) {
           frame = (frame + 1) % sheet.frames;
           const column = frame % columns;
           const row = Math.floor(frame / columns);
-          el.style.backgroundPositionX = -(column * displayFrameWidth) + "px";
-          el.style.backgroundPositionY = -(row * displayHeight) + "px";
+          el.style.backgroundPositionX = -(column * fit.displayFrameWidth) + "px";
+          el.style.backgroundPositionY = -(row * fit.rowStep + fit.topOffset) + "px";
         }
       },
     });
@@ -666,18 +665,75 @@ const playerSpriteEl = player.querySelector(".player-sprite");
 // is not specific to one act; see CLAUDE.md, Decisions on record.
 // fps is carried over unchanged from the placeholder sheets these
 // replace; it has not been checked against a phone yet.
+//
+// contentTop and contentHeight are measured from each sheet's own alpha
+// channel (the union of every frame's non-transparent bounding box, in
+// native pixels within the 256px cell), not eyeballed — see spriteFit,
+// above loadSpriteSheet. Without them Macario's idle pose rendered
+// visibly smaller than his walk cycle, both floated well above the
+// ground, and neither matched an animated NPC like Nanay, because all
+// of them were being scaled and grounded by the empty space in their
+// frame rather than by the character actually drawn in it.
 // The sheets Macario wears with nothing equipped. An outfit replaces
 // whichever of the three it declares and leaves the rest alone, so a
 // cosmetic that only redraws the walk cycle is a complete outfit.
 const BASE_SPRITE_SHEETS = {
-  idle: { src: "Assets/Prefab/Macario_Idle.png", frames: 16, fps: 6, columns: 5 },
-  walk: { src: "Assets/Prefab/Macario_Walking.png", frames: 20, fps: 12, columns: 5 },
+  idle: {
+    src: "Assets/Prefab/Macario_Idle.png", frames: 16, fps: 6, columns: 5,
+    contentTop: 73, contentHeight: 106,
+  },
+  walk: {
+    src: "Assets/Prefab/Macario_Walking.png", frames: 20, fps: 12, columns: 5,
+    contentTop: 60, contentHeight: 127,
+  },
   dead: { src: "Assets/Dead.png", frames: 5, fps: 6, columns: 5, loop: false },
 };
 
 // The set actually in use. Reassigned by setOutfit, which is why this is
 // a let; everything that draws the player reads it rather than the base.
 let SPRITE_SHEETS = BASE_SPRITE_SHEETS;
+
+// Sprite art does not fill its frame edge to edge. Every sheet in this
+// project sits in a 256px-tall cell, but how much of that cell the artist
+// actually drew the character into varies a lot sheet to sheet — Nanay's
+// drawing fills about two thirds of hers, Macario's idle pose barely
+// two fifths of his. Scaling every sheet so its FULL FRAME is
+// DISPLAY_HEIGHT tall (what this used to do unconditionally) therefore
+// rendered a different apparent character height per sheet, and left
+// every one of them floating above the ground by however much empty
+// space sits below the feet, because the box's bottom edge is the
+// bottom of the FRAME, not the bottom of the drawing.
+//
+// A sheet may declare contentTop and contentHeight, in the sheet's own
+// native pixels, to say where the drawn character actually sits inside
+// its frame. These are measured from the real art's alpha channel
+// (union of the non-transparent bounding box across every frame, so no
+// pose gets clipped), not eyeballed, and are not something this engine
+// derives on its own — a new sheet needs them measured the same way
+// before it will line up with the others. spriteFit turns those two
+// numbers into a scale that makes the CHARACTER, not the frame,
+// DISPLAY_HEIGHT tall, plus the background-position shift that puts its
+// feet at the box's bottom edge. A sheet with neither field falls back
+// to the old behaviour exactly (contentTop 0, contentHeight the full
+// frameHeight), which is what keeps every sheet nobody has measured yet
+// — cosmetics with no art, the test harness's own fixtures — rendering
+// exactly as it always has.
+function spriteFit(sheet, displayHeight) {
+  const contentHeight = sheet.contentHeight || sheet.frameHeight;
+  const contentTop = sheet.contentTop || 0;
+  const scale = displayHeight / contentHeight;
+  return {
+    scale,
+    displayFrameWidth: sheet.frameWidth * scale,
+    // The scaled distance from one row to the next in the background
+    // image. Equal to displayHeight only in the no-correction case
+    // (contentHeight === frameHeight); otherwise the scaled frame is
+    // taller than the box it is cropped into, and stepping by
+    // displayHeight instead of this would land on the wrong row.
+    rowStep: sheet.frameHeight * scale,
+    topOffset: contentTop * scale,
+  };
+}
 
 function loadSpriteSheet(def) {
   return new Promise((resolve) => {
@@ -805,20 +861,20 @@ function applyAnim(name, force) {
 
   clearPlaceholder(playerSpriteEl);
 
-  // Scale so one FRAME is DISPLAY_HEIGHT tall, not the whole sheet.
-  // Scaling by naturalHeight would shrink the character to 1/rows size
-  // on any multi-row sheet.
-  const scale = DISPLAY_HEIGHT / sheet.frameHeight;
-  const displayFrameWidth = sheet.frameWidth * scale;
+  // Scale so the CHARACTER (per contentHeight, see spriteFit above
+  // loadSpriteSheet), not the whole frame, is DISPLAY_HEIGHT tall, and
+  // shift the background up so its feet (contentTop + contentHeight)
+  // land on the box's bottom edge instead of the frame's.
+  const fit = spriteFit(sheet, DISPLAY_HEIGHT);
 
-  playerSpriteEl.style.width = displayFrameWidth + "px";
+  playerSpriteEl.style.width = fit.displayFrameWidth + "px";
   playerSpriteEl.style.height = DISPLAY_HEIGHT + "px";
   // Quoted for the same reason as setupNpcAnimation above: a path
   // with a space breaks an unquoted url().
   playerSpriteEl.style.backgroundImage = `url("${assetUrl(sheet.src)}")`;
   playerSpriteEl.style.backgroundSize =
-    sheet.naturalWidth * scale + "px " + sheet.naturalHeight * scale + "px";
-  playerSpriteEl.style.backgroundPositionY = "0px";
+    sheet.naturalWidth * fit.scale + "px " + sheet.naturalHeight * fit.scale + "px";
+  playerSpriteEl.style.backgroundPositionY = -fit.topOffset + "px";
   playerSpriteEl.style.backgroundPositionX = "0px";
 }
 
@@ -847,12 +903,12 @@ function updateAnimFrame(now) {
       const column = currentFrame % columns;
       const row = Math.floor(currentFrame / columns);
 
-      const scale = DISPLAY_HEIGHT / sheet.frameHeight;
-      const displayFrameWidth = sheet.frameWidth * scale;
+      const fit = spriteFit(sheet, DISPLAY_HEIGHT);
 
       playerSpriteEl.style.backgroundPositionX =
-        -(column * displayFrameWidth) + "px";
-      playerSpriteEl.style.backgroundPositionY = -(row * DISPLAY_HEIGHT) + "px";
+        -(column * fit.displayFrameWidth) + "px";
+      playerSpriteEl.style.backgroundPositionY =
+        -(row * fit.rowStep + fit.topOffset) + "px";
     }
   }
 

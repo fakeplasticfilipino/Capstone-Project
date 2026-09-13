@@ -27,6 +27,14 @@
 // 5-column by 3-row sheet, 14 of its 15 cells used. See CLAUDE.md's
 // Pitfalls for the quoting fix that was needed in game.js before a
 // path with a space in it (this one) would actually render.
+//
+// contentTop/contentHeight on her animation def say where she actually
+// sits within her 256px frame (measured from the art's alpha channel),
+// so game.js's spriteFit scales and grounds her by her own drawn height
+// rather than the frame's — see game.js, above loadSpriteSheet, and
+// CLAUDE.md, Decisions on record, for why that matters: without it she
+// and Macario were scaled and grounded by two different amounts of
+// empty padding and never matched.
 // =============================================================
 
 window.ACT_1 = {
@@ -57,7 +65,10 @@ window.ACT_1 = {
           x: 300,
           label: "Nanay",
           stage: 0,
-          animation: { src: "Assets/Act 1/Nanay.png", frames: 14, fps: 6, columns: 5 },
+          animation: {
+            src: "Assets/Act 1/Nanay.png", frames: 14, fps: 6, columns: 5,
+            contentTop: 45, contentHeight: 166,
+          },
           dialogueSets: [
             {
               lines: [
