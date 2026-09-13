@@ -1147,6 +1147,85 @@ prints the same contentTop/contentHeight a person would otherwise have
 to eyeball, straight from the PNG's own alpha channel. See Sprite sheets
 and _dev/README.md.
 
+Block 15's Katipunan flag palette (gold, navy, red) was retired and
+replaced with a natural wood-and-green palette, because the flag chrome
+still read as a flat, modern interface rather than something physically
+made, and the request this time was explicit: pure CSS and SVG only, no
+new image assets, and a fully natural color range (browns, greens,
+cream) rather than keeping any red or gold as an accent. This retextures
+UI chrome only, the same boundary Block 15 drew and for the same
+reason: panels, buttons, borders and generic text changed; gameplay and
+status colors did not. Hearts, hazards, the guard detection meter, the
+thrown spear, platforms, hide-spots, the stage platform, the cutscene
+blackout, and the danger/success colors on quiz feedback and inventory
+rows are all exactly the literals they were before this block.
+
+The palette lives in the same :root custom-property shape Block 15
+used: --c-wood, --c-wood-deep and --c-wood-light for panels, overlays
+and borders; --c-green and --c-green-deep for the one accent color this
+retheme uses, covering what gold used to cover (headings kept a plain
+--c-cream instead; see below); each with an -rgb triplet so a
+translucent rgba(var(--c-x-rgb), alpha) never needs a new hardcoded
+literal. --c-border-muted was redefined from a cool navy-blue to a warm
+muted brown (#6d5842) in place, so every rule that already referenced it
+(the quiz choices, the inventory rows, the settings choices, and others)
+picked up the new tone with no per-rule edit needed.
+
+Two colors needed to be decoupled rather than swapped, for the same
+reason Block 15 decoupled a shared literal once before. The guard meter
+fill and the thrown spear both used to read var(--c-gold) directly, so
+retiring that variable would have recolored two gameplay signals along
+with the chrome. Both are now the literal #f4c542 instead, unchanged in
+appearance and untouched by any future chrome palette change.
+
+Retired var(--c-gold) split three ways depending on what it was doing.
+Panel and button borders (auth box, quest log, dialogue box, the
+act/quiz/shell overlay boxes, the pause/inventory/shop buttons, the
+touch controls) became --c-wood-light: a border is chrome, not an
+accent. Headings and titles (auth title, quest log title, act and quiz
+titles, the shell heading, the rotate notice) became a plain --c-cream
+rather than an accent color, on the view that a heading in this palette
+reads better as cream-on-wood than as another green surface. Everything
+that was signaling "this is the one active or emphasized thing" —
+the dialogue speaker name, the quiz progress line, the toast, the
+selected quiz choice, the active settings choice, the equipped
+inventory row, the currency balance, an object's owned/worn marker,
+the interact prompt's active state, the feedback stars — became
+--c-green, since green was already this project's one existing accent
+(the interact prompt, an owned item) before this block and re-using it
+rather than inventing a second accent keeps the palette to browns,
+greens and cream as asked. Retired var(--c-red) (auth submit, the gift
+button, the act/quiz primary button, the shell primary button)
+became the same --c-green for the identical reason: one obvious thing
+to tap, colored the one accent this palette has. Chrome tints that were
+previously rgba(var(--c-gold-rgb), n) on plate-like surfaces (the
+panel button borders and icon wells in the Icons and button chrome
+section, the round world-button and touch-control radial gradients,
+the shell box's outer glow) became rgba(var(--c-wood-light-rgb), n)
+instead of green, since those are texture rather than emphasis and a
+screen where every surface glows green stops reading as an accent at
+all.
+
+Pre-existing status-green literals were deliberately left alone rather
+than rewired to --c-green: .inv-item-owned, #auth-status.success,
+.shell-note.ok and .shell-keeps .ico all already used their own
+hardcoded greens (#43a047, #7bc47f family) as an "owned/success" signal
+independent of chrome, exactly the separation Block 15 established.
+They happen to render close to the new chrome green now, which is a
+coincidence of both drawing from the same natural palette, not a
+merge — a future chrome change that moves --c-green elsewhere will not
+move these, and that is the point of them staying literals.
+
+Verified by running the existing suite unchanged (327 passed, 0 failed,
+run twice) — this block touches color values only, so no check needed
+writing or updating — and by a headless screenshot pass over the title
+screen, the game world and HUD, the pause menu, the settings panel and
+the inventory panel, confirming the wood/green/cream look renders
+correctly and that gameplay elements (hearts, the quest log, the touch
+controls) kept their prior appearance. style.css's own script version
+was bumped in index.html for the cache-buster reason stated under
+Pitfalls.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes

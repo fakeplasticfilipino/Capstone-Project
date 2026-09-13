@@ -20,53 +20,38 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after the student added two real commissioned sprites for
-Macario, his own base walk and idle cycles — Assets/Prefab/Macario_Walking.png
-(20 frames, 5 columns by 4 rows) and Assets/Prefab/Macario_Idle.png (16
-frames, same 5 by 4 grid with the last row only one frame full). game.js's
-BASE_SPRITE_SHEETS was repointed at these two real files, in place of the
-placeholder paths (Assets/Walk.png, Assets/Idle.png) that never actually
-existed on this device; ASSET_VERSION went to 6 and game.js's own script
-version, eventually, to v25 (see below). See Known problems, missing
-production art, for the detail and what is still outstanding (Dead.png,
-Cement_Tile.png, Tondo.png, Tondo_Night.png).
+Last updated: after Block 16, a full UI retheme replacing Block 15's
+Katipunan flag chrome (gold, navy, red) with a natural wood-and-green
+palette (browns, greens, cream; no red or gold anywhere), done in pure
+CSS with no new image assets, per an explicit request for a natural
+rather than modern-flat look. Gameplay and status colors were left
+untouched, same boundary Block 15 drew; two spots that used to read the
+retired gold variable directly (the guard meter fill, the thrown spear)
+are now the literal #f4c542 instead, so they could not be silently
+recolored by retiring that variable. style.css's script version went to
+v17. See Blocks done and CLAUDE.md, Decisions on record, for the color
+mapping. Verified by re-running the suite (327 passed, 0 failed) and by
+a headless screenshot pass over the title screen, the game world/HUD,
+the pause menu, the settings panel and the inventory panel — NOT YET
+SEEN ON THE PHONE ITSELF.
 
-Getting that real art on screen surfaced a second problem in the same
-session: Macario's idle pose rendered visibly smaller than his own walk
-cycle, neither matched Nanay's height, and all three floated above the
-ground by different amounts, because every sheet was being scaled and
-grounded by its FRAME size (always 256px) rather than by how much of
-that frame the artist actually drew into — and real art fills a
-different fraction of its frame sheet to sheet. Fixed the same way, with
-no image edits: game.js gained spriteFit and two new optional per-sheet
-fields, contentTop and contentHeight, measured from each sheet's own
-alpha channel; see CLAUDE.md, Sprite sheets and Decisions on record, for
-the format and the exact numbers. game.js's script version went to v25
-and content/act1.js's (Nanay's animation def now carries the two new
-fields) to v12 as a result.
-
-That measuring was a one-off script the first time. It is now a real
-tool, _dev/measure-sprite.js, added the same session once it was clear
-Dead.png and future outfit art would need the same treatment: point it
-at a sheet and its columns/frames and it prints the contentTop/
-contentHeight to paste in, read straight from the PNG's own alpha
-channel rather than eyeballed. No new dependency — the PNG decoding is
-plain Node plus node:zlib. See _dev/README.md and CLAUDE.md, Sprite
-sheets. (COMPLETE)
-
-Both fixes together: the suite is fully green, 327 passed, 0 failed, run
-twice against these real files in a session with no device shell, by
-staging the repository into a disposable sandbox and running
-node _dev/test.js there — see Verification. A screenshot of a guest
-session next to Nanay, and the two sprites' own getBoundingClientRect()
-read in that same headless run, confirm the player and Nanay now report
-an identical top, bottom and height rather than merely looking close in
-a screenshot. NONE OF THIS HAS BEEN SEEN ON THE PHONE ITSELF yet, same as
-the icon pass, the settings reset from Block 12, and both Blocks 14 and
-15. The measuring behind the second fix is now a standing tool rather
-than a one-off script — see _dev/measure-sprite.js in Blocks done — so
-the next sheet (Dead.png, an outfit's art) is one command, not a redo of
-this session's manual analysis.
+Earlier the same broader work: the student added two real commissioned
+sprites for Macario, his own base walk and idle cycles
+(Assets/Prefab/Macario_Walking.png, 20 frames; Macario_Idle.png, 16
+frames, both 5 by 4 grids), wired into BASE_SPRITE_SHEETS in place of
+placeholder paths that never existed on this device (ASSET_VERSION 6,
+game.js v25). Getting the real art on screen exposed a scaling bug —
+every sheet was grounded by its fixed FRAME size rather than by how
+much of that frame the art actually filled, so Macario's idle, his own
+walk cycle and Nanay's sprite were three different heights and all
+floated above the ground. Fixed without touching any image: game.js
+gained spriteFit plus two optional per-sheet fields, contentTop and
+contentHeight, measured from each sheet's own alpha channel (see
+CLAUDE.md, Sprite sheets, for the format). That measuring is now a
+permanent tool, _dev/measure-sprite.js (zero dependencies — PNG chunk
+parsing plus node:zlib), rather than the one-off script it started as.
+See Known problems, missing production art, for what is still
+outstanding (Dead.png, Cement_Tile.png, Tondo.png, Tondo_Night.png).
 
 ## Right now
 
@@ -112,11 +97,12 @@ instead of requiring pause first. Both keep working the old way too
 (through the pause menu). See Blocks done for the detail and CLAUDE.md,
 Decisions on record, for how shell.js tells the two entry paths apart.
 
-Block 14 (play-as-guest) and Block 15 (the Katipunan flag UI retheme)
-are both done; see Blocks done for detail and CLAUDE.md, Decisions on
-record, for the mechanism behind each. Both are verified in the harness
-only — NEITHER HAS BEEN SEEN ON THE PHONE YET, same as the icon pass
-below.
+Block 14 (play-as-guest), Block 15 (the Katipunan flag UI retheme) and
+Block 16 (replacing that palette with a natural wood-and-green one) are
+all done; see Blocks done for detail and CLAUDE.md, Decisions on
+record, for the mechanism behind each. All three are verified in the
+harness only — NONE HAS BEEN SEEN ON THE PHONE YET, same as the icon
+pass below.
 
 A report of "I can't see Nanay anywhere" was investigated this session
 and is NOT a code fault: driving the actual shipped files headlessly
@@ -617,6 +603,30 @@ checked against the code. Its findings are the two scoreboards above.
 Revised Act I item bank. Ten matched pre and post pairs plus a trivia
 fact that no longer leaks pre-test answers. Seeded and confirmed
 serving ten questions per test. (COMPLETE)
+
+Block 16, second UI retheme. Block 15's Katipunan flag palette (gold,
+navy, red) replaced with a natural wood-and-green one (browns, greens,
+cream), requested because the flag chrome still read as flat and
+modern rather than natural. Pure CSS, no new image assets, per the
+request. Chrome only — panels, buttons, borders, generic text — same
+boundary Block 15 drew; gameplay and status colors (hearts, hazards,
+the guard meter, platforms, hide-spots, danger/success signals) stayed
+exactly as they were, and the two spots that used to read the retired
+gold variable directly (the guard meter fill, the thrown spear) are now
+a literal #f4c542 so they could not be recolored by retiring it. New
+:root custom properties (--c-wood, --c-wood-deep, --c-wood-light,
+--c-green, --c-green-deep, plus -rgb triplets) replace the retired
+--c-navy*/--c-red*/--c-gold* set; --c-border-muted was redefined from
+navy-blue to a warm brown in place, so every rule already referencing
+it updated for free. style.css bumped to v17; no new test coverage
+needed, since only color values changed and the existing suite already
+exercises every screen touched. 327 passed, 0 failed, re-run after the
+retheme. Verified by hand against headless screenshots of the title
+screen, the game world and HUD, the pause menu, the settings panel and
+the inventory panel. See CLAUDE.md, Decisions on record, for the full
+color-to-color mapping and for which pre-existing green status literals
+were deliberately left alone rather than rewired to the new chrome
+green. (COMPLETE)
 
 ## Blocks remaining
 

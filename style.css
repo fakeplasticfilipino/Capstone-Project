@@ -9,7 +9,7 @@
 html, body {
   height: 100%;
   overflow: hidden;
-  background: var(--c-navy-deep);
+  background: var(--c-wood-deep);
   font-family: sans-serif;
   color: var(--c-cream);
 }
@@ -27,29 +27,52 @@ html, body {
 :root {
   --zoom: 1.75;
 
-  /* Block 15. Katipunan flag palette, replacing the old gold-on-black
-     UI chrome. RGB triplets exist alongside the solid colors so any
-     rgba(...) that needs the old backdrop's translucency can write
-     rgba(var(--c-x-rgb), alpha) instead of a new hardcoded literal.
-     This only retextures UI chrome (panels, buttons, borders, generic
-     text) — gameplay and status colors (health, hazards, guard
-     detection, danger/success signals) are deliberately untouched;
-     see CLAUDE.md, Decisions on record, UI retheme. */
-  --c-navy-rgb: 26, 47, 107;       /* #1a2f6b */
-  --c-navy-deep-rgb: 15, 28, 69;   /* #0f1c45 */
-  --c-red-rgb: 139, 26, 26;        /* #8b1a1a */
-  --c-gold-rgb: 244, 197, 66;      /* #f4c542 */
+  /* Natural wood-and-green palette, replacing Block 15's Katipunan
+     flag chrome (gold, navy, red), which still read as a flat, modern
+     interface rather than something physically made. RGB triplets
+     exist alongside the solid colors so any rgba(...) that needs
+     translucency can write rgba(var(--c-x-rgb), alpha) instead of a
+     new hardcoded literal — the same convention Block 15 set up,
+     kept here.
 
-  --c-navy: rgb(var(--c-navy-rgb));
-  --c-navy-deep: rgb(var(--c-navy-deep-rgb));
-  --c-red: rgb(var(--c-red-rgb));
-  --c-red-deep: #6e1414;
-  --c-red-light: #a52a2a;
-  --c-gold: rgb(var(--c-gold-rgb));
+     This only retextures UI chrome (panels, buttons, borders, generic
+     text), the same boundary Block 15 drew and for the same reason:
+     gameplay and status colors (health, hazards, guard detection,
+     danger/success signals) are deliberately untouched. Two spots —
+     the guard meter and the thrown spear — used to read var(--c-gold)
+     directly; both are now a literal #f4c542 instead, so retiring
+     that variable here could not silently recolor them. See
+     CLAUDE.md, Decisions on record. */
+  --c-wood-rgb: 90, 61, 38;          /* #5a3d26 — mid wood; already
+                                         the stage platform's color */
+  --c-wood-deep-rgb: 34, 23, 15;     /* #22170f — near-black wood, the
+                                         panel/overlay backdrop */
+  --c-wood-light-rgb: 141, 110, 99;  /* #8d6e63 — lighter wood, used
+                                         for frames and borders */
+  --c-green-rgb: 67, 160, 71;        /* #43a047 — the green this
+                                         project already uses for the
+                                         interact prompt and an owned
+                                         item, now also the chrome
+                                         accent; see Decisions on
+                                         record for why one green
+                                         meaning everything is fine
+                                         here even though Block 15
+                                         kept status-green and chrome
+                                         deliberately apart. */
+  --c-green-deep-rgb: 27, 94, 32;    /* #1b5e20 */
+
+  --c-wood: rgb(var(--c-wood-rgb));
+  --c-wood-deep: rgb(var(--c-wood-deep-rgb));
+  --c-wood-light: rgb(var(--c-wood-light-rgb));
+  --c-green: rgb(var(--c-green-rgb));
+  --c-green-deep: rgb(var(--c-green-deep-rgb));
+  --c-green-light: #81c784;
   --c-cream: #f5efe0;
   --c-cream-dim: #cbb99a;
   --c-cream-faint: #9a8f78;
-  --c-border-muted: #3d4f82;
+  --c-border-muted: #6d5842; /* warm muted brown; was a cool navy-blue
+                                 under the old palette and would have
+                                 clashed with everything around it */
 }
 
 /* Phone landscape, which is how this game is meant to be held. Short
@@ -325,7 +348,7 @@ html, body {
 #auth-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(var(--c-navy-deep-rgb), 0.92);
+  background: rgba(var(--c-wood-deep-rgb), 0.92);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -334,15 +357,15 @@ html, body {
 
 #auth-box {
   width: min(90vw, 360px);
-  background: rgba(var(--c-navy-deep-rgb), 0.97);
-  border: 2px solid var(--c-gold);
+  background: rgba(var(--c-wood-deep-rgb), 0.97);
+  border: 2px solid var(--c-wood-light);
   border-radius: 10px;
   padding: 24px 22px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
 }
 
 #auth-title {
-  color: var(--c-gold);
+  color: var(--c-cream);
   text-align: center;
   font-size: 22px;
   letter-spacing: 3px;
@@ -365,7 +388,7 @@ html, body {
 #auth-form input[type="text"],
 #auth-form input[type="email"],
 #auth-form input[type="password"] {
-  background: var(--c-navy-deep);
+  background: var(--c-wood-deep);
   border: 1px solid var(--c-border-muted);
   border-radius: 6px;
   padding: 10px 12px;
@@ -375,7 +398,7 @@ html, body {
 
 #auth-submit {
   margin-top: 4px;
-  background: var(--c-red);
+  background: var(--c-green);
   color: var(--c-cream);
   border: none;
   border-radius: 6px;
@@ -408,8 +431,8 @@ html, body {
   top: 16px;
   left: 16px;
   z-index: 15;
-  background: rgba(var(--c-navy-deep-rgb), 0.75);
-  border: 2px solid var(--c-gold);
+  background: rgba(var(--c-wood-deep-rgb), 0.75);
+  border: 2px solid var(--c-wood-light);
   border-radius: 8px;
   padding: 10px 14px;
   max-width: 260px;
@@ -417,7 +440,7 @@ html, body {
 
 #quest-log-title {
   font-weight: bold;
-  color: var(--c-gold);
+  color: var(--c-cream);
   font-size: 13px;
   margin-bottom: 6px;
   text-transform: uppercase;
@@ -453,7 +476,7 @@ html, body {
   bottom: 180px;
   transform: translateX(-50%);
   z-index: 15;
-  background: var(--c-red);
+  background: var(--c-green);
   color: var(--c-cream);
   border: none;
   border-radius: 20px;
@@ -465,7 +488,7 @@ html, body {
 }
 
 #gift-btn:active {
-  background: var(--c-red-deep);
+  background: var(--c-green-deep);
 }
 
 /* Dialogue box — a classic full-width bar flush against the bottom
@@ -477,8 +500,8 @@ html, body {
   right: 0;
   bottom: 0;
   width: 100%;
-  background: rgba(var(--c-navy-deep-rgb), 0.95);
-  border-top: 3px solid var(--c-gold);
+  background: rgba(var(--c-wood-deep-rgb), 0.95);
+  border-top: 3px solid var(--c-wood-light);
   padding: 18px 24px 22px;
   z-index: 25;
   box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.5);
@@ -492,7 +515,7 @@ html, body {
 
 #dialogue-speaker {
   font-weight: bold;
-  color: var(--c-gold);
+  color: var(--c-green);
   margin-bottom: 6px;
   font-size: 15px;
 }
@@ -533,8 +556,8 @@ html, body {
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  border: 2px solid var(--c-gold);
-  background: rgba(var(--c-navy-deep-rgb), 0.55);
+  border: 2px solid var(--c-wood-light);
+  background: rgba(var(--c-wood-deep-rgb), 0.55);
   color: var(--c-cream);
   font-size: 18px;
   font-weight: bold;
@@ -544,7 +567,7 @@ html, body {
 }
 
 .touch-btn:active {
-  background: rgba(var(--c-gold-rgb), 0.4);
+  background: rgba(var(--c-green-rgb), 0.4);
 }
 
 .interact-btn {
@@ -553,13 +576,13 @@ html, body {
   font-size: 13px;
 }
 
-/* Lights up gold and grows slightly whenever something interactable
+/* Lights up green and grows slightly whenever something interactable
    (an NPC or the stage) is in range. */
 .interact-btn.active {
-  background: var(--c-gold);
-  color: var(--c-navy-deep);
-  border-color: #fff3c4;
-  box-shadow: 0 0 14px rgba(var(--c-gold-rgb), 0.85);
+  background: var(--c-green);
+  color: var(--c-wood-deep);
+  border-color: #c8e6c9;
+  box-shadow: 0 0 14px rgba(var(--c-green-rgb), 0.85);
   transform: scale(1.1);
 }
 
@@ -622,7 +645,7 @@ html, body {
 #quiz {
   position: fixed;
   inset: 0;
-  background: rgba(var(--c-navy-deep-rgb), 0.94);
+  background: rgba(var(--c-wood-deep-rgb), 0.94);
   z-index: 90;
   display: flex;
   align-items: center;
@@ -636,8 +659,8 @@ html, body {
   width: min(90vw, 380px);
   max-height: 100%;
   overflow-y: auto;
-  background: rgba(var(--c-navy-deep-rgb), 0.97);
-  border: 2px solid var(--c-gold);
+  background: rgba(var(--c-wood-deep-rgb), 0.97);
+  border: 2px solid var(--c-wood-light);
   border-radius: 10px;
   padding: 24px 22px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
@@ -656,7 +679,7 @@ html, body {
 
 #act-screen-title,
 #quiz-title {
-  color: var(--c-gold);
+  color: var(--c-cream);
   text-align: center;
   font-size: 20px;
   letter-spacing: 1px;
@@ -671,13 +694,13 @@ html, body {
   margin: 0 0 20px;
 }
 
-/* Shared button styling. Kept red to match #auth-submit, since
+/* Shared button styling. Kept green to match #auth-submit, since
    this is the same "the only thing to do here" affordance. */
 #act-screen-btn,
 #quiz-btn {
   display: block;
   width: 100%;
-  background: var(--c-red);
+  background: var(--c-green);
   color: var(--c-cream);
   border: none;
   border-radius: 6px;
@@ -697,7 +720,7 @@ html, body {
 /* ---- Assessment specifics ---------------------------------- */
 
 #quiz-progress {
-  color: var(--c-gold);
+  color: var(--c-green);
   text-align: center;
   font-size: 12px;
   margin-bottom: 14px;
@@ -725,7 +748,7 @@ html, body {
   width: 100%;
   min-height: 44px;
   text-align: left;
-  background: var(--c-navy-deep);
+  background: var(--c-wood-deep);
   border: 1px solid var(--c-border-muted);
   border-radius: 6px;
   padding: 11px 12px;
@@ -737,9 +760,9 @@ html, body {
 }
 
 .quiz-choice.selected {
-  border-color: var(--c-gold);
-  background: rgba(var(--c-navy-rgb), 0.35);
-  color: var(--c-gold);
+  border-color: var(--c-green);
+  background: rgba(var(--c-green-rgb), 0.18);
+  color: var(--c-green);
 }
 
 #quiz-note {
@@ -798,16 +821,16 @@ html, body {
   font-family: inherit;
   font-size: 16px;
   color: var(--c-cream-dim);
-  background: var(--c-navy-deep);
+  background: var(--c-wood-deep);
   border: 2px solid var(--c-border-muted);
   border-radius: 8px;
   cursor: pointer;
 }
 
 .feedback-star.on {
-  background: rgba(var(--c-gold-rgb), 0.18);
-  border-color: var(--c-gold);
-  color: var(--c-gold);
+  background: rgba(var(--c-green-rgb), 0.18);
+  border-color: var(--c-green);
+  color: var(--c-green);
 }
 
 .feedback-legend {
@@ -826,7 +849,7 @@ html, body {
   font-family: inherit;
   font-size: 13px;
   color: var(--c-cream);
-  background: var(--c-navy-deep);
+  background: var(--c-wood-deep);
   border: 1px solid var(--c-border-muted);
   border-radius: 6px;
   resize: none;
@@ -955,7 +978,7 @@ html, body {
 .guard-meter-fill {
   width: 0%;
   height: 100%;
-  background: var(--c-gold);
+  background: #f4c542;
   transition: width 80ms linear;
 }
 
@@ -967,9 +990,9 @@ html, body {
   position: absolute;
   width: 14px;
   height: 14px;
-  background: var(--c-gold);
+  background: #f4c542;
   border-radius: 50%;
-  box-shadow: 0 0 6px rgba(var(--c-gold-rgb), 0.8);
+  box-shadow: 0 0 6px rgba(244, 197, 66, 0.8);
 }
 
 /* ---- Player feedback --------------------------------------- */
@@ -1022,10 +1045,10 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 40;
-  background: rgba(var(--c-navy-deep-rgb), 0.9);
-  border: 1px solid var(--c-gold);
+  background: rgba(var(--c-wood-deep-rgb), 0.9);
+  border: 1px solid var(--c-wood-light);
   border-radius: 6px;
-  color: var(--c-gold);
+  color: var(--c-green);
   font-size: 12px;
   padding: 7px 12px;
   white-space: nowrap;
@@ -1057,7 +1080,7 @@ html, body {
 
    The title screen, pause, settings, and the logout confirmation.
    Styled from the same parts as #act-screen and #quiz rather than
-   introducing a third look: dark panel, amber border, green
+   introducing a third look: dark panel, wood-panel border, green
    primary button.
 
    z-index sits at 110, above the auth overlay's 100, because the
@@ -1070,7 +1093,7 @@ html, body {
 #shell {
   position: fixed;
   inset: 0;
-  background: rgba(var(--c-navy-deep-rgb), 0.94);
+  background: rgba(var(--c-wood-deep-rgb), 0.94);
   z-index: 110;
   display: flex;
   align-items: center;
@@ -1087,8 +1110,8 @@ html, body {
   width: min(90vw, 380px);
   max-height: 100%;
   overflow-y: auto;
-  background: rgba(var(--c-navy-deep-rgb), 0.97);
-  border: 2px solid var(--c-gold);
+  background: rgba(var(--c-wood-deep-rgb), 0.97);
+  border: 2px solid var(--c-wood-light);
   border-radius: 10px;
   padding: 24px 22px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
@@ -1109,7 +1132,7 @@ html, body {
 }
 
 .shell-heading {
-  color: var(--c-gold);
+  color: var(--c-cream);
   text-align: center;
   font-size: 22px;
   letter-spacing: 3px;
@@ -1149,7 +1172,7 @@ h2.shell-heading {
 }
 
 .shell-btn-primary {
-  background: var(--c-red);
+  background: var(--c-green);
   color: var(--c-cream);
 }
 
@@ -1213,9 +1236,9 @@ h2.shell-heading {
 }
 
 .shell-choice.active {
-  border-color: var(--c-gold);
-  color: var(--c-gold);
-  background: rgba(var(--c-gold-rgb), 0.12);
+  border-color: var(--c-green);
+  color: var(--c-green);
+  background: rgba(var(--c-green-rgb), 0.12);
 }
 
 .shell-controls {
@@ -1254,7 +1277,7 @@ h2.shell-heading {
 }
 
 .inv-slot-filled {
-  color: var(--c-gold);
+  color: var(--c-green);
 }
 
 .inv-slot-empty {
@@ -1282,8 +1305,8 @@ h2.shell-heading {
 }
 
 .inv-item-worn {
-  border-color: var(--c-gold);
-  background: rgba(var(--c-gold-rgb), 0.12);
+  border-color: var(--c-green);
+  background: rgba(var(--c-green-rgb), 0.12);
 }
 
 .inv-item-name {
@@ -1301,7 +1324,7 @@ h2.shell-heading {
 .inv-item-action {
   font-weight: normal;
   font-size: 11px;
-  color: var(--c-gold);
+  color: var(--c-green);
   white-space: nowrap;
 }
 
@@ -1312,7 +1335,7 @@ h2.shell-heading {
   margin-top: 4px;
 }
 
-/* The balance. Amber, because it is the number the shop screen is
+/* The balance. Green, because it is the number the shop screen is
    about, and repeated on both panels so a student never has to go
    back a screen to find out what they can afford. */
 .inv-balance {
@@ -1323,7 +1346,7 @@ h2.shell-heading {
 }
 
 .inv-balance span {
-  color: var(--c-gold);
+  color: var(--c-green);
   font-weight: bold;
 }
 
@@ -1377,7 +1400,7 @@ h2.shell-heading {
     position: fixed;
     inset: 0;
     z-index: 130;
-    background: var(--c-navy-deep);
+    background: var(--c-wood-deep);
     align-items: center;
     justify-content: center;
     padding: 24px;
@@ -1392,7 +1415,7 @@ h2.shell-heading {
 
 #rotate-icon {
   font-size: 40px;
-  color: var(--c-gold);
+  color: var(--c-cream);
   margin-bottom: 16px;
   /* Nudges rather than spins. A looping animation on a screen a student
      is meant to leave within two seconds is noise. */
@@ -1400,7 +1423,7 @@ h2.shell-heading {
 }
 
 #rotate-notice h2 {
-  color: var(--c-gold);
+  color: var(--c-cream);
   font-size: 20px;
   letter-spacing: 1px;
   margin: 0 0 10px;
@@ -1427,8 +1450,8 @@ h2.shell-heading {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 2px solid var(--c-gold);
-  background: rgba(var(--c-navy-deep-rgb), 0.55);
+  border: 2px solid var(--c-wood-light);
+  background: rgba(var(--c-wood-deep-rgb), 0.55);
   color: var(--c-cream);
   font-size: 14px;
   font-weight: bold;
@@ -1557,7 +1580,7 @@ body.text-sm .shell-sub { font-size: 12px; }
   justify-content: flex-start;
   padding: 10px 14px;
   border-radius: 8px;
-  border: 2px solid rgba(var(--c-gold-rgb), 0.35);
+  border: 2px solid rgba(var(--c-wood-light-rgb), 0.45);
   text-align: left;
   letter-spacing: 0.6px;
   /* A highlight on the top edge and a hard shadow under it. Two
@@ -1571,13 +1594,13 @@ body.text-sm .shell-sub { font-size: 12px; }
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  border: 1px solid rgba(var(--c-gold-rgb), 0.45);
-  background: rgba(var(--c-gold-rgb), 0.12);
+  border: 1px solid rgba(var(--c-wood-light-rgb), 0.5);
+  background: rgba(var(--c-wood-light-rgb), 0.15);
 }
 
 .shell-btn-primary {
-  background: linear-gradient(var(--c-red-light), var(--c-red-deep));
-  border-color: var(--c-gold);
+  background: linear-gradient(var(--c-green-light), var(--c-green-deep));
+  border-color: var(--c-green);
 }
 
 .shell-btn-primary .ico {
@@ -1619,7 +1642,7 @@ body.text-sm .shell-sub { font-size: 12px; }
    changed. */
 #shell-box {
   border-width: 2px;
-  box-shadow: 0 0 0 1px rgba(var(--c-gold-rgb), 0.18),
+  box-shadow: 0 0 0 1px rgba(var(--c-wood-light-rgb), 0.25),
     0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
@@ -1648,7 +1671,7 @@ body.text-sm .shell-sub { font-size: 12px; }
   border-width: 3px;
   background: radial-gradient(
     circle at 50% 32%,
-    rgba(var(--c-gold-rgb), 0.18),
+    rgba(var(--c-wood-light-rgb), 0.22),
     rgba(0, 0, 0, 0.62) 70%
   );
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.16),
@@ -1668,7 +1691,7 @@ body.text-sm .shell-sub { font-size: 12px; }
   border-width: 3px;
   background: radial-gradient(
     circle at 50% 32%,
-    rgba(var(--c-gold-rgb), 0.18),
+    rgba(var(--c-wood-light-rgb), 0.22),
     rgba(0, 0, 0, 0.62) 70%
   );
 }
@@ -1759,8 +1782,8 @@ body.text-sm .shell-sub { font-size: 12px; }
 }
 
 .quiz-choice.selected .qbadge {
-  border-color: var(--c-gold);
-  color: var(--c-gold);
+  border-color: var(--c-green);
+  color: var(--c-green);
 }
 
 /* ---- Feedback scale ------------------------------------------ */
