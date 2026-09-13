@@ -169,7 +169,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 5;
+const ASSET_VERSION = 6;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -659,13 +659,19 @@ const playerSpriteEl = player.querySelector(".player-sprite");
 
 // columns is how many frames sit across one row of the sheet. Omit it
 // for a plain single-row strip and it defaults to the frame count.
-// Walk.png is a 5 + 5 + 2 grid, so 12 frames across 5 columns.
+// Macario_Walking.png is a full 5 by 4 grid, 20 frames across 5 columns.
+// Macario_Idle.png is a 5 + 5 + 5 + 1 grid, 16 frames across 5 columns.
+// Both are real commissioned art, delivered this session, and live in
+// Assets/Prefab (not Assets/ directly) alongside any other sprite that
+// is not specific to one act; see CLAUDE.md, Decisions on record.
+// fps is carried over unchanged from the placeholder sheets these
+// replace; it has not been checked against a phone yet.
 // The sheets Macario wears with nothing equipped. An outfit replaces
 // whichever of the three it declares and leaves the rest alone, so a
 // cosmetic that only redraws the walk cycle is a complete outfit.
 const BASE_SPRITE_SHEETS = {
-  idle: { src: "Assets/Idle.png", frames: 6, fps: 6, columns: 6 },
-  walk: { src: "Assets/Walk.png", frames: 12, fps: 12, columns: 5 },
+  idle: { src: "Assets/Prefab/Macario_Idle.png", frames: 16, fps: 6, columns: 5 },
+  walk: { src: "Assets/Prefab/Macario_Walking.png", frames: 20, fps: 12, columns: 5 },
   dead: { src: "Assets/Dead.png", frames: 5, fps: 6, columns: 5, loop: false },
 };
 

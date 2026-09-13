@@ -20,14 +20,24 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after a full sweep of the actual files on this device,
-following Block 14 (play-as-guest) and Block 15 (the Katipunan flag UI
-retheme). The sweep found the suite's true result against the real
-Assets/ folder is 326 passed, 1 failed, not the 0 failed reported when
-Block 15 was delivered — see Known problems, missing production art,
-for why, and read that entry before trusting a green run in a future
-session. The icon pass and the settings reset from Block 12, and both
-Blocks 14 and 15, are still not yet confirmed on the device.
+Last updated: after the student added two real commissioned sprites for
+Macario, his own base walk and idle cycles — Assets/Prefab/Macario_Walking.png
+(20 frames, 5 columns by 4 rows) and Assets/Prefab/Macario_Idle.png (16
+frames, same 5 by 4 grid with the last row only one frame full). game.js's
+BASE_SPRITE_SHEETS was repointed at these two real files, in place of the
+placeholder paths (Assets/Walk.png, Assets/Idle.png) that never actually
+existed on this device; ASSET_VERSION went to 6 and game.js's own script
+version to v24 so the browser refetches it. See Known problems, missing
+production art, for the detail and what is still outstanding (Dead.png,
+Cement_Tile.png, Tondo.png, Tondo_Night.png). The suite is fully green
+again as a result: 327 passed, 0 failed, run twice against these real
+files in a session with no device shell, by staging the repository into a
+disposable sandbox and running node _dev/test.js there — see Verification.
+A screenshot of a guest session idling and then walking, taken the same
+way, confirms the sprites actually paint correctly rather than just
+loading without error. NONE OF THIS HAS BEEN SEEN ON THE PHONE ITSELF yet,
+same as the icon pass, the settings reset from Block 12, and both Blocks
+14 and 15.
 
 ## Right now
 
@@ -60,10 +70,12 @@ The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
 The automated suite carries 327 checks after Block 14 added its own
-coverage (see Blocks done), but a full sweep against this device's real
-files shows 326 passed, 1 failed: Assets/Walk.png does not exist here,
-so the check that unequipping a cosmetic outfit restores the base walk
-cycle fails for real. See Known problems, missing production art.
+coverage (see Blocks done). It is fully green against this device's real
+files as of this session: 327 passed, 0 failed, run twice. The one check
+that used to fail for real here — unequipping a cosmetic outfit restores
+the base walk cycle — now passes, because the base walk sheet it asserts
+against is a real file again. See Known problems, missing production art,
+and Verification.
 
 Block 13 is done: #btn-inventory and #btn-shop now sit next to
 #btn-pause in the main UI, so either screen is one tap from gameplay
@@ -444,6 +456,27 @@ drawing. Both call sites in game.js now quote the url(). ASSET_VERSION
 bumped to 5. 289 passed, 0 failed, run twice after all of the above.
 (COMPLETE)
 
+Macario's own base sprites. Assets/Prefab/Macario_Walking.png (1280x1024,
+5 columns by 4 rows, 20 frames) and Assets/Prefab/Macario_Idle.png (same
+1280x1024, 5 by 4 grid, but only 16 of the 20 cells are real frames) were
+added by the student, real commissioned art rather than the earlier
+Claude-drawn placeholders. game.js's BASE_SPRITE_SHEETS now reads
+Assets/Prefab/Macario_Walking.png and Assets/Prefab/Macario_Idle.png in
+place of Assets/Walk.png and Assets/Idle.png, which the code had named for
+several blocks but which never actually existed on this device (see Known
+problems, missing production art); fps was left unchanged (idle 6, walk
+12) since nobody has judged it against a phone yet. ASSET_VERSION bumped
+to 6, game.js's own script version to v24. The one test that hardcoded the
+old, nonexistent path and had been failing for real because of it —
+"unequipping restores the base walk cycle" — now passes, along with the
+two other Section Y assertions that hardcoded the old idle/walk paths and
+needed updating to match. 327 passed, 0 failed, run twice, from a
+disposable sandbox with the repository staged into it (this session had
+no shell on the device itself). Also confirmed by a headless screenshot of
+a guest session idling and then walking, so the frames are known to paint
+correctly and not just load without error. Dead.png is still missing and
+still falls back to the placeholder box. (COMPLETE)
+
 Act I and the item catalogue reset to a blank slate. Deliberate, at
 the student's direction: the narrative-complete Act I and the two
 granted items plus two purchasable outfits were both content written
@@ -658,29 +691,25 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the replacement art. Assets/ holds one real commissioned sprite
-today: Nanay, Macario's mother, the only NPC content/act1.js declares.
-CORRECTION, from a full sweep of this device's actual files: an
-earlier version of this paragraph claimed Walk.png and Cement_Tile.png
-were still technically present in Assets/, just unused. That is no
-longer true, if it ever was — a fresh check found neither file, nor
-Idle.png, Dead.png, Tondo.png, or Tondo_Night.png, anywhere on this
-device; Assets/Prefab/ is empty. See Known problems, missing
-production art, for the full list and what it breaks. Do not repeat
-this paragraph's old mistake: verify against the device directly
-(device_list_dir or equivalent) rather than trusting a session's own
-working copy, which can silently carry stand-in files that were never
-written back to the user's machine. Everything the fuller Act I draft
-used to need art for — a director, a recruiter, a courier contact, a
-guard, decorations, the Tondo day/night skyline — is not currently
-declared as content at all, so there is nothing there to draw against
-yet; that list comes back once real content does. The player's own
-Idle and Dead poses and everything in Acts II through IV are untouched
-and still fall back to the labelled placeholder box when the file is
-missing, which is the fallback system working, not a fault — but the
-base Walk/Idle/Dead files are not act-specific placeholders, they are
-what every act falls back TO, and right now that fallback is itself
-broken.
+Chase the remaining replacement art. Assets/ now holds three real
+commissioned sprites: Act 1/Nanay.png (Macario's mother, the only NPC
+content/act1.js declares), and Prefab/Macario_Walking.png and
+Prefab/Macario_Idle.png (Macario's own base walk and idle cycles, added
+this session — see Known problems, missing production art, and CLAUDE.md,
+Decisions on record). Still needed: Macario's Dead pose (the one base
+sprite still falling back to the placeholder box for every player), the
+Cement_Tile.png ground tile, and the Tondo.png / Tondo_Night.png day and
+night skyline backdrops. Verify against the device directly
+(device_list_dir or equivalent) before trusting any list like this one —
+a session's own working copy can silently carry stand-in files that were
+never written back to the user's machine, which is what made an earlier
+version of this paragraph wrong. Everything the fuller Act I draft used to
+need art for — a director, a recruiter, a courier contact, a guard,
+decorations, the Tondo day/night skyline — is not currently declared as
+content at all, so there is nothing there to draw against yet; that list
+comes back once real content does. Acts II through IV are untouched and
+still fall back to the labelled placeholder box wherever art is missing,
+which is the fallback system working, not a fault.
 
 Block 11's two outfits, Skin_Walk.png and Skin_Uniporme_Walk.png,
 are moot for now: content/items.js was reset to an empty catalogue in
@@ -716,28 +745,31 @@ Assets/Cement_Tile.png was 1.4 MB for a repeating floor tile. Now 120
 by 120 and 21.7 KB. (COMPLETE, but see the entry below — the file that
 was optimized here is not on this device anymore)
 
-Missing production art. A full sweep of this device's actual files
-(not a session's cached copy of them) found Assets/ holds only
-Act 1/Nanay.png; Assets/Prefab/ is empty. Six files the shipped code
-references do not exist anywhere on disk here: Cement_Tile.png (the
-ground tile referenced just above), Tondo.png and Tondo_Night.png (the
-day and night skyline backdrops), and Walk.png, Idle.png, Dead.png
-(Macario's own sprite sheets — not a cosmetic outfit's, the base
-ones every player, guest or not, falls back to). The live game as
-currently checked out on this device would show no backdrop, no
-ground, and no player animation beyond Nanay's own sprite. _dev/test.js
-catches exactly one symptom of this: the check that unequipping a
-cosmetic outfit restores the base walk cycle asserts against the real
-Assets/Walk.png rather than a fixture, and fails here (326 passed, 1
-failed — see Verification). The other five files have no automated
-coverage at all and are silently broken with the suite fully green
-around them. A Claude session cannot create real game art and has no
-way to know whether a working copy of these six files exists somewhere
-outside this project folder; the Cement_Tile.png line above confirms at
-least that one was optimized and present at some point, so check git
-history for a commit that still has it (`git log --all --full-history
--- Assets/`) before concluding the art itself is lost. (KNOWN, BLOCKING
-A REAL DEVICE PASS ON BLOCKS 14 AND 15 AND ON ACT I GENERALLY)
+Missing production art. NARROWED this session: two of the six files this
+entry used to list are now real. Assets/Prefab/Macario_Walking.png (20
+frames) and Assets/Prefab/Macario_Idle.png (16 frames) were added by the
+student and are the base walk and idle cycles every player, guest or not,
+falls back to; game.js now points BASE_SPRITE_SHEETS at them instead of
+the never-existent Assets/Walk.png and Assets/Idle.png. Four files the
+shipped code references still do not exist anywhere on disk here:
+Cement_Tile.png (the ground tile), Tondo.png and Tondo_Night.png (the day
+and night skyline backdrops), and Dead.png (Macario's death pose — the
+one base sprite still missing). The live game as currently checked out on
+this device would still show no backdrop and no ground, and a defeated
+Macario still falls back to the placeholder box. _dev/test.js's one real
+symptom of this gap — the check that unequipping a cosmetic outfit
+restores the base walk cycle, which asserts against the actual walk sheet
+rather than a fixture — now passes, since that sheet is real (see
+Verification). The other four missing files have no automated coverage at
+all and are silently broken with the suite fully green around them. A
+Claude session cannot create real game art and has no way to know whether
+a working copy of these four files exists somewhere outside this project
+folder; the Cement_Tile.png line in an earlier version of this entry
+confirmed at least that one was optimized and present at some point, so
+check git history for a commit that still has it (`git log --all
+--full-history -- Assets/`) before concluding the art itself is lost.
+(KNOWN, BLOCKING A REAL DEVICE PASS ON BLOCKS 14 AND 15 AND ON ACT I
+GENERALLY — narrower than before, not closed)
 
 Dynamic difficulty cannot be demonstrated in the running game,
 because only Act I has guards and Act I is the 1.00 multiplier. The
@@ -783,12 +815,13 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-327 checks. Anything other than "0 failed" is a regression, with one
-standing exception right now: "unequipping restores the base walk
-cycle" fails on this device because Assets/Walk.png is missing (see
-Known problems, missing production art). Restoring that file should
-turn the suite fully green again without a code change; any other
-failure is real.
+327 checks. Anything other than "0 failed" is a regression. It last ran
+327 passed, 0 failed, twice, in the session that added Macario's real
+walk and idle sprites (see Known problems, missing production art) — run
+from a disposable sandbox with the repository staged into it and a
+symlinked global Playwright install, since that session had no shell on
+the device itself; the same command is what to run directly on the
+device when one is available.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it

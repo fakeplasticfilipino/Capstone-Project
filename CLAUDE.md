@@ -1041,6 +1041,33 @@ existing suite already exercises every screen touched; the full 327-check
 suite (310 plus Block 14's 17) was re-run after the retheme with no
 regressions.
 
+Macario's own base walk and idle sprites are real commissioned art, not
+Claude-drawn placeholders: Assets/Prefab/Macario_Walking.png (1280x1024,
+a full 5-column by 4-row grid, 20 frames) and Assets/Prefab/Macario_Idle.png
+(same 1280x1024, 5 by 4 grid, but only 16 of the 20 cells are real frames —
+the last row has one frame, not five). Both live in Assets/Prefab, not
+Assets/ directly, matching the folder's purpose from the earlier
+reorganisation: Assets/Act 1 holds art specific to one act (Nanay), and
+Assets/Prefab holds art that is not act-specific and that every act falls
+back to, which is exactly what the player's own base sprites are.
+BASE_SPRITE_SHEETS in game.js was repointed at these two files, replacing
+Assets/Walk.png and Assets/Idle.png — names the code had carried for
+several blocks but which never actually existed on this device (see
+TRACKER.md, Known problems, missing production art). fps was left
+unchanged from the placeholder sheets (idle 6, walk 12) rather than
+guessed at; nobody has judged the new art's speed against a phone yet, so
+treat that pair as a first guess to revisit once someone has. Dead.png is
+still missing and still falls back to the placeholder box, which is the
+fallback system working as designed, not a fault. ASSET_VERSION bumped to
+6 and game.js's own script version to v24, since the browser must refetch
+game.js to learn the new asset version. _dev/test.js, section Y, had three
+assertions that hardcoded the old Assets/Walk.png and Assets/Idle.png
+path strings as the expected "base sheet restored" value; all three were
+updated to the new paths, and the one check that had actually been failing
+against this device's real files because Assets/Walk.png never
+existed — "unequipping restores the base walk cycle" — now passes for
+real. 327 passed, 0 failed, run twice.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes

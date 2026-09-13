@@ -1433,13 +1433,13 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("an outfit replaces the sheet it declares",
        swapped.src === "Assets/Skin_Test_Walk.png", swapped);
     ok("and leaves the sheets it does not declare alone",
-       swapped.idle === "Assets/Idle.png", swapped);
+       swapped.idle === "Assets/Prefab/Macario_Idle.png", swapped);
 
     // A harness-owned fixture stands in for "an outfit whose art has been
-    // drawn" — deliberately NOT Assets/Walk.png. This section only needs
-    // to prove an outfit with real, loadable art actually repaints the
-    // player; it should not care whether the base walk cycle currently
-    // ships in Assets/ or not, and _dev/fixtures/test-outfit-walk.png
+    // drawn" — deliberately NOT the base walk sheet. This section only
+    // needs to prove an outfit with real, loadable art actually repaints
+    // the player; it should not care whether the base walk cycle currently
+    // ships for real or not, and _dev/fixtures/test-outfit-walk.png
     // stays put either way.
     const painted = await page.evaluate(async () => {
       await Game.setOutfit({
@@ -1456,7 +1456,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       return SPRITE_SHEETS.walk.src;
     });
     ok("passing nothing restores the base sheets",
-       restored === "Assets/Walk.png", restored);
+       restored === "Assets/Prefab/Macario_Walking.png", restored);
 
     // An outfit whose art has not been drawn is bought, worn, and shown
     // as the dashed placeholder, exactly like every other missing image.
@@ -1489,7 +1489,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       return { src: SPRITE_SHEETS.walk.src, failed: SPRITE_SHEETS.walk.failed };
     });
     ok("unequipping restores the base walk cycle",
-       off.src === "Assets/Walk.png" && !off.failed, off);
+       off.src === "Assets/Prefab/Macario_Walking.png" && !off.failed, off);
 
     await ctx.close();
   }
