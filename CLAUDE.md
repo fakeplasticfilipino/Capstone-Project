@@ -433,7 +433,17 @@ actually sits within that cell, in the sheet's own native pixels:
 
 Measure both from the real art's alpha channel — the union of every
 frame's non-transparent bounding box, so no pose gets clipped — never by
-eye. spriteFit (in game.js, just above loadSpriteSheet) turns them into
+eye, and never by hand either: run
+
+    node _dev/measure-sprite.js <path-to-png> --columns=N --frames=M
+
+which prints every frame's own box, flags any frame whose content
+height strays far enough from the union that a single number cannot
+correct it (see _dev/README.md), and prints the contentTop/contentHeight
+line ready to paste in. It depends on nothing beyond Node itself — the
+PNG decoding is plain chunk parsing and node:zlib, not a library — and
+is what produced every number in this section and in Decisions on
+record. spriteFit (in game.js, just above loadSpriteSheet) turns them into
 the scale and background-position shift that renders the CHARACTER, not
 the frame, at DISPLAY_HEIGHT tall with its feet on the box's bottom
 edge, which is what actually puts a character on the ground and makes
@@ -1128,6 +1138,14 @@ feet land on the same ground line, not just similar-looking in a
 screenshot. 327 passed, 0 failed, run twice; no existing check measured
 backgroundPosition or backgroundSize directly, so none needed updating,
 only the visual verification above.
+
+The three sheets above were measured by a one-off script, written and
+discarded in the same session. _dev/measure-sprite.js is that script
+made permanent, once it was clear this would come up again for Dead.png
+and for outfit art: it takes any sheet plus its columns/frames and
+prints the same contentTop/contentHeight a person would otherwise have
+to eyeball, straight from the PNG's own alpha channel. See Sprite sheets
+and _dev/README.md.
 
 ## Pitfalls
 

@@ -48,6 +48,30 @@ and one block per gameplay system added since Block 6.
 
 TRACKER.md's Verification section carries the current check count.
 
+## Measuring a sprite sheet
+
+    node _dev/measure-sprite.js <path-to-png> --columns=N --frames=M
+
+A sprite's frame is a fixed-size cell; the character drawn inside it
+rarely fills that cell edge to edge, and how much of it gets filled
+varies sheet to sheet. game.js's contentTop/contentHeight fields (see
+CLAUDE.md, Sprite sheets) correct for that, but they have to be measured
+from the real art, not eyeballed — this is what does the measuring.
+
+It reads the PNG's own alpha channel directly (no npm install, no image
+library; PNG chunk parsing and the scanline unfilter are plain Node plus
+node:zlib), slices it into the same grid the sheet's own columns/frames
+values describe, and prints every frame's own bounding box plus the
+union across all of them — copy the contentTop/contentHeight line it
+prints straight into the sheet's definition. It also warns when a single
+frame's content height strays far from that union, which means a single
+number cannot correct that sheet (a raised weapon, a crouch) and it is
+worth looking at by eye before trusting the tool.
+
+Only 8-bit, non-interlaced PNGs are supported (every sheet in Assets/ is
+one); anything else is refused with what to re-export as, rather than
+silently measured wrong.
+
 ## Adding checks
 
 Each block builds a page with newPage(seed), where seed becomes

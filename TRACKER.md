@@ -45,6 +45,15 @@ the format and the exact numbers. game.js's script version went to v25
 and content/act1.js's (Nanay's animation def now carries the two new
 fields) to v12 as a result.
 
+That measuring was a one-off script the first time. It is now a real
+tool, _dev/measure-sprite.js, added the same session once it was clear
+Dead.png and future outfit art would need the same treatment: point it
+at a sheet and its columns/frames and it prints the contentTop/
+contentHeight to paste in, read straight from the PNG's own alpha
+channel rather than eyeballed. No new dependency — the PNG decoding is
+plain Node plus node:zlib. See _dev/README.md and CLAUDE.md, Sprite
+sheets. (COMPLETE)
+
 Both fixes together: the suite is fully green, 327 passed, 0 failed, run
 twice against these real files in a session with no device shell, by
 staging the repository into a disposable sandbox and running
@@ -54,7 +63,10 @@ read in that same headless run, confirm the player and Nanay now report
 an identical top, bottom and height rather than merely looking close in
 a screenshot. NONE OF THIS HAS BEEN SEEN ON THE PHONE ITSELF yet, same as
 the icon pass, the settings reset from Block 12, and both Blocks 14 and
-15.
+15. The measuring behind the second fix is now a standing tool rather
+than a one-off script — see _dev/measure-sprite.js in Blocks done — so
+the next sheet (Dead.png, an outfit's art) is one command, not a redo of
+this session's manual analysis.
 
 ## Right now
 
