@@ -39,13 +39,18 @@ be out of date.
 
 In short: every system is built, live, and confirmed on a real Android
 phone. Assessment, performance scoring, equipment, currency, cosmetics and
-the teacher dashboard all work end to end.
+the teacher dashboard all work end to end as mechanics — none of that
+depends on what story content happens to be loaded, and it stays fully
+covered by the automated suite even while Act I's content below is thin.
 
-No story is written yet. Act I currently holds a TEST STAGE rather than a
-narrative: one room containing one example of every mechanic, plus a bare
-second room that proves scene transport. Acts II through IV are registered
-and loadable but empty. Writing the four acts against the source material
-is the remaining work.
+No story is written yet. Act I is currently a one-scene, one-NPC skeleton
+(Macario and his mother, Nanay, one short exchange) rather than a
+narrative — a deliberate reset back to a small, real, working base after
+an earlier full draft was written ahead of the resource person's source
+material rather than against it. The item shop is likewise empty for the
+same reason. Acts II through IV are registered and loadable but empty.
+Writing all four acts, and the item catalogue, against the source
+material is the remaining work.
 
 ## Stack
 
@@ -96,12 +101,13 @@ nothing.
     assessment.js         trivia card, pre-test, post-test, feedback
     shell.js              title screen, pause, settings, inventory, logout
     inventory.js          inventory, equipment and the shop
-    content/act1.js       Act I as data. Currently a test stage: scenes,
-                          NPCs, guards, hazards, pickups, objectives
+    content/act1.js       Act I as data. Currently a one-scene, one-NPC
+                          skeleton, reset from a fuller draft; see TRACKER.md
     content/act2.js       Acts II to IV, registered but not yet written
     content/act3.js
     content/act4.js
-    content/items.js      the item catalogue, equipment and cosmetics
+    content/items.js      the item catalogue, equipment and cosmetics.
+                          Currently empty; see TRACKER.md
     style.css             game styles
 
     teacher.html          teacher entry point
