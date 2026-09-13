@@ -202,6 +202,8 @@ game.js exposes window.Game and nothing else:
     flushSave()          awaitable; logout must await it
     setUiBlocked(bool)   suppresses world input while a screen is open
     isSignedIn()
+    enterAsGuest()       Block 14; see Decisions on record
+    isGuest()
     stats()              { damageTaken, detections, playMs }, a copy
     resetStats()         called by Acts.enterAct, and by nothing else
     setEffects(obj)      { maxHealthBonus, projectileSpeedMult }
@@ -977,6 +979,67 @@ visibility is driven by game.js, in the same per-frame branch and the
 same window.Inventory guard that already governs #btn-pause, rather than
 by shell.js, since that is the file that already owns "the student is
 currently playing" as a rendered fact.
+
+Block 14 added play-as-guest: a second title-screen button
+(#shell-guest) next to Magsimula/Magpatuloy that drops straight into Act
+I with no account, no login box, and nothing written to the database.
+The whole feature turned out to be one new function on each side rather
+than a parallel code path threaded through the engine, because every
+write-path function in acts.js (syncStart, _ensureRow, setStatus,
+checkObjectives) and saveProgress in game.js already began with
+`if (!currentUserId) return;` — a guard written for "nothing to save
+yet", not for guests, but it covers a guest for free as long as
+currentUserId is simply never set. game.js's enterGameAsGuest sets a new
+isGuest flag instead, then calls loadAct(Acts.getAct(1), "tondo")
+directly; shell.js's _onGuestStart sets this.entered = true before
+calling it, the same trick _onStart already plays for a real login, so
+that when enterGameAsGuest calls Shell.awaitEntry() afterward it finds
+entry already underway and drops straight into _enterWorld() rather than
+waiting on a login-box tap that would never come. A guest is not a real,
+disposable Supabase account and never touches Supabase at all: closing
+the tab loses everything, on purpose, and Game.isGuest()/Game.isSignedIn()
+report which state a session is in for anything that needs to ask
+(nothing currently does; both are exposed for the shop/inventory code to
+guard against in the future should a guest ever reach them). Reset,
+logout, and the teacher dashboard are all meaningless for a session that
+never wrote a row and were left untouched rather than special-cased.
+See _dev/test.js, AH, for the coverage: the button entering the world
+without a login box, no rows appearing in any table across a played
+session, and a reload landing back on a fresh title screen rather than
+resuming, since there is nothing to resume from.
+
+Block 15 replaced the gold-on-black UI chrome with a Katipunan flag
+palette (deep red, royal blue/navy, cream, pale gold used sparingly for
+accents) requested after the gold/black look was judged not to fit the
+game. This retextures UI chrome only — panels, buttons, borders, and
+generic text — never gameplay or status colors, which carry meaning
+independent of branding and stayed exactly as they were: health hearts,
+environmental hazards, the guard detection meter, platforms, hide-spots,
+the stage platform, the cutscene blackout, and the danger/success signal
+colors on quiz feedback and inventory rows. The palette lives as CSS
+custom properties in :root (--c-navy, --c-navy-deep, --c-red, --c-gold,
+--c-cream and their dim/faint variants, plus an -rgb triplet for each so
+any translucent rgba(...) use can write rgba(var(--c-x-rgb), alpha)
+instead of a new hardcoded literal) rather than as one-off hex literals
+at each use site, so a future palette change is a handful of variable
+edits instead of another file-wide hunt. One color needed a
+context-dependent split rather than a global swap: #7bc47f was doing
+double duty as both a semantic "owned/success" indicator
+(.inv-item-owned, .shell-note.ok, .shell-keeps .ico — left green, since
+green-means-success is a signal, not a brand color) and as the decorative
+border on .shell-btn-primary (recolored to gold, since that one use was
+chrome). #43a047 similarly stayed green on .inv-item-owned's border while
+every other use of it (the login/quiz/primary-action buttons) became the
+new red. Logout's border stays a separate, pre-existing danger red
+(#7f1d1d family) rather than being merged with the new brand red; the two
+read as visually close in a palette this red-heavy, which is a tradeoff
+worth revisiting if a tester ever confuses "the button that logs me out"
+with "the button that does the main thing," but splitting them further
+seemed premature without that evidence. See _dev/test.js: no new coverage
+was added for this block, since it changes only color values and the
+existing suite already exercises every screen touched; the full 327-check
+suite (310 plus Block 14's 17) was re-run after the retheme with no
+regressions.
 
 ## Pitfalls
 

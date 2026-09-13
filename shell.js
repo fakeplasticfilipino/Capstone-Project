@@ -95,6 +95,7 @@ const Shell = {
         reset: document.getElementById("shell-reset-confirm"),
       },
       startBtn: document.getElementById("shell-start"),
+      guestBtn: document.getElementById("shell-guest"),
       titleNote: document.getElementById("shell-title-note"),
       titleSettingsBtn: document.getElementById("shell-title-settings"),
       resumeBtn: document.getElementById("shell-resume"),
@@ -129,6 +130,9 @@ const Shell = {
 
   _bind() {
     this.el.startBtn.addEventListener("click", () => this._onStart());
+    if (this.el.guestBtn) {
+      this.el.guestBtn.addEventListener("click", () => this._onGuestStart());
+    }
     this.el.titleSettingsBtn.addEventListener("click", () =>
       this._openSettings("title")
     );
@@ -359,6 +363,21 @@ const Shell = {
     // saying the same thing.
     this.state = "auth";
     this.el.overlay.classList.add("hidden");
+  },
+
+  // Block 14. Guest skips the login box entirely rather than showing
+  // it and then bypassing it, which is why this does not reuse
+  // _onStart. Setting entered here before calling into game.js is
+  // the same trick _onStart plays for a real login: by the time
+  // enterAsGuest calls back into awaitEntry, this.entered is already
+  // true, so awaitEntry drops straight into _enterWorld() instead of
+  // waiting on a Magpatuloy tap that would never come.
+  _onGuestStart() {
+    if (this.entered) return; // already on the way in; ignore a second tap
+    this.entered = true;
+    if (window.Game && window.Game.enterAsGuest) {
+      window.Game.enterAsGuest();
+    }
   },
 
   _enterWorld() {

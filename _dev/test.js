@@ -2228,6 +2228,58 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAH. Play-as-guest, no save");
+  {
+    // Block 14. A guest never authenticates, so this drives the title
+    // screen's second button rather than the auth form, and the whole
+    // point of the section is to prove nothing lands in __DB anywhere
+    // along the way.
+    const { ctx, page } = await newPage({ session: null }, fixtureRoutes());
+    await page.waitForTimeout(300);
+    ok("guest button visible at title", await visible(page, "#shell-guest"));
+    ok("guest button reads Maglaro bilang Bisita",
+       (await page.textContent("#shell-guest")).trim() === "Maglaro bilang Bisita",
+       (await page.textContent("#shell-guest")).trim());
+
+    await page.click("#shell-guest");
+    await page.waitForTimeout(400);
+    ok("shell hidden, straight into the world", !(await visible(page, "#shell")));
+    ok("no login box was ever shown", !(await visible(page, "#auth-overlay")));
+    ok("shell state is playing", (await page.evaluate(() => Shell.state)) === "playing");
+    ok("Game reports guest", await page.evaluate(() => Game.isGuest()));
+    ok("not signed in", !(await page.evaluate(() => Game.isSignedIn())));
+    ok("act I loaded", (await page.evaluate(() => Acts.current)) === 1);
+    ok("starting scene is tondo", (await page.evaluate(() => currentRoom)) === "tondo");
+    ok("the starting quest still loaded", (await page.evaluate(() =>
+      typeof quests !== "undefined" && quests.some((q) => q.id === "pinagmulan"))));
+    await page.click("#btn-pause");
+    await page.waitForTimeout(150);
+    ok("pause screen opens for a guest", await visible(page, "#shell-pause"));
+    await page.click("#shell-resume");
+    await page.waitForTimeout(100);
+
+    ok("no game_progress row written for a guest",
+       (await page.evaluate(() => __DB.game_progress.length)) === 0);
+    ok("no act_progress row written for a guest",
+       (await page.evaluate(() => __DB.act_progress.length)) === 0);
+    ok("no session rows written for a guest",
+       (await page.evaluate(() => (__DB.play_sessions || []).length)) === 0);
+
+    await page.waitForTimeout(1200);
+    ok("still nothing written after time passes (no autosave for a guest)",
+       (await page.evaluate(() => __DB.game_progress.length)) === 0);
+
+    await page.reload();
+    await page.waitForTimeout(300);
+    ok("reload lands back on the title screen, not resumed as a guest",
+       await visible(page, "#shell-title"));
+    ok("and offers a start, not a resume, since nothing was ever saved",
+       (await page.textContent("#shell-start")).trim() === "Magsimula",
+       (await page.textContent("#shell-start")).trim());
+
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

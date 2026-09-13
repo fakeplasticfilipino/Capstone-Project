@@ -2001,6 +2001,7 @@ const authOverlay = document.getElementById("auth-overlay");
 
 let currentUserId = null;
 let currentProfile = null; // the logged-in student's profiles row
+let isGuest = false; // see enterGameAsGuest, Block 14
 let autosaveTimer = null; // guards against stacking a second interval
 
 authForm.addEventListener("submit", async (e) => {
@@ -2155,6 +2156,38 @@ async function enterGameAsUser(userId) {
       if (saveDirty) saveProgress();
     }, 10000);
   }
+}
+
+// Block 14. Play-as-guest: skips Supabase entirely rather than
+// authenticating as a real, disposable account. currentUserId is
+// deliberately never set for a guest, which is what makes this safe
+// to add without touching every write site by hand: saveProgress,
+// Acts.syncStart, Acts._ensureRow, Acts.setStatus and
+// Acts.checkObjectives all already refuse to run without a
+// currentUserId (see acts.js), because that guard was written for
+// "nothing to write yet" rather than "guest", and it already covers
+// this case for free. A guest therefore gets exactly Act I's world —
+// movement, dialogue, combat, health — and nothing that touches the
+// database: no game_progress row, no act_progress row, no trivia, no
+// pre-test or post-test, no currency, no equipment grant. Closing the
+// tab loses everything, which is the point.
+//
+// See CLAUDE.md, Decisions on record, Guest mode, for why
+// Acts.syncStart is skipped outright rather than called and trusted
+// to no-op.
+async function enterGameAsGuest() {
+  if (currentUserId || isGuest) return; // a real login, or already a guest
+
+  isGuest = true;
+  authOverlay.classList.add("hidden");
+  authGated = false;
+
+  if (window.Acts) {
+    Acts.current = 1;
+    loadAct(Acts.getAct(1), "tondo");
+  }
+
+  if (window.Shell) await Shell.awaitEntry();
 }
 
 async function loadProgress(userId) {
@@ -2343,6 +2376,11 @@ window.Game = {
   stopSaving,
   setUiBlocked,
   isSignedIn: () => Boolean(currentUserId),
+
+  // Block 14. See enterGameAsGuest above for what a guest does and,
+  // more importantly, does not do.
+  enterAsGuest: enterGameAsGuest,
+  isGuest: () => isGuest,
 
   // Read by acts.js, which is the only thing that writes them anywhere.
   // Returned as a copy so a caller cannot mutate the engine's counters by

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="style.css?v=15" />
+  <link rel="stylesheet" href="style.css?v=16" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -165,6 +165,12 @@
           <p class="shell-sub">Ang buhay ni Macario Sakay</p>
           <button id="shell-start" class="shell-btn shell-btn-primary" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl">Naglo-load...</span>
+          </button>
+          <!-- Block 14. Skips login entirely; see Game.enterAsGuest in
+               game.js. No account, no save, nothing written to the
+               database. -->
+          <button id="shell-guest" class="shell-btn shell-btn-ghost" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl">Maglaro bilang Bisita</span>
           </button>
           <button id="shell-title-settings" class="shell-btn shell-btn-ghost" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-gear"></use></svg></span><span class="lbl">Mga Setting</span>
@@ -370,10 +376,10 @@
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=3"></script>
-  <script src="game.js?v=22"></script>
+  <script src="game.js?v=23"></script>
   <script src="acts.js?v=8"></script>
   <script src="inventory.js?v=4"></script>
   <script src="assessment.js?v=3"></script>
-  <script src="shell.js?v=7"></script>
+  <script src="shell.js?v=8"></script>
 </body>
 </html>

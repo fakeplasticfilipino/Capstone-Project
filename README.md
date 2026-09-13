@@ -93,6 +93,12 @@ either through the Supabase dashboard or with create_accounts.js. Students
 must also be assigned to a class, or the teacher dashboard will show
 nothing.
 
+The title screen also offers Maglaro bilang Bisita, play as a guest:
+Act I with no account and no login, for a quick look at the game without
+provisioning one. Nothing about a guest session is saved or written to
+the database, so it does not appear on the teacher dashboard and cannot
+be used to complete an act for the study.
+
 ## Layout
 
     index.html            student entry point, the game

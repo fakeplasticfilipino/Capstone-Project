@@ -20,11 +20,9 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 13, the shop and inventory main-UI buttons, and
-after investigating a "can't see Nanay" report that turned out to be a
-stale deployment rather than a code fault (see Right now and Known
-problems). The icon pass and the settings reset from Block 12 are still
-not yet confirmed on the device.
+Last updated: after Block 14 (play-as-guest) and Block 15 (the Katipunan
+flag UI retheme). The icon pass and the settings reset from Block 12,
+and both of these new blocks, are still not yet confirmed on the device.
 
 ## Right now
 
@@ -56,7 +54,7 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite passes at 310 checks, 0 failures, after Block 13
+The automated suite passes at 327 checks, 0 failures, after Block 14
 added its own coverage (see Blocks done).
 
 Block 13 is done: #btn-inventory and #btn-shop now sit next to
@@ -64,6 +62,12 @@ Block 13 is done: #btn-inventory and #btn-shop now sit next to
 instead of requiring pause first. Both keep working the old way too
 (through the pause menu). See Blocks done for the detail and CLAUDE.md,
 Decisions on record, for how shell.js tells the two entry paths apart.
+
+Block 14 (play-as-guest) and Block 15 (the Katipunan flag UI retheme)
+are both done; see Blocks done for detail and CLAUDE.md, Decisions on
+record, for the mechanism behind each. Both are verified in the harness
+only — NEITHER HAS BEEN SEEN ON THE PHONE YET, same as the icon pass
+below.
 
 A report of "I can't see Nanay anywhere" was investigated this session
 and is NOT a code fault: driving the actual shipped files headlessly
@@ -75,8 +79,8 @@ exactly the caching failure this project has warned about since Block
 7. See Known problems below and CLAUDE.md, Pitfalls, for the detail and
 what to check before assuming the code regressed. This session's own
 copies of index.html, game.js, shell.js, style.css and _dev/test.js
-carry correctly bumped numbers (game.js v22, shell.js v7, style.css
-v15, content/act1.js v11, content/items.js v3); whatever pushes them
+carry correctly bumped numbers (game.js v23, shell.js v8, style.css
+v16, content/act1.js v11, content/items.js v3); whatever pushes them
 to GitHub next should push all of them together, not file by file.
 
 The UI now reads as a game rather than a form. Every button carries an
@@ -171,7 +175,8 @@ flakiness from the new content's positions.
 Get the resource person's source material in hand before writing any
 more of Act I — that is the whole reason it was just reset to a
 one-NPC skeleton rather than extended further. Alongside that: a
-device pass on the icon work, which has only been seen in a headless
+device pass on the icon work, on play-as-guest, and on the new UI
+theme, none of which have been seen on a phone yet, only in a headless
 browser, then Block 12's remaining polish, then the pilot. Writing
 Acts II through IV, against the source material this time, is the
 content work after that; see Blocks remaining.
@@ -484,6 +489,33 @@ icon-audit and touch-target sections covering the two new buttons. 310
 passed, 0 failed, run twice. Verified by hand in a headless browser
 against the real shipped content as well. (COMPLETE)
 
+Block 14, play-as-guest. A second title-screen button, #shell-guest,
+drops straight into Act I with no login box, no account, and nothing
+written to Supabase; closing the tab loses everything, on purpose. Free
+of charge, essentially, because every write-path function in acts.js
+and game.js already refused to run without a currentUserId, and a guest
+simply never gets one. game.js and shell.js bumped (v23, v8);
+_dev/test.js gained a new section (AH, 17 checks) proving the button
+enters the world without a login box, that no row appears in any table
+across a played session, and that a reload lands back on a fresh title
+screen. See CLAUDE.md, Decisions on record, for the mechanism. 327
+passed, 0 failed. (COMPLETE)
+
+Block 15, UI retheme. The gold-on-black chrome replaced with a
+Katipunan flag palette (deep red, navy, cream, gold used sparingly for
+accents), requested because the old scheme did not fit the game.
+Gameplay and status colors (health, hazards, the guard meter, platforms,
+hide-spots, danger/success signals) were deliberately left untouched;
+only panels, buttons, borders and generic text changed, via a small set
+of new CSS custom properties in :root rather than one-off literals.
+style.css bumped (v16); no new test coverage needed since only color
+values changed and the existing suite already exercises every screen
+touched. Verified by hand against screenshots of the title screen,
+settings, pause, and inventory panels. 327 passed, 0 failed, re-run
+after the retheme. See CLAUDE.md, Decisions on record, for the one
+color (#7bc47f) that needed a context-dependent split rather than a
+global swap. (COMPLETE)
+
 Paper audit. Seventeen functional requirements, ten non-functional,
 five modules, seventeen ERD entities and all four act storyboards
 checked against the code. Its findings are the two scoreboards above.
@@ -701,7 +733,7 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-310 checks. Anything other than "0 failed" is a regression.
+327 checks. Anything other than "0 failed" is a regression.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it
