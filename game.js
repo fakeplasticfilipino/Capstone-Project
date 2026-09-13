@@ -163,7 +163,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 4;
+const ASSET_VERSION = 5;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -540,7 +540,13 @@ function setupNpcAnimation(sheet, el, displayHeight, token) {
 
     el.style.width = displayFrameWidth + "px";
     el.style.height = displayHeight + "px";
-    el.style.backgroundImage = `url(${assetUrl(sheet.src)})`;
+    // Quoted: an unquoted CSS url() breaks on the first space in the
+    // path, and Assets/Act 1/Nanay.png has one. Without the quotes
+    // this silently no-ops (backgroundImage stays "none") even though
+    // the preload above already succeeded and computed real frame
+    // geometry, which makes the failure look like a smaller layout
+    // bug rather than the sprite never actually drawing.
+    el.style.backgroundImage = `url("${assetUrl(sheet.src)}")`;
     el.style.backgroundSize =
       sheet.naturalWidth * scale + "px " + sheet.naturalHeight * scale + "px";
     el.style.backgroundPositionY = "0px";
@@ -795,7 +801,9 @@ function applyAnim(name, force) {
 
   playerSpriteEl.style.width = displayFrameWidth + "px";
   playerSpriteEl.style.height = DISPLAY_HEIGHT + "px";
-  playerSpriteEl.style.backgroundImage = `url(${assetUrl(sheet.src)})`;
+  // Quoted for the same reason as setupNpcAnimation above: a path
+  // with a space breaks an unquoted url().
+  playerSpriteEl.style.backgroundImage = `url("${assetUrl(sheet.src)}")`;
   playerSpriteEl.style.backgroundSize =
     sheet.naturalWidth * scale + "px " + sheet.naturalHeight * scale + "px";
   playerSpriteEl.style.backgroundPositionY = "0px";

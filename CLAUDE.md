@@ -350,10 +350,13 @@ currentColor, so an icon is whatever colour its button already is.
 That is why they are strokes rather than glyphs.
 
 There is no icon art and none can be invented. Assets/ holds a floor
-tile, the player's walk cycle, and a set of Claude-drawn placeholder
-sprites for Act I (see Decisions on record). A missing image still
-renders as the dashed placeholder box naming the file, so referencing
-an icon PNG would fill the screen with those.
+tile, the player's walk cycle, and — as of the folder reorganisation
+into Assets/Act 1 and Assets/Prefab — one real commissioned sprite,
+Nanay (see Decisions on record). The earlier Claude-drawn placeholder
+set for Act I's other NPCs, the guard and the decorations has been
+removed on purpose and not replaced; those now render as the dashed
+placeholder box naming the file, same as any other missing image, so
+referencing an icon PNG would fill the screen with those.
 
 Unicode and emoji were the cheaper option and were rejected on a render
 rather than on principle: the crossed swords fell back to a thin
@@ -882,6 +885,21 @@ and not a claim about what is documented. If the resource person's source
 material says something different or something more, later passages
 correct or extend these beats rather than the other way around.
 
+The tondo scene's opening NPC is Nanay (Macario's mother), not a generic
+neighbor. She was a neighbor originally, carrying the same two LO1 facts
+(Tondo, mananahi at barbero); once real commissioned art existed for
+Macario's mother specifically (Assets/Act 1/Nanay.png, a 5-column by
+3-row, 14-frame sheet), she replaced the neighbor rather than being added
+alongside her, since a mother stating her son's trade and their place in
+Tondo fits those same two facts at least as well as a neighbor did, and
+Assets/ only had one commissioned sprite to place. The dialogue was
+reworded for the relationship (a mother doesn't ask her own son whether
+he still lives in the same neighborhood) without changing any of the
+stated facts. Every other Act I NPC, the guard, and the decorations lost
+their earlier Claude-drawn placeholder art in the same folder
+reorganisation and were deliberately not given new placeholders; they
+render as the engine's own dashed box until real art exists for them too.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -961,6 +979,19 @@ read guard.img at all. An NPC's img and a guard's img look like the same
 field and are not: give a guard a static image and it stays a box forever,
 silently, with no error. Declare a guard's sprite as animation or accept
 the placeholder.
+
+setupNpcAnimation and setupPlayerAnimation (game.js) used to build their
+CSS background-image with an unquoted url(${...}). That breaks the moment
+an asset path has a space in it — Assets/Act 1/Nanay.png does — and it
+breaks silently in a way that looks like a loading failure but isn't:
+loadSpriteSheet's preload Image() still succeeds (browsers tolerate a
+literal space in an <img>/Image src), so naturalWidth/naturalHeight,
+frameWidth/frameHeight and the computed backgroundSize/backgroundPosition
+are all correct. Only the CSS url() token itself is invalid, so
+backgroundImage silently stays "none" and the sprite is an invisible box
+occupying the right size in the right place. Fixed by quoting both sites:
+url("${assetUrl(sheet.src)}"). Any future asset path with a space, a
+paren, or a comma needs this same quoting; it's cheap enough to always do.
 
 ## Accounts
 

@@ -20,8 +20,8 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after the Act I rewrite. The icon pass and the settings
-reset from Block 12 are still not yet confirmed on the device.
+Last updated: after Nanay's sprite went in. The icon pass and the
+settings reset from Block 12 are still not yet confirmed on the device.
 
 ## Right now
 
@@ -360,6 +360,27 @@ line at all (the neighbor's revisit, the director's whole
 conversation). 289 passed, 0 failed, run twice after both changes.
 (COMPLETE)
 
+Nanay's sprite. Assets/ was reorganised into Assets/Act 1 and
+Assets/Prefab; the placeholder set from the pass above was removed on
+purpose, and Assets/Act 1/Nanay.png — 1280x768, 5 columns by 3 rows,
+14 frames, real commissioned art — was added. The tondo scene's
+opening neighbor NPC is now Nanay (Macario's mother) carrying the
+same two LO1 facts, since a mother stating her son's trade and their
+place in Tondo fits at least as well and Assets/ only had the one
+real sprite to place; see CLAUDE.md, Decisions on record. Two things
+found along the way, both fixed: Walk.png and Cement_Tile.png — the
+player's own walk cycle and the ground tile, neither Act-I-specific
+nor placeholder art — were missing from Assets/ entirely after the
+reorganisation and have been restored from an earlier staged copy;
+and setupNpcAnimation's and the player animator's CSS
+background-image was built with an unquoted url(${...}), which is
+invalid the moment a path has a space in it, as "Assets/Act 1/" now
+does — it failed silently, with the sprite sheet reporting a
+successful load and the correct frame geometry while never actually
+drawing. Both call sites in game.js now quote the url(). ASSET_VERSION
+bumped to 5. 289 passed, 0 failed, run twice after all of the above.
+(COMPLETE)
+
 Paper audit. Seventeen functional requirements, ten non-functional,
 five modules, seventeen ERD entities and all four act storyboards
 checked against the code. Its findings are the two scoreboards above.
@@ -485,15 +506,17 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the replacement art. Assets/ holds a floor tile, the player
-walk cycle, and — as of the Act I rewrite — Claude-drawn placeholder
-sprites for the four Act I NPCs, the guard, two decorations and the
-Tondo day/night skyline. These are flat silhouettes, deliberately
-simple so nobody mistakes them for finished art, and they are still
-what this line is asking to have replaced. The player's own Idle and
-Dead poses, both outfits, and everything in Acts II through IV are
-untouched and still fall back to the labelled placeholder box, which
-remains the fallback system working, not a fault.
+Chase the replacement art. Assets/ now holds a floor tile, the player
+walk cycle, and one real commissioned sprite: Nanay, Macario's mother,
+in the tondo scene. The rest of Act I — the director, the recruiter,
+the courier contact, the guard, both decorations and the Tondo
+day/night skyline — has no art file at all right now; the earlier
+Claude-drawn placeholder set was removed on purpose and was never a
+substitute for this line, only scaffolding while it was outstanding.
+The player's own Idle and Dead poses, both outfits, and everything in
+Acts II through IV are untouched and still fall back to the labelled
+placeholder box, which remains the fallback system working, not a
+fault.
 
 Block 11 adds two named files to that list: Skin_Walk.png and
 Skin_Uniporme_Walk.png, the two outfits. Both are bought and worn

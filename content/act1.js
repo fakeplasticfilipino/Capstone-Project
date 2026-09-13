@@ -52,17 +52,21 @@
 // itself is what makes reaching that NPC hard; hiding them behind a
 // flag would add nothing.
 //
-// SPRITES. The four NPCs, the guard, the two decorations and the
-// Tondo day/night skyline now have placeholder art — flat silhouette
-// pieces, Claude-drawn, meant to be replaced rather than kept. They
-// exist so the scene reads as a place instead of a field of dashed
-// boxes; they are not a substitute for the commissioned art on
-// TRACKER's Blocked-on-other-people list, which still names what's
-// actually missing. Guards render ONLY through the animation path —
-// buildGuards() in game.js never attempts to load a static guard.img
-// at all, it shows the placeholder box unconditionally in that
-// branch — so Guwardiya.png below is declared as animation, not img,
-// or the art would sit in Assets/ and never be seen.
+// SPRITES. Nanay has real, commissioned art: Assets/Act 1/Nanay.png,
+// a 5-column by 3-row sheet, 14 frames used out of the 15 cells. Every
+// other NPC, the guard, the decorations and the Tondo day/night
+// skyline have no art file at all right now — the earlier placeholder
+// set was Claude-drawn scaffolding and has since been removed on
+// purpose, so they fall back to the engine's own dashed placeholder
+// box (see showPlaceholder() / checkBackgroundImage() in game.js).
+// That fallback is silent and non-fatal by design: a missing img 404s
+// to a labelled box, a missing sprite sheet resolves with def.failed
+// = true instead of rejecting, so nothing here needs to special-case
+// it. Guards render ONLY through the animation path — buildGuards()
+// in game.js never attempts to load a static guard.img at all, it
+// shows the placeholder box unconditionally in that branch — so a
+// future guard sprite has to be declared as animation, not img, or
+// the art would sit in Assets/ and never be seen.
 // =============================================================
 
 // A phone in landscape shows 1176 world pixels across at --zoom 0.7.
@@ -89,7 +93,7 @@ window.ACT_1 = {
     { id: "pag-alis", label: "Magpaalam sa dating buhay", flag: "nagpaalam" },
   ],
 
-  startingQuests: [{ id: "pinagmulan", text: "Kausapin ang kapitbahay" }],
+  startingQuests: [{ id: "pinagmulan", text: "Kausapin ang nanay" }],
 
   scenes: [
     // ===========================================================
@@ -111,20 +115,25 @@ window.ACT_1 = {
         {
           // LO1, both pairs. The correct answers in the item bank
           // are Tondo and "mananahi at barbero"; both are said in
-          // plain terms here rather than implied.
-          id: "kapitbahay",
+          // plain terms here rather than implied. This was originally
+          // a generic neighbor NPC; Nanay (Macario's mother, real
+          // commissioned art — see the SPRITES note above) replaces
+          // her here because a mother naming her son's trade and
+          // their place in Tondo fits the same two facts better than
+          // a neighbor did. Nothing about the facts themselves moved.
+          id: "nanay",
           x: 300,
-          img: "Assets/Kapitbahay.png",
-          label: "Kapitbahay",
+          label: "Nanay",
           stage: 0,
+          animation: { src: "Assets/Act 1/Nanay.png", frames: 14, fps: 6, columns: 5 },
           dialogueSets: [
             {
               lines: [
-                { speaker: "Kapitbahay", text: "Kumusta, Macario! Dito ka pa rin nananahi, dito sa Tondo?" },
-                { speaker: "Macario", text: "Oo, dito pa rin. Mananahi at barbero ako, tulad ng dati." },
-                { speaker: "Kapitbahay", text: "Karaniwang trabaho lang, pero sapat na para mabuhay dito sa atin." },
-                { speaker: "Kapitbahay", text: "Mamayang gabi may pagtatanghal sa entablado. Aakyat ka pa rin, di ba?" },
-                { speaker: "Macario", text: "Oo. Pupunta ako roon mamaya." },
+                { speaker: "Nanay", text: "Macario, anak, kumusta ang trabaho mo ngayon?" },
+                { speaker: "Macario", text: "Mabuti naman, Nanay. Mananahi at barbero pa rin ako, dito rin sa Tondo." },
+                { speaker: "Nanay", text: "Karaniwang trabaho lang ito, pero iyan ang nagbibigay sa atin ng makakain." },
+                { speaker: "Nanay", text: "Mamayang gabi may pagtatanghal ka sa entablado, hindi ba? Huwag kang mahuli." },
+                { speaker: "Macario", text: "Oo, Nanay. Pupunta ako roon mamaya." },
               ],
               onComplete: () => {
                 state.flags.nalamanAngPinagmulan = true;
@@ -139,8 +148,8 @@ window.ACT_1 = {
               // to any objective — the first conversation already
               // did that.
               lines: [
-                { speaker: "Kapitbahay", text: "Doon sa entablado, sa may tabi ng kalye. Hindi mo mamimintasan." },
-                { speaker: "Macario", text: "Aalis na ako. Baka mahuli ako sa simula." },
+                { speaker: "Nanay", text: "Doon sa entablado, sa may tabi ng kalye. Hindi mo mamimintasan." },
+                { speaker: "Macario", text: "Aalis na ako, Nanay. Baka mahuli ako sa simula." },
               ],
               onComplete: () => {},
             },
