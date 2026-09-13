@@ -20,9 +20,11 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Act I and the item catalogue were reset to a blank
-slate. The icon pass and the settings reset from Block 12 are still not
-yet confirmed on the device.
+Last updated: after Block 13, the shop and inventory main-UI buttons, and
+after investigating a "can't see Nanay" report that turned out to be a
+stale deployment rather than a code fault (see Right now and Known
+problems). The icon pass and the settings reset from Block 12 are still
+not yet confirmed on the device.
 
 ## Right now
 
@@ -54,7 +56,28 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite passes at 289 checks, 0 failures.
+The automated suite passes at 310 checks, 0 failures, after Block 13
+added its own coverage (see Blocks done).
+
+Block 13 is done: #btn-inventory and #btn-shop now sit next to
+#btn-pause in the main UI, so either screen is one tap from gameplay
+instead of requiring pause first. Both keep working the old way too
+(through the pause menu). See Blocks done for the detail and CLAUDE.md,
+Decisions on record, for how shell.js tells the two entry paths apart.
+
+A report of "I can't see Nanay anywhere" was investigated this session
+and is NOT a code fault: driving the actual shipped files headlessly
+shows Nanay's sprite and dialogue working correctly. The live GitHub
+main branch was already serving the reset content and the CSS fix at
+the time of checking, but index.html's own script version numbers
+(?v=N) on that branch were STALE relative to the files they point at —
+exactly the caching failure this project has warned about since Block
+7. See Known problems below and CLAUDE.md, Pitfalls, for the detail and
+what to check before assuming the code regressed. This session's own
+copies of index.html, game.js, shell.js, style.css and _dev/test.js
+carry correctly bumped numbers (game.js v22, shell.js v7, style.css
+v15, content/act1.js v11, content/items.js v3); whatever pushes them
+to GitHub next should push all of them together, not file by file.
 
 The UI now reads as a game rather than a form. Every button carries an
 inline SVG icon beside its Tagalog label, and the panels and the touch
@@ -445,6 +468,22 @@ by hand end to end (fresh student through Nanay's three-line exchange
 to the flag setting and the act completing into the post-test) as
 well as by the harness. 289 passed, 0 failed, run twice. (COMPLETE)
 
+Block 13, direct-entry shop and inventory. Two new buttons in the main
+UI, #btn-inventory and #btn-shop, next to #btn-pause, styled the same
+way and gated the same way (window.Inventory, and visible only while
+actually playing, exactly like #btn-pause already was). Either one
+pauses the game itself and jumps straight to its panel; the shop
+button skips inventory entirely when reached this way. The original
+pause-menu doors into both panels are unchanged and still work exactly
+as before. shell.js tracks which door was used (invReturn, shopReturn)
+so "back" resumes the world directly when the door was the main UI, or
+returns to pause/inventory when it was the older path. index.html,
+game.js, shell.js and style.css all bumped (v22, v7, v15 respectively);
+_dev/test.js gained a new section (T2) plus extensions to the existing
+icon-audit and touch-target sections covering the two new buttons. 310
+passed, 0 failed, run twice. Verified by hand in a headless browser
+against the real shipped content as well. (COMPLETE)
+
 Paper audit. Seventeen functional requirements, ten non-functional,
 five modules, seventeen ERD entities and all four act storyboards
 checked against the code. Its findings are the two scoreboards above.
@@ -624,6 +663,25 @@ formula is documented and the harness proves it against a fabricated
 act. The honest answer to a panel is that the lever is built and the
 acts it scales are not written yet. (BY DESIGN)
 
+The deployed site can silently fall behind the repository's own files.
+Checked this session: raw.githubusercontent.com's main branch already
+had Nanay's content and the CSS quote fix in game.js, but the live
+index.html's own script tags still named OLDER ?v=N numbers
+(content/act1.js?v=5, game.js?v=14, shell.js?v=4, style.css?v=9,
+content/items.js?v=2) than the files sitting behind those exact URLs.
+A browser or CDN that already fetched one of those URLs has no reason
+to ask again, so it keeps serving whatever it cached under that
+version number regardless of what the file now contains. This is the
+likely explanation for a report of missing content (Nanay, in this
+case) when a fresh, uncached fetch of the same files shows them
+working. Before assuming the code regressed: hard refresh or open the
+live URL in a private window, and confirm the numbers index.html
+actually references were bumped in the same push that changed the
+files they name. Nothing in a Claude session run this way can commit
+or push, so keeping these numbers in step across a push is on whatever
+does the pushing, not something verifiable by fetching GitHub alone
+afterward. (KNOWN, WATCH ON NEXT PUSH)
+
 ## Deferred
 
 Student-facing join screen. join_code exists but class assignment is
@@ -643,7 +701,7 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-289 checks. Anything other than "0 failed" is a regression.
+310 checks. Anything other than "0 failed" is a regression.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it

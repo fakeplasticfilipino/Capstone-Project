@@ -117,6 +117,8 @@ const Shell = {
       shopNote: document.getElementById("shell-shop-note"),
       shopBalance: document.getElementById("shell-shop-balance"),
       pauseBtn: document.getElementById("btn-pause"),
+      mainInventoryBtn: document.getElementById("btn-inventory"),
+      mainShopBtn: document.getElementById("btn-shop"),
       settingsNote: document.getElementById("shell-settings-note"),
       resetBtn: document.getElementById("shell-reset"),
       resetConfirm: document.getElementById("shell-reset-yes"),
@@ -144,19 +146,41 @@ const Shell = {
     // same shape as the act flow's guard on window.Assessment: with the
     // module absent the button never appears, and every other screen
     // behaves exactly as it did before Block 10.
+    //
+    // Two entry points now feed the same two panels: the pause-menu
+    // buttons (unchanged) and the main-UI buttons added in Block 13,
+    // which jump straight in from "playing" without pausing first.
+    // _openInventory/_openShop take which one asked so the matching
+    // close can undo exactly that, rather than assuming pause.
     if (window.Inventory) {
       this.el.inventoryOpen.classList.remove("hidden");
       this.el.inventoryOpen.addEventListener("click", () =>
-        this._openInventory()
+        this._openInventory("paused")
       );
       this.el.inventoryBack.addEventListener("click", () =>
         this._closeInventory()
       );
       this.el.items.addEventListener("click", (e) => this._onItemTap(e));
 
-      this.el.shopOpen.addEventListener("click", () => this._openShop());
+      this.el.shopOpen.addEventListener("click", () =>
+        this._openShop("inventory")
+      );
       this.el.shopBack.addEventListener("click", () => this._closeShop());
       this.el.shopList.addEventListener("click", (e) => this._onBuyTap(e));
+
+      // Main-UI buttons, next to #btn-pause. Visibility rides along
+      // with the movement controls (game.js), gated the same way, so
+      // this only ever needs to bind the click.
+      if (this.el.mainInventoryBtn) {
+        this.el.mainInventoryBtn.addEventListener("click", () =>
+          this._openInventory("playing")
+        );
+      }
+      if (this.el.mainShopBtn) {
+        this.el.mainShopBtn.addEventListener("click", () =>
+          this._openShop("playing")
+        );
+      }
 
       // inventory.js owns the state and tells the screen when it moved,
       // including when it puts an optimistic change back after a failed
@@ -450,30 +474,57 @@ const Shell = {
   // -----------------------------------------------------------
   // Inventory
   //
-  // Reached from pause and from nowhere else. The mobile control
-  // cluster already overflows the viewport at 412px, which is a known
-  // problem scheduled for Block 12, and a sixth button in that row
-  // would make a documented fault worse in order to save one tap.
+  // Reached two ways since Block 13: through pause, as before, or
+  // directly from its own main-UI button next to #btn-pause, which
+  // skips the pause screen entirely. Either way the game stops for
+  // the whole visit, so an effect can never change under a running
+  // frame; a direct open pauses it itself instead of relying on
+  // openPause having already done so.
   //
-  // Opening it from pause also means the game is stopped for the whole
-  // visit, so an effect can never change under a running frame.
+  // invReturn records which door was used, because the two need
+  // different ways back out: from pause, back means pause; opened
+  // directly, back means resume.
   // -----------------------------------------------------------
 
-  _openInventory() {
+  _openInventory(from) {
     if (!window.Inventory) return;
-    if (this.state !== "paused") return; // pause is the only way in
+    if (from === "playing") {
+      if (this.state !== "playing") return;
+      if (!window.Game) return;
+      // setPaused refuses during the stage cutscene, the same guard
+      // openPause honours; see the comment there.
+      if (!Game.setPaused(true)) return;
+      Game.setUiBlocked(true);
+      this.el.overlay.classList.remove("hidden");
+      this.invReturn = "playing";
+    } else {
+      if (this.state !== "paused") return;
+      this.invReturn = "paused";
+    }
     this.state = "inventory";
     this._renderInventory();
     this._showPanel("inventory");
   },
 
-  // Back to pause rather than back to the world. The student paused to
-  // get here, and resuming out from under them would hide the effect
-  // they just equipped before they saw the hearts change.
+  // Back to pause if pause is where this visit started; the student
+  // paused to get here, and resuming out from under them would hide
+  // the effect they just equipped before they saw the hearts change.
+  // Back to the world, fully resumed, if the main-UI button opened it
+  // directly, since there was never a pause screen to return to.
   _closeInventory() {
     if (this.state !== "inventory") return;
-    this.state = "paused";
-    this._showPanel("pause");
+    if (this.invReturn === "playing") {
+      this.state = "playing";
+      this.el.overlay.classList.add("hidden");
+      if (window.Game) {
+        Game.setUiBlocked(false);
+        Game.setPaused(false);
+      }
+      this._applyOrientation();
+    } else {
+      this.state = "paused";
+      this._showPanel("pause");
+    }
   },
 
   // Slots first, then everything owned. Both are redrawn whole rather
@@ -590,14 +641,31 @@ const Shell = {
   // -----------------------------------------------------------
   // Shop
   //
-  // A panel off the inventory rather than off pause. The two belong
-  // together, and the pause screen already carries four buttons at a
-  // width where a fifth starts to push the logout button off a phone.
+  // Reached three ways since Block 13: off the inventory panel (the
+  // original path — the pause screen already carries four buttons at
+  // a width where a fifth starts to push the logout button off a
+  // phone), or directly from its own main-UI button, which — like
+  // direct-entry inventory — pauses the world itself and skips both
+  // pause and inventory.
+  //
+  // shopReturn mirrors invReturn: back means inventory if that is
+  // where this visit came from, or a full resume if the main-UI
+  // button opened it straight from the world.
   // -----------------------------------------------------------
 
-  _openShop() {
+  _openShop(from) {
     if (!window.Inventory) return;
-    if (this.state !== "inventory") return;
+    if (from === "playing") {
+      if (this.state !== "playing") return;
+      if (!window.Game) return;
+      if (!Game.setPaused(true)) return;
+      Game.setUiBlocked(true);
+      this.el.overlay.classList.remove("hidden");
+      this.shopReturn = "playing";
+    } else {
+      if (this.state !== "inventory") return;
+      this.shopReturn = "inventory";
+    }
     this.state = "shop";
     this._renderShop();
     this._showPanel("shop");
@@ -605,9 +673,19 @@ const Shell = {
 
   _closeShop() {
     if (this.state !== "shop") return;
-    this.state = "inventory";
-    this._renderInventory();
-    this._showPanel("inventory");
+    if (this.shopReturn === "playing") {
+      this.state = "playing";
+      this.el.overlay.classList.add("hidden");
+      if (window.Game) {
+        Game.setUiBlocked(false);
+        Game.setPaused(false);
+      }
+      this._applyOrientation();
+    } else {
+      this.state = "inventory";
+      this._renderInventory();
+      this._showPanel("inventory");
+    }
   },
 
   // Every priced item, owned or not. An owned one stays on the list

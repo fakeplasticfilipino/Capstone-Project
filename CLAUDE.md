@@ -720,12 +720,16 @@ than a reward. Unequipping clamps health down to the new maximum.
 Equipment effects derive from player_equipment and are not written into
 save_state. There is no second copy of the truth to fall out of step.
 
-The inventory screen is reached from pause and from nowhere else. The
-mobile control cluster already overflows the viewport at 412px, which is a
-known problem scheduled for Block 12, and a sixth button in that row would
-make a documented fault worse to save one tap. Opening from pause also
-means the game is stopped for the whole visit, so an effect can never
-change under a running frame.
+The inventory and shop screens were reached from pause and from nowhere
+else through Block 12. Block 13 added a second door: #btn-inventory and
+#btn-shop, next to #btn-pause in the main UI rather than in the mobile
+control cluster (which already overflows the viewport at 412px, a known
+problem, and a further button in that row would make a documented fault
+worse to save one tap). Either door still stops the game for the whole
+visit, so an effect can never change under a running frame; a direct
+open pauses the world itself rather than relying on openPause having
+already done it. See Decisions on record, Block 13, for how shell.js
+tells the two doors apart on the way back out.
 
 The Agimat's extra heart is not compensated for in the performance score.
 DAMAGE_BUDGET of 6 was chosen against a three-heart run, so a student
@@ -951,6 +955,29 @@ against the REAL (not fixture-routed) content, now risks auto-completing
 the act the instant it loads, because the real Act I has only the one
 objective and that flag is already true.
 
+Block 13 gave inventory and shop their own main-UI buttons, #btn-inventory
+and #btn-shop, next to #btn-pause, so either screen is one tap from
+gameplay instead of two or three through the pause menu. Both panels kept
+their original pause-menu doors too; nothing about the Block 10/11 flow was
+removed, only added to. shell.js tracks which door was used, invReturn for
+the inventory panel and shopReturn for the shop panel, each set to either
+"paused" (came in through the pause menu; a direct-open still exists for
+the inventory-hosted shopOpen button, which passes "inventory") or
+"playing" (came straight from the main UI). _closeInventory/_closeShop
+read that flag to decide whether "back" returns to the pause screen or
+fully resumes the world; a direct-open pauses the game itself first
+(the same Game.setPaused(true) call and cutscene-refusal guard openPause
+uses) since there was no prior pause tap to have done it. The shop button
+opens the shop panel directly, skipping inventory entirely, when reached
+from the main UI; reached from inside the inventory panel (either
+door's inventory) it behaves as it always has. The two new buttons reuse
+the i-bag and i-coins icons already used for their pause-menu
+counterparts (Imbentaryo, Tindahan) rather than new art, and their
+visibility is driven by game.js, in the same per-frame branch and the
+same window.Inventory guard that already governs #btn-pause, rather than
+by shell.js, since that is the file that already owns "the student is
+currently playing" as a rendered fact.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -1058,6 +1085,33 @@ _dev/test.js call site that seeds atTestRoom()-shaped flags now passes
 fixtureRoutes() to newPage() for exactly this reason (see Decisions on
 record); a new call site that skips it and seeds those flags against the
 real content will hang on a `page.click` timeout with no other clue why.
+
+A student (or a developer) reporting "I can't see Nanay anywhere" is not
+necessarily a code problem. Driving the actual shipped content/act1.js and
+game.js headlessly (real files, not the _dev/test.js fixture) confirms the
+sprite loads, the CSS is quoted correctly, and the dialogue plays; the
+files themselves are not the fault. Checked against the live GitHub main
+branch during Block 13: raw.githubusercontent.com already served the
+reset, Nanay-only content/act1.js and the quoted-url fix in game.js, but
+the live index.html's own script tags still named OLDER v=N numbers
+(content/act1.js?v=5, game.js?v=14, shell.js?v=4, style.css?v=9,
+content/items.js?v=2) than the content actually sitting behind those same
+URLs. Whatever pushed the newer file bytes to main did not bump the
+matching query strings, which is exactly the failure this file already
+warns about under Pitfalls ("Increment the v=N cache-buster... or mobile
+browsers keep serving the cached copy"): a browser or CDN that fetched,
+say, content/act1.js?v=5 before that push will keep serving what it
+cached at that URL and has no reason to ever ask again, since the URL
+never changed. If Nanay is missing on a real device or in a real browser
+but a fresh headless fetch of the same files shows her fine, suspect this
+before suspecting the code: hard refresh, or open the live URL in a
+private window, and confirm the v=N numbers referenced by index.html
+actually match a bump made after the file they reference last changed.
+This session's own edits keep the numbers matched (see the Run log in
+TRACKER.md for the values in effect after Block 13); nothing here reaches
+outside this environment to commit or push, so keeping index.html and
+the files it names in step is the pushing side's responsibility, not
+something a later Claude session can verify by fetching GitHub alone.
 
 ## Accounts
 

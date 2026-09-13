@@ -80,6 +80,12 @@ function makeIcon(symbolId) {
 }
 const mobileControls = document.getElementById("mobile-controls");
 const btnPause = document.getElementById("btn-pause");
+// Shop and inventory buttons added in Block 13. They ride the same
+// visibility branch as btnPause below, further gated on window.Inventory
+// so they never appear if that module fails to load — the same guard
+// shell.js applies to their pause-menu counterparts.
+const btnInventoryMain = document.getElementById("btn-inventory");
+const btnShopMain = document.getElementById("btn-shop");
 
 const questListEl = document.getElementById("quest-list");
 const giftBtn = document.getElementById("gift-btn");
@@ -1939,6 +1945,12 @@ function gameLoop(now) {
     // already the exact definition of "the student is playing", and a
     // second copy of it would be a second thing to keep in step.
     if (btnPause) btnPause.classList.remove("hidden");
+    if (btnInventoryMain && window.Inventory) {
+      btnInventoryMain.classList.remove("hidden");
+    }
+    if (btnShopMain && window.Inventory) {
+      btnShopMain.classList.remove("hidden");
+    }
     nearby = findNearby();
     if (nearby.type === "npc") {
       setLabel(btnInteract, "Usap");
@@ -1962,6 +1974,8 @@ function gameLoop(now) {
     // advances it, so tuck the movement controls away.
     mobileControls.classList.add("hidden");
     if (btnPause) btnPause.classList.add("hidden");
+    if (btnInventoryMain) btnInventoryMain.classList.add("hidden");
+    if (btnShopMain) btnShopMain.classList.add("hidden");
     giftBtn.classList.add("hidden");
     setLabel(btnInteract, "E");
     btnInteract.classList.remove("active");

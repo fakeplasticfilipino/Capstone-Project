@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="style.css?v=14" />
+  <link rel="stylesheet" href="style.css?v=15" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -85,9 +85,15 @@
     <div id="hud" class="hidden">
       <div id="hud-hearts"></div>
     </div>
-    <!-- Pause. Shown and hidden by the game loop alongside the mobile
-         controls, because that branch is already the exact definition
-         of "the student is playing". -->
+    <!-- Shop, inventory, and pause. All three shown and hidden together
+         by the game loop alongside the mobile controls, because that
+         branch is already the exact definition of "the student is
+         playing" (Block 13). Shop and inventory are also gated on
+         window.Inventory there, the same guard shell.js applies to
+         their pause-menu counterparts, so the buttons never appear if
+         that module fails to load. -->
+    <button id="btn-shop" class="hidden" type="button" aria-label="Tindahan"><span class="ico"><svg aria-hidden="true"><use href="#i-coins"></use></svg></span></button>
+    <button id="btn-inventory" class="hidden" type="button" aria-label="Imbentaryo"><span class="ico"><svg aria-hidden="true"><use href="#i-bag"></use></svg></span></button>
     <button id="btn-pause" class="hidden" type="button" aria-label="Pahinga"><span class="ico"><svg aria-hidden="true"><use href="#i-pause"></use></svg></span></button>
     <div id="toast" class="hidden"></div>
 
@@ -364,10 +370,10 @@
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=3"></script>
-  <script src="game.js?v=21"></script>
+  <script src="game.js?v=22"></script>
   <script src="acts.js?v=8"></script>
   <script src="inventory.js?v=4"></script>
   <script src="assessment.js?v=3"></script>
-  <script src="shell.js?v=6"></script>
+  <script src="shell.js?v=7"></script>
 </body>
 </html>

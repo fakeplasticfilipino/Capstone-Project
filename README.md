@@ -24,9 +24,10 @@ end.
 Gameplay is movement and jump, stealth past patrols with a detection meter,
 melee and thrown-projectile combat, and a health system with environmental
 hazards and collectible restoratives. Guard speed scales with the act
-number. Equipment and cosmetic outfits are built: an inventory and a shop
-reached from the pause screen, in-game currency awarded per act and scaled
-by performance, and outfits that change the player sprite.
+number. Equipment and cosmetic outfits are built: an inventory and a shop,
+reached either from their own buttons in the main UI or from the pause
+screen, in-game currency awarded per act and scaled by performance, and
+outfits that change the player sprite.
 
 Teachers get a separate dashboard showing their class roster, act
 completion, assessment results, gain scores, and class averages.

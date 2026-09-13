@@ -968,8 +968,9 @@ html, body {
 #hud {
   position: absolute;
   top: 10px;
-  /* Clear of #btn-pause, which owns the corner from Block 7 on. */
-  right: 64px;
+  /* Clear of #btn-pause, #btn-inventory and #btn-shop, which own the
+     corner from Block 7 (pause) and Block 13 (the other two) on. */
+  right: 168px;
   z-index: 40;
 }
 
@@ -1388,12 +1389,16 @@ h2.shell-heading {
   margin: 0;
 }
 
-/* Pause button. Top right, with the hearts shifted left to sit
-   beside it rather than under it. */
-#btn-pause {
+/* Pause, inventory and shop buttons. Top right, one cluster: pause
+   keeps the corner it has owned since Block 7, and inventory and shop
+   (Block 13) sit immediately to its left in that order, with the
+   hearts shifted further left again to clear all three rather than
+   just the one. */
+#btn-pause,
+#btn-inventory,
+#btn-shop {
   position: absolute;
   top: 10px;
-  right: 12px;
   z-index: 40;
   width: 44px;
   height: 44px;
@@ -1409,7 +1414,21 @@ h2.shell-heading {
   touch-action: manipulation;
 }
 
-#btn-pause.hidden {
+#btn-pause {
+  right: 12px;
+}
+
+#btn-inventory {
+  right: 64px;
+}
+
+#btn-shop {
+  right: 116px;
+}
+
+#btn-pause.hidden,
+#btn-inventory.hidden,
+#btn-shop.hidden {
   display: none;
 }
 
@@ -1616,7 +1635,9 @@ body.text-sm .shell-sub { font-size: 12px; }
   letter-spacing: 0.5px;
 }
 
-#btn-pause {
+#btn-pause,
+#btn-inventory,
+#btn-shop {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1628,7 +1649,9 @@ body.text-sm .shell-sub { font-size: 12px; }
   );
 }
 
-#btn-pause .ico svg {
+#btn-pause .ico svg,
+#btn-inventory .ico svg,
+#btn-shop .ico svg {
   width: 20px;
   height: 20px;
 }
@@ -1842,30 +1865,48 @@ body.text-sm .shell-sub { font-size: 12px; }
 }
 
 
-/* The pause button and the hearts, on the target device.
+/* The pause, inventory and shop buttons, and the hearts, on the
+   target device.
 
    This has to sit at the END of the file rather than in the
-   phone-landscape block at the top, because #btn-pause is styled from
-   an id further down and an id inside a media query does not outrank
-   an identical id after it. Source order is the only thing that
-   settles it, the same way it settles the button diameters.
+   phone-landscape block at the top, because these ids are styled from
+   ids further up and an id inside a media query does not outrank an
+   identical id after it. Source order is the only thing that settles
+   it, the same way it settles the button diameters.
 
-   The button was 44px everywhere, which is the minimum in CSS pixels
-   and therefore 31 on glass once --zoom is applied. It has been under
-   the bar since the camera moved back and nothing caught it: the
-   checks that measure a rendered target only ever looked at the
-   control cluster. 64 lands at 44.8.
+   The buttons were 44px everywhere, which is the minimum in CSS
+   pixels and therefore 31 on glass once --zoom is applied. It has
+   been under the bar since the camera moved back and nothing caught
+   it: the checks that measure a rendered target only ever looked at
+   the control cluster. 64 lands at 44.8.
 
-   The hearts clear this button by a fixed distance rather than by
-   layout, so they move with it. */
+   Growing all three to 64px pushes inventory and shop further from
+   the right edge too, so their "right" offsets are restated here
+   rather than inherited — the 8px (44px mode) and 12px (64px mode)
+   gaps are each kept consistent within their own mode instead of
+   matching each other, the same asymmetry the hearts offset already
+   had before Block 13.
+
+   The hearts clear all three buttons by a fixed distance rather than
+   by layout, so they move with them. */
 @media (orientation: landscape) and (max-height: 500px) {
-  #btn-pause {
+  #btn-pause,
+  #btn-inventory,
+  #btn-shop {
     width: 64px;
     height: 64px;
   }
 
+  #btn-inventory {
+    right: 84px;
+  }
+
+  #btn-shop {
+    right: 156px;
+  }
+
   #hud {
-    right: 88px;
+    right: 228px;
   }
 }
 

@@ -1101,6 +1101,95 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nT2. Shop and inventory reached directly, without pausing first");
+  {
+    // Block 13: #btn-inventory and #btn-shop sit next to #btn-pause in
+    // the main UI, so a student can reach either screen in one tap
+    // instead of pausing first. Opening either one still pauses the
+    // world underneath, exactly as the pause-menu path always has;
+    // what changes is only where "back" goes afterward.
+    const { ctx, page } = await enterTestRoom();
+
+    ok("the inventory button is offered in the main UI",
+       await visible(page, "#btn-inventory"));
+    ok("the shop button is offered in the main UI",
+       await visible(page, "#btn-shop"));
+    ok("neither is inside the pause overlay",
+       await page.evaluate(() =>
+         !document.getElementById("shell").contains(
+           document.getElementById("btn-inventory")) &&
+         !document.getElementById("shell").contains(
+           document.getElementById("btn-shop"))));
+
+    await page.click("#btn-inventory");
+    await page.waitForTimeout(100);
+    ok("tapping it opens the inventory panel directly",
+       await visible(page, "#shell-inventory"));
+    ok("shell state is inventory", (await page.evaluate(() => Shell.state)) === "inventory");
+    ok("the world paused itself for the visit",
+       await page.evaluate(() => Game.isPaused()));
+
+    await page.click("#shell-inventory-back");
+    await page.waitForTimeout(100);
+    ok("back skips pause entirely",
+       !(await visible(page, "#shell-pause")));
+    ok("the shell overlay is hidden again",
+       await page.evaluate(() =>
+         document.getElementById("shell").classList.contains("hidden")));
+    ok("shell state is back to playing",
+       (await page.evaluate(() => Shell.state)) === "playing");
+    ok("and the world is actually running again",
+       !(await page.evaluate(() => Game.isPaused())));
+
+    await page.click("#btn-shop");
+    await page.waitForTimeout(100);
+    ok("tapping the shop button opens the shop panel directly, skipping inventory",
+       await visible(page, "#shell-shop"));
+    ok("shell state is shop", (await page.evaluate(() => Shell.state)) === "shop");
+    ok("the world paused itself for this visit too",
+       await page.evaluate(() => Game.isPaused()));
+
+    await page.click("#shell-shop-back");
+    await page.waitForTimeout(100);
+    ok("back from a direct shop visit also resumes the world, not inventory",
+       (await page.evaluate(() => Shell.state)) === "playing" &&
+       !(await page.evaluate(() => Game.isPaused())));
+
+    // Chained: direct inventory, then into shop from inside it, then
+    // back out through both. Each hop should land where it came from.
+    await page.click("#btn-inventory");
+    await page.waitForTimeout(100);
+    await page.click("#shell-shop-open");
+    await page.waitForTimeout(100);
+    ok("shop reached from a direct inventory visit still opens",
+       await visible(page, "#shell-shop"));
+    await page.click("#shell-shop-back");
+    await page.waitForTimeout(100);
+    ok("backing out of that shop returns to inventory, not the world",
+       await visible(page, "#shell-inventory") &&
+       (await page.evaluate(() => Shell.state)) === "inventory");
+    await page.click("#shell-inventory-back");
+    await page.waitForTimeout(100);
+    ok("and backing out of that inventory finally resumes the world",
+       (await page.evaluate(() => Shell.state)) === "playing" &&
+       !(await page.evaluate(() => Game.isPaused())));
+
+    // The pause-menu path is untouched by any of the above: pause,
+    // then inventory, still returns to pause rather than the world.
+    await page.click("#btn-pause");
+    await page.waitForTimeout(100);
+    await page.click("#shell-inventory-open");
+    await page.waitForTimeout(100);
+    await page.click("#shell-inventory-back");
+    await page.waitForTimeout(100);
+    ok("the pause-menu route into inventory still returns to pause",
+       await visible(page, "#shell-pause"));
+    await page.click("#shell-resume");
+    await page.waitForTimeout(100);
+
+    await ctx.close();
+  }
+
   console.log("\nU. Inventory is optional to the flow");
   {
     const { ctx, page } = await enterTestRoom("**/inventory.js*");
@@ -1654,7 +1743,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     // symbol the sprite does not define renders nothing at all.
     const audit = await page.evaluate(() => {
       const ids = ["btn-left", "btn-right", "btn-attack", "btn-jump",
-        "btn-interact", "btn-pause", "gift-btn", "act-screen-btn",
+        "btn-interact", "btn-pause", "btn-inventory", "btn-shop",
+        "gift-btn", "act-screen-btn",
         "quiz-btn", "quiz-back", "shell-start", "shell-title-settings",
         "shell-resume", "shell-inventory-open", "shell-pause-settings",
         "shell-logout", "shell-settings-back", "shell-reset",
@@ -1699,10 +1789,12 @@ const visible = (page, sel) => page.evaluate((s) => {
         return hit === b;
       };
       return { left: at("btn-left"), attack: at("btn-attack"),
-               jump: at("btn-jump"), pause: at("btn-pause") };
+               jump: at("btn-jump"), pause: at("btn-pause"),
+               inventory: at("btn-inventory"), shop: at("btn-shop") };
     });
     ok("a tap in the middle of a button lands on the button",
-       hits.left && hits.attack && hits.jump && hits.pause, hits);
+       hits.left && hits.attack && hits.jump && hits.pause &&
+       hits.inventory && hits.shop, hits);
 
     // And functionally, because a hit test is still a reading. AA
     // already clicks Atake and Talon; this is the pause button, which
@@ -1712,6 +1804,21 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the pause button still opens pause with an icon in it",
        await visible(page, "#shell-pause"));
     await page.click("#shell-resume");
+    await page.waitForTimeout(150);
+
+    // Same reading for the two buttons added in Block 13.
+    await page.click("#btn-inventory");
+    await page.waitForTimeout(150);
+    ok("the inventory button opens inventory with an icon in it",
+       await visible(page, "#shell-inventory"));
+    await page.click("#shell-inventory-back");
+    await page.waitForTimeout(150);
+
+    await page.click("#btn-shop");
+    await page.waitForTimeout(150);
+    ok("the shop button opens the shop with an icon in it",
+       await visible(page, "#shell-shop"));
+    await page.click("#shell-shop-back");
     await page.waitForTimeout(150);
 
     // The one the game loop rewrites every frame. Writing textContent
@@ -1890,15 +1997,20 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a text size choice does", screens.choice >= 44, screens);
     ok("and a menu button does", screens.shellBtn >= 44, screens);
 
-    // The hearts were moved with the pause button. They must not end
-    // up underneath it.
+    // The hearts were moved with the pause button, then again in
+    // Block 13 when inventory and shop joined it. They must not end up
+    // underneath any of the three; shop sits leftmost, so its left
+    // edge is the one that actually constrains the hearts.
     const clear = await page.evaluate(() => {
       const h = document.getElementById("hud").getBoundingClientRect();
       const p = document.getElementById("btn-pause").getBoundingClientRect();
-      return { hudRight: h.right, pauseLeft: p.left };
+      const s = document.getElementById("btn-shop").getBoundingClientRect();
+      return { hudRight: h.right, pauseLeft: p.left, shopLeft: s.left };
     });
     ok("the hearts still clear the pause button",
        clear.hudRight <= clear.pauseLeft + 1, clear);
+    ok("and clear the shop button, the leftmost of the three",
+       clear.hudRight <= clear.shopLeft + 1, clear);
 
     await ctx.close();
   }
