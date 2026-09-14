@@ -2280,6 +2280,105 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAI. Aim-and-fire shooting animation");
+  {
+    // The shooting sheet (25 frames) is played as two named views of the
+    // one image rather than two files: shootAim (0-12, held while the
+    // button is down) and shootFire (13-15, played once at the instant
+    // the throw actually happens). See game.js, BASE_SPRITE_SHEETS.
+    const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
+
+    const sheets = await page.evaluate(() => ({
+      aim: SPRITE_SHEETS.shootAim,
+      fire: SPRITE_SHEETS.shootFire,
+    }));
+    ok("shootAim loaded without falling back to a placeholder",
+       sheets.aim && sheets.aim.failed === false, sheets.aim);
+    ok("shootFire loaded without falling back to a placeholder",
+       sheets.fire && sheets.fire.failed === false, sheets.fire);
+    ok("shootAim covers frames 0-12", sheets.aim.startFrame === 0 && sheets.aim.endFrame === 12, sheets.aim);
+    ok("shootFire covers frames 13-15", sheets.fire.startFrame === 13 && sheets.fire.endFrame === 15, sheets.fire);
+
+    // Holding the attack button should switch the pose to the aim view
+    // immediately, before anyone knows yet whether this will end up a
+    // melee swing or a throw.
+    const pressed = await page.evaluate(() => {
+      startAttackHold();
+      return { anim: currentAnim, frame: currentFrame, shooting };
+    });
+    ok("pressing attack switches to the aim pose",
+       pressed.anim === "shootAim" && pressed.shooting === "aim", pressed);
+    ok("the aim pose starts on its own first frame (0), not frame 0 of the sheet's neighbour",
+       pressed.frame === 0, pressed);
+
+    // Held well past the aim clip's own length (13 frames at 8fps =
+    // 1625ms): it must have climbed to frame 12 and stayed there,
+    // proven by sampling twice a tick apart, rather than looped back to
+    // frame 0 or run past the sub-range into shootFire's frames.
+    await page.waitForTimeout(2000);
+    const held = await page.evaluate(() => new Promise((resolve) => {
+      const first = currentFrame;
+      requestAnimationFrame(() => requestAnimationFrame(() =>
+        resolve({ first, second: currentFrame, anim: currentAnim })));
+    }));
+    ok("a long hold settles on the aim clip's last frame (12) and holds there",
+       held.first === 12 && held.second === 12 && held.anim === "shootAim", held);
+
+    // A quick tap (released under ATTACK_HOLD_MS) is a melee swing, not
+    // a throw, and must drop the aim pose rather than carry it into a
+    // pose that implies a shot was fired. Fresh press-and-release pair,
+    // since the previous press has been held for the last two seconds.
+    const tapped = await page.evaluate(() => {
+      destroyProjectile();
+      startAttackHold();
+      endAttackHold();
+      return { shooting, anim: currentAnim, projectile: projectile !== null };
+    });
+    ok("releasing early cancels the aim pose", tapped.shooting === null, tapped);
+    ok("and throws nothing", tapped.projectile === false, tapped);
+
+    // A held-and-released throw fires the projectile and the muzzle
+    // flash clip at the same instant, not one before the other.
+    const fired = await page.evaluate(() => {
+      destroyProjectile();
+      posX = 400;
+      facing = 1;
+      startAttackHold();
+      attackHoldStart = performance.now() - (ATTACK_HOLD_MS + 10);
+      endAttackHold();
+      return {
+        anim: currentAnim, frame: currentFrame, shooting,
+        projectile: projectile !== null,
+      };
+    });
+    ok("a qualifying hold plays the fire clip", fired.anim === "shootFire" && fired.shooting === "fire", fired);
+    ok("starting on the fire clip's own first frame (13)", fired.frame === 13, fired);
+    ok("and the projectile appears at the same moment", fired.projectile === true, fired);
+
+    // The fire clip is 3 frames at 12fps (250ms). Comfortably after that,
+    // the pose must have been handed back to the ordinary idle/walk
+    // switch on its own, with no button press or gameplay code required.
+    await page.waitForTimeout(500);
+    const settled = await page.evaluate(() => ({ shooting, anim: currentAnim }));
+    ok("the fire clip hands the pose back afterwards",
+       settled.shooting === null && (settled.anim === "idle" || settled.anim === "walk"), settled);
+
+    // A guard catch or hazard can respawn the player mid-hold. The pose
+    // must not stay stuck on the aim frame for the rest of the visit to
+    // the scene once that happens.
+    const stuck = await page.evaluate(() => {
+      startAttackHold();
+      respawnInScene();
+      return { shooting, attackHoldStart };
+    });
+    ok("a respawn clears a held aim pose rather than leaving it stuck",
+       stuck.shooting === null && stuck.attackHoldStart === 0, stuck);
+
+    await page.evaluate(() => destroyProjectile());
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

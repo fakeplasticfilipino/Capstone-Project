@@ -20,20 +20,29 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 16, a full UI retheme replacing Block 15's
-Katipunan flag chrome (gold, navy, red) with a natural wood-and-green
-palette (browns, greens, cream; no red or gold anywhere), done in pure
-CSS with no new image assets, per an explicit request for a natural
-rather than modern-flat look. Gameplay and status colors were left
-untouched, same boundary Block 15 drew; two spots that used to read the
-retired gold variable directly (the guard meter fill, the thrown spear)
-are now the literal #f4c542 instead, so they could not be silently
-recolored by retiring that variable. style.css's script version went to
-v17. See Blocks done and CLAUDE.md, Decisions on record, for the color
-mapping. Verified by re-running the suite (327 passed, 0 failed) and by
-a headless screenshot pass over the title screen, the game world/HUD,
-the pause menu, the settings panel and the inventory panel — NOT YET
-SEEN ON THE PHONE ITSELF.
+Last updated: after Block 17, a third real commissioned sprite
+(Assets/Prefab/Macario_Shooting.png, 25 frames) wired in as Macario's
+first-ever ranged-attack animation. The engine gained two new optional
+per-sheet fields, startFrame and endFrame, so one 25-frame image can be
+declared as two named poses (shootAim, frames 0-12, held while the
+attack button is down; shootFire, frames 13-15, a muzzle flash played
+once at the instant the throw fires) rather than needing two files. See
+Blocks done and CLAUDE.md, Sprite sheets and Decisions on record, for
+the mechanism and the frame numbers. ASSET_VERSION to 7, game.js's
+script version to v26. Verified by a new suite section (14 checks) plus
+two headless screenshots of the aim pose and the fire pose — NOT YET
+SEEN ON THE PHONE ITSELF. 341 passed, 0 failed.
+
+Earlier the same broader run of sessions: Block 16, a full UI retheme
+replacing Block 15's Katipunan flag chrome (gold, navy, red) with a
+natural wood-and-green palette (browns, greens, cream; no red or gold
+anywhere), done in pure CSS with no new image assets, per an explicit
+request for a natural rather than modern-flat look. Gameplay and status
+colors were left untouched, same boundary Block 15 drew; two spots that
+used to read the retired gold variable directly (the guard meter fill,
+the thrown spear) are now the literal #f4c542 instead. style.css's
+script version went to v17. See Blocks done and CLAUDE.md, Decisions on
+record, for the color mapping.
 
 Earlier the same broader work: the student added two real commissioned
 sprites for Macario, his own base walk and idle cycles
@@ -83,9 +92,9 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite carries 327 checks after Block 14 added its own
+The automated suite carries 341 checks after Block 17 added its own
 coverage (see Blocks done). It is fully green against this device's real
-files as of this session: 327 passed, 0 failed, run twice. The one check
+files as of this session: 341 passed, 0 failed, run twice. The one check
 that used to fail for real here — unequipping a cosmetic outfit restores
 the base walk cycle — now passes, because the base walk sheet it asserts
 against is a real file again. See Known problems, missing production art,
@@ -628,6 +637,44 @@ color-to-color mapping and for which pre-existing green status literals
 were deliberately left alone rather than rewired to the new chrome
 green. (COMPLETE)
 
+Block 17, the shooting animation. A third real commissioned sprite,
+Assets/Prefab/Macario_Shooting.png (500x500, 5 by 5, 25 frames), wired
+in as Macario's ranged-attack pose — there was no dedicated animation
+for that action before this; holding attack to throw (Ibato) left
+whatever pose the player was already in unchanged while the projectile
+spawned. Measured the same way as the other two sprites (_dev/
+measure-sprite.js: contentTop 23, contentHeight 51). This sheet is one
+continuous clip covering an aim/draw-up sequence and a muzzle flash
+around frame 15, with several unused frames after it, so it needed
+something the walk/idle sprites did not: playing only PART of a sheet,
+and different parts at different times. The engine gained two more
+optional per-sheet fields, startFrame and endFrame (default 0 and
+frames - 1, so idle/walk/dead are unaffected), which let the one image
+be declared twice under two names: shootAim (frames 0-12, held on 12
+for as long as the button stays down) and shootFire (frames 13-15, the
+muzzle flash, played once at the exact instant the throw fires — not
+before it and not after). A new shooting state variable suppresses the
+main loop's own idle/walk switch while either is playing, the same way
+cutscenePlaying already does for the death sequence; a plain timer
+sized to the fire clip's own frame count and fps hands the pose back
+afterwards, the same approach flashAttack already uses for the melee
+flash. A guard catch, a hazard knockback, or the stage cutscene
+starting while attack happens to be held could otherwise leave the aim
+pose stuck for the rest of a scene visit; respawnInScene and
+startPerformance now both clear it defensively. ASSET_VERSION to 7,
+game.js's script version to v26. New coverage in _dev/test.js, section
+AI (14 checks): both named sheets load and declare the right ranges;
+pressing attack switches the pose immediately; a long hold settles on
+and holds frame 12 rather than looping past it; a quick release cancels
+the pose into a melee swing with nothing thrown; a qualifying hold
+plays the fire clip from its own frame 13 with the projectile appearing
+in the same step; the pose is handed back on its own once the fire clip
+finishes; and a mid-hold respawn clears a stuck pose. 341 passed, 0
+failed, run twice. Verified further by two headless screenshots, the
+aim pose and the fire-with-projectile frame, confirming the timing
+looks right and not just that the checks pass. See CLAUDE.md, Sprite
+sheets and Decisions on record, for the full mechanism. (COMPLETE)
+
 ## Blocks remaining
 
 Block 12, polish. (IN PROGRESS)
@@ -872,13 +919,13 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-327 checks. Anything other than "0 failed" is a regression. It last ran
-327 passed, 0 failed, twice, in the session that added Macario's real
-walk and idle sprites (see Known problems, missing production art) — run
-from a disposable sandbox with the repository staged into it and a
-symlinked global Playwright install, since that session had no shell on
-the device itself; the same command is what to run directly on the
-device when one is available.
+341 checks. Anything other than "0 failed" is a regression. It last ran
+341 passed, 0 failed, twice, in the session that added Macario's
+shooting animation (see Blocks done, Block 17) — run from a disposable
+sandbox with the repository staged into it and a symlinked global
+Playwright install, since that session had no shell on the device
+itself; the same command is what to run directly on the device when one
+is available.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it

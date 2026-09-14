@@ -169,7 +169,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 6;
+const ASSET_VERSION = 7;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -687,6 +687,26 @@ const BASE_SPRITE_SHEETS = {
     contentTop: 60, contentHeight: 127,
   },
   dead: { src: "Assets/Dead.png", frames: 5, fps: 6, columns: 5, loop: false },
+
+  // One 25-frame sheet, played as two separate named views rather than
+  // two files, via the optional startFrame/endFrame fields (see
+  // applyAnim/updateAnimFrame and Sprite sheets in CLAUDE.md): frames
+  // 0-12 are the aim/draw-up pose, held on frame 12 for as long as the
+  // attack button stays down, and frames 13-15 are the fire flourish (a
+  // muzzle flash lands on frame 14), played once at the instant the
+  // throw actually happens. Frames 16-24 are unused for now. fps for
+  // both, like the walk/idle pair before them, is a first guess nobody
+  // has judged on a phone yet.
+  shootAim: {
+    src: "Assets/Prefab/Macario_Shooting.png", frames: 25, fps: 8, columns: 5,
+    startFrame: 0, endFrame: 12, loop: false,
+    contentTop: 23, contentHeight: 51,
+  },
+  shootFire: {
+    src: "Assets/Prefab/Macario_Shooting.png", frames: 25, fps: 12, columns: 5,
+    startFrame: 13, endFrame: 15, loop: false,
+    contentTop: 23, contentHeight: 51,
+  },
 };
 
 // The set actually in use. Reassigned by setOutfit, which is why this is
@@ -803,6 +823,8 @@ Promise.all([
   loadSpriteSheet(SPRITE_SHEETS.idle),
   loadSpriteSheet(SPRITE_SHEETS.walk),
   loadSpriteSheet(SPRITE_SHEETS.dead),
+  loadSpriteSheet(SPRITE_SHEETS.shootAim),
+  loadSpriteSheet(SPRITE_SHEETS.shootFire),
 ]).then(() => {
   spritesReady = true;
   applyAnim(currentAnim, true);
@@ -844,10 +866,14 @@ function applyAnim(name, force) {
   if (!spritesReady) return;
   if (currentAnim === name && !force) return;
   currentAnim = name;
-  currentFrame = 0;
-  lastFrameTime = 0;
 
   const sheet = SPRITE_SHEETS[name];
+  // startFrame lets a sheet declare it plays a sub-range of a larger
+  // image (see shootAim/shootFire above) rather than always starting at
+  // frame 0. Absent, this is exactly frame 0, as every sheet before them
+  // behaved.
+  currentFrame = sheet.startFrame || 0;
+  lastFrameTime = 0;
 
   if (sheet.failed) {
     showPlaceholder(
@@ -889,11 +915,18 @@ function updateAnimFrame(now) {
 
     if (now - lastFrameTime >= frameDuration) {
       lastFrameTime = now;
+
+      // A sheet may declare startFrame/endFrame to play only part of
+      // itself (see shootAim/shootFire, above BASE_SPRITE_SHEETS).
+      // Absent, this is 0 and frames - 1, exactly the old behaviour.
+      const startFrame = sheet.startFrame || 0;
+      const endFrame = sheet.endFrame != null ? sheet.endFrame : sheet.frames - 1;
+
       if (sheet.loop === false) {
-        if (currentFrame < sheet.frames - 1) currentFrame++;
-        // else hold on the last frame
+        if (currentFrame < endFrame) currentFrame++;
+        // else hold on endFrame
       } else {
-        currentFrame = (currentFrame + 1) % sheet.frames;
+        currentFrame = currentFrame + 1 > endFrame ? startFrame : currentFrame + 1;
       }
 
       // Frame index to grid position. For a 5-column Walk sheet,
@@ -1158,6 +1191,12 @@ function startGift(npc) {
 function startPerformance() {
   if (cutscenePlaying) return;
   cutscenePlaying = true;
+  // Same reasoning as respawnInScene: don't let a held attack button
+  // leave the shooting pose stuck across a scene the player no longer
+  // controls.
+  attackHoldStart = 0;
+  shooting = null;
+  clearTimeout(shootFireTimer);
   activeNpc = null;
   activeMode = "cutscene-part1";
   activeSet = { lines: STAGE.poemPart1 };
@@ -1626,6 +1665,15 @@ function respawnInScene() {
   velY = 0;
   facing = 1;
 
+  // A guard catch or a hazard can respawn the player while the attack
+  // button happens to be down. Without this, shooting would stay stuck
+  // and suppress the idle/walk switch (see gameLoop) for the rest of
+  // the visit to this scene, since nothing else clears it once the
+  // press that started it is gone.
+  attackHoldStart = 0;
+  shooting = null;
+  clearTimeout(shootFireTimer);
+
   if (health <= 0) {
     health = maxHealth;
     renderHearts();
@@ -1734,9 +1782,20 @@ const PROJECTILE_RANGE = 520;
 let attackHoldStart = 0;
 let projectile = null; // at most one in flight
 
+// Whether the shooting sheet currently owns the player's pose: "aim"
+// while the button is down (nothing yet decides melee vs. throw — that
+// is only known on release), "fire" for the brief flourish right after
+// a throw. The main loop's own idle/walk switch (see gameLoop) is
+// suppressed while this is set, the same way cutscenePlaying already
+// suppresses it for the death sequence.
+let shooting = null; // null | "aim" | "fire"
+let shootFireTimer = null;
+
 function startAttackHold() {
   if (authGated || uiBlocked || inDialogue || cutscenePlaying) return;
   attackHoldStart = performance.now();
+  shooting = "aim";
+  applyAnim("shootAim", true);
 }
 
 function endAttackHold() {
@@ -1744,10 +1803,41 @@ function endAttackHold() {
   const held = performance.now() - attackHoldStart;
   attackHoldStart = 0;
 
-  if (authGated || uiBlocked || inDialogue || cutscenePlaying) return;
+  if (authGated || uiBlocked || inDialogue || cutscenePlaying) {
+    shooting = null;
+    return;
+  }
 
-  if (held >= ATTACK_HOLD_MS) throwProjectile();
-  else meleeAttack();
+  if (held >= ATTACK_HOLD_MS) {
+    // Fire the instant the throw happens, not before, so the muzzle
+    // flash frame lands with the projectile actually appearing.
+    throwProjectile();
+    playShootFire();
+  } else {
+    // A short tap was never a throw — drop the aim pose and swing
+    // instead, rather than let the sheet decide gameplay.
+    shooting = null;
+    meleeAttack();
+  }
+}
+
+// Plays shootFire's three frames once, then hands the pose back to the
+// normal idle/walk switch. There is no general "animation finished"
+// callback in this engine (see applyAnim/updateAnimFrame) — a plain
+// timer sized to the clip's own frame count and fps is the same
+// approach flashAttack already uses for the melee brightness flash.
+function playShootFire() {
+  shooting = "fire";
+  applyAnim("shootFire", true);
+
+  const sheet = SPRITE_SHEETS.shootFire;
+  const frameCount = sheet.endFrame - sheet.startFrame + 1;
+  const duration = frameCount * (1000 / sheet.fps);
+
+  clearTimeout(shootFireTimer);
+  shootFireTimer = setTimeout(() => {
+    shooting = null;
+  }, duration);
 }
 
 function flashAttack() {
@@ -1983,8 +2073,10 @@ function gameLoop(now) {
   updateProjectile(step);
 
   // During the stage cutscene, leave whatever animation is already set
-  // (such as "dead") rather than switching back to idle or walk.
-  if (!cutscenePlaying) {
+  // (such as "dead") rather than switching back to idle or walk. The
+  // same holds while shooting owns the pose (aiming or firing) — see
+  // startAttackHold/playShootFire.
+  if (!cutscenePlaying && !shooting) {
     applyAnim(isWalking && onGround ? "walk" : "idle");
   }
   updateAnimFrame(now);

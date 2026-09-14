@@ -466,6 +466,25 @@ to contentTop/contentHeight is a change to the CONTENT file that declares
 them (game.js for the player, content/actN.js for an NPC), not to the
 image, so it needs that file's own v=N bumped rather than ASSET_VERSION.
 
+A sheet may also declare startFrame and endFrame, in frame numbers
+rather than pixels, to play only part of itself:
+
+    { src: "Assets/Prefab/Macario_Shooting.png", frames: 25, fps: 8,
+      columns: 5, startFrame: 0, endFrame: 12, loop: false,
+      contentTop: 23, contentHeight: 51 }
+
+This is what lets one image be declared as more than one named entry in
+BASE_SPRITE_SHEETS (see shootAim/shootFire, and Decisions on record) —
+two poses drawn on the same sheet by an artist, or a single sheet with a
+distinct "aim" and "fire" portion, without splitting the art into two
+files. applyAnim starts playback at startFrame instead of always 0, and
+updateAnimFrame steps and (with loop: false) holds within
+[startFrame, endFrame] instead of [0, frames - 1]. Both default to 0 and
+frames - 1 when absent, so every sheet before this one is unaffected.
+The two fields describe frame RANGE only; contentTop/contentHeight are
+still measured once for the whole sheet, since every frame in it shares
+the same cell geometry regardless of which named entry plays it.
+
 Missing images do not break anything. They fall back to a dashed
 placeholder box showing the expected filename.
 
@@ -1225,6 +1244,68 @@ correctly and that gameplay elements (hearts, the quest log, the touch
 controls) kept their prior appearance. style.css's own script version
 was bumped in index.html for the cache-buster reason stated under
 Pitfalls.
+
+A third real commissioned sprite, Assets/Prefab/Macario_Shooting.png (a
+500x500, 5 by 5 grid, 25 frames), was added and wired in as Macario's
+ranged-attack pose — there was previously no dedicated animation for
+that action at all; holding the attack button to throw (Ibato) left
+whatever pose (idle or walk) the player was already in unchanged while
+the projectile spawned. Measured the same way as the other two
+(_dev/measure-sprite.js, contentTop 23, contentHeight 51 of a 100px
+cell), but this sheet needed something the other two did not: it is one
+continuous 25-frame clip — an aim/draw-up sequence, a muzzle flash
+around frame 15, then several unused recovery frames — and only part of
+it should ever play, and different parts at different times, rather
+than one sheet meaning one pose end to end.
+
+The engine gained startFrame and endFrame, two more optional per-sheet
+fields (see Sprite sheets), so BASE_SPRITE_SHEETS declares this one
+image twice under two names: shootAim (frames 0-12, loop: false) and
+shootFire (frames 13-15, loop: false). applyAnim and updateAnimFrame
+both fall back to 0 and frames - 1 when these are absent, so idle, walk
+and dead are unaffected. This is a smaller, more general change than a
+one-off "shooting sheet" special case would have been, and the same
+mechanism is available to the next sheet that turns out to hold more
+than one pose.
+
+A new module-level variable, shooting (null | "aim" | "fire"), tracks
+which of the two owns the player's pose right now, and the main loop's
+own idle/walk switch is skipped whenever it is set — exactly the way
+cutscenePlaying already suppresses that switch for the death sequence,
+not a second, different mechanism. startAttackHold sets shooting to
+"aim" and switches to shootAim the moment the button goes down, before
+anyone — including the engine — knows whether this hold will end up a
+melee swing or a throw; that is only decided on release, by
+ATTACK_HOLD_MS, exactly as it already was. endAttackHold either clears
+shooting (a short tap, which becomes meleeAttack as before) or calls the
+new playShootFire, which switches to shootFire and starts
+throwProjectile in the same call, so the muzzle-flash frame and the
+projectile's appearance land in the same frame rather than one ahead of
+the other. There is no general "animation finished" callback in this
+engine, so playShootFire hands the pose back with a plain
+setTimeout sized to the clip's own frame count and fps — the same
+approach flashAttack already uses for the melee brightness flash, not a
+new pattern.
+
+Holding attack across a guard catch, a hazard knockback, or the stage
+cutscene starting is possible, and previously nothing reset
+attackHoldStart in any of those cases (nothing needed to — idle and
+walk look the same regardless). A stuck shooting pose is a new failure
+this feature could have introduced, so respawnInScene and
+startPerformance now both clear attackHoldStart, shooting and the fire
+timer defensively, the same two lines in both places.
+
+Covered in _dev/test.js, section AI: both sheets load without falling
+back to a placeholder and declare the right frame ranges; pressing
+attack switches to the aim pose immediately; a long hold climbs to and
+holds on frame 12 rather than looping past it; a quick release cancels
+the pose and throws nothing; a qualifying hold plays the fire clip
+starting on its own frame 13 with the projectile appearing in the same
+step; the fire clip hands the pose back on its own after its 250ms
+without further input; and a respawn mid-hold clears the pose rather
+than leaving it stuck. 341 passed, 0 failed. ASSET_VERSION to 7 and
+game.js's own script version to v26, for the same reason as the last
+two sprites.
 
 ## Pitfalls
 
