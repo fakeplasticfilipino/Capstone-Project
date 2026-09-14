@@ -194,15 +194,22 @@ html, body {
 }
 
 /* Tondo, Manila backdrop — replaces the sky/ground entirely.
-   The image (1024x285) is stretched to fill the full viewport height
-   and tiled horizontally to cover the whole (much wider) world. */
+   The real art (1983x793, added this session — see CLAUDE.md, Decisions
+   on record) is scaled to the full viewport height and tiled
+   horizontally, via background-repeat, to cover the whole (much wider)
+   world. It is a painted scene, not a texture drawn to tile seamlessly,
+   so the repeat leaves a visible seam wherever one copy ends and the
+   next begins — see .tree-shadow below and buildSkylineShadows() in
+   game.js, which is what disguises that seam as a tree's cast shadow
+   rather than leaving it a bare visual jump. Lives in Assets/Act 1/,
+   matching Nanay.png, since this backdrop is Act 1's alone. */
 #skyline {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
   height: 100%;
-  background-image: url("Assets/Tondo.png");
+  background-image: url("Assets/Act 1/Tondo.png");
   background-repeat: repeat-x;
   background-position: bottom left;
   background-size: auto 100%;
@@ -212,14 +219,17 @@ html, body {
 /* Night version, layered directly on top of the day skyline. Stays
    fully transparent until switchToNight() adds .visible — then it
    crossfades in and stays that way (the ending permanently shifts
-   the scene to night). */
+   the scene to night). Not added to this device yet (see TRACKER.md,
+   Known problems) but pointed at Assets/Act 1/ already, on the same
+   reasoning as the day version above, so dropping the file in is the
+   only step left once it exists. */
 #skyline-night {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
   height: 100%;
-  background-image: url("Assets/Tondo_Night.png");
+  background-image: url("Assets/Act 1/Tondo_Night.png");
   background-repeat: repeat-x;
   background-position: bottom left;
   background-size: auto 100%;
@@ -230,6 +240,36 @@ html, body {
 
 #skyline-night.visible {
   opacity: 1;
+}
+
+/* One soft, tall shadow band per background seam, created and positioned
+   (both left and width — see TREE_SHADOW_WIDTH) by buildSkylineShadows()
+   (game.js) at exactly the world-pixel x where one copy of the skyline
+   image ends and the next begins — computed at scene load from the
+   element's own rendered height, not a hardcoded guess, so it lands on
+   the real seam at any screen size or --zoom. Two gradients multiplied
+   together taper it in both directions at once: darkest low and
+   centered, fading to nothing at the top and at either edge, the shape
+   of a long shadow falling across a path rather than a hard vertical
+   line. Purely decorative — pointer-events: none, and no z-index of its
+   own, so it paints in the same layer as #ground-tiles (above the
+   backdrop, below every character) and never competes with or occludes
+   Macario or an NPC. */
+.tree-shadow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.25) 55%,
+      rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to right,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.85) 50%,
+      rgba(0, 0, 0, 0) 100%);
+  background-blend-mode: multiply;
 }
 
 /* Ground: a repeating cement tile texture sitting in front of the
@@ -294,8 +334,16 @@ html, body {
   image-rendering: crisp-edges;
 }
 
+/* z-index: 1 pulls Macario into a later-painted tier than every NPC,
+   guard, and decoration — those are all appended into #world by loadScene's
+   build*() calls, which happens after #player already exists in the static
+   HTML, so without this Macario (DOM-early, z-index: auto) loses ties to
+   anything added after him (e.g. Nanay) under plain DOM-order stacking.
+   inHideSpot() is a pure logic flag with no visual effect of its own, so
+   there's no "duck behind cover" mechanic this could break. */
 #player {
   left: 0px;
+  z-index: 1;
 }
 
 .hidden {

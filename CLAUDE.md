@@ -1307,6 +1307,59 @@ than leaving it stuck. 341 passed, 0 failed. ASSET_VERSION to 7 and
 game.js's own script version to v26, for the same reason as the last
 two sprites.
 
+Assets/Act 1/Tondo.png is now real commissioned art (1983x793, a painted
+Tondo river-village scene, not a texture drawn to tile seamlessly) and
+replaces the placeholder path the CSS and game.js previously pointed at
+(Assets/Tondo.png, root). It lives in Assets/Act 1/ rather than
+Assets/Prefab/, matching Nanay.png, since this backdrop is Act I's alone
+(see Act data format). Assets/Act 1/Tondo_Night.png was renamed to match
+proactively, on the same reasoning, even though that file still does not
+exist on this device (see TRACKER.md, Known problems) — dropping it in
+later is now the only step left. checkBackgroundImage's two skyline calls
+and both #skyline/#skyline-night background-image URLs were updated to
+the new path; ASSET_VERSION to 8 for the same reason a new file under
+Assets/ always bumps it.
+
+#skyline tiles the backdrop horizontally (background-repeat: repeat-x,
+background-size: auto 100%) to cover the world, which is much wider than
+one copy of the art, and because the art is a real composition rather
+than a seamless texture, each repeat leaves a visible seam. Rather than
+hide or avoid the repeat, a new buildSkylineShadows() (game.js, called
+from loadScene alongside the other build*() functions) places a
+.tree-shadow div at each seam x, so the seam reads as a tree's long cast
+shadow falling across the path — the same "clever reuse read as
+diegetic" idea as reusing one sprite sheet as two named poses earlier in
+this same run of sessions. The shadow is two CSS gradients combined with
+background-blend-mode: multiply (a vertical taper and a horizontal
+taper), not an image asset. Seam position is computed at scene load from
+skyline.clientHeight (not a hardcoded pixel guess), using
+SKYLINE_ASPECT = 1983/793 to convert the rendered height back into the
+tile's actual on-screen width; this is deliberately a one-time-per-load
+computation with no resize listener, matching that no other system in
+this engine handles window resize either (see Pitfalls). The divs are
+pushed to actElements, so unloadScene's existing cleanup removes them
+with everything else the scene created — no separate lifecycle needed.
+
+Macario was rendering behind Nanay (and would render behind any NPC,
+guard, or decoration) because #player is a static, early child of
+#world in index.html while every NPC/guard/decoration is appended into
+#world later, at scene-load time, by loadScene's build*() calls; with
+every one of them at the browser default z-index (auto), CSS resolves
+the tie by DOM order, and later-appended always wins. Fixed with a single
+declaration, #player { z-index: 1 }, which pulls Macario into a later
+painted tier than all of them regardless of DOM order. Checked that
+nothing in this engine relies on the old behavior first: inHideSpot()
+(see Combat and stealth, above) is a pure logic flag consulted only by
+guard detection math and has no visual effect of its own, so there is no
+"Macario visually ducks behind cover" mechanic this could break.
+
+Covered in _dev/test.js, section AJ: #player's computed z-index is
+positive; the skyline loads Assets/Act 1/Tondo.png without falling back
+to the placeholder; buildSkylineShadows() places at least one
+.tree-shadow div with an explicit position and width; and unloadScene
+removes them. 346 passed, 0 failed. game.js's own script version to
+v27, for the same reason as every other block that touches its code.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes

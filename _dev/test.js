@@ -2379,6 +2379,52 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAJ. Skyline seam shadows and player stacking");
+  {
+    // #player must out-stack every NPC/guard/decoration, which are all
+    // appended into #world after #player already exists in the static
+    // HTML (see loadScene's build*() calls) — without a positive
+    // z-index here, plain DOM-order stacking would put Macario behind
+    // anything added after him, such as Nanay.
+    const { ctx, page } = await enterTestRoom();
+    const playerZ = await page.evaluate(() =>
+      getComputedStyle(document.getElementById("player")).zIndex);
+    ok("Macario sits in a positive stacking tier above DOM-later NPCs",
+       Number(playerZ) > 0, playerZ);
+
+    // Assets/Act 1/Tondo.png is real now (see CLAUDE.md, Decisions on
+    // record) — the skyline must load it rather than falling back to
+    // the dashed placeholder checkBackgroundImage() draws for a
+    // missing file.
+    await page.waitForTimeout(200);
+    const skylineText = await page.evaluate(() =>
+      document.getElementById("skyline").textContent);
+    ok("the skyline backdrop loads without falling back to a placeholder",
+       skylineText === "", skylineText);
+
+    // buildSkylineShadows() should have placed at least one .tree-shadow
+    // div — #world is comfortably wider than one tile of the real
+    // 1983x793 art at this viewport height — each sized and positioned
+    // explicitly rather than left at the browser's defaults.
+    const shadows = await page.evaluate(() =>
+      Array.from(document.querySelectorAll(".tree-shadow")).map((el) => ({
+        left: el.style.left, width: el.style.width,
+      })));
+    ok("at least one seam-masking shadow band was placed", shadows.length > 0, shadows);
+    ok("each shadow band has an explicit width and position, not browser defaults",
+       shadows.length > 0 && shadows.every((s) => s.width !== "" && s.left !== ""), shadows);
+
+    // Leaving the scene must clean the shadow bands up along with
+    // everything else loadScene created, via the existing actElements
+    // lifecycle — not leave stale ones behind for the next scene to
+    // pile more on top of.
+    await page.evaluate(() => unloadScene());
+    const afterUnload = await page.evaluate(() => document.querySelectorAll(".tree-shadow").length);
+    ok("unloading the scene removes the shadow bands", afterUnload === 0, afterUnload);
+
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

@@ -169,7 +169,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 7;
+const ASSET_VERSION = 8;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -253,6 +253,14 @@ let HIDE_SPOTS = []; // regions that suppress guard detection
 let HAZARDS = []; // ground regions that cost one health on contact
 let PICKUPS = []; // collectibles; currently only hearts
 
+// Native pixel dimensions of Assets/Act 1/Tondo.png. #skyline scales that
+// image via background-size: auto 100%, so at any rendered height the
+// tile is exactly this ratio times as wide — used by buildSkylineShadows()
+// below to find exactly where the background repeats, without hardcoding
+// a pixel width that would only be right at one screen size / --zoom.
+const SKYLINE_ASPECT = 1983 / 793;
+const TREE_SHADOW_WIDTH = 140; // px, width of each seam-masking shadow band
+
 // Ids collected during this visit to the scene. Created by loadScene and
 // cleared only by loadScene, never by respawnInScene, so a heart already
 // spent cannot be farmed by dying on purpose. Leaving the scene and
@@ -331,6 +339,7 @@ function loadScene(sceneId) {
   PICKUPS = scene.pickups || [];
   collectedPickups = new Set();
 
+  buildSkylineShadows();
   buildNpcs(token);
   buildDecorations(token);
   buildStage();
@@ -372,6 +381,31 @@ function unloadAct() {
   unloadScene();
   SCENES = [];
   currentActData = null;
+}
+
+// Places one .tree-shadow div at each x where the tiled #skyline background
+// image repeats, so the seam reads as a tree's cast shadow rather than an
+// obvious texture repeat. Recomputed fresh every scene load (there is no
+// window-resize handling anywhere in this engine — see CLAUDE.md — so this
+// one-time-per-scene computation matches how everything else here works)
+// from the skyline element's actual rendered height, since background-size:
+// auto 100% makes the tile's pixel width depend on viewport size / --zoom,
+// not a fixed constant. Appended to #world before any NPC/guard/decoration
+// so it sits low in the DOM-order stacking tier, alongside #ground-tiles.
+function buildSkylineShadows() {
+  const skyline = document.getElementById("skyline");
+  const renderedHeight = skyline.clientHeight;
+  if (!renderedHeight) return; // not laid out yet — skip rather than divide by 0
+  const tileWidth = renderedHeight * SKYLINE_ASPECT;
+  const totalWidth = world.clientWidth;
+  for (let seamX = tileWidth; seamX < totalWidth; seamX += tileWidth) {
+    const shadow = document.createElement("div");
+    shadow.className = "tree-shadow";
+    shadow.style.left = `${seamX - TREE_SHADOW_WIDTH / 2}px`;
+    shadow.style.width = `${TREE_SHADOW_WIDTH}px`;
+    world.appendChild(shadow);
+    actElements.push(shadow);
+  }
 }
 
 function buildNpcs(token) {
@@ -504,13 +538,13 @@ function checkBackgroundImage(el, src, label) {
 
 checkBackgroundImage(
   document.getElementById("skyline"),
-  "Assets/Tondo.png",
-  "Assets/Tondo.png"
+  "Assets/Act 1/Tondo.png",
+  "Assets/Act 1/Tondo.png"
 );
 checkBackgroundImage(
   document.getElementById("skyline-night"),
-  "Assets/Tondo_Night.png",
-  "Assets/Tondo_Night.png"
+  "Assets/Act 1/Tondo_Night.png",
+  "Assets/Act 1/Tondo_Night.png"
 );
 checkBackgroundImage(
   document.getElementById("ground-tiles"),

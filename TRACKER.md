@@ -20,20 +20,29 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 17, a third real commissioned sprite
-(Assets/Prefab/Macario_Shooting.png, 25 frames) wired in as Macario's
-first-ever ranged-attack animation. The engine gained two new optional
-per-sheet fields, startFrame and endFrame, so one 25-frame image can be
-declared as two named poses (shootAim, frames 0-12, held while the
-attack button is down; shootFire, frames 13-15, a muzzle flash played
-once at the instant the throw fires) rather than needing two files. See
-Blocks done and CLAUDE.md, Sprite sheets and Decisions on record, for
-the mechanism and the frame numbers. ASSET_VERSION to 7, game.js's
-script version to v26. Verified by a new suite section (14 checks) plus
-two headless screenshots of the aim pose and the fire pose — NOT YET
-SEEN ON THE PHONE ITSELF. 341 passed, 0 failed.
+Last updated: after Block 18, the real Tondo.png backdrop (1983x793) tiled
+across Act I's world with a new seam-masking shadow effect
+(buildSkylineShadows(), game.js), plus a stacking fix, #player { z-index:
+1 }, so Macario now renders in front of Nanay and every other NPC/guard/
+decoration instead of behind them. See Blocks done and CLAUDE.md,
+Decisions on record, for the full mechanism. ASSET_VERSION to 8, game.js's
+script version to v27. Verified by a new suite section (5 checks) plus
+headless screenshots of the tiled backdrop with a shadow band in frame and
+a direct elementFromPoint check confirming Macario paints above
+Nanay — NOT YET SEEN ON THE PHONE ITSELF. 346 passed, 0 failed.
 
-Earlier the same broader run of sessions: Block 16, a full UI retheme
+Earlier the same broader run of sessions: Block 17, a third real
+commissioned sprite (Assets/Prefab/Macario_Shooting.png, 25 frames) wired
+in as Macario's first-ever ranged-attack animation. The engine gained two
+new optional per-sheet fields, startFrame and endFrame, so one 25-frame
+image can be declared as two named poses (shootAim, frames 0-12, held
+while the attack button is down; shootFire, frames 13-15, a muzzle flash
+played once at the instant the throw fires) rather than needing two
+files. ASSET_VERSION to 7, game.js's script version to v26. Verified by a
+suite section (14 checks) plus two headless screenshots of the aim pose
+and the fire pose.
+
+Earlier still, the same broader run of sessions: Block 16, a full UI retheme
 replacing Block 15's Katipunan flag chrome (gold, navy, red) with a
 natural wood-and-green palette (browns, greens, cream; no red or gold
 anywhere), done in pure CSS with no new image assets, per an explicit
@@ -92,9 +101,9 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite carries 341 checks after Block 17 added its own
+The automated suite carries 346 checks after Block 18 added its own
 coverage (see Blocks done). It is fully green against this device's real
-files as of this session: 341 passed, 0 failed, run twice. The one check
+files as of this session: 346 passed, 0 failed, run twice. The one check
 that used to fail for real here — unequipping a cosmetic outfit restores
 the base walk cycle — now passes, because the base walk sheet it asserts
 against is a real file again. See Known problems, missing production art,
@@ -675,6 +684,34 @@ aim pose and the fire-with-projectile frame, confirming the timing
 looks right and not just that the checks pass. See CLAUDE.md, Sprite
 sheets and Decisions on record, for the full mechanism. (COMPLETE)
 
+Block 18, the Tondo backdrop and a stacking fix. Assets/Act 1/Tondo.png
+(1983x793) is real now, replacing the placeholder path the CSS and
+game.js pointed at; Assets/Act 1/Tondo_Night.png was renamed to match
+proactively even though that file is still missing (see Known
+problems). It repeats across the world via CSS (background-repeat:
+repeat-x), and because it is a painted scene rather than a seamless
+texture, a new buildSkylineShadows() (game.js, called from loadScene)
+places a soft, tapered .tree-shadow div — two blended CSS gradients, no
+image — at each x where the background actually repeats, computed from
+the art's real aspect ratio and the element's rendered height at scene
+load rather than a guessed pixel width, so the seam reads as a tree's
+cast shadow instead of an obvious repeat. Separately, Macario was
+rendering behind Nanay (and would render behind any NPC, guard or
+decoration): #player is static and DOM-early in index.html while every
+NPC/guard/decoration is appended later, in loadScene, and CSS breaks a
+z-index tie between them by DOM order. Fixed with #player { z-index: 1
+}; checked first that inHideSpot() has no visual effect of its own, so
+nothing relies on the old ordering. ASSET_VERSION to 8, game.js's
+script version to v27. New coverage in _dev/test.js, section AJ (5
+checks): #player's z-index is positive; the skyline loads the real file
+without falling back to the placeholder; at least one shadow band is
+placed with an explicit position and size; unloadScene removes them.
+346 passed, 0 failed. Verified further by headless screenshots of the
+tiled backdrop with a shadow band in frame, plus a direct
+elementFromPoint check confirming the browser paints Macario, not
+Nanay, at their overlap. See CLAUDE.md, Decisions on record, for the
+full mechanism. (COMPLETE)
+
 ## Blocks remaining
 
 Block 12, polish. (IN PROGRESS)
@@ -849,31 +886,35 @@ Assets/Cement_Tile.png was 1.4 MB for a repeating floor tile. Now 120
 by 120 and 21.7 KB. (COMPLETE, but see the entry below — the file that
 was optimized here is not on this device anymore)
 
-Missing production art. NARROWED this session: two of the six files this
-entry used to list are now real. Assets/Prefab/Macario_Walking.png (20
-frames) and Assets/Prefab/Macario_Idle.png (16 frames) were added by the
-student and are the base walk and idle cycles every player, guest or not,
-falls back to; game.js now points BASE_SPRITE_SHEETS at them instead of
-the never-existent Assets/Walk.png and Assets/Idle.png. Four files the
-shipped code references still do not exist anywhere on disk here:
-Cement_Tile.png (the ground tile), Tondo.png and Tondo_Night.png (the day
-and night skyline backdrops), and Dead.png (Macario's death pose — the
-one base sprite still missing). The live game as currently checked out on
-this device would still show no backdrop and no ground, and a defeated
-Macario still falls back to the placeholder box. _dev/test.js's one real
-symptom of this gap — the check that unequipping a cosmetic outfit
-restores the base walk cycle, which asserts against the actual walk sheet
-rather than a fixture — now passes, since that sheet is real (see
-Verification). The other four missing files have no automated coverage at
-all and are silently broken with the suite fully green around them. A
-Claude session cannot create real game art and has no way to know whether
-a working copy of these four files exists somewhere outside this project
-folder; the Cement_Tile.png line in an earlier version of this entry
-confirmed at least that one was optimized and present at some point, so
-check git history for a commit that still has it (`git log --all
---full-history -- Assets/`) before concluding the art itself is lost.
-(KNOWN, BLOCKING A REAL DEVICE PASS ON BLOCKS 14 AND 15 AND ON ACT I
-GENERALLY — narrower than before, not closed)
+Missing production art. NARROWED further across this session: four of the
+original six files this entry used to list are now real.
+Assets/Prefab/Macario_Walking.png (20 frames) and Macario_Idle.png (16
+frames) are Macario's base walk and idle cycles, which every player,
+guest or not, falls back to; Assets/Prefab/Macario_Shooting.png (25
+frames, Block 17) is his ranged-attack pose; Assets/Act 1/Tondo.png
+(1983x793, Block 18) is the day skyline backdrop, now tiled across the
+world with a seam-masking shadow effect (see Blocks done). Two files the
+shipped code still references do not exist anywhere on disk here:
+Cement_Tile.png (the ground tile) and Assets/Act 1/Tondo_Night.png (the
+night skyline — the path was renamed to Assets/Act 1/ in Block 18
+alongside the day version, on the same reasoning, even though the file
+itself is still missing), and Dead.png (Macario's death pose) — three in
+total. The live game as currently checked out on this device would still
+show no ground texture, no night skyline, and a defeated Macario falling
+back to the placeholder box. _dev/test.js's one real symptom of this
+gap — the check that unequipping a cosmetic outfit restores the base walk
+cycle, which asserts against the actual walk sheet rather than a
+fixture — now passes, since that sheet is real (see Verification). The
+three still-missing files have no automated coverage at all and are
+silently broken with the suite fully green around them. A Claude session
+cannot create real game art and has no way to know whether a working copy
+of these three files exists somewhere outside this project folder; the
+Cement_Tile.png line in an earlier version of this entry confirmed at
+least that one was optimized and present at some point, so check git
+history for a commit that still has it (`git log --all --full-history --
+Assets/`) before concluding the art itself is lost. (KNOWN, BLOCKING A
+REAL DEVICE PASS ON BLOCKS 14 AND 15 AND ON ACT I GENERALLY — narrower
+than before, not closed)
 
 Dynamic difficulty cannot be demonstrated in the running game,
 because only Act I has guards and Act I is the 1.00 multiplier. The
@@ -919,13 +960,13 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-341 checks. Anything other than "0 failed" is a regression. It last ran
-341 passed, 0 failed, twice, in the session that added Macario's
-shooting animation (see Blocks done, Block 17) — run from a disposable
-sandbox with the repository staged into it and a symlinked global
-Playwright install, since that session had no shell on the device
-itself; the same command is what to run directly on the device when one
-is available.
+346 checks. Anything other than "0 failed" is a regression. It last ran
+346 passed, 0 failed, twice, in the session that added the real Tondo.png
+backdrop and the player-stacking fix (see Blocks done, Block 18) — run
+from a disposable sandbox with the repository staged into it and a
+symlinked global Playwright install, since that session had no shell on
+the device itself; the same command is what to run directly on the device
+when one is available.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it
