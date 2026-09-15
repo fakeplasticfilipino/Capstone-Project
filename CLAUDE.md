@@ -67,16 +67,16 @@ one decision is what removed the mobile control overflow from the work
 rather than fixing it, because the overflow only ever happened in
 portrait.
 
-## Act I is a deliberate blank slate
+## Act I's content: a deliberate reset, then built forward again
 
 content/act1.js has gone through three shapes: a proving ground (one room,
 one example of every engine system, placeholder dialogue about buko and
 errands), a full narrative written directly against the ten item pairs in
 db/macario_items_v3.sql (two scenes, five objectives, a stage cutscene, a
-guard corridor), and now a reset back to one scene, one NPC (Nanay,
-Macario's mother, with real commissioned art) and one exchange. All three
-are in git history; none should be restored by copying old code back in
-without a reason.
+guard corridor), and a reset back to one scene, one NPC (Nanay, Macario's
+mother, with real commissioned art) and one exchange. All three are in
+git history; none should be restored by copying old code back in without
+a reason.
 
 The reset was deliberate, not a regression: the narrative-complete version
 was written ahead of the resource person's source material rather than
@@ -86,6 +86,19 @@ contact with the source. content/items.js was reset the same way, back to
 an empty catalogue, for the same reason — the two granted equipment items
 and two purchasable outfits it carried were content decisions made without
 the source material either.
+
+Built forward from that reset since, one verified passage at a time
+(Blocks 19-21): Act I is no longer the one-scene blank slate above — it
+is now two scenes, tondo and a kutsero flashback, with a fourth
+objective (pumunta_entablado) that keeps the act open once the
+flashback resolves, since the flashback is a memory within the act, not
+the act's own ending. content/items.js correspondingly holds one real
+item, Mansanas (kind: "consumable" as of Block 22 — see Item data
+format, below). See TRACKER.md, Right now and Blocks done (Blocks
+19-23), for exactly what is built, what still has no content (the
+entablado itself, a guard, anything past the flashback), and for the
+two engine bugs Blocks 22-23 fixed along the way that are unrelated to
+this content work.
 
 None of this touched the ENGINE. Every mechanic the fuller version
 exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
@@ -451,8 +464,12 @@ That is why they are strokes rather than glyphs.
 There is no icon art and none can be invented. Assets/ holds a floor
 tile, the player's walk cycle, and — as of the folder reorganisation
 into Assets/Act 1 and Assets/Prefab — one real commissioned sprite,
-Nanay, the only NPC content/act1.js currently declares (see Act I is
-a deliberate blank slate, and Decisions on record). Any future NPC,
+Nanay (see Act I's content, above, and Decisions on record). Three
+more NPCs joined content/act1.js since, in the kutsero scene (Kabayo,
+Kutsero, Tindero — Blocks 19-20), and none of the three has real art
+either: their img fields point at Assets/Horse.png, Assets/Kutsero.png
+and Assets/Tindero.png, none of which exist on this device (see
+TRACKER.md, Known problems, missing production art). Any future NPC,
 guard or decoration without real art falls back to the dashed
 placeholder box naming the file, same as any other missing image, so
 referencing an icon PNG would fill the screen with those.

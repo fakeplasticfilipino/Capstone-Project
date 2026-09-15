@@ -165,13 +165,13 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite carries 346 checks after Block 18 added its own
-coverage (see Blocks done). It is fully green against this device's real
-files as of this session: 346 passed, 0 failed, run twice. The one check
+The automated suite has grown to 371 checks, after Block 22 and Block
+23 added their own coverage on top of Block 18's (see Blocks done). It
+is fully green: 371 passed, 0 failed, as of Block 23. The one check
 that used to fail for real here — unequipping a cosmetic outfit restores
-the base walk cycle — now passes, because the base walk sheet it asserts
-against is a real file again. See Known problems, missing production art,
-and Verification.
+the base walk cycle — still passes, because the base walk sheet it
+asserts against is a real file. See Known problems, missing production
+art, and Verification.
 
 Block 13 is done: #btn-inventory and #btn-shop now sit next to
 #btn-pause in the main UI, so either screen is one tap from gameplay
@@ -1239,35 +1239,58 @@ Assets/Cement_Tile.png was 1.4 MB for a repeating floor tile. Now 120
 by 120 and 21.7 KB. (COMPLETE, but see the entry below — the file that
 was optimized here is not on this device anymore)
 
-Missing production art. NARROWED further across this session: four of the
-original six files this entry used to list are now real.
-Assets/Prefab/Macario_Walking.png (20 frames) and Macario_Idle.png (16
-frames) are Macario's base walk and idle cycles, which every player,
-guest or not, falls back to; Assets/Prefab/Macario_Shooting.png (25
-frames, Block 17) is his ranged-attack pose; Assets/Act 1/Tondo.png
-(1983x793, Block 18) is the day skyline backdrop, now tiled across the
-world with a seam-masking shadow effect (see Blocks done). Two files the
-shipped code still references do not exist anywhere on disk here:
-Cement_Tile.png (the ground tile) and Assets/Act 1/Tondo_Night.png (the
-night skyline — the path was renamed to Assets/Act 1/ in Block 18
-alongside the day version, on the same reasoning, even though the file
-itself is still missing), and Dead.png (Macario's death pose) — three in
-total. The live game as currently checked out on this device would still
-show no ground texture, no night skyline, and a defeated Macario falling
-back to the placeholder box. _dev/test.js's one real symptom of this
-gap — the check that unequipping a cosmetic outfit restores the base walk
-cycle, which asserts against the actual walk sheet rather than a
-fixture — now passes, since that sheet is real (see Verification). The
-three still-missing files have no automated coverage at all and are
-silently broken with the suite fully green around them. A Claude session
-cannot create real game art and has no way to know whether a working copy
-of these three files exists somewhere outside this project folder; the
-Cement_Tile.png line in an earlier version of this entry confirmed at
-least that one was optimized and present at some point, so check git
-history for a commit that still has it (`git log --all --full-history --
-Assets/`) before concluding the art itself is lost. (KNOWN, BLOCKING A
-REAL DEVICE PASS ON BLOCKS 14 AND 15 AND ON ACT I GENERALLY — narrower
-than before, not closed)
+Missing production art. NARROWED in one direction, WIDENED in another:
+four of the original six files this entry used to list are real, but
+scanning the actual device this session (for Block 23's tracker
+update) turned up three more the kutsero scene now needs and never
+got an entry here.
+
+Real: Assets/Prefab/Macario_Walking.png (20 frames) and
+Macario_Idle.png (16 frames) are Macario's base walk and idle cycles,
+which every player, guest or not, falls back to; Assets/Prefab/
+Macario_Shooting.png (25 frames, Block 17) is his ranged-attack pose;
+Assets/Act 1/Tondo.png (1983x793, Block 18) is the day skyline
+backdrop, now tiled across the world with a seam-masking shadow
+effect (see Blocks done).
+
+Still missing, the original three: Cement_Tile.png (the ground tile),
+Assets/Act 1/Tondo_Night.png (the night skyline — the path was renamed
+to Assets/Act 1/ in Block 18 alongside the day version, on the same
+reasoning, even though the file itself is still missing), and
+Dead.png (Macario's death pose).
+
+Missing, newly found and not caused by anything in Blocks 22-23: three
+of the kutsero scene's own NPCs, content/act1.js's img field pointing
+straight at Assets/ (its root, not Act 1/ or Prefab/) for all three —
+Assets/Horse.png (Kabayo), Assets/Kutsero.png (Kutsero, same name as
+the scene), and Assets/Tindero.png (Tindero, at the shop end of the
+map). These have been missing since Blocks 19-20 built the scene and
+were never entered here; this device's Assets/ folder holds only the
+Act 1/ and Prefab/ subfolders confirmed above, nothing at its own
+root. Six files missing in total now, not three.
+
+The live game as currently checked out on this device would show no
+ground texture, no night skyline, a defeated Macario falling back to
+the placeholder box, and all three of Kabayo, Kutsero and Tindero as
+dashed placeholder boxes naming their missing file, in the one scene a
+proponent is most likely to actually play through right now.
+_dev/test.js's one real symptom of the original three — the check
+that unequipping a cosmetic outfit restores the base walk cycle,
+which asserts against the actual walk sheet rather than a fixture —
+passes, since that sheet is real (see Verification), and
+_dev/verify_new_scene.js drives the kutsero scene entirely through
+FIXTURE_ACT1_JS-free real content without ever asserting that Kabayo,
+Kutsero or Tindero actually render as art rather than placeholders —
+so all six missing files have no automated coverage and are silently
+broken with both suites fully green around them. A Claude session
+cannot create real game art and has no way to know whether a working
+copy of any of these six files exists somewhere outside this project
+folder; the Cement_Tile.png line in an earlier version of this entry
+confirmed at least that one was optimized and present at some point,
+so check git history for a commit that still has it (`git log --all
+--full-history -- Assets/`) before concluding any of this art is
+lost. (KNOWN, BLOCKING A REAL DEVICE PASS ON BLOCKS 14, 15, 19 AND 20
+AND ON ACT I GENERALLY — six files now, not three)
 
 Dynamic difficulty cannot be demonstrated in the running game,
 because only Act I has guards and Act I is the 1.00 multiplier. The
@@ -1313,13 +1336,19 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-346 checks. Anything other than "0 failed" is a regression. It last ran
-346 passed, 0 failed, twice, in the session that added the real Tondo.png
-backdrop and the player-stacking fix (see Blocks done, Block 18) — run
+371 checks, after Block 22 and Block 23 each added their own coverage
+on top of Block 18's 346 (see Blocks done). Anything other than "0
+failed" is a regression. It last ran 371 passed, 0 failed, in Block
+23, the session that corrected Block 22's projectile-spawn fix — run
 from a disposable sandbox with the repository staged into it and a
 symlinked global Playwright install, since that session had no shell on
 the device itself; the same command is what to run directly on the device
-when one is available.
+when one is available. Blocks 19 through 21 (the kutsero scene, the
+apple quest, and the flashback-objective fix) are covered separately,
+against the REAL content/act1.js and content/items.js rather than
+test fixtures, by _dev/verify_new_scene.js (28 passed, 0 failed as of
+Block 22, its own most recent addition) — not part of this count and
+not run by `node _dev/test.js`; run it on its own the same way.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it
