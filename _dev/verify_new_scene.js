@@ -1,6 +1,9 @@
 // One-off verification script for the extended kutsero scene: Kabayo,
 // Kutsero (+10 barya), the road hazard, Tindero's Tindahan (Mansanas,
-// 5 barya), and giving the apple back to Kabayo to end the memory.
+// 5 barya), and giving the apple back to Kabayo to end the memory —
+// without ending Act I, since the memory is a flashback within the
+// act, not the act's own ending (a fourth objective, pumunta_entablado,
+// is what actually keeps Act I open — see content/act1.js's header).
 // Not part of the shipped suite; drives the REAL content/act1.js (no
 // fixture routes) the same way _dev/test.js Section A does.
 const { chromium } = require("playwright");
@@ -191,6 +194,8 @@ const talk = async (page, times) => {
     grey: document.getElementById("skyline").classList.contains("grey-filter"),
     flag: state.flags.binilhanNgMansanasAngKabayo,
     questDone: quests.find((q) => q.id === "bilhan_mansanas"),
+    entabladoQuest: quests.find((q) => q.id === "pumunta_entablado"),
+    entabladoFlag: state.flags.nasaEntablado,
     objTotal: Acts.objectivesFor(1).length,
     objDone: Acts.countDone(1),
   }));
@@ -198,48 +203,23 @@ const talk = async (page, times) => {
   ok("no longer greyed out", afterGift.grey === false, afterGift);
   ok("the third objective's flag is set", afterGift.flag === true, afterGift);
   ok("the apple quest is marked done in the log", afterGift.questDone && afterGift.questDone.done === true, afterGift.questDone);
-  ok("all three objectives are now done", afterGift.objTotal === 3 && afterGift.objDone === 3, afterGift);
+  ok("a new, open quest to reach the entablado is logged", afterGift.entabladoQuest && afterGift.entabladoQuest.done === false, afterGift.entabladoQuest);
+  ok("its objective's flag is not set — nothing completes it yet", afterGift.entabladoFlag !== true, afterGift.entabladoFlag);
+  ok("Act I now has four objectives, three of them done", afterGift.objTotal === 4 && afterGift.objDone === 3, afterGift);
 
-  // This is the flagged consequence: Act I finishes here. finishAct()
-  // moves through posttest (a quiz screen, same #quiz/#quiz-btn used for
-  // the pretest above) before complete() and the transition screen, so
-  // the same quiz dismissal is needed here to let the flow finish.
-  await page.waitForTimeout(1500);
-  const midFlow = await page.evaluate(() => Acts.status);
-  ok("giving Kabayo the apple moves Act I into its post-test", midFlow === "posttest", midFlow);
-  // A quiz screen with choices (the real test items, or the feedback
-  // survey shown when none are seeded — see sb-stub.js's
-  // get_assessment_items) needs one selected before Ipasa enables; a
-  // quiz screen with no choices (an info/already-submitted message) is
-  // a bare click. Repeated up to 6 times to walk through everything
-  // runTest can show on the way to complete()/showTransition().
-  const answerQuiz = async () => {
-    if (!(await page.locator("#quiz").isVisible().catch(() => false))) return false;
-    const choiceCount = await page.locator("#quiz-choices .quiz-choice").count();
-    const starCount = await page.locator("#quiz-choices .feedback-star").count();
-    if (choiceCount > 0) await page.click("#quiz-choices .quiz-choice >> nth=0");
-    else if (starCount > 0) await page.click("#quiz-choices .feedback-star >> nth=0"); // the optional post-act feedback screen
-    await page.click("#quiz-btn", { timeout: 2000 }).catch((e) => console.log("  click failed: " + e.message));
-    return true;
-  };
-  for (let i = 0; i < 6; i++) {
-    const acted = await answerQuiz();
-    await page.waitForTimeout(250);
-    const snap = await page.evaluate(() => ({
-      status: Acts.status,
-      quizVisible: !document.getElementById("quiz").classList.contains("hidden"),
-      transitionVisible: !document.getElementById("act-screen").classList.contains("hidden"),
-    }));
-    console.log("  poll " + i + " (acted=" + acted + "): " + JSON.stringify(snap));
-    if (snap.transitionVisible) break;
-    if (!acted && !snap.quizVisible) break;
-  }
-  const finished = await page.evaluate(() => ({
+  // The flashback resolving must NOT end Act I — it is a memory within
+  // the act, not the act's own ending. Confirmed two ways: status stays
+  // "playing" (finishAct/posttest never runs) and the transition screen
+  // never appears, given a beat past the fade to be sure nothing async
+  // sneaks it in late.
+  await page.waitForTimeout(2000);
+  const afterFlashback = await page.evaluate(() => ({
     status: Acts.status,
     transitionVisible: !document.getElementById("act-screen").classList.contains("hidden"),
   }));
-  console.log("  after full completion: " + JSON.stringify(finished));
-  ok("Act I completes and the transition screen appears", finished.status === "completed" && finished.transitionVisible, finished);
+  console.log("  after the flashback resolves: " + JSON.stringify(afterFlashback));
+  ok("Act I is still playing — the flashback ending did not finish the act", afterFlashback.status === "playing", afterFlashback);
+  ok("no transition screen appeared", afterFlashback.transitionVisible === false, afterFlashback);
 
   await ctx.close();
   await browser.close();

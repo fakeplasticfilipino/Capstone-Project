@@ -14,14 +14,22 @@
 // at Tindero, a hazard sits on the road between them, and Tindero's
 // stall — at the far edge of the now-wider map — sells the one apple
 // this quest needs. Bringing it back to Kabayo, at the gift button,
-// completes the quest, completes Act I's third and last objective,
-// and fades back to tondo, ending the memory. THIS COMPLETES ACT I:
-// checkObjectives sees all three objectives done the moment that
-// gift lands and runs the post-test/transition flow exactly as it
-// would for any other act. See CLAUDE.md, Decisions on record, if
-// that is not the intended ending point for Act I as written today —
-// a fourth objective (reaching the entablado itself) would need to
-// exist before this quest could finish without also closing the act.
+// completes the quest and fades back to tondo, ending the memory.
+//
+// The whole kutsero scene is a flashback, not the story's present —
+// it plays out grey (greyFilter) precisely because it is memory, not
+// now — so finishing it must not finish Act I: Macario is back in the
+// story's present, still on his way to the entablado, not done with
+// the act. A fourth objective, pumunta_entablado, exists for exactly
+// this: nothing in this file ever sets its flag, which is what keeps
+// checkObjectives from seeing all objectives done and ending Act I
+// the moment the flashback resolves — the same deliberate trick Block
+// 19 used to keep Act I from finishing two objectives early. Kabayo's
+// gift adds it as an open quest on the way back to tondo, so the
+// player's log reflects the same thing the objective counter does:
+// there is still somewhere to go. Whatever scene depicts arriving at
+// the entablado is the next piece of content this act needs; nothing
+// here builds it yet.
 //
 // The engine gained the pieces of support this needed, documented in
 // CLAUDE.md (Act data format, Decisions on record):
@@ -66,16 +74,19 @@ window.ACT_1 = {
   title: "Origins",
   titleTagalog: "Ang Pinagmulan ni Macario",
 
-  // Three objectives for three quests. The first two complete
-  // together, in Nanay's onComplete below, since in the story the
-  // trip to work starts the moment that conversation ends. The third
-  // now has a real ending: giving Kabayo the apple (his gift,
-  // binilhanNgMansanasAngKabayo) sets it. All three true finishes Act
-  // I — see the header above.
+  // Four objectives now. The first two complete together, in Nanay's
+  // onComplete below, since in the story the trip to work starts the
+  // moment that conversation ends. The third has a real ending: giving
+  // Kabayo the apple (his gift, binilhanNgMansanasAngKabayo) sets it —
+  // that is the flashback resolving, not the act. The fourth,
+  // pumunta_entablado, is the one that actually closes Act I, and
+  // nothing in this file sets its flag yet: see the header above for
+  // why that is deliberate.
   objectives: [
     { id: "kausapin_nanay", label: "Kausapin si Nanay", flag: "nakausapKayNanay" },
     { id: "pumunta_trabaho", label: "Pumunta sa trabaho", flag: "nasaDaanPatungoSaTrabaho" },
     { id: "bilhan_mansanas", label: "Bilhan ng mansanas ang kabayo", flag: "binilhanNgMansanasAngKabayo" },
+    { id: "pumunta_entablado", label: "Pumunta sa entablado", flag: "nasaEntablado" },
   ],
 
   // Only the first two are known from the start. "Bilhan ng mansanas
@@ -201,7 +212,12 @@ window.ACT_1 = {
               { speaker: "Kabayo", text: "Neighh!" },
             ],
             completesQuest: "bilhan_mansanas",
+            // The flashback resolving, not the act. addQuest for the
+            // entablado errand Nanay actually sent him on, still open
+            // (its objective's flag is not set anywhere — see the
+            // header), then back to the story's present.
             onComplete: () => {
+              addQuest("pumunta_entablado", "Pumunta sa entablado");
               if (window.Acts) Acts.gotoScene("tondo");
             },
           },

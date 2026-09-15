@@ -325,10 +325,11 @@ holding on the last. onComplete fires once, when that conversation ends.
 A gift's onComplete fires once, right after its flag and its quest are
 both set (endDialogue, game.js), the same position in the sequence a
 dialogueSet's own onComplete already has. Most gifts have nothing
-further to do once given; Kabayo's (content/act1.js, Block 20) uses it
-to leave the scene, Acts.gotoScene("tondo"), since setting the flag
-alone would finish Act I in the background while the player was still
-standing next to Kabayo in a greyed-out memory.
+further to do once given; Kabayo's (content/act1.js, Blocks 20-21)
+uses it to add the next quest, "Pumunta sa entablado", and leave the
+scene, Acts.gotoScene("tondo") — the kutsero scene is a flashback, and
+resolving it returns Macario to tondo without finishing Act I, which
+still has an open fourth objective (pumunta_entablado) nothing sets.
 
 opensShop: true skips dialogue entirely: pressing E opens Tindahan
 directly (Game.onShopRequest, below), and the NPC needs no
@@ -1531,6 +1532,39 @@ to tondo with all three objectives done, and — the flagged consequence
 above — Acts.status reaching "completed" and the transition screen
 appearing after the post-test's feedback survey is answered. 24
 passed, 0 failed. Not run on a phone.
+
+Block 21, on direct feedback the same session: Block 20's flagged
+consequence was wrong for the story being told. The kutsero scene is a
+flashback — it plays out desaturated (greyFilter) precisely because it
+is memory, not the present — and finishing a flashback must not finish
+the act around it. Fixed with the fourth objective Block 20's own
+write-up already named as the fix: pumunta_entablado ("Pumunta sa
+entablado"), added to Act I's objectives with a flag,
+nasaEntablado, that nothing in content/act1.js sets. This is the same
+deliberate-gap trick Block 19 used to keep Act I from finishing on the
+apple quest alone; it now keeps Act I from finishing on the flashback
+alone. Kabayo's gift.onComplete now also calls addQuest for
+pumunta_entablado, right before Acts.gotoScene("tondo"), so the quest
+log shows the same open thread the objective counter now carries —
+Macario is back in tondo, in the story's present, still on his way to
+the entablado, with no content yet depicting arriving there.
+
+Nothing else about Block 20 changed: Kutsero, Tindero, Mansanas, the
+hazard, opensShop, gift.onComplete and buyFlag all stand exactly as
+built. Only the objectives array and Kabayo's gift.onComplete moved.
+content/act1.js's script version to v15; nothing else touched, so
+game.js, shell.js, inventory.js, content/items.js and ASSET_VERSION
+are unchanged from Block 20.
+
+Verified by re-running the full suite unchanged (354 passed, 0 failed
+— none of Block 21's changes touch anything the fixture-driven suite
+exercises) and by rewriting _dev/verify_new_scene.js's ending: it no
+longer walks the post-test/transition flow at all, and instead asserts
+the opposite of what Block 20 confirmed — Acts.objectivesFor(1).length
+=== 4, Acts.countDone(1) === 3, a new pumunta_entablado quest logged
+and undone, and Acts.status still "playing" (not "completed") with no
+transition screen, a full two seconds after the flashback resolves.
+26 passed, 0 failed. Not run on a phone.
 
 ## Pitfalls
 

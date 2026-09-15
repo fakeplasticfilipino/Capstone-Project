@@ -20,35 +20,35 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 20, the kutsero scene Block 19 left half-built
-is now finished. The world grew from 1176px to 2150px; Kabayo now sends
-Macario off with a real quest instead of a dead end, and two new NPCs
-carry it to its end — Kutsero, who pays 10 barya through a conversation
-and points at Tindero, at the far edge of the widened map, who skips
-dialogue entirely (a new NPC field, opensShop: true) and opens Tindahan
-directly. Tindahan's first real item, Mansanas, sells there for 5 barya
-and, via a new item field, buyFlag, is what lets Kabayo's gift button
-accept it. A hazard sits on the road between the two ("Natapakan mo ang
-bubog!"), the scene's first. Giving Kabayo the apple sets Act I's third
-and last objective and ends the memory (a new gift field, onComplete,
-calls Acts.gotoScene("tondo")) — AND, because that was Act I's last
-open objective, finishes Act I outright: the post-test, then the
-transition screen, run right there in the greyed-out kutsero scene the
-instant the gift lands, same as any other act's last objective would.
-This was not asked for by name, but it is what asking for the memory to
-end and return to tondo necessarily does, given Block 19 already set
-Act I's objectives array at exactly three entries. See Blocks done,
-Block 20, and CLAUDE.md, Decisions on record, for the full mechanism,
-for the opensShop/Game.onShopRequest, gift.onComplete and buyFlag
-additions, and for why this is a proponents' content decision the same
-way Block 19's was. game.js's script version to v29, shell.js's to v9,
-inventory.js's to v5, content/act1.js's to v14, content/items.js's to
-v4. No new Assets/ file, so ASSET_VERSION is unchanged at 8. Verified by
-the full existing suite, extended with a new section (354 passed, 0
-failed) plus _dev/verify_new_scene.js extended to drive the REAL
-content/act1.js through the whole new flow end to end, including
-Act I actually completing (24 checks, all passing). NOT YET SEEN ON THE
-PHONE ITSELF.
+Last updated: after Block 21, a same-session correction to Block 20.
+Block 20 finished the kutsero scene Block 19 left half-built — the
+world grew from 1176px to 2150px, Kabayo now sends Macario off with a
+real quest, Kutsero pays 10 barya and points at Tindero (at the far
+edge of the widened map, opensShop: true, skips dialogue and opens
+Tindahan directly), a hazard sits on the road between them, and
+Tindahan's first item, Mansanas, sells there for 5 barya and, via a
+new item field buyFlag, is what lets Kabayo's gift button accept it —
+but Block 20 also had giving Kabayo the apple finish Act I outright,
+since that flag was the act's third and last objective. On direct
+feedback: the kutsero scene is a flashback (it plays desaturated
+because it is memory, not the present), and finishing a flashback must
+not finish the act around it. Block 21 fixes exactly that, with the
+fourth objective Block 20's own write-up had already named as the
+fix — pumunta_entablado ("Pumunta sa entablado"), whose flag,
+nasaEntablado, nothing in content sets — and adds it as an open quest
+the moment Kabayo's gift lands, so the log matches the objective
+counter: Macario is back in tondo, still on his way to the entablado.
+Nothing else about Block 20 changed. See Blocks done, Blocks 20-21,
+and CLAUDE.md, Decisions on record, for the full mechanism.
+content/act1.js's script version to v15; game.js, shell.js,
+inventory.js, content/items.js and ASSET_VERSION are unchanged from
+Block 20 (v29, v9, v5, v4, 8 respectively). Verified by the full
+suite, unaffected (354 passed, 0 failed), plus
+_dev/verify_new_scene.js rewritten at its ending to assert the
+opposite of what Block 20 confirmed: four objectives, three done, a
+new open pumunta_entablado quest, and Acts.status still "playing" —
+no transition screen — two full seconds after the flashback resolves
+(26 checks, all passing). NOT YET SEEN ON THE PHONE ITSELF.
 
 Earlier, Block 18: the real Tondo.png backdrop (1983x793) tiled across
 Act I's world with a new seam-masking shadow effect
@@ -106,16 +106,20 @@ outstanding (Dead.png, Cement_Tile.png, Tondo.png, Tondo_Night.png).
 content/act1.js was reset to a one-scene, one-NPC (Nanay) blank slate
 some sessions ago, a deliberate rollback rather than damage — see
 Blocks done for why and what stayed covered. Block 19 built forward
-from that base for the first time since, and Block 20 carried it to a
-real ending: Act I is now two scenes (tondo, kutsero), three quests,
-one item (Mansanas) and, as of this pass, playable start to finish —
-including Act I actually completing when the apple is given to
-Kabayo. Read Blocks done, Block 20 (and Block 19 before it), before
-assuming anything below about "Act I plays end to end with hazards,
-pickups..." describes only the ENGINE rather than the shipped
-content: it now does describe the content too, for hazards and shop
-purchases specifically — Act I's kutsero scene has both. It still has
-no guard, and content/items.js still holds only the one item.
+from that base for the first time since, and Block 20 carried it to
+where the flashback resolves: Act I is now two scenes (tondo,
+kutsero), three quests done inside the flashback plus a fourth, still
+open, waiting on the entablado (Block 21), and one item (Mansanas).
+Read Blocks done, Blocks 19-21, before assuming anything below about
+"Act I plays end to end with hazards, pickups..." describes only the
+ENGINE rather than the shipped content: it now does describe the
+content too, for hazards and shop purchases specifically — Act I's
+kutsero scene has both. It still has no guard, and content/items.js
+still holds only the one item. What Act I does not have yet is
+anywhere the entablado, or its own fourth objective, is actually
+depicted — the game currently returns Macario to an ordinary tondo
+with an errand he cannot yet complete, on purpose (Block 21), until
+that content exists.
 
 Blocks 1 through 9 are built, verified and live. Schema v4 has been
 run against the live database, the client is pushed, and Act I plays
@@ -248,19 +252,19 @@ notice rather than a layout to fix.
 
 Block 20 finished the apple quest Block 19 left open, at the same
 proponents'-own-direction authority (Content authority, below): a
-scene-setting errand, not a new historical claim. Its own open thread
-is what it surfaces rather than leaves: giving Kabayo the apple now
-finishes Act I outright (post-test, then the transition screen), since
-that was the act's third and last objective — see Blocks done, Block
-20, and CLAUDE.md, Decisions on record, for the full reasoning. If Act
-I is meant to keep going past this point — toward the entablado, say —
-that needs a fourth objective before more content can be added to it
-without also closing the act. That is the proponents' call, on the
-same authority as the rest of the storyline; nothing here decides it
-for them.
+scene-setting errand, not a new historical claim. Block 21, the same
+session, fixed the open thread Block 20 surfaced rather than closed:
+the fourth objective, pumunta_entablado, now exists and correctly
+keeps Act I from finishing when the flashback resolves — but nothing
+built yet depicts reaching the entablado itself, so the act currently
+ends its playable content with an open quest nothing can complete. That
+is the next beat: a scene (or a repurposing of tondo) where arriving
+at the entablado sets nasaEntablado and Act I finishes for real. See
+Blocks done, Blocks 20-21, and CLAUDE.md, Decisions on record, for the
+full reasoning.
 
 Separately, still outstanding: a device pass on the icon work, on
-play-as-guest, the new UI theme, and now Blocks 19 and 20, none of
+play-as-guest, the new UI theme, and now Blocks 19 through 21, none of
 which have been seen on a phone yet, only in a headless browser, then
 Block 12's remaining polish, then the pilot. Writing Acts II through
 IV, against the source material this time, is the content work after
@@ -357,16 +361,16 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-Framework complete. Act I is now two scenes, three quests and one
-shop item (Blocks 19-20), up from the one-scene, one-NPC skeleton it
-was reset to after a fuller draft was written ahead of the resource
-person's source material rather than against it, and now plays start
-to finish, including completing itself when the apple quest is
-delivered. Acts II through IV are still registered stubs with no
-content. Writing real content for all three, against the source
-material for anything the assessment tests — and deciding whether Act
-I needs a fourth objective before it can hold more content without
-finishing early — is what remains of this objective.
+Framework complete. Act I is now two scenes, four quests (one still
+open) and one shop item (Blocks 19-21), up from the one-scene, one-NPC
+skeleton it was reset to after a fuller draft was written ahead of the
+resource person's source material rather than against it. The
+flashback plays start to finish and correctly does not finish the
+act on its own; what remains is the content Act I's fourth objective
+is waiting on — depicting Macario actually reaching the entablado —
+plus Acts II through IV, still registered stubs with no content.
+Writing real content for all of it, against the source material for
+anything the assessment tests, is what remains of this objective.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
 equipment, cosmetic rewards. (IN PROGRESS) All four are built, and
@@ -890,6 +894,28 @@ consequence above, confirmed rather than assumed — Acts.status
 reaching "completed" and the transition screen actually appearing once
 the post-test's feedback survey is answered. 24 passed, 0 failed. Not
 run on a phone. (COMPLETE)
+
+Block 21, a same-session correction to Block 20: the kutsero scene is
+a flashback, not the story's present, and finishing it must not finish
+Act I. A fourth objective, pumunta_entablado ("Pumunta sa entablado"),
+was added, with a flag, nasaEntablado, that nothing in content/act1.js
+sets — the same deliberate-gap trick Block 19 used to keep Act I from
+finishing on the apple quest alone, now keeping it from finishing on
+the flashback alone. Kabayo's gift.onComplete now also addQuests
+pumunta_entablado, right before returning to tondo, so the quest log
+carries the same open thread the objective counter does. Everything
+else about Block 20 is unchanged — Kutsero, Tindero, Mansanas, the
+hazard, opensShop, gift.onComplete, buyFlag all stand as built; only
+the objectives array and one onComplete moved. content/act1.js's
+script version to v15; nothing else touched.
+
+Verified by re-running the full suite unchanged (354 passed, 0 failed)
+and by rewriting _dev/verify_new_scene.js's ending to assert the
+opposite of what Block 20 confirmed: Acts.objectivesFor(1).length ===
+4, Acts.countDone(1) === 3, a new open pumunta_entablado quest logged
+and undone, and Acts.status still "playing" with no transition screen
+visible a full two seconds after the flashback resolves. 26 passed, 0
+failed. Not run on a phone. (COMPLETE)
 
 ## Blocks remaining
 
