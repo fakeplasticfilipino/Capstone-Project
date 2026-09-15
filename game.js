@@ -339,6 +339,16 @@ function loadScene(sceneId) {
   PICKUPS = scene.pickups || [];
   collectedPickups = new Set();
 
+  // Same Tondo.png backdrop, desaturated. Lets content reuse the one
+  // backdrop for a flashback or memory beat instead of needing a second
+  // background asset; see CLAUDE.md, Act data format. Toggled rather than
+  // only ever added, so leaving the scene (gotoScene back to a scene
+  // without the flag) clears it instead of leaving the world permanently
+  // grey.
+  document
+    .getElementById("skyline")
+    .classList.toggle("grey-filter", Boolean(scene.greyFilter));
+
   buildSkylineShadows();
   buildNpcs(token);
   buildDecorations(token);
@@ -1344,6 +1354,41 @@ async function runDeathSequence() {
 // way out. Acts.showTransition() replaces that, so both are gone
 // rather than kept as dead code. Saves written by the old ending are
 // migrated in applyLoadedState().
+
+// A plain scene-to-scene move under cover of black, for content that
+// wants the fade without the stage's poem/death machinery around it.
+// Reuses the same #blackout element and hold/fade timings as
+// runNightTransition/runDeathSequence above rather than inventing a
+// second blackout mechanism. Acts.gotoScene calls this rather than
+// loadScene directly.
+//
+// cutscenePlaying is set for the duration so movement, jumping,
+// attacking and interacting are all suppressed the same way they
+// already are for the stage sequence (see handleInteractPress,
+// handleJumpPress, canAct in the game loop, and playerIsSafe) — a
+// scene swap mid-stride would otherwise be visible for a frame on
+// either side of the blackout, and an interact press during the fade
+// could fire against a scene that is no longer the one on screen. The
+// same defensive clear startPerformance and respawnInScene already do
+// is repeated here, since a fade can just as easily start with the
+// attack button held down as either of those can.
+async function fadeToScene(sceneId) {
+  cutscenePlaying = true;
+  attackHoldStart = 0;
+  shooting = null;
+  clearTimeout(shootFireTimer);
+
+  blackout.classList.add("visible");
+  await wait(900); // fade to black
+
+  loadScene(sceneId); // swap while hidden behind black
+
+  await wait(400); // hold black briefly, same as runNightTransition
+  blackout.classList.remove("visible");
+
+  await wait(900); // fade back in
+  cutscenePlaying = false;
+}
 
 // =============================================================
 // SCENE FURNITURE

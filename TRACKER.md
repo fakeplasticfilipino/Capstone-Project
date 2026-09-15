@@ -20,8 +20,31 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 18, the real Tondo.png backdrop (1983x793) tiled
-across Act I's world with a new seam-masking shadow effect
+Last updated: after Block 19, Act I grew from one scene to two and from
+one quest to three. Nanay's tondo dialogue was rewritten around sending
+Macario to deliver something to the kutsero on his way to the entablado;
+he is cut off mid-sentence and the scene fades (Acts.gotoScene now fades
+to black around every scene change — fadeToScene, game.js, reusing the
+stage cutscene's #blackout timings) into "kutsero", the same Tondo
+backdrop desaturated via a new optional scene field, greyFilter. There he
+finds only the horse, Kabayo (img: Assets/Horse.png, no art yet, falls
+back to the placeholder same as anything else missing), and talking to
+him adds a third quest, buying it apples, that nothing in this pass
+completes — its objective's flag is deliberately never set, which is what
+keeps Act I from finishing on 2 of 3 rather than waiting on a beat that
+is not built yet. See Blocks done and CLAUDE.md, Decisions on record, for
+the full mechanism and for why this is a proponents' content decision
+rather than one needing outside approval. game.js's script version to
+v28, acts.js's to v9, style.css's to v18, content/act1.js's to v13. No
+new Assets/ file, so ASSET_VERSION is unchanged at 8. Verified by the
+full existing suite (346 passed, 0 failed, run against this device's real
+files including the real Tondo/Nanay/Macario art) plus a one-off headless
+script driving the REAL content/act1.js end to end through both new
+lines of dialogue, the fade, the grey filter, and the new quest — 24
+checks, all passing. NOT YET SEEN ON THE PHONE ITSELF.
+
+Earlier, Block 18: the real Tondo.png backdrop (1983x793) tiled across
+Act I's world with a new seam-masking shadow effect
 (buildSkylineShadows(), game.js), plus a stacking fix, #player { z-index:
 1 }, so Macario now renders in front of Nanay and every other NPC/guard/
 decoration instead of behind them. See Blocks done and CLAUDE.md,
@@ -73,15 +96,20 @@ outstanding (Dead.png, Cement_Tile.png, Tondo.png, Tondo_Night.png).
 
 ## Right now
 
-content/act1.js and content/items.js were both just reset to a blank
-slate: Act I is one scene, one NPC (Nanay) and one exchange, and the
-item catalogue is empty. This was a deliberate rollback, not damage —
-see Blocks done for why and what stayed covered. Read that entry before
-assuming anything below about "Act I plays end to end with hazards,
-pickups..." describes what ships today: it describes the ENGINE, which
-is unchanged and still fully verified: the hazard, guard, pickup, stage
-and shop mechanics themselves are exactly as built and tested, just not
-currently wired into Act I's shipped content.
+content/act1.js was reset to a one-scene, one-NPC (Nanay) blank slate
+some sessions ago, a deliberate rollback rather than damage — see
+Blocks done for why and what stayed covered. Block 19 built forward
+from that base for the first time since: Act I is now two scenes
+(tondo, kutsero) and three quests, still small and still not the full
+narrative, but no longer the single exchange the reset left it at.
+content/items.js is still an empty catalogue; nothing in Block 19
+touched it. Read Blocks done, Block 19, before assuming anything below
+about "Act I plays end to end with hazards, pickups..." describes what
+ships today: it describes the ENGINE, which is unchanged and still
+fully verified: the hazard, guard, pickup, stage and shop mechanics
+themselves are exactly as built and tested, just not currently wired
+into Act I's shipped content, which has no hazard, no guard and no
+shop yet.
 
 Blocks 1 through 9 are built, verified and live. Schema v4 has been
 run against the live database, the client is pushed, and Act I plays
@@ -212,14 +240,21 @@ notice rather than a layout to fix.
 
 ## Next action
 
-Get the resource person's source material in hand before writing any
-more of Act I — that is the whole reason it was just reset to a
-one-NPC skeleton rather than extended further. Alongside that: a
-device pass on the icon work, on play-as-guest, and on the new UI
-theme, none of which have been seen on a phone yet, only in a headless
-browser, then Block 12's remaining polish, then the pilot. Writing
-Acts II through IV, against the source material this time, is the
-content work after that; see Blocks remaining.
+Block 19 wrote more of Act I directly, at the proponents' own
+direction: per Content authority below, the storyline itself is
+theirs to write, and this pass adds a scene-setting errand rather
+than a new historical claim, so it did not need the resource
+person's source material in hand first the way a new LO-teaching
+beat would. The open thread it leaves is the apple quest itself —
+bilhan_mansanas has no flag anywhere yet, so Act I currently stops
+one objective short of finishing, right where Kabayo left off.
+
+Separately, still outstanding: a device pass on the icon work, on
+play-as-guest, the new UI theme, and now Block 19, none of which have
+been seen on a phone yet, only in a headless browser, then Block 12's
+remaining polish, then the pilot. Writing Acts II through IV, against
+the source material this time, is the content work after that; see
+Blocks remaining.
 
 ## The milestone
 
@@ -312,11 +347,13 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-Framework complete. Act I is currently a one-scene, one-NPC skeleton,
-reset from a fuller draft that was written ahead of the resource
-person's source material rather than against it; Acts II through IV
-are still registered stubs with no content. Writing real content for
-all four, against the source material this time, is what remains of
+Framework complete. Act I is now two scenes and three quests (Block
+19), up from the one-scene, one-NPC skeleton it was reset to after a
+fuller draft was written ahead of the resource person's source
+material rather than against it; the apple quest Block 19 leaves open
+is the next beat, and Acts II through IV are still registered stubs
+with no content. Writing real content for all four, against the
+source material for anything the assessment tests, is what remains of
 this objective.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
@@ -564,6 +601,12 @@ content/act1.js and content/items.js bumped to v11 and v3. Verified
 by hand end to end (fresh student through Nanay's three-line exchange
 to the flag setting and the act completing into the post-test) as
 well as by the harness. 289 passed, 0 failed, run twice. (COMPLETE)
+CORRECTION, found scanning this file: index.html actually references
+content/act1.js?v=12 right now, not v11 as recorded above. Content
+still matches this entry's blank-slate description (one scene, one
+NPC, one exchange), so nothing regressed, but some later edit bumped
+the number past what got written down here and no session recorded
+why. Trust the live file's own query string over this line.
 
 Block 13, direct-entry shop and inventory. Two new buttons in the main
 UI, #btn-inventory and #btn-shop, next to #btn-pause, styled the same
@@ -712,6 +755,58 @@ elementFromPoint check confirming the browser paints Macario, not
 Nanay, at their overlap. See CLAUDE.md, Decisions on record, for the
 full mechanism. (COMPLETE)
 
+Block 19, Act I's second scene and third quest. content/act1.js's
+tondo dialogue was rewritten: Nanay asks where Macario is going and
+sends him to deliver something to the kutsero, a man he worked for as
+a boy; Macario is cut off mid-sentence ("Nay, mahuhuli na po a-") as
+the scene fades. Both starting quests, "Kausapin si Nanay" and
+"Pumunta sa trabaho", complete together in that onComplete, since in
+the story the errand starts the instant the conversation ends. The
+fade lands on a new scene, "kutsero", the same Tondo backdrop reused
+rather than redrawn: a new optional scene field, greyFilter, toggles
+a CSS grayscale filter on #skyline (game.js, loadScene; style.css). It
+holds one NPC, Kabayo the horse — img: Assets/Horse.png, no art yet,
+falls back to the placeholder naming the file, same as every other
+missing image in this project. Talking to him ("Neighh" / "Gutom ka
+na ba? Saglit lang ha, bili muna akong mansanas") adds a third quest,
+"Bilhan ng mansanas ang kabayo", via addQuest from his own onComplete
+rather than being in startingQuests, since a quest for a fact the
+player has not discovered yet would be a spoiler. Its objective,
+bilhan_mansanas, has no flag set anywhere in this pass — the apple
+purchase itself is not built yet — which is what correctly stops Act
+I at 2 of 3 objectives done rather than finishing early.
+
+Acts.gotoScene (acts.js) now fades to black around every scene change
+rather than swapping instantly: a new fadeToScene (game.js) reuses
+the same #blackout element and hold/fade timings the stage cutscene
+already used, and sets cutscenePlaying for the duration so movement,
+jumping, attacking and interacting are suppressed the same way they
+already are mid-cutscene. This is gotoScene's first real caller, so
+nothing existing depended on the instant-swap behavior it replaces.
+game.js's script version to v28, acts.js's to v9, style.css's to v18,
+content/act1.js's to v13; no new Assets/ file, so ASSET_VERSION stays
+at 8. See CLAUDE.md, Act data format and Decisions on record, for the
+full mechanism and for why this is a content decision the proponents
+are authorized to make without the resource person's source material
+in hand (Content authority, above): it is a scene-setting errand, not
+a new historical claim.
+
+Verified two ways. First, the full existing suite, unchanged, against
+this device's real files: 346 passed, 0 failed. Second, a new one-off
+headless script (_dev/verify_new_scene.js, not part of the shipped
+suite) drives the REAL content/act1.js — no fixture routing — through
+the actual login flow: both starting quests present and the apple
+quest absent at scene start; each dialogue line checked verbatim
+against the script; the blackout and cutscenePlaying confirmed up
+mid-fade; the landed scene id, the grey-filter class, both flags and
+both quests confirmed done after the fade and before Kabayo is met;
+Kabayo's two lines checked verbatim and the apple quest confirmed
+added only after that conversation; the placeholder box confirmed to
+name Assets/Horse.png; and Acts.objectivesFor(1).length === 3,
+Acts.countDone(1) === 2, Acts.status === "playing" confirmed together,
+proving the act does not auto-complete. 24 passed, 0 failed. Not run
+on a phone. (COMPLETE)
+
 ## Blocks remaining
 
 Block 12, polish. (IN PROGRESS)
@@ -832,25 +927,28 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the remaining replacement art. Assets/ now holds three real
-commissioned sprites: Act 1/Nanay.png (Macario's mother, the only NPC
-content/act1.js declares), and Prefab/Macario_Walking.png and
-Prefab/Macario_Idle.png (Macario's own base walk and idle cycles, added
-this session — see Known problems, missing production art, and CLAUDE.md,
-Decisions on record). Still needed: Macario's Dead pose (the one base
-sprite still falling back to the placeholder box for every player), the
-Cement_Tile.png ground tile, and the Tondo.png / Tondo_Night.png day and
-night skyline backdrops. Verify against the device directly
-(device_list_dir or equivalent) before trusting any list like this one —
-a session's own working copy can silently carry stand-in files that were
-never written back to the user's machine, which is what made an earlier
-version of this paragraph wrong. Everything the fuller Act I draft used to
-need art for — a director, a recruiter, a courier contact, a guard,
-decorations, the Tondo day/night skyline — is not currently declared as
-content at all, so there is nothing there to draw against yet; that list
-comes back once real content does. Acts II through IV are untouched and
-still fall back to the labelled placeholder box wherever art is missing,
-which is the fallback system working, not a fault.
+Chase the remaining replacement art. Assets/ now holds five real
+commissioned files: Act 1/Nanay.png (Macario's mother, the only NPC
+content/act1.js declares), Act 1/Tondo.png (the day skyline backdrop,
+added Block 18), and Prefab/Macario_Walking.png, Macario_Idle.png and
+Macario_Shooting.png (Macario's own base walk/idle cycles and his
+ranged-attack pose — see Known problems, missing production art, and
+CLAUDE.md, Decisions on record). Still needed: Macario's Dead pose (the
+one base sprite still falling back to the placeholder box for every
+player), the Cement_Tile.png ground tile, and Tondo_Night.png (the night
+skyline — the path was renamed to Assets/Act 1/ in Block 18 to match the
+day version, even though the file itself is still missing). Verify
+against the device directly (device_list_dir or equivalent) before
+trusting any list like this one — a session's own working copy can
+silently carry stand-in files that were never written back to the user's
+machine, which is what made an earlier version of this paragraph wrong.
+Everything the fuller Act I draft used to need art for — a director, a
+recruiter, a courier contact, a guard, decorations, the night skyline — is
+not currently declared as content at all, so there is nothing there to
+draw against yet; that list comes back once real content does. Acts II
+through IV are untouched and still fall back to the labelled placeholder
+box wherever art is missing, which is the fallback system working, not a
+fault.
 
 Block 11's two outfits, Skin_Walk.png and Skin_Uniporme_Walk.png,
 are moot for now: content/items.js was reset to an empty catalogue in

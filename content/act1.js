@@ -1,27 +1,23 @@
 // =============================================================
 // MACARIO — content/act1.js
 //
-// BLANK SLATE, ON PURPOSE. This is a deliberate reset, not a draft
-// left unfinished. The narrative-complete version that used to live
-// here (two scenes, five objectives, a stage cutscene, a guard
-// corridor, three other NPCs) is preserved in git history and in
-// TRACKER.md's Blocks done, and _dev/test.js keeps a private copy of
-// its gameplay skeleton (guard, hazard, hideSpot, platform, pickup)
-// so the engine mechanics that content exercised stay fully tested
-// even though nothing here uses them right now. See CLAUDE.md,
-// Decisions on record, for why: the resource person's source
-// material had not been read into that version, and starting over
-// from a real placeholder base was chosen over layering more content
-// on a narrative built ahead of the source.
+// Act I is now two scenes and three quests, up from the one-NPC
+// skeleton this file was reset to (see git history and TRACKER.md,
+// Blocks done, for that reset and why). The story: Nanay sends
+// Macario off to the entablado with something to hand to the
+// kutsero, a man Macario worked for as a boy; on the way, he finds
+// only the kutsero's horse and goes to buy it apples before he can
+// go any further. Nothing here resolves the "buy apples" quest yet —
+// that is deliberately left open, the same way the rest of Act I was
+// left open after the last reset, to be built one verified passage
+// at a time rather than guessed at ahead of the source material.
 //
-// WHAT'S HERE. One scene, one NPC, one exchange: Macario and Nanay,
-// carrying the same two LO1 facts (Tondo, mananahi at barbero) the
-// item bank in db/macario_items_v3.sql already commits to as correct
-// answers. Nothing else — no stage, no guard, no second scene, no
-// other NPC — is declared yet. The engine still supports all of it;
-// it is simply not present in this file until the next pass adds it
-// back deliberately, against the source material rather than ahead
-// of it.
+// The engine gained two small pieces of support for this scene,
+// documented in CLAUDE.md (Act data format, Decisions on record):
+// a scene can declare greyFilter to desaturate the shared Tondo
+// backdrop rather than needing a second background asset, and
+// Acts.gotoScene now fades to black around the scene swap
+// (fadeToScene, game.js) instead of cutting instantly.
 //
 // Nanay has real commissioned art: Assets/Act 1/Nanay.png, a
 // 5-column by 3-row sheet, 14 of its 15 cells used. See CLAUDE.md's
@@ -35,6 +31,13 @@
 // CLAUDE.md, Decisions on record, for why that matters: without it she
 // and Macario were scaled and grounded by two different amounts of
 // empty padding and never matched.
+//
+// Kabayo (the kutsero's horse) has no art yet: img points at
+// Assets/Horse.png, which does not exist on this device, so it falls
+// back to the dashed placeholder box naming the file — the same
+// fallback every other missing image in this project uses. There is
+// nothing to wire in once real art exists; only the file needs to
+// land in Assets/.
 // =============================================================
 
 window.ACT_1 = {
@@ -42,15 +45,30 @@ window.ACT_1 = {
   title: "Origins",
   titleTagalog: "Ang Pinagmulan ni Macario",
 
-  // One objective for the one beat that exists. checkObjectives() pays
-  // floor(50 / 1) = 50 barya on it, and the remaining 50 lands on
-  // Acts.complete() same as any other act — nothing here needed to
-  // change for the drip math to still hold together at N = 1.
+  // Three objectives for three quests. The first two complete
+  // together, in Nanay's onComplete below, since in the story the
+  // trip to work starts the moment that conversation ends. The third
+  // has no flag anywhere yet — deliberately: nothing in this pass
+  // implements buying the apples, so it stays open rather than being
+  // marked done for a beat that has not been built. That keeps the
+  // act from finishing early: checkObjectives only calls finishAct()
+  // once every objective's flag is true, and this one's flag is never
+  // set here.
   objectives: [
-    { id: "pinagmulan", label: "Alamin ang pinagmulan", flag: "nalamanAngPinagmulan" },
+    { id: "kausapin_nanay", label: "Kausapin si Nanay", flag: "nakausapKayNanay" },
+    { id: "pumunta_trabaho", label: "Pumunta sa trabaho", flag: "nasaDaanPatungoSaTrabaho" },
+    { id: "bilhan_mansanas", label: "Bilhan ng mansanas ang kabayo", flag: "binilhanNgMansanasAngKabayo" },
   ],
 
-  startingQuests: [{ id: "pinagmulan", text: "Kausapin ang nanay" }],
+  // Only the first two are known from the start. "Bilhan ng mansanas
+  // ang kabayo" is added by Kabayo's own onComplete, in the kutsero
+  // scene below, the moment Macario actually meets the horse — a
+  // quest log entry for a fact the player does not know yet would be
+  // a spoiler for no reason.
+  startingQuests: [
+    { id: "kausapin_nanay", text: "Kausapin si Nanay" },
+    { id: "pumunta_trabaho", text: "Pumunta sa trabaho" },
+  ],
 
   scenes: [
     {
@@ -59,8 +77,6 @@ window.ACT_1 = {
       startX: 80,
       npcs: [
         {
-          // LO1, both pairs: Tondo and "mananahi at barbero", both
-          // said in plain terms rather than implied.
           id: "nanay",
           x: 300,
           label: "Nanay",
@@ -72,27 +88,64 @@ window.ACT_1 = {
           dialogueSets: [
             {
               lines: [
-                { speaker: "Nanay", text: "Macario, anak, kumusta ang trabaho mo ngayon?" },
-                { speaker: "Macario", text: "Mabuti naman, Nanay. Mananahi at barbero pa rin ako, dito rin sa Tondo." },
-                { speaker: "Nanay", text: "Karaniwang trabaho lang ito, pero iyan ang nagbibigay sa atin ng makakain." },
+                { speaker: "Nanay", text: "Macario, anak, saan ka pupunta?" },
+                { speaker: "Macario", text: "Sa entablado nay, huli na ‘ho ako" },
+                { speaker: "Nanay", text: "Paki-bigay nga ito sa kutsero, naaalala mo pa ba siya? Nag-trabaho ka sakaniya dati, ang bata bata mo pa noon…" },
+                { speaker: "Macario", text: "Nay, mahuhuli na po a-" },
               ],
+              // Cut off mid-sentence, on purpose — Nanay's errand pulls
+              // him away before he finishes. The fade and scene change
+              // are the rest of the beat, not a separate player action,
+              // so both quests complete here rather than waiting on
+              // anything else.
               onComplete: () => {
-                state.flags.nalamanAngPinagmulan = true;
-                completeQuest("pinagmulan");
+                state.flags.nakausapKayNanay = true;
+                state.flags.nasaDaanPatungoSaTrabaho = true;
+                completeQuest("kausapin_nanay");
+                completeQuest("pumunta_trabaho");
                 markDirty();
-                if (window.Acts) Acts.checkObjectives();
+                if (window.Acts) Acts.gotoScene("kutsero");
               },
             },
             {
-              // Holds here on every later visit. Short, and not tied
-              // to any objective — the first conversation already
-              // did that, and there is nowhere else to send the
-              // player yet.
+              // Holds here on every later visit, same as before. There
+              // is currently no way back to this scene once the player
+              // has moved on, but the pattern costs nothing to keep.
               lines: [
                 { speaker: "Nanay", text: "Mag-ingat ka lagi, anak." },
                 { speaker: "Macario", text: "Opo, Nanay." },
               ],
               onComplete: () => {},
+            },
+          ],
+        },
+      ],
+    },
+
+    {
+      // Same backdrop as tondo (#skyline is not per-scene art; see
+      // CLAUDE.md, Act data format), but greyFilter desaturates it —
+      // the trip to the kutsero, cut short before Macario finds him.
+      id: "kutsero",
+      worldWidth: 1176,
+      startX: 80,
+      greyFilter: true,
+      npcs: [
+        {
+          id: "kabayo",
+          x: 300,
+          label: "Kabayo",
+          img: "Assets/Horse.png",
+          stage: 0,
+          dialogueSets: [
+            {
+              lines: [
+                { speaker: "Kabayo", text: "Neighh" },
+                { speaker: "Macario", text: "Gutom ka na ba? Saglit lang ha, bili muna akong mansanas" },
+              ],
+              onComplete: () => {
+                addQuest("bilhan_mansanas", "Bilhan ng mansanas ang kabayo");
+              },
             },
           ],
         },

@@ -713,8 +713,13 @@ const Acts = {
   // enterAct: the act, its objectives and its act_progress row are
   // unchanged, only the location moves. Content calls this from an
   // NPC's onComplete when a conversation should change the location.
+  //
+  // Fades to black rather than swapping instantly (fadeToScene, in
+  // game.js, reusing the same #blackout element and timings the stage
+  // cutscene already uses). Awaited, so the save that follows writes
+  // the NEW scene's id, not the one the player is fading out of.
   async gotoScene(sceneId) {
-    loadScene(sceneId);
+    await fadeToScene(sceneId);
     markDirty();
     await saveProgress();
   },

@@ -257,6 +257,7 @@ Scene shape:
       id,                                        persisted as current_room
       worldWidth, startX,
       dangerous: true,                           optional; shows the hearts
+      greyFilter: true,                          optional; desaturates #skyline
       npcs: [...],
       stage: {...} | omitted,
       decorations: [...],
@@ -289,7 +290,19 @@ forgets the flag would take a heart the student cannot see.
 
 An act with an empty objectives array can never complete, which is how
 Acts II through IV are kept from reporting progress they have not made.
-That also means the act after it stays locked, which is correct.
+That also means the act after it stays locked, which is correct. The
+same mechanism works one objective at a time: an objective whose flag
+nothing in content ever sets keeps the act from finishing without
+needing to be left out of the array, which is how Act I currently
+stops short of the courier task.
+
+greyFilter reuses whatever backdrop #skyline already has (Assets/Act
+1/Tondo.png, at present) rather than needing a second background
+asset for a flashback or memory beat. It is read once, in loadScene,
+and toggled rather than only ever added, so a scene without it clears
+whatever the previous scene set. See Decisions on record for the
+scene it was added for and for Acts.gotoScene now fading to black
+around every scene change instead of swapping instantly.
 
 NPC shape:
 
@@ -1359,6 +1372,53 @@ to the placeholder; buildSkylineShadows() places at least one
 .tree-shadow div with an explicit position and width; and unloadScene
 removes them. 346 passed, 0 failed. game.js's own script version to
 v27, for the same reason as every other block that touches its code.
+
+Act I is now two scenes and three quests, up from the one-NPC skeleton
+it was reset to. Nanay sends Macario off to the entablado with
+something to hand to the kutsero, a man Macario worked for as a boy;
+the tondo scene's Nanay dialogue was rewritten around that errand
+rather than restating the earlier Tondo/trade lines, and Macario is
+cut off mid-sentence before the scene fades to a second scene,
+"kutsero", where he finds only the kutsero's horse. This is a content
+decision the proponents are authorized to make on their own (see
+Content authority, in TRACKER.md's milestone section): the resource
+person has left the storyline itself to them, faithful to the source
+material's facts, and nothing in this pass invents a historical claim
+the item bank does not already commit to — it is a scene-setting
+errand, not a fact.
+
+The engine gained the two pieces of support this needed, both general
+rather than one-off. First, Acts.gotoScene now fades to black around
+every scene change (fadeToScene, game.js) instead of swapping
+instantly, reusing the same #blackout element and hold/fade timings
+runNightTransition and runDeathSequence already used for the stage
+cutscene, and setting cutscenePlaying for the duration so movement,
+jumping, attacking and interacting are suppressed the same way they
+already are mid-cutscene. This is gotoScene's only caller so far, so
+there was no existing behavior to preserve; a future scene that
+genuinely needs an instant cut would need its own path rather than an
+option threaded through this one, since there is no second caller yet
+to design that option against. Second, a scene may declare greyFilter
+to desaturate #skyline
+(see Act data format) — the kutsero scene reuses the same Tondo
+backdrop rather than needing separate art for a scene that is really
+the same street, moments later.
+
+Kabayo (the kutsero's horse) is a static-image NPC, img:
+"Assets/Horse.png", which does not exist yet and falls back to the
+dashed placeholder box naming the file, same as every other missing
+image in this project (see Icons). Talking to him adds a third quest,
+"Bilhan ng mansanas ang kabayo" (buy the horse apples), via addQuest
+called from his own onComplete rather than being in Act I's
+startingQuests — a log entry for a quest the player has not
+discovered yet would be a spoiler for nothing. That quest's objective,
+bilhan_mansanas, has no flag anywhere in this pass: buying the apples
+is not built yet, and leaving its flag unset is what keeps
+checkObjectives from finishing Act I on two objectives out of three
+rather than waiting for a beat that does not exist. The other two
+objectives, kausapin_nanay and pumunta_trabaho, complete together, in
+Nanay's onComplete, because in the story the trip to work starts the
+moment that conversation ends rather than through a separate action.
 
 ## Pitfalls
 

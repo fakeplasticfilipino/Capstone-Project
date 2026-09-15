@@ -189,7 +189,8 @@ html, body {
 
 :root {
   /* How high off the very bottom of the screen characters' feet sit.
-     Tweak this if it doesn't line up with the road drawn in Assets/Tondo.png. */
+     Tweak this if it doesn't line up with the road drawn in
+     Assets/Act 1/Tondo.png. */
   --ground-level: 60px;
 }
 
@@ -240,6 +241,15 @@ html, body {
 
 #skyline-night.visible {
   opacity: 1;
+}
+
+/* Same backdrop, desaturated. Set from a scene's greyFilter field
+   (game.js, loadScene) rather than a second background image, for a
+   flashback/memory beat that reuses Act 1's one piece of backdrop art.
+   Swapped under cover of #blackout (see fadeToScene, game.js), so no
+   transition is needed here the way #skyline-night has one. */
+#skyline.grey-filter {
+  filter: grayscale(1);
 }
 
 /* One soft, tall shadow band per background seam, created and positioned
