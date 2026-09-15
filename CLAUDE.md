@@ -359,19 +359,39 @@ low-end phone would buy nothing. Only ownership is stored.
 
     {
       id, name, description,
-      kind: "equipment" | "cosmetic",
-      slot: "weapon" | "accessory" | "outfit",
+      kind: "equipment" | "cosmetic" | "consumable",
+      slot: "weapon" | "accessory" | "outfit",   omitted for a consumable
       price,                                     in-game currency; 0 is
                                                  not for sale
       img,
       grantedOnAct: 1,                           optional; handed over on
                                                  entering that act
-      effect: { projectileSpeedMult: 1.5 }       equipment only
+      effect: { projectileSpeedMult: 1.5 }       equipment or consumable
             | { maxHealthBonus: 1 }
       sheets: { walk: {...} }                    cosmetic only; any of
                                                  idle, walk, dead
       buyFlag: "someFlag"                        optional; see below
     }
+
+kind: "consumable" (Block 22) is the one kind with no slot at all: there
+is nothing to equip it into, so Inventory.equip()/toggle() refuse one
+outright rather than writing it into an equipment row under a slot it
+does not have. Its effect, if it has one, applies for as long as it is
+simply owned (Inventory.effects() sums it in alongside whatever is
+actually equipped) — there is no equip step for a consumable to apply
+it through — and stops the moment it is actually used up,
+Inventory.consume(id): an optimistic ownedIds removal plus a
+player_inventory delete, rolled back on a failed write the same way
+buy() rolls back its own optimistic write. Content calls consume() at
+the moment the item is genuinely spent, not at purchase — Mansanas
+(content/items.js), given to Kabayo (content/act1.js), is the first
+one. Buying one still goes through buy() exactly like equipment or a
+cosmetic does; only the effect timing and the lack of a slot differ. A
+consumable does not stack — buy() already refuses a second purchase of
+anything already owned, consumable or not — so "unit" here means one
+unit ever, not a counted quantity; the DB's own quantity column on
+player_inventory (used, at 1, by every kind) is there for a future
+stacking model this project does not build.
 
 buyFlag names a story flag, in state.flags rather than in the
 ownership table inventory.js otherwise owns entirely, set the moment
@@ -1565,6 +1585,96 @@ the opposite of what Block 20 confirmed — Acts.objectivesFor(1).length
 and undone, and Acts.status still "playing" (not "completed") with no
 transition screen, a full two seconds after the flashback resolves.
 26 passed, 0 failed. Not run on a phone.
+
+Block 22, three fixes reported directly by the proponent playing the
+game: a hitbox bug, a projectile draw-order bug, and a reclassification
+of Mansanas.
+
+findNearby() (game.js) used to compare posX (Macario's own left edge)
+straight against an NPC's own left edge, npc.x, to decide whether he
+was close enough to interact. That is an anchor-to-anchor distance,
+not an edge-to-edge one, and Macario (40px wide, PLAYER_WIDTH) and an
+NPC (roughly 80, the new NPC_WIDTH — .npc-sprite's own CSS width) are
+not the same width: from Macario's left, npc.x already sits past the
+NPC's own far edge, so the anchor distance undercounts how close he
+truly is and the prompt fired early, well before contact; from his
+right, npc.x is the NPC's NEAR edge, so the same math overcounts the
+gap and nothing happened until his own body had nearly swallowed the
+NPC's whole width — which is what read as "only works from the far
+right of a thing." A new helper, edgeGap(aX, aWidth, bX, bWidth),
+measures the real empty space between the two boxes instead (0 once
+they overlap, never negative), and findNearby's own INTERACT_DISTANCE
+(90, unchanged) is now compared against that instead of the raw
+anchor distance — the same configured reach, applied consistently
+regardless of which side Macario approaches from. Hazards were never
+affected: updateHazards already compared a true centre
+(posX + PLAYER_WIDTH / 2) against a hazard's own real bounds, which is
+why it never showed this asymmetry — it was the model to fix NPCs
+toward, not a second bug.
+
+throwProjectile() (game.js) used posX + facing * 30 for the spawn
+point regardless of which way Macario was facing. Facing left, posX
+(his own left edge) is already his leading edge, so this correctly
+spawned 30px clear of his own body; facing right, the same math
+spawned only 30px past his left edge — still inside his 40px-wide
+body (PLAYER_WIDTH) — so the throw started underneath him rather than
+beside him. Invisible facing left, since nothing overlapped to reveal
+it, and exactly why it "only" rendered behind him facing right:
+.projectile (style.css) carries no z-index of its own, so it only
+loses the stacking order to #player's explicit one (z-index: 1,
+Block 18) where the two genuinely overlap on screen. Fixed at the
+source — the spawn point now measures its 30px clearance
+(PROJECTILE_SPAWN_GAP) from Macario's actual leading edge, posX +
+PLAYER_WIDTH facing right or posX facing left, so it clears his body
+either way — and reinforced defensively: .projectile now carries its
+own z-index: 2, one above #player's, so an overlap that happens
+anyway (Macario stepping back into his own throw, say) is still never
+hidden behind him.
+
+Mansanas (content/items.js) was kind: "equipment", slot: "accessory" —
+buyable, wearable, ownership permanent once bought. On direct
+feedback: it should be "a unit type... rather than something you own
+or wear... something you consume." It is now kind: "consumable", the
+first of a new item kind (see Item data format, above, for the full
+shape): no slot, so Inventory.equip()/toggle() refuse it outright and
+shell.js's inventory screen shows it as owned rather than offering an
+Isuot/Tanggalin toggle it has no slot to back; its +1 max health
+applies the moment it is owned rather than needing an equip step
+(Inventory.effects() now also sums any owned consumable's effect,
+not only what is actually equipped); and Inventory.consume(id) — new —
+is what actually uses it up: an optimistic ownedIds removal and a
+player_inventory delete, rolled back on a failed write the same
+shape buy() already rolls back its own. Kabayo's gift.onComplete
+(content/act1.js) calls Inventory.consume("mansanas") the moment the
+apple is actually handed over, so the +1 max health lasts exactly as
+long as Macario is carrying it — bought and carried, worth a heart;
+given away, worth 10 barya, a quest, and nothing further. This last
+part is a judgement call rather than something the request settled
+outright: a permanent stat-up potion (the bonus stays even after the
+item is gone) would have been just as reasonable a reading of "you
+consume it," and would have needed no new mechanism beyond this one
+either — say so if the lasting version was intended instead.
+
+game.js's script version to v30, style.css's to v19, inventory.js's
+to v6, shell.js's to v10, content/items.js's to v5, content/act1.js's
+to v16. No new Assets/ file, so ASSET_VERSION is unchanged at 8.
+
+Verified by extending the full suite with a new section covering all
+three fixes independently of any real content: a same-real-gap
+symmetry check on findNearby (a 50px gap reaches identically from
+either side of a test NPC; a 100px gap, past INTERACT_DISTANCE,
+reaches from neither), a thrown projectile's spawn point confirmed to
+clear Macario's own body on both facings plus its own z-index, and a
+fixture consumable (gatas) bought, confirmed to apply its effect
+immediately with no equip step, confirmed to refuse equip()/toggle(),
+consumed with its effect and ownership both ending, and rolled back
+correctly on a simulated failed write — 371 passed, 0 failed. Second,
+_dev/verify_new_scene.js, extended with two more checks on the real
+Mansanas exchange: no longer owned and the +1 max health gone,
+immediately after it is actually given to Kabayo — 28 passed, 0
+failed. Not run on a phone, so the hitbox and throw fixes specifically
+are unconfirmed on the touch controls and viewport this was actually
+reported from.
 
 ## Pitfalls
 

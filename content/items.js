@@ -4,13 +4,19 @@
 // Mansanas is the first real item since the reset (see git history
 // and TRACKER.md, Blocks done, for the two granted equipment items
 // and two purchasable outfits that used to be here and why they were
-// cleared). It is bought from Tindero, in the kutsero scene
-// (content/act1.js), then given away to Kabayo rather than worn —
-// see CLAUDE.md, Decisions on record, for buyFlag, the one new field
-// this needed: an item can declare a story flag to set in
-// state.flags the moment it is bought, because Kabayo's gift button
-// (requiresFlag) has no way to ask Inventory.owns() directly, and
-// nothing before this item needed one to.
+// cleared) and the first consumable ever: bought from Tindero, in the
+// kutsero scene (content/act1.js), then given to Kabayo, at which
+// point it is gone — not equipped, not kept. kind: "consumable" items
+// carry no slot at all (see CLAUDE.md, Item data format): nothing to
+// wear, so no equip step, and its effect applies from the moment it
+// is owned rather than from being worn. Kabayo's gift.onComplete is
+// what actually consumes it, Inventory.consume("mansanas") — see
+// content/act1.js.
+//
+// buyFlag is still what content/act1.js's gift button gates on
+// (requiresFlag), set the moment this is bought (inventory.js, buy());
+// the engine's gift system only ever reads state.flags, so it has no
+// way to ask Inventory.owns() directly, consumable or not.
 //
 // Read the header this file used to carry (git history, or
 // TRACKER.md) before writing further items in: it explains why item
@@ -24,18 +30,18 @@ window.ITEMS = [
     id: "mansanas",
     name: "Mansanas",
     description: "Malaking mansanas mula kay Tindero. Para sa kabayo ng kutsero.",
-    kind: "equipment",
-    slot: "accessory",
+    kind: "consumable",
     price: 5,
     img: "Assets/Mansanas.png",
+    // Applies for as long as Mansanas is owned (inventory.js, effects()),
+    // not from being equipped — a consumable has no slot to equip it
+    // into. Ends the moment it is consumed: giving it to Kabayo is
+    // worth 5 barya and a max heart while it lasts, not forever.
     effect: { maxHealthBonus: 1 },
-    // Set the moment it is bought (inventory.js, buy()), not on equip —
-    // Kabayo's gift button gates on this rather than on Inventory.owns(),
-    // since the engine's gift system only ever reads state.flags. Wearing
-    // it as an accessory still works exactly like any other item with a
-    // maxHealthBonus; giving it away foregoes that in favor of finishing
-    // the quest, which is the point of it being a gift rather than a kept
-    // charm.
+    // Set the moment it is bought (inventory.js, buy()), not on
+    // consumption — Kabayo's gift button gates on this rather than on
+    // Inventory.owns(), since the engine's gift system only ever reads
+    // state.flags.
     buyFlag: "binilhAngMansanas",
   },
 ];

@@ -610,16 +610,27 @@ const Shell = {
     }
 
     owned.forEach((item) => {
-      const worn = Inventory.equipped(item.slot) === item.id;
+      // A consumable has no slot, so nothing to equip or unequip — the
+      // row shows it is owned and stops there, disabled the same way a
+      // shop row that is already owned is (.inv-item-owned), rather
+      // than offering an Isuot/Tanggalin toggle that would try to wear
+      // a unit item into a slot it does not have (equip() guards this
+      // too, but the row should never invite the tap to begin with).
+      const consumable = item.kind === "consumable";
+      const worn = !consumable && Inventory.equipped(item.slot) === item.id;
 
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "inv-item" + (worn ? " inv-item-worn" : "");
+      btn.className =
+        "inv-item" + (worn ? " inv-item-worn" : consumable ? " inv-item-owned" : "");
       btn.dataset.itemId = item.id;
+      btn.disabled = consumable;
 
       // The slot's symbol, so a row says what kind of thing it is
       // before the student reads the name. Outfit art does not exist
-      // yet, so this is also the only picture on the row.
+      // yet, so this is also the only picture on the row. A consumable
+      // has no slot, so this is _slotIcon's own fallback, i-bag — a
+      // unit belongs in a bag, not a gear slot.
       btn.appendChild(makeIcon(this._slotIcon(item.slot)));
 
       const body = document.createElement("div");
@@ -631,7 +642,7 @@ const Shell = {
 
       const action = document.createElement("span");
       action.className = "inv-item-action";
-      action.textContent = worn ? "Tanggalin" : "Isuot";
+      action.textContent = consumable ? "Pag-aari" : worn ? "Tanggalin" : "Isuot";
       name.appendChild(action);
 
       const desc = document.createElement("div");

@@ -93,6 +93,14 @@ const giftBtn = document.getElementById("gift-btn");
 const PLAYER_WIDTH = 40;
 const SPEED = 5;
 const INTERACT_DISTANCE = 90;
+// .npc-sprite's CSS width (style.css) — used only to size the interact
+// zone around an NPC's own anchor (npc.x, its left edge, same as
+// posX for the player), never to place the NPC itself. A rough
+// constant rather than each NPC's real rendered width, the same way
+// PLAYER_WIDTH already is: exact per-NPC widths (an animated sheet's
+// varies by its own aspect ratio) aren't tracked in NPC data, and
+// don't need to be for a reach check. See findNearby's edgeGap.
+const NPC_WIDTH = 80;
 const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
 const GROUND_LEVEL = 60; // must match --ground-level in style.css
 const DISPLAY_HEIGHT = 134; // shared sprite height (player + animated NPCs)
@@ -1163,6 +1171,28 @@ giftBtn.addEventListener("click", (e) => {
 });
 
 // --- Interaction / dialogue ---
+// The empty space between two entities' own bounding boxes, given each
+// one's left-edge anchor and width, rather than the raw distance
+// between the anchors themselves — 0 once they overlap, never
+// negative. Comparing anchors directly (the player's posX against an
+// NPC's npc.x) used to be what findNearby did, and since the player
+// is 40px wide (PLAYER_WIDTH) and an NPC is roughly 80 (NPC_WIDTH),
+// that quietly needed a different amount of walking depending on
+// which side Macario approached from: from the left, npc.x is past
+// the NPC's own far edge, so the anchor-to-anchor distance undercounts
+// how close he already is and the prompt appears early, well before
+// contact; from the right, npc.x is the NPC's NEAR edge, so the same
+// math overcounts the gap and nothing happens until Macario's own body
+// has all but swallowed the NPC's — which is what made it feel like
+// interaction only worked "from the far right" of a thing. Measuring
+// the gap between the boxes themselves removes the direction from the
+// answer entirely.
+function edgeGap(aX, aWidth, bX, bWidth) {
+  const aCentre = aX + aWidth / 2;
+  const bCentre = bX + bWidth / 2;
+  return Math.max(0, Math.abs(aCentre - bCentre) - (aWidth + bWidth) / 2);
+}
+
 function findNearby() {
   let closest = null;
   let closestType = null;
@@ -1170,7 +1200,7 @@ function findNearby() {
 
   for (const npc of NPCS) {
     if (npc.hidden) continue;
-    const dist = Math.abs(posX - npc.x);
+    const dist = edgeGap(posX, PLAYER_WIDTH, npc.x, NPC_WIDTH);
     if (dist < INTERACT_DISTANCE && dist < closestDist) {
       closest = npc;
       closestType = "npc";
@@ -1975,6 +2005,20 @@ function disableGuard(guard, message) {
   if (message) showToast(message);
 }
 
+// Clearance from Macario's own LEADING edge — his right edge when
+// throwing right, his left edge when throwing left — not from posX,
+// his anchor, which is always his left edge regardless of facing.
+// Using posX for both directions used to spawn a rightward throw only
+// 30px past his own left edge: still inside his 40px-wide body
+// (PLAYER_WIDTH), so it started underneath him rather than beside
+// him. That was invisible facing left, where posX - 30 already clears
+// his body (his left edge is the leading one), and exactly why the
+// projectile only ever appeared to render behind him facing right:
+// .projectile carries no z-index of its own (style.css), so it only
+// loses to #player's explicit one (z-index: 1) where the two actually
+// overlap on screen.
+const PROJECTILE_SPAWN_GAP = 30;
+
 function throwProjectile() {
   if (projectile) return; // one at a time
   flashAttack();
@@ -1984,9 +2028,11 @@ function throwProjectile() {
   world.appendChild(el);
   actElements.push(el);
 
+  const leadingEdge = facing >= 0 ? posX + PLAYER_WIDTH : posX;
+
   projectile = {
     el: el,
-    x: posX + facing * 30,
+    x: leadingEdge + facing * PROJECTILE_SPAWN_GAP,
     y: posY + 60,
     dir: facing,
     travelled: 0,

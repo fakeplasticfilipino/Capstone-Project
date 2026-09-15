@@ -85,9 +85,10 @@ window.ACT_1 = {
 `;
 
 // The item catalogue the shop/equip/effect sections (Block 10, P-Z) were
-// written against: two granted equipment items and two priced outfits,
-// same ids, prices and effects the assertions check by name. Kept
-// separate from content/items.js on purpose (see that file's header).
+// written against: two granted equipment items, two priced outfits and
+// one priced consumable (Block 22), same ids, prices and effects the
+// assertions check by name. Kept separate from content/items.js on
+// purpose (see that file's header).
 const FIXTURE_ITEMS_JS = `
 window.ITEMS = [
   {
@@ -109,6 +110,11 @@ window.ITEMS = [
     id: "damit-katipunero", name: "Uniporme ng Katipunero", kind: "cosmetic",
     slot: "outfit", price: 90, img: "Assets/Skin_Uniporme_Walk.png",
     sheets: { walk: { src: "Assets/Skin_Uniporme_Walk.png", frames: 12, fps: 12, columns: 5 } },
+  },
+  {
+    id: "gatas", name: "Gatas ng Kalabaw", kind: "consumable",
+    price: 3, img: "Assets/Gatas.png",
+    effect: { maxHealthBonus: 1 },
   },
 ];
 `;
@@ -868,12 +874,18 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     const shape = await page.evaluate(() => ({
       count: window.ITEMS.length,
+      // A consumable is the one kind that must NOT carry a slot — there
+      // is nothing to equip it into (see CLAUDE.md, Item data format) —
+      // so wellFormed checks for a slot everywhere except there, rather
+      // than requiring one unconditionally.
       wellFormed: window.ITEMS.every(
-        (i) => i.id && i.kind && i.slot && i.name
+        (i) => i.id && i.kind && i.name &&
+          (i.kind === "consumable" ? !i.slot : Boolean(i.slot))
       ),
       slots: window.ITEMS.map((i) => i.slot),
       equipment: window.ITEMS.filter((i) => i.kind === "equipment").length,
       cosmetics: window.ITEMS.filter((i) => i.kind === "cosmetic").length,
+      consumables: window.ITEMS.filter((i) => i.kind === "consumable").length,
       // A cosmetic that carries an effect is not a cosmetic. This is the
       // check that stops the outfit slot quietly becoming a third
       // equipment slot.
@@ -883,13 +895,15 @@ const visible = (page, sel) => page.evaluate((s) => {
       granted: window.ITEMS.filter((i) => i.grantedOnAct === 1).length,
       priced: window.ITEMS.filter((i) => (i.price || 0) > 0).length,
     }));
-    ok("the catalogue loaded", shape.count >= 4, shape.count);
-    ok("every item has an id, kind, slot and name", shape.wellFormed, shape);
+    ok("the catalogue loaded", shape.count >= 5, shape.count);
+    ok("every item has an id, kind and name, and a slot unless it is a consumable",
+       shape.wellFormed, shape);
     ok("one weapon and one accessory",
        shape.slots.includes("weapon") && shape.slots.includes("accessory"),
        shape.slots);
     ok("two granted equipment items", shape.equipment === 2 && shape.granted === 2, shape);
-    ok("two priced cosmetics", shape.cosmetics === 2 && shape.priced === 2, shape);
+    ok("two priced cosmetics and one priced consumable",
+       shape.cosmetics === 2 && shape.consumables === 1 && shape.priced === 3, shape);
     ok("cosmetics carry no effect", shape.cosmeticsAreInert, shape);
 
     await ctx.close();
@@ -1511,9 +1525,9 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the shop opens", await visible(page, "#shell-shop"));
     ok("shell state is shop",
        (await page.evaluate(() => Shell.state)) === "shop");
-    ok("both cosmetics are listed",
+    ok("both cosmetics and the consumable are listed",
        (await page.evaluate(() =>
-         document.querySelectorAll("#shell-shop-list .inv-item").length)) === 2);
+         document.querySelectorAll("#shell-shop-list .inv-item").length)) === 3);
     ok("the one you cannot afford is disabled",
        await page.isDisabled('[data-buy-id="damit-katipunero"]'));
     ok("the one you can afford is not",
@@ -2495,6 +2509,120 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("a gift's onComplete runs", gifted.fired === true, gifted);
     ok("after its own flag was set", gifted.given === true, gifted);
+
+    await ctx.close();
+  }
+
+  console.log("\nAL. Interaction reach, a clean throw, and a consumable item");
+  {
+    const { ctx, page } = await enterTestRoom();
+
+    // Interaction reach: the gap between the two bounding boxes, not
+    // between their left-edge anchors (findNearby's edgeGap, game.js).
+    // Before this fix, comparing posX (Macario's own left edge, his
+    // 40px-wide body — PLAYER_WIDTH) straight against npc.x (an NPC's
+    // left edge, but a roughly 80px-wide sprite — NPC_WIDTH) gave a
+    // different answer depending on which side carried that width
+    // difference: the same real gap reached from one side and did not
+    // from the other. Proven here as a symmetry check rather than by
+    // asserting one particular threshold: the SAME real gap (50px, well
+    // inside INTERACT_DISTANCE's 90) must reach from both sides, and
+    // the SAME larger gap (100px, past it) must reach from neither.
+    const reach = await page.evaluate(() => {
+      NPCS.push({ id: "test-reach", x: 1000, label: "Test" }); // spans 1000-1080
+      const at = (x) => { posX = x; return findNearby().type === "npc"; };
+      const r = {
+        gap50FromLeft: at(910), // right edge at 950, 50px short of 1000
+        gap50FromRight: at(1130), // left edge at 1130, 50px past 1080
+        gap100FromLeft: at(860),
+        gap100FromRight: at(1180),
+      };
+      NPCS.pop();
+      return r;
+    });
+    ok("a 50px gap reaches from the left", reach.gap50FromLeft, reach);
+    ok("the same 50px gap reaches from the right", reach.gap50FromRight, reach);
+    ok("a 100px gap does not reach, from the left", !reach.gap100FromLeft, reach);
+    ok("nor from the right — the same gap either way", !reach.gap100FromRight, reach);
+
+    // The throw: must clear Macario's own 40px-wide body (PLAYER_WIDTH)
+    // on both sides, not just facing left, where posX (his own left
+    // edge) already happened to be the leading edge.
+    const thrown = await page.evaluate(() => {
+      posX = 400;
+      facing = 1;
+      throwProjectile();
+      const right = { x: projectile.x, clearsRight: projectile.x >= posX + PLAYER_WIDTH };
+      const zIndex = getComputedStyle(projectile.el).zIndex;
+      destroyProjectile();
+
+      facing = -1;
+      throwProjectile();
+      const left = { x: projectile.x, clearsLeft: projectile.x <= posX };
+      destroyProjectile();
+
+      return { right, left, zIndex };
+    });
+    ok("a rightward throw spawns past Macario's own right edge, not inside it",
+       thrown.right.clearsRight, thrown.right);
+    ok("a leftward throw still spawns past his left edge",
+       thrown.left.clearsLeft, thrown.left);
+    ok("the projectile also carries its own z-index, above #player's",
+       Number(thrown.zIndex) > 1, thrown.zIndex);
+
+    // Gatas: a consumable (kind: "consumable", no slot — see
+    // content/items.js's Mansanas for the real one this fixture stands
+    // in for). Owning it applies its effect immediately, with no equip
+    // step to speak of, and both the ownership and the effect end the
+    // moment it is actually consumed.
+    const bought = await page.evaluate(async () => {
+      health = 3;
+      Game.addCurrency(10);
+      const ok1 = await Inventory.buy("gatas");
+      return { ok1, max: maxHealth, health, owns: Inventory.owns("gatas") };
+    });
+    ok("buying the consumable works", bought.ok1 === true, bought);
+    ok("its effect applies the instant it is owned, no equip step",
+       bought.max === 4 && bought.health === 4, bought);
+
+    const notWearable = await page.evaluate(async () => {
+      const equipped = await Inventory.equip("gatas");
+      const toggled = await Inventory.toggle("gatas");
+      return { equipped, toggled };
+    });
+    ok("a consumable refuses to be equipped", notWearable.equipped === false, notWearable);
+    ok("and refuses toggle() too", notWearable.toggled === false, notWearable);
+
+    const consumed = await page.evaluate(async () => {
+      const ok2 = await Inventory.consume("gatas");
+      return {
+        ok2, max: maxHealth, health, owns: Inventory.owns("gatas"),
+        rows: __DB.player_inventory.filter((r) => r.item_id === "gatas").length,
+      };
+    });
+    ok("consuming it succeeds", consumed.ok2 === true, consumed);
+    ok("its effect ends with it", consumed.max === 3 && consumed.health === 3, consumed);
+    ok("it is no longer owned", !consumed.owns, consumed);
+    ok("and its row is gone from the database", consumed.rows === 0, consumed);
+
+    // A failed write must not lose the item — same rollback shape as
+    // buy()'s own failure test (Section X).
+    const rolledBack = await page.evaluate(async () => {
+      Game.addCurrency(10);
+      await Inventory.buy("gatas");
+      const realFrom = sb.from;
+      sb.from = function (table) {
+        if (table !== "player_inventory") return realFrom.call(sb, table);
+        return { delete: () => ({ eq: () => ({ eq: () =>
+          Promise.resolve({ error: { message: "simulated" } }) }) }) };
+      };
+      const failed = await Inventory.consume("gatas");
+      sb.from = realFrom;
+      return { failed, owns: Inventory.owns("gatas"), max: maxHealth };
+    });
+    ok("a failed consume reports failure", rolledBack.failed === false, rolledBack);
+    ok("and rolls the item — and its effect — back",
+       rolledBack.owns && rolledBack.max === 4, rolledBack);
 
     await ctx.close();
   }

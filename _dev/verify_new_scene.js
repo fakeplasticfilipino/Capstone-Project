@@ -198,6 +198,8 @@ const talk = async (page, times) => {
     entabladoFlag: state.flags.nasaEntablado,
     objTotal: Acts.objectivesFor(1).length,
     objDone: Acts.countDone(1),
+    ownsMansanas: Inventory.owns("mansanas"),
+    maxHealth: maxHealth,
   }));
   ok("the memory ends back in tondo", afterGift.room === "tondo", afterGift);
   ok("no longer greyed out", afterGift.grey === false, afterGift);
@@ -206,6 +208,8 @@ const talk = async (page, times) => {
   ok("a new, open quest to reach the entablado is logged", afterGift.entabladoQuest && afterGift.entabladoQuest.done === false, afterGift.entabladoQuest);
   ok("its objective's flag is not set — nothing completes it yet", afterGift.entabladoFlag !== true, afterGift.entabladoFlag);
   ok("Act I now has four objectives, three of them done", afterGift.objTotal === 4 && afterGift.objDone === 3, afterGift);
+  ok("Mansanas is consumed, not kept, once it is actually given away", afterGift.ownsMansanas === false, afterGift);
+  ok("and its +1 max health goes with it", afterGift.maxHealth === 3, afterGift);
 
   // The flashback resolving must NOT end Act I — it is a memory within
   // the act, not the act's own ending. Confirmed two ways: status stays

@@ -212,11 +212,17 @@ window.ACT_1 = {
               { speaker: "Kabayo", text: "Neighh!" },
             ],
             completesQuest: "bilhan_mansanas",
-            // The flashback resolving, not the act. addQuest for the
-            // entablado errand Nanay actually sent him on, still open
-            // (its objective's flag is not set anywhere — see the
-            // header), then back to the story's present.
+            // The flashback resolving, not the act. Mansanas is a
+            // consumable (content/items.js) — this is the moment it is
+            // actually spent, Inventory.consume, rather than at
+            // purchase, so it is gone (and its +1 max health with it)
+            // once it is actually handed over rather than the instant
+            // it was bought. Then addQuest for the entablado errand
+            // Nanay actually sent him on, still open (its objective's
+            // flag is not set anywhere — see the header), and back to
+            // the story's present.
             onComplete: () => {
+              if (window.Inventory) Inventory.consume("mansanas");
               addQuest("pumunta_entablado", "Pumunta sa entablado");
               if (window.Acts) Acts.gotoScene("tondo");
             },

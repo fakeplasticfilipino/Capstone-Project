@@ -20,35 +20,57 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 21, a same-session correction to Block 20.
-Block 20 finished the kutsero scene Block 19 left half-built — the
-world grew from 1176px to 2150px, Kabayo now sends Macario off with a
-real quest, Kutsero pays 10 barya and points at Tindero (at the far
-edge of the widened map, opensShop: true, skips dialogue and opens
-Tindahan directly), a hazard sits on the road between them, and
-Tindahan's first item, Mansanas, sells there for 5 barya and, via a
-new item field buyFlag, is what lets Kabayo's gift button accept it —
-but Block 20 also had giving Kabayo the apple finish Act I outright,
-since that flag was the act's third and last objective. On direct
-feedback: the kutsero scene is a flashback (it plays desaturated
-because it is memory, not the present), and finishing a flashback must
-not finish the act around it. Block 21 fixes exactly that, with the
-fourth objective Block 20's own write-up had already named as the
-fix — pumunta_entablado ("Pumunta sa entablado"), whose flag,
-nasaEntablado, nothing in content sets — and adds it as an open quest
-the moment Kabayo's gift lands, so the log matches the objective
-counter: Macario is back in tondo, still on his way to the entablado.
-Nothing else about Block 20 changed. See Blocks done, Blocks 20-21,
-and CLAUDE.md, Decisions on record, for the full mechanism.
-content/act1.js's script version to v15; game.js, shell.js,
-inventory.js, content/items.js and ASSET_VERSION are unchanged from
-Block 20 (v29, v9, v5, v4, 8 respectively). Verified by the full
-suite, unaffected (354 passed, 0 failed), plus
-_dev/verify_new_scene.js rewritten at its ending to assert the
-opposite of what Block 20 confirmed: four objectives, three done, a
-new open pumunta_entablado quest, and Acts.status still "playing" —
-no transition screen — two full seconds after the flashback resolves
-(26 checks, all passing). NOT YET SEEN ON THE PHONE ITSELF.
+Last updated: after Block 22, three fixes reported directly by the
+proponent playing the game. First, a hitbox bug: findNearby's
+NPC-interaction check (game.js) compared posX (Macario's own left
+edge) straight against an NPC's own left edge, and since Macario
+(40px) and an NPC (roughly 80px) are not the same width, the same
+INTERACT_DISTANCE (90, unchanged) meant something different depending
+on which side he approached from — too generous from the left,
+requiring near-total overlap from the right, which is what read as
+"only works from the far right of a thing." Fixed with a proper
+edge-to-edge gap measurement (edgeGap, new) rather than a raw anchor
+distance. Second, a projectile draw-order bug: a rightward throw used
+to spawn 30px past Macario's own LEFT edge — still inside his 40px
+body — so it started underneath him and rendered behind him (his
+sprite carries an explicit z-index, the throw does not); a leftward
+throw already cleared him by coincidence, since his left edge is his
+leading edge that way, which is why only one direction ever showed
+the problem. Fixed at the spawn point (now measured from his actual
+leading edge either way) and reinforced with a z-index on the
+projectile itself. Third, Mansanas is reclassified: kind: "equipment"
+→ kind: "consumable", the first of a new item kind with no slot at
+all — nothing to equip, an effect that applies from ownership alone
+rather than from being worn, and a new Inventory.consume() that
+actually uses it up (both the ownership and the +1 max health end)
+the moment Kabayo's gift hands it over, rather than it sitting in the
+inventory screen forever as a wearable that was never worn. See
+Blocks done, Block 22, and CLAUDE.md, Decisions on record, for the
+full mechanism and for the one judgement call in it (whether the
+health bonus should end with the item, or last permanently — implemented
+as ending with it). game.js's script version to v30, style.css's to
+v19, inventory.js's to v6, shell.js's to v10, content/items.js's to
+v5, content/act1.js's to v16. No new Assets/ file, so ASSET_VERSION is
+unchanged at 8. Verified by the full suite extended with a new section
+covering all three fixes independently of real content (371 passed, 0
+failed) plus _dev/verify_new_scene.js extended with two more checks on
+the real Mansanas exchange — no longer owned and the health bonus gone
+immediately after it is actually given to Kabayo (28 passed, 0
+failed). NOT YET SEEN ON THE PHONE ITSELF, so the hitbox and throw
+fixes specifically are unconfirmed on the touch controls and viewport
+this was actually reported from.
+
+Earlier, Block 21: a same-session correction to Block 20. Block 20
+finished the kutsero scene Block 19 left half-built — the world grew
+to 2150px, Kutsero and Tindero carry Kabayo's quest to a real ending,
+a hazard sits on the road, and Tindahan's first item, Mansanas, sells
+for 5 barya — but Block 20 also had giving Kabayo the apple finish
+Act I outright, since that flag was the act's third and last
+objective. On direct feedback: the kutsero scene is a flashback and
+finishing it must not finish the act around it. Block 21 fixed that
+with a fourth objective, pumunta_entablado, whose flag nothing in
+content sets, added as an open quest the moment Kabayo's gift lands.
+content/act1.js's script version went to v15.
 
 Earlier, Block 18: the real Tondo.png backdrop (1983x793) tiled across
 Act I's world with a new seam-masking shadow effect
@@ -109,14 +131,18 @@ Blocks done for why and what stayed covered. Block 19 built forward
 from that base for the first time since, and Block 20 carried it to
 where the flashback resolves: Act I is now two scenes (tondo,
 kutsero), three quests done inside the flashback plus a fourth, still
-open, waiting on the entablado (Block 21), and one item (Mansanas).
-Read Blocks done, Blocks 19-21, before assuming anything below about
-"Act I plays end to end with hazards, pickups..." describes only the
-ENGINE rather than the shipped content: it now does describe the
-content too, for hazards and shop purchases specifically — Act I's
-kutsero scene has both. It still has no guard, and content/items.js
-still holds only the one item. What Act I does not have yet is
-anywhere the entablado, or its own fourth objective, is actually
+open, waiting on the entablado (Block 21), and one item (Mansanas,
+now a consumable rather than equipment — Block 22, which otherwise
+touched only engine mechanics, not content: an interaction-distance
+hitbox bug and a projectile draw-order bug, both reported directly by
+the proponent playing on the device this ships to). Read Blocks done,
+Blocks 19-22, before assuming anything below about "Act I plays end
+to end with hazards, pickups..." describes only the ENGINE rather than
+the shipped content: it now does describe the content too, for
+hazards and shop purchases specifically — Act I's kutsero scene has
+both. It still has no guard, and content/items.js still holds only the
+one item. What Act I does not have yet is anywhere the entablado, or
+its own fourth objective, is actually
 depicted — the game currently returns Macario to an ordinary tondo
 with an errand he cannot yet complete, on purpose (Block 21), until
 that content exists.
@@ -916,6 +942,71 @@ opposite of what Block 20 confirmed: Acts.objectivesFor(1).length ===
 and undone, and Acts.status still "playing" with no transition screen
 visible a full two seconds after the flashback resolves. 26 passed, 0
 failed. Not run on a phone. (COMPLETE)
+
+Block 22, three fixes reported directly by the proponent playing the
+game — two engine bugs and one content reclassification.
+
+The hitbox bug: findNearby (game.js) decided whether Macario could
+interact with an NPC by comparing posX (his own left edge) straight
+against npc.x (the NPC's own left edge) — an anchor-to-anchor
+distance. Macario is 40px wide (PLAYER_WIDTH) and an NPC is roughly
+80 (a new constant, NPC_WIDTH, matching .npc-sprite's own CSS width),
+so the same INTERACT_DISTANCE (90, unchanged) meant a different real
+gap depending on which side he approached from: too generous from the
+left (the prompt fired well before contact), and too strict from the
+right (requiring his own body to nearly swallow the NPC's) — which is
+what read as "only works from the far right of a thing." Fixed with a
+new helper, edgeGap, that measures the actual empty space between the
+two entities' bounding boxes instead of the raw distance between their
+anchors. Hazards were never affected — updateHazards already compared
+a true centre against a hazard's real bounds, which is the model this
+fix brings NPCs in line with.
+
+The projectile bug: throwProjectile (game.js) spawned a thrown
+weapon 30px past posX regardless of facing. Facing left, posX (his own
+left edge) is already his leading edge, so this correctly cleared his
+body; facing right, the same 30px landed only just past his own left
+edge — still inside his 40px-wide body — so the throw started
+underneath him and rendered behind him, since .projectile (style.css)
+carries no z-index of its own and only loses the stacking order to
+#player's explicit one (z-index: 1, Block 18) where the two actually
+overlap. Fixed at the spawn point (now measured from his real leading
+edge, whichever side that is) and backed up with a z-index on the
+projectile itself, one above #player's.
+
+The reclassification: Mansanas (content/items.js) was kind:
+"equipment", slot: "accessory" — buyable, wearable, kept forever once
+bought. On direct feedback, it should be "a unit type... something you
+consume" rather than something worn. It is now kind: "consumable", a
+new item kind with no slot at all (see CLAUDE.md, Item data format):
+Inventory.equip()/toggle() refuse one outright, its +1 max health now
+applies from ownership alone rather than from being equipped, and a
+new Inventory.consume(id) is what actually uses it up — ownership and
+effect both end together. Kabayo's gift.onComplete (content/act1.js)
+now calls it the moment the apple is actually handed over. One
+judgement call inside this: the health bonus ends when the item is
+consumed rather than lasting permanently, which the request did not
+settle either way — flagged in CLAUDE.md, Decisions on record, in case
+the lasting version was actually intended.
+
+game.js's script version to v30, style.css's to v19, inventory.js's to
+v6, shell.js's to v10, content/items.js's to v5, content/act1.js's to
+v16. No new Assets/ file, so ASSET_VERSION is unchanged at 8.
+
+Verified by extending the full suite with a new section that exercises
+all three fixes independently of real content — a same-real-gap
+symmetry check on the interaction reach, a thrown projectile confirmed
+to clear Macario's own body on both facings plus carry its own
+z-index, and a fixture consumable bought, confirmed to apply its
+effect with no equip step, confirmed to refuse equip()/toggle(),
+consumed with its effect and ownership both ending, and rolled back on
+a simulated failed write: 371 passed, 0 failed. Second,
+_dev/verify_new_scene.js, extended with two checks on the real
+Mansanas exchange: no longer owned and the health bonus gone,
+immediately after it is actually given to Kabayo. 28 passed, 0 failed.
+NOT run on a phone, so the hitbox and throw fixes specifically remain
+unconfirmed on the touch controls and viewport they were actually
+reported from. (COMPLETE)
 
 ## Blocks remaining
 

@@ -205,6 +205,7 @@ const Inventory = {
   async equip(id) {
     const item = this.item(id);
     if (!item || !this.owns(id)) return false;
+    if (item.kind === "consumable") return false; // nothing to wear
     if (!currentUserId) return false;
 
     const slot = item.slot;
@@ -289,6 +290,13 @@ const Inventory = {
 
     this.ownedIds.push(id);
 
+    // A consumable's effect applies from ownership alone (see effects(),
+    // below) rather than from being equipped, so buying one has to run
+    // the same recompute equip()/unequip() already do. Equipment and
+    // cosmetics are unaffected either way — applyEffects() only ever
+    // reads what is actually equipped or actually a consumable.
+    this.applyEffects();
+
     // An item may declare buyFlag: a story flag, in state.flags rather
     // than in the ownership table this file otherwise owns, set the
     // moment the purchase succeeds. Mansanas and Kabayo's gift are the
@@ -319,6 +327,7 @@ const Inventory = {
       if (Game.addCurrency) Game.addCurrency(price);
       const at = this.ownedIds.indexOf(id);
       if (at !== -1) this.ownedIds.splice(at, 1);
+      this.applyEffects();
       if (flagToSet) {
         delete state.flags[flagToSet];
         markDirty();
@@ -329,12 +338,57 @@ const Inventory = {
   },
 
   // Convenience for the screen: tapping the item you are wearing takes
-  // it off, tapping any other one puts it on.
+  // it off, tapping any other one puts it on. Never reached for a
+  // consumable — shell.js does not wire a tap to one — but guarded
+  // the same way equip() is, since toggle() is also what a test would
+  // reach for.
   async toggle(id) {
     const item = this.item(id);
     if (!item) return false;
+    if (item.kind === "consumable") return false;
     if (this.equipped(item.slot) === id) return this.unequip(item.slot);
     return this.equip(id);
+  },
+
+  // -----------------------------------------------------------
+  // Consuming
+  //
+  // A consumable (kind: "consumable" — no slot, nothing to equip; see
+  // effects() below and CLAUDE.md, Item data format) is used up rather
+  // than kept. This is what actually uses it up: content calls it at
+  // the moment the item is spent — Kabayo's gift, for Mansanas — not
+  // at purchase, so it sits in the inventory screen as an ordinary
+  // owned thing for as long as the student is still carrying it.
+  // Optimistic and rolled back on a failed write, the same pattern
+  // buy() and equip() already use.
+  // -----------------------------------------------------------
+
+  async consume(id) {
+    const item = this.item(id);
+    if (!item || item.kind !== "consumable") return false;
+    if (!this.owns(id)) return false;
+    if (!currentUserId) return false;
+
+    const at = this.ownedIds.indexOf(id);
+    this.ownedIds.splice(at, 1);
+    this.applyEffects();
+    this._changed();
+
+    try {
+      const { error } = await sb
+        .from("player_inventory")
+        .delete()
+        .eq("student_id", currentUserId)
+        .eq("item_id", id);
+      if (error) throw error;
+      return true;
+    } catch (err) {
+      console.error("consume failed:", err);
+      this.ownedIds.splice(at, 0, id);
+      this.applyEffects();
+      this._changed();
+      return false;
+    }
   },
 
   // -----------------------------------------------------------
@@ -344,6 +398,14 @@ const Inventory = {
   // apply without knowing what produced it. Bonuses add, multipliers
   // multiply, and an item with neither contributes nothing, which is
   // what makes a cosmetic a cosmetic.
+  //
+  // Equipment contributes only while worn, in a slot; a consumable
+  // has no slot to be worn in, so it contributes for as long as it is
+  // simply owned instead — bought (or granted) is already "in use" for
+  // a unit item, the same way this project's one consumable so far,
+  // Mansanas, needs no separate "eat it" step before its +1 max health
+  // applies. consume() (above) is what ends that, by ending the
+  // ownership itself.
   // -----------------------------------------------------------
 
   effects() {
@@ -352,6 +414,17 @@ const Inventory = {
     Object.keys(this.equipment).forEach((slot) => {
       const item = this.item(this.equipment[slot]);
       if (!item || !item.effect) return;
+
+      if (typeof item.effect.maxHealthBonus === "number") {
+        total.maxHealthBonus += item.effect.maxHealthBonus;
+      }
+      if (typeof item.effect.projectileSpeedMult === "number") {
+        total.projectileSpeedMult *= item.effect.projectileSpeedMult;
+      }
+    });
+
+    this.ownedItems().forEach((item) => {
+      if (item.kind !== "consumable" || !item.effect) return;
 
       if (typeof item.effect.maxHealthBonus === "number") {
         total.maxHealthBonus += item.effect.maxHealthBonus;
