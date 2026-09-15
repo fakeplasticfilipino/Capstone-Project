@@ -312,14 +312,43 @@ NPC shape:
       animation: { src, frames, fps },           sprite sheet
       startsHidden: true,                        optional
       revealedByFlag: "someFlag",                optional; unhides when set
+      opensShop: true,                           optional; see below
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete() }],
       gift: { buttonLabel, requiresFlag, givenFlag,
-              responseLines, completesQuest }    optional
+              responseLines, completesQuest,
+              onComplete() }                     optional; onComplete optional
     }
 
 Talking to an NPC advances through dialogueSets one per conversation,
 holding on the last. onComplete fires once, when that conversation ends.
+A gift's onComplete fires once, right after its flag and its quest are
+both set (endDialogue, game.js), the same position in the sequence a
+dialogueSet's own onComplete already has. Most gifts have nothing
+further to do once given; Kabayo's (content/act1.js, Block 20) uses it
+to leave the scene, Acts.gotoScene("tondo"), since setting the flag
+alone would finish Act I in the background while the player was still
+standing next to Kabayo in a greyed-out memory.
+
+opensShop: true skips dialogue entirely: pressing E opens Tindahan
+directly (Game.onShopRequest, below), and the NPC needs no
+dialogueSets at all — none are read if opensShop is set, checked
+before dialogueSets would ever be (handleInteractPress, game.js). An
+NPC with both would have opensShop win and dialogueSets go unused,
+which is not a useful thing to declare on purpose.
+
+Game.onShopRequest(fn) is the facade call shell.js registers a single
+listener with, the same shape Inventory.onChange(fn) already uses in
+the opposite direction: game.js knows an NPC just asked for the shop
+(opensShop, pressed) but does not know what a shop is or how to draw
+one; shell.js knows how to open one (Shell._openShop("playing"), the
+same direct-open path #btn-shop uses) but has no reason to watch every
+NPC interaction for one that wants it. Registered once, in shell.js's
+init, alongside Inventory.onChange, since _openShop is a no-op without
+window.Inventory anyway. This is not the one documented exception to
+game.js never calling into shell.js (Shell.awaitEntry()) — game.js
+still calls nothing on Shell directly; it calls a listener shell.js
+handed it, the same indirection Inventory.onChange already relies on.
 
 ## Item data format
 
@@ -340,7 +369,20 @@ low-end phone would buy nothing. Only ownership is stored.
             | { maxHealthBonus: 1 }
       sheets: { walk: {...} }                    cosmetic only; any of
                                                  idle, walk, dead
+      buyFlag: "someFlag"                        optional; see below
     }
+
+buyFlag names a story flag, in state.flags rather than in the
+ownership table inventory.js otherwise owns entirely, set the moment
+the item is bought (Inventory.buy, inventory.js) and not before —
+granting via grantedOnAct does not set it. It exists because a gift's
+requiresFlag (Act data format, above) can only ever read state.flags,
+never call Inventory.owns() directly, and nothing before Mansanas
+(content/items.js, Block 20) needed a purchase to be legible to the
+gift system. Optimistic and rolled back together with the ownership
+row on a failed write, and set only once: a flag already true from an
+earlier session is left alone rather than re-marked dirty for
+nothing.
 
 A cosmetic's sheets take the sprite sheet shape below. An outfit replaces
 whichever of the three it declares and leaves the rest alone, so a skin
@@ -1419,6 +1461,76 @@ rather than waiting for a beat that does not exist. The other two
 objectives, kausapin_nanay and pumunta_trabaho, complete together, in
 Nanay's onComplete, because in the story the trip to work starts the
 moment that conversation ends rather than through a separate action.
+
+Block 20 finished the kutsero scene Block 19 left half-built: the
+world grew from 1176px to 2150px, Kabayo now sends Macario off with an
+actual quest rather than a dead end ("Gutom ka na ba? Saglit lang ha,
+bili muna akong mansanas"), and two new NPCs carry it — Kutsero
+(x:750), a conversation that pays 10 barya through the currency
+facade (Game.addCurrency, the same call acts.js uses to pay out
+objectives), and Tindero (x:1950, opensShop: true), at the far edge of
+the widened map, selling the pass's one new item: Mansanas, 5 barya,
++1 max health as an accessory, and — via buyFlag — the thing that
+makes it legible to Kabayo's gift (see Act data format and Item data
+format for opensShop, gift.onComplete and buyFlag, all three added
+this pass). A hazard sits on the road between Kutsero and Tindero
+(x:1300, width:100, "Natapakan mo ang bubog!"), the scene's first, and
+is what makes it "dangerous" (see Act data format's derivation) and
+shows the hearts. This is the same class of decision Block 19's was
+(Content authority, TRACKER.md's milestone section): a scene-setting
+errand, not a new historical claim, so it did not need the resource
+person's source material in hand first.
+
+Giving Kabayo the apple — the gift button, requiresFlag:
+binilhAngMansanas — sets bilhanNgMansanasAngKabayo, the third and last
+of Act I's three objectives, and its onComplete calls
+Acts.gotoScene("tondo") to end the memory. THIS FINISHES ACT I: the
+moment that flag lands, checkObjectives (called from every
+saveProgress, game.js) sees all three objectives done and runs the
+same finishAct — post-test, then complete(), then the transition
+screen — any other act's last objective would. This was not asked for
+explicitly; it is what asking for "the memory to complete and go back
+to the previous map" necessarily does, given Act I's objectives array
+already had exactly three entries (Block 19) and this pass supplies
+the third's only flag-setter. If Act I is meant to continue past this
+point — toward the entablado itself, say — a fourth objective would
+need to exist before this quest could finish without also closing the
+act; nothing here adds one, since the proponents did not ask for one
+and the correct number of objectives is their call, not an engine
+one.
+
+Fixed in the same pass: Nanay's onComplete used to run
+Acts.gotoScene("kutsero") unconditionally, which was harmless while
+nothing ever returned to tondo. Kabayo's gift now does, so a second
+approach to Nanay would have replayed her first dialogueSet (the
+objective-completing one) and re-triggered the scene change — a loop,
+and one guest mode could never break out of on its own, since
+Acts.checkObjectives never runs without currentUserId. A firstTime
+guard, read before her flags are set, keeps the scene change to the
+first approach only; she just repeats herself on any visit after,
+same as every other NPC with nothing new to say.
+
+game.js's script version to v29, shell.js's to v9, inventory.js's to
+v5, content/act1.js's to v14, content/items.js's to v4; no new
+Assets/ file (Kutsero.png, Tindero.png and Mansanas.png are referenced
+but do not exist on this device, so all three fall back to the dashed
+placeholder box naming the file, same as Kabayo since Block 19), so
+ASSET_VERSION stays at 8.
+
+Verified two ways. First, the full existing suite, extended with a
+new section (AK) covering opensShop/Game.onShopRequest, a gift's
+onComplete, and an item's buyFlag against the fixture content: 354
+passed, 0 failed. Second, _dev/verify_new_scene.js (Block 19's
+one-off, extended rather than replaced) drives the REAL content/act1.js
+end to end: Nanay into the fade, Kabayo's quest, Kutsero's two lines
+checked verbatim and the 10-barya payment (and its absence on a repeat
+visit), the hazard costing a heart, Tindero opening Tindahan with no
+dialogue box, Mansanas listed and bought (ownership, buyFlag, the 5
+barya spent), the gift button appearing back at Kabayo, the fade back
+to tondo with all three objectives done, and — the flagged consequence
+above — Acts.status reaching "completed" and the transition screen
+appearing after the post-test's feedback survey is answered. 24
+passed, 0 failed. Not run on a phone.
 
 ## Pitfalls
 

@@ -1,15 +1,15 @@
-// One-off verification script for the new Kausapin-si-Nanay /
-// Pumunta-sa-Trabaho / Bilhan-ng-mansanas-ang-kabayo scene. Not part
-// of the shipped suite; drives the REAL content/act1.js (no fixture
-// routes) the same way _dev/test.js Section A does, then exercises
-// the new dialogue, fade transition and second scene.
+// One-off verification script for the extended kutsero scene: Kabayo,
+// Kutsero (+10 barya), the road hazard, Tindero's Tindahan (Mansanas,
+// 5 barya), and giving the apple back to Kabayo to end the memory.
+// Not part of the shipped suite; drives the REAL content/act1.js (no
+// fixture routes) the same way _dev/test.js Section A does.
 const { chromium } = require("playwright");
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
-const PORT = 8098;
+const PORT = 8096;
 const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png" };
 
@@ -28,6 +28,27 @@ let pass = 0, fail = 0;
 const ok = (name, cond, extra) => {
   if (cond) { pass++; console.log("  PASS  " + name); }
   else { fail++; console.log("  FAIL  " + name + (extra !== undefined ? "  -> " + JSON.stringify(extra) : "")); }
+};
+
+const visible = (page, sel) => page.evaluate((s) => {
+  const el = document.querySelector(s);
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  return getComputedStyle(el).display !== "none" && r.width > 0 && r.height > 0;
+}, sel);
+
+const walkTo = async (page, x) => {
+  await page.evaluate((tx) => { posX = tx; }, x);
+  await page.waitForTimeout(80); // let the game loop fold the new posX into `nearby`
+};
+
+const talk = async (page, times) => {
+  await page.keyboard.press("e");
+  await page.waitForTimeout(120);
+  for (let i = 0; i < times; i++) {
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+  }
 };
 
 (async () => {
@@ -53,116 +74,172 @@ const ok = (name, cond, extra) => {
   await page.fill("#auth-password", "x");
   await page.click("#auth-submit");
   await page.waitForTimeout(600);
-
-  // No assessment items are seeded in the stub, so the pre-act flow
-  // collapses to just the trivia card (see sb-stub.js, get_assessment_items).
   if (await page.locator("#quiz").isVisible().catch(() => false)) {
     await page.click("#quiz-btn");
     await page.waitForTimeout(400);
   }
   ok("act status is playing", (await page.evaluate(() => Acts.status)) === "playing");
-  ok("starting scene is tondo", (await page.evaluate(() => currentRoom)) === "tondo");
 
-  const questsAtStart = await page.evaluate(() => quests.map((q) => q.id));
-  ok("both starting quests are logged",
-     questsAtStart.includes("kausapin_nanay") && questsAtStart.includes("pumunta_trabaho"),
-     questsAtStart);
-  ok("the apple quest is not logged yet",
-     !questsAtStart.includes("bilhan_mansanas"), questsAtStart);
+  // --- Nanay, then the fade into kutsero (covered fully in Block 19's
+  // own verification; just enough here to land in the memory). ---
+  await walkTo(page, 280);
+  await talk(page, 4); // 5 lines total
+  await page.waitForTimeout(2200); // the fade (900+400+900ms)
+  const inKutsero = await page.evaluate(() => ({ room: currentRoom, grey: document.getElementById("skyline").classList.contains("grey-filter") }));
+  ok("landed in the kutsero scene, greyed out", inKutsero.room === "kutsero" && inKutsero.grey, inKutsero);
 
-  // Walk to Nanay (x=300, start at x=80) and talk.
-  await page.evaluate(() => { posX = 280; });
-  await page.waitForTimeout(50);
+  // --- Kabayo: unchanged from Block 19, still adds the quest. ---
+  await walkTo(page, 280); // Kabayo sits at x=300
+  await talk(page, 2); // 2 lines, 3 presses to fully close the box
+  const questsAfterKabayo = await page.evaluate(() => quests.map((q) => q.id));
+  ok("the apple quest is logged after meeting Kabayo", questsAfterKabayo.includes("bilhan_mansanas"), questsAfterKabayo);
+
+  // --- Kutsero: +10 barya, and the exact script. ---
+  const balanceBefore = await page.evaluate(() => Game.currency());
+  await walkTo(page, 730); // Kutsero sits at x=750
   await page.keyboard.press("e");
-  await page.waitForTimeout(150);
-  ok("dialogue opened", await page.evaluate(() => inDialogue));
-
-  const lines = [];
-  for (let i = 0; i < 5; i++) {
-    lines.push(await page.evaluate(() => dialogueText.textContent));
+  await page.waitForTimeout(120);
+  const kutseroLines = [];
+  for (let i = 0; i < 2; i++) {
+    kutseroLines.push(await page.evaluate(() => ({ speaker: dialogueSpeaker.textContent, text: dialogueText.textContent })));
     await page.keyboard.press("e");
     await page.waitForTimeout(120);
   }
-  console.log("  lines seen: " + JSON.stringify(lines));
-  ok("first line matches the script",
-     lines[0] === "Macario, anak, saan ka pupunta?", lines[0]);
-  ok("second line matches the script",
-     lines[1] === "Sa entablado nay, huli na ‘ho ako", lines[1]);
-  ok("fourth line matches the script (cut off)",
-     lines[3] === "Nay, mahuhuli na po a-", lines[3]);
+  console.log("  kutsero lines: " + JSON.stringify(kutseroLines));
+  ok("Macario asks for barya", kutseroLines[0].speaker === "Macario" &&
+     kutseroLines[0].text === "Kutsero, pahingi akong barya, bili lang akong mansanas", kutseroLines[0]);
+  ok("Kutsero points him to Tindero", kutseroLines[1].speaker === "Kutsero" &&
+     kutseroLines[1].text === "O eto Macario, yung malaking mansanas dun sa Tindero sa may dulo.", kutseroLines[1]);
+  const balanceAfter = await page.evaluate(() => Game.currency());
+  ok("Kutsero pays 10 barya", balanceAfter === balanceBefore + 10, { balanceBefore, balanceAfter });
 
-  // The 5th press ended the dialogue and fired the fade. Mid-fade the
-  // world should be under blackout and non-interactive.
-  await page.waitForTimeout(300);
-  const midFade = await page.evaluate(() => ({
-    blackoutVisible: document.getElementById("blackout").classList.contains("visible"),
-    cutscenePlaying: typeof cutscenePlaying !== "undefined" ? cutscenePlaying : null,
+  // Talking to Kutsero again must not pay out a second time. 1 line, 2
+  // presses to fully close the box (left open by a bare 1-press talk(0),
+  // which then ate the very first 'e' meant for whatever came next).
+  await talk(page, 1);
+  await page.waitForTimeout(120);
+  const balanceAfterRevisit = await page.evaluate(() => Game.currency());
+  ok("a repeat visit to Kutsero does not pay again", balanceAfterRevisit === balanceAfter, balanceAfterRevisit);
+
+  // --- The hazard between Kutsero and Tindero. ---
+  const hazardInfo = await page.evaluate(() => ({
+    dangerous: !document.getElementById("hud").classList.contains("hidden"),
+    hazard: HAZARDS[0],
   }));
-  ok("blackout is up mid-transition", midFade.blackoutVisible, midFade);
-  ok("cutscenePlaying suppresses input mid-transition", midFade.cutscenePlaying === true, midFade);
+  ok("the scene is dangerous (a hazard is declared) and hearts show", hazardInfo.dangerous, hazardInfo);
+  const hpBefore = await page.evaluate(() => health);
+  await page.evaluate((h) => {
+    invulnUntil = 0;
+    posX = h.x + h.width / 2;
+    posY = floorHeightAt(posX);
+    velY = 0;
+  }, hazardInfo.hazard);
+  await page.waitForTimeout(300);
+  const hpAfter = await page.evaluate(() => health);
+  ok("standing in the hazard costs a heart", hpAfter === hpBefore - 1, { hpBefore, hpAfter });
 
-  await page.waitForTimeout(2200); // let the full fade (900+400+900ms) finish
+  // --- Tindero, at the edge of the widened map: opens Tindahan directly. ---
+  await walkTo(page, 1930); // Tindero sits at x=1950
+  await page.keyboard.press("e");
+  await page.waitForTimeout(200);
+  ok("Tindero opens the shop directly, no dialogue", await visible(page, "#shell-shop"));
+  ok("and no dialogue box was opened along the way", !(await visible(page, "#dialogue-box")));
 
-  const afterFade = await page.evaluate(() => ({
+  const shopRow = await page.evaluate(() => {
+    const btn = document.querySelector('[data-buy-id="mansanas"]');
+    return btn ? { text: btn.textContent, disabled: btn.disabled } : null;
+  });
+  ok("Mansanas is listed for sale at 5 barya", shopRow && shopRow.text.includes("Mansanas") && shopRow.text.includes("5"), shopRow);
+
+  await page.click('[data-buy-id="mansanas"]');
+  await page.waitForTimeout(200);
+  const afterBuy = await page.evaluate(() => ({
+    owns: Inventory.owns("mansanas"),
+    flag: state.flags.binilhAngMansanas,
+    balance: Game.currency(),
+  }));
+  ok("Mansanas is now owned", afterBuy.owns, afterBuy);
+  ok("buyFlag set binilhAngMansanas", afterBuy.flag === true, afterBuy);
+  ok("5 barya were spent", afterBuy.balance === balanceAfter - 5, afterBuy);
+
+  await page.click("#shell-shop-back");
+  await page.waitForTimeout(150);
+  ok("closing the shop resumes play", (await page.evaluate(() => Shell.state)) === "playing");
+
+  // --- Back to Kabayo: the gift button, then the memory ends. ---
+  await walkTo(page, 280);
+  await page.waitForTimeout(150);
+  const giftBtnState = await page.evaluate(() => ({
+    hidden: document.getElementById("gift-btn") ? document.getElementById("gift-btn").classList.contains("hidden") : null,
+    label: document.getElementById("gift-btn") ? document.getElementById("gift-btn").textContent : null,
+  }));
+  ok("the gift button appears near Kabayo, no longer hidden", giftBtnState.hidden === false, giftBtnState);
+
+  await page.click("#gift-btn");
+  await page.waitForTimeout(120);
+  const giftLines = [];
+  for (let i = 0; i < 2; i++) {
+    giftLines.push(await page.evaluate(() => dialogueText.textContent));
+    await page.keyboard.press("e");
+    await page.waitForTimeout(150);
+  }
+  console.log("  gift lines: " + JSON.stringify(giftLines));
+
+  await page.waitForTimeout(2200); // the fade back to tondo
+  const afterGift = await page.evaluate(() => ({
     room: currentRoom,
     grey: document.getElementById("skyline").classList.contains("grey-filter"),
-    cutscenePlaying: cutscenePlaying,
-    flags: { kausapin: state.flags.nakausapKayNanay, trabaho: state.flags.nasaDaanPatungoSaTrabaho },
+    flag: state.flags.binilhanNgMansanasAngKabayo,
+    questDone: quests.find((q) => q.id === "bilhan_mansanas"),
+    objTotal: Acts.objectivesFor(1).length,
+    objDone: Acts.countDone(1),
   }));
-  ok("landed in the kutsero scene", afterFade.room === "kutsero", afterFade);
-  ok("skyline carries the grey filter", afterFade.grey === true, afterFade);
-  ok("cutscenePlaying released after the fade", afterFade.cutscenePlaying === false, afterFade);
-  ok("both flags were set", afterFade.flags.kausapin === true && afterFade.flags.trabaho === true, afterFade);
+  ok("the memory ends back in tondo", afterGift.room === "tondo", afterGift);
+  ok("no longer greyed out", afterGift.grey === false, afterGift);
+  ok("the third objective's flag is set", afterGift.flag === true, afterGift);
+  ok("the apple quest is marked done in the log", afterGift.questDone && afterGift.questDone.done === true, afterGift.questDone);
+  ok("all three objectives are now done", afterGift.objTotal === 3 && afterGift.objDone === 3, afterGift);
 
-  const questsAfterFade = await page.evaluate(() => quests.map((q) => ({ id: q.id, done: q.done })));
-  ok("both starting quests are marked done",
-     questsAfterFade.every((q) => q.id !== "kausapin_nanay" && q.id !== "pumunta_trabaho" ? true : q.done),
-     questsAfterFade);
-  ok("the apple quest still isn't logged (not met Kabayo yet)",
-     !questsAfterFade.some((q) => q.id === "bilhan_mansanas"), questsAfterFade);
-
-  // Kabayo sits at x=300 in the new scene too.
-  await page.evaluate(() => { posX = 280; });
-  await page.waitForTimeout(50);
-  await page.keyboard.press("e");
-  await page.waitForTimeout(150);
-  ok("dialogue with Kabayo opened", await page.evaluate(() => inDialogue));
-
-  const kabayoLines = [];
-  for (let i = 0; i < 3; i++) {
-    kabayoLines.push(await page.evaluate(() => ({
-      speaker: dialogueSpeaker.textContent, text: dialogueText.textContent,
-    })));
-    await page.keyboard.press("e");
-    await page.waitForTimeout(120);
+  // This is the flagged consequence: Act I finishes here. finishAct()
+  // moves through posttest (a quiz screen, same #quiz/#quiz-btn used for
+  // the pretest above) before complete() and the transition screen, so
+  // the same quiz dismissal is needed here to let the flow finish.
+  await page.waitForTimeout(1500);
+  const midFlow = await page.evaluate(() => Acts.status);
+  ok("giving Kabayo the apple moves Act I into its post-test", midFlow === "posttest", midFlow);
+  // A quiz screen with choices (the real test items, or the feedback
+  // survey shown when none are seeded — see sb-stub.js's
+  // get_assessment_items) needs one selected before Ipasa enables; a
+  // quiz screen with no choices (an info/already-submitted message) is
+  // a bare click. Repeated up to 6 times to walk through everything
+  // runTest can show on the way to complete()/showTransition().
+  const answerQuiz = async () => {
+    if (!(await page.locator("#quiz").isVisible().catch(() => false))) return false;
+    const choiceCount = await page.locator("#quiz-choices .quiz-choice").count();
+    const starCount = await page.locator("#quiz-choices .feedback-star").count();
+    if (choiceCount > 0) await page.click("#quiz-choices .quiz-choice >> nth=0");
+    else if (starCount > 0) await page.click("#quiz-choices .feedback-star >> nth=0"); // the optional post-act feedback screen
+    await page.click("#quiz-btn", { timeout: 2000 }).catch((e) => console.log("  click failed: " + e.message));
+    return true;
+  };
+  for (let i = 0; i < 6; i++) {
+    const acted = await answerQuiz();
+    await page.waitForTimeout(250);
+    const snap = await page.evaluate(() => ({
+      status: Acts.status,
+      quizVisible: !document.getElementById("quiz").classList.contains("hidden"),
+      transitionVisible: !document.getElementById("act-screen").classList.contains("hidden"),
+    }));
+    console.log("  poll " + i + " (acted=" + acted + "): " + JSON.stringify(snap));
+    if (snap.transitionVisible) break;
+    if (!acted && !snap.quizVisible) break;
   }
-  console.log("  kabayo lines seen: " + JSON.stringify(kabayoLines));
-  ok("Kabayo neighs", kabayoLines[0].speaker === "Kabayo" && kabayoLines[0].text === "Neighh", kabayoLines[0]);
-  ok("Macario replies", kabayoLines[1].speaker === "Macario" &&
-     kabayoLines[1].text === "Gutom ka na ba? Saglit lang ha, bili muna akong mansanas", kabayoLines[1]);
-
-  await page.waitForTimeout(150);
-  const questsAfterKabayo = await page.evaluate(() => quests.map((q) => q.id));
-  ok("the apple quest is now logged", questsAfterKabayo.includes("bilhan_mansanas"), questsAfterKabayo);
-
-  // Kabayo has no real art yet: falls back to the dashed placeholder
-  // naming Assets/Horse.png, same as every other missing image.
-  const horsePlaceholder = await page.evaluate(() => {
-    const el = document.getElementById("npc-kabayo");
-    return el ? el.textContent : null;
-  });
-  ok("Kabayo falls back to the placeholder naming Assets/Horse.png",
-     (horsePlaceholder || "").includes("Assets/Horse.png"), horsePlaceholder);
-
-  // Objectives: 3 total, 2 done (act must NOT auto-complete).
-  const objState = await page.evaluate(() => ({
-    total: Acts.objectivesFor(1).length,
-    done: Acts.countDone(1),
+  const finished = await page.evaluate(() => ({
     status: Acts.status,
+    transitionVisible: !document.getElementById("act-screen").classList.contains("hidden"),
   }));
-  ok("three objectives declared for Act I", objState.total === 3, objState);
-  ok("exactly two are done", objState.done === 2, objState);
-  ok("act has not auto-completed", objState.status === "playing", objState);
+  console.log("  after full completion: " + JSON.stringify(finished));
+  ok("Act I completes and the transition screen appears", finished.status === "completed" && finished.transitionVisible, finished);
 
   await ctx.close();
   await browser.close();

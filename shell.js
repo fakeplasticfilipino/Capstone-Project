@@ -193,6 +193,15 @@ const Shell = {
         this._renderInventory();
         if (this.state === "shop") this._renderShop();
       });
+
+      // game.js tells us when an NPC that opens the shop (opensShop:
+      // true — a Tindero, say) was pressed, the same direct-open path
+      // #btn-shop already uses. Registered only alongside the rest of
+      // this block, since _openShop itself is a no-op without
+      // window.Inventory anyway.
+      if (window.Game && Game.onShopRequest) {
+        Game.onShopRequest(() => this._openShop("playing"));
+      }
     }
 
     this.el.settingsBack.addEventListener("click", () => this._closeSettings());

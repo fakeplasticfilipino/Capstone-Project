@@ -7,17 +7,38 @@
 // Macario off to the entablado with something to hand to the
 // kutsero, a man Macario worked for as a boy; on the way, he finds
 // only the kutsero's horse and goes to buy it apples before he can
-// go any further. Nothing here resolves the "buy apples" quest yet —
-// that is deliberately left open, the same way the rest of Act I was
-// left open after the last reset, to be built one verified passage
-// at a time rather than guessed at ahead of the source material.
+// go any further.
 //
-// The engine gained two small pieces of support for this scene,
-// documented in CLAUDE.md (Act data format, Decisions on record):
-// a scene can declare greyFilter to desaturate the shared Tondo
-// backdrop rather than needing a second background asset, and
-// Acts.gotoScene now fades to black around the scene swap
-// (fadeToScene, game.js) instead of cutting instantly.
+// The kutsero scene now plays out in full: Kabayo (hungry) sends
+// Macario looking for money, Kutsero gives him barya and points him
+// at Tindero, a hazard sits on the road between them, and Tindero's
+// stall — at the far edge of the now-wider map — sells the one apple
+// this quest needs. Bringing it back to Kabayo, at the gift button,
+// completes the quest, completes Act I's third and last objective,
+// and fades back to tondo, ending the memory. THIS COMPLETES ACT I:
+// checkObjectives sees all three objectives done the moment that
+// gift lands and runs the post-test/transition flow exactly as it
+// would for any other act. See CLAUDE.md, Decisions on record, if
+// that is not the intended ending point for Act I as written today —
+// a fourth objective (reaching the entablado itself) would need to
+// exist before this quest could finish without also closing the act.
+//
+// The engine gained the pieces of support this needed, documented in
+// CLAUDE.md (Act data format, Decisions on record):
+//   - a scene can declare greyFilter to desaturate the shared Tondo
+//     backdrop rather than needing a second background asset
+//   - Acts.gotoScene fades to black around a scene swap (fadeToScene,
+//     game.js) instead of cutting instantly
+//   - an NPC can declare opensShop: true to skip dialogue and open
+//     Tindahan directly (Tindero, below)
+//   - an NPC's gift can declare onComplete, the same shape a
+//     dialogueSet's already has, for a gift that should do something
+//     beyond setting its flag and its quest (Kabayo's, below, ends
+//     the scene)
+//   - an item can declare buyFlag, a story flag set in state.flags
+//     the moment it is bought (content/items.js, Mansanas), since
+//     Kabayo's gift button has no way to ask Inventory.owns()
+//     directly
 //
 // Nanay has real commissioned art: Assets/Act 1/Nanay.png, a
 // 5-column by 3-row sheet, 14 of its 15 cells used. See CLAUDE.md's
@@ -32,12 +53,12 @@
 // and Macario were scaled and grounded by two different amounts of
 // empty padding and never matched.
 //
-// Kabayo (the kutsero's horse) has no art yet: img points at
-// Assets/Horse.png, which does not exist on this device, so it falls
-// back to the dashed placeholder box naming the file — the same
-// fallback every other missing image in this project uses. There is
-// nothing to wire in once real art exists; only the file needs to
-// land in Assets/.
+// Kabayo, Kutsero and Tindero have no art yet: img points at
+// Assets/Horse.png, Assets/Kutsero.png and Assets/Tindero.png, none of
+// which exist on this device, so all three fall back to the dashed
+// placeholder box naming the file — the same fallback every other
+// missing image in this project uses. There is nothing to wire in once
+// real art exists; only the files need to land in Assets/.
 // =============================================================
 
 window.ACT_1 = {
@@ -48,12 +69,9 @@ window.ACT_1 = {
   // Three objectives for three quests. The first two complete
   // together, in Nanay's onComplete below, since in the story the
   // trip to work starts the moment that conversation ends. The third
-  // has no flag anywhere yet — deliberately: nothing in this pass
-  // implements buying the apples, so it stays open rather than being
-  // marked done for a beat that has not been built. That keeps the
-  // act from finishing early: checkObjectives only calls finishAct()
-  // once every objective's flag is true, and this one's flag is never
-  // set here.
+  // now has a real ending: giving Kabayo the apple (his gift,
+  // binilhanNgMansanasAngKabayo) sets it. All three true finishes Act
+  // I — see the header above.
   objectives: [
     { id: "kausapin_nanay", label: "Kausapin si Nanay", flag: "nakausapKayNanay" },
     { id: "pumunta_trabaho", label: "Pumunta sa trabaho", flag: "nasaDaanPatungoSaTrabaho" },
@@ -98,19 +116,28 @@ window.ACT_1 = {
               // are the rest of the beat, not a separate player action,
               // so both quests complete here rather than waiting on
               // anything else.
+              //
+              // firstTime guards the scene change only, not the flags or
+              // the quest log: buildNpcs() resets every NPC's stage to 0
+              // on every scene load (see game.js), which is exactly what
+              // lets this same dialogueSet play again if the player ever
+              // returns to tondo — Kabayo's gift now sends them back here
+              // once the memory ends. Without the guard, walking up to
+              // Nanay a second time would fade back into the kutsero
+              // scene all over again; with it, she just repeats herself,
+              // same as any other NPC with nothing new to say.
               onComplete: () => {
+                const firstTime = !state.flags.nasaDaanPatungoSaTrabaho;
                 state.flags.nakausapKayNanay = true;
                 state.flags.nasaDaanPatungoSaTrabaho = true;
                 completeQuest("kausapin_nanay");
                 completeQuest("pumunta_trabaho");
                 markDirty();
-                if (window.Acts) Acts.gotoScene("kutsero");
+                if (firstTime && window.Acts) Acts.gotoScene("kutsero");
               },
             },
             {
-              // Holds here on every later visit, same as before. There
-              // is currently no way back to this scene once the player
-              // has moved on, but the pattern costs nothing to keep.
+              // Holds here on every later visit, same as before.
               lines: [
                 { speaker: "Nanay", text: "Mag-ingat ka lagi, anak." },
                 { speaker: "Macario", text: "Opo, Nanay." },
@@ -125,11 +152,20 @@ window.ACT_1 = {
     {
       // Same backdrop as tondo (#skyline is not per-scene art; see
       // CLAUDE.md, Act data format), but greyFilter desaturates it —
-      // the trip to the kutsero, cut short before Macario finds him.
+      // the trip to the kutsero, playing out as a memory. Wider than
+      // tondo: it now holds four points of interest end to end rather
+      // than one.
       id: "kutsero",
-      worldWidth: 1176,
+      worldWidth: 2150,
       startX: 80,
       greyFilter: true,
+      hazards: [
+        // Between Kutsero and Tindero, not before Kutsero — the errand
+        // itself is safe, the road to the stall is not. Declaring this
+        // is also what makes the scene "dangerous" and shows the
+        // hearts; see CLAUDE.md, Act data format.
+        { x: 1300, width: 100, reason: "Natapakan mo ang bubog!" },
+      ],
       npcs: [
         {
           id: "kabayo",
@@ -148,6 +184,75 @@ window.ACT_1 = {
               },
             },
           ],
+          // The gift button appears the moment Mansanas is bought
+          // (Inventory buy() sets buyFlag — see content/items.js) and
+          // stays until it is used. onComplete runs after the flag and
+          // the quest are both set, same order endDialogue already
+          // uses for a plain dialogueSet, and is what actually ends
+          // the memory: without it, the flag alone would finish Act I
+          // in the background while the player was still standing next
+          // to Kabayo in a greyed-out scene.
+          gift: {
+            buttonLabel: "Ibigay ang Mansanas",
+            requiresFlag: "binilhAngMansanas",
+            givenFlag: "binilhanNgMansanasAngKabayo",
+            responseLines: [
+              { speaker: "Macario", text: "Heto, kumain ka na." },
+              { speaker: "Kabayo", text: "Neighh!" },
+            ],
+            completesQuest: "bilhan_mansanas",
+            onComplete: () => {
+              if (window.Acts) Acts.gotoScene("tondo");
+            },
+          },
+        },
+
+        {
+          id: "kutsero",
+          x: 750,
+          label: "Kutsero",
+          img: "Assets/Kutsero.png",
+          stage: 0,
+          dialogueSets: [
+            {
+              lines: [
+                { speaker: "Macario", text: "Kutsero, pahingi akong barya, bili lang akong mansanas" },
+                { speaker: "Kutsero", text: "O eto Macario, yung malaking mansanas dun sa Tindero sa may dulo." },
+              ],
+              // +10 barya, straight through the currency facade
+              // (Game.addCurrency) — the same call acts.js uses to pay
+              // out objectives, just triggered from a conversation
+              // instead. Guarded on window.Game the way every other
+              // content onComplete guards on window.Acts.
+              onComplete: () => {
+                if (window.Game) Game.addCurrency(10);
+              },
+            },
+            {
+              // Holds here on later visits so the barya is not paid out
+              // twice — see Nanay's dialogueSets for the same pattern
+              // and why it matters (buildNpcs resets stage on load, but
+              // not mid-visit, so this only ever matters within one
+              // stay in the scene, which is the only time it needs to).
+              lines: [
+                { speaker: "Kutsero", text: "Nasa iyo na ang barya. Pumunta ka na sa Tindero, nasa dulo ng daan." },
+              ],
+              onComplete: () => {},
+            },
+          ],
+        },
+
+        {
+          // "Pressing E simply opens up Tindahan" — no dialogue at all,
+          // so no dialogueSets: opensShop is checked before dialogueSets
+          // would ever be read (see game.js, handleInteractPress and
+          // the interact-label branch). Placed at the far edge of the
+          // widened map.
+          id: "tindero",
+          x: 1950,
+          label: "Tindero",
+          img: "Assets/Tindero.png",
+          opensShop: true,
         },
       ],
     },

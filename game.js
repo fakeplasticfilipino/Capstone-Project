@@ -1198,12 +1198,26 @@ function canGiveGift(npc) {
   return true;
 }
 
+// Set by shell.js, the only thing that knows how to open the shop
+// screen (Shell._openShop). Content marks an NPC opensShop: true (a
+// Tindero, say) to skip dialogue entirely and ask for the shop
+// instead; the engine does not know what a shop is, only that
+// something wants to hear about this, the same shape Inventory.onChange
+// already uses in the other direction.
+let shopRequestListener = null;
+
+function requestShop() {
+  if (shopRequestListener) shopRequestListener();
+}
+
 function handleInteractPress() {
   if (authGated || uiBlocked) return;
   if (inDialogue) {
     advanceDialogue();
   } else if (cutscenePlaying) {
     // ignore E while the performance or blackout sequence runs
+  } else if (nearby.type === "npc" && nearby.ref.opensShop) {
+    requestShop();
   } else if (nearby.type === "npc") {
     startDialogue(nearby.ref);
   } else if (nearby.type === "stage") {
@@ -1278,6 +1292,11 @@ function endDialogue() {
     state.flags[gift.givenFlag] = true;
     markDirty();
     if (gift.completesQuest) completeQuest(gift.completesQuest);
+    // Same shape as a dialogueSet's onComplete, one step later: a gift
+    // can end an errand (a scene change, say) exactly the way finishing
+    // a conversation already can. Optional — most gifts so far have had
+    // nothing further to do once the flag and the quest were set.
+    if (gift.onComplete) gift.onComplete();
   } else if (finishedMode === "npc") {
     if (finishedSet.onComplete) {
       finishedSet.onComplete();
@@ -2185,7 +2204,10 @@ function gameLoop(now) {
       btnShopMain.classList.remove("hidden");
     }
     nearby = findNearby();
-    if (nearby.type === "npc") {
+    if (nearby.type === "npc" && nearby.ref.opensShop) {
+      setLabel(btnInteract, "Tindahan");
+      btnInteract.classList.add("active");
+    } else if (nearby.type === "npc") {
       setLabel(btnInteract, "Usap");
       btnInteract.classList.add("active");
     } else if (nearby.type === "stage") {
@@ -2661,5 +2683,14 @@ window.Game = {
     damageTaken = 0;
     detections = 0;
     playMs = 0;
+  },
+
+  // shell.js is the only thing that knows how to open the shop screen,
+  // and game.js is the only thing that knows an NPC just asked for it
+  // (opensShop: true, handled in handleInteractPress). Registered once,
+  // from shell.js's own init, the same direction Inventory.onChange
+  // already runs in.
+  onShopRequest(fn) {
+    shopRequestListener = typeof fn === "function" ? fn : null;
   },
 };

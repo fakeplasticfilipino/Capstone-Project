@@ -2425,6 +2425,80 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAK. Shop-opening NPCs, a gift's onComplete, and an item's buyFlag");
+  {
+    const { ctx, page } = await enterTestRoom();
+
+    // opensShop: true skips dialogue entirely and opens the same
+    // #shell-shop screen #btn-shop already does (Shell._openShop,
+    // reached through Game.onShopRequest — see game.js,
+    // handleInteractPress, and shell.js's init). Pushed straight into
+    // the live NPCS array rather than through a scene reload: findNearby
+    // is pure position math against that array, so this is enough to
+    // drive the interaction without rebuilding the DOM for an NPC this
+    // test never needs to see rendered.
+    await page.evaluate(() => {
+      NPCS.push({ id: "test-tindero", x: posX, label: "Test Tindero", opensShop: true });
+    });
+    // A beat for the game loop to fold the pushed NPC into its own
+    // module-scope `nearby` (recomputed once per animation frame, not
+    // synchronously on push) before E is pressed against it.
+    await page.waitForTimeout(80);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(150);
+    ok("an opensShop NPC opens the shop screen directly", await visible(page, "#shell-shop"));
+    ok("no dialogue box was opened along the way", !(await visible(page, "#dialogue-box")));
+    await page.click("#shell-shop-back");
+    await page.waitForTimeout(100);
+    ok("closing it resumes play", (await page.evaluate(() => Shell.state)) === "playing");
+
+    // buyFlag: a story flag an item can ask to have set in state.flags
+    // the instant it is bought, optimistically, alongside the ownership
+    // row inventory.js already writes optimistically. Exists because a
+    // gift's requiresFlag can only ever read state.flags, never
+    // Inventory.owns() directly, and nothing before this item needed a
+    // bridge between the two.
+    const bought = await page.evaluate(async () => {
+      window.ITEMS.push({
+        id: "test-mansanas", name: "Test Mansanas", kind: "equipment",
+        slot: "accessory", price: 0, img: "Assets/Test.png",
+        buyFlag: "test_boughtMansanas",
+      });
+      const before = Boolean(state.flags.test_boughtMansanas);
+      const purchased = await Inventory.buy("test-mansanas");
+      return { before, purchased, after: Boolean(state.flags.test_boughtMansanas) };
+    });
+    ok("the flag is unset before the purchase", bought.before === false, bought);
+    ok("the purchase itself succeeded", bought.purchased === true, bought);
+    ok("buyFlag is set in state.flags the moment it is bought", bought.after === true, bought);
+
+    // A gift may declare onComplete, the same shape a dialogueSet's
+    // already has, called after the gift's own flag and quest are set —
+    // so a gift can end something (a scene change, for Kabayo) rather
+    // than only ever marking itself given.
+    const gifted = await page.evaluate(() => {
+      let fired = false;
+      state.flags.test_giftRequires = true;
+      const npc = {
+        id: "test-giftnpc", x: posX, label: "Test",
+        gift: {
+          buttonLabel: "Test",
+          requiresFlag: "test_giftRequires",
+          givenFlag: "test_giftGiven",
+          responseLines: [{ speaker: "A", text: "salamat" }],
+          onComplete: () => { fired = true; },
+        },
+      };
+      startGift(npc);
+      advanceDialogue(); // one line, so this ends it
+      return { fired, given: state.flags.test_giftGiven };
+    });
+    ok("a gift's onComplete runs", gifted.fired === true, gifted);
+    ok("after its own flag was set", gifted.given === true, gifted);
+
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

@@ -20,28 +20,35 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 19, Act I grew from one scene to two and from
-one quest to three. Nanay's tondo dialogue was rewritten around sending
-Macario to deliver something to the kutsero on his way to the entablado;
-he is cut off mid-sentence and the scene fades (Acts.gotoScene now fades
-to black around every scene change — fadeToScene, game.js, reusing the
-stage cutscene's #blackout timings) into "kutsero", the same Tondo
-backdrop desaturated via a new optional scene field, greyFilter. There he
-finds only the horse, Kabayo (img: Assets/Horse.png, no art yet, falls
-back to the placeholder same as anything else missing), and talking to
-him adds a third quest, buying it apples, that nothing in this pass
-completes — its objective's flag is deliberately never set, which is what
-keeps Act I from finishing on 2 of 3 rather than waiting on a beat that
-is not built yet. See Blocks done and CLAUDE.md, Decisions on record, for
-the full mechanism and for why this is a proponents' content decision
-rather than one needing outside approval. game.js's script version to
-v28, acts.js's to v9, style.css's to v18, content/act1.js's to v13. No
-new Assets/ file, so ASSET_VERSION is unchanged at 8. Verified by the
-full existing suite (346 passed, 0 failed, run against this device's real
-files including the real Tondo/Nanay/Macario art) plus a one-off headless
-script driving the REAL content/act1.js end to end through both new
-lines of dialogue, the fade, the grey filter, and the new quest — 24
-checks, all passing. NOT YET SEEN ON THE PHONE ITSELF.
+Last updated: after Block 20, the kutsero scene Block 19 left half-built
+is now finished. The world grew from 1176px to 2150px; Kabayo now sends
+Macario off with a real quest instead of a dead end, and two new NPCs
+carry it to its end — Kutsero, who pays 10 barya through a conversation
+and points at Tindero, at the far edge of the widened map, who skips
+dialogue entirely (a new NPC field, opensShop: true) and opens Tindahan
+directly. Tindahan's first real item, Mansanas, sells there for 5 barya
+and, via a new item field, buyFlag, is what lets Kabayo's gift button
+accept it. A hazard sits on the road between the two ("Natapakan mo ang
+bubog!"), the scene's first. Giving Kabayo the apple sets Act I's third
+and last objective and ends the memory (a new gift field, onComplete,
+calls Acts.gotoScene("tondo")) — AND, because that was Act I's last
+open objective, finishes Act I outright: the post-test, then the
+transition screen, run right there in the greyed-out kutsero scene the
+instant the gift lands, same as any other act's last objective would.
+This was not asked for by name, but it is what asking for the memory to
+end and return to tondo necessarily does, given Block 19 already set
+Act I's objectives array at exactly three entries. See Blocks done,
+Block 20, and CLAUDE.md, Decisions on record, for the full mechanism,
+for the opensShop/Game.onShopRequest, gift.onComplete and buyFlag
+additions, and for why this is a proponents' content decision the same
+way Block 19's was. game.js's script version to v29, shell.js's to v9,
+inventory.js's to v5, content/act1.js's to v14, content/items.js's to
+v4. No new Assets/ file, so ASSET_VERSION is unchanged at 8. Verified by
+the full existing suite, extended with a new section (354 passed, 0
+failed) plus _dev/verify_new_scene.js extended to drive the REAL
+content/act1.js through the whole new flow end to end, including
+Act I actually completing (24 checks, all passing). NOT YET SEEN ON THE
+PHONE ITSELF.
 
 Earlier, Block 18: the real Tondo.png backdrop (1983x793) tiled across
 Act I's world with a new seam-masking shadow effect
@@ -99,17 +106,16 @@ outstanding (Dead.png, Cement_Tile.png, Tondo.png, Tondo_Night.png).
 content/act1.js was reset to a one-scene, one-NPC (Nanay) blank slate
 some sessions ago, a deliberate rollback rather than damage — see
 Blocks done for why and what stayed covered. Block 19 built forward
-from that base for the first time since: Act I is now two scenes
-(tondo, kutsero) and three quests, still small and still not the full
-narrative, but no longer the single exchange the reset left it at.
-content/items.js is still an empty catalogue; nothing in Block 19
-touched it. Read Blocks done, Block 19, before assuming anything below
-about "Act I plays end to end with hazards, pickups..." describes what
-ships today: it describes the ENGINE, which is unchanged and still
-fully verified: the hazard, guard, pickup, stage and shop mechanics
-themselves are exactly as built and tested, just not currently wired
-into Act I's shipped content, which has no hazard, no guard and no
-shop yet.
+from that base for the first time since, and Block 20 carried it to a
+real ending: Act I is now two scenes (tondo, kutsero), three quests,
+one item (Mansanas) and, as of this pass, playable start to finish —
+including Act I actually completing when the apple is given to
+Kabayo. Read Blocks done, Block 20 (and Block 19 before it), before
+assuming anything below about "Act I plays end to end with hazards,
+pickups..." describes only the ENGINE rather than the shipped
+content: it now does describe the content too, for hazards and shop
+purchases specifically — Act I's kutsero scene has both. It still has
+no guard, and content/items.js still holds only the one item.
 
 Blocks 1 through 9 are built, verified and live. Schema v4 has been
 run against the live database, the client is pushed, and Act I plays
@@ -240,21 +246,25 @@ notice rather than a layout to fix.
 
 ## Next action
 
-Block 19 wrote more of Act I directly, at the proponents' own
-direction: per Content authority below, the storyline itself is
-theirs to write, and this pass adds a scene-setting errand rather
-than a new historical claim, so it did not need the resource
-person's source material in hand first the way a new LO-teaching
-beat would. The open thread it leaves is the apple quest itself —
-bilhan_mansanas has no flag anywhere yet, so Act I currently stops
-one objective short of finishing, right where Kabayo left off.
+Block 20 finished the apple quest Block 19 left open, at the same
+proponents'-own-direction authority (Content authority, below): a
+scene-setting errand, not a new historical claim. Its own open thread
+is what it surfaces rather than leaves: giving Kabayo the apple now
+finishes Act I outright (post-test, then the transition screen), since
+that was the act's third and last objective — see Blocks done, Block
+20, and CLAUDE.md, Decisions on record, for the full reasoning. If Act
+I is meant to keep going past this point — toward the entablado, say —
+that needs a fourth objective before more content can be added to it
+without also closing the act. That is the proponents' call, on the
+same authority as the rest of the storyline; nothing here decides it
+for them.
 
 Separately, still outstanding: a device pass on the icon work, on
-play-as-guest, the new UI theme, and now Block 19, none of which have
-been seen on a phone yet, only in a headless browser, then Block 12's
-remaining polish, then the pilot. Writing Acts II through IV, against
-the source material this time, is the content work after that; see
-Blocks remaining.
+play-as-guest, the new UI theme, and now Blocks 19 and 20, none of
+which have been seen on a phone yet, only in a headless browser, then
+Block 12's remaining polish, then the pilot. Writing Acts II through
+IV, against the source material this time, is the content work after
+that; see Blocks remaining.
 
 ## The milestone
 
@@ -347,14 +357,16 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-Framework complete. Act I is now two scenes and three quests (Block
-19), up from the one-scene, one-NPC skeleton it was reset to after a
-fuller draft was written ahead of the resource person's source
-material rather than against it; the apple quest Block 19 leaves open
-is the next beat, and Acts II through IV are still registered stubs
-with no content. Writing real content for all four, against the
-source material for anything the assessment tests, is what remains of
-this objective.
+Framework complete. Act I is now two scenes, three quests and one
+shop item (Blocks 19-20), up from the one-scene, one-NPC skeleton it
+was reset to after a fuller draft was written ahead of the resource
+person's source material rather than against it, and now plays start
+to finish, including completing itself when the apple quest is
+delivered. Acts II through IV are still registered stubs with no
+content. Writing real content for all three, against the source
+material for anything the assessment tests — and deciding whether Act
+I needs a fourth objective before it can hold more content without
+finishing early — is what remains of this objective.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
 equipment, cosmetic rewards. (IN PROGRESS) All four are built, and
@@ -806,6 +818,78 @@ name Assets/Horse.png; and Acts.objectivesFor(1).length === 3,
 Acts.countDone(1) === 2, Acts.status === "playing" confirmed together,
 proving the act does not auto-complete. 24 passed, 0 failed. Not run
 on a phone. (COMPLETE)
+
+Block 20, the kutsero scene finished — and, with it, Act I. The world
+grew from 1176px to 2150px; Kabayo's dialogue now leads somewhere
+(the quest it already added gets an actual ending), Kutsero (x:750)
+pays 10 barya through a conversation and points at Tindero (x:1950,
+opensShop: true), who skips dialogue entirely and opens Tindahan
+directly at the map's far edge. Tindahan's first real item, Mansanas
+(content/items.js), sells for 5 barya, is worth +1 max health as an
+accessory, and — via a new item field, buyFlag — sets the flag
+Kabayo's gift button (requiresFlag) needs, since the gift system can
+only ever read state.flags, never Inventory.owns() directly. A hazard
+sits on the road between Kutsero and Tindero, the scene's first.
+
+Three engine additions made this possible, all general rather than
+one-off: opensShop (an NPC field) and Game.onShopRequest (the facade
+call shell.js registers a listener with, the same shape
+Inventory.onChange already uses in the other direction) let an NPC
+open the shop screen directly without game.js ever calling into
+shell.js; gift.onComplete (a gift field) lets a gift end a scene, the
+same way a dialogueSet's own onComplete already can; buyFlag (an item
+field) is described above. See CLAUDE.md, Act data format and Item
+data format, for the exact shapes, and Decisions on record for the
+full reasoning behind each.
+
+Giving Kabayo the apple — the gift, requiresFlag: binilhAngMansanas —
+sets bilhanNgMansanasAngKabayo, Act I's third and last objective, and
+its onComplete ends the memory, Acts.gotoScene("tondo"). Because that
+was the act's last open objective, checkObjectives sees all three
+done the instant the flag lands and runs finishAct exactly as it
+would for any other act's ending — the post-test, then the transition
+screen — right there, in the greyed-out kutsero scene. THIS WAS NOT AN
+EXPLICIT REQUEST, and it was not decided quietly: it is the direct,
+inevitable consequence of Block 19 having already set Act I's
+objectives array at exactly three entries, of this pass supplying the
+third's only flag-setter, and of nothing asking for a fourth. If Act I
+is meant to continue past this point — toward the entablado Nanay
+actually sent Macario to, which nothing built so far depicts — a
+fourth objective needs to exist before more content can be added to
+Act I without it finishing early again. That decision belongs to the
+proponents, on the same content authority the rest of this pass used;
+it was surfaced rather than made here.
+
+Also fixed: Nanay's onComplete used to call Acts.gotoScene("kutsero")
+unconditionally, harmless while nothing ever returned to tondo. Now
+that Kabayo's gift does, a second approach to Nanay would have
+replayed her objective-completing dialogueSet and re-triggered the
+scene change — a loop, unrecoverable in guest mode specifically, since
+Acts.checkObjectives never runs without currentUserId. A firstTime
+guard fixes it: the scene change only fires on the first approach: she
+just repeats herself after, like any other NPC with nothing new to
+say.
+
+game.js's script version to v29, shell.js's to v9, inventory.js's to
+v5, content/act1.js's to v14, content/items.js's to v4; no new
+Assets/ file (Kutsero.png, Tindero.png, Mansanas.png referenced but
+not present, same placeholder fallback as Kabayo), so ASSET_VERSION
+stays at 8.
+
+Verified two ways. First, the full existing suite, extended with a
+new section covering opensShop/Game.onShopRequest, gift.onComplete
+and buyFlag against the fixture content: 354 passed, 0 failed. Second,
+_dev/verify_new_scene.js (Block 19's one-off, extended) drives the
+REAL content/act1.js through the whole new flow: Kabayo's quest,
+Kutsero's two lines verified verbatim, the 10-barya payment and its
+absence on a repeat visit, the hazard costing a heart, Tindero opening
+Tindahan with no dialogue box, Mansanas listed and bought (ownership,
+buyFlag, currency spent), the gift button appearing back at Kabayo,
+the fade to tondo with all three objectives done, and — the flagged
+consequence above, confirmed rather than assumed — Acts.status
+reaching "completed" and the transition screen actually appearing once
+the post-test's feedback survey is answered. 24 passed, 0 failed. Not
+run on a phone. (COMPLETE)
 
 ## Blocks remaining
 

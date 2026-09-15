@@ -288,7 +288,21 @@ const Inventory = {
     if (!Game.spendCurrency(price)) return false;
 
     this.ownedIds.push(id);
+
+    // An item may declare buyFlag: a story flag, in state.flags rather
+    // than in the ownership table this file otherwise owns, set the
+    // moment the purchase succeeds. Mansanas and Kabayo's gift are the
+    // first use of this: the gift button's requiresFlag has no way to
+    // ask Inventory.owns() directly, so a purchase that content cares
+    // about flips a flag the same way finishing a conversation already
+    // does. Optimistic and rolled back with the ownership row itself,
+    // and only set once — a flag already true from an earlier session
+    // is left alone rather than re-marked dirty for nothing.
+    const flagToSet = item.buyFlag && !state.flags[item.buyFlag] ? item.buyFlag : null;
+    if (flagToSet) state.flags[flagToSet] = true;
+
     this._changed();
+    if (flagToSet) markDirty();
 
     try {
       const { error } = await sb
@@ -305,6 +319,10 @@ const Inventory = {
       if (Game.addCurrency) Game.addCurrency(price);
       const at = this.ownedIds.indexOf(id);
       if (at !== -1) this.ownedIds.splice(at, 1);
+      if (flagToSet) {
+        delete state.flags[flagToSet];
+        markDirty();
+      }
       this._changed();
       return false;
     }
