@@ -1676,6 +1676,57 @@ failed. Not run on a phone, so the hitbox and throw fixes specifically
 are unconfirmed on the touch controls and viewport this was actually
 reported from.
 
+Block 23 corrected Block 22's projectile fix, which turned out to be
+right about the mechanism (spawn from the leading edge, add a z-index)
+but wrong about the width — it still visibly failed facing right,
+exactly the report that reopened it, confirmed with a screenshot
+before touching any code rather than guessed at from the source.
+
+throwProjectile() (game.js) measured its leading edge as
+posX + PLAYER_WIDTH facing right. PLAYER_WIDTH (40) is Macario's
+LOGIC-side hitbox only — narrower on purpose than how wide he actually
+renders, the same way a forgiving hitbox works in most games — and has
+nothing to do with the visible <div class="player-sprite">, which
+applyAnim() sizes to fit.displayFrameWidth (scaled off DISPLAY_HEIGHT,
+134) and which measured well over 150px wide once a real sheet had
+loaded. #player itself carries no CSS width of its own — only
+`left`, set to posX every frame — so as a single-child flex column
+its rendered box just wraps that sprite: left edge pinned to posX,
+extending purely rightward from there, in EITHER facing direction,
+since facing left only mirrors the artwork in place via
+playerSpriteEl's own scaleX(-1) (applyAnim) — a transform, which
+repaints pixels but never moves the element's layout box. So a
+rightward throw needed to clear posX + the sprite's real rendered
+width, not posX + 40; the Block 22 fix cleared the narrower bound and
+still spawned deep inside the visible body. A leftward throw was
+never wrong: the sprite never extends left of posX at all, so posX
+itself was already past it.
+
+Fixed by reading the actual rendered width at throw time —
+playerSpriteEl.offsetWidth, not a constant — so this tracks whatever
+sheet happens to be loaded (including a worn outfit's own sheets,
+Inventory.applyOutfit) rather than drifting stale if the art changes
+again; PROJECTILE_SPAWN_GAP (30) still adds its own clearance beyond
+that. Falls back to PLAYER_WIDTH only if asked to throw before any
+sheet has finished loading, when offsetWidth would read 0.
+
+_dev/test.js's own Section AL assertion was too weak to have caught
+this: it checked the throw against posX + PLAYER_WIDTH, the same
+narrower bound the buggy code used, so it could not fail regardless
+of which fix was in place. Rewritten to check against
+playerSpriteEl.offsetWidth instead — the box a player actually sees —
+so it would have failed against the Block 22 version and now passes
+against this one. game.js's script version to v31; _dev/test.js is
+dev-only and unversioned.
+
+Verified with a one-off screenshot script (_dev/screenshot_throw.js,
+not part of the shipped suite) driving the real index.html: before
+the fix, a rightward throw's projectile sat entirely inside #player's
+own rendered bounding box on screen; after, it lands clear of it —
+matching what a screenshot actually shows, not just what the
+coordinates say. Full suite re-run clean after the assertion rewrite:
+371 passed, 0 failed.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes

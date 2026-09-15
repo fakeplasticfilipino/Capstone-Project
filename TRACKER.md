@@ -20,45 +20,43 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 22, three fixes reported directly by the
-proponent playing the game. First, a hitbox bug: findNearby's
-NPC-interaction check (game.js) compared posX (Macario's own left
-edge) straight against an NPC's own left edge, and since Macario
-(40px) and an NPC (roughly 80px) are not the same width, the same
-INTERACT_DISTANCE (90, unchanged) meant something different depending
-on which side he approached from — too generous from the left,
-requiring near-total overlap from the right, which is what read as
-"only works from the far right of a thing." Fixed with a proper
-edge-to-edge gap measurement (edgeGap, new) rather than a raw anchor
-distance. Second, a projectile draw-order bug: a rightward throw used
-to spawn 30px past Macario's own LEFT edge — still inside his 40px
-body — so it started underneath him and rendered behind him (his
-sprite carries an explicit z-index, the throw does not); a leftward
-throw already cleared him by coincidence, since his left edge is his
-leading edge that way, which is why only one direction ever showed
-the problem. Fixed at the spawn point (now measured from his actual
-leading edge either way) and reinforced with a z-index on the
-projectile itself. Third, Mansanas is reclassified: kind: "equipment"
-→ kind: "consumable", the first of a new item kind with no slot at
-all — nothing to equip, an effect that applies from ownership alone
-rather than from being worn, and a new Inventory.consume() that
-actually uses it up (both the ownership and the +1 max health end)
-the moment Kabayo's gift hands it over, rather than it sitting in the
-inventory screen forever as a wearable that was never worn. See
-Blocks done, Block 22, and CLAUDE.md, Decisions on record, for the
-full mechanism and for the one judgement call in it (whether the
-health bonus should end with the item, or last permanently — implemented
-as ending with it). game.js's script version to v30, style.css's to
-v19, inventory.js's to v6, shell.js's to v10, content/items.js's to
-v5, content/act1.js's to v16. No new Assets/ file, so ASSET_VERSION is
-unchanged at 8. Verified by the full suite extended with a new section
-covering all three fixes independently of real content (371 passed, 0
-failed) plus _dev/verify_new_scene.js extended with two more checks on
-the real Mansanas exchange — no longer owned and the health bonus gone
-immediately after it is actually given to Kabayo (28 passed, 0
-failed). NOT YET SEEN ON THE PHONE ITSELF, so the hitbox and throw
-fixes specifically are unconfirmed on the touch controls and viewport
-this was actually reported from.
+Last updated: after Block 23, a same-session correction to Block 22's
+projectile fix — reopened by direct feedback that a rightward throw
+still visibly appeared behind Macario, confirmed with a screenshot
+before touching code rather than guessed from the source. The Block
+22 fix measured the throw's leading edge as posX + PLAYER_WIDTH, but
+PLAYER_WIDTH (40) is Macario's LOGIC-side hitbox only, narrower on
+purpose than how wide he actually renders — the visible
+player-sprite div is sized to fit.displayFrameWidth in applyAnim(),
+well over 150px once a real sheet loads, and #player (no CSS width of
+its own) just wraps it, its box pinned at posX on the left and
+extending purely rightward from there in EITHER facing direction
+(facing left only mirrors the art in place via a transform, which
+never moves the box). So the Block 22 fix cleared a bound far
+narrower than Macario's actual visible body and the throw still
+spawned inside it. Fixed by reading the sprite's real rendered width
+at throw time (playerSpriteEl.offsetWidth) instead of the constant,
+with PLAYER_WIDTH kept only as a before-sprites-load fallback.
+_dev/test.js's own assertion was too weak to have caught this — it
+checked the same narrow bound the bug used — so it was rewritten to
+check against offsetWidth, the box a player actually sees. game.js's
+script version to v31. See Blocks done, Block 23, and CLAUDE.md,
+Decisions on record, for the full mechanism. Verified with a one-off
+screenshot script (_dev/screenshot_throw.js, not part of the shipped
+suite) showing the projectile clear of #player's own rendered box on
+screen, and the full suite re-run clean after the assertion rewrite:
+371 passed, 0 failed.
+
+Earlier, Block 22: three fixes reported directly by the proponent
+playing the game — the same interaction-hitbox asymmetry (fixed with
+edgeGap, a real edge-to-edge gap rather than a raw anchor distance),
+the projectile draw-order bug Block 23 above went on to correct more
+fully, and Mansanas reclassified from kind: "equipment" (buyable,
+wearable) to kind: "consumable" (no slot; its +1 max health applies
+from ownership alone and ends the moment Inventory.consume() is
+called, which Kabayo's gift.onComplete now does). game.js's script
+version to v30, style.css's to v19, inventory.js's to v6, shell.js's
+to v10, content/items.js's to v5, content/act1.js's to v16.
 
 Earlier, Block 21: a same-session correction to Block 20. Block 20
 finished the kutsero scene Block 19 left half-built — the world grew
@@ -135,8 +133,10 @@ open, waiting on the entablado (Block 21), and one item (Mansanas,
 now a consumable rather than equipment — Block 22, which otherwise
 touched only engine mechanics, not content: an interaction-distance
 hitbox bug and a projectile draw-order bug, both reported directly by
-the proponent playing on the device this ships to). Read Blocks done,
-Blocks 19-22, before assuming anything below about "Act I plays end
+the proponent playing on the device this ships to, the second of
+which needed a same-session correction of its own in Block 23 once
+the first fix still visibly failed). Read Blocks done, Blocks 19-23,
+before assuming anything below about "Act I plays end
 to end with hazards, pickups..." describes only the ENGINE rather than
 the shipped content: it now does describe the content too, for
 hazards and shop purchases specifically — Act I's kutsero scene has
@@ -1007,6 +1007,60 @@ immediately after it is actually given to Kabayo. 28 passed, 0 failed.
 NOT run on a phone, so the hitbox and throw fixes specifically remain
 unconfirmed on the touch controls and viewport they were actually
 reported from. (COMPLETE)
+
+Block 23, a same-session correction to Block 22's projectile fix,
+reopened by direct feedback that a rightward throw still visibly
+appeared behind Macario. Investigated with a screenshot first, of the
+real page, rather than re-reasoning from the source: it showed the
+projectile landing well inside #player's own rendered bounding box on
+screen even after the Block 22 fix.
+
+The real cause: Block 22 measured the throw's leading edge as
+posX + PLAYER_WIDTH facing right, but PLAYER_WIDTH (40) is Macario's
+LOGIC-side hitbox only — deliberately narrower than how wide he
+actually renders, the same way a forgiving hitbox works in most
+games — and has nothing to do with the visible
+<div class="player-sprite">, which applyAnim() sizes to
+fit.displayFrameWidth (scaled off DISPLAY_HEIGHT, 134) and which
+measured well over 150px wide with a real sheet loaded. #player
+itself carries no CSS width of its own, only a `left` set to posX
+every frame, so as a single-child flex column its rendered box just
+wraps that sprite: left edge pinned to posX, extending purely
+rightward from there, in EITHER facing direction (facing left only
+mirrors the artwork in place via a transform on the sprite, which
+repaints pixels but never moves the box). A rightward throw needed to
+clear posX + the sprite's real rendered width, not posX + 40; Block
+22 cleared a bound roughly a quarter that size and the throw kept
+landing inside the visible body. A leftward throw was never wrong —
+the sprite never extends left of posX in the first place.
+
+Fixed by reading the sprite's actual rendered width at throw time,
+playerSpriteEl.offsetWidth, instead of the PLAYER_WIDTH constant —
+so this keeps tracking whatever sheet is actually loaded (a worn
+outfit's own sheets included) rather than going stale if the art
+changes — with PLAYER_WIDTH kept only as a fallback for the case of
+throwing before any sheet has finished loading, when offsetWidth
+would read 0.
+
+_dev/test.js's own Section AL assertion could not have caught this:
+it checked the throw against the same posX + PLAYER_WIDTH bound the
+buggy code used, so it was satisfied by construction regardless of
+which fix was in place. Rewritten to check against
+playerSpriteEl.offsetWidth instead, the box a player actually sees —
+confirmed to fail against the Block 22 version and pass against this
+one.
+
+game.js's script version to v31. _dev/test.js is dev-only and
+unversioned, so nothing else in index.html changed.
+
+Verified two ways. First, a one-off screenshot script
+(_dev/screenshot_throw.js, scratch, not part of the shipped suite)
+driving the real index.html: before this fix, the thrown projectile's
+on-screen box sat entirely inside #player's own rendered bounding
+box facing right; after, it lands clear of it, matching what the
+numbers said it should. Second, the full suite re-run after the
+Section AL rewrite: 371 passed, 0 failed. Not run on a phone.
+(COMPLETE)
 
 ## Blocks remaining
 

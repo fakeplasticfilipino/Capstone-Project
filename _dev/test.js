@@ -2545,14 +2545,27 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a 100px gap does not reach, from the left", !reach.gap100FromLeft, reach);
     ok("nor from the right — the same gap either way", !reach.gap100FromRight, reach);
 
-    // The throw: must clear Macario's own 40px-wide body (PLAYER_WIDTH)
-    // on both sides, not just facing left, where posX (his own left
-    // edge) already happened to be the leading edge.
+    // The throw: must clear Macario's own VISIBLE body, not just his
+    // 40px-wide logic hitbox (PLAYER_WIDTH). Those two are not the same
+    // width — the <div class="player-sprite"> renders considerably wider
+    // than PLAYER_WIDTH once a real sheet is loaded (applyAnim sizes it
+    // to fit.displayFrameWidth, scaled off DISPLAY_HEIGHT) — so this
+    // checks against playerSpriteEl.offsetWidth, the box a player would
+    // actually see the projectile appear inside of, rather than against
+    // PLAYER_WIDTH, which a fix could satisfy on paper while the
+    // projectile still visibly spawned inside Macario's own sprite (as
+    // happened here: the first fix cleared this weaker bound and still
+    // looked wrong on screen facing right).
     const thrown = await page.evaluate(() => {
       posX = 400;
       facing = 1;
       throwProjectile();
-      const right = { x: projectile.x, clearsRight: projectile.x >= posX + PLAYER_WIDTH };
+      const spriteWidth = playerSpriteEl.offsetWidth;
+      const right = {
+        x: projectile.x,
+        spriteWidth,
+        clearsRight: projectile.x >= posX + spriteWidth,
+      };
       const zIndex = getComputedStyle(projectile.el).zIndex;
       destroyProjectile();
 

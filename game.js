@@ -2005,18 +2005,28 @@ function disableGuard(guard, message) {
   if (message) showToast(message);
 }
 
-// Clearance from Macario's own LEADING edge — his right edge when
-// throwing right, his left edge when throwing left — not from posX,
-// his anchor, which is always his left edge regardless of facing.
-// Using posX for both directions used to spawn a rightward throw only
-// 30px past his own left edge: still inside his 40px-wide body
-// (PLAYER_WIDTH), so it started underneath him rather than beside
-// him. That was invisible facing left, where posX - 30 already clears
-// his body (his left edge is the leading one), and exactly why the
-// projectile only ever appeared to render behind him facing right:
-// .projectile carries no z-index of its own (style.css), so it only
-// loses to #player's explicit one (z-index: 1) where the two actually
-// overlap on screen.
+// Clearance from Macario's own LEADING edge, which is NOT posX +/-
+// PLAYER_WIDTH. PLAYER_WIDTH (40) is only his logic-side hitbox, used
+// for collision and interaction reach — narrower, on purpose, than how
+// wide he actually renders. The visible <div class="player-sprite">
+// is sized in applyAnim() to fit.displayFrameWidth (scaled from the
+// loaded sheet to DISPLAY_HEIGHT, currently well over 100px), and its
+// box always sits with its LEFT edge pinned to posX (#player's own
+// `left` is set to posX + "px" in the game loop, and #player has no
+// CSS width of its own, so it just wraps its one child). Facing left
+// only mirrors the artwork in place via scaleX(-1) in applyAnim — a
+// CSS transform, which repaints the sprite but never moves its layout
+// box — so the sprite always extends rightward from posX, in BOTH
+// facing directions, and never extends left of it at all.
+//
+// That is why a rightward throw needs posX + the sprite's real
+// rendered width as its leading edge: anything short of that (the
+// previous fix used PLAYER_WIDTH, 40) still lands inside the visible
+// body. A leftward throw was already fine as soon as it moved past
+// posX at all, since the sprite never occupies that side to begin
+// with — so its leading edge stays posX. (.projectile also carries
+// its own z-index in style.css, above #player's, as a backstop for
+// any case where the two still end up overlapping on screen.)
 const PROJECTILE_SPAWN_GAP = 30;
 
 function throwProjectile() {
@@ -2028,7 +2038,12 @@ function throwProjectile() {
   world.appendChild(el);
   actElements.push(el);
 
-  const leadingEdge = facing >= 0 ? posX + PLAYER_WIDTH : posX;
+  // offsetWidth (not a CSS constant) so this tracks whatever sprite
+  // sheet is actually loaded, rather than drifting stale if the art
+  // changes. Falls back to PLAYER_WIDTH only if asked to throw before
+  // any sheet has finished loading (offsetWidth would read 0 then).
+  const spriteWidth = playerSpriteEl.offsetWidth || PLAYER_WIDTH;
+  const leadingEdge = facing >= 0 ? posX + spriteWidth : posX;
 
   projectile = {
     el: el,
