@@ -1456,6 +1456,8 @@ and both #skyline/#skyline-night background-image URLs were updated to
 the new path; ASSET_VERSION to 8 for the same reason a new file under
 Assets/ always bumps it.
 
+(The seam shadow in the next paragraph is superseded by Mirrored backdrop
+tiles, Block 26, below.)
 #skyline tiles the backdrop horizontally (background-repeat: repeat-x,
 background-size: auto 100%) to cover the world, which is much wider than
 one copy of the art, and because the art is a real composition rather
@@ -1920,6 +1922,41 @@ invented equipment back; the slots render empty and say so. The harness
 fixture carries two equipment items, two outfits, a consumable and a
 quest item, so every path is covered regardless.
 
+Mirrored backdrop tiles (Block 26). The tree shadow (Block 18) was
+reported as ugly: at the phone's zoom it was a dark vertical post in the
+middle of the scene, and it only covered the seam rather than removing
+it. buildSkylineShadows and .tree-shadow are deleted.
+
+buildSkylineTiles (game.js, called from loadScene where the shadows
+were) lays the backdrop out as absolutely positioned tiles inside
+#skyline and #skyline-night, each exactly one image wide at the layer's
+rendered height, with every second tile flipped by scaleX(-1). A flipped
+copy meets its neighbour at the same column of the painting on both
+sides, so the join is continuous at both of the image's edges, with no
+art edited and no new asset. The alternatives were tried on the real
+image before choosing: plain repeat jumps in the clouds and water; a
+crossfade over an overlap ghosts palms and huts through each other;
+mirroring's only cost is a symmetry, which in a row of stilt houses
+reads as more village.
+
+Details that are load bearing. Each layer names its picture once in a
+custom property, --skyline-src, which the tiles read, so one function
+serves day and night and the night art needs no code when it lands. The
+layer's own repeat-x background stays until the tiles exist and is then
+switched off by .skyline-tiled, so the backdrop is never blank for a
+frame, and checkBackgroundImage still has a real background to replace
+if the file is missing. Tile widths are rounded to whole pixels and each
+tile overlaps the next by one, because two fractional edges can show a
+hairline of sky, and the overlap is invisible precisely because the
+mirrored columns match. greyFilter is a filter on #skyline, so it still
+greys every tile inside it.
+
+Section AJ checks it in pixels: with everything in front of the backdrop
+hidden and the camera on the first seam, the columns either side of the
+join must differ no more than columns either side of nearby points in the
+same painting. The same check fails against unmirrored tiles (about twice
+the nearby difference), so it can tell a seam from no seam.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -2067,6 +2104,13 @@ for art centred the way Macario's and Nanay's are, and wrong for art
 drawn off-centre, where the character will visibly stand to one side
 of his hitbox. Run measure-sprite.js on every new sheet and paste all
 three numbers, not just the two vertical ones.
+
+The backdrop's tiles are children of #skyline and #skyline-night, which
+are static elements that outlive a scene. They are pushed to actElements
+so unloadScene removes them, and the layers keep their .skyline-tiled
+class, so between an unloadScene and the next loadScene the backdrop is
+blank. Every caller today does both back to back, under the blackout. A
+new caller that unloads without loading straight after must expect that.
 
 Tile clicks and action clicks are separate listeners on separate
 containers (the list and the detail pane) in both panels. A new action

@@ -194,49 +194,72 @@ html, body {
   --ground-level: 60px;
 }
 
-/* Tondo, Manila backdrop — replaces the sky/ground entirely.
-   The real art (1983x793, added this session — see CLAUDE.md, Decisions
-   on record) is scaled to the full viewport height and tiled
-   horizontally, via background-repeat, to cover the whole (much wider)
-   world. It is a painted scene, not a texture drawn to tile seamlessly,
-   so the repeat leaves a visible seam wherever one copy ends and the
-   next begins — see .tree-shadow below and buildSkylineShadows() in
-   game.js, which is what disguises that seam as a tree's cast shadow
-   rather than leaving it a bare visual jump. Lives in Assets/Act 1/,
-   matching Nanay.png, since this backdrop is Act 1's alone. */
+/* Tondo, Manila backdrop, replacing the sky and ground entirely.
+   The real art (1983x793, see CLAUDE.md, Decisions on record) is drawn at
+   the full height of the world and tiled across its width by
+   buildSkylineTiles() (game.js), every other tile mirrored so no seam
+   shows (Block 26). The picture is named once per layer, in
+   --skyline-src, and the tiles read it from there.
+
+   The layer keeps the plain repeat-x background until the tiles exist
+   (.skyline-tiled switches it off), so the backdrop is never blank for
+   a frame, and checkBackgroundImage() still has a background to replace
+   with its labelled placeholder if the file is missing. */
 #skyline {
+  --skyline-src: url("Assets/Act 1/Tondo.png");
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
   height: 100%;
-  background-image: url("Assets/Act 1/Tondo.png");
+  background-image: var(--skyline-src);
   background-repeat: repeat-x;
   background-position: bottom left;
   background-size: auto 100%;
   z-index: -1;
+  overflow: hidden;
 }
 
 /* Night version, layered directly on top of the day skyline. Stays
-   fully transparent until switchToNight() adds .visible — then it
-   crossfades in and stays that way (the ending permanently shifts
-   the scene to night). Not added to this device yet (see TRACKER.md,
-   Known problems) but pointed at Assets/Act 1/ already, on the same
-   reasoning as the day version above, so dropping the file in is the
-   only step left once it exists. */
+   fully transparent until switchToNight() adds .visible, then it
+   crossfades in and stays that way. Tondo_Night.png does not exist on
+   this device yet (see TRACKER.md, Known problems); its tiles are simply
+   empty until it does, and dropping the file in is the only step left. */
 #skyline-night {
+  --skyline-src: url("Assets/Act 1/Tondo_Night.png");
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
   height: 100%;
-  background-image: url("Assets/Act 1/Tondo_Night.png");
+  background-image: var(--skyline-src);
   background-repeat: repeat-x;
   background-position: bottom left;
   background-size: auto 100%;
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
+  overflow: hidden;
+}
+
+#skyline.skyline-tiled,
+#skyline-night.skyline-tiled {
+  background-image: none;
+}
+
+.skyline-tile {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-image: var(--skyline-src);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+/* Flipped about its own centre, so it stays in its own slot. */
+.skyline-tile-mirrored {
+  transform: scaleX(-1);
 }
 
 #skyline-night.visible {
@@ -250,36 +273,6 @@ html, body {
    transition is needed here the way #skyline-night has one. */
 #skyline.grey-filter {
   filter: grayscale(1);
-}
-
-/* One soft, tall shadow band per background seam, created and positioned
-   (both left and width — see TREE_SHADOW_WIDTH) by buildSkylineShadows()
-   (game.js) at exactly the world-pixel x where one copy of the skyline
-   image ends and the next begins — computed at scene load from the
-   element's own rendered height, not a hardcoded guess, so it lands on
-   the real seam at any screen size or --zoom. Two gradients multiplied
-   together taper it in both directions at once: darkest low and
-   centered, fading to nothing at the top and at either edge, the shape
-   of a long shadow falling across a path rather than a hard vertical
-   line. Purely decorative — pointer-events: none, and no z-index of its
-   own, so it paints in the same layer as #ground-tiles (above the
-   backdrop, below every character) and never competes with or occludes
-   Macario or an NPC. */
-.tree-shadow {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to bottom,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.25) 55%,
-      rgba(0, 0, 0, 0.7) 100%),
-    linear-gradient(to right,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.85) 50%,
-      rgba(0, 0, 0, 0) 100%);
-  background-blend-mode: multiply;
 }
 
 /* Ground: a repeating cement tile texture sitting in front of the

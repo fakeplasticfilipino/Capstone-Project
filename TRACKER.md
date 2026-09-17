@@ -20,25 +20,24 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 25, an overhaul of the item and inventory
-system for polish, requested directly. Permanent items are worn in
-three slots, Sandata, Anting-anting and Damit. Consumables stack, do
-nothing while carried, and are used with Gamitin (Mansanas heals one
-heart, refused at full health). Quest items are carried until the story
-takes them and are sold only while their quest is open. At the
-proponent's direction the horse's apple is now its own quest item,
-"Mansanas para sa kabayo" (id mansanas-kabayo), separate from the
-Mansanas a student eats. Both screens were rebuilt as wide two-column
-panels (list on the left, the selected item and its one action on the
-right), selecting and acting became two taps, disabled actions say why,
-Tindahan was removed from the inventory and Imbentaryo from the pause
-menu, and guests can now buy and use items in memory, which is what
-lets a guest finish the kutsero scene. No schema change.
-db/reset_test_accounts.sql was rewritten and should be run once, since
-the old "mansanas" id now means a different item. game.js v33,
-style.css v21, shell.js v11, inventory.js v7, content/items.js v6,
-content/act1.js v18. Suite 407 passed, 0 failed;
+Last updated: after Block 26, reported directly: the dark "tree shadow"
+posts that hid each seam in the repeated Tondo backdrop looked ugly.
+Replaced rather than restyled. The backdrop is now laid out as tiles with
+every second one mirrored (buildSkylineTiles, game.js), so the painting
+continues across each join instead of jumping, and the shadow bands are
+gone. No new art. The kutsero scene's grey filter still applies, and the
+night layer uses the same tiles once Tondo_Night.png exists. game.js v34,
+style.css v22. Suite 412 passed, 0 failed, including a new pixel check
+on the seam that fails against unmirrored tiles;
 _dev/verify_new_scene.js 35 passed, 0 failed. NOT RUN ON A PHONE.
+
+Earlier, Block 25: the item and inventory overhaul. Permanent items in
+Sandata, Anting-anting and Damit; stacking consumables used with
+Gamitin; quest items sold only while their quest is open, with the
+horse's apple split out as "Mansanas para sa kabayo"; two-column shop
+and inventory screens with select-then-act; guests can buy and use
+items; Tindahan and Imbentaryo doors removed from inventory and pause.
+db/reset_test_accounts.sql should be run once after pulling it.
 
 Earlier, Block 24: the body model. Every character's art now stands
 on its logical body (mountBody, bodySprite, a per-sheet footX), hazards
@@ -168,9 +167,9 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite has grown to 407 checks, after Block 25 rebuilt the
-inventory and shop sections on top of Block 24's 387 (see Blocks done).
-It is fully green: 407 passed, 0 failed, as of Block 25. The one check
+The automated suite has grown to 412 checks, after Block 26 rebuilt
+section AJ for the mirrored backdrop on top of Block 25's 407 (see Blocks
+done). It is fully green: 412 passed, 0 failed, as of Block 26. The one check
 that used to fail for real here — unequipping a cosmetic outfit restores
 the base walk cycle — still passes, because the base walk sheet it
 asserts against is a real file. See Known problems, missing production
@@ -299,7 +298,9 @@ heart goes only while his feet are on the glass, and that Nanay and
 the placeholder NPCs still look placed where intended; for Block 25:
 open Tindahan and Imbentaryo on the phone and confirm both panels fit
 the screen sideways with Bumalik visible, that tiles are easy to tap,
-and that eating a Mansanas after the glass restores the heart), none of
+and that eating a Mansanas after the glass restores the heart; for
+Block 26: walk the kutsero scene end to end and confirm there is no dark
+post and no visible jump where the backdrop repeats), none of
 which have been seen on a phone yet, only in a headless browser, then
 Block 12's remaining polish, then the pilot. Writing Acts II through
 IV, against the source material this time, is the content work after
@@ -1203,6 +1204,33 @@ food heals without touching the quest item, and Kabayo still takes the
 right one; 35 passed, 0 failed. Headless screenshots of both panels at
 823 by 412. NOT RUN ON A PHONE. (COMPLETE)
 
+Block 26, the backdrop seam. Reported directly: the tree shadow bands
+Block 18 placed over each repeat of Tondo.png read as ugly black posts.
+Three approaches were compared on the real image before building: plain
+repetition (a visible jump in the clouds and water), a crossfade over an
+overlap (palms and huts ghosting through each other), and mirroring every
+second copy (continuous at both edges, at the cost of a symmetry). Built
+the mirror.
+
+game.js: buildSkylineShadows and TREE_SHADOW_WIDTH removed;
+buildSkylineTiles lays out whole-pixel tiles one image wide, overlapping
+by one pixel, every second tile flipped, inside both #skyline and
+#skyline-night, pushed to actElements. style.css: .tree-shadow removed;
+each layer names its image in --skyline-src; .skyline-tile and
+.skyline-tile-mirrored added; .skyline-tiled switches the layer's own
+repeat off once tiles exist. No asset change, so ASSET_VERSION stays at 8.
+game.js v34, style.css v22.
+
+Verified: section AJ rebuilt (tiles cover the world, alternate tiles
+mirrored, layer repeat off, no shadow bands, one fresh set per scene
+load, tiles removed on unload) plus a pixel check with everything in
+front of the backdrop hidden and the camera on the seam. That check read
+75.6 across an unmirrored join against 38.1 nearby and failed, and passes
+with mirroring. Full suite 412 passed, 0 failed.
+_dev/verify_new_scene.js 35 passed, 0 failed. Headless screenshots of
+both seams at 823 by 412, before and after. NOT RUN ON A PHONE.
+(COMPLETE)
+
 ## Blocks remaining
 
 Block 12, polish. (IN PROGRESS)
@@ -1477,10 +1505,10 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-407 checks, after Block 25 rebuilt sections P, T, T2, U, Z and the
-consumable half of AL, and added guest-inventory checks to AH, on top of
-Block 24's 387 (see Blocks done). Anything other than "0 failed" is a
-regression. It last ran 407 passed, 0 failed, in Block 25 — run
+412 checks, after Block 26 rebuilt section AJ (mirrored backdrop tiles
+and a pixel check on the seam) on top of Block 25's 407 (see Blocks
+done). Anything other than "0 failed" is a regression. It last ran 412
+passed, 0 failed, in Block 26 — run
 from a disposable sandbox with the repository staged into it and a
 symlinked global Playwright install, since that session had no shell on
 the device itself; the same command is what to run directly on the device

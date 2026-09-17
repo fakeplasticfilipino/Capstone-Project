@@ -2475,48 +2475,106 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAJ. Skyline seam shadows and player stacking");
+  console.log("\nAJ. A seamless backdrop and player stacking");
   {
     // #player must out-stack every NPC/guard/decoration, which are all
     // appended into #world after #player already exists in the static
-    // HTML (see loadScene's build*() calls) — without a positive
-    // z-index here, plain DOM-order stacking would put Macario behind
-    // anything added after him, such as Nanay.
+    // HTML (see loadScene's build*() calls). Without a positive z-index,
+    // plain DOM-order stacking would put Macario behind anything added
+    // after him, such as Nanay.
     const { ctx, page } = await enterTestRoom();
     const playerZ = await page.evaluate(() =>
       getComputedStyle(document.getElementById("player")).zIndex);
     ok("Macario sits in a positive stacking tier above DOM-later NPCs",
        Number(playerZ) > 0, playerZ);
 
-    // Assets/Act 1/Tondo.png is real now (see CLAUDE.md, Decisions on
-    // record) — the skyline must load it rather than falling back to
-    // the dashed placeholder checkBackgroundImage() draws for a
-    // missing file.
     await page.waitForTimeout(200);
     const skylineText = await page.evaluate(() =>
       document.getElementById("skyline").textContent);
     ok("the skyline backdrop loads without falling back to a placeholder",
        skylineText === "", skylineText);
 
-    // buildSkylineShadows() should have placed at least one .tree-shadow
-    // div — #world is comfortably wider than one tile of the real
-    // 1983x793 art at this viewport height — each sized and positioned
-    // explicitly rather than left at the browser's defaults.
-    const shadows = await page.evaluate(() =>
-      Array.from(document.querySelectorAll(".tree-shadow")).map((el) => ({
-        left: el.style.left, width: el.style.width,
-      })));
-    ok("at least one seam-masking shadow band was placed", shadows.length > 0, shadows);
-    ok("each shadow band has an explicit width and position, not browser defaults",
-       shadows.length > 0 && shadows.every((s) => s.width !== "" && s.left !== ""), shadows);
+    // Block 26: the backdrop is tiles, every other one mirrored, instead
+    // of a repeat-x background with a dark band over each seam.
+    const tiles = await page.evaluate(() => {
+      const els = [...document.querySelectorAll("#skyline .skyline-tile")];
+      const last = els[els.length - 1];
+      return {
+        count: els.length,
+        mirrored: els.map((el) => el.classList.contains("skyline-tile-mirrored")),
+        covers: last ? parseFloat(last.style.left) + parseFloat(last.style.width) >= world.clientWidth : false,
+        layerBackground: getComputedStyle(document.getElementById("skyline")).backgroundImage,
+        shadows: document.querySelectorAll(".tree-shadow").length,
+      };
+    });
+    ok("the backdrop is laid out as more than one tile", tiles.count > 1, tiles);
+    ok("every other tile is mirrored, starting with the second",
+       tiles.mirrored.every((m, i) => m === (i % 2 === 1)), tiles.mirrored);
+    ok("the tiles cover the whole world", tiles.covers, tiles);
+    ok("the layer's own repeat is switched off once tiled",
+       tiles.layerBackground === "none", tiles.layerBackground);
+    ok("no seam-covering shadow band is drawn any more", tiles.shadows === 0, tiles);
 
-    // Leaving the scene must clean the shadow bands up along with
-    // everything else loadScene created, via the existing actElements
-    // lifecycle — not leave stale ones behind for the next scene to
-    // pile more on top of.
+    // The seam, in pixels. Everything in front of the backdrop is hidden,
+    // the camera is put on the first seam, and the columns either side
+    // of it are compared with columns either side of an ordinary point
+    // nearby. A seam that jumps differs far more than neighbouring
+    // columns of the same painting do.
+    await page.evaluate(() => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      const style = document.createElement("style");
+      style.id = "seam-test";
+      style.textContent = "#world > :not(#skyline), #hud, #quest-log, #mobile-controls, " +
+        "#btn-pause, #btn-inventory, #btn-shop, #toast { visibility: hidden !important; } " +
+        "*, *::before { animation-play-state: paused !important; }";
+      document.head.appendChild(style);
+      const seam = parseFloat(document.querySelectorAll("#skyline .skyline-tile")[1].style.left);
+      posX = seam - PLAYER_WIDTH / 2;
+    });
+    await page.waitForTimeout(300);
+    const shot = (await page.screenshot()).toString("base64");
+    const seam = await page.evaluate(async (b64) => {
+      const img = await createImageBitmap(await (await fetch("data:image/png;base64," + b64)).blob());
+      const c = document.createElement("canvas");
+      c.width = img.width; c.height = img.height;
+      const g = c.getContext("2d");
+      g.drawImage(img, 0, 0);
+      const d = g.getImageData(0, 0, img.width, img.height).data;
+      const w = world.getBoundingClientRect();
+      const z = w.width / world.offsetWidth;
+      const seamWorld = parseFloat(document.querySelectorAll("#skyline .skyline-tile")[1].style.left);
+      const sx = Math.round(w.left + seamWorld * z);
+      // Columns 2px either side of x, over the top two thirds of the
+      // screen, where there is sky, trees and water but no ground tiles.
+      const jump = (x) => {
+        let sum = 0, n = 0;
+        for (let y = 0; y < Math.floor(img.height * 0.66); y++) {
+          const i = (y * img.width + (x - 2)) * 4;
+          const j = (y * img.width + (x + 2)) * 4;
+          sum += Math.abs(d[i] - d[j]) + Math.abs(d[i + 1] - d[j + 1]) + Math.abs(d[i + 2] - d[j + 2]);
+          n++;
+        }
+        return sum / n;
+      };
+      const nearby = [-60, -40, 40, 60].map((o) => jump(sx + o));
+      return { sx, atSeam: jump(sx), nearby: nearby.reduce((a, b) => a + b, 0) / nearby.length };
+    }, shot);
+    ok("the join between two tiles is as continuous as the painting either side of it",
+       seam.sx > 10 && seam.atSeam <= seam.nearby * 1.5 + 4, seam);
+
+    await page.evaluate(() => document.getElementById("seam-test").remove());
+
+    // Leaving the scene removes the tiles with everything else loadScene
+    // created, and loading one builds exactly one fresh set.
     await page.evaluate(() => unloadScene());
-    const afterUnload = await page.evaluate(() => document.querySelectorAll(".tree-shadow").length);
-    ok("unloading the scene removes the shadow bands", afterUnload === 0, afterUnload);
+    const afterUnload = await page.evaluate(() => document.querySelectorAll(".skyline-tile").length);
+    ok("unloading the scene removes the tiles", afterUnload === 0, afterUnload);
+    const rebuilt = await page.evaluate(() => {
+      loadScene("misyon");
+      return document.querySelectorAll("#skyline .skyline-tile").length;
+    });
+    ok("reloading a scene builds one set, not a second set on top",
+       rebuilt === tiles.count, { rebuilt, before: tiles.count });
 
     await ctx.close();
   }

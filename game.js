@@ -288,13 +288,12 @@ let HIDE_SPOTS = []; // regions that suppress guard detection
 let HAZARDS = []; // ground regions that cost one health on contact
 let PICKUPS = []; // collectibles; currently only hearts
 
-// Native pixel dimensions of Assets/Act 1/Tondo.png. #skyline scales that
-// image via background-size: auto 100%, so at any rendered height the
-// tile is exactly this ratio times as wide — used by buildSkylineShadows()
-// below to find exactly where the background repeats, without hardcoding
-// a pixel width that would only be right at one screen size / --zoom.
+// Native pixel dimensions of Assets/Act 1/Tondo.png. A backdrop tile is
+// drawn at the full height of the skyline, so at any rendered height it
+// is exactly this ratio times as wide. buildSkylineTiles() uses it to lay
+// the tiles out without hardcoding a width that would only be right at
+// one screen size or --zoom.
 const SKYLINE_ASPECT = 1983 / 793;
-const TREE_SHADOW_WIDTH = 140; // px, width of each seam-masking shadow band
 
 // Ids collected during this visit to the scene. Created by loadScene and
 // cleared only by loadScene, never by respawnInScene, so a heart already
@@ -384,7 +383,7 @@ function loadScene(sceneId) {
     .getElementById("skyline")
     .classList.toggle("grey-filter", Boolean(scene.greyFilter));
 
-  buildSkylineShadows();
+  buildSkylineTiles();
   buildNpcs(token);
   buildDecorations(token);
   buildStage();
@@ -428,29 +427,57 @@ function unloadAct() {
   currentActData = null;
 }
 
-// Places one .tree-shadow div at each x where the tiled #skyline background
-// image repeats, so the seam reads as a tree's cast shadow rather than an
-// obvious texture repeat. Recomputed fresh every scene load (there is no
-// window-resize handling anywhere in this engine — see CLAUDE.md — so this
-// one-time-per-scene computation matches how everything else here works)
-// from the skyline element's actual rendered height, since background-size:
-// auto 100% makes the tile's pixel width depend on viewport size / --zoom,
-// not a fixed constant. Appended to #world before any NPC/guard/decoration
-// so it sits low in the DOM-order stacking tier, alongside #ground-tiles.
-function buildSkylineShadows() {
-  const skyline = document.getElementById("skyline");
-  const renderedHeight = skyline.clientHeight;
-  if (!renderedHeight) return; // not laid out yet — skip rather than divide by 0
-  const tileWidth = renderedHeight * SKYLINE_ASPECT;
-  const totalWidth = world.clientWidth;
-  for (let seamX = tileWidth; seamX < totalWidth; seamX += tileWidth) {
-    const shadow = document.createElement("div");
-    shadow.className = "tree-shadow";
-    shadow.style.left = `${seamX - TREE_SHADOW_WIDTH / 2}px`;
-    shadow.style.width = `${TREE_SHADOW_WIDTH}px`;
-    world.appendChild(shadow);
-    actElements.push(shadow);
-  }
+// Lays the backdrop out as tiles, every other one mirrored (Block 26).
+//
+// Tondo.png is a painted scene, not a texture drawn to repeat, so plain
+// repeat-x put the image's right edge against its own left edge and left
+// a visible jump in the clouds and the water. Blocks 18 to 25 covered each
+// seam with a dark "tree shadow" band, which hid the jump by putting a
+// black post in the middle of the scene instead.
+//
+// Mirroring removes the seam rather than hiding it. When the second copy
+// is flipped, the pixels on both sides of the join are the SAME column of
+// the image, so nothing jumps; the third copy is unflipped again and meets
+// the second at the image's other edge, which is equally continuous. The
+// cost is a symmetry a careful eye can find, which in a painting of stilt
+// houses and palms reads as more village rather than as a mistake. It
+// needs no new art and no image editing, which is the constraint the
+// backdrop has always had.
+//
+// Tiles are absolutely positioned divs inside #skyline and #skyline-night,
+// each taking its picture from its own layer's --skyline-src, so one
+// function serves both and greyFilter (a filter on #skyline) still
+// applies to everything inside it. Widths are whole pixels and each tile
+// overlaps the next by one, because two fractional edges can leave a
+// hairline of the sky showing through; the overlap is invisible exactly
+// because the mirrored columns match. background-size is the tile's own
+// box, so the rounding stretches the image by under a pixel rather than
+// cropping it.
+//
+// Rebuilt on every scene load from the skyline's rendered height (there is
+// no resize handling anywhere in this engine; see CLAUDE.md) and pushed to
+// actElements, so unloadScene removes them with everything else the scene
+// made.
+function buildSkylineTiles() {
+  ["skyline", "skyline-night"].forEach((id) => {
+    const layer = document.getElementById(id);
+    if (!layer) return;
+    const height = layer.clientHeight;
+    if (!height) return; // not laid out yet; skip rather than divide by 0
+
+    const tileWidth = Math.max(1, Math.round(height * SKYLINE_ASPECT));
+    const totalWidth = world.clientWidth;
+    layer.classList.add("skyline-tiled");
+
+    for (let i = 0, x = 0; x < totalWidth; i++, x += tileWidth) {
+      const tile = document.createElement("div");
+      tile.className = "skyline-tile" + (i % 2 ? " skyline-tile-mirrored" : "");
+      tile.style.left = x + "px";
+      tile.style.width = tileWidth + 1 + "px";
+      layer.appendChild(tile);
+      actElements.push(tile);
+    }
+  });
 }
 
 function buildNpcs(token) {
