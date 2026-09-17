@@ -2545,40 +2545,36 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a 100px gap does not reach, from the left", !reach.gap100FromLeft, reach);
     ok("nor from the right — the same gap either way", !reach.gap100FromRight, reach);
 
-    // The throw: must clear Macario's own VISIBLE body, not just his
-    // 40px-wide logic hitbox (PLAYER_WIDTH). Those two are not the same
-    // width — the <div class="player-sprite"> renders considerably wider
-    // than PLAYER_WIDTH once a real sheet is loaded (applyAnim sizes it
-    // to fit.displayFrameWidth, scaled off DISPLAY_HEIGHT) — so this
-    // checks against playerSpriteEl.offsetWidth, the box a player would
-    // actually see the projectile appear inside of, rather than against
-    // PLAYER_WIDTH, which a fix could satisfy on paper while the
-    // projectile still visibly spawned inside Macario's own sprite (as
-    // happened here: the first fix cleared this weaker bound and still
-    // looked wrong on screen facing right).
+    // The throw leaves from the front of his body, in both directions.
+    // Blocks 22 and 23 checked this against the sprite element's width,
+    // which was only ever meaningful while that element hung a whole
+    // scaled cell off one side of the body; section AM now proves the
+    // drawn character stands on the body, so the body's leading edge IS
+    // his visible front, and this is checked against that.
     const thrown = await page.evaluate(() => {
       posX = 400;
       facing = 1;
       throwProjectile();
-      const spriteWidth = playerSpriteEl.offsetWidth;
       const right = {
         x: projectile.x,
-        spriteWidth,
-        clearsRight: projectile.x >= posX + spriteWidth,
+        clearsRight: projectile.x >= posX + PLAYER_WIDTH + PROJECTILE_SPAWN_GAP,
       };
       const zIndex = getComputedStyle(projectile.el).zIndex;
       destroyProjectile();
 
       facing = -1;
       throwProjectile();
-      const left = { x: projectile.x, clearsLeft: projectile.x <= posX };
+      const left = {
+        x: projectile.x,
+        clearsLeft: projectile.x + PROJECTILE_SIZE <= posX - PROJECTILE_SPAWN_GAP,
+      };
       destroyProjectile();
 
       return { right, left, zIndex };
     });
-    ok("a rightward throw spawns past Macario's own right edge, not inside it",
+    ok("a rightward throw spawns clear of the front of his body",
        thrown.right.clearsRight, thrown.right);
-    ok("a leftward throw still spawns past his left edge",
+    ok("a leftward throw spawns clear of the front of his body, ball and all",
        thrown.left.clearsLeft, thrown.left);
     ok("the projectile also carries its own z-index, above #player's",
        Number(thrown.zIndex) > 1, thrown.zIndex);
@@ -2636,6 +2632,164 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a failed consume reports failure", rolledBack.failed === false, rolledBack);
     ok("and rolls the item — and its effect — back",
        rolledBack.owns && rolledBack.max === 4, rolledBack);
+
+    await ctx.close();
+  }
+
+  console.log("\nAM. Bodies: the drawn character stands where the logic does");
+  {
+    // Every check here reads PIXELS, not style properties. Two earlier
+    // fixes to the throw passed checks written against numbers the code
+    // itself produced and still looked wrong on screen; the only thing
+    // that cannot agree with a wrong model is a screenshot. The player is
+    // screenshotted shown and hidden, and the columns that change are
+    // where he is drawn. Decoded in the page with a canvas, so this needs
+    // nothing beyond Playwright.
+    const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
+    // Anything else that moves between the two screenshots reads as part
+    // of him. The misyon fixture's heart pickup bobs on a CSS animation,
+    // and sat inside the span on the first run of this section, so every
+    // animation is frozen while these checks run.
+    await page.addStyleTag({ content: "*, *::before { animation-play-state: paused !important; }" });
+
+    const drawnSpan = async () => {
+      const shown = (await page.screenshot()).toString("base64");
+      await page.evaluate(() => { player.style.visibility = "hidden"; });
+      const hidden = (await page.screenshot()).toString("base64");
+      await page.evaluate(() => { player.style.visibility = ""; });
+      return page.evaluate(async ([a, b]) => {
+        const load = async (b64) => {
+          const img = await createImageBitmap(await (await fetch("data:image/png;base64," + b64)).blob());
+          const c = document.createElement("canvas");
+          c.width = img.width; c.height = img.height;
+          const g = c.getContext("2d");
+          g.drawImage(img, 0, 0);
+          return g.getImageData(0, 0, img.width, img.height);
+        };
+        const A = await load(a), B = await load(b);
+        let lo = Infinity, hi = -Infinity;
+        for (let y = 0; y < A.height; y++) {
+          for (let x = 0; x < A.width; x++) {
+            const i = (y * A.width + x) * 4;
+            const d = Math.abs(A.data[i] - B.data[i]) +
+              Math.abs(A.data[i + 1] - B.data[i + 1]) +
+              Math.abs(A.data[i + 2] - B.data[i + 2]);
+            if (d > 30) { if (x < lo) lo = x; if (x > hi) hi = x; }
+          }
+        }
+        // Screen columns back to world x, through the camera and --zoom.
+        const w = world.getBoundingClientRect();
+        const z = w.width / world.offsetWidth;
+        return { left: (lo - w.left) / z, right: (hi - w.left) / z,
+                 bodyCentre: posX + PLAYER_WIDTH / 2 };
+      }, [shown, hidden]);
+    };
+
+    // Stand him somewhere empty, with whatever pose, and let it render.
+    const pose = async (anim, face) => {
+      await page.evaluate(([anim, face]) => {
+        destroyProjectile();
+        posX = 300; posY = floorHeightAt(300); velY = 0; facing = face;
+        if (anim === "shootAim") { shooting = "aim"; } else { shooting = null; }
+        applyAnim(anim, true);
+      }, [anim, face]);
+      await page.waitForTimeout(250);
+      return drawnSpan();
+    };
+
+    for (const [anim, face] of [["idle", 1], ["idle", -1], ["walk", 1], ["walk", -1], ["shootAim", 1], ["shootAim", -1]]) {
+      const span = await pose(anim, face);
+      const drawnCentre = (span.left + span.right) / 2;
+      // The shooting pose reaches forward with an arm, so its drawing is
+      // not centred on the body even though its feet are; it is held to
+      // "his body is inside the drawing" rather than to a centre.
+      if (anim === "shootAim") {
+        ok(`${anim} facing ${face > 0 ? "right" : "left"}: the drawing covers the body`,
+           span.left <= span.bodyCentre && span.right >= span.bodyCentre, span);
+      } else {
+        ok(`${anim} facing ${face > 0 ? "right" : "left"}: drawn centred on the body (within 12px)`,
+           Math.abs(drawnCentre - span.bodyCentre) <= 12, { ...span, drawnCentre });
+      }
+    }
+    await page.evaluate(() => { shooting = null; applyAnim("idle", true); });
+
+    // Turning around must not move him. A flip about the middle of a
+    // wide cell instead of about his feet throws him sideways.
+    const r = await pose("walk", 1);
+    const l = await pose("walk", -1);
+    const shift = Math.abs((r.left + r.right) / 2 - (l.left + l.right) / 2);
+    ok("turning around does not slide him sideways (within 12px)", shift <= 12, { r, l, shift });
+
+    // The hazard, at both of its edges, from both directions. A body
+    // just touching the band hurts; a body just short of it does not.
+    const hazardAt = (x) => page.evaluate((x) => new Promise((res) => {
+      health = 3; invulnUntil = 0; velY = 0;
+      posX = x; posY = floorHeightAt(x);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const hurt = health < 3;
+        health = 3; invulnUntil = 0;
+        posX = 300; posY = floorHeightAt(300);
+        res(hurt);
+      }));
+    }), x);
+    const h = await page.evaluate(() => HAZARDS[0]);
+    ok("5px short of the band's left edge is safe",
+       !(await hazardAt(h.x - 40 - 5)));
+    ok("5px over the band's left edge hurts",
+       await hazardAt(h.x - 40 + 5));
+    ok("5px over the band's right edge hurts",
+       await hazardAt(h.x + h.width - 5));
+    ok("5px past the band's right edge is safe",
+       !(await hazardAt(h.x + h.width + 5)));
+
+    // The same test the bug report was made with, in pixels: when he is
+    // hurt, he is drawn over the band.
+    const drawnWhenHurt = await (async () => {
+      await page.evaluate((h) => {
+        health = 3; invulnUntil = 0; facing = 1;
+        posX = h.x + 10; posY = floorHeightAt(posX); velY = 0;
+      }, h);
+      await page.waitForTimeout(60);
+      const hurt = await page.evaluate(() => health < 3);
+      await page.evaluate((h) => {
+        invulnUntil = performance.now() + 60000;
+        posX = h.x + 10; posY = floorHeightAt(posX); velY = 0;
+      }, h);
+      await page.waitForTimeout(250);
+      const span = await drawnSpan();
+      return { hurt, span };
+    })();
+    ok("when the hazard hurts him, he is drawn over it",
+       drawnWhenHurt.hurt &&
+       drawnWhenHurt.span.right > h.x && drawnWhenHurt.span.left < h.x + h.width,
+       { ...drawnWhenHurt, band: [h.x, h.x + h.width] });
+
+    // NPCs and guards stand on their bodies too: the .entity box is the
+    // body, and the placeholder or sprite inside it is centred on it.
+    const npc = await page.evaluate(() => {
+      NPCS.push({ id: "body-npc", x: 900, label: "Test", img: "Assets/Missing_Body_Test.png" });
+      buildNpcs(actLoadToken);
+      return new Promise((res) => setTimeout(() => {
+        const el = document.getElementById("npc-body-npc");
+        const box = el.getBoundingClientRect();
+        const art = el.firstElementChild.getBoundingClientRect();
+        res({ boxWidth: el.offsetWidth, NPC_WIDTH,
+              boxCentre: box.left + box.width / 2, artCentre: art.left + art.width / 2 });
+      }, 400));
+    });
+    ok("an NPC's box is its body", npc.boxWidth === npc.NPC_WIDTH, npc);
+    ok("an NPC's art is centred on its body", Math.abs(npc.boxCentre - npc.artCentre) <= 1, npc);
+
+    const guard = await page.evaluate(() => {
+      const g = GUARDS[0];
+      const box = g.el.getBoundingClientRect();
+      const art = g.el.querySelector(".sprite").getBoundingClientRect();
+      return { boxWidth: g.el.offsetWidth, GUARD_WIDTH,
+               boxCentre: box.left + box.width / 2, artCentre: art.left + art.width / 2 };
+    });
+    ok("a guard's box is its body", guard.boxWidth === guard.GUARD_WIDTH, guard);
+    ok("a guard's art is centred on its body", Math.abs(guard.boxCentre - guard.artCentre) <= 1, guard);
 
     await ctx.close();
   }

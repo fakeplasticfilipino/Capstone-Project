@@ -90,17 +90,44 @@ const btnShopMain = document.getElementById("btn-shop");
 const questListEl = document.getElementById("quest-list");
 const giftBtn = document.getElementById("gift-btn");
 
+// --- Bodies ----------------------------------------------------------------
+// Every character in the world is a BODY first and a picture second. A
+// body is a box on the ground: its left edge is the character's x (posX
+// for Macario, npc.x for an NPC, guard.pos for a guard) and its width is
+// one of the constants below. Every rule that asks "is he touching it"
+// reads the body and nothing else, and every sprite is drawn so that the
+// feet of the character in the art stand on the centre of that body (see
+// bodySprite, above loadSpriteSheet). The picture follows the body; the
+// body never follows the picture.
+//
+// This replaced a model in which the logic box and the picture only
+// shared a left edge. The picture is a whole sprite-sheet CELL scaled up
+// (over 300px wide for the idle sheet) with the character drawn in the
+// middle of it, so Macario's drawn feet stood roughly 140px to the right
+// of the 40px box every collision actually used. A hazard therefore hurt
+// him when he was drawn well past it and never when he was drawn standing
+// on it, and a thrown spear, an NPC's reach and a guard's catch were all
+// measured from a point on screen where nobody was standing. Patching
+// each consumer with its own offset (Blocks 22 and 23 did that for the
+// throw) could not converge, because there was no single place where the
+// picture and the body were made to agree. There is now.
+//
+// Two rules, used consistently, are the whole collision model:
+//   harm is by OVERLAP: any part of the body inside a hazard band hurts.
+//   support and cover are by CENTRE: a platform holds him and a hide spot
+//   hides him while the middle of his body is over it, so standing half
+//   off a ledge or half out of a crate behaves the way it looks.
 const PLAYER_WIDTH = 40;
 const SPEED = 5;
 const INTERACT_DISTANCE = 90;
-// .npc-sprite's CSS width (style.css) — used only to size the interact
-// zone around an NPC's own anchor (npc.x, its left edge, same as
-// posX for the player), never to place the NPC itself. A rough
-// constant rather than each NPC's real rendered width, the same way
-// PLAYER_WIDTH already is: exact per-NPC widths (an animated sheet's
-// varies by its own aspect ratio) aren't tracked in NPC data, and
-// don't need to be for a reach check. See findNearby's edgeGap.
+// An NPC's body is wider than Macario's on purpose. It is only ever used
+// for reach (findNearby's edgeGap), never for harm, and a generous box is
+// what makes talking to someone forgiving on a touch screen. Exact
+// per-NPC widths are not tracked in content and do not need to be.
 const NPC_WIDTH = 80;
+// A guard's body is the same size as Macario's: guards catch, get hit and
+// get taken down, which are the same kind of contact his body has.
+const GUARD_WIDTH = PLAYER_WIDTH;
 const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
 const GROUND_LEVEL = 60; // must match --ground-level in style.css
 const DISPLAY_HEIGHT = 134; // shared sprite height (player + animated NPCs)
@@ -441,7 +468,7 @@ function buildNpcs(token) {
     const el = document.createElement("div");
     el.className = "entity";
     el.id = "npc-" + npc.id;
-    el.style.left = npc.x + "px";
+    mountBody(el, npc.x, NPC_WIDTH);
     if (npc.hidden) el.style.display = "none";
 
     if (npc.animation) {
@@ -450,7 +477,7 @@ function buildNpcs(token) {
       spriteEl.className = "sprite npc-sprite npc-anim-sprite";
       el.appendChild(spriteEl);
       world.appendChild(el);
-      setupNpcAnimation(npc.animation, spriteEl, DISPLAY_HEIGHT, token);
+      setupNpcAnimation(npc.animation, spriteEl, DISPLAY_HEIGHT, token, NPC_WIDTH);
     } else {
       // Static image, falling back to a placeholder box showing the
       // expected filename if the file is missing. An <img> cannot
@@ -459,20 +486,19 @@ function buildNpcs(token) {
       img.className = "sprite npc-sprite";
       img.src = assetUrl(npc.img);
       img.alt = npc.label;
+      // A static image has no measured feet, so it is centred on the
+      // body, the same assumption an unmeasured sheet gets.
+      img.style.left = "0px"; // .npc-sprite is NPC_WIDTH wide until it loads
+      img.onload = () => {
+        img.style.left = (NPC_WIDTH - img.offsetWidth) / 2 + "px";
+      };
       img.onerror = () => {
         const placeholder = document.createElement("div");
         placeholder.className = "sprite npc-sprite";
         // Same box every other character gets. 80 by 112 was written
         // here before anything else used a placeholder, and it left
         // Macario a head taller than every NPC and guard on screen.
-        // Nobody saw it while the camera was zoomed in far enough to
-        // show him alone.
-        showPlaceholder(
-          placeholder,
-          npc.img,
-          Math.round(DISPLAY_HEIGHT * 0.7),
-          DISPLAY_HEIGHT
-        );
+        bodyPlaceholder(placeholder, npc.img, DISPLAY_HEIGHT, NPC_WIDTH);
         img.replaceWith(placeholder);
       };
       el.appendChild(img);
@@ -488,7 +514,9 @@ function buildDecorations(token) {
     const el = document.createElement("div");
     el.className = "entity";
     el.id = "dec-" + dec.id;
-    el.style.left = dec.x + "px";
+    // A decoration has no body, so its x is simply where it stands: a
+    // zero-width box, with the art's feet on it.
+    mountBody(el, dec.x, 0, dec.displayHeight || DISPLAY_HEIGHT);
 
     const spriteEl = document.createElement("div");
     spriteEl.className = "sprite npc-sprite npc-anim-sprite";
@@ -499,7 +527,8 @@ function buildDecorations(token) {
       dec.animation,
       spriteEl,
       dec.displayHeight || DISPLAY_HEIGHT,
-      token
+      token,
+      0
     );
 
     actElements.push(el);
@@ -570,8 +599,9 @@ checkBackgroundImage(
   "Assets/Cement_Tile.png"
 );
 
-function setupNpcAnimation(sheet, el, displayHeight, token) {
+function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth) {
   displayHeight = displayHeight || DISPLAY_HEIGHT;
+  bodyWidth = bodyWidth || 0;
   let frame = 0;
   let lastTime = 0;
 
@@ -580,34 +610,15 @@ function setupNpcAnimation(sheet, el, displayHeight, token) {
     if (token !== undefined && token !== actLoadToken) return;
 
     if (sheet.failed) {
-      showPlaceholder(
-        el,
-        sheet.src,
-        Math.round(displayHeight * 0.7),
-        displayHeight
-      );
+      bodyPlaceholder(el, sheet.src, displayHeight, bodyWidth);
       return;
     }
 
-    // Grid aware, matching the player. NPC sheets are single-row today,
-    // but the first multi-row sheet delivered would otherwise render
-    // at the wrong scale and walk off the right edge of the image.
+    // Grid aware, matching the player. The first multi-row sheet
+    // delivered would otherwise render at the wrong scale and walk off
+    // the right edge of the image.
     const columns = sheet.columns || sheet.frames;
-    const fit = spriteFit(sheet, displayHeight);
-
-    el.style.width = fit.displayFrameWidth + "px";
-    el.style.height = displayHeight + "px";
-    // Quoted: an unquoted CSS url() breaks on the first space in the
-    // path, and Assets/Act 1/Nanay.png has one. Without the quotes
-    // this silently no-ops (backgroundImage stays "none") even though
-    // the preload above already succeeded and computed real frame
-    // geometry, which makes the failure look like a smaller layout
-    // bug rather than the sprite never actually drawing.
-    el.style.backgroundImage = `url("${assetUrl(sheet.src)}")`;
-    el.style.backgroundSize =
-      sheet.naturalWidth * fit.scale + "px " + sheet.naturalHeight * fit.scale + "px";
-    el.style.backgroundPositionY = -fit.topOffset + "px";
-    el.style.backgroundPositionX = "0px";
+    const fit = bodySprite(el, sheet, displayHeight, bodyWidth);
 
     npcAnimators.push({
       update(now) {
@@ -707,6 +718,9 @@ function getPlatformOffset(x) {
 
 // --- Player sprite animation ---------------------------------------------
 const playerSpriteEl = player.querySelector(".player-sprite");
+// #player's box is his body. Its left is written every frame in the game
+// loop; its size never changes.
+mountBody(player, 0, PLAYER_WIDTH);
 
 // columns is how many frames sit across one row of the sheet. Omit it
 // for a plain single-row strip and it defaults to the frame count.
@@ -732,11 +746,11 @@ const playerSpriteEl = player.querySelector(".player-sprite");
 const BASE_SPRITE_SHEETS = {
   idle: {
     src: "Assets/Prefab/Macario_Idle.png", frames: 16, fps: 6, columns: 5,
-    contentTop: 73, contentHeight: 106,
+    contentTop: 73, contentHeight: 106, footX: 130,
   },
   walk: {
     src: "Assets/Prefab/Macario_Walking.png", frames: 20, fps: 12, columns: 5,
-    contentTop: 60, contentHeight: 127,
+    contentTop: 60, contentHeight: 127, footX: 126,
   },
   dead: { src: "Assets/Dead.png", frames: 5, fps: 6, columns: 5, loop: false },
 
@@ -752,12 +766,12 @@ const BASE_SPRITE_SHEETS = {
   shootAim: {
     src: "Assets/Prefab/Macario_Shooting.png", frames: 25, fps: 8, columns: 5,
     startFrame: 0, endFrame: 12, loop: false,
-    contentTop: 23, contentHeight: 51,
+    contentTop: 23, contentHeight: 51, footX: 49,
   },
   shootFire: {
     src: "Assets/Prefab/Macario_Shooting.png", frames: 25, fps: 12, columns: 5,
     startFrame: 13, endFrame: 15, loop: false,
-    contentTop: 23, contentHeight: 51,
+    contentTop: 23, contentHeight: 51, footX: 49,
   },
 };
 
@@ -804,7 +818,65 @@ function spriteFit(sheet, displayHeight) {
     // displayHeight instead of this would land on the wrong row.
     rowStep: sheet.frameHeight * scale,
     topOffset: contentTop * scale,
+    // Where the character's feet stand, in rendered px from the sprite
+    // element's own left edge. footX is measured the same way as
+    // contentTop (_dev/measure-sprite.js), from the feet rather than the
+    // whole drawing, because an extended arm widens a drawing on one side
+    // only. Absent, the middle of the cell, which is where an artist
+    // centres a character by default and where every unmeasured sheet
+    // (outfits with no art, the harness fixtures) is assumed to stand.
+    footOffset: (typeof sheet.footX === "number" ? sheet.footX : sheet.frameWidth / 2) * scale,
   };
+}
+
+// Sizes a sprite element for a sheet and stands it on a body. The element
+// is absolutely positioned inside its .entity, whose own box IS the body
+// (left = x, width = the body width, see mountBody), so putting the feet
+// at bodyWidth / 2 is all it takes for the art to stand where the logic
+// stands. transform-origin is set to the same point so that facing left,
+// a scaleX(-1), mirrors the character about his own feet instead of
+// about the middle of a 300px cell, which would throw him sideways by
+// however far the feet sit from that middle every time he turned.
+//
+// The one function every animated character goes through: the player
+// (applyAnim), NPCs, guards and decorations (setupNpcAnimation). A
+// second copy of this arithmetic anywhere is how the two drifted apart
+// in the first place.
+function bodySprite(el, sheet, displayHeight, bodyWidth) {
+  const fit = spriteFit(sheet, displayHeight);
+  el.style.width = fit.displayFrameWidth + "px";
+  el.style.height = displayHeight + "px";
+  el.style.left = bodyWidth / 2 - fit.footOffset + "px";
+  el.style.transformOrigin = fit.footOffset + "px 100%";
+  // Quoted: an unquoted CSS url() breaks on the first space in the path,
+  // and Assets/Act 1/Nanay.png has one. Without the quotes this silently
+  // no-ops (backgroundImage stays "none") even though the preload
+  // already succeeded and computed real frame geometry.
+  el.style.backgroundImage = `url("${assetUrl(sheet.src)}")`;
+  el.style.backgroundSize =
+    sheet.naturalWidth * fit.scale + "px " + sheet.naturalHeight * fit.scale + "px";
+  el.style.backgroundPositionY = -fit.topOffset + "px";
+  el.style.backgroundPositionX = "0px";
+  return fit;
+}
+
+// The placeholder box, stood on a body the same way: centred on it, and
+// flipped about its own middle.
+function bodyPlaceholder(el, filename, displayHeight, bodyWidth) {
+  const width = Math.round(displayHeight * 0.7);
+  showPlaceholder(el, filename, width, displayHeight);
+  el.style.left = (bodyWidth - width) / 2 + "px";
+  el.style.transformOrigin = "50% 100%";
+}
+
+// Makes an .entity element's box the body itself. Its children are drawn
+// relative to this box and may overhang it freely; the box is what the
+// camera, the debugging eye and the harness can trust to be where the
+// logic thinks the character is.
+function mountBody(el, x, bodyWidth, height) {
+  el.style.left = x + "px";
+  el.style.width = bodyWidth + "px";
+  el.style.height = (height || DISPLAY_HEIGHT) + "px";
 }
 
 function loadSpriteSheet(def) {
@@ -928,32 +1000,17 @@ function applyAnim(name, force) {
   lastFrameTime = 0;
 
   if (sheet.failed) {
-    showPlaceholder(
-      playerSpriteEl,
-      sheet.src,
-      Math.round(DISPLAY_HEIGHT * 0.7),
-      DISPLAY_HEIGHT
-    );
+    bodyPlaceholder(playerSpriteEl, sheet.src, DISPLAY_HEIGHT, PLAYER_WIDTH);
     return;
   }
 
   clearPlaceholder(playerSpriteEl);
 
-  // Scale so the CHARACTER (per contentHeight, see spriteFit above
-  // loadSpriteSheet), not the whole frame, is DISPLAY_HEIGHT tall, and
-  // shift the background up so its feet (contentTop + contentHeight)
-  // land on the box's bottom edge instead of the frame's.
-  const fit = spriteFit(sheet, DISPLAY_HEIGHT);
-
-  playerSpriteEl.style.width = fit.displayFrameWidth + "px";
-  playerSpriteEl.style.height = DISPLAY_HEIGHT + "px";
-  // Quoted for the same reason as setupNpcAnimation above: a path
-  // with a space breaks an unquoted url().
-  playerSpriteEl.style.backgroundImage = `url("${assetUrl(sheet.src)}")`;
-  playerSpriteEl.style.backgroundSize =
-    sheet.naturalWidth * fit.scale + "px " + sheet.naturalHeight * fit.scale + "px";
-  playerSpriteEl.style.backgroundPositionY = -fit.topOffset + "px";
-  playerSpriteEl.style.backgroundPositionX = "0px";
+  // The character, not the frame, is DISPLAY_HEIGHT tall with its feet on
+  // the ground (spriteFit), and those feet stand on the middle of his body
+  // (bodySprite). Each sheet carries its own footX, so switching from idle
+  // to walk to the shooting pose never slides him sideways.
+  bodySprite(playerSpriteEl, sheet, DISPLAY_HEIGHT, PLAYER_WIDTH);
 }
 
 function updateAnimFrame(now) {
@@ -1209,7 +1266,9 @@ function findNearby() {
   }
 
   if (STAGE) {
-    const stageDist = Math.abs(posX - STAGE.x);
+    // STAGE.x is the stage's centre, so it is compared with the centre
+    // of the body rather than its left edge.
+    const stageDist = Math.abs(posX + PLAYER_WIDTH / 2 - STAGE.x);
     if (stageDist < INTERACT_DISTANCE && stageDist < closestDist) {
       closest = STAGE;
       closestType = "stage";
@@ -1502,7 +1561,7 @@ function buildGuards(token) {
     const el = document.createElement("div");
     el.className = "entity guard";
     el.id = "guard-" + guard.id;
-    el.style.left = guard.pos + "px";
+    mountBody(el, guard.pos, GUARD_WIDTH);
 
     const meter = document.createElement("div");
     meter.className = "guard-meter";
@@ -1516,16 +1575,11 @@ function buildGuards(token) {
       sprite.className = "sprite npc-sprite npc-anim-sprite";
       el.appendChild(sprite);
       world.appendChild(el);
-      setupNpcAnimation(guard.animation, sprite, DISPLAY_HEIGHT, token);
+      setupNpcAnimation(guard.animation, sprite, DISPLAY_HEIGHT, token, GUARD_WIDTH);
     } else {
       const sprite = document.createElement("div");
       sprite.className = "sprite npc-sprite";
-      showPlaceholder(
-        sprite,
-        guard.img || "Guard",
-        Math.round(DISPLAY_HEIGHT * 0.7),
-        DISPLAY_HEIGHT
-      );
+      bodyPlaceholder(sprite, guard.img || "Guard", DISPLAY_HEIGHT, GUARD_WIDTH);
       el.appendChild(sprite);
       world.appendChild(el);
     }
@@ -1619,7 +1673,9 @@ function updateGuards(step) {
     }
 
     // Detection.
-    const dx = posX - guard.pos;
+    // Centre to centre, so "in front" means in front of the body the
+    // student can see rather than of either character's left edge.
+    const dx = posX + PLAYER_WIDTH / 2 - (guard.pos + GUARD_WIDTH / 2);
     const inFront = Math.sign(dx) === guard.facing || dx === 0;
     const inRange = Math.abs(dx) <= (guard.detectRadius || 240);
     const seen = inFront && inRange && !hidden && !playerIsSafe();
@@ -1833,9 +1889,13 @@ function updateHazards() {
   const onFloor = posY <= floorHeightAt(posX) + 1;
   if (!onFloor) return; // jumped it
 
-  const centre = posX + PLAYER_WIDTH / 2;
+  // Harm is by overlap (see Bodies, at the top of this file): any part
+  // of the body over the band hurts, which is what a student standing
+  // with one foot on broken glass expects. It used to be the centre of
+  // the body, and that was only survivable while nobody could see where
+  // the body was.
   const hazard = HAZARDS.find(
-    (h) => centre >= h.x && centre <= h.x + h.width
+    (h) => posX + PLAYER_WIDTH > h.x && posX < h.x + h.width
   );
   if (!hazard) return;
 
@@ -1976,16 +2036,19 @@ function flashAttack() {
 function meleeAttack() {
   flashAttack();
 
-  const reach = posX + facing * MELEE_RANGE;
-  const lo = Math.min(posX, reach);
-  const hi = Math.max(posX, reach);
+  // Measured centre to centre, the same way detection is.
+  const centre = posX + PLAYER_WIDTH / 2;
+  const reach = centre + facing * MELEE_RANGE;
+  const lo = Math.min(centre, reach);
+  const hi = Math.max(centre, reach);
 
   for (const guard of GUARDS) {
     if (guard.disabled) continue;
-    if (guard.pos < lo || guard.pos > hi) continue;
+    const guardCentre = guard.pos + GUARD_WIDTH / 2;
+    if (guardCentre < lo || guardCentre > hi) continue;
 
     // Behind means the guard is facing away from Macario.
-    const behind = Math.sign(guard.pos - posX) === guard.facing;
+    const behind = Math.sign(guardCentre - centre) === guard.facing;
 
     if (behind && guard.alert < 1) {
       disableGuard(guard, "Natumba ang bantay.");
@@ -2005,29 +2068,16 @@ function disableGuard(guard, message) {
   if (message) showToast(message);
 }
 
-// Clearance from Macario's own LEADING edge, which is NOT posX +/-
-// PLAYER_WIDTH. PLAYER_WIDTH (40) is only his logic-side hitbox, used
-// for collision and interaction reach — narrower, on purpose, than how
-// wide he actually renders. The visible <div class="player-sprite">
-// is sized in applyAnim() to fit.displayFrameWidth (scaled from the
-// loaded sheet to DISPLAY_HEIGHT, currently well over 100px), and its
-// box always sits with its LEFT edge pinned to posX (#player's own
-// `left` is set to posX + "px" in the game loop, and #player has no
-// CSS width of its own, so it just wraps its one child). Facing left
-// only mirrors the artwork in place via scaleX(-1) in applyAnim — a
-// CSS transform, which repaints the sprite but never moves its layout
-// box — so the sprite always extends rightward from posX, in BOTH
-// facing directions, and never extends left of it at all.
-//
-// That is why a rightward throw needs posX + the sprite's real
-// rendered width as its leading edge: anything short of that (the
-// previous fix used PLAYER_WIDTH, 40) still lands inside the visible
-// body. A leftward throw was already fine as soon as it moved past
-// posX at all, since the sprite never occupies that side to begin
-// with — so its leading edge stays posX. (.projectile also carries
-// its own z-index in style.css, above #player's, as a backstop for
-// any case where the two still end up overlapping on screen.)
+// The spear leaves from the front of his BODY, plus a gap. Blocks 22 and
+// 23 tried to clear the rendered sprite element instead, first with the
+// body width and then with the element's offsetWidth, and both were wrong
+// for the same underlying reason: the element was a whole scaled cell
+// hanging off to the right of the body, so "past its edge" was over 300px
+// ahead of him facing right and inside him facing left. With the art now
+// standing on the body (bodySprite), the body's own leading edge is where
+// his front actually is, in both directions, whatever sheet is loaded.
 const PROJECTILE_SPAWN_GAP = 30;
+const PROJECTILE_SIZE = 14; // must match .projectile's CSS width
 
 function throwProjectile() {
   if (projectile) return; // one at a time
@@ -2038,16 +2088,15 @@ function throwProjectile() {
   world.appendChild(el);
   actElements.push(el);
 
-  // offsetWidth (not a CSS constant) so this tracks whatever sprite
-  // sheet is actually loaded, rather than drifting stale if the art
-  // changes. Falls back to PLAYER_WIDTH only if asked to throw before
-  // any sheet has finished loading (offsetWidth would read 0 then).
-  const spriteWidth = playerSpriteEl.offsetWidth || PLAYER_WIDTH;
-  const leadingEdge = facing >= 0 ? posX + spriteWidth : posX;
+  // projectile.x is the ball's left edge, so a leftward throw also steps
+  // back by the ball's own width to keep the whole ball clear.
+  const x = facing >= 0
+    ? posX + PLAYER_WIDTH + PROJECTILE_SPAWN_GAP
+    : posX - PROJECTILE_SPAWN_GAP - PROJECTILE_SIZE;
 
   projectile = {
     el: el,
-    x: leadingEdge + facing * PROJECTILE_SPAWN_GAP,
+    x: x,
     y: posY + 60,
     dir: facing,
     travelled: 0,
@@ -2070,7 +2119,8 @@ function updateProjectile(step) {
 
   for (const guard of GUARDS) {
     if (guard.disabled) continue;
-    if (Math.abs(guard.pos - projectile.x) > 40) continue;
+    const guardCentre = guard.pos + GUARD_WIDTH / 2;
+    if (Math.abs(guardCentre - (projectile.x + PROJECTILE_SIZE / 2)) > 40) continue;
     disableGuard(guard, "Tinamaan ang bantay.");
     destroyProjectile();
     return;

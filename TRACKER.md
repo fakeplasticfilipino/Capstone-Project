@@ -20,32 +20,33 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 23, a same-session correction to Block 22's
-projectile fix — reopened by direct feedback that a rightward throw
-still visibly appeared behind Macario, confirmed with a screenshot
-before touching code rather than guessed from the source. The Block
-22 fix measured the throw's leading edge as posX + PLAYER_WIDTH, but
-PLAYER_WIDTH (40) is Macario's LOGIC-side hitbox only, narrower on
-purpose than how wide he actually renders — the visible
-player-sprite div is sized to fit.displayFrameWidth in applyAnim(),
-well over 150px once a real sheet loads, and #player (no CSS width of
-its own) just wraps it, its box pinned at posX on the left and
-extending purely rightward from there in EITHER facing direction
-(facing left only mirrors the art in place via a transform, which
-never moves the box). So the Block 22 fix cleared a bound far
-narrower than Macario's actual visible body and the throw still
-spawned inside it. Fixed by reading the sprite's real rendered width
-at throw time (playerSpriteEl.offsetWidth) instead of the constant,
-with PLAYER_WIDTH kept only as a before-sprites-load fallback.
-_dev/test.js's own assertion was too weak to have caught this — it
-checked the same narrow bound the bug used — so it was rewritten to
-check against offsetWidth, the box a player actually sees. game.js's
-script version to v31. See Blocks done, Block 23, and CLAUDE.md,
-Decisions on record, for the full mechanism. Verified with a one-off
-screenshot script (_dev/screenshot_throw.js, not part of the shipped
-suite) showing the projectile clear of #player's own rendered box on
-screen, and the full suite re-run clean after the assertion rewrite:
-371 passed, 0 failed.
+Last updated: after Block 24, an overhaul of how every character's
+picture relates to its hitbox, reported directly by the proponent: a
+hazard (the red glass band in the kutsero scene) did not hurt Macario
+while he was drawn standing on it, and did hurt him once he was drawn
+past it on the right. Measured in pixels before touching code: his
+drawn feet stood about 140px to the right of the 40px box every
+collision read, because the sprite element was a whole scaled sheet
+cell (over 300px wide) pinned to the box's left edge with the
+character drawn in the middle of it. The same gap was behind Blocks 22
+and 23's throw fixes, which is why they kept missing. Rather than add
+a third offset, the engine now has one body model (see CLAUDE.md,
+Bodies, under Decisions on record): an .entity's own box is the body,
+and one function, bodySprite, stands the art's measured feet (a new
+per-sheet footX field) on the middle of it, for the player, NPCs,
+guards and decorations alike. Hazards hurt on any overlap with the
+body; platforms and hide spots still use its centre. The throw leaves
+from the body's front edge, replacing Block 23's offsetWidth reading.
+game.js v32, style.css v20, content/act1.js v17; no new asset, so
+ASSET_VERSION stays at 8. Verified by a new suite section (AM) that
+reads screenshots rather than style values, confirmed to fail 12 ways
+against the Block 23 code and pass against this one: 387 passed, 0
+failed. _dev/verify_new_scene.js, 28 passed, 0 failed. NOT RUN ON A
+PHONE.
+
+Earlier, Block 23: a correction to Block 22's throw spawn point that
+read the sprite element's offsetWidth. Superseded by Block 24, which
+found the real cause.
 
 Earlier, Block 22: three fixes reported directly by the proponent
 playing the game — the same interaction-hitbox asymmetry (fixed with
@@ -165,9 +166,9 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite has grown to 371 checks, after Block 22 and Block
-23 added their own coverage on top of Block 18's (see Blocks done). It
-is fully green: 371 passed, 0 failed, as of Block 23. The one check
+The automated suite has grown to 387 checks, after Block 24 added
+section AM on top of Block 23's 371 (see Blocks done). It is fully
+green: 387 passed, 0 failed, as of Block 24. The one check
 that used to fail for real here — unequipping a cosmetic outfit restores
 the base walk cycle — still passes, because the base walk sheet it
 asserts against is a real file. See Known problems, missing production
@@ -290,7 +291,10 @@ Blocks done, Blocks 20-21, and CLAUDE.md, Decisions on record, for the
 full reasoning.
 
 Separately, still outstanding: a device pass on the icon work, on
-play-as-guest, the new UI theme, and now Blocks 19 through 21, none of
+play-as-guest, the new UI theme, and now Blocks 19 through 24 (for
+Block 24: walk onto the kutsero hazard from both sides and confirm the
+heart goes only while his feet are on the glass, and that Nanay and
+the placeholder NPCs still look placed where intended), none of
 which have been seen on a phone yet, only in a headless browser, then
 Block 12's remaining polish, then the pilot. Writing Acts II through
 IV, against the source material this time, is the content work after
@@ -1060,7 +1064,84 @@ on-screen box sat entirely inside #player's own rendered bounding
 box facing right; after, it lands clear of it, matching what the
 numbers said it should. Second, the full suite re-run after the
 Section AL rewrite: 371 passed, 0 failed. Not run on a phone.
-(COMPLETE)
+(COMPLETE, superseded by Block 24)
+
+Block 24, the body model. Reported directly by the proponent: the
+hazard band in the kutsero scene did not hurt Macario while he stood
+on it and did hurt him when he was drawn past its right end. The
+request was for an overhaul rather than another point fix, since the
+report pointed at the hitbox and the sprite in general.
+
+Measured first, in pixels: a scratch script swept Macario across the
+real hazard, screenshotted him shown and hidden at every step, and
+compared the columns he was drawn in against where damage happened.
+His drawing stood about 140px to the right of his logic box, and
+damage began only once the drawing had fully passed the band. The
+cause was structural. #player was a flex column that wrapped a sprite
+element sized to a whole scaled sheet cell (324px wide for the idle
+sheet), pinned at posX on its left, with the character drawn in the
+middle of the cell; the 40px logic box shared only that left edge.
+Blocks 22 and 23 had corrected the throw against this twice without
+finding it. NPCs and guards had the same shape: Nanay's drawing stood
+about 60px right of her reach box.
+
+The overhaul, all in game.js and style.css. An .entity's own box is
+now the character's body (mountBody sets its left, width and height
+from the same constants collisions read: PLAYER_WIDTH 40, NPC_WIDTH
+80, and a new GUARD_WIDTH equal to PLAYER_WIDTH). Its art is
+absolutely positioned inside it by one function, bodySprite, which
+puts the drawn feet on the middle of the body and sets the flip
+origin to the same point, so turning around does not slide him.
+Placeholder boxes go through bodyPlaceholder the same way. Where the
+feet are is a new optional per-sheet field, footX, measured by
+_dev/measure-sprite.js (now printed on its paste line) from the
+bottom fifth of the drawing rather than from the whole drawing,
+because the shooting pose's extended arm pulls the whole-drawing
+centre 14 native pixels forward of the feet. Measured: idle 130,
+walk 126, shooting 49, Nanay 127. A sheet without it is assumed to
+stand in the middle of its cell.
+
+Collision rules were written down as two and applied consistently:
+harm by overlap (updateHazards now hurts on any overlap of the body
+with the band, instead of the body's centre), support and cover by
+centre (platforms, hide spots and pickups, unchanged). Guard
+detection, melee and the spear's hit test now measure centre to
+centre; since guard and player bodies are the same width, detection
+and melee reach are numerically unchanged. The stage's interact
+distance now measures from the body's centre, since STAGE.x is the
+stage's centre. The throw spawns PROJECTILE_SPAWN_GAP past the body's
+leading edge in both directions, stepping back by the ball's width
+(new PROJECTILE_SIZE, 14) facing left; Block 23's offsetWidth reading
+is gone. Decorations get a zero-width body, so their x is where they
+stand; no shipped content declares one.
+
+Visible consequence to check on the device: NPCs now stand centred on
+their x plus 40 rather than offset to the right of it, so Nanay is
+drawn about 60px further left than before, and the static-image NPCs'
+placeholder boxes about 7px further left. Nothing about reach changed
+for them, only where they are drawn, which is now where the reach is.
+
+game.js's script version to v32, style.css's to v20,
+content/act1.js's to v17 (Nanay's footX). No new Assets/ file, so
+ASSET_VERSION is unchanged at 8.
+
+Verified three ways. First, the scratch sweep re-run: drawn span and
+damage now agree to within the 20px sweep step at both edges of the
+band. Second, a new suite section, AM, which reads screenshots rather
+than style values (the lesson of Block 23's too-weak assertion):
+idle and walk drawn centred on the body within 12px in both facings,
+the shooting pose's drawing covering the body in both facings,
+turning around moving him less than 12px, the hazard hurting 5px
+inside either edge of the band and not 5px outside it, "when the
+hazard hurts him, he is drawn over it" (the report itself, as a
+check), and an NPC's and a guard's box equal to its body with its art
+centred on it. AM was run against the Block 23 code and failed 12
+checks there, including the report check, so it can tell the two
+apart. Section AL's throw assertions were rewritten against the body.
+Full suite: 387 passed, 0 failed. _dev/verify_new_scene.js against the
+real content: 28 passed, 0 failed. Third, headless screenshots of
+idle, walk, aim and fire in both facings with the body box outlined.
+NOT RUN ON A PHONE. (COMPLETE)
 
 ## Blocks remaining
 
@@ -1336,10 +1417,10 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-371 checks, after Block 22 and Block 23 each added their own coverage
-on top of Block 18's 346 (see Blocks done). Anything other than "0
-failed" is a regression. It last ran 371 passed, 0 failed, in Block
-23, the session that corrected Block 22's projectile-spawn fix — run
+387 checks, after Block 24 added section AM (bodies and pixels) on
+top of Block 23's 371 (see Blocks done). Anything other than "0
+failed" is a regression. It last ran 387 passed, 0 failed, in Block
+24 — run
 from a disposable sandbox with the repository staged into it and a
 symlinked global Playwright install, since that session had no shell on
 the device itself; the same command is what to run directly on the device

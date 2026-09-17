@@ -333,6 +333,12 @@ NPC shape:
               onComplete() }                     optional; onComplete optional
     }
 
+An NPC's x is the left edge of its body, NPC_WIDTH (80) wide, and its art
+is drawn standing on the middle of that body (see Bodies, under Decisions
+on record). A guard's x and patrol bounds are the left edge of a body
+GUARD_WIDTH (40) wide, the same way. A decoration has no body: its x is
+the point it stands on.
+
 Talking to an NPC advances through dialogueSets one per conversation,
 holding on the last. onComplete fires once, when that conversation ends.
 A gift's onComplete fires once, right after its flag and its quest are
@@ -532,8 +538,8 @@ eye, and never by hand either: run
 
 which prints every frame's own box, flags any frame whose content
 height strays far enough from the union that a single number cannot
-correct it (see _dev/README.md), and prints the contentTop/contentHeight
-line ready to paste in. It depends on nothing beyond Node itself — the
+correct it (see _dev/README.md), and prints the contentTop/contentHeight/
+footX line ready to paste in. It depends on nothing beyond Node itself — the
 PNG decoding is plain chunk parsing and node:zlib, not a library — and
 is what produced every number in this section and in Decisions on
 record. spriteFit (in game.js, just above loadSpriteSheet) turns them into
@@ -548,6 +554,23 @@ fixture sheets need no changes to keep working. See Decisions on record
 for the numbers measured for Macario and Nanay and why this was needed;
 the same measurement is owed to Dead.png and to any outfit's walk/idle/
 dead sheets once real art exists for them.
+
+A third optional field, footX, says where the character STANDS inside
+the cell horizontally, in the same native pixels. It is what lines the
+art up with the character's body (see Bodies, under Decisions on
+record): bodySprite in game.js puts that point on the middle of the
+body and flips the sprite about it. measure-sprite.js prints it on the
+same paste line, measured from the bottom fifth of the drawing (the
+feet and lower legs) averaged across frames, not from the whole
+drawing, because a pose that reaches (Macario_Shooting.png's extended
+arm) drags the whole drawing's centre forward of where he stands.
+Omit it and the sheet is assumed to stand in the middle of its cell.
+
+    { src: "Assets/Prefab/Macario_Idle.png", frames: 16, fps: 6,
+      columns: 5, contentTop: 73, contentHeight: 106, footX: 130 }
+
+A change to footX, like contentTop/contentHeight, is a change to the
+content file that declares it, not to the image.
 
 Every image load goes through assetUrl(), which appends the ASSET_VERSION
 constant in game.js. Images are not covered by the v=N strings in
@@ -1693,7 +1716,7 @@ failed. Not run on a phone, so the hitbox and throw fixes specifically
 are unconfirmed on the touch controls and viewport this was actually
 reported from.
 
-Block 23 corrected Block 22's projectile fix, which turned out to be
+Block 23 (superseded by Bodies, Block 24, below) corrected Block 22's projectile fix, which turned out to be
 right about the mechanism (spawn from the leading edge, add a z-index)
 but wrong about the width — it still visibly failed facing right,
 exactly the report that reopened it, confirmed with a screenshot
@@ -1743,6 +1766,68 @@ own rendered bounding box on screen; after, it lands clear of it —
 matching what a screenshot actually shows, not just what the
 coordinates say. Full suite re-run clean after the assertion rewrite:
 371 passed, 0 failed.
+
+Bodies (Block 24). Every character in the world is a body first and a
+picture second. A body is a box on the ground whose left edge is the
+character's x (posX, npc.x, guard.pos) and whose width is PLAYER_WIDTH
+(40), NPC_WIDTH (80) or GUARD_WIDTH (40). The .entity element's own box
+IS that body: mountBody (game.js) sets its left, width and height, and
+style.css no longer lets it size itself to its content. The art inside
+is absolutely positioned by one function, bodySprite, which scales it
+through spriteFit, puts the sheet's footX on the middle of the body,
+and sets transform-origin to that same point so a facing flip mirrors
+the character about his own feet. bodyPlaceholder does the same for a
+missing image. Player, NPCs, guards and decorations all go through
+these; a second copy of that arithmetic anywhere is how the picture and
+the logic drifted apart in the first place.
+
+What it replaced: #player was a flex column wrapping a sprite element
+the size of a whole scaled sheet cell (324px for the idle sheet),
+pinned to posX on its left, with the character drawn in the middle of
+the cell. The logic box shared only the left edge, so Macario's drawn
+feet stood about 140px right of every collision. The reported symptom
+was a hazard that did not hurt while he stood on it and did hurt once
+he was drawn past it. Blocks 22 and 23 had already corrected the throw
+against this twice, each against a different wrong width, without
+finding it. The request was for an overhaul rather than a third
+offset, and a single place where picture and body are made to agree is
+what that means.
+
+Two collision rules, applied everywhere. Harm is by overlap: a hazard
+hurts while any part of the body is over its band. Support and cover
+are by centre: a platform holds, a hide spot hides and a pickup is
+reached by the middle of the body. Harm by overlap matches what a
+student sees (a foot on the glass); support by centre matches it too
+(standing half off a ledge does not drop him). Guard detection, melee
+and the spear's hit test measure centre to centre, which with equal
+guard and player widths leaves their reach numerically where it was.
+The throw spawns PROJECTILE_SPAWN_GAP past the body's leading edge,
+and a leftward throw also steps back by PROJECTILE_SIZE so the whole
+ball clears; reading the sprite element's offsetWidth (Block 23) is
+gone, since that element's width no longer says anything about where
+he is.
+
+The body widths were kept, not re-derived from the art. 40 is close to
+the idle drawing's measured width at display scale (48) and narrower
+than the walk cycle's stride, which is the forgiving direction for
+harm, and keeping it left every tuned distance (INTERACT_DISTANCE,
+MELEE_RANGE, the knockback, the hide spots) meaning what it meant. A
+body does not change width with the animation, on purpose: a hitbox
+that grew mid-stride would take a heart for walking past a hazard's
+edge.
+
+The visible consequence is that NPCs moved: art that used to hang to
+the right of x now stands centred on x + 40, so Nanay is drawn about
+60px left of where she was and a placeholder NPC about 7px. Content x
+values were not adjusted to compensate, since the new position is the
+one that matches the reach.
+
+The harness checks this in pixels (section AM): the player is
+screenshotted shown and hidden, the changed columns are where he is
+drawn, and those are compared against his body in world coordinates,
+with CSS animations frozen so a bobbing pickup does not read as part
+of him. A check written against style values would have passed the
+old model, which is the lesson Block 23's assertion already taught.
 
 ## Pitfalls
 
@@ -1878,6 +1963,19 @@ TRACKER.md for the values in effect after Block 13); nothing here reaches
 outside this environment to commit or push, so keeping index.html and
 the files it names in step is the pushing side's responsibility, not
 something a later Claude session can verify by fetching GitHub alone.
+
+Any new element that represents a character in the world must be
+built through mountBody and bodySprite (or bodyPlaceholder), and any
+new rule about touching must read the body. Positioning a sprite
+element directly, or measuring contact against a rendered element's
+size, reintroduces the Block 24 fault silently: nothing errors, the
+character is simply drawn somewhere other than where he is.
+
+A sheet with no footX stands in the middle of its cell. That is right
+for art centred the way Macario's and Nanay's are, and wrong for art
+drawn off-centre, where the character will visibly stand to one side
+of his hitbox. Run measure-sprite.js on every new sheet and paste all
+three numbers, not just the two vertical ones.
 
 ## Accounts
 

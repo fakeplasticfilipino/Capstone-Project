@@ -32,8 +32,8 @@
 // Prints every frame's own bounding box, so a human can see at a
 // glance whether one frame is a wild outlier (a raised arm, a weapon
 // held overhead) before trusting the union, then prints the union
-// across all frames — the contentTop/contentHeight pair to paste into
-// the sheet's definition — plus a warning if any single frame's own
+// across all frames — the contentTop/contentHeight/footX line to paste
+// into the sheet's definition — plus a warning if any single frame's own
 // content height strays far from that union, since a single global
 // number cannot correct a sheet whose character genuinely changes
 // size frame to frame (see the code comment on spriteFit in game.js
@@ -266,9 +266,47 @@ function measure(filePath, columns, frames, threshold) {
     .map((r, i) => (r ? { i, h: r.bottom - r.top + 1 } : null))
     .filter((r) => r && Math.abs(r.h - contentHeight) > 6);
 
+  // footX: where the character STANDS inside its cell, horizontally —
+  // the centre of whatever is opaque in the bottom fifth of the union
+  // box (the feet and lower legs), averaged across every frame. This,
+  // not the frame's centre and not the union box's centre, is what
+  // game.js lines up with a character's logical body (see bodySprite
+  // in game.js and Sprite sheets in CLAUDE.md). The union box is a bad
+  // anchor for anything with a pose that reaches: a raised or extended
+  // arm widens the box on one side only and drags its centre off the
+  // body, which is exactly Macario_Shooting.png. Feet do not reach.
+  const footBand = Math.max(1, Math.round(contentHeight * 0.2));
+  const footCentres = [];
+  for (let f = 0; f < frames; f++) {
+    if (!perFrame[f]) continue;
+    const col = f % columns;
+    const row = Math.floor(f / columns);
+    const x0 = Math.round(col * frameWidth);
+    const y0 = Math.round(row * frameHeight);
+    const fw = Math.round(frameWidth);
+    let lo = Infinity, hi = -Infinity;
+    for (let y = unionBottom - footBand + 1; y <= unionBottom; y++) {
+      for (let x = 0; x < fw; x++) {
+        if (rgba[((y0 + y) * width + (x0 + x)) * 4 + 3] > threshold) {
+          if (x < lo) lo = x;
+          if (x > hi) hi = x;
+        }
+      }
+    }
+    if (lo !== Infinity) footCentres.push((lo + hi) / 2);
+  }
+  const footX = footCentres.length
+    ? Math.round(footCentres.reduce((a, b) => a + b, 0) / footCentres.length)
+    : Math.round((unionLeft + unionRight) / 2);
+  const footSpread = footCentres.length
+    ? Math.round(Math.max(...footCentres) - Math.min(...footCentres))
+    : 0;
+
   console.log("\n--- union across all frames ---");
   console.log(`contentTop: ${unionTop}, contentHeight: ${contentHeight}`);
-  console.log(`(horizontal, for reference only — not read by the engine today: ` +
+  console.log(`footX: ${footX}  (stance centre, from the bottom ${footBand}px of the box; ` +
+    `per-frame stance centres span ${footSpread}px)`);
+  console.log(`(union box, for reference only: ` +
     `left=${unionLeft} right=${unionRight} width=${unionRight - unionLeft + 1})`);
 
   if (outliers.length) {
@@ -287,7 +325,7 @@ function measure(filePath, columns, frames, threshold) {
   }
 
   console.log(`\nPaste into the sheet's definition:`);
-  console.log(`  contentTop: ${unionTop}, contentHeight: ${contentHeight},`);
+  console.log(`  contentTop: ${unionTop}, contentHeight: ${contentHeight}, footX: ${footX},`);
 }
 
 function main() {

@@ -59,7 +59,9 @@
 // rather than the frame's — see game.js, above loadSpriteSheet, and
 // CLAUDE.md, Decisions on record, for why that matters: without it she
 // and Macario were scaled and grounded by two different amounts of
-// empty padding and never matched.
+// empty padding and never matched. footX, measured the same way, is
+// where her feet are across the cell, which is the point game.js
+// stands on the middle of her body (CLAUDE.md, Bodies, Block 24).
 //
 // Kabayo, Kutsero and Tindero have no art yet: img points at
 // Assets/Horse.png, Assets/Kutsero.png and Assets/Tindero.png, none of
@@ -112,7 +114,7 @@ window.ACT_1 = {
           stage: 0,
           animation: {
             src: "Assets/Act 1/Nanay.png", frames: 14, fps: 6, columns: 5,
-            contentTop: 45, contentHeight: 166,
+            contentTop: 45, contentHeight: 166, footX: 127,
           },
           dialogueSets: [
             {
