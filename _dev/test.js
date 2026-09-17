@@ -2393,8 +2393,10 @@ const visible = (page, sel) => page.evaluate((s) => {
        sheets.aim && sheets.aim.failed === false, sheets.aim);
     ok("shootFire loaded without falling back to a placeholder",
        sheets.fire && sheets.fire.failed === false, sheets.fire);
-    ok("shootAim covers frames 0-12", sheets.aim.startFrame === 0 && sheets.aim.endFrame === 12, sheets.aim);
-    ok("shootFire covers frames 13-15", sheets.fire.startFrame === 13 && sheets.fire.endFrame === 15, sheets.fire);
+    ok("shootAim covers frames 0-2", sheets.aim.startFrame === 0 && sheets.aim.endFrame === 2, sheets.aim);
+    ok("shootFire covers frames 3-11, starting on the muzzle flash", sheets.fire.startFrame === 3 && sheets.fire.endFrame === 11, sheets.fire);
+    ok("the sheet is read as a 5 by 3 grid of 12 frames",
+       sheets.fire.columns === 5 && sheets.fire.frames === 12 && sheets.fire.rows === 3, sheets.fire);
 
     // Block 27: the aim pose waits AIM_POSE_DELAY_MS before showing, so
     // a tap goes straight into the punch without a flash of the aiming
@@ -2412,8 +2414,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the aim pose starts at the beginning of its own range, not past it",
        aiming.frame >= 0 && aiming.frame <= 3, aiming);
 
-    // Held well past the aim clip's own length (13 frames at 8fps =
-    // 1625ms): it must have climbed to frame 12 and stayed there,
+    // Held well past the aim clip's own length (3 frames at 8fps =
+    // 375ms): it must have climbed to frame 2 and stayed there,
     // proven by sampling twice a tick apart, rather than looped back to
     // frame 0 or run past the sub-range into shootFire's frames.
     await page.waitForTimeout(2000);
@@ -2422,8 +2424,8 @@ const visible = (page, sel) => page.evaluate((s) => {
       requestAnimationFrame(() => requestAnimationFrame(() =>
         resolve({ first, second: currentFrame, anim: currentAnim })));
     }));
-    ok("a long hold settles on the aim clip's last frame (12) and holds there",
-       held.first === 12 && held.second === 12 && held.anim === "shootAim", held);
+    ok("a long hold settles on the aim clip's last frame (2) and holds there",
+       held.first === 2 && held.second === 2 && held.anim === "shootAim", held);
 
     // A quick tap (released under ATTACK_HOLD_MS) is a melee swing, not
     // a throw, and must drop the aim pose rather than carry it into a
@@ -2482,13 +2484,34 @@ const visible = (page, sel) => page.evaluate((s) => {
       };
     });
     ok("a qualifying hold plays the fire clip", fired.anim === "shootFire" && fired.shooting === "fire", fired);
-    ok("starting on the fire clip's own first frame (13)", fired.frame === 13, fired);
+    ok("starting on the fire clip's own first frame, the flash (3)", fired.frame === 3, fired);
     ok("and the projectile appears at the same moment", fired.projectile === true, fired);
 
-    // The fire clip is 3 frames at 12fps (250ms). Comfortably after that,
+    // The shot starts at the drawn pistol's tip: in front of the body and
+    // at the gun's height rather than at the old fixed chest height.
+    const muzzle = await page.evaluate(() => {
+      destroyProjectile();
+      posX = 400; posY = floorHeightAt(400); facing = 1;
+      throwProjectile();
+      const right = { x: projectile.x, y: projectile.y - posY };
+      destroyProjectile();
+      facing = -1;
+      throwProjectile();
+      const left = { x: projectile.x + PROJECTILE_SIZE, y: projectile.y - posY };
+      destroyProjectile();
+      return { centre: posX + PLAYER_WIDTH / 2, right, left };
+    });
+    ok("facing right, the shot starts at the muzzle, well in front of him",
+       muzzle.right.x - muzzle.centre > 55 && muzzle.right.x - muzzle.centre < 80, muzzle);
+    ok("facing left, the same distance on the other side",
+       Math.abs((muzzle.centre - muzzle.left.x) - (muzzle.right.x - muzzle.centre)) <= 1, muzzle);
+    ok("at the pistol's height, not the old chest height",
+       muzzle.right.y > 85 && muzzle.right.y < 115 && muzzle.left.y === muzzle.right.y, muzzle);
+
+    // The fire clip is 9 frames at 18fps (500ms). Comfortably after that,
     // the pose must have been handed back to the ordinary idle/walk
     // switch on its own, with no button press or gameplay code required.
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(800);
     const settled = await page.evaluate(() => ({ shooting, anim: currentAnim }));
     ok("the fire clip hands the pose back afterwards",
        settled.shooting === null && (settled.anim === "idle" || settled.anim === "walk"), settled);

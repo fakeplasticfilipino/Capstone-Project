@@ -20,14 +20,18 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 27, two commissioned sheets wired in. A tap
-on Atake plays Macario's new punch (Assets/Prefab/Macario_Melee.jpg, 4 by
-3, 12 frames), and the aim pose now waits 150ms before showing so a tap
-never flashes the aiming arm first. Kutsero is drawn from his own idle
-sheet (Assets/Act 1/Kutsero.png, 5 by 3, 14 frames) instead of the
-placeholder box. The melee file is a PNG named .jpg; it works as is.
-ASSET_VERSION 9, game.js v35, content/act1.js v19. Suite 417 passed, 0
-failed; _dev/verify_new_scene.js 36 passed, 0 failed. NOT RUN ON A PHONE.
+Last updated: after Block 28. Macario_Shooting.png was replaced with a
+5 by 3, 12-frame sheet whose muzzle flash is frame 4. The aim now holds
+on frames 1-3 and the shot plays frames 4-12, starting on the flash, with
+the projectile leaving from the drawn pistol's tip (a new muzzle field on
+the fire sheet) instead of a fixed chest height. ASSET_VERSION 10,
+game.js v36. Suite 421 passed, 0 failed; _dev/verify_new_scene.js 36
+passed, 0 failed. NOT RUN ON A PHONE.
+
+Earlier, Block 27: Macario's melee punch on a tap (Macario_Melee.jpg,
+4 by 3) with a 150ms delay before the aim pose, and Kutsero's own idle
+sheet in place of the placeholder. ASSET_VERSION 9, game.js v35,
+content/act1.js v19.
 
 Earlier, Block 26: the backdrop seam. The dark tree-shadow posts were
 replaced by mirroring every second copy of Tondo.png, so the painting
@@ -169,9 +173,9 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite has grown to 417 checks, after Block 27 extended
-section AI for the melee clip on top of Block 26's 412 (see Blocks
-done). It is fully green: 417 passed, 0 failed, as of Block 27. The one check
+The automated suite has grown to 421 checks, after Block 28 updated
+section AI for the new shooting sheet on top of Block 27's 417 (see
+Blocks done). It is fully green: 421 passed, 0 failed, as of Block 28. The one check
 that used to fail for real here — unequipping a cosmetic outfit restores
 the base walk cycle — still passes, because the base walk sheet it
 asserts against is a real file. See Known problems, missing production
@@ -305,7 +309,9 @@ Block 26: walk the kutsero scene end to end and confirm there is no dark
 post and no visible jump where the backdrop repeats; for Block 27: tap
 Atake facing both ways and confirm the punch plays without a flash of
 the aiming pose, that holding still throws, and that Kutsero stands on
-the road at his own spot), none of
+the road at his own spot; for Block 28: hold Atake facing both ways
+and confirm the flash shows on release and the shot leaves from the
+pistol, not from his chest), none of
 which have been seen on a phone yet, only in a headless browser, then
 Block 12's remaining polish, then the pilot. Writing Acts II through
 IV, against the source material this time, is the content work after
@@ -1265,6 +1271,27 @@ rather than the placeholder; 36 passed, 0 failed. Headless screenshots of
 idle and mid-punch facing both ways, with Kutsero beside him. NOT RUN ON
 A PHONE. (COMPLETE)
 
+Block 28, the redrawn shooting sheet. Assets/Prefab/Macario_Shooting.png
+replaced: 1280x768, 5 by 3, 12 frames, muzzle flash on frame 4 (index 3).
+Viewed frame by frame before mapping it: frames 0-2 aim, 3 fires, 4-9
+recoil, 10-11 return. Remeasured with _dev/measure-sprite.js: contentTop
+63, contentHeight 126, footX 117 (the warning about frame heights is the
+pistol rising in recoil; the feet do not move). Pistol tip measured in
+frame 2 at x 178, y 87.
+
+game.js: shootAim frames 0-2 at 8fps; shootFire frames 3-11 at 18fps
+with muzzle { x: 178, y: 87 }; throwProjectile starts the shot at the
+muzzle when the fire sheet names one, never nearer the body than the old
+spawn point. ASSET_VERSION to 10, game.js v36.
+
+Verified: section AI updated (frame ranges, 5 by 3 grid of 12, the hold
+settling on frame 2, the fire clip starting on frame 3, the pose handed
+back after half a second) plus three new checks that the shot leaves at
+the muzzle, the same distance either side, at pistol height. Full suite
+421 passed, 0 failed. _dev/verify_new_scene.js 36 passed, 0 failed.
+Headless screenshots of the aim and the shot facing both ways. NOT RUN ON
+A PHONE. (COMPLETE)
+
 ## Blocks remaining
 
 Block 12, polish. (IN PROGRESS)
@@ -1541,10 +1568,10 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-417 checks, after Block 27 extended section AI (the melee clip and the
-aim pose delay) on top of Block 26's 412 (see Blocks done). Anything
-other than "0 failed" is a regression. It last ran 417 passed, 0 failed,
-in Block 27 — run
+421 checks, after Block 28 updated section AI (the new shooting sheet's
+frame ranges and the muzzle spawn) on top of Block 27's 417 (see Blocks
+done). Anything other than "0 failed" is a regression. It last ran 421
+passed, 0 failed, in Block 28 — run
 from a disposable sandbox with the repository staged into it and a
 symlinked global Playwright install, since that session had no shell on
 the device itself; the same command is what to run directly on the device

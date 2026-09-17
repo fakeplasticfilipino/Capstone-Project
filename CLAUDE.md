@@ -605,9 +605,9 @@ image, so it needs that file's own v=N bumped rather than ASSET_VERSION.
 A sheet may also declare startFrame and endFrame, in frame numbers
 rather than pixels, to play only part of itself:
 
-    { src: "Assets/Prefab/Macario_Shooting.png", frames: 25, fps: 8,
-      columns: 5, startFrame: 0, endFrame: 12, loop: false,
-      contentTop: 23, contentHeight: 51 }
+    { src: "Assets/Prefab/Macario_Shooting.png", frames: 12, fps: 8,
+      columns: 5, startFrame: 0, endFrame: 2, loop: false,
+      contentTop: 63, contentHeight: 126, footX: 117 }
 
 This is what lets one image be declared as more than one named entry in
 BASE_SPRITE_SHEETS (see shootAim/shootFire, and Decisions on record) —
@@ -1983,6 +1983,24 @@ drawn while the button is down.
 Kutsero changed from a static img (a placeholder, since the file never
 existed) to an animation def in content/act1.js, which is all an NPC
 needs to go through bodySprite. ASSET_VERSION to 9.
+
+The redrawn shooting sheet (Block 28). Assets/Prefab/Macario_Shooting.png
+was replaced with a 5 by 3 sheet of 12 frames, the muzzle flash on frame 4
+counting from one (index 3). shootAim is now frames 0-2, held on 2;
+shootFire is 3-11 at 18fps, half a second, and starts on the flash so the
+flash and the projectile appear together. Remeasured: contentTop 63,
+contentHeight 126 (the union, which includes the pistol lifted in recoil;
+a tighter pair would crop the gun in frames 5-7), footX 117.
+
+A sheet may now declare muzzle: { x, y }, in native cell pixels, and
+throwProjectile starts the shot there: forward of the feet by
+(muzzle.x - footX) and above them by (contentTop + contentHeight -
+muzzle.y), both scaled by spriteFit, mirrored for facing left. It never
+spawns nearer the body than the plain PROJECTILE_SPAWN_GAP point, so a
+future sheet with a short reach cannot put the shot inside Macario.
+Measured from the pistol's tip in frame 2: x 178, y 87. Without muzzle
+the old spawn (body edge plus the gap, 60px up) applies. ASSET_VERSION
+to 10.
 
 ## Pitfalls
 

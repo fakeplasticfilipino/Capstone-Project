@@ -204,7 +204,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 9;
+const ASSET_VERSION = 10;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -781,24 +781,30 @@ const BASE_SPRITE_SHEETS = {
   },
   dead: { src: "Assets/Dead.png", frames: 5, fps: 6, columns: 5, loop: false },
 
-  // One 25-frame sheet, played as two separate named views rather than
-  // two files, via the optional startFrame/endFrame fields (see
-  // applyAnim/updateAnimFrame and Sprite sheets in CLAUDE.md): frames
-  // 0-12 are the aim/draw-up pose, held on frame 12 for as long as the
-  // attack button stays down, and frames 13-15 are the fire flourish (a
-  // muzzle flash lands on frame 14), played once at the instant the
-  // throw actually happens. Frames 16-24 are unused for now. fps for
-  // both, like the walk/idle pair before them, is a first guess nobody
-  // has judged on a phone yet.
+  // Block 28. The redrawn shooting sheet: 5 by 3, 12 of its 15 cells,
+  // played as two named views of the one image through startFrame and
+  // endFrame (see Sprite sheets in CLAUDE.md). Frames 0-2 are the aim,
+  // held on frame 2 while the button stays down. Frames 3-11 are the shot:
+  // the muzzle flash is frame 3, then the recoil lifts the pistol and
+  // brings it back down, played once at the instant the projectile
+  // leaves. The fire clip starts ON the flash frame, so the flash and the
+  // projectile appear together.
+  //
+  // contentTop/contentHeight are the union across all twelve frames, which
+  // includes the pistol raised in recoil; a tighter pair would crop the
+  // gun off the top of the box in frames 5-7. footX is from the feet, as
+  // always. muzzle is the pistol's tip in frame 2, in the same native cell
+  // pixels, and is where throwProjectile starts the shot.
   shootAim: {
-    src: "Assets/Prefab/Macario_Shooting.png", frames: 25, fps: 8, columns: 5,
-    startFrame: 0, endFrame: 12, loop: false,
-    contentTop: 23, contentHeight: 51, footX: 49,
+    src: "Assets/Prefab/Macario_Shooting.png", frames: 12, fps: 8, columns: 5,
+    startFrame: 0, endFrame: 2, loop: false,
+    contentTop: 63, contentHeight: 126, footX: 117,
   },
   shootFire: {
-    src: "Assets/Prefab/Macario_Shooting.png", frames: 25, fps: 12, columns: 5,
-    startFrame: 13, endFrame: 15, loop: false,
-    contentTop: 23, contentHeight: 51, footX: 49,
+    src: "Assets/Prefab/Macario_Shooting.png", frames: 12, fps: 18, columns: 5,
+    startFrame: 3, endFrame: 11, loop: false,
+    contentTop: 63, contentHeight: 126, footX: 117,
+    muzzle: { x: 178, y: 87 },
   },
 
   // Block 27. The one-tap melee swing: a 4 by 3 sheet, 12 frames, played
@@ -2168,14 +2174,33 @@ function throwProjectile() {
 
   // projectile.x is the ball's left edge, so a leftward throw also steps
   // back by the ball's own width to keep the whole ball clear.
-  const x = facing >= 0
+  let x = facing >= 0
     ? posX + PLAYER_WIDTH + PROJECTILE_SPAWN_GAP
     : posX - PROJECTILE_SPAWN_GAP - PROJECTILE_SIZE;
+  let y = posY + 60;
+
+  // Block 28. When the fire sheet names its muzzle, the shot starts at the
+  // pistol's tip instead: measured from the feet, the same point bodySprite
+  // stands on the middle of the body, so it lands on the drawn gun in
+  // either facing. Never nearer the body than the plain spawn point above,
+  // so a sheet with a short arm cannot put the shot inside Macario.
+  const sheet = SPRITE_SHEETS.shootFire;
+  if (sheet && sheet.muzzle && sheet.frameHeight && !sheet.failed) {
+    const fit = spriteFit(sheet, DISPLAY_HEIGHT);
+    const forward = (sheet.muzzle.x - (sheet.footX != null ? sheet.footX : sheet.frameWidth / 2)) * fit.scale;
+    const up = (sheet.contentTop + sheet.contentHeight - sheet.muzzle.y) * fit.scale;
+    const centre = posX + PLAYER_WIDTH / 2;
+    const tip = centre + facing * forward;
+    x = facing >= 0
+      ? Math.max(x, tip)
+      : Math.min(x, tip - PROJECTILE_SIZE);
+    y = posY + up - PROJECTILE_SIZE / 2;
+  }
 
   projectile = {
     el: el,
     x: x,
-    y: posY + 60,
+    y: y,
     dir: facing,
     travelled: 0,
   };
