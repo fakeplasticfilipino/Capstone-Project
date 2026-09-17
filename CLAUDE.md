@@ -2002,6 +2002,44 @@ Measured from the pistol's tip in frame 2: x 178, y 87. Without muzzle
 the old spawn (body edge plus the gap, 60px up) applies. ASSET_VERSION
 to 10.
 
+Pixel theme (Block 29). Requested directly: the chrome read as rounded,
+glossy and 3D beside pixel-art sprites and a pixel-art backdrop, and the
+text as plain. The whole interface was restyled as a flat 16-bit window
+set, in one section of style.css ("PIXEL THEME") placed after the rules
+it overrides and before the touch-target block, which stays last. It
+sets no width, height or min-height on anything tappable, so every
+on-glass size the harness measures is unchanged.
+
+The rules: square corners everywhere; flat fills, no gradients, glows or
+blurred shadows; depth only as a hard offset shadow or a solid 4px darker
+band along a button's bottom edge, removed with a 2px drop on press;
+windows outlined twice, a wood frame inside a near-black ink line. The
+Block 16 palette is kept, since it already matches the painted art.
+Gameplay colours keep their literals; only shapes changed, which is why
+the hearts are now pixel hearts cut with clip-path (outlined by stacked
+drop-shadows on #hud-hearts, and an empty heart is a dark heart rather
+than a hollow square, because a clipped shape cannot carry a border).
+
+Two pixel faces, chosen by rendering ten candidates with the game's own
+words: Press Start 2P for titles only, VT323 for everything read. VT323
+was the only face that kept B apart from 8 and 5 apart from S at body
+sizes with clear word spacing; Pixelify Sans was built first and failed
+both, which matters for Grade 8 students reading Tagalog on a small
+screen. VT323 is small for its nominal size, so every text size in the
+theme is about a third larger than the rule it replaces, including the
+text-size setting's small and large variants, which the theme restates.
+font-synthesis: none stops a smeared fake bold on single-weight faces.
+
+The fonts are self-hosted in Assets/Fonts (woff2, latin subsets, their
+SIL Open Font License files beside them), not loaded from Google Fonts: a
+phone on patchy data or a school network blocking the font CDN would
+otherwise fall back to Courier, which is the plain look this replaced.
+Section AN checks both faces actually load from there.
+
+The dialogue prompt is now Tagalog ("I-tap o pindutin ang E") with a
+blinking arrow drawn in CSS borders, since it was the one English line
+left on a player-facing screen.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -2156,6 +2194,13 @@ so unloadScene removes them, and the layers keep their .skyline-tiled
 class, so between an unloadScene and the next loadScene the backdrop is
 blank. Every caller today does both back to back, under the blackout. A
 new caller that unloads without loading straight after must expect that.
+
+A new text rule written in px for the old sans-serif will render about a
+quarter too small in VT323. Size new text against the theme's sizes, not
+the older rules above it, and if a new element should follow the text
+size setting, add its body.text-sm and body.text-lg variants inside the
+theme section too, or the theme's base size will outrank nothing and the
+older variants will apply at the old scale.
 
 Tile clicks and action clicks are separate listeners on separate
 containers (the list and the detail pane) in both panels. A new action

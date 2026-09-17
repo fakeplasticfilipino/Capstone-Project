@@ -40,7 +40,7 @@ const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
 
 const MIME = {
   ".html": "text/html", ".js": "text/javascript", ".css": "text/css",
-  ".png": "image/png", ".jpg": "image/jpeg",
+  ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2",
 };
 
 // A gameplay skeleton equivalent to the misyon scene an earlier pass of
@@ -3013,6 +3013,38 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a guard's box is its body", guard.boxWidth === guard.GUARD_WIDTH, guard);
     ok("a guard's art is centred on its body", Math.abs(guard.boxCentre - guard.artCentre) <= 1, guard);
 
+    await ctx.close();
+  }
+
+  console.log("\nAN. The pixel theme");
+  {
+    // Block 29. The fonts are self-hosted, so they must actually load
+    // from Assets/Fonts rather than silently falling back to Courier,
+    // which is the plain look the block replaced. And the chrome is flat:
+    // square corners and no soft shadows on the windows and buttons.
+    const { ctx, page } = await enterTestRoom();
+    await page.waitForTimeout(300);
+    const theme = await page.evaluate(async () => {
+      await document.fonts.ready;
+      const loaded = [...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family.replace(/"/g, ""));
+      const cs = (sel) => getComputedStyle(document.querySelector(sel));
+      return {
+        loaded,
+        bodyFont: cs("body").fontFamily,
+        headingFont: cs(".shell-heading").fontFamily,
+        radii: ["#shell-box", ".shell-btn", "#quest-log", "#btn-pause", ".touch-btn", "#quiz-box"]
+          .map((sel) => [sel, cs(sel).borderTopLeftRadius]),
+        buttonImage: cs(".shell-btn-primary").backgroundImage,
+      };
+    });
+    ok("VT323 loads from the repository", theme.loaded.includes("VT323"), theme.loaded);
+    ok("Press Start 2P loads from the repository", theme.loaded.includes("Press Start 2P"), theme.loaded);
+    ok("body text uses VT323", theme.bodyFont.includes("VT323"), theme.bodyFont);
+    ok("headings use Press Start 2P", theme.headingFont.includes("Press Start 2P"), theme.headingFont);
+    ok("windows and buttons have square corners",
+       theme.radii.every(([, r]) => r === "0px"), theme.radii);
+    ok("the primary button is a flat fill, not a gradient",
+       theme.buttonImage === "none", theme.buttonImage);
     await ctx.close();
   }
 

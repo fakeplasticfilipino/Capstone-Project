@@ -2316,6 +2316,659 @@ body.text-sm .shell-sub { font-size: 12px; }
   min-height: 1.2em;
 }
 
+/* =============================================================
+   PIXEL THEME (Block 29)
+
+   Requested directly: the interface read as rounded, glossy and
+   "3D" beside pixel-art sprites and a pixel-art backdrop. This
+   section restyles the chrome as a flat 16-bit window set, the look
+   of the SNES and GBA-era RPG menus the art already belongs to.
+
+   The rules, applied to every panel, button and label below:
+     No rounded corners. A pixel window has square ones.
+     No gradients, no glows, no blur. Colours are flat fills.
+     Depth is a hard offset shadow or a 4px darker band along a
+     button's bottom edge, drawn in solid colour, never a soft
+     shadow. Pressing a button removes the band and drops it 2px,
+     which is how a sprite button presses.
+     Every window is outlined twice: a light wood frame inside a
+     near-black ink line, so it reads against the bright backdrop.
+
+   Two pixel faces, chosen on a rendered comparison of ten with the
+   game's own words ("Bilhin: 5 barya", "Macario, anak, saan ka
+   pupunta?") rather than by name. Press Start 2P, the chunky 8-bit
+   face, for titles only, where words are short. VT323, a terminal
+   face, for everything a student reads: it was the only candidate that
+   kept B apart from 8 and 5 apart from S at body sizes and left clear
+   space between words. Pixelify Sans was tried first and failed both.
+   VT323 is small for its size, so every text size below is set about a
+   third larger than the rule it overrides. font-synthesis: none stops
+   the browser smearing a fake bold onto faces that have one weight.
+
+   The palette is the Block 16 wood, green and cream, unchanged: it
+   already matches the painted Tondo art, and gameplay colours
+   (hearts, hazards, the guard meter, the spear) keep their literal
+   colours. Only their SHAPES are squared off here.
+
+   Everything is an override placed after the rules it replaces and
+   before the touch-target block below, which must stay last. No
+   width, height or min-height of a tappable thing is set here, so
+   every size the harness measures on glass is unchanged.
+   ============================================================= */
+
+/* The fonts ship in the repository (Assets/Fonts, SIL Open Font
+   License files beside them) rather than loading from Google Fonts.
+   A classroom phone on patchy data, or a school network that blocks
+   the font CDN, would otherwise get the fallback face, which is the
+   plain look this block replaces. Latin subsets, which cover every
+   character the game writes. font-display: swap, so text is never
+   invisible while the files (18KB and 13KB) load. */
+@font-face {
+  font-family: "VT323";
+  src: url("Assets/Fonts/VT323.woff2?v=1") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Press Start 2P";
+  src: url("Assets/Fonts/PressStart2P.woff2?v=1") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --px-ink: #120c07;
+  --px-panel: #24180f;
+  --px-cell: #3a2818;
+  --px-cell-hi: #4a3521;
+  --px-edge: #8d6e63;
+  --px-green: #3e8e41;
+  --px-green-hi: #7bc47f;
+  --px-danger: #6b1f1f;
+  --px-font: "VT323", "Courier New", monospace;
+  --px-title: "Press Start 2P", "VT323", monospace;
+  --px-frame: 0 0 0 3px var(--px-ink), 6px 6px 0 3px rgba(0, 0, 0, 0.45);
+  --px-band: inset 0 -4px 0 rgba(0, 0, 0, 0.35);
+}
+
+html,
+body,
+button,
+input,
+textarea {
+  font-family: var(--px-font);
+  font-synthesis: none;
+}
+
+body {
+  line-height: 1.2;
+}
+
+/* ---- Windows --------------------------------------------------- */
+
+#shell-box,
+#act-screen-box,
+#quiz-box,
+#auth-box {
+  background: var(--px-panel);
+  border: 3px solid var(--px-edge);
+  border-radius: 0;
+  box-shadow: var(--px-frame);
+}
+
+#shell,
+#act-screen,
+#quiz {
+  background: rgba(18, 12, 7, 0.82);
+}
+
+.shell-heading,
+h2.shell-heading,
+#act-screen-title,
+#quiz-title,
+#auth-title,
+#rotate-notice h2,
+.inv-title .shell-heading {
+  font-family: var(--px-title);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 3px 3px 0 var(--px-ink);
+}
+
+/* The one word big enough to carry the chunky face at size. */
+#shell-title .shell-heading,
+#auth-title {
+  font-size: 24px;
+  letter-spacing: 2px;
+}
+
+.shell-sub,
+#act-screen-body,
+#auth-subtitle,
+#auth-status,
+#rotate-notice p {
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+body.text-sm .shell-sub { font-size: 16px; }
+body.text-lg .shell-sub { font-size: 21px; }
+
+.shell-eyebrow,
+#act-screen-eyebrow,
+#quiz-eyebrow {
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: var(--px-green-hi);
+}
+
+.shell-label,
+#quest-log-title {
+  font-size: 17px;
+  letter-spacing: 2px;
+  color: var(--px-green-hi);
+}
+
+body.text-sm #quest-log-title { font-size: 15px; }
+body.text-lg #quest-log-title { font-size: 20px; }
+
+/* ---- Buttons --------------------------------------------------- */
+
+.shell-btn,
+#act-screen-btn,
+#quiz-btn,
+#quiz-back,
+#auth-submit,
+#gift-btn {
+  font-family: var(--px-font);
+  font-weight: 400;
+  font-size: 21px;
+  letter-spacing: 1px;
+  border-radius: 0;
+  border: 3px solid var(--px-ink);
+  background: var(--px-cell);
+  color: var(--c-cream);
+  box-shadow: var(--px-band);
+  text-shadow: none;
+  transition: none;
+}
+
+.shell-btn-primary,
+#act-screen-btn,
+#quiz-btn,
+#auth-submit,
+#gift-btn {
+  background: var(--px-green);
+  border-color: var(--px-ink);
+  color: #fffbe8;
+}
+
+.shell-btn-ghost {
+  background: var(--px-cell);
+  color: var(--c-cream);
+}
+
+.shell-btn-danger {
+  background: var(--px-danger);
+  border-color: var(--px-ink);
+  color: #ffd9d9;
+}
+
+.shell-btn:not(:disabled):active,
+#act-screen-btn:not(:disabled):active,
+#quiz-btn:not(:disabled):active,
+#quiz-back:not(:disabled):active,
+#auth-submit:not(:disabled):active,
+#gift-btn:active {
+  box-shadow: none;
+  transform: translateY(2px);
+}
+
+#gift-btn:active {
+  transform: translate(-50%, 2px);
+}
+
+.shell-btn:disabled,
+#quiz-btn:disabled,
+#act-screen-btn:disabled {
+  opacity: 1;
+  background: #2e2419;
+  color: #857563;
+  box-shadow: none;
+}
+
+/* The medallion beside each label: a square socket, not a pill. */
+.shell-btn .ico,
+.shell-btn-primary .ico,
+.shell-btn-danger .ico {
+  border-radius: 0;
+  border: 2px solid var(--px-ink);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.shell-btn .ico svg,
+#act-screen-btn .ico svg,
+#quiz-btn .ico svg,
+#quiz-back .ico svg,
+#auth-submit .ico svg {
+  color: #fffbe8;
+}
+
+.shell-btn-danger .ico svg {
+  color: #ffb4b4;
+}
+
+.shell-choice {
+  border-radius: 0;
+  border: 3px solid var(--px-ink);
+  background: var(--px-cell);
+  color: var(--c-cream-dim);
+  box-shadow: var(--px-band);
+  font-family: var(--px-font);
+  font-size: 19px;
+}
+
+.shell-choice.active {
+  background: var(--px-green);
+  color: #fffbe8;
+  border-color: var(--px-ink);
+}
+
+.shell-note,
+#quiz-note,
+.shell-wipes,
+.shell-warn,
+.shell-keeps,
+.feedback-legend,
+.feedback-counter {
+  font-size: 17px;
+}
+
+.shell-controls {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.shell-controls li {
+  border-bottom: 2px dotted rgba(141, 110, 99, 0.35);
+}
+
+/* ---- Login ----------------------------------------------------- */
+
+#auth-form input[type="text"],
+#auth-form input[type="email"],
+#auth-form input[type="password"] {
+  border-radius: 0;
+  border: 3px solid var(--px-ink);
+  background: #1a110a;
+  box-shadow: inset 3px 3px 0 rgba(0, 0, 0, 0.45);
+  font-size: 20px;
+}
+
+#auth-form input:focus {
+  outline: 3px solid var(--px-green-hi);
+  outline-offset: 0;
+}
+
+/* ---- Quiz ------------------------------------------------------ */
+
+.quiz-choice {
+  border-radius: 0;
+  border: 3px solid var(--px-ink);
+  background: var(--px-cell);
+  box-shadow: var(--px-band);
+  font-family: var(--px-font);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+#quiz-question {
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+body.text-sm #quiz-question { font-size: 17px; }
+body.text-lg #quiz-question { font-size: 23px; }
+
+#quiz-progress {
+  font-size: 16px;
+}
+
+.quiz-choice.selected {
+  background: #264d28;
+  border-color: var(--px-green-hi);
+  color: #eaffea;
+}
+
+.qbadge {
+  border-radius: 0;
+  border: 2px solid var(--px-ink);
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 17px;
+}
+
+.feedback-star,
+.feedback-comment {
+  border-radius: 0;
+  font-family: var(--px-font);
+}
+
+/* ---- The world HUD --------------------------------------------- */
+
+#quest-log {
+  background: rgba(36, 24, 15, 0.9);
+  border: 3px solid var(--px-edge);
+  border-radius: 0;
+  box-shadow: 0 0 0 2px var(--px-ink), 4px 4px 0 2px rgba(0, 0, 0, 0.4);
+}
+
+#quest-list {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+body.text-sm #quest-list { font-size: 16px; }
+body.text-lg #quest-list { font-size: 21px; }
+
+#toast {
+  border-radius: 0;
+  border: 3px solid var(--px-ink);
+  background: var(--px-panel);
+  color: var(--px-green-hi);
+  font-size: 19px;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* The dialogue box is the window a student reads the whole lesson in:
+   a framed pane along the bottom with the speaker on a name tab. */
+#dialogue-box {
+  background: var(--px-panel);
+  border-top: 4px solid var(--px-edge);
+  box-shadow: 0 -3px 0 var(--px-ink);
+}
+
+#dialogue-speaker {
+  display: inline-block;
+  padding: 0 10px;
+  background: var(--px-green);
+  color: #fffbe8;
+  border: 2px solid var(--px-ink);
+  letter-spacing: 1px;
+  font-size: 20px;
+}
+
+#dialogue-text {
+  color: var(--c-cream);
+  font-size: 23px;
+  line-height: 1.2;
+}
+
+body.text-sm #dialogue-speaker { font-size: 18px; }
+body.text-sm #dialogue-text { font-size: 19px; }
+body.text-lg #dialogue-speaker { font-size: 24px; }
+body.text-lg #dialogue-text { font-size: 27px; }
+
+/* The prompt to go on is a blinking pixel arrow as well as the words,
+   the convention every pixel RPG taught its players. Drawn with
+   borders rather than a glyph, for the font-coverage reason recorded
+   under Icons in CLAUDE.md. */
+#dialogue-continue {
+  font-size: 16px;
+  color: var(--c-cream-dim);
+}
+
+#dialogue-continue::after {
+  content: "";
+  display: inline-block;
+  margin-left: 8px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid var(--px-green-hi);
+  vertical-align: middle;
+  animation: px-blink 0.9s steps(1, end) infinite;
+}
+
+@keyframes px-blink {
+  50% { visibility: hidden; }
+}
+
+/* Hearts as pixel hearts, cut from a 7 by 6 grid, with an ink outline
+   drawn by a stack of hard drop shadows on the row. Colours are the
+   same literals as before; an empty heart is a dark heart rather than a
+   hollow square, since a clipped shape cannot carry a border. */
+#hud-hearts {
+  filter: drop-shadow(2px 0 0 var(--px-ink)) drop-shadow(-2px 0 0 var(--px-ink))
+    drop-shadow(0 2px 0 var(--px-ink)) drop-shadow(0 -2px 0 var(--px-ink));
+}
+
+.heart,
+.pickup-heart {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: polygon(
+    14.29% 0%, 42.86% 0%, 42.86% 16.67%, 57.14% 16.67%, 57.14% 0%,
+    85.71% 0%, 85.71% 16.67%, 100% 16.67%, 100% 50%, 85.71% 50%,
+    85.71% 66.67%, 71.43% 66.67%, 71.43% 83.33%, 57.14% 83.33%,
+    57.14% 100%, 42.86% 100%, 42.86% 83.33%, 28.57% 83.33%,
+    28.57% 66.67%, 14.29% 66.67%, 14.29% 50%, 0% 50%, 0% 16.67%,
+    14.29% 16.67%
+  );
+}
+
+.heart {
+  width: 21px;
+  height: 18px;
+}
+
+.heart-empty {
+  background: #4a3a2c;
+}
+
+.projectile,
+.platform,
+.hide-spot,
+.guard-meter,
+.guard-meter-fill {
+  border-radius: 0;
+}
+
+.projectile {
+  box-shadow: 0 0 0 2px var(--px-ink);
+}
+
+/* ---- Touch controls and the corner buttons ---------------------- */
+
+.touch-btn,
+#btn-pause,
+#btn-inventory,
+#btn-shop {
+  border-radius: 0;
+  background: rgba(18, 12, 7, 0.62);
+  border: 3px solid rgba(245, 239, 224, 0.78);
+  box-shadow: 0 0 0 2px var(--px-ink), 3px 3px 0 2px rgba(0, 0, 0, 0.35);
+  font-family: var(--px-font);
+  transition: none;
+}
+
+.touch-btn .lbl {
+  font-family: var(--px-font);
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+/* The phone sizes, restated for VT323 inside the same query and with
+   the same selectors as the phone block at the top of this file, which
+   they have to outrank by source order. 20px of VT323 is about the
+   width 15px of the old face was, so the words still fit the buttons. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .dpad .touch-btn .lbl {
+    font-size: 24px;
+  }
+
+  .action-cluster .touch-btn .lbl,
+  #btn-attack .lbl,
+  #btn-jump .lbl {
+    font-size: 20px;
+  }
+}
+
+.touch-btn:active,
+#btn-pause:active,
+#btn-inventory:active,
+#btn-shop:active {
+  background: rgba(62, 142, 65, 0.75);
+}
+
+.interact-btn {
+  background: rgba(62, 142, 65, 0.5);
+}
+
+.interact-btn.active {
+  background: var(--px-green);
+  color: #fffbe8;
+  border-color: #eaffea;
+  box-shadow: 0 0 0 2px var(--px-ink), 3px 3px 0 2px rgba(0, 0, 0, 0.35);
+  animation: px-pulse 0.8s steps(2, end) infinite;
+}
+
+@keyframes px-pulse {
+  50% { border-color: var(--px-ink); }
+}
+
+/* ---- Inventory and shop ---------------------------------------- */
+
+.inv-balance {
+  border-radius: 0;
+  border: 3px solid var(--px-ink);
+  background: var(--px-cell);
+  font-size: 21px;
+  box-shadow: var(--px-band);
+}
+
+.inv-slot,
+.inv-tile {
+  border-radius: 0;
+  border: 3px solid var(--px-ink);
+  background: var(--px-cell);
+  box-shadow: var(--px-band);
+  font-family: var(--px-font);
+}
+
+.inv-slot-empty {
+  border-style: dashed;
+  border-color: #5a4633;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: none;
+}
+
+.inv-slot-filled {
+  background: #2c3f22;
+}
+
+.inv-slot-label {
+  font-size: 15px;
+  color: var(--px-green-hi);
+}
+
+.inv-slot-value {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.inv-tile .lbl {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.inv-tile-selected,
+.inv-slot.inv-tile-selected {
+  background: #264d28;
+  border-color: var(--px-green-hi);
+  border-style: solid;
+  box-shadow: 0 0 0 2px var(--px-ink), var(--px-band);
+}
+
+.inv-tile-quest {
+  border-color: #b8901f;
+}
+
+.inv-badge {
+  border-radius: 0;
+  border: 2px solid var(--px-ink);
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.inv-art,
+.inv-art-large {
+  border-radius: 0;
+  border: 2px solid var(--px-ink);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.inv-detail {
+  border-radius: 0;
+  border: 3px solid var(--px-edge);
+  background: #1a110a;
+  box-shadow: 0 0 0 2px var(--px-ink);
+}
+
+.inv-detail-name {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.05;
+  text-shadow: 2px 2px 0 var(--px-ink);
+}
+
+.inv-chip {
+  border-radius: 0;
+  border: 2px solid var(--px-ink);
+  background: var(--px-green);
+  color: #fffbe8;
+  font-size: 16px;
+}
+
+.inv-chip-quest {
+  background: #8d6e12;
+  color: #fff8e1;
+}
+
+.inv-detail-desc {
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+.inv-effects li {
+  font-size: 18px;
+}
+
+.inv-effects li::before {
+  border-radius: 0;
+}
+
+.inv-detail-count,
+.inv-detail-hint,
+.inv-detail-empty,
+.inv-empty {
+  font-size: 18px;
+}
+
+.inv-effects li::before {
+  top: 7px;
+}
+
+#gift-btn {
+  font-size: 21px;
+}
+
 /* EVERY TAPPABLE THING ON A SCREEN, at 44px on glass.
 
    The control cluster's diameters were worked out against --zoom when

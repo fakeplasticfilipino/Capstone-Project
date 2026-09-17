@@ -20,13 +20,20 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 28. Macario_Shooting.png was replaced with a
-5 by 3, 12-frame sheet whose muzzle flash is frame 4. The aim now holds
-on frames 1-3 and the shot plays frames 4-12, starting on the flash, with
-the projectile leaving from the drawn pistol's tip (a new muzzle field on
-the fire sheet) instead of a fixed chest height. ASSET_VERSION 10,
-game.js v36. Suite 421 passed, 0 failed; _dev/verify_new_scene.js 36
-passed, 0 failed. NOT RUN ON A PHONE.
+Last updated: after Block 29, a pixel-art restyle of the whole
+interface, requested directly because the UI looked rounded and 3D and
+the text plain beside the pixel art. Every window, button, tile, the
+quest log, dialogue box, toast, touch controls and corner buttons are now
+flat with square corners, hard outlines and solid bottom bands instead of
+gradients and soft shadows. Text uses two self-hosted pixel fonts: Press
+Start 2P for titles, VT323 for everything read (chosen over Pixelify Sans
+for legibility). Hearts are pixel hearts. The dialogue prompt is now in
+Tagalog. style.css v23; new files in Assets/Fonts. Suite 427 passed, 0
+failed; _dev/verify_new_scene.js 36 passed, 0 failed. NOT RUN ON A PHONE.
+
+Earlier, Block 28: the redrawn 5 by 3 shooting sheet, with the aim on
+frames 1-3, the shot on 4-12 starting on the flash, and the projectile
+leaving from the pistol's tip. ASSET_VERSION 10, game.js v36.
 
 Earlier, Block 27: Macario's melee punch on a tap (Macario_Melee.jpg,
 4 by 3) with a 150ms delay before the aim pose, and Kutsero's own idle
@@ -173,9 +180,9 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite has grown to 421 checks, after Block 28 updated
-section AI for the new shooting sheet on top of Block 27's 417 (see
-Blocks done). It is fully green: 421 passed, 0 failed, as of Block 28. The one check
+The automated suite has grown to 427 checks, after Block 29 added
+section AN (the pixel theme) on top of Block 28's 421 (see Blocks done).
+It is fully green: 427 passed, 0 failed, as of Block 29. The one check
 that used to fail for real here — unequipping a cosmetic outfit restores
 the base walk cycle — still passes, because the base walk sheet it
 asserts against is a real file. See Known problems, missing production
@@ -311,7 +318,11 @@ Atake facing both ways and confirm the punch plays without a flash of
 the aiming pose, that holding still throws, and that Kutsero stands on
 the road at his own spot; for Block 28: hold Atake facing both ways
 and confirm the flash shows on release and the shot leaves from the
-pistol, not from his chest), none of
+pistol, not from his chest; for Block 29: read the dialogue, the quest
+log, a quiz item and the shop on the phone at each text size and confirm
+every word is comfortable to read, and that the fonts are the pixel
+faces rather than a plain monospace, which would mean Assets/Fonts did
+not upload), none of
 which have been seen on a phone yet, only in a headless browser, then
 Block 12's remaining polish, then the pilot. Writing Acts II through
 IV, against the source material this time, is the content work after
@@ -1292,6 +1303,39 @@ the muzzle, the same distance either side, at pistol height. Full suite
 Headless screenshots of the aim and the shot facing both ways. NOT RUN ON
 A PHONE. (COMPLETE)
 
+Block 29, the pixel theme. Requested: the UI looked "bubbly" and 3D and
+the text plain, not like a flat 2D pixel game. Surveyed every screen
+first with an eleven-shot headless tour (title, login, world, dialogue,
+dangerous-scene HUD, pause, settings, shop, inventory, a quiz item, the
+act screen) and repeated the same tour after each pass.
+
+style.css: one new section, PIXEL THEME, before the touch-target block.
+Square corners, flat fills and hard outlines on #shell-box, #quiz-box,
+#act-screen-box, #auth-box, every .shell-btn and the act, quiz, login
+and gift buttons, .shell-choice, .quiz-choice and .qbadge, the login
+inputs, #quest-log, #toast, #dialogue-box (speaker on a name tab,
+blinking CSS arrow), the touch controls and the three corner buttons
+(the interact button pulses its border in two steps instead of glowing),
+and every inventory and shop surface. Hearts and the heart pickup are
+clip-path pixel hearts; the spear, platforms, hide spots and guard meter
+lost their rounding. Fonts: Assets/Fonts/VT323.woff2 and
+PressStart2P.woff2 with their OFL files, declared with @font-face; text
+sizes restated about a third larger for VT323, including the text-size
+setting's variants and the phone touch labels. Pixelify Sans was built
+first and replaced after a ten-font comparison showed it confusing B
+with 8 and 5 with S.
+
+index.html: the dialogue prompt changed from English to "I-tap o
+pindutin ang E"; style.css to v23. No JavaScript changed.
+
+Verified: new section AN (both fonts load from Assets/Fonts, body and
+headings use them, square corners on six key surfaces, flat primary
+button); the existing size checks (AB, AE, and the 44px-on-glass
+checks) all still pass unchanged. Full suite 427 passed, 0 failed.
+_dev/verify_new_scene.js 36 passed, 0 failed. Before and after tours at
+823 by 412, plus a 2x density pass on the dialogue and shop to judge the
+fonts as a phone would render them. NOT RUN ON A PHONE. (COMPLETE)
+
 ## Blocks remaining
 
 Block 12, polish. (IN PROGRESS)
@@ -1568,10 +1612,10 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-421 checks, after Block 28 updated section AI (the new shooting sheet's
-frame ranges and the muzzle spawn) on top of Block 27's 417 (see Blocks
-done). Anything other than "0 failed" is a regression. It last ran 421
-passed, 0 failed, in Block 28 — run
+427 checks, after Block 29 added section AN (self-hosted fonts load,
+square corners, flat fills) on top of Block 28's 421 (see Blocks done).
+Anything other than "0 failed" is a regression. It last ran 427 passed,
+0 failed, in Block 29 — run
 from a disposable sandbox with the repository staged into it and a
 symlinked global Playwright install, since that session had no shell on
 the device itself; the same command is what to run directly on the device
