@@ -483,7 +483,8 @@ into Assets/Act 1 and Assets/Prefab — one real commissioned sprite,
 Nanay (see Act I's content, above, and Decisions on record). Three
 more NPCs joined content/act1.js since, in the kutsero scene (Kabayo,
 Kutsero, Tindero — Blocks 19-20), and none of the three has real art
-either: their img fields point at Assets/Horse.png, Assets/Kutsero.png
+either (Kutsero gained real art in Block 27; see Decisions on record):
+their img fields point at Assets/Horse.png, Assets/Kutsero.png
 and Assets/Tindero.png, none of which exist on this device (see
 TRACKER.md, Known problems, missing production art). Any future NPC,
 guard or decoration without real art falls back to the dashed
@@ -1956,6 +1957,32 @@ hidden and the camera on the first seam, the columns either side of the
 join must differ no more than columns either side of nearby points in the
 same painting. The same check fails against unmirrored tiles (about twice
 the nearby difference), so it can tell a seam from no seam.
+
+Melee clip and Kutsero's art (Block 27). Two commissioned sheets
+arrived: Assets/Prefab/Macario_Melee.jpg (4 by 3, 12 frames, a punch)
+and Assets/Act 1/Kutsero.png (5 by 3, 14 frames, a front-facing idle).
+Both were measured with measure-sprite.js. The melee sheet is a PNG with
+transparency saved under a .jpg name; browsers decode by content, so it
+is referenced as delivered, and renaming it later means changing the src
+in BASE_SPRITE_SHEETS.melee and bumping ASSET_VERSION.
+
+A tap on Atake now plays the punch (playMelee, 12 frames at 24fps, half a
+second) through the same shooting variable and hand-back timer the fire
+clip uses, so every existing reset path already clears it. The hit still
+lands on release, not on the punch's contact frame: making gameplay wait
+for the art would add a quarter second of lag to a one-tap attack and
+break nothing visible enough to be worth it.
+
+The aim pose no longer appears the instant the button goes down. It waits
+AIM_POSE_DELAY_MS (150), switched on by updateAttackHoldPose from the game
+loop, because with a punch to play on release every tap would otherwise
+flash the aiming arm first. ATTACK_HOLD_MS (400) alone still decides
+whether a release is a punch or a throw; the delay only decides what is
+drawn while the button is down.
+
+Kutsero changed from a static img (a placeholder, since the file never
+existed) to an animation def in content/act1.js, which is all an NPC
+needs to go through bodySprite. ASSET_VERSION to 9.
 
 ## Pitfalls
 

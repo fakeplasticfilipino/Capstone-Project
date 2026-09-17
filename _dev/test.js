@@ -2396,17 +2396,21 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("shootAim covers frames 0-12", sheets.aim.startFrame === 0 && sheets.aim.endFrame === 12, sheets.aim);
     ok("shootFire covers frames 13-15", sheets.fire.startFrame === 13 && sheets.fire.endFrame === 15, sheets.fire);
 
-    // Holding the attack button should switch the pose to the aim view
-    // immediately, before anyone knows yet whether this will end up a
-    // melee swing or a throw.
+    // Block 27: the aim pose waits AIM_POSE_DELAY_MS before showing, so
+    // a tap goes straight into the punch without a flash of the aiming
+    // arm first. Held past the delay, the aim pose shows as before.
     const pressed = await page.evaluate(() => {
       startAttackHold();
-      return { anim: currentAnim, frame: currentFrame, shooting };
+      return { anim: currentAnim, shooting };
     });
-    ok("pressing attack switches to the aim pose",
-       pressed.anim === "shootAim" && pressed.shooting === "aim", pressed);
-    ok("the aim pose starts on its own first frame (0), not frame 0 of the sheet's neighbour",
-       pressed.frame === 0, pressed);
+    ok("pressing attack does not show the aim pose on the first frame",
+       pressed.shooting === null && pressed.anim !== "shootAim", pressed);
+    await page.waitForTimeout(250);
+    const aiming = await page.evaluate(() => ({ anim: currentAnim, frame: currentFrame, shooting }));
+    ok("held past the delay, it switches to the aim pose",
+       aiming.anim === "shootAim" && aiming.shooting === "aim", aiming);
+    ok("the aim pose starts at the beginning of its own range, not past it",
+       aiming.frame >= 0 && aiming.frame <= 3, aiming);
 
     // Held well past the aim clip's own length (13 frames at 8fps =
     // 1625ms): it must have climbed to frame 12 and stayed there,
@@ -2431,8 +2435,37 @@ const visible = (page, sel) => page.evaluate((s) => {
       endAttackHold();
       return { shooting, anim: currentAnim, projectile: projectile !== null };
     });
-    ok("releasing early cancels the aim pose", tapped.shooting === null, tapped);
+    ok("releasing early plays the melee punch instead of the aim pose",
+       tapped.shooting === "melee" && tapped.anim === "melee", tapped);
     ok("and throws nothing", tapped.projectile === false, tapped);
+
+    // The punch: its sheet loaded, and it hands the pose back on its own
+    // once its 12 frames at 24fps (500ms) have played.
+    const melee = await page.evaluate(() => SPRITE_SHEETS.melee);
+    ok("the melee sheet loaded without falling back to a placeholder",
+       melee && melee.failed === false, melee);
+    ok("and is read as a 4 by 3 grid of 12 frames",
+       melee.columns === 4 && melee.frames === 12 && melee.rows === 3, melee);
+    await page.waitForTimeout(700);
+    const punched = await page.evaluate(() => ({ shooting, anim: currentAnim, frame: currentFrame }));
+    ok("the punch hands the pose back afterwards",
+       punched.shooting === null && (punched.anim === "idle" || punched.anim === "walk"), punched);
+
+    // A tap that is quick enough never shows the aim pose at all, even
+    // for a frame: sampled every animation frame from press to release.
+    const flash = await page.evaluate(() => new Promise((resolve) => {
+      let sawAim = false;
+      startAttackHold();
+      const t0 = performance.now();
+      const tick = () => {
+        if (currentAnim === "shootAim") sawAim = true;
+        if (performance.now() - t0 < 90) requestAnimationFrame(tick);
+        else { endAttackHold(); resolve({ sawAim, anim: currentAnim }); }
+      };
+      requestAnimationFrame(tick);
+    }));
+    ok("a quick tap never flashes the aim pose first", !flash.sawAim && flash.anim === "melee", flash);
+    await page.waitForTimeout(700);
 
     // A held-and-released throw fires the projectile and the muzzle
     // flash clip at the same instant, not one before the other.
@@ -2465,6 +2498,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     // the scene once that happens.
     const stuck = await page.evaluate(() => {
       startAttackHold();
+      attackHoldStart = performance.now() - 300;
+      updateAttackHoldPose(performance.now());
       respawnInScene();
       return { shooting, attackHoldStart };
     });

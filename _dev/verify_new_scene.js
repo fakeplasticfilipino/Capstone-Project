@@ -97,6 +97,15 @@ const talk = async (page, times) => {
   const questsAfterKabayo = await page.evaluate(() => quests.map((q) => q.id));
   ok("the apple quest is logged after meeting Kabayo", questsAfterKabayo.includes("bilhan_mansanas"), questsAfterKabayo);
 
+  // --- Kutsero's art (Block 27): a real animated sheet, not a placeholder. ---
+  await page.waitForTimeout(300);
+  const kutseroArt = await page.evaluate(() => {
+    const el = document.querySelector("#npc-kutsero .sprite");
+    return { bg: el.style.backgroundImage, text: el.textContent, height: el.style.height };
+  });
+  ok("Kutsero draws his sprite sheet, not the placeholder box",
+     kutseroArt.bg.includes("Kutsero.png") && kutseroArt.text === "", kutseroArt);
+
   // --- Kutsero: +10 barya, and the exact script. ---
   const balanceBefore = await page.evaluate(() => Game.currency());
   await walkTo(page, 730); // Kutsero sits at x=750

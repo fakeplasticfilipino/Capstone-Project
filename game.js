@@ -204,7 +204,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 8;
+const ASSET_VERSION = 9;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -800,6 +800,20 @@ const BASE_SPRITE_SHEETS = {
     startFrame: 13, endFrame: 15, loop: false,
     contentTop: 23, contentHeight: 51, footX: 49,
   },
+
+  // Block 27. The one-tap melee swing: a 4 by 3 sheet, 12 frames, played
+  // once per tap (playMelee). 24fps puts the whole punch at half a second,
+  // quick enough that a second tap never feels ignored. The file is a PNG
+  // with transparency that happens to carry a .jpg name; browsers read the
+  // bytes, not the extension, so it is referenced as delivered. The punch
+  // dips about ten native pixels at full extension (frames 5 to 10), which
+  // is the lunge in the art rather than a size error, so one
+  // contentTop/contentHeight pair is right for it.
+  melee: {
+    src: "Assets/Prefab/Macario_Melee.jpg", frames: 12, fps: 24, columns: 4,
+    loop: false,
+    contentTop: 47, contentHeight: 109, footX: 96,
+  },
 };
 
 // The set actually in use. Reassigned by setOutfit, which is why this is
@@ -976,6 +990,7 @@ Promise.all([
   loadSpriteSheet(SPRITE_SHEETS.dead),
   loadSpriteSheet(SPRITE_SHEETS.shootAim),
   loadSpriteSheet(SPRITE_SHEETS.shootFire),
+  loadSpriteSheet(SPRITE_SHEETS.melee),
 ]).then(() => {
   spritesReady = true;
   applyAnim(currentAnim, true);
@@ -1997,18 +2012,36 @@ const PROJECTILE_RANGE = 520;
 let attackHoldStart = 0;
 let projectile = null; // at most one in flight
 
-// Whether the shooting sheet currently owns the player's pose: "aim"
-// while the button is down (nothing yet decides melee vs. throw — that
-// is only known on release), "fire" for the brief flourish right after
-// a throw. The main loop's own idle/walk switch (see gameLoop) is
-// suppressed while this is set, the same way cutscenePlaying already
-// suppresses it for the death sequence.
-let shooting = null; // null | "aim" | "fire"
-let shootFireTimer = null;
+// Which attack clip currently owns the player's pose: "aim" while the
+// button is held, "fire" for the brief flourish right after a throw, and
+// "melee" for the punch a tap plays (Block 27). The main loop's own
+// idle/walk switch (see gameLoop) is suppressed while this is set, the
+// same way cutscenePlaying already suppresses it for the death sequence.
+// The name predates melee having a clip of its own; it is kept because
+// every reset path already clears it (respawnInScene, startPerformance,
+// loadScene) and a rename would be churn through all of them.
+let shooting = null; // null | "aim" | "fire" | "melee"
+let shootFireTimer = null; // hands the pose back after fire or melee
+
+// How long the button must be down before the aim pose shows (Block 27).
+// Before melee had its own clip, the aim pose appeared the instant the
+// button went down, which was harmless. With a punch to play on release,
+// every tap would flash the aiming arm for a frame or two first. A tap is
+// well under this; a hold that becomes a throw is well over it, and
+// ATTACK_HOLD_MS still alone decides which one a release is.
+const AIM_POSE_DELAY_MS = 150;
 
 function startAttackHold() {
   if (authGated || uiBlocked || inDialogue || cutscenePlaying) return;
   attackHoldStart = performance.now();
+}
+
+// Called every frame from the game loop. Switches to the aim pose once
+// the button has been held past AIM_POSE_DELAY_MS, and not before, so a
+// tap goes straight from idle or walk into the punch.
+function updateAttackHoldPose(now) {
+  if (!attackHoldStart || shooting === "aim") return;
+  if (now - attackHoldStart < AIM_POSE_DELAY_MS) return;
   shooting = "aim";
   applyAnim("shootAim", true);
 }
@@ -2029,11 +2062,29 @@ function endAttackHold() {
     throwProjectile();
     playShootFire();
   } else {
-    // A short tap was never a throw — drop the aim pose and swing
-    // instead, rather than let the sheet decide gameplay.
-    shooting = null;
+    // A short tap was never a throw: drop any aim pose and swing. The hit
+    // lands on release, as it always has, and the punch clip plays over
+    // it; gameplay is not made to wait for the art.
     meleeAttack();
+    playMelee();
   }
+}
+
+// Plays the punch once, then hands the pose back. Same timer approach as
+// playShootFire, below, and the same timer, so a throw straight after a
+// punch (or the reverse) cancels the earlier hand-back rather than
+// letting it end the new clip early.
+function playMelee() {
+  shooting = "melee";
+  applyAnim("melee", true);
+
+  const sheet = SPRITE_SHEETS.melee;
+  const duration = sheet.frames * (1000 / sheet.fps);
+
+  clearTimeout(shootFireTimer);
+  shootFireTimer = setTimeout(() => {
+    shooting = null;
+  }, duration);
 }
 
 // Plays shootFire's three frames once, then hands the pose back to the
@@ -2310,8 +2361,9 @@ function gameLoop(now) {
 
   // During the stage cutscene, leave whatever animation is already set
   // (such as "dead") rather than switching back to idle or walk. The
-  // same holds while shooting owns the pose (aiming or firing) — see
-  // startAttackHold/playShootFire.
+  // same holds while an attack clip owns the pose (aiming, firing or
+  // punching) — see updateAttackHoldPose, playShootFire and playMelee.
+  if (canAct) updateAttackHoldPose(now);
   if (!cutscenePlaying && !shooting) {
     applyAnim(isWalking && onGround ? "walk" : "idle");
   }

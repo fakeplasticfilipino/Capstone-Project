@@ -65,7 +65,8 @@
 // stands on the middle of her body (CLAUDE.md, Bodies, Block 24).
 //
 // Kabayo, Kutsero and Tindero have no art yet: img points at
-// Assets/Horse.png, Assets/Kutsero.png and Assets/Tindero.png, none of
+// Assets/Horse.png and Assets/Tindero.png (Kutsero has real art as of
+// Block 27, Assets/Act 1/Kutsero.png), none of
 // which exist on this device, so all three fall back to the dashed
 // placeholder box naming the file — the same fallback every other
 // missing image in this project uses. There is nothing to wire in once
@@ -235,7 +236,14 @@ window.ACT_1 = {
           id: "kutsero",
           x: 750,
           label: "Kutsero",
-          img: "Assets/Kutsero.png",
+          // Real commissioned art (Block 27): a 5 by 3 sheet, 14 of its 15
+          // cells used, measured with _dev/measure-sprite.js the same way
+          // Nanay's was. He faces the camera, so there is no facing to get
+          // wrong from either side.
+          animation: {
+            src: "Assets/Act 1/Kutsero.png", frames: 14, fps: 6, columns: 5,
+            contentTop: 69, contentHeight: 121, footX: 128,
+          },
           stage: 0,
           dialogueSets: [
             {

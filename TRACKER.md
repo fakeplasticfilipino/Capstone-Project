@@ -20,16 +20,18 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 26, reported directly: the dark "tree shadow"
-posts that hid each seam in the repeated Tondo backdrop looked ugly.
-Replaced rather than restyled. The backdrop is now laid out as tiles with
-every second one mirrored (buildSkylineTiles, game.js), so the painting
-continues across each join instead of jumping, and the shadow bands are
-gone. No new art. The kutsero scene's grey filter still applies, and the
-night layer uses the same tiles once Tondo_Night.png exists. game.js v34,
-style.css v22. Suite 412 passed, 0 failed, including a new pixel check
-on the seam that fails against unmirrored tiles;
-_dev/verify_new_scene.js 35 passed, 0 failed. NOT RUN ON A PHONE.
+Last updated: after Block 27, two commissioned sheets wired in. A tap
+on Atake plays Macario's new punch (Assets/Prefab/Macario_Melee.jpg, 4 by
+3, 12 frames), and the aim pose now waits 150ms before showing so a tap
+never flashes the aiming arm first. Kutsero is drawn from his own idle
+sheet (Assets/Act 1/Kutsero.png, 5 by 3, 14 frames) instead of the
+placeholder box. The melee file is a PNG named .jpg; it works as is.
+ASSET_VERSION 9, game.js v35, content/act1.js v19. Suite 417 passed, 0
+failed; _dev/verify_new_scene.js 36 passed, 0 failed. NOT RUN ON A PHONE.
+
+Earlier, Block 26: the backdrop seam. The dark tree-shadow posts were
+replaced by mirroring every second copy of Tondo.png, so the painting
+continues across each join. game.js v34, style.css v22.
 
 Earlier, Block 25: the item and inventory overhaul. Permanent items in
 Sandata, Anting-anting and Damit; stacking consumables used with
@@ -167,9 +169,9 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite has grown to 412 checks, after Block 26 rebuilt
-section AJ for the mirrored backdrop on top of Block 25's 407 (see Blocks
-done). It is fully green: 412 passed, 0 failed, as of Block 26. The one check
+The automated suite has grown to 417 checks, after Block 27 extended
+section AI for the melee clip on top of Block 26's 412 (see Blocks
+done). It is fully green: 417 passed, 0 failed, as of Block 27. The one check
 that used to fail for real here — unequipping a cosmetic outfit restores
 the base walk cycle — still passes, because the base walk sheet it
 asserts against is a real file. See Known problems, missing production
@@ -300,7 +302,10 @@ open Tindahan and Imbentaryo on the phone and confirm both panels fit
 the screen sideways with Bumalik visible, that tiles are easy to tap,
 and that eating a Mansanas after the glass restores the heart; for
 Block 26: walk the kutsero scene end to end and confirm there is no dark
-post and no visible jump where the backdrop repeats), none of
+post and no visible jump where the backdrop repeats; for Block 27: tap
+Atake facing both ways and confirm the punch plays without a flash of
+the aiming pose, that holding still throws, and that Kutsero stands on
+the road at his own spot), none of
 which have been seen on a phone yet, only in a headless browser, then
 Block 12's remaining polish, then the pilot. Writing Acts II through
 IV, against the source material this time, is the content work after
@@ -1231,6 +1236,35 @@ _dev/verify_new_scene.js 35 passed, 0 failed. Headless screenshots of
 both seams at 823 by 412, before and after. NOT RUN ON A PHONE.
 (COMPLETE)
 
+Block 27, Macario's melee clip and Kutsero's idle. Two sheets delivered:
+Assets/Prefab/Macario_Melee.jpg (800x600, 4 by 3, 12 frames; a PNG with
+alpha under a .jpg name) and Assets/Act 1/Kutsero.png (1280x768, 5 by 3,
+14 of 15 cells). Measured with _dev/measure-sprite.js: melee contentTop 47,
+contentHeight 109, footX 96 (six punch frames dip about ten pixels, which
+is the lunge, not a size fault); Kutsero contentTop 69, contentHeight
+121, footX 128.
+
+game.js: BASE_SPRITE_SHEETS.melee (24fps, loop false) and its preload;
+playMelee plays it once on a tap, through the existing shooting state
+and hand-back timer; the aim pose moved from startAttackHold into
+updateAttackHoldPose, called from the game loop, and shows only after
+AIM_POSE_DELAY_MS (150). ATTACK_HOLD_MS (400) is unchanged and still the
+only thing that decides punch or throw. The hit still lands on release.
+ASSET_VERSION to 9, game.js v35.
+
+content/act1.js: Kutsero's img replaced with an animation def (6fps,
+matching Nanay). v19.
+
+Verified: section AI extended (no aim pose on the first frame of a
+press, aim pose after the delay, a tap plays the melee clip and throws
+nothing, the melee sheet loads as a 4 by 3 grid, the punch hands the
+pose back after its half second, and a quick tap sampled every frame
+never shows the aim pose); full suite 417 passed, 0 failed.
+_dev/verify_new_scene.js gained a check that Kutsero draws his sheet
+rather than the placeholder; 36 passed, 0 failed. Headless screenshots of
+idle and mid-punch facing both ways, with Kutsero beside him. NOT RUN ON
+A PHONE. (COMPLETE)
+
 ## Blocks remaining
 
 Block 12, polish. (IN PROGRESS)
@@ -1436,7 +1470,9 @@ the scene), and Assets/Tindero.png (Tindero, at the shop end of the
 map). These have been missing since Blocks 19-20 built the scene and
 were never entered here; this device's Assets/ folder holds only the
 Act 1/ and Prefab/ subfolders confirmed above, nothing at its own
-root. Six files missing in total now, not three.
+root. Six files missing in total now, not three. (Block 27: Kutsero now
+has real art at Assets/Act 1/Kutsero.png, so five remain: Horse.png,
+Tindero.png, Tondo_Night.png, Cement_Tile.png and Dead.png.)
 
 The live game as currently checked out on this device would show no
 ground texture, no night skyline, a defeated Macario falling back to
@@ -1505,10 +1541,10 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-412 checks, after Block 26 rebuilt section AJ (mirrored backdrop tiles
-and a pixel check on the seam) on top of Block 25's 407 (see Blocks
-done). Anything other than "0 failed" is a regression. It last ran 412
-passed, 0 failed, in Block 26 — run
+417 checks, after Block 27 extended section AI (the melee clip and the
+aim pose delay) on top of Block 26's 412 (see Blocks done). Anything
+other than "0 failed" is a regression. It last ran 417 passed, 0 failed,
+in Block 27 — run
 from a disposable sandbox with the repository staged into it and a
 symlinked global Playwright install, since that session had no shell on
 the device itself; the same command is what to run directly on the device
