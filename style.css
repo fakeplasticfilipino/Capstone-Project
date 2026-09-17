@@ -276,6 +276,12 @@ html, body {
   filter: grayscale(1);
 }
 
+/* A scene whose backdrop already paints a floor (ground: false, the
+   inside of the entablado) hides the dirt strip. Block 34. */
+#ground-tiles.ground-hidden {
+  display: none;
+}
+
 /* Ground: a repeating earth texture (Lupa.jpg, Block 33) sitting in front
    of the skyline backdrop, right where characters stand. A dark gradient
    is layered on top so the bottom of the band fades to black, for depth

@@ -718,8 +718,12 @@ const Acts = {
   // game.js, reusing the same #blackout element and timings the stage
   // cutscene already uses). Awaited, so the save that follows writes
   // the NEW scene's id, not the one the player is fading out of.
-  async gotoScene(sceneId) {
-    await fadeToScene(sceneId);
+  //
+  // placement, optional, is { x, facing } in the new scene (Block 34),
+  // for a doorway that should land at the matching door rather than at
+  // the scene's startX.
+  async gotoScene(sceneId, placement) {
+    await fadeToScene(sceneId, placement);
     markDirty();
     await saveProgress();
   },

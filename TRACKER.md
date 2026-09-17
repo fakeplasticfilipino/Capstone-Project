@@ -22,12 +22,12 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 17 Sep 2026, after Block 33 (Kutsero and Tindero art
-sorted out, Lupa.jpg ground). Blocks 22 to 29 were audited against GitHub main
-(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 33
+Last updated: 18 Sep 2026, after Block 34 (the entablado, outside and
+in). Blocks 22 to 29 were audited against GitHub main
+(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 34
 were written to the device folder; whether they are pushed is not
-recorded. The suite was run against the device folder's files: 476
-passed, 0 failed; _dev/verify_new_scene.js 72 passed, 0 failed.
+recorded. The suite was run against the device folder's files: 486
+passed, 0 failed; _dev/verify_new_scene.js 80 passed, 0 failed.
 
 ## Start here
 
@@ -42,7 +42,7 @@ the shop, equipment and outfits, play-as-guest, settings and the full
 reset (which needs schema v5), and the teacher dashboard. Performance
 was confirmed smooth on a real 4GB Android phone in landscape.
 
-Act I is two scenes and is the only act with content. Acts II to IV are
+Act I is three scenes and is the only act with content. Acts II to IV are
 registered stubs. Act I cannot be completed yet, on purpose: its fourth
 objective has no content (see Next action).
 
@@ -66,7 +66,13 @@ objective has no content (see Next action).
               stage costume, which completes it, and her shop opens:
               Damit para sa Entablado, 100 barya, worn in Damit, halves
               how fast a guard notices him while he stands still. No
-              guard exists in Act I yet to notice.
+              guard exists in Act I yet to notice. At the end of the
+              road, now 2900px, stands the entablado (real art); Pasok
+              at its stairs goes in.
+    entablado the inside of the stage (Entablado.png as the whole
+              backdrop, no dirt strip). Nothing here yet; Lumabas at the
+              left edge goes back out to the stairs. Going in does not
+              complete pumunta_entablado.
 
 content/items.js ships three items: the two apples and the stage
 clothes (Damit). No Sandata or Anting-anting item exists yet. The
@@ -88,18 +94,18 @@ default. Intense.mp3 is in Assets/Prefab and unused on purpose.
 
 Current versions, which index.html must match on every push:
 
-    style.css v24        game.js v40          shell.js v13
-    inventory.js v8      acts.js v9           assessment.js v3
-    content/act1.js v23  content/items.js v7  content/act2-4.js v1
-    ASSET_VERSION 12 (in game.js)
+    style.css v25        game.js v41          shell.js v13
+    inventory.js v8      acts.js v10          assessment.js v3
+    content/act1.js v24  content/items.js v7  content/act2-4.js v1
+    ASSET_VERSION 13 (in game.js)
 
-Nothing from Blocks 14 to 33 has been seen on a phone. Everything in
+Nothing from Blocks 14 to 34 has been seen on a phone. Everything in
 that range is verified headlessly only. A device pass is owed before
 the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 33 are built. Blocks 22 to 33 were all this session, each
+Blocks 1 to 34 are built. Blocks 22 to 34 were all this session, each
 on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -126,15 +132,18 @@ on direct feedback from the proponent:
         Nanay's opening rewritten
     33  the real Kutsero sheet; the old one renamed Tindero and wired
         in; Lupa.jpg as the ground, greyed in the memory
+    34  the entablado: Entablado_Labas.png at the end of a 2900px road,
+        a doorway into an "entablado" scene with Entablado.png as its
+        own backdrop, and back out; scene backdrop, ground and exits
 
-Push Blocks 30 to 33 together, with every file below in the same
-commit, or the ?v=N numbers will not match: game.js, shell.js,
+Push Blocks 30 to 34 together, with every file below in the same
+commit, or the ?v=N numbers will not match: game.js, acts.js, shell.js,
 inventory.js, style.css, index.html, content/act1.js, content/items.js,
 CLAUDE.md, TRACKER.md, _dev/test.js, _dev/verify_new_scene.js, and the
 new and renamed files in Assets/ (Act 1/Kutsero.png, Act 1/Tindero.png,
-Act 1/Lupa.jpg, Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
-Prefab/Gun_Shot.mp3; Intense.mp3 and Act 1/Entablado.png may go too,
-nothing loads them yet).
+Act 1/Lupa.jpg, Act 1/Entablado_Labas.png, Act 1/Entablado.png,
+Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
+Prefab/Gun_Shot.mp3; Intense.mp3 may go too, nothing loads it yet).
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/reset_test_accounts.sql
@@ -145,8 +154,8 @@ changed meaning; whether it has been is not recorded.
 
 In order.
 
-1. Push Blocks 30 to 33 (see Right now for the file list), then a
-device pass on Blocks 14 to 33, on the phone, in landscape, from a private tab
+1. Push Blocks 30 to 34 (see Right now for the file list), then a
+device pass on Blocks 14 to 34, on the phone, in landscape, from a private tab
 (browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
@@ -181,14 +190,18 @@ device pass on Blocks 14 to 33, on the phone, in landscape, from a private tab
       talking; her shop opens by itself and lists only the clothes;
       buying leaves 100 less; Isuot puts them in Damit; the corner
       shop button does not sell them.
+    The entablado: the building stands on the road at a sensible size
+      beside Macario; Pasok appears at its stairs; inside, the painting
+      fills the screen with its floor under his feet and no dirt strip;
+      Lumabas at the left edge is findable and returns to the stairs.
     Kabayo: crisp pixels rather than a blur, standing on the road,
       roughly Macario's height. If he reads too small for a horse,
       that is one number (an NPC display height) to add.
 
-2. The entablado. Act I's fourth objective, pumunta_entablado, has flag
-nasaEntablado, which nothing sets. The next content beat is a scene (or
-a use of tondo) where Macario reaches the entablado and that flag is
-set, which is what finally lets Act I complete and run its post-test.
+2. The entablado's story. The room exists (Block 34) and is empty. Act
+I's last objective, pumunta_entablado, has flag nasaEntablado, which
+nothing sets. The next content beat is what happens on that stage and
+where that flag is set, which is what finally lets Act I complete and run its post-test.
 Write it against the resource person's source book (Content authority,
 under The milestone). The engine already has a stage and a death
 cutscene mechanic; see CLAUDE.md.
@@ -297,7 +310,7 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-The framework is complete. Act I has two scenes, five NPCs and five
+The framework is complete. Act I has three scenes, five NPCs and five
 objectives, four of them playable end to end; the fifth waits on the
 entablado content. Acts II to IV are registered stubs with no content.
 
@@ -351,7 +364,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 476-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 486-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -412,6 +425,9 @@ submit_assessment).
         conversations; Mananahi on a longer tondo road
     32  stage clothes, stillDetectionMult, soldBy, opensShopAfter
         (section AQ); tailor quest; 200 barya from Nanay
+    33  real Kutsero sheet; Tindero wired in; Lupa.jpg ground
+    34  entablado outside and in; scene backdrop, ground: false, exits,
+        gotoScene placement (section AR)
 
 ## Blocks remaining
 
@@ -473,10 +489,9 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 ## Known problems
 
 Missing production art. Assets/ holds real art for Nanay, Kutsero,
-Kabayo, Tindero, Tondo.png, Lupa.jpg (the ground), and Macario's idle, walk, melee and shooting sheets,
-plus the two fonts and four sound files. Assets/Act 1/Entablado.png
-also exists and is not referenced by anything yet; it is presumably for
-the entablado beat (Next action, item 2). Still missing, each falling
+Kabayo, Tindero, both entablado pictures, Tondo.png, Lupa.jpg (the
+ground), and Macario's idle, walk, melee and shooting sheets, plus the
+two fonts and four sound files. Still missing, each falling
 back to the dashed placeholder box naming the file (or, for the item,
 to its symbol):
 
@@ -542,11 +557,11 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 476 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 68
+test.js: 486 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 80
 checks driving the REAL content/act1.js and content/items.js through
-the tondo and kutsero scenes. Both last ran green on 17 Sep 2026
-against the device folder after Block 32. Anything other than "0 failed"
+the tondo, kutsero and entablado scenes. Both last ran green on 17 Sep 2026
+against the device folder after Block 34. Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright
 may need its browser path pointed at the preinstalled Chromium. Audio

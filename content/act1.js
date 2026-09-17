@@ -125,8 +125,32 @@ window.ACT_1 = {
     {
       id: "tondo",
       // Widened in Block 31 from one screen (1176) to hold the road the
-      // Mananahi stands on, the same width the kutsero scene already has.
-      worldWidth: 2150,
+      // Mananahi stands on, and again in Block 34 to 2900 so the entablado
+      // stands at the end of it, clear of her.
+      worldWidth: 2900,
+      // Block 34. The outside of the entablado, as scenery. Its picture has
+      // a transparent background, measured the way a sprite is (the
+      // drawing's alpha box, feet at the bottom of the stairs), drawn 400px
+      // tall: about three people, the height a building reads beside
+      // them. Macario walks in front of it (#player is above decorations).
+      decorations: [
+        {
+          id: "entablado-labas",
+          x: 2400,
+          displayHeight: 400,
+          animation: {
+            src: "Assets/Act 1/Entablado_Labas.png", frames: 1, fps: 1,
+            contentTop: 14, contentHeight: 914, footX: 835,
+          },
+        },
+      ],
+      // The door is the stairs, in the middle of the building. Not gated on
+      // any flag: nothing inside has story yet, and pumunta_entablado's
+      // flag is still set by nothing, so going in does not finish Act I.
+      exits: [
+        { id: "pasok-entablado", x: 2330, width: 140, label: "Pasok",
+          toScene: "entablado" },
+      ],
       startX: 80,
       // Block 31. The moment the flashback ends, back in the present,
       // Macario is standing with his mother and she answers the memory.
@@ -423,6 +447,25 @@ window.ACT_1 = {
           },
           opensShop: true,
         },
+      ],
+    },
+    {
+      // Block 34. Inside the entablado. Entablado.png is one painting of the
+      // stage, curtains and backdrop included, so the scene brings it as its
+      // own backdrop, drawn once rather than tiled, and hides the dirt strip
+      // because the painting has its own wooden floor. One phone screen
+      // wide. No story here yet; the only thing to do is leave, and leaving
+      // puts Macario back at the stairs outside rather than at the start of
+      // the road.
+      id: "entablado",
+      worldWidth: 1176,
+      startX: 260,
+      backdrop: { src: "Assets/Act 1/Entablado.png" },
+      ground: false,
+      npcs: [],
+      exits: [
+        { id: "lumabas-entablado", x: 0, width: 80, label: "Lumabas",
+          toScene: "tondo", toX: 2180, toFacing: -1 },
       ],
     },
   ],

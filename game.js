@@ -210,7 +210,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 12;
+const ASSET_VERSION = 13;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -395,6 +395,20 @@ function loadScene(sceneId) {
     .getElementById("ground-tiles")
     .classList.toggle("grey-filter", Boolean(scene.greyFilter));
 
+  // Block 34. A scene may bring its own backdrop picture (the inside of
+  // the entablado) instead of the shared Tondo.png, and may hide the dirt
+  // strip when the picture already has a floor. Both are set or cleared
+  // on every load, like greyFilter, so leaving the scene restores Tondo.
+  const skylineEl = document.getElementById("skyline");
+  if (scene.backdrop && scene.backdrop.src) {
+    skylineEl.style.setProperty("--skyline-src", `url("${assetUrl(scene.backdrop.src)}")`);
+  } else {
+    skylineEl.style.removeProperty("--skyline-src");
+  }
+  document
+    .getElementById("ground-tiles")
+    .classList.toggle("ground-hidden", scene.ground === false);
+
   buildSkylineTiles();
   buildNpcs(token);
   buildDecorations(token);
@@ -471,6 +485,30 @@ function unloadAct() {
 // actElements, so unloadScene removes them with everything else the scene
 // made.
 function buildSkylineTiles() {
+  const backdrop = currentScene && currentScene.backdrop;
+
+  // Block 34. A scene's own backdrop is one painting of one room, not a
+  // street, so it is drawn once rather than tiled: a mirrored second
+  // copy of a stage would put a second set of curtains beside the first.
+  // It covers the whole visible world, anchored at the bottom so the
+  // painted floor stays under the characters' feet; on a screen wider
+  // than the picture's own shape the top edge is what gets cropped. The
+  // night layer is left empty, since only Tondo has a night picture.
+  if (backdrop && backdrop.src) {
+    const layer = document.getElementById("skyline");
+    if (!layer) return;
+    layer.classList.add("skyline-tiled");
+    const tile = document.createElement("div");
+    tile.className = "skyline-tile";
+    tile.style.left = "0px";
+    tile.style.width = Math.max(WORLD_WIDTH, viewport.clientWidth) + "px";
+    tile.style.backgroundSize = "cover";
+    tile.style.backgroundPosition = "center bottom";
+    layer.appendChild(tile);
+    actElements.push(tile);
+    return;
+  }
+
   ["skyline", "skyline-night"].forEach((id) => {
     const layer = document.getElementById(id);
     if (!layer) return;
@@ -1336,6 +1374,19 @@ function findNearby() {
     }
   }
 
+  // Block 34. Doorways to another scene. An exit is a zone on the road,
+  // x and width like a hazard, reached the same edge-to-edge way an NPC
+  // is, so standing at the stairs of the entablado is enough.
+  const exits = (currentScene && currentScene.exits) || [];
+  for (const exit of exits) {
+    const dist = edgeGap(posX, PLAYER_WIDTH, exit.x, exit.width || 80);
+    if (dist < INTERACT_DISTANCE && dist < closestDist) {
+      closest = exit;
+      closestType = "exit";
+      closestDist = dist;
+    }
+  }
+
   if (STAGE) {
     // STAGE.x is the stage's centre, so it is compared with the centre
     // of the body rather than its left edge.
@@ -1393,6 +1444,9 @@ function handleInteractPress() {
     startDialogue(nearby.ref);
   } else if (nearby.type === "stage") {
     startPerformance();
+  } else if (nearby.type === "exit" && window.Acts) {
+    const exit = nearby.ref;
+    Acts.gotoScene(exit.toScene, { x: exit.toX, facing: exit.toFacing });
   }
 }
 
@@ -1588,7 +1642,7 @@ async function runDeathSequence() {
 // same defensive clear startPerformance and respawnInScene already do
 // is repeated here, since a fade can just as easily start with the
 // attack button held down as either of those can.
-async function fadeToScene(sceneId) {
+async function fadeToScene(sceneId, placement) {
   cutscenePlaying = true;
   attackHoldStart = 0;
   shooting = null;
@@ -1598,6 +1652,18 @@ async function fadeToScene(sceneId) {
   await wait(900); // fade to black
 
   loadScene(sceneId); // swap while hidden behind black
+
+  // Block 34. Where to stand in the new scene when it is not its startX:
+  // coming back out of the entablado lands at its door, not at the far
+  // end of the road. An arrival dialogue's own x, below, still wins.
+  if (placement && typeof placement.x === "number") {
+    posX = Math.max(0, Math.min(placement.x, WORLD_WIDTH - PLAYER_WIDTH));
+    posY = groundHeightAt(posX);
+    velY = 0;
+  }
+  if (placement && (placement.facing === 1 || placement.facing === -1)) {
+    facing = placement.facing;
+  }
 
   // Block 31. Chosen and placed while the screen is still black, so a
   // student never sees Macario jump from the scene's startX to where the
@@ -2799,6 +2865,9 @@ function gameLoop(now) {
       btnInteract.classList.add("active");
     } else if (nearby.type === "stage") {
       setLabel(btnInteract, "Ganap");
+      btnInteract.classList.add("active");
+    } else if (nearby.type === "exit") {
+      setLabel(btnInteract, nearby.ref.label || "Pasok");
       btnInteract.classList.add("active");
     } else {
       setLabel(btnInteract, "E");

@@ -385,7 +385,7 @@ const talk = async (page, times) => {
     return { exists: !!el, shown: el && el.style.display !== "none", width: WORLD_WIDTH,
              placeholder: el && el.textContent.includes("Mananahi.png") };
   });
-  ok("the road is longer and the Mananahi is on it", mana.exists && mana.shown && mana.width === 2150, mana);
+  ok("the road is longer and the Mananahi is on it", mana.exists && mana.shown && mana.width === 2900, mana);
   ok("drawn as the placeholder naming Mananahi.png until the art exists", mana.placeholder, mana);
   await walkTo(page, 1420);
   await page.keyboard.press("e");
@@ -452,6 +452,48 @@ const talk = async (page, times) => {
   const corner = await page.evaluate(() => [...document.querySelectorAll("#shell-shop-list [data-shop-id]")].map((t) => t.dataset.shopId));
   ok("the corner shop button does not sell her clothes", !corner.includes("damit-entablado"), corner);
   await page.click("#shell-shop-back");
+  await page.waitForTimeout(150);
+
+  // --- Block 34: the entablado, outside and in. ---
+  const outside = await page.evaluate(() => {
+    const d = document.querySelector("#dec-entablado-labas .sprite");
+    return { bg: d && d.style.backgroundImage, text: d && d.textContent, height: d && d.style.height, width: WORLD_WIDTH };
+  });
+  ok("the road is 2900px and the entablado stands at its end, drawn from Entablado_Labas.png",
+     outside.width === 2900 && /Entablado_Labas\.png/.test(outside.bg) && outside.text === "" && outside.height === "400px", outside);
+  await walkTo(page, 2360);
+  await page.waitForTimeout(120);
+  ok("at its stairs the prompt reads Pasok",
+     (await page.evaluate(() => document.querySelector("#btn-interact .lbl").textContent)) === "Pasok");
+  await page.keyboard.press("e");
+  await page.waitForTimeout(2600);
+  const stage = await page.evaluate(() => ({
+    room: currentRoom,
+    src: document.getElementById("skyline").style.getPropertyValue("--skyline-src"),
+    ground: getComputedStyle(document.getElementById("ground-tiles")).display,
+    status: Acts.status, entabladoFlag: state.flags.nasaEntablado,
+  }));
+  ok("going in fades to the entablado scene", stage.room === "entablado", stage);
+  ok("with Entablado.png as its backdrop and no dirt strip",
+     /Entablado\.png/.test(stage.src) && !/Labas/.test(stage.src) && stage.ground === "none", stage);
+  ok("which does not finish Act I", stage.status === "playing" && stage.entabladoFlag !== true, stage);
+  const stagePic = await page.evaluate(() => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img.naturalWidth);
+    img.onerror = () => resolve(0);
+    img.src = assetUrl("Assets/Act 1/Entablado.png");
+  }));
+  ok("and that picture actually loads", stagePic === 1672, stagePic);
+  await walkTo(page, 40);
+  await page.waitForTimeout(120);
+  ok("at the left edge the prompt reads Lumabas",
+     (await page.evaluate(() => document.querySelector("#btn-interact .lbl").textContent)) === "Lumabas");
+  await page.keyboard.press("e");
+  await page.waitForTimeout(2600);
+  const out = await page.evaluate(() => ({ room: currentRoom, posX, facing,
+    src: document.getElementById("skyline").style.getPropertyValue("--skyline-src") }));
+  ok("leaving lands back outside at the stairs, facing the road",
+     out.room === "tondo" && out.posX === 2180 && out.facing === -1 && out.src === "", out);
 
   await ctx.close();
   await browser.close();

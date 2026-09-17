@@ -286,6 +286,10 @@ Scene shape:
       worldWidth, startX,
       dangerous: true,                           optional; shows the hearts
       greyFilter: true,                          optional; greys backdrop + ground
+      backdrop: { src },                         optional; own picture, drawn once
+      ground: false,                             optional; hides the dirt strip
+      exits: [{ id, x, width, label, toScene,    optional; doorways
+                toX, toFacing }],
       arrivalDialogues: [{ requiresFlag,         optional; opens by itself
                            doneFlag, x, facing,  after a fade into the scene
                            lines, onComplete }],
@@ -334,6 +338,22 @@ and toggled rather than only ever added, so a scene without it clears
 whatever the previous scene set. See Decisions on record for the
 scene it was added for and for Acts.gotoScene now fading to black
 around every scene change instead of swapping instantly.
+
+backdrop (Block 34) replaces the shared Tondo.png for one scene with a
+picture of its own, drawn once to cover the visible world and anchored
+at the bottom, never tiled or mirrored, because it is one room rather
+than a street. The night layer stays empty under it. ground: false hides
+#ground-tiles for a picture that paints its own floor. Both are cleared
+on every load, so a scene without them gets Tondo and the dirt back.
+
+An exit is a doorway: a zone on the road, x and width like a hazard,
+reached edge to edge like an NPC. The interact button reads its label
+(default Pasok), and E calls Acts.gotoScene(toScene, { x: toX, facing:
+toFacing }), the same fade every scene change uses. Without toX the new
+scene's startX applies; an arrival dialogue's own x still wins over
+both. A building to walk into is a decoration for the picture plus an
+exit at its door; a decoration with a single still image is an animation
+def with frames: 1.
 
 arrivalDialogues are conversations nobody starts: they open the moment a
 fade into the scene (Acts.gotoScene) finishes. The first entry whose
@@ -2219,6 +2239,36 @@ the road was still brown, so greyFilter now greys #ground-tiles along
 with #skyline. Characters stay in colour, as they always have.
 ASSET_VERSION to 12, which also stops phones serving the old picture
 cached under Kutsero.png.
+
+The entablado (Block 34). Two pictures arrived: Entablado_Labas.png, the
+outside of the stage on a transparent background, and Entablado.png, one
+painting of the inside. The request was the outside in the first scene
+and, on interacting with it, a room with the inside as its background,
+like the flashback.
+
+The outside is a decoration at x 2400 at the end of the tondo road, which
+grew from 2150 to 2900 so the building clears the Mananahi. It is drawn
+400px tall, about three people, measured with measure-sprite.js like any
+sheet (contentTop 14, contentHeight 914, footX 835). The door is an exit
+over its stairs. The inside is scene "entablado", one phone screen wide,
+with backdrop and ground: false.
+
+Three engine pieces, each the smallest that did the job. The skyline had
+one picture for every scene, set in CSS; a scene's backdrop now sets the
+same --skyline-src custom property the tiles already read, so the day
+and night layers and greyFilter needed no change. Tiling had to be
+skipped for it, since a mirrored second stage beside the first reads as
+a mistake where a mirrored stilt house does not. Interacting with scenery
+had no mechanism, and the existing STAGE object is the performance
+cutscene, not a door, so exits are their own small list rather than a
+flag bent onto an NPC or the stage. And gotoScene took no position,
+which would have returned Macario to the start of the road; it now takes
+an optional { x, facing }.
+
+A way back out, Lumabas at the room's left edge, was added although it
+was not asked for: without it a student who walks in is stuck in a room
+with nothing in it until the entablado has content. Going in sets no
+flag, so pumunta_entablado stays open and Act I does not finish.
 
 ## Pitfalls
 

@@ -3432,6 +3432,74 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAR. Scene backdrops, a hidden ground, and doorways between scenes");
+  {
+    // Block 34, against scenes added to the fixture at run time.
+    const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      SCENES.push({ id: "test-silid", worldWidth: 1176, startX: 300, npcs: [],
+        backdrop: { src: "Assets/Act 1/Nanay.png" }, ground: false,
+        exits: [{ id: "test-labas", x: 0, width: 80, label: "Lumabas", toScene: "tondo", toX: 700, toFacing: -1 }] });
+      const tondo = SCENES.find((sc) => sc.id === "tondo");
+      tondo.exits = [{ id: "test-pasok", x: 500, width: 100, label: "Pasok", toScene: "test-silid" }];
+    });
+    await page.evaluate(() => fadeToScene("tondo"));
+    await page.waitForTimeout(2400);
+
+    const near = await page.evaluate(() => new Promise((resolve) => {
+      posX = 400; // a 60px gap to the door
+      setTimeout(() => resolve({ type: nearby.type, label: document.querySelector("#btn-interact .lbl").textContent }), 200);
+    }));
+    ok("standing at a doorway reaches it, labelled from content", near.type === "exit" && near.label === "Pasok", near);
+    const far = await page.evaluate(() => new Promise((resolve) => {
+      posX = 250;
+      setTimeout(() => resolve(nearby.type), 200);
+    }));
+    ok("and out of reach it does not", far !== "exit", far);
+
+    await page.evaluate(() => { posX = 400; });
+    await page.waitForTimeout(150);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(2600);
+    const inside = await page.evaluate(() => {
+      const sky = document.getElementById("skyline");
+      const tiles = sky.querySelectorAll(".skyline-tile");
+      return {
+        room: currentRoom, posX,
+        src: sky.style.getPropertyValue("--skyline-src"),
+        tiles: tiles.length, mirrored: sky.querySelectorAll(".skyline-tile-mirrored").length,
+        size: tiles[0] && tiles[0].style.backgroundSize,
+        tileWidth: tiles[0] && parseFloat(tiles[0].style.width),
+        night: document.getElementById("skyline-night").querySelectorAll(".skyline-tile").length,
+        ground: getComputedStyle(document.getElementById("ground-tiles")).display,
+      };
+    });
+    ok("E at the doorway fades to its scene, at that scene's startX", inside.room === "test-silid" && inside.posX === 300, inside);
+    ok("a scene's backdrop replaces the shared picture", /Nanay\.png/.test(inside.src), inside);
+    ok("drawn once, covering, not tiled or mirrored",
+       inside.tiles === 1 && inside.mirrored === 0 && inside.size === "cover" && inside.tileWidth >= 1176, inside);
+    ok("with no night tiles behind it", inside.night === 0, inside);
+    ok("ground: false hides the dirt strip", inside.ground === "none", inside);
+
+    await page.evaluate(() => { posX = 60; });
+    await page.waitForTimeout(150);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(2600);
+    const back = await page.evaluate(() => {
+      const sky = document.getElementById("skyline");
+      return { room: currentRoom, posX, facing,
+               src: sky.style.getPropertyValue("--skyline-src"),
+               tiles: sky.querySelectorAll(".skyline-tile").length,
+               ground: getComputedStyle(document.getElementById("ground-tiles")).display };
+    });
+    ok("a doorway with toX and toFacing lands there, not at startX",
+       back.room === "tondo" && back.posX === 700 && back.facing === -1, back);
+    ok("leaving restores the shared backdrop, tiled again", back.src === "" && back.tiles > 1, back);
+    ok("and the ground", back.ground !== "none", back);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");
