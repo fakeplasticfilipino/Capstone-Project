@@ -15,6 +15,15 @@ Read in this order at the start of a session: this file, then TRACKER.md.
 Both sit in the repository, so read them directly rather than asking for
 them to be pasted.
 
+This file is long, because Decisions on record keeps the reasoning behind
+every block. A session does not need all of it to start. Read, in order:
+TRACKER.md's "Start here" and "Next action"; then, in this file, Stack,
+Architecture, The engine to shell contract, Act data format, Item data
+format, Sprite sheets, Conventions and Pitfalls. Go to Decisions on record
+when touching a system, and search it by the system's name (Bodies,
+Inventory and shop, Mirrored backdrop tiles, Pixel theme, and so on).
+Where an older decision says it is superseded, the later entry wins.
+
 ## Source of truth
 
 The repository is public:
@@ -88,18 +97,16 @@ and two purchasable outfits it carried were content decisions made without
 the source material either.
 
 Built forward from that reset since, one verified passage at a time
-(Blocks 19-21): Act I is no longer the one-scene blank slate above — it
+(Blocks 19-21): Act I is no longer the one-scene blank slate above. It
 is now two scenes, tondo and a kutsero flashback, with a fourth
 objective (pumunta_entablado) that keeps the act open once the
 flashback resolves, since the flashback is a memory within the act, not
 the act's own ending. content/items.js correspondingly holds two real
 items as of Block 25: Mansanas, a consumable a student eats to heal,
 and "Mansanas para sa kabayo", the quest item Kabayo takes (see Item
-data format, below). See TRACKER.md, Right now and Blocks done (Blocks
-19-23), for exactly what is built, what still has no content (the
-entablado itself, a guard, anything past the flashback), and for the
-two engine bugs Blocks 22-23 fixed along the way that are unrelated to
-this content work.
+data format, below). TRACKER.md, Start here, describes exactly what
+Act I contains today and what still has no content (the entablado
+itself, a guard, anything past the flashback).
 
 None of this touched the ENGINE. Every mechanic the fuller version
 exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
@@ -477,19 +484,13 @@ use href="#i-name". They cost no request, cannot 404, and inherit
 currentColor, so an icon is whatever colour its button already is.
 That is why they are strokes rather than glyphs.
 
-There is no icon art and none can be invented. Assets/ holds a floor
-tile, the player's walk cycle, and — as of the folder reorganisation
-into Assets/Act 1 and Assets/Prefab — one real commissioned sprite,
-Nanay (see Act I's content, above, and Decisions on record). Three
-more NPCs joined content/act1.js since, in the kutsero scene (Kabayo,
-Kutsero, Tindero — Blocks 19-20), and none of the three has real art
-either (Kutsero gained real art in Block 27; see Decisions on record):
-their img fields point at Assets/Horse.png, Assets/Kutsero.png
-and Assets/Tindero.png, none of which exist on this device (see
-TRACKER.md, Known problems, missing production art). Any future NPC,
-guard or decoration without real art falls back to the dashed
-placeholder box naming the file, same as any other missing image, so
-referencing an icon PNG would fill the screen with those.
+There is no icon art and none can be invented. Assets/ holds commissioned
+character and backdrop art (Assets/Act 1 for one act's art, Assets/Prefab
+for Macario's own sheets) and the two fonts (Assets/Fonts), and no icons.
+TRACKER.md, Known problems, lists which referenced art files are still
+missing. Any NPC, guard or decoration without real art falls back to the
+dashed placeholder box naming the file, same as any other missing image,
+so referencing an icon PNG would fill the screen with those.
 
 Unicode and emoji were the cheaper option and were rejected on a render
 rather than on principle: the crossed swords fell back to a thin
@@ -2138,10 +2139,12 @@ against the REAL content/act1.js (rather than through enterTestRoom(),
 which routes to the harness's own fixture) can auto-complete the act
 before the test gets to do anything. checkObjectives() runs on entry and
 compares the seeded flags against whatever objectives the loaded act
-actually declares; content/act1.js now declares exactly one, so a seed
-carrying { nalamanAngPinagmulan: true, ... } — written when Act I still
-had five objectives — reads as "1 of 1 done" the instant the real content
-loads, and the act silently finishes and jumps to the real post-test
+actually declares. When content/act1.js declared exactly one objective
+(after the reset, before Block 19), a seed written for the old
+five-objective act read as "1 of 1 done" the instant the real content
+loaded; the
+same trap applies to any seed that sets every flag the real act currently
+declares. The act silently finishes and jumps to the real post-test
 before #btn-pause or anything else in the test ever becomes visible. Every
 _dev/test.js call site that seeds atTestRoom()-shaped flags now passes
 fixtureRoutes() to newPage() for exactly this reason (see Decisions on

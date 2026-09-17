@@ -22,12 +22,13 @@ a post-test, so learning gain is measured per act rather than only at the
 end.
 
 Gameplay is movement and jump, stealth past patrols with a detection meter,
-melee and thrown-projectile combat, and a health system with environmental
-hazards and collectible restoratives. Guard speed scales with the act
-number. Equipment and cosmetic outfits are built: an inventory and a shop,
-reached either from their own buttons in the main UI or from the pause
-screen, in-game currency awarded per act and scaled by performance, and
-outfits that change the player sprite.
+a melee punch and a ranged shot, and a health system with environmental
+hazards, collectible hearts and food that heals. Guard speed scales with
+the act number. Items are built: an inventory with three equipment slots
+(Sandata, Anting-anting, Damit), stacking consumables and quest items, and
+a shop reached from its own button or from a shopkeeper, with in-game
+currency awarded per act and scaled by performance. The interface is a
+flat pixel-art style to match the sprites.
 
 Teachers get a separate dashboard showing their class roster, act
 completion, assessment results, gain scores, and class averages.
@@ -38,20 +39,19 @@ See TRACKER.md, which is the only file in this repository that describes
 status. Anything about progress stated anywhere else, including here, may
 be out of date.
 
-In short: every system is built, live, and confirmed on a real Android
-phone. Assessment, performance scoring, equipment, currency, cosmetics and
+In short: every system is built and live, and the game was confirmed to
+run smoothly on a real Android phone; the most recent changes still need a
+second phone pass. Assessment, performance scoring, equipment, currency, cosmetics and
 the teacher dashboard all work end to end as mechanics — none of that
 depends on what story content happens to be loaded, and it stays fully
 covered by the automated suite even while Act I's content below is thin.
 
-No story is written yet. Act I is currently a one-scene, one-NPC skeleton
-(Macario and his mother, Nanay, one short exchange) rather than a
-narrative — a deliberate reset back to a small, real, working base after
-an earlier full draft was written ahead of the resource person's source
-material rather than against it. The item shop is likewise empty for the
-same reason. Acts II through IV are registered and loadable but empty.
-Writing all four acts, and the item catalogue, against the source
-material is the remaining work.
+The story is being written one passage at a time against the resource
+person's source material. Act I currently has two scenes: Macario's
+mother sends him on an errand, and a flashback to his work for a kutsero
+has him buy an apple for the horse. It stops short of its final beat, at
+the entablado, which is the next thing to write. The shop sells two
+items so far. Acts II through IV are registered and loadable but empty.
 
 ## Stack
 
@@ -106,23 +106,23 @@ be used to complete an act for the study.
                           stealth, health, save/load
     acts.js               act flow controller, owns act_progress writes
     assessment.js         trivia card, pre-test, post-test, feedback
-    shell.js              title screen, pause, settings, inventory, logout
-    inventory.js          inventory, equipment and the shop
-    content/act1.js       Act I as data. Currently a one-scene, one-NPC
-                          skeleton, reset from a fuller draft; see TRACKER.md
+    shell.js              title screen, pause, settings, inventory and
+                          shop screens, logout
+    inventory.js          item ownership, equipment, consumables, the shop
+    content/act1.js       Act I as data: two scenes so far; see TRACKER.md
     content/act2.js       Acts II to IV, registered but not yet written
     content/act3.js
     content/act4.js
-    content/items.js      the item catalogue, equipment and cosmetics.
-                          Currently empty; see TRACKER.md
-    style.css             game styles
+    content/items.js      the item catalogue; two items so far
+    style.css             game styles, including the pixel theme
 
     teacher.html          teacher entry point
     teacher.js            dashboard: roster, aggregation, rendering
     teacher.css           dashboard styles
 
     supabaseClient.js     shared Supabase client
-    Assets/               sprite sheets and backgrounds
+    Assets/               sprite sheets, backgrounds and the two
+                          self-hosted pixel fonts (Assets/Fonts, OFL)
 
     db/applied/           migrations already run against the live project
     db/macario_items_v3.sql     revised Act I item bank, matched pairs
@@ -132,6 +132,8 @@ be used to complete an act for the study.
     create_accounts.js    admin script, runs locally only, not in git
 
     _dev/test.js          headless test suite
+    _dev/verify_new_scene.js   the same, against the real Act I content
+    _dev/measure-sprite.js     measures a sprite sheet's placement numbers
     _dev/sb-stub.js       fake Supabase client used by the suite
     _dev/README.md        how to run it
 
