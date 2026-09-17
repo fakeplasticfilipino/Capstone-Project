@@ -157,7 +157,13 @@ const INVULN_MS = 1000;
 // Declared here rather than beside the other mutable state further down,
 // because loadAct() runs at parse time and reaches into the HUD, and
 // anything it can touch has to be initialised above it.
-let equipEffects = { maxHealthBonus: 0, projectileSpeedMult: 1 };
+let equipEffects = { maxHealthBonus: 0, projectileSpeedMult: 1, stillDetectionMult: 1 };
+
+// Block 32. Whether Macario is standing still on the ground this frame,
+// set by the game loop just before guards are updated, and read by
+// detection for stillDetectionMult. Declared up here beside the effects
+// it serves, for the same parse-time reason.
+let playerStill = true;
 
 // The little hop that comes with a hazard shove. Without being moved
 // clear the player is left standing in the band, the invulnerability
@@ -1354,8 +1360,19 @@ function canGiveGift(npc) {
 // already uses in the other direction.
 let shopRequestListener = null;
 
-function requestShop() {
-  if (shopRequestListener) shopRequestListener();
+// sellerId is the NPC's id, so a shop can stock only what that seller
+// sells (Inventory.forSale). The corner button passes none.
+function requestShop(sellerId) {
+  if (shopRequestListener) shopRequestListener(sellerId || null);
+}
+
+// Block 32. An NPC may open the shop from the start (opensShop: true,
+// Tindero) or only once a flag is set (opensShopAfter, the Mananahi,
+// who talks first and sells afterwards).
+function npcOpensShop(npc) {
+  if (!npc) return false;
+  if (npc.opensShop) return true;
+  return Boolean(npc.opensShopAfter && state.flags[npc.opensShopAfter]);
 }
 
 function handleInteractPress() {
@@ -1364,8 +1381,8 @@ function handleInteractPress() {
     advanceDialogue();
   } else if (cutscenePlaying) {
     // ignore E while the performance or blackout sequence runs
-  } else if (nearby.type === "npc" && nearby.ref.opensShop) {
-    requestShop();
+  } else if (nearby.type === "npc" && npcOpensShop(nearby.ref)) {
+    requestShop(nearby.ref.id);
   } else if (nearby.type === "npc") {
     startDialogue(nearby.ref);
   } else if (nearby.type === "stage") {
@@ -1465,6 +1482,12 @@ function endDialogue() {
       if (finishedNpc.stage < finishedNpc.dialogueSets.length - 1) {
         finishedNpc.stage++;
       }
+    }
+    // The conversation that sets an opensShopAfter flag ends straight
+    // into the shop, so "pay me first" is followed by somewhere to pay
+    // rather than by a second press of E.
+    if (finishedNpc.opensShopAfter && state.flags[finishedNpc.opensShopAfter]) {
+      requestShop(finishedNpc.id);
     }
   } else if (finishedMode === "arrival") {
     // Set on the way OUT, not in: a reload mid-conversation should hear
@@ -1801,7 +1824,13 @@ function updateGuards(step) {
     const seen = inFront && inRange && !hidden && !playerIsSafe();
 
     if (seen) {
-      guard.alert = Math.min(1, guard.alert + (guard.alertRate || 0.012) * step);
+      // Worn equipment can slow the fill while Macario keeps still
+      // (Block 32). It never touches decay, so moving out of sight
+      // still clears the meter at the same rate, and it never stops the
+      // fill outright: standing in plain view is still a way to be
+      // caught, only a slower one.
+      const stillMult = playerStill ? equipEffects.stillDetectionMult : 1;
+      guard.alert = Math.min(1, guard.alert + (guard.alertRate || 0.012) * stillMult * step);
     } else {
       guard.alert = Math.max(0, guard.alert - (guard.decayRate || 0.02) * step);
     }
@@ -1893,6 +1922,13 @@ function setEffects(next) {
 
   const mult = Number(e.projectileSpeedMult);
   equipEffects.projectileSpeedMult = isFinite(mult) && mult > 0 ? mult : 1;
+
+  // Block 32. How fast a guard's meter fills while Macario stands still,
+  // as a multiplier: 0.5 is half as fast. Only a slowing is accepted.
+  // Worn clothes that made a student easier to see would be a trap
+  // bought with barya.
+  const still = Number(e.stillDetectionMult);
+  equipEffects.stillDetectionMult = isFinite(still) && still > 0 && still < 1 ? still : 1;
 
   const bonus = Number(e.maxHealthBonus);
   equipEffects.maxHealthBonus =
@@ -2701,6 +2737,9 @@ function gameLoop(now) {
     onGround = false;
   }
 
+  // Walking or in the air is moving; anything else, including talking
+  // or holding the attack button, is standing still.
+  playerStill = !isWalking && onGround;
   if (canAct) updateGuards(step);
 
   // After the vertical resolution, so the ground test sees where the
@@ -2746,7 +2785,7 @@ function gameLoop(now) {
       btnShopMain.classList.remove("hidden");
     }
     nearby = findNearby();
-    if (nearby.type === "npc" && nearby.ref.opensShop) {
+    if (nearby.type === "npc" && npcOpensShop(nearby.ref)) {
       setLabel(btnInteract, "Tindahan");
       btnInteract.classList.add("active");
     } else if (nearby.type === "npc") {

@@ -180,7 +180,7 @@ const Shell = {
         );
       }
       if (this.el.mainShopBtn) {
-        this.el.mainShopBtn.addEventListener("click", () => this._openShop());
+        this.el.mainShopBtn.addEventListener("click", () => this._openShop(null));
       }
 
       // inventory.js owns the state and tells the screen when it moved,
@@ -194,7 +194,7 @@ const Shell = {
       // game.js tells us when an NPC that opens the shop (opensShop:
       // true, Tindero) was pressed.
       if (window.Game && Game.onShopRequest) {
-        Game.onShopRequest(() => this._openShop());
+        Game.onShopRequest((sellerId) => this._openShop(sellerId));
       }
     }
 
@@ -559,6 +559,7 @@ const Shell = {
 
   invSelected: null,
   shopSelected: null,
+  shopSeller: null, // the NPC whose stock is shown; null is the general stock
 
   // The symbol an item falls back to. An item may name its own
   // (icon: "i-apple"); otherwise its slot's, or a scroll for a quest
@@ -935,9 +936,12 @@ const Shell = {
 
   // -- Shop -----------------------------------------------------
 
-  _openShop() {
+  // sellerId is the NPC that opened it, or null for the corner button;
+  // it decides which stock is listed (Inventory.forSale).
+  _openShop(sellerId) {
     if (!window.Inventory) return;
     if (!this._pauseForScreen()) return;
+    this.shopSeller = sellerId || null;
     this.state = "shop";
     this._note(this.el.shopNote, "");
     this._renderShop();
@@ -957,7 +961,7 @@ const Shell = {
 
     this.el.shopBalance.textContent = String(Inventory.balance());
 
-    const goods = Inventory.forSale();
+    const goods = Inventory.forSale(this.shopSeller);
     if (!goods.some((item) => item.id === this.shopSelected)) {
       this.shopSelected = goods.length ? goods[0].id : null;
     }

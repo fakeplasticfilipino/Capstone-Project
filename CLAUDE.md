@@ -229,7 +229,8 @@ game.js exposes window.Game and nothing else:
     isGuest()
     stats()              { damageTaken, detections, playMs }, a copy
     resetStats()         called by Acts.enterAct, and by nothing else
-    setEffects(obj)      { maxHealthBonus, projectileSpeedMult }
+    setEffects(obj)      { maxHealthBonus, projectileSpeedMult,
+                           stillDetectionMult }
     health()             { health, max }, a copy; Block 25
     heal(n)              false and no change at full health; Block 25
     setAudio(obj)        { music, sfx } booleans; Block 30
@@ -352,6 +353,7 @@ NPC shape:
       startsHidden: true,                        optional
       revealedByFlag: "someFlag",                optional; unhides when set
       opensShop: true,                           optional; see below
+      opensShopAfter: "someFlag",                optional; talks, then sells
       nearSound: "Assets/X.mp3",                 optional; loops while near
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete(),
@@ -387,6 +389,12 @@ dialogueSets at all — none are read if opensShop is set, checked
 before dialogueSets would ever be (handleInteractPress, game.js). An
 NPC with both would have opensShop win and dialogueSets go unused,
 which is not a useful thing to declare on purpose.
+
+opensShopAfter (Block 32) is the talk-first version: while its flag is
+unset the NPC talks normally, the conversation that sets it ends straight
+into the shop, and from then on E opens the shop directly. Either way the
+shop is asked for with the NPC's id, and an item that names that id as
+soldBy (Item data format) is that seller's own stock.
 
 nearSound names an audio file that loops while Macario is within
 talking range of the NPC (the same INTERACT_DISTANCE edge gap the Usap
@@ -430,6 +438,7 @@ low-end phone would buy nothing. Only ownership is stored.
                                                  entering that act
       effect: { projectileSpeedMult: 1.5 }       equipment only; applies
             | { maxHealthBonus: 1 }              while worn
+            | { stillDetectionMult: 0.5 }
       sheets: { walk: {...} }                    cosmetic only; any of
                                                  idle, walk, dead
       use: { heal: 1 },                          consumable only; applied
@@ -437,17 +446,20 @@ low-end phone would buy nothing. Only ownership is stored.
       maxStack: 5,                               consumable only; default 5
       forQuest: "questId",                       quest only; on sale only
                                                  while that quest is open
-      buyFlag: "someFlag"                        optional; see below
+      buyFlag: "someFlag",                       optional; see below
+      soldBy: "npcId"                            optional; that seller only
     }
 
 There are three groups, and the inventory screen, the shop and
 inventory.js all speak in them.
 
-Permanent items are kind "equipment" (slot weapon or accessory) or kind
-"cosmetic" (slot outfit). Bought or granted once, kept, and worn in the
-slot they name, one item per slot. Equipment's effect applies only while
-worn. A cosmetic carries sheets and never an effect, which is what makes
-it cosmetic. The slot ids are what player_equipment.slot stores and are
+Permanent items are kind "equipment" (any slot) or kind "cosmetic"
+(slot outfit). Bought or granted once, kept, and worn in the slot they
+name, one item per slot. Equipment's effect applies only while worn. A
+cosmetic carries sheets and never an effect, which is what makes it
+cosmetic. Equipment in the outfit slot (Block 32, the stage clothes) may
+carry sheets as well as an effect; without sheets, wearing it leaves
+Macario's look unchanged. The slot ids are what player_equipment.slot stores and are
 never renamed; Sandata, Anting-anting and Damit are the labels.
 
 Consumables are kind "consumable". No slot, so equip and toggle refuse
@@ -482,8 +494,18 @@ flight at a time. The built effect is projectileSpeedMult, which scales
 PROJECTILE_SPEED, and because a faster spear also clears that limiter sooner
 it makes the throw both quicker and more frequent from one lever.
 
-Effects are deliberately small and few. A faster projectile and one extra
-heart are the whole design brief; anything that needs a balance spreadsheet
+stillDetectionMult (Block 32) scales how fast a guard's meter fills
+while Macario stands still on the ground, and only slows it: a value of 1
+or more is ignored. Decay is untouched, and walking or jumping fills at
+the normal rate.
+
+soldBy names the NPC whose shop sells the item. A seller with any stock
+of its own lists only that stock; every item without soldBy is general
+stock, listed by the corner shop button and by a seller with nothing of
+its own.
+
+Effects are deliberately small and few. A faster projectile, one extra
+heart and a slower meter while still are the whole design brief; anything that needs a balance spreadsheet
 is out of scope. Bonuses add and multipliers multiply, so an item with
 neither contributes nothing.
 
@@ -2146,6 +2168,37 @@ rebuilt; revealNpcsByFlag is not needed and still runs only where it did.
 Her art does not exist yet (Assets/Act 1/Mananahi.png). Her last line
 asks for payment, and nothing is built behind it yet: no item, no
 objective. The dialogue speaker is "Mana", as written.
+
+The first equipment (Block 32). Requested as script and mechanics: Nanay
+hands Macario 200 barya with his money line, the return conversation
+ends with her reminding him to see the Mananahi (a quest), and the
+Mananahi sells his stage clothes for 100, which slow a guard's notice
+while he stands still. Nanay's opening was rewritten by the proponent in
+the same pass so the kutsero is still what starts the memory.
+
+Worn in Damit, not Anting-anting, because it is clothing, which meant
+letting equipment take the outfit slot. Nothing in inventory.js tied a
+kind to a slot, so that was a documentation change plus effectLines,
+not a code path.
+
+The shop needed stock per seller, or the clothes would have appeared on
+the corner button everywhere and on Tindero's stall inside the memory.
+soldBy is the smallest form of that: one optional field, and the corner
+button and Tindero behave exactly as they did.
+
+The quest completes when the Mananahi's conversation ends, not on the
+purchase. Kausapin ang mananahi is an objective, and making an objective
+wait on spending barya would put the act behind a purchase a struggling
+student might not afford, which is what the no-game-over rule and the
+outfit prices were set against. In Act I as shipped the student cannot
+be short: 200 from Nanay, 10 from Kutsero, and at most 30 in apples.
+
+0.5 is chosen, not measured, like the score budgets. Act I has no guard,
+so the effect cannot yet be seen in shipped content; section AQ proves it
+against the fixture guard by driving updateGuards directly.
+
+The fifth objective changes Act I's drip to floor(50 / 5) = 10 a
+objective, which is what the fixture act already used.
 
 ## Pitfalls
 

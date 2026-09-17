@@ -3329,6 +3329,109 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAQ. Standing-still detection, seller stock, and a shop after talking");
+  {
+    // Block 32, against the fixture guard and catalogue plus an item and
+    // NPC added at run time, so none of it depends on Act I's content.
+    const { ctx, page } = await enterTestRoom();
+
+    // The meter is driven by calling updateGuards directly with the loop
+    // paused, so frame timing cannot blur a factor of two.
+    const fill = (effects, still) => page.evaluate(({ effects, still }) => {
+      setPaused(true);
+      setEffects(effects);
+      const g = GUARDS[0];
+      g.disabled = false;
+      g.patrolFrom = g.patrolTo = g.pos; // a sentry, so it keeps facing
+      g.facing = 1;
+      posX = g.pos + GUARD_WIDTH + 100; // in front, inside detectRadius
+      posY = floorHeightAt(posX);
+      invulnUntil = 0;
+      g.alert = 0;
+      playerStill = still;
+      for (let i = 0; i < 20; i++) updateGuards(1);
+      const alert = g.alert;
+      g.alert = 0;
+      setPaused(false);
+      return alert;
+    }, { effects, still });
+
+    const base = await fill({}, true);
+    const worn = await fill({ stillDetectionMult: 0.5 }, true);
+    const moving = await fill({ stillDetectionMult: 0.5 }, false);
+    ok("a guard's meter fills while Macario stands in view", base > 0, base);
+    ok("wearing stillDetectionMult 0.5, standing still fills it half as fast",
+       Math.abs(worn - base / 2) < 1e-9, { base, worn });
+    ok("moving fills it at the normal rate, effect or not", Math.abs(moving - base) < 1e-9, { base, moving });
+    const rejected = await page.evaluate(() => {
+      setEffects({ stillDetectionMult: 2 });
+      const r = equipEffects.stillDetectionMult;
+      setEffects({});
+      return r;
+    });
+    ok("an effect that would make him easier to see is refused", rejected === 1, rejected);
+    ok("the loop marks him still when idle on the ground",
+       await page.evaluate(() => new Promise((r) => { keysPressed["d"] = false; setTimeout(() => r(playerStill), 200); })));
+
+    // Inventory reduces worn items to the number.
+    const summed = await page.evaluate(() => {
+      ITEMS.push({ id: "test-damit", name: "Test", kind: "equipment", slot: "outfit", price: 7,
+                   soldBy: "test-mananahi", effect: { stillDetectionMult: 0.5 } });
+      return { effects: Inventory.effects(), lines: Inventory.effectLines(Inventory.item("test-damit")) };
+    });
+    ok("Inventory.effects starts from a neutral multiplier", summed.effects.stillDetectionMult === 1, summed.effects);
+    ok("and effectLines describes the effect in Tagalog",
+       summed.lines.some((l) => l.includes("mabagal ka lang mapapansin ng mga gwardya")), summed.lines);
+
+    const stock = await page.evaluate(() => ({
+      corner: Inventory.forSale(null).map((i) => i.id),
+      seller: Inventory.forSale("test-mananahi").map((i) => i.id),
+      other: Inventory.forSale("tindero").map((i) => i.id),
+    }));
+    ok("a seller with its own stock lists only that", stock.seller.length === 1 && stock.seller[0] === "test-damit", stock);
+    ok("the corner button never lists a seller's item", !stock.corner.includes("test-damit") && stock.corner.length > 0, stock);
+    ok("a seller with no stock of its own lists the general stock", JSON.stringify(stock.other) === JSON.stringify(stock.corner), stock);
+
+    // An NPC that talks first and sells afterwards.
+    await page.evaluate(() => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      NPCS.push({ id: "test-mananahi", x: 700, label: "Mananahi", stage: 0, opensShopAfter: "test_nakausap",
+        dialogueSets: [{ lines: [{ speaker: "M", text: "bayad muna" }],
+                         onComplete: () => { state.flags.test_nakausap = true; } }] });
+      posX = 700 - 40 - 30;
+      posY = floorHeightAt(posX);
+    });
+    await page.waitForTimeout(150);
+    ok("before the flag, E talks", await page.evaluate(() => {
+      handleInteractPress();
+      return inDialogue && dialogueText.textContent === "bayad muna";
+    }));
+    await page.keyboard.press("e");
+    await page.waitForTimeout(200);
+    const shopAfter = await page.evaluate(() => ({
+      state: Shell.state, seller: Shell.shopSeller,
+      shelf: [...document.querySelectorAll("#shell-shop-list [data-shop-id]")].map((t) => t.dataset.shopId),
+    }));
+    ok("the conversation that sets the flag ends in that seller's shop",
+       shopAfter.state === "shop" && shopAfter.seller === "test-mananahi", shopAfter);
+    ok("showing only that seller's stock", JSON.stringify(shopAfter.shelf) === '["test-damit"]', shopAfter.shelf);
+    await page.click("#shell-shop-back");
+    await page.waitForTimeout(150);
+    const direct = await page.evaluate(() => {
+      const label = document.querySelector("#btn-interact .lbl").textContent;
+      handleInteractPress();
+      return { label, state: Shell.state, talking: inDialogue };
+    });
+    ok("after it, the prompt reads Tindahan and E opens the shop directly",
+       direct.label === "Tindahan" && direct.state === "shop" && !direct.talking, direct);
+    await page.click("#shell-shop-back");
+    await page.waitForTimeout(150);
+    await page.click("#btn-shop");
+    await page.waitForTimeout(150);
+    ok("the corner button opens the general stock", await page.evaluate(() => Shell.shopSeller === null));
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

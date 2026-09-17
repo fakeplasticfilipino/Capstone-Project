@@ -8,11 +8,14 @@
 //
 // Three groups, which is how the inventory screen sorts them:
 //
-//   Permanent: kind "equipment" (slot "weapon", shown as Sandata, or
-//   "accessory", shown as Anting-anting) or kind "cosmetic" (slot
-//   "outfit", shown as Damit). Bought or granted once, kept, worn.
-//   Equipment carries `effect`; a cosmetic carries `sheets` and never
-//   an effect.
+//   Permanent: kind "equipment" (any slot: "weapon", shown as Sandata,
+//   "accessory", shown as Anting-anting, or "outfit", shown as Damit)
+//   or kind "cosmetic" (slot "outfit"). Bought or granted once, kept,
+//   worn. Equipment carries `effect` and, in the outfit slot, may also
+//   carry `sheets`; a cosmetic carries `sheets` and never an effect.
+//
+//   soldBy (optional) names the NPC whose shop sells it. Without it an
+//   item is general stock (the corner button, Tindero).
 //
 //   Consumable: kind "consumable". Stacks up to maxStack (default 5).
 //   Gamitin applies `use` once and spends one.
@@ -21,11 +24,10 @@
 //   (Inventory.consume). Listed in Tindahan only while `forQuest` is
 //   an open quest.
 //
-// No permanent items ship yet. The two granted equipment items and two
-// outfits an earlier pass carried were cleared with the Act I reset,
-// because they were content decisions made ahead of the source
-// material (see TRACKER.md). A permanent item, when one is decided,
-// takes this shape:
+// One permanent item ships, the stage clothes (Block 32). The items an
+// earlier pass carried were cleared with the Act I reset, because they
+// were content decisions made ahead of the source material (see
+// TRACKER.md). A permanent item takes this shape:
 //
 //   {
 //     id: "sibat", name: "Sibat", kind: "equipment", slot: "weapon",
@@ -53,6 +55,27 @@ window.ITEMS = [
     icon: "i-apple", // shown until Mansanas.png exists
     use: { heal: 1 },
     maxStack: 5,
+  },
+
+  // The first permanent item (Block 32): the stage clothes the Mananahi
+  // sewed for Macario, worn in the Damit slot. Equipment rather than a
+  // cosmetic, because it does something: while he stands still, a
+  // guard's meter fills at half speed. There is no outfit art, so it has
+  // no sheets and wearing it leaves his look unchanged; the tile shows
+  // the shirt symbol. Sold only by the Mananahi (soldBy), for 100 of the
+  // 200 barya Nanay hands him. The name and description are working
+  // wording for the proponents to replace.
+  {
+    id: "damit-entablado",
+    name: "Damit para sa Entablado",
+    description: "Ang damit na tinahi ng mananahi para sa pagtatanghal ni Macario.",
+    kind: "equipment",
+    slot: "outfit",
+    price: 100,
+    img: "Assets/Act 1/Damit_Entablado.png",
+    icon: "i-shirt", // shown until the picture exists
+    soldBy: "mananahi",
+    effect: { stillDetectionMult: 0.5 },
   },
 
   // The apple the horse is waiting for. A separate item from the one

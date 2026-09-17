@@ -93,15 +93,22 @@ const talk = async (page, times) => {
   await page.keyboard.press("e");
   await page.waitForTimeout(120);
   const nanayOpening = [];
-  for (let i = 0; i < 5; i++) {
+  const barya0 = await page.evaluate(() => Game.currency());
+  for (let i = 0; i < 6; i++) {
     nanayOpening.push(await page.evaluate(() => dialogueSpeaker.textContent + ": " + dialogueText.textContent));
     await page.keyboard.press("e");
     await page.waitForTimeout(120);
   }
-  ok("Nanay opens with his money, then asks where he is going (Block 31)",
-     nanayOpening[0] === "Nanay: Anak, Macario, yung pera mo!" &&
-     nanayOpening[1] === "Nanay: Saan ka ba pupunta?" &&
-     nanayOpening[2].startsWith("Macario: Sa entablado"), nanayOpening);
+  ok("Nanay's opening plays as scripted in Block 32",
+     nanayOpening[0] === "Nanay: Macario anak, yung pera mo." &&
+     nanayOpening[1] === "Macario: Salamat Nay." &&
+     nanayOpening[4] === "Nanay: Naaalala mo ba nung nagtrabaho ka sakaniya?" &&
+     nanayOpening[5] === "Macario: Nay, huli na 'ho ak-", nanayOpening);
+  const barya1 = await page.evaluate(() => Game.currency());
+  // 200 from Nanay. The act's own drip for the two objectives this
+  // conversation completes (10 each) rides the next save, so it may or
+  // may not have landed yet at this instant.
+  ok("she hands him 200 barya", barya1 - barya0 === 200 || barya1 - barya0 === 220, { barya0, barya1 });
 
   // During the fade nothing is open yet; the memory's first line waits
   // for the fade-in to finish.
@@ -296,16 +303,20 @@ const talk = async (page, times) => {
   ok("with Macario standing beside his mother, facing her",
      returnScene.gap < INTERACT_DISTANCE_FOR_TEST && returnScene.facing === 1, returnScene);
   const returnLines = [returnScene.first];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 7; i++) {
     await page.keyboard.press("e");
     await page.waitForTimeout(120);
     returnLines.push(await page.evaluate(() => dialogueSpeaker.textContent + ": " + dialogueText.textContent));
   }
-  ok("all six lines play in order, ending on mag ingat",
-     returnLines.length === 6 && returnLines[5] === "Nanay: Okay sige, mag ingat ka ha!", returnLines);
+  ok("all eight lines play in order, ending on the errand to the tailor",
+     returnLines.length === 8 && returnLines[5] === "Nanay: Okay sige, mag ingat ka ha!" &&
+     returnLines[6] === "Nanay: Wag mo kalimutang dumaan sa mananahi para sa kadamitan mo" &&
+     returnLines[7] === "Macario: Opo nay", returnLines);
   await page.keyboard.press("e");
   await page.waitForTimeout(150);
   ok("and it closes", await page.evaluate(() => !inDialogue && state.flags.nakabalikMulaSaAlaala === true));
+  const tailorQuest = await page.evaluate(() => quests.find((q) => q.id === "kausapin_mananahi"));
+  ok("closing it logs the quest to talk to the tailor", tailorQuest && tailorQuest.done === false, tailorQuest);
   const afterGift = await page.evaluate(() => ({
     room: currentRoom,
     grey: document.getElementById("skyline").classList.contains("grey-filter"),
@@ -324,7 +335,7 @@ const talk = async (page, times) => {
   ok("the apple quest is marked done in the log", afterGift.questDone && afterGift.questDone.done === true, afterGift.questDone);
   ok("a new, open quest to reach the entablado is logged", afterGift.entabladoQuest && afterGift.entabladoQuest.done === false, afterGift.entabladoQuest);
   ok("its objective's flag is not set — nothing completes it yet", afterGift.entabladoFlag !== true, afterGift.entabladoFlag);
-  ok("Act I now has four objectives, three of them done", afterGift.objTotal === 4 && afterGift.objDone === 3, afterGift);
+  ok("Act I now has five objectives, three of them done", afterGift.objTotal === 5 && afterGift.objDone === 3, afterGift);
   ok("Mansanas is consumed, not kept, once it is actually given away", afterGift.ownsMansanas === false, afterGift);
   ok("and max health is still its base three, since no apple ever raised it", afterGift.maxHealth === 3, afterGift);
 
@@ -374,7 +385,58 @@ const talk = async (page, times) => {
      manaLines[0] === "Mana: Oh, kamusta ka na Macario? Ang laki laki mo na" &&
      manaLines[4] === "Macario: Andiyan na ba yung damit ko para sa entablado?" &&
      manaLines[5] === "Mana: Oo, pero bayad muna hehe...", manaLines);
-  ok("and closes", await page.evaluate(() => !inDialogue));
+  await page.waitForTimeout(200);
+
+  // --- Block 32: the tailor quest, her shop, and the first equipment. ---
+  const afterMana = await page.evaluate(() => ({
+    open: inDialogue, shop: Shell.state,
+    quest: quests.find((q) => q.id === "kausapin_mananahi"),
+    done: Acts.countDone(1),
+    shelf: [...document.querySelectorAll("#shell-shop-list [data-shop-id]")].map((t) => t.dataset.shopId),
+    balance: Game.currency(),
+  }));
+  ok("the conversation completes the tailor quest", afterMana.quest && afterMana.quest.done === true, afterMana.quest);
+  ok("and its objective, four of five done", afterMana.done === 4, afterMana);
+  ok("it ends straight into her shop", !afterMana.open && afterMana.shop === "shop", afterMana);
+  ok("which sells the stage clothes and nothing else", afterMana.shelf.length === 1 && afterMana.shelf[0] === "damit-entablado", afterMana.shelf);
+
+  const detail = await page.evaluate(() => document.getElementById("shell-shop-detail").textContent);
+  ok("priced at 100 barya, with its effect in the description",
+     detail.includes("100") && detail.includes("mabagal ka lang mapapansin ng mga gwardya"), detail);
+  await page.click("#shell-shop-action");
+  await page.waitForTimeout(250);
+  const bought = await page.evaluate(() => ({ owns: Inventory.owns("damit-entablado"), balance: Game.currency() }));
+  ok("buying it takes 100 barya", bought.owns && bought.balance === afterMana.balance - 100, { afterMana: afterMana.balance, bought });
+  await page.click("#shell-shop-back");
+  await page.waitForTimeout(150);
+
+  await page.click("#btn-inventory");
+  await page.waitForTimeout(150);
+  await page.click('#shell-items [data-item-id="damit-entablado"]');
+  await page.waitForTimeout(100);
+  await page.click("#shell-inv-action");
+  await page.waitForTimeout(250);
+  const worn = await page.evaluate(() => ({
+    worn: Inventory.isWorn("damit-entablado"), slot: Inventory.equipped("outfit"),
+    mult: equipEffects.stillDetectionMult, sheet: SPRITE_SHEETS.idle.src,
+  }));
+  ok("it is worn in the Damit slot", worn.worn && worn.slot === "damit-entablado", worn);
+  ok("and wearing it halves detection while standing still", worn.mult === 0.5, worn);
+  ok("with no outfit art, Macario keeps his own sprites", /Macario_Idle/.test(worn.sheet), worn);
+  await page.click("#shell-inventory-back");
+  await page.waitForTimeout(150);
+
+  await page.keyboard.press("e");
+  await page.waitForTimeout(200);
+  ok("E at the Mananahi now opens her shop directly",
+     await page.evaluate(() => Shell.state === "shop" && !inDialogue));
+  await page.click("#shell-shop-back");
+  await page.waitForTimeout(150);
+  await page.click("#btn-shop");
+  await page.waitForTimeout(200);
+  const corner = await page.evaluate(() => [...document.querySelectorAll("#shell-shop-list [data-shop-id]")].map((t) => t.dataset.shopId));
+  ok("the corner shop button does not sell her clothes", !corner.includes("damit-entablado"), corner);
+  await page.click("#shell-shop-back");
 
   await ctx.close();
   await browser.close();

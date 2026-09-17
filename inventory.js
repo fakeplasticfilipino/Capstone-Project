@@ -159,12 +159,21 @@ const Inventory = {
   // a spoiler in one case and a trap in the other. Owned permanent
   // items stay listed, marked as owned, so a student can see what they
   // already have rather than watching tiles disappear.
-  forSale() {
-    return this.catalogue().filter((entry) => {
+  //
+  // Block 32. An item may name its seller, soldBy, an NPC id. A seller
+  // with stock of its own lists only that stock: the Mananahi sells the
+  // stage clothes and not apples. Everything without soldBy is the
+  // general stock, listed by the corner button and by any seller that
+  // has nothing of its own (Tindero). So the clothes are never on the
+  // corner button, and never on a stall in the flashback.
+  forSale(sellerId) {
+    const priced = this.catalogue().filter((entry) => {
       if ((entry.price || 0) <= 0) return false;
       if (this.isQuest(entry) && entry.forQuest) return this.questOpen(entry.forQuest);
       return true;
     });
+    const own = sellerId ? priced.filter((entry) => entry.soldBy === sellerId) : [];
+    return own.length ? own : priced.filter((entry) => !entry.soldBy);
   },
 
   // Reads the engine's quest log. A quest that has been logged and is
@@ -547,7 +556,7 @@ const Inventory = {
   // -----------------------------------------------------------
 
   effects() {
-    const total = { maxHealthBonus: 0, projectileSpeedMult: 1 };
+    const total = { maxHealthBonus: 0, projectileSpeedMult: 1, stillDetectionMult: 1 };
 
     Object.keys(this.equipment).forEach((slot) => {
       const item = this.item(this.equipment[slot]);
@@ -558,6 +567,9 @@ const Inventory = {
       }
       if (typeof item.effect.projectileSpeedMult === "number") {
         total.projectileSpeedMult *= item.effect.projectileSpeedMult;
+      }
+      if (typeof item.effect.stillDetectionMult === "number") {
+        total.stillDetectionMult *= item.effect.stillDetectionMult;
       }
     });
 
@@ -603,6 +615,9 @@ const Inventory = {
     }
     if (typeof e.projectileSpeedMult === "number" && e.projectileSpeedMult !== 1) {
       lines.push(`Paghagis ×${e.projectileSpeedMult} na bilis`);
+    }
+    if (typeof e.stillDetectionMult === "number" && e.stillDetectionMult < 1) {
+      lines.push("Kapag nakatayo lang at hindi nakilos, mabagal ka lang mapapansin ng mga gwardya.");
     }
     const u = item.use || {};
     if (typeof u.heal === "number" && u.heal > 0) {

@@ -22,12 +22,12 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 17 Sep 2026, after Block 31 (conversations around the
-memory, the Mananahi). Blocks 22 to 29 were audited against GitHub main
-(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 and 31
+Last updated: 17 Sep 2026, after Block 32 (the first equipment, the
+tailor quest, Nanay's rewritten opening). Blocks 22 to 29 were audited against GitHub main
+(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 32
 were written to the device folder; whether they are pushed is not
-recorded. The suite was run against the device folder's files: 461
-passed, 0 failed; _dev/verify_new_scene.js 56 passed, 0 failed.
+recorded. The suite was run against the device folder's files: 476
+passed, 0 failed; _dev/verify_new_scene.js 68 passed, 0 failed.
 
 ## Start here
 
@@ -46,9 +46,10 @@ Act I is two scenes and is the only act with content. Acts II to IV are
 registered stubs. Act I cannot be completed yet, on purpose: its fourth
 objective has no content (see Next action).
 
-    tondo     Nanay (real art) reminds Macario of his money and sends
-              him on an errand. Talking to her completes objectives 1
-              and 2 and fades into:
+    tondo     Nanay (real art) hands Macario his money (200 barya) and
+              brings up the kutsero, and the memory cuts him off.
+              Talking to her completes objectives 1 and 2 and fades
+              into:
     kutsero   a greyed-out flashback. Kabayo the horse (real art,
               neighing while Macario is near) asks for an apple; Kutsero (real art) gives 10
               barya; a glass hazard sits on the road; Tindero
@@ -58,14 +59,17 @@ objective has no content (see Next action).
               Giving Kabayo the quest apple completes objective 3 and
               fades back to tondo with a fourth quest, "Pumunta sa
               entablado", that nothing can complete yet.
-    tondo     (after) Macario stands beside Nanay and a six-line
-              exchange plays by itself. Further down the road, now
+    tondo     (after) Macario stands beside Nanay and an eight-line
+              exchange plays by itself, ending with a quest, "Kausapin
+              ang mananahi" (objective 4). Further down the road, now
               2150px, the Mananahi (placeholder box) talks about his
-              stage costume and asks to be paid. Nothing follows that
-              yet.
+              stage costume, which completes it, and her shop opens:
+              Damit para sa Entablado, 100 barya, worn in Damit, halves
+              how fast a guard notices him while he stands still. No
+              guard exists in Act I yet to notice.
 
-content/items.js ships exactly those two items. No Sandata,
-Anting-anting or Damit item exists yet; the slots render empty. The
+content/items.js ships three items: the two apples and the stage
+clothes (Damit). No Sandata or Anting-anting item exists yet. The
 harness fixture carries equipment, outfits, a consumable and a quest
 item, so those paths stay tested.
 
@@ -84,18 +88,18 @@ default. Intense.mp3 is in Assets/Prefab and unused on purpose.
 
 Current versions, which index.html must match on every push:
 
-    style.css v23        game.js v38          shell.js v12
-    inventory.js v7      acts.js v9           assessment.js v3
-    content/act1.js v21  content/items.js v6  content/act2-4.js v1
+    style.css v23        game.js v39          shell.js v13
+    inventory.js v8      acts.js v9           assessment.js v3
+    content/act1.js v22  content/items.js v7  content/act2-4.js v1
     ASSET_VERSION 11 (in game.js)
 
-Nothing from Blocks 14 to 31 has been seen on a phone. Everything in
+Nothing from Blocks 14 to 32 has been seen on a phone. Everything in
 that range is verified headlessly only. A device pass is owed before
 the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 31 are built. Blocks 22 to 31 were all this session, each
+Blocks 1 to 32 are built. Blocks 22 to 32 were all this session, each
 on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -116,11 +120,16 @@ on direct feedback from the proponent:
     31  arrival dialogues (the memory's opening line, the return to
         Nanay), skipIfFlag so Nanay does not replay her errand, Nanay's
         new opening, a longer tondo road and the Mananahi
+    32  the first equipment: stage clothes in Damit with
+        stillDetectionMult; soldBy stock per seller; opensShopAfter;
+        200 barya from Nanay; the tailor quest (fifth objective);
+        Nanay's opening rewritten
 
-Push Blocks 30 and 31 together, with every file below in the same
+Push Blocks 30 to 32 together, with every file below in the same
 commit, or the ?v=N numbers will not match: game.js, shell.js,
-index.html, content/act1.js, CLAUDE.md, TRACKER.md, _dev/test.js,
-_dev/verify_new_scene.js, and the new files in Assets/
+inventory.js, index.html, content/act1.js, content/items.js,
+CLAUDE.md, TRACKER.md, _dev/test.js, _dev/verify_new_scene.js, and the
+new files in Assets/
 (Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
 Prefab/Gun_Shot.mp3; Intense.mp3 and Act 1/Entablado.png may go too,
 nothing loads them yet).
@@ -134,8 +143,8 @@ changed meaning; whether it has been is not recorded.
 
 In order.
 
-1. Push Blocks 30 and 31 (see Right now for the file list), then a
-device pass on Blocks 14 to 31, on the phone, in landscape, from a private tab
+1. Push Blocks 30 to 32 (see Right now for the file list), then a
+device pass on Blocks 14 to 32, on the phone, in landscape, from a private tab
 (browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
@@ -165,15 +174,16 @@ device pass on Blocks 14 to 31, on the phone, in landscape, from a private tab
       "Mag-ingat ka lagi, anak."; the Mananahi is absent before the
       memory and on the road after it; the dialogue box does not hide
       whoever is speaking.
+    The tailor: the barya chip shows 200 more after Nanay; the quest
+      appears after the return and ticks when the Mananahi finishes
+      talking; her shop opens by itself and lists only the clothes;
+      buying leaves 100 less; Isuot puts them in Damit; the corner
+      shop button does not sell them.
     Kabayo: crisp pixels rather than a blur, standing on the road,
       roughly Macario's height. If he reads too small for a horse,
       that is one number (an NPC display height) to add.
 
-2. The Mananahi's payment. Her last line asks to be paid for the stage
-costume, and nothing answers it yet. Decide what paying is (barya at a
-button, a gift, an outfit in the Damit slot) before the entablado.
-
-3. The entablado. Act I's fourth objective, pumunta_entablado, has flag
+2. The entablado. Act I's fourth objective, pumunta_entablado, has flag
 nasaEntablado, which nothing sets. The next content beat is a scene (or
 a use of tondo) where Macario reaches the entablado and that flag is
 set, which is what finally lets Act I complete and run its post-test.
@@ -181,12 +191,14 @@ Write it against the resource person's source book (Content authority,
 under The milestone). The engine already has a stage and a death
 cutscene mechanic; see CLAUDE.md.
 
-4. Remaining art, chased with the artist: Mananahi.png (Assets/Act 1/),
+3. Remaining art, chased with the artist: Mananahi.png (Assets/Act 1/),
+Damit_Entablado.png (Assets/Act 1/, the clothes' tile picture; outfit
+sheets later if he should look different wearing them),
 Tindero.png, Macario's Dead sheet, Cement_Tile.png (ground), and
 Mansanas.png (item icon; the apple symbol stands in). Each new sheet
 needs measure-sprite.js and all three numbers pasted.
 
-5. Then Block 12's remaining polish, the pilot, and Acts II to IV
+4. Then Block 12's remaining polish, the pilot, and Acts II to IV
 against the source material.
 
 ## The milestone
@@ -283,16 +295,17 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-The framework is complete. Act I has two scenes, five NPCs and four
-objectives, three of them playable end to end; the fourth waits on the
+The framework is complete. Act I has two scenes, five NPCs and five
+objectives, four of them playable end to end; the fifth waits on the
 entablado content. Acts II to IV are registered stubs with no content.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
 equipment, cosmetic rewards. (IN PROGRESS) All four are built and
 tested. Health, hazards and the shop are exercised by shipped content.
-Dynamic difficulty needs guards and equipment and outfits need items,
-none of which Act I ships yet; all are proven against the harness
-fixture. What remains is content and art, not code.
+Equipment is now exercised by shipped content (the stage clothes).
+Dynamic difficulty, and the clothes' effect, need a guard, which Act I
+does not ship yet, and outfits need art; all are proven against the
+harness fixture. What remains is content and art, not code.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and
 post-tests, server-side grading, in-game performance scoring,
@@ -315,7 +328,7 @@ work through.
 | Narrative Delivery | (PARTIAL) Built. Act I uses it across two scenes and five NPCs, with conversations that open by themselves around the memory; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups, and healing by eating a Mansanas |
-| Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, a two-column inventory, stacking consumables, quest items, granting and buying. No equipment item ships yet; verified against the fixture catalogue |
+| Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, a two-column inventory, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one equipment item, the stage clothes (Damit, slower detection while still); its effect has no guard to act on yet |
 | Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No outfit ships yet; verified against the fixture catalogue |
 | Trivia | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Act Assessment | (BUILT) Act I seeded; Acts II to IV not seeded |
@@ -336,7 +349,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 461-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 476-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -395,6 +408,8 @@ submit_assessment).
         ambience, Musika and Mga tunog switches (section AO)
     31  arrivalDialogues, skipIfFlag (section AP); memory
         conversations; Mananahi on a longer tondo road
+    32  stage clothes, stillDetectionMult, soldBy, opensShopAfter
+        (section AQ); tailor quest; 200 barya from Nanay
 
 ## Blocks remaining
 
@@ -412,9 +427,9 @@ material. (NOT STARTED)
 Seed trivia and assessment items for Acts II to IV. Until then those
 acts skip their tests with a notice, which is deliberate. (NOT STARTED)
 
-Real items for the three equipment slots and at least one outfit,
-decided against the source material, so objective 2 is demonstrated by
-shipped content rather than only by the fixture. (NOT STARTED)
+Real items for Sandata and Anting-anting, and outfit art, decided
+against the source material. The Damit slot has its first item
+(Block 32). (IN PROGRESS)
 
 ## Blocked on other people
 
@@ -464,6 +479,8 @@ back to the dashed placeholder box naming the file (or, for the item,
 to its symbol):
 
     Assets/Act 1/Mananahi.png  the Mananahi, on the tondo road
+    Assets/Act 1/Damit_Entablado.png  the stage clothes' tile (the shirt
+                               symbol stands in)
     Assets/Tindero.png         Tindero, in the kutsero scene
     Assets/Dead.png            Macario's death pose
     Assets/Cement_Tile.png     the ground strip; its placeholder is the
@@ -499,7 +516,9 @@ Block 13. The harness covers 823 by 412 and 740 by 360 in landscape,
 which is a floor rather than a survey. (PARTIAL)
 
 Dynamic difficulty cannot be demonstrated in the running game, because
-no shipped act has guards and Act I is the 1.00 multiplier. The formula
+no shipped act has guards and Act I is the 1.00 multiplier. The same
+holds for the stage clothes' effect (Block 32): it slows a guard's
+notice, and Act I has no guard. The formula
 is documented and the harness proves it against a fabricated act. The
 honest answer to a panel is that the lever is built and the acts it
 scales are not written yet. (BY DESIGN)
@@ -524,11 +543,11 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 461 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 56
+test.js: 476 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 68
 checks driving the REAL content/act1.js and content/items.js through
 the tondo and kutsero scenes. Both last ran green on 17 Sep 2026
-against the device folder after Block 31. Anything other than "0 failed"
+against the device folder after Block 32. Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright
 may need its browser path pointed at the preinstalled Chromium. Audio

@@ -37,7 +37,14 @@
 // beside her for her reply before he sets off. Both are a scene's
 // arrivalDialogues (CLAUDE.md, Act data format). Past her, further down
 // a road that is now twice as long, the Mananahi waits with his stage
-// costume, and her asking to be paid is where this passage stops.
+// costume.
+//
+// Block 32 made that a quest and the first equipment. Nanay's opening
+// was rewritten so she hands him his money (200 barya) and brings up
+// the kutsero before the memory cuts in; the return ends with her
+// reminding him to see the Mananahi, which logs "Kausapin ang
+// mananahi"; and talking to the Mananahi completes it and opens her
+// shop, which sells the stage clothes (content/items.js) for 100.
 //
 // The engine gained the pieces of support this needed, documented in
 // CLAUDE.md (Act data format, Decisions on record):
@@ -85,7 +92,8 @@ window.ACT_1 = {
   title: "Origins",
   titleTagalog: "Ang Pinagmulan ni Macario",
 
-  // Four objectives now. The first two complete together, in Nanay's
+  // Five objectives since Block 32, which added kausapin_mananahi. The
+  // first two complete together, in Nanay's
   // onComplete below, since in the story the trip to work starts the
   // moment that conversation ends. The third has a real ending: giving
   // Kabayo the apple (his gift, binilhanNgMansanasAngKabayo) sets it —
@@ -97,6 +105,11 @@ window.ACT_1 = {
     { id: "kausapin_nanay", label: "Kausapin si Nanay", flag: "nakausapKayNanay" },
     { id: "pumunta_trabaho", label: "Pumunta sa trabaho", flag: "nasaDaanPatungoSaTrabaho" },
     { id: "bilhan_mansanas", label: "Bilhan ng mansanas ang kabayo", flag: "binilhanNgMansanasAngKabayo" },
+    // Block 32. Given by Nanay when Macario is back from the memory, and
+    // done when the conversation with the Mananahi ends. Buying the
+    // clothes is not required to finish it: the act should not be locked
+    // behind a purchase (CLAUDE.md, the no-game-over rule).
+    { id: "kausapin_mananahi", label: "Kausapin ang mananahi", flag: "nakausapAngMananahi" },
     { id: "pumunta_entablado", label: "Pumunta sa entablado", flag: "nasaEntablado" },
   ],
 
@@ -134,7 +147,14 @@ window.ACT_1 = {
             { speaker: "Macario", text: "Hahaha" },
             { speaker: "Macario", text: "Kailangan ko ng pumuntang trabaho ma, hinihintay na ako ng mga kapwa kong artista" },
             { speaker: "Nanay", text: "Okay sige, mag ingat ka ha!" },
+            // Block 32. The errand to the tailor, and the quest it gives.
+            { speaker: "Nanay", text: "Wag mo kalimutang dumaan sa mananahi para sa kadamitan mo" },
+            { speaker: "Macario", text: "Opo nay" },
           ],
+          onComplete: () => {
+            addQuest("kausapin_mananahi", "Kausapin ang mananahi");
+            markDirty();
+          },
         },
       ],
       npcs: [
@@ -154,11 +174,15 @@ window.ACT_1 = {
               // flashback returns Macario here (game.js, startDialogue).
               skipIfFlag: "nasaDaanPatungoSaTrabaho",
               lines: [
-                { speaker: "Nanay", text: "Anak, Macario, yung pera mo!" },
-                { speaker: "Nanay", text: "Saan ka ba pupunta?" },
-                { speaker: "Macario", text: "Sa entablado nay, huli na ‘ho ako" },
-                { speaker: "Nanay", text: "Paki-bigay nga ito sa kutsero, naaalala mo pa ba siya? Nag-trabaho ka sakaniya dati, ang bata bata mo pa noon…" },
-                { speaker: "Macario", text: "Nay, mahuhuli na po a-" },
+                // Block 32 script. She hands over his money (200 barya,
+                // paid in onComplete), mentions the kutsero, and the memory
+                // cuts him off.
+                { speaker: "Nanay", text: "Macario anak, yung pera mo." },
+                { speaker: "Macario", text: "Salamat Nay." },
+                { speaker: "Nanay", text: "Hinahanap ka nung kutsero na naghatid sakin dito, kamusta ka na raw." },
+                { speaker: "Macario", text: "Nay, mauuna na ako, medyo huli na ako sa trabaho eh" },
+                { speaker: "Nanay", text: "Naaalala mo ba nung nagtrabaho ka sakaniya?" },
+                { speaker: "Macario", text: "Nay, huli na 'ho ak-" },
               ],
               // Cut off mid-sentence, on purpose — Nanay's errand pulls
               // him away before he finishes. The fade and scene change
@@ -181,6 +205,10 @@ window.ACT_1 = {
                 state.flags.nasaDaanPatungoSaTrabaho = true;
                 completeQuest("kausapin_nanay");
                 completeQuest("pumunta_trabaho");
+                // "yung pera mo": his money, 200 barya, once. It is what
+                // pays the Mananahi's 100 later, and the firstTime guard
+                // is what stops a second visit paying it again.
+                if (firstTime && window.Game) Game.addCurrency(200);
                 markDirty();
                 if (firstTime && window.Acts) Acts.gotoScene("kutsero");
               },
@@ -209,17 +237,25 @@ window.ACT_1 = {
           // a sprite sheet rather than a single picture, img becomes an
           // animation def measured with _dev/measure-sprite.js.
           //
-          // Her request for payment is where this passage stops. Nothing
-          // is for sale here yet and no objective is set.
+          // Block 32. The first conversation completes the tailor quest and
+          // ends straight into her shop (opensShopAfter), which stocks only
+          // what names her as soldBy in content/items.js: the stage clothes,
+          // 100 barya. After that, E opens the shop directly.
           id: "mananahi",
           x: 1500,
           label: "Mananahi",
           img: "Assets/Act 1/Mananahi.png",
           startsHidden: true,
           revealedByFlag: "binilhanNgMansanasAngKabayo",
+          opensShopAfter: "nakausapAngMananahi",
           stage: 0,
           dialogueSets: [
             {
+              onComplete: () => {
+                state.flags.nakausapAngMananahi = true;
+                completeQuest("kausapin_mananahi");
+                markDirty();
+              },
               lines: [
                 { speaker: "Mana", text: "Oh, kamusta ka na Macario? Ang laki laki mo na" },
                 { speaker: "Macario", text: "Ayos lang naman, ito, buhay pa din" },
