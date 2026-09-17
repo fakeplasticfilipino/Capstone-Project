@@ -57,7 +57,9 @@ const Shell = {
   // dashboard, and keeping them local avoids both a schema change
   // and a round trip on a phone chosen for being slow.
   STORAGE_KEY: "macario:settings",
-  settings: { textSize: "md" },
+  // music and sfx are the two sound switches (Block 30). Both default on:
+  // a device that has never opened settings should sound like the game.
+  settings: { textSize: "md", music: true, sfx: true },
 
   // -----------------------------------------------------------
   // Setup
@@ -103,6 +105,8 @@ const Shell = {
       logoutBtn: document.getElementById("shell-logout"),
       settingsBack: document.getElementById("shell-settings-back"),
       textSizeGroup: document.getElementById("shell-textsize"),
+      musicGroup: document.getElementById("shell-music"),
+      sfxGroup: document.getElementById("shell-sfx"),
       logoutConfirm: document.getElementById("shell-logout-yes"),
       logoutCancel: document.getElementById("shell-logout-no"),
       logoutNote: document.getElementById("shell-logout-note"),
@@ -213,6 +217,22 @@ const Shell = {
       const btn = e.target.closest("[data-size]");
       if (!btn) return;
       this.settings.textSize = btn.dataset.size;
+      this._applySettings();
+      this._saveSettings();
+    });
+
+    this.el.musicGroup.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-music]");
+      if (!btn) return;
+      this.settings.music = btn.dataset.music === "on";
+      this._applySettings();
+      this._saveSettings();
+    });
+
+    this.el.sfxGroup.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-sfx]");
+      if (!btn) return;
+      this.settings.sfx = btn.dataset.sfx === "on";
       this._applySettings();
       this._saveSettings();
     });
@@ -455,6 +475,15 @@ const Shell = {
       if (parsed && typeof parsed.textSize === "string") {
         this.settings.textSize = parsed.textSize;
       }
+      // Checked as booleans rather than truthiness, so a settings value
+      // saved before Block 30, which has neither key, keeps the defaults
+      // instead of reading as off.
+      if (parsed && typeof parsed.music === "boolean") {
+        this.settings.music = parsed.music;
+      }
+      if (parsed && typeof parsed.sfx === "boolean") {
+        this.settings.sfx = parsed.sfx;
+      }
     } catch (err) {
       // Private browsing throws on localStorage rather than
       // returning null, and a corrupt value throws on parse. Neither
@@ -487,6 +516,20 @@ const Shell = {
     buttons.forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.size === size);
     });
+
+    const music = this.settings.music !== false;
+    const sfx = this.settings.sfx !== false;
+    this.el.musicGroup.querySelectorAll("[data-music]").forEach((btn) => {
+      btn.classList.toggle("active", (btn.dataset.music === "on") === music);
+    });
+    this.el.sfxGroup.querySelectorAll("[data-sfx]").forEach((btn) => {
+      btn.classList.toggle("active", (btn.dataset.sfx === "on") === sfx);
+    });
+
+    // The engine owns what gets silenced; this only owns the choice.
+    // Called on start-up too, before the world is entered, so no sound
+    // can play once against a setting that says off.
+    if (window.Game && Game.setAudio) Game.setAudio({ music, sfx });
   },
 
   // -----------------------------------------------------------

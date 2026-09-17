@@ -204,7 +204,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 10;
+const ASSET_VERSION = 11;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -484,6 +484,7 @@ function buildNpcs(token) {
   NPCS.forEach((npc) => {
     // Reset per-load runtime state so replaying an act starts clean.
     npc.stage = 0;
+    npc.nearSoundOn = false;
 
     // An NPC that starts hidden stays hidden until its flag is set.
     // Checking the flag here rather than only on reveal means a
@@ -904,6 +905,16 @@ function bodySprite(el, sheet, displayHeight, bodyWidth) {
     sheet.naturalWidth * fit.scale + "px " + sheet.naturalHeight * fit.scale + "px";
   el.style.backgroundPositionY = -fit.topOffset + "px";
   el.style.backgroundPositionX = "0px";
+  // Small pixel art scaled up several times is smeared into a blur by
+  // the browser's default smoothing. Horse.png is a 32px cell drawn at
+  // about four and a half times that. Every other sheet in this project
+  // is painted at 256px and scaled DOWN or barely up (Macario's idle is
+  // 1.26), where nearest-neighbour would only add jagged edges, so the
+  // switch is made on the scale itself rather than declared per sheet:
+  // a new sheet gets the right treatment without anyone remembering a
+  // field. 2 is the point where a source pixel is at least two screen
+  // pixels wide and smoothing starts to show as blur.
+  el.style.imageRendering = fit.scale >= 2 ? "pixelated" : "";
   return fit;
 }
 
@@ -2166,6 +2177,12 @@ const PROJECTILE_SIZE = 14; // must match .projectile's CSS width
 function throwProjectile() {
   if (projectile) return; // one at a time
   flashAttack();
+  // Here rather than in playShootFire, which runs whether or not a shot
+  // actually left: a release while the last shot is still in flight
+  // plays the fire pose but throws nothing, and must not bang either.
+  // endAttackHold calls this and playShootFire in the same step, so the
+  // sound still lands with the muzzle flash.
+  playSfx("gunShot");
 
   const el = document.createElement("div");
   el.className = "projectile";
@@ -2250,6 +2267,250 @@ dialogueBox.addEventListener("click", () => {
 });
 
 // =============================================================
+// AUDIO (Block 30)
+//
+// Three kinds of sound, and three mechanisms, because each one has a
+// different cost on a low-end phone.
+//
+// Music is one long file (Calm.mp3, two minutes) played through a
+// single <audio> element. The browser streams and decodes it as it
+// plays. Decoding it up front through Web Audio would hold the whole
+// track as raw samples, about 40MB, on a phone chosen for being short
+// of memory.
+//
+// One-shot effects (the gunshot) go through Web Audio instead. An
+// <audio> element on Android Chrome can start a noticeable fraction of
+// a second late, which is exactly the gap between the muzzle flash and
+// the bang a student would notice. A decoded two second clip is small,
+// and a buffer source starts on the next audio frame. If Web Audio is
+// missing or the decode fails, a plain <audio> is the fallback, late
+// rather than silent.
+//
+// Ambience that belongs to a character (Kabayo's Horse.mp3) is an NPC's
+// nearSound. It loops on its own <audio> element while Macario is in
+// talking range, fades in and out rather than cutting, and starts from
+// the top on each new approach so the first thing heard is a neigh
+// rather than the middle of a silence.
+//
+// Nothing here is touched by loadAct, which runs at parse time. Every
+// call site is either the game loop (first run on a later frame) or a
+// function called after the page has finished parsing, so the lets
+// below are always initialised before anything reads them.
+// =============================================================
+
+const MUSIC_SRC = "Assets/Prefab/Calm.mp3";
+const SFX_SOURCES = { gunShot: "Assets/Prefab/Gun_Shot.mp3" };
+
+// Music sits under everything else. It is the one sound that never
+// stops, and a classroom of phones all playing it at full volume is
+// the complaint this number exists to prevent.
+const MUSIC_VOLUME = 0.35;
+const SFX_VOLUME = 0.8;
+const NEAR_SOUND_VOLUME = 0.7;
+const NEAR_SOUND_FADE_MS = 500;
+
+// Ambience starts at the same reach as the Usap prompt and stops a
+// little further out. Without the gap, standing on the boundary starts
+// and stops it every few frames.
+const NEAR_SOUND_RELEASE = 60;
+
+// Both on by default. shell.js hands in the stored setting at start-up,
+// before any sound could have played.
+let audioPrefs = { music: true, sfx: true };
+
+let musicEl = null;
+let musicWanted = false; // the world has been entered; music belongs on
+
+let audioCtx = null;
+const sfxBuffers = {}; // name -> AudioBuffer, once decoded
+
+const nearSoundEls = new Map(); // src -> { el, volume }
+let lastNearSoundNow = 0;
+
+function assetAudio(src, loop) {
+  const el = new Audio(assetUrl(src));
+  el.loop = Boolean(loop);
+  el.preload = "auto";
+  return el;
+}
+
+// A rejected play() is the browser refusing sound before a gesture. It
+// is not an error worth a console line, and the unlock listener below
+// retries on the next tap.
+function tryPlay(el) {
+  try {
+    const p = el.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  } catch (err) {
+    // Some older engines throw synchronously instead.
+  }
+}
+
+function startMusic() {
+  musicWanted = true;
+  syncMusic();
+}
+
+function syncMusic() {
+  const shouldPlay = musicWanted && audioPrefs.music && !document.hidden;
+  if (!shouldPlay) {
+    if (musicEl && !musicEl.paused) musicEl.pause();
+    return;
+  }
+  if (!musicEl) {
+    musicEl = assetAudio(MUSIC_SRC, true);
+    musicEl.volume = MUSIC_VOLUME;
+  }
+  if (musicEl.paused) tryPlay(musicEl);
+}
+
+function ensureAudioContext() {
+  if (audioCtx) return audioCtx;
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  try {
+    audioCtx = new Ctx();
+  } catch (err) {
+    return null;
+  }
+  return audioCtx;
+}
+
+// Fetched and decoded once, as soon as the page has parsed, so the
+// first shot is not the one that waits for the network. A context made
+// before a gesture starts suspended; decoding still works in that state.
+function preloadSfx() {
+  const ctx = ensureAudioContext();
+  if (!ctx || !window.fetch) return;
+  Object.keys(SFX_SOURCES).forEach((name) => {
+    fetch(assetUrl(SFX_SOURCES[name]))
+      .then((res) => (res.ok ? res.arrayBuffer() : Promise.reject(res.status)))
+      .then((data) => new Promise((resolve, reject) => {
+        // The callback form, because older Android WebViews never
+        // returned a promise from decodeAudioData.
+        ctx.decodeAudioData(data, resolve, reject);
+      }))
+      .then((buffer) => { sfxBuffers[name] = buffer; })
+      .catch(() => {}); // the <audio> fallback in playSfx covers it
+  });
+}
+
+function playSfx(name) {
+  if (!audioPrefs.sfx || document.hidden) return;
+  const src = SFX_SOURCES[name];
+  if (!src) return;
+
+  const ctx = audioCtx;
+  const buffer = sfxBuffers[name];
+  if (ctx && buffer) {
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
+    const source = ctx.createBufferSource();
+    const gain = ctx.createGain();
+    gain.gain.value = SFX_VOLUME;
+    source.buffer = buffer;
+    source.connect(gain);
+    gain.connect(ctx.destination);
+    source.start(0);
+    return;
+  }
+
+  const el = assetAudio(src, false);
+  el.volume = SFX_VOLUME;
+  tryPlay(el);
+}
+
+// Called every frame from the top of gameLoop, paused or not. Decides
+// which NPC ambience should be audible and eases each element's volume
+// toward that, so walking away fades Kabayo out rather than cutting him
+// off mid-neigh. A paused world, an open screen or a hidden tab counts
+// as nobody being near.
+function updateNearSounds(now) {
+  const dt = lastNearSoundNow ? Math.min(now - lastNearSoundNow, 100) : 16;
+  lastNearSoundNow = now;
+
+  const live = !paused && !uiBlocked && !authGated && !document.hidden &&
+    audioPrefs.sfx;
+  const wanted = new Set();
+
+  for (const npc of NPCS) {
+    if (!npc.nearSound) continue;
+    let on = false;
+    if (live && !npc.hidden) {
+      const gap = edgeGap(posX, PLAYER_WIDTH, npc.x, NPC_WIDTH);
+      on = gap < INTERACT_DISTANCE ||
+        (npc.nearSoundOn && gap < INTERACT_DISTANCE + NEAR_SOUND_RELEASE);
+    }
+    npc.nearSoundOn = on;
+    if (on) wanted.add(npc.nearSound);
+  }
+
+  // A scene with nothing to say, and nothing still fading: done.
+  if (!wanted.size && !nearSoundEls.size) return;
+
+  wanted.forEach((src) => {
+    if (!nearSoundEls.has(src)) {
+      nearSoundEls.set(src, { el: assetAudio(src, true), volume: 0 });
+    }
+  });
+
+  const stepAmount = (NEAR_SOUND_VOLUME / NEAR_SOUND_FADE_MS) * dt;
+  nearSoundEls.forEach((entry, src) => {
+    const target = wanted.has(src) ? NEAR_SOUND_VOLUME : 0;
+    if (entry.volume < target) {
+      entry.volume = Math.min(target, entry.volume + stepAmount);
+    } else if (entry.volume > target) {
+      entry.volume = Math.max(target, entry.volume - stepAmount);
+    }
+    entry.el.volume = entry.volume;
+
+    if (target > 0 && entry.el.paused) {
+      tryPlay(entry.el);
+    } else if (target === 0 && entry.volume === 0) {
+      // Faded all the way out: stop, rewind for the next approach, and
+      // forget it, so a scene left behind costs nothing per frame.
+      entry.el.pause();
+      try { entry.el.currentTime = 0; } catch (err) {}
+      nearSoundEls.delete(src);
+    }
+  });
+}
+
+function setAudio(prefs) {
+  if (prefs && typeof prefs.music === "boolean") audioPrefs.music = prefs.music;
+  if (prefs && typeof prefs.sfx === "boolean") audioPrefs.sfx = prefs.sfx;
+  syncMusic();
+  // updateNearSounds reads audioPrefs.sfx on the next frame and fades
+  // any ambience out on its own; nothing to do for it here.
+}
+
+// A phone locked or switched away from Chrome should go quiet. Chrome
+// usually silences a hidden tab itself, but not reliably on every
+// Android build, and a phone in a pocket playing music through a
+// lesson is the one audio failure a teacher would hear about.
+document.addEventListener("visibilitychange", () => {
+  syncMusic();
+  if (audioCtx) {
+    if (document.hidden) audioCtx.suspend().catch(() => {});
+    else audioCtx.resume().catch(() => {});
+  }
+});
+
+// The browser will not start sound until the page has had a gesture.
+// The title tap normally counts, so music starts straight after it, but
+// if play() was refused anyway this retries on the next touch or key,
+// which is also when a suspended Web Audio context is allowed to resume.
+["pointerdown", "keydown", "touchend"].forEach((type) => {
+  document.addEventListener(type, () => {
+    if (audioCtx && audioCtx.state === "suspended" && !document.hidden) {
+      audioCtx.resume().catch(() => {});
+    }
+    if (musicWanted) syncMusic();
+  }, { capture: true, passive: true });
+});
+
+preloadSfx();
+
+// =============================================================
 // PAUSE
 //
 // shell.js owns the pause SCREEN. This owns the pause STATE,
@@ -2313,6 +2574,11 @@ let lastFrameNow = 0;
 
 function gameLoop(now) {
   now = now || 0;
+
+  // Before the pause check, on purpose: a paused world has to be able
+  // to fade its ambience OUT, and the paused branch below does nothing
+  // else.
+  updateNearSounds(now);
 
   // A paused game does no work whatsoever. The next frame is still
   // requested, so resuming is a flag flip rather than a restart.
@@ -2617,6 +2883,10 @@ async function enterGameAsUser(userId) {
   // what went wrong.
   if (window.Shell) await Shell.awaitEntry();
 
+  // The title tap that resolved awaitEntry is the user gesture a
+  // browser wants before it will play sound; see startMusic.
+  startMusic();
+
   if (window.Acts) await Acts.syncStart(actNumber);
 
   // Safety-net save, in case something set saveDirty without going
@@ -2658,6 +2928,7 @@ async function enterGameAsGuest() {
   }
 
   if (window.Shell) await Shell.awaitEntry();
+  startMusic();
 }
 
 async function loadProgress(userId) {
@@ -2878,6 +3149,11 @@ window.Game = {
     renderHearts();
     return true;
   },
+
+  // Block 30. The two sound switches, as plain booleans. shell.js owns
+  // the setting and where it is stored; this owns what it silences.
+  setAudio,
+  audio: () => ({ music: audioPrefs.music, sfx: audioPrefs.sfx }),
 
   // Swaps the player's sprite sheets for an outfit's. Awaitable, because
   // the sheets have to load before the swap is visible.

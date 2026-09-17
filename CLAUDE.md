@@ -232,6 +232,8 @@ game.js exposes window.Game and nothing else:
     setEffects(obj)      { maxHealthBonus, projectileSpeedMult }
     health()             { health, max }, a copy; Block 25
     heal(n)              false and no change at full health; Block 25
+    setAudio(obj)        { music, sfx } booleans; Block 30
+    audio()              { music, sfx }, a copy
     setOutfit(sheets)    awaitable; null restores the base sprites
     currency()
     addCurrency(n)
@@ -338,6 +340,7 @@ NPC shape:
       startsHidden: true,                        optional
       revealedByFlag: "someFlag",                optional; unhides when set
       opensShop: true,                           optional; see below
+      nearSound: "Assets/X.mp3",                 optional; loops while near
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete() }],
       gift: { buttonLabel, requiresFlag, givenFlag,
@@ -368,6 +371,14 @@ dialogueSets at all — none are read if opensShop is set, checked
 before dialogueSets would ever be (handleInteractPress, game.js). An
 NPC with both would have opensShop win and dialogueSets go unused,
 which is not a useful thing to declare on purpose.
+
+nearSound names an audio file that loops while Macario is within
+talking range of the NPC (the same INTERACT_DISTANCE edge gap the Usap
+prompt uses) and fades out when he walks NEAR_SOUND_RELEASE past it.
+It restarts from the top on each approach, goes quiet while the world
+is paused or a screen is open, and follows the Mga tunog switch. The
+engine plays it and never learns what it is; see Audio, Block 30,
+under Decisions on record.
 
 Game.onShopRequest(fn) is the facade call shell.js registers a single
 listener with, the same shape Inventory.onChange(fn) already uses in
@@ -486,7 +497,9 @@ That is why they are strokes rather than glyphs.
 
 There is no icon art and none can be invented. Assets/ holds commissioned
 character and backdrop art (Assets/Act 1 for one act's art, Assets/Prefab
-for Macario's own sheets) and the two fonts (Assets/Fonts), and no icons.
+for Macario's own sheets and the shared sounds), the two fonts
+(Assets/Fonts), and no icons. The three sound symbols (i-music, i-sound,
+i-mute) are inline strokes like the rest, not art.
 TRACKER.md, Known problems, lists which referenced art files are still
 missing. Any NPC, guard or decoration without real art falls back to the
 dashed placeholder box naming the file, same as any other missing image,
@@ -621,6 +634,12 @@ frames - 1 when absent, so every sheet before this one is unaffected.
 The two fields describe frame RANGE only; contentTop/contentHeight are
 still measured once for the whole sheet, since every frame in it shares
 the same cell geometry regardless of which named entry plays it.
+
+A sheet scaled up by 2 or more is drawn with image-rendering:
+pixelated, set by bodySprite from the fit itself rather than declared
+on the sheet. Horse.png, a 32px cell drawn about four and a half times
+its size, is the case it exists for; every 256px sheet in this project
+is scaled down or barely up and keeps the browser's smoothing.
 
 Missing images do not break anything. They fall back to a dashed
 placeholder box showing the expected filename.
@@ -2041,6 +2060,49 @@ The dialogue prompt is now Tagalog ("I-tap o pindutin ang E") with a
 blinking arrow drawn in CSS borders, since it was the one English line
 left on a player-facing screen.
 
+Audio (Block 30). Requested with the first sound files: Calm.mp3 as the
+default background music, Gun_Shot.mp3 on firing, and Horse.mp3 playing
+while Macario is near Kabayo, whose 22-frame strip (Assets/Act 1/
+Horse.png) arrived at the same time. Intense.mp3 is in Assets/Prefab and
+deliberately unused until a scene is written that calls for it.
+
+Three sounds, three mechanisms, each chosen for the target phone. Music
+is one <audio> element, streamed as it plays; decoding a two minute
+track through Web Audio would hold about 40MB of samples. The gunshot is
+a Web Audio buffer, fetched and decoded at parse time, because an
+<audio> element on Android Chrome can start late enough to be heard
+after the muzzle flash; a plain <audio> is the fallback when Web Audio
+is missing or the decode fails. A character's ambience is its nearSound
+(Act data format), one looping <audio> element per file, eased in and
+out by updateNearSounds from the top of the game loop.
+
+What plays when. Music starts right after Shell.awaitEntry in both entry
+paths, because the title tap is the gesture a browser requires before
+sound; if play() is refused anyway, the next touch or key retries. It
+keeps playing behind pause, inventory, shop and settings, since a menu
+that goes silent reads as a crash, and it plays under the trivia card and
+the tests too, at 0.35 volume. Ambience stops while the world is stopped
+(paused, a screen open, logged out) because the thing making the noise is
+part of that world. A hidden tab silences everything, since Chrome does
+not do that reliably on every Android build. The gunshot is played from
+throwProjectile after its one-in-flight guard, so a release that throws
+nothing makes no sound, and it lands in the same step as the flash
+because endAttackHold calls throwProjectile and playShootFire together.
+
+Two switches in settings, Musika and Mga tunog, each Bukas or Patay, in
+the same localStorage object as text size and on by default. Switches
+rather than a slider: in a classroom the question is whether a phone
+makes noise at all. shell.js owns the choice and hands the engine two
+booleans through Game.setAudio at start-up and on every change; game.js
+owns what they silence. A stored value from before this block has
+neither key and keeps both on.
+
+Section AO covers it by counting what the engine asks the browser to
+play, since a headless browser cannot listen: buffers started and
+<audio> play() calls are spied on, so the fallback path cannot pass a
+check silently. Two of its checks were run against deliberately broken
+copies (no gunshot call, no release band) to confirm they fail.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -2209,6 +2271,17 @@ Tile clicks and action clicks are separate listeners on separate
 containers (the list and the detail pane) in both panels. A new action
 added to a tile directly would bring back the one-tap purchase this
 design removed. Put actions in the detail pane.
+
+Nothing that loadAct reaches at parse time may call into the audio
+section of game.js. Its state is declared with let further down the
+file, below loadScene, and the temporal dead zone rule above applies.
+Every current call site is the game loop, an entry function, the facade
+or an event listener, all of which run after parsing. That is why
+buildNpcs only resets npc.nearSoundOn and leaves the sound itself to
+the next frame.
+
+A new sound file is an Assets/ change like any other: bump ASSET_VERSION,
+because every audio load goes through assetUrl too.
 
 An item's count lives in Inventory.counts, not in a list of ids. Code
 that asks "is it owned" uses Inventory.owns(id); code that needs how

@@ -22,11 +22,12 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 17 Sep 2026, end of the session that ran Blocks 22 to 29,
-after a full audit. The device folder, the GitHub main branch (commit
-58f4a43, "UI Overhaul") and this file were compared file by file and
-match. The suite was run against a fresh clone of main: 427 passed, 0
-failed; _dev/verify_new_scene.js 36 passed, 0 failed.
+Last updated: 17 Sep 2026, after Block 30 (audio and Kabayo's art).
+Blocks 22 to 29 were audited against GitHub main (commit 58f4a43, "UI
+Overhaul") earlier the same day. Block 30 was written to the device
+folder and is NOT pushed yet. The suite was run against the device
+folder's files: 453 passed, 0 failed; _dev/verify_new_scene.js 41
+passed, 0 failed.
 
 ## Start here
 
@@ -47,8 +48,8 @@ objective has no content (see Next action).
 
     tondo     Nanay (real art) sends Macario on an errand. Talking to
               her completes objectives 1 and 2 and fades into:
-    kutsero   a greyed-out flashback. Kabayo the horse (placeholder
-              box) asks for an apple; Kutsero (real art) gives 10
+    kutsero   a greyed-out flashback. Kabayo the horse (real art,
+              neighing while Macario is near) asks for an apple; Kutsero (real art) gives 10
               barya; a glass hazard sits on the road; Tindero
               (placeholder box, opensShop) sells Mansanas (food, heals
               one heart) and "Mansanas para sa kabayo" (quest item).
@@ -69,20 +70,25 @@ The interface is a flat pixel-art theme (Block 29): square panels, hard
 outlines, Press Start 2P for titles and VT323 for everything read, both
 self-hosted in Assets/Fonts.
 
+Sound (Block 30): Calm.mp3 loops as background music from the moment the
+world is entered, Gun_Shot.mp3 plays on every shot, and Horse.mp3 loops
+near Kabayo. Settings has Musika and Mga tunog switches, both on by
+default. Intense.mp3 is in Assets/Prefab and unused on purpose.
+
 Current versions, which index.html must match on every push:
 
-    style.css v23        game.js v36          shell.js v11
+    style.css v23        game.js v37          shell.js v12
     inventory.js v7      acts.js v9           assessment.js v3
-    content/act1.js v19  content/items.js v6  content/act2-4.js v1
-    ASSET_VERSION 10 (in game.js)
+    content/act1.js v20  content/items.js v6  content/act2-4.js v1
+    ASSET_VERSION 11 (in game.js)
 
-Nothing from Blocks 14 to 29 has been seen on a phone. Everything in
+Nothing from Blocks 14 to 30 has been seen on a phone. Everything in
 that range is verified headlessly only. A device pass is owed before
 the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 29 are built. Blocks 22 to 29 were all this session, each
+Blocks 1 to 30 are built. Blocks 22 to 30 were all this session, each
 on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -97,6 +103,17 @@ on direct feedback from the proponent:
     27  melee punch sheet on a tap; Kutsero's idle sheet
     28  new 5 by 3 shooting sheet; the shot leaves from the pistol
     29  flat pixel UI theme and self-hosted pixel fonts
+    30  Kabayo's 22-frame sheet (pixelated scaling); audio: Calm.mp3
+        music, Gun_Shot.mp3 on a shot, Horse.mp3 near Kabayo, and
+        Musika and Mga tunog switches in settings
+
+Block 30 is on the device folder only. Push it with every file below in
+the same commit, or the ?v=N numbers will not match: game.js,
+shell.js, index.html, content/act1.js, CLAUDE.md, TRACKER.md,
+_dev/test.js, _dev/verify_new_scene.js, and the new files in Assets/
+(Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
+Prefab/Gun_Shot.mp3; Intense.mp3 and Act 1/Entablado.png may go too,
+nothing loads them yet).
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/reset_test_accounts.sql
@@ -107,8 +124,9 @@ changed meaning; whether it has been is not recorded.
 
 In order.
 
-1. Device pass on Blocks 14 to 29, on the phone, in landscape, from a
-private tab (browsers cache index.html; see Known problems). Check:
+1. Push Block 30 (see Right now for the file list), then a device pass
+on Blocks 14 to 30, on the phone, in landscape, from a private tab
+(browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
       which would mean Assets/Fonts did not upload), text readable at
@@ -125,6 +143,15 @@ private tab (browsers cache index.html; see Known problems). Check:
       Bumalik visible; tiles are easy to tap; both apples listed.
     Imbentaryo: eating a Mansanas after the glass restores a heart; the
       quest apple cannot be eaten; Kabayo takes it.
+    Sound: music starts after the title tap (not before) and keeps going
+      in pause and the shop; a shot bangs with the flash, with no
+      noticeable delay; Kabayo neighs as Macario reaches him and fades
+      out walking on; Musika and Mga tunog Patay silence each; locking
+      the phone silences the game; the music is not too loud against
+      the gunshot.
+    Kabayo: crisp pixels rather than a blur, standing on the road,
+      roughly Macario's height. If he reads too small for a horse,
+      that is one number (an NPC display height) to add.
 
 2. The entablado. Act I's fourth objective, pumunta_entablado, has flag
 nasaEntablado, which nothing sets. The next content beat is a scene (or
@@ -134,8 +161,8 @@ Write it against the resource person's source book (Content authority,
 under The milestone). The engine already has a stage and a death
 cutscene mechanic; see CLAUDE.md.
 
-3. Remaining art, chased with the artist: Horse.png (Kabayo),
-Tindero.png, Macario's Dead sheet, Cement_Tile.png (ground), and
+3. Remaining art, chased with the artist: Tindero.png, Macario's Dead
+sheet, Cement_Tile.png (ground), and
 Mansanas.png (item icon; the apple symbol stands in). Each new sheet
 needs measure-sprite.js and all three numbers pasted.
 
@@ -289,7 +316,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 427-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 453-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -344,11 +371,15 @@ submit_assessment).
     27  melee punch sheet and aim-pose delay; Kutsero's idle sheet
     28  5 by 3 shooting sheet; muzzle field; shot from the pistol
     29  flat pixel theme; VT323 and Press Start 2P self-hosted
+    30  Kabayo's sheet, pixelated scaling; music, gunshot, nearSound
+        ambience, Musika and Mga tunog switches (section AO)
 
 ## Blocks remaining
 
-Block 12, polish. (IN PROGRESS) Audio if there is time, which is still
-the first thing to cut. Everything else in Block 12 is a device check
+Block 12, polish. (IN PROGRESS) Audio is now built (Block 30); what
+remains of it is Intense.mp3, waiting for a scene with danger in it,
+and whatever the device pass says about volume. Everything else in
+Block 12 is a device check
 now folded into Next action, item 1: label sizes on the touch buttons,
 whether dialogue and quest text read comfortably at each text size,
 and whether the inventory and shop fit without scrolling to Bumalik.
@@ -383,7 +414,7 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the remaining art with the artist: Horse.png, Tindero.png,
+Chase the remaining art with the artist: Tindero.png,
 Macario's Dead sheet, Cement_Tile.png and Mansanas.png (see Known
 problems for where each shows). Later, once real items and the entablado
 content are decided, the art they need. (NOT STARTED)
@@ -403,11 +434,13 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 ## Known problems
 
 Missing production art. Assets/ holds real art for Nanay, Kutsero,
-Tondo.png, and Macario's idle, walk, melee and shooting sheets, plus the
-two fonts. Still missing, each falling back to the dashed placeholder
-box naming the file (or, for the item, to its symbol):
+Kabayo, Tondo.png, and Macario's idle, walk, melee and shooting sheets,
+plus the two fonts and four sound files. Assets/Act 1/Entablado.png
+also exists and is not referenced by anything yet; it is presumably for
+the entablado beat (Next action, item 2). Still missing, each falling
+back to the dashed placeholder box naming the file (or, for the item,
+to its symbol):
 
-    Assets/Horse.png           Kabayo, in the kutsero scene
     Assets/Tindero.png         Tindero, in the kutsero scene
     Assets/Dead.png            Macario's death pose
     Assets/Cement_Tile.png     the ground strip; its placeholder is the
@@ -417,7 +450,7 @@ box naming the file (or, for the item, to its symbol):
                                switches to night yet, so nothing shows
 
 Nothing in the suite fails for these; only verify_new_scene.js checks
-that a named NPC (Kutsero) draws real art. (KNOWN)
+that named NPCs (Kutsero, Kabayo) draw real art. (KNOWN)
 
 Browsers cache index.html. It carries no version number of its own, so
 a phone that loaded an old copy keeps requesting the old ?v=N files
@@ -468,14 +501,17 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 427 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 36
+test.js: 453 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 41
 checks driving the REAL content/act1.js and content/items.js through
 the tondo and kutsero scenes. Both last ran green on 17 Sep 2026
-against a fresh clone of main (58f4a43). Anything other than "0 failed"
+against the device folder after Block 30, not yet pushed. Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright
-may need its browser path pointed at the preinstalled Chromium.
+may need its browser path pointed at the preinstalled Chromium. Audio
+is checked by counting what the engine asks the browser to play
+(section AO), which headless Chromium allows after the harness's first
+click; it cannot tell whether a sound is too loud.
 
 It drives the shipping index.html with a stubbed Supabase client and
 Playwright against Chromium at 823 by 412, phone LANDSCAPE, so it

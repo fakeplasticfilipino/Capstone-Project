@@ -64,13 +64,12 @@
 // where her feet are across the cell, which is the point game.js
 // stands on the middle of her body (CLAUDE.md, Bodies, Block 24).
 //
-// Kabayo, Kutsero and Tindero have no art yet: img points at
-// Assets/Horse.png and Assets/Tindero.png (Kutsero has real art as of
-// Block 27, Assets/Act 1/Kutsero.png), none of
-// which exist on this device, so all three fall back to the dashed
-// placeholder box naming the file — the same fallback every other
-// missing image in this project uses. There is nothing to wire in once
-// real art exists; only the files need to land in Assets/.
+// Kutsero (Block 27) and Kabayo (Block 30) have real art in
+// Assets/Act 1/. Tindero still has none: img points at
+// Assets/Tindero.png, which does not exist, so he falls back to the
+// dashed placeholder box naming the file, the same fallback every
+// other missing image in this project uses. Nothing needs wiring once
+// that file lands in Assets/ under that name.
 // =============================================================
 
 window.ACT_1 = {
@@ -186,7 +185,22 @@ window.ACT_1 = {
           id: "kabayo",
           x: 300,
           label: "Kabayo",
-          img: "Assets/Horse.png",
+          // Real art (Block 30): a single strip of 22 frames, 32px cells,
+          // a grazing loop that starts and ends with his head up. Measured
+          // with _dev/measure-sprite.js. It warns that the grazing frames
+          // are shorter than the union; that is his head going down, not
+          // a mis-scaled pose, so the union pair is the right one: it
+          // keeps his raised ears inside the box. He is drawn facing left,
+          // toward Macario, who enters from the left of this scene.
+          // At DISPLAY_HEIGHT a 32px cell is scaled about four and a half
+          // times, which is what switches bodySprite to pixelated scaling.
+          animation: {
+            src: "Assets/Act 1/Horse.png", frames: 22, fps: 8,
+            contentTop: 2, contentHeight: 30, footX: 19,
+          },
+          // Loops while Macario is within talking range and fades out
+          // when he leaves (game.js, updateNearSounds).
+          nearSound: "Assets/Act 1/Horse.mp3",
           stage: 0,
           dialogueSets: [
             {

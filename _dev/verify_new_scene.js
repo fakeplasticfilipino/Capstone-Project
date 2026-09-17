@@ -14,7 +14,7 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const PORT = 8096;
 const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png" };
+const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png", ".mp3": "audio/mpeg" };
 
 const server = http.createServer((req, res) => {
   const rel = decodeURIComponent(req.url.split("?")[0]).replace(/^\/+/, "");
@@ -106,9 +106,29 @@ const talk = async (page, times) => {
   ok("Kutsero draws his sprite sheet, not the placeholder box",
      kutseroArt.bg.includes("Kutsero.png") && kutseroArt.text === "", kutseroArt);
 
+  // --- Kabayo's art and sound (Block 30). ---
+  const kabayoArt = await page.evaluate(() => {
+    const el = document.querySelector("#npc-kabayo .sprite");
+    return { bg: el.style.backgroundImage, text: el.textContent, rendering: el.style.imageRendering,
+             height: el.style.height };
+  });
+  ok("Kabayo draws Horse.png, not the placeholder box",
+     kabayoArt.bg.includes("Horse.png") && kabayoArt.text === "", kabayoArt);
+  ok("his 32px sheet is scaled up pixelated rather than smoothed",
+     kabayoArt.rendering === "pixelated", kabayoArt);
+  const nearKabayo = await page.evaluate(() => {
+    const e = nearSoundEls.get("Assets/Act 1/Horse.mp3");
+    return { playing: !!e && !e.el.paused, music: !!musicEl && !musicEl.paused && /Calm\.mp3/.test(musicEl.src) };
+  });
+  ok("Horse.mp3 is playing while Macario stands at Kabayo", nearKabayo.playing, nearKabayo);
+  ok("over Calm.mp3", nearKabayo.music, nearKabayo);
+
   // --- Kutsero: +10 barya, and the exact script. ---
   const balanceBefore = await page.evaluate(() => Game.currency());
   await walkTo(page, 730); // Kutsero sits at x=750
+  await page.waitForTimeout(900); // the fade-out
+  ok("walking on to Kutsero leaves Kabayo's sound behind",
+     await page.evaluate(() => !nearSoundEls.has("Assets/Act 1/Horse.mp3")));
   await page.keyboard.press("e");
   await page.waitForTimeout(120);
   const kutseroLines = [];

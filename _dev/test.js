@@ -41,6 +41,7 @@ const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
 const MIME = {
   ".html": "text/html", ".js": "text/javascript", ".css": "text/css",
   ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2",
+  ".mp3": "audio/mpeg",
 };
 
 // A gameplay skeleton equivalent to the misyon scene an earlier pass of
@@ -3046,6 +3047,214 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the primary button is a flat fill, not a gradient",
        theme.buttonImage === "none", theme.buttonImage);
     await ctx.close();
+  }
+
+  console.log("\nAO. Sound: music, the gunshot, NPC ambience, and the two switches");
+  {
+    // Block 30. The sounds are real files played by the real engine; what
+    // is checked is which element or buffer the engine asked to play and
+    // when, since a headless browser has no ears. The two spies below
+    // count every Web Audio buffer started and every <audio> play() call,
+    // so a check cannot pass by the fallback path doing the work quietly.
+    const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
+    const spy = () => page.evaluate(() => {
+      window.__SOUND = { buffers: 0, plays: [] };
+      if (window.AudioContext && !AudioContext.prototype.__spied) {
+        const make = AudioContext.prototype.createBufferSource;
+        AudioContext.prototype.createBufferSource = function () {
+          const node = make.call(this);
+          const start = node.start.bind(node);
+          node.start = (...a) => { window.__SOUND.buffers++; return start(...a); };
+          return node;
+        };
+        const play = HTMLMediaElement.prototype.play;
+        HTMLMediaElement.prototype.play = function () {
+          window.__SOUND.plays.push(this.src);
+          return play.call(this);
+        };
+        AudioContext.prototype.__spied = true;
+      }
+    });
+    await spy();
+
+    const music = await page.evaluate(() => ({
+      exists: !!musicEl, src: musicEl && musicEl.src, loop: musicEl && musicEl.loop,
+      paused: musicEl ? musicEl.paused : null, wanted: musicWanted,
+    }));
+    ok("entering the world starts the background music", music.exists && music.wanted, music);
+    ok("and it is Calm.mp3, looping", /Calm\.mp3/.test(music.src) && music.loop, music);
+    ok("and it is actually playing", music.paused === false, music);
+
+    // The gunshot is decoded ahead of time, so the first shot does not
+    // wait on the network. Allowed a moment: the fetch starts at parse.
+    await page.waitForFunction(() => !!sfxBuffers.gunShot, null, { timeout: 5000 }).catch(() => {});
+    ok("Gun_Shot.mp3 is decoded before the first shot", await page.evaluate(() => !!sfxBuffers.gunShot));
+
+    const tap = await page.evaluate(() => {
+      destroyProjectile();
+      __SOUND.buffers = 0; __SOUND.plays = [];
+      startAttackHold();
+      endAttackHold();
+      return { buffers: __SOUND.buffers, plays: __SOUND.plays.length, shooting };
+    });
+    ok("a tap (the punch) makes no gunshot", tap.buffers === 0 && tap.plays === 0, tap);
+    await page.waitForTimeout(700);
+
+    const shot = await page.evaluate(() => {
+      destroyProjectile();
+      __SOUND.buffers = 0; __SOUND.plays = [];
+      startAttackHold();
+      attackHoldStart = performance.now() - ATTACK_HOLD_MS - 50;
+      endAttackHold();
+      return { buffers: __SOUND.buffers, plays: __SOUND.plays, projectile: projectile !== null, shooting };
+    });
+    ok("a hold released into a shot plays the gunshot in the same step",
+       shot.projectile && shot.shooting === "fire" && shot.buffers === 1, shot);
+
+    const second = await page.evaluate(() => {
+      __SOUND.buffers = 0;
+      startAttackHold();
+      attackHoldStart = performance.now() - ATTACK_HOLD_MS - 50;
+      endAttackHold(); // the first shot is still in flight
+      return { buffers: __SOUND.buffers };
+    });
+    ok("a release while the last shot is still flying makes no second bang",
+       second.buffers === 0, second);
+    await page.waitForTimeout(700);
+
+    // NPC ambience, against a test NPC added to the fixture scene at run
+    // time, so the mechanism is checked apart from whatever Act I ships.
+    const near = await page.evaluate(() => new Promise((resolve) => {
+      destroyProjectile();
+      NPCS.push({ id: "test-kalabaw", x: 1200, label: "Kalabaw", nearSound: "Assets/Act 1/Horse.mp3" });
+      posX = 200;
+      const far = nearSoundEls.size;
+      posX = 1200 - 40 - 50; // a 50px gap, inside INTERACT_DISTANCE
+      setTimeout(() => {
+        const e = nearSoundEls.get("Assets/Act 1/Horse.mp3");
+        resolve({ far, has: !!e, loop: e && e.el.loop, paused: e ? e.el.paused : null, volume: e && e.el.volume });
+      }, 800);
+    }));
+    ok("nothing plays while far from a nearSound NPC", near.far === 0, near);
+    ok("walking into talking range starts its sound, looping", near.has && near.loop && near.paused === false, near);
+    ok("and it has faded all the way in", Math.abs(near.volume - 0.7) < 0.01, near);
+
+    const band = await page.evaluate(() => new Promise((resolve) => {
+      posX = 1200 - 40 - (INTERACT_DISTANCE + 30); // past reach, inside the release band
+      // Longer than a whole fade (NEAR_SOUND_FADE_MS), and at full volume
+      // rather than merely present: a sound that had started fading out
+      // is still in the map for half a second, which is how this check
+      // once passed with the band removed entirely.
+      setTimeout(() => {
+        const e = nearSoundEls.get("Assets/Act 1/Horse.mp3");
+        resolve({ has: !!e, volume: e && e.el.volume });
+      }, NEAR_SOUND_FADE_MS + 300);
+    }));
+    ok("stepping just past reach does not cut it (the release band)",
+       band.has && Math.abs(band.volume - 0.7) < 0.01, band);
+
+    const left = await page.evaluate(() => new Promise((resolve) => {
+      const e = nearSoundEls.get("Assets/Act 1/Horse.mp3");
+      posX = 200;
+      setTimeout(() => resolve({
+        gone: !nearSoundEls.has("Assets/Act 1/Horse.mp3"),
+        paused: e.el.paused, rewound: e.el.currentTime === 0,
+      }), 900);
+    }));
+    ok("walking away fades it out and stops it", left.gone && left.paused, left);
+    ok("rewound, so the next approach starts from the top", left.rewound, left);
+
+    const pausedNear = await page.evaluate(() => new Promise((resolve) => {
+      posX = 1200 - 40 - 50;
+      setTimeout(() => {
+        const started = nearSoundEls.has("Assets/Act 1/Horse.mp3");
+        setPaused(true);
+        setTimeout(() => {
+          const r = { started, gone: !nearSoundEls.has("Assets/Act 1/Horse.mp3"),
+                      musicPaused: musicEl.paused };
+          setPaused(false);
+          resolve(r);
+        }, 900);
+      }, 700);
+    }));
+    ok("pausing the world fades the ambience out while standing still",
+       pausedNear.started && pausedNear.gone, pausedNear);
+    ok("but the music keeps playing behind the pause screen",
+       pausedNear.musicPaused === false, pausedNear);
+
+    // The switches, driven through the real settings screen.
+    await page.click("#btn-pause");
+    await page.waitForTimeout(150);
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(250);
+    ok("settings shows Musika and Mga tunog both on by default",
+       await page.evaluate(() =>
+         document.querySelector('#shell-music [data-music="on"]').classList.contains("active") &&
+         document.querySelector('#shell-sfx [data-sfx="on"]').classList.contains("active")));
+    const choiceHeight = await page.evaluate(() =>
+      Math.round(document.querySelector('#shell-sfx [data-sfx="off"]').getBoundingClientRect().height));
+    ok("a sound switch clears 44px on screen", choiceHeight >= 44, choiceHeight);
+
+    await page.click('#shell-music [data-music="off"]');
+    await page.click('#shell-sfx [data-sfx="off"]');
+    await page.waitForTimeout(100);
+    const off = await page.evaluate(() => ({
+      audio: Game.audio(), musicPaused: musicEl.paused,
+      stored: JSON.parse(localStorage.getItem("macario:settings")),
+      offActive: document.querySelector('#shell-music [data-music="off"]').classList.contains("active"),
+    }));
+    ok("Patay on Musika stops the music", off.audio.music === false && off.musicPaused, off);
+    ok("and the switch shows it", off.offActive, off);
+    ok("both switches are saved on the device",
+       off.stored.music === false && off.stored.sfx === false, off.stored);
+    await page.click("#shell-settings-back");
+    await page.waitForTimeout(100);
+    await page.click("#shell-resume");
+    await page.waitForTimeout(150);
+
+    const silent = await page.evaluate(() => new Promise((resolve) => {
+      destroyProjectile();
+      __SOUND.buffers = 0; __SOUND.plays = [];
+      startAttackHold();
+      attackHoldStart = performance.now() - ATTACK_HOLD_MS - 50;
+      endAttackHold();
+      posX = 1200 - 40 - 50;
+      setTimeout(() => resolve({ buffers: __SOUND.buffers, plays: __SOUND.plays.length,
+                                 near: nearSoundEls.size }), 700);
+    }));
+    ok("with Mga tunog off, a shot is silent", silent.buffers === 0, silent);
+    ok("and a nearSound NPC stays silent", silent.near === 0 && silent.plays === 0, silent);
+
+    // A hidden tab goes quiet even with music on.
+    const hidden = await page.evaluate(() => {
+      Game.setAudio({ music: true, sfx: true });
+      const wasPlaying = !musicEl.paused;
+      Object.defineProperty(document, "hidden", { configurable: true, get: () => true });
+      document.dispatchEvent(new Event("visibilitychange"));
+      const r = { wasPlaying, pausedWhenHidden: musicEl.paused };
+      delete document.hidden;
+      document.dispatchEvent(new Event("visibilitychange"));
+      r.back = !musicEl.paused;
+      return r;
+    });
+    ok("hiding the tab pauses the music", hidden.pausedWhenHidden, hidden);
+    ok("and showing it again resumes", hidden.back, hidden);
+    await ctx.close();
+
+    // A reload restores the switches, and a settings value from before
+    // Block 30 (no music or sfx key) keeps sound on rather than off.
+    const { ctx: c2, page: p2 } = await newPage({ session: null });
+    await p2.evaluate(() => localStorage.setItem("macario:settings", JSON.stringify({ textSize: "lg", music: false, sfx: true })));
+    await p2.reload();
+    await p2.waitForTimeout(300);
+    ok("a reload restores Musika off", (await p2.evaluate(() => Game.audio())).music === false);
+    await p2.evaluate(() => localStorage.setItem("macario:settings", JSON.stringify({ textSize: "lg" })));
+    await p2.reload();
+    await p2.waitForTimeout(300);
+    const legacy = await p2.evaluate(() => Game.audio());
+    ok("an older saved setting keeps both on", legacy.music && legacy.sfx, legacy);
+    await c2.close();
   }
 
   await browser.close();

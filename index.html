@@ -54,6 +54,9 @@
     <symbol id="i-apple" viewBox="0 0 24 24"><path d="M12 8.2c-1.6-1.3-5.6-1.6-6.8 1.9-1.1 3.3.8 8.9 3.6 9.9 1.3.5 2.1-.3 3.2-.3s1.9.8 3.2.3c2.8-1 4.7-6.6 3.6-9.9C17.6 6.6 13.6 6.9 12 8.2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 8V4.5M12.2 5.6c1-1.9 3-2.3 4.3-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-scroll" viewBox="0 0 24 24"><path d="M7 4h10.5A2.5 2.5 0 0 1 20 6.5V8h-3M7 4a2.5 2.5 0 0 0-2.5 2.5v11A2.5 2.5 0 0 0 7 20h10V6.5A2.5 2.5 0 0 0 14.5 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 9.5h5M8.5 13h5M8.5 16.5h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 17.5V5.5l10-2v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="6.5" cy="17.5" rx="2.8" ry="2.3" fill="currentColor"/><ellipse cx="16.5" cy="15.5" rx="2.8" ry="2.3" fill="currentColor"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18.3 6.5a8 8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m15.5 9.5 5 5M20.5 9.5l-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
     <symbol id="i-letter" viewBox="0 0 24 24"><path d="M4.5 19.5 12 4.5l7.5 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.6 14h8.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
   </svg>
   <div id="app-scale">
@@ -206,6 +209,26 @@
               <button class="shell-choice" type="button" data-size="sm"><span class="ico"><svg aria-hidden="true"><use href="#i-letter"></use></svg></span><span class="lbl">Maliit</span></button>
               <button class="shell-choice" type="button" data-size="md"><span class="ico"><svg aria-hidden="true"><use href="#i-letter"></use></svg></span><span class="lbl">Katamtaman</span></button>
               <button class="shell-choice" type="button" data-size="lg"><span class="ico"><svg aria-hidden="true"><use href="#i-letter"></use></svg></span><span class="lbl">Malaki</span></button>
+            </div>
+          </div>
+
+          <!-- Block 30. Two switches rather than a volume slider: on a
+               classroom phone the question is whether it makes noise at
+               all, and a slider at 44px on glass would not fit beside
+               anything. Kept on the device, like text size. -->
+          <div class="shell-field">
+            <div class="shell-label">Musika</div>
+            <div class="shell-choices" id="shell-music">
+              <button class="shell-choice" type="button" data-music="on"><span class="ico"><svg aria-hidden="true"><use href="#i-music"></use></svg></span><span class="lbl">Bukas</span></button>
+              <button class="shell-choice" type="button" data-music="off"><span class="ico"><svg aria-hidden="true"><use href="#i-mute"></use></svg></span><span class="lbl">Patay</span></button>
+            </div>
+          </div>
+
+          <div class="shell-field">
+            <div class="shell-label">Mga tunog</div>
+            <div class="shell-choices" id="shell-sfx">
+              <button class="shell-choice" type="button" data-sfx="on"><span class="ico"><svg aria-hidden="true"><use href="#i-sound"></use></svg></span><span class="lbl">Bukas</span></button>
+              <button class="shell-choice" type="button" data-sfx="off"><span class="ico"><svg aria-hidden="true"><use href="#i-mute"></use></svg></span><span class="lbl">Patay</span></button>
             </div>
           </div>
 
@@ -386,15 +409,15 @@
        back except the one guarded awaitEntry call in game.js. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabaseClient.js"></script>
-  <script src="content/act1.js?v=19"></script>
+  <script src="content/act1.js?v=20"></script>
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=6"></script>
-  <script src="game.js?v=36"></script>
+  <script src="game.js?v=37"></script>
   <script src="acts.js?v=9"></script>
   <script src="inventory.js?v=7"></script>
   <script src="assessment.js?v=3"></script>
-  <script src="shell.js?v=11"></script>
+  <script src="shell.js?v=12"></script>
 </body>
 </html>
