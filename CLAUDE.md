@@ -288,10 +288,12 @@ Scene shape:
       greyFilter: true,                          optional; greys backdrop + ground
       backdrop: { src },                         optional; own picture, drawn once
       ground: false,                             optional; hides the dirt strip
+      music: "Assets/X.mp3",                     optional; this scene's track
       exits: [{ id, x, width, label, toScene,    optional; doorways
                 toX, toFacing }],
       arrivalDialogues: [{ requiresFlag,         optional; opens by itself
-                           doneFlag, x, facing,  after a fade into the scene
+                           doneFlag, unlessFlag, after a fade into the scene
+                           x, facing,
                            lines, onComplete }],
       npcs: [...],
       stage: {...} | omitted,
@@ -353,13 +355,17 @@ toFacing }), the same fade every scene change uses. Without toX the new
 scene's startX applies; an arrival dialogue's own x still wins over
 both. A building to walk into is a decoration for the picture plus an
 exit at its door; a decoration with a single still image is an animation
-def with frames: 1.
+def with frames: 1. A decoration may also declare hidden: true, for a
+character a script brings on later, and facing: -1 to mirror its art.
 
 arrivalDialogues are conversations nobody starts: they open the moment a
 fade into the scene (Acts.gotoScene) finishes. The first entry whose
 requiresFlag is set, or that has none, and whose doneFlag is not yet set
-is the one that plays; closing it sets doneFlag and runs onComplete. x
-and facing, when given, place Macario while the screen is still black.
+is the one that plays; closing it sets doneFlag and runs onComplete. An
+unlessFlag suppresses it without being set by it, which is what lets a
+scene replay until the beat it leads to is actually finished (the
+entablado's fight). x and facing, when given, place Macario while the
+screen is still black.
 They play only through a fade, never on a login or reload into the
 scene, so a student who reloads during the fade skips that one line of
 story rather than meeting it over a title screen or a test.
@@ -436,6 +442,26 @@ window.Inventory anyway. This is not the one documented exception to
 game.js never calling into shell.js (Shell.awaitEntry()) — game.js
 still calls nothing on Shell directly; it calls a listener shell.js
 handed it, the same indirection Inventory.onChange already relies on.
+
+Calls content may make for a scene that plays itself out (Block 35), all
+of them plain globals in game.js, like addQuest:
+
+    playDialogue(lines)          opens the dialogue box; resolves on close
+    setCutscene(bool)            holds the world still, no box on screen
+    turnPlayer(1 | -1)
+    showDecoration(id, bool)
+    moveDecoration(id, x, pxPerSecond)   resolves on arrival
+    spawnEnemies(defs)           resolves when every one of them is down
+    setMusic(src | null)         null is the scene's own track, else Calm
+
+An enemy def is { id, x, hp, speed, img | animation }. Enemies fight
+rather than patrol and are a separate list from guards: they walk at
+Macario, stop at ENEMY_REACH, light up for ENEMY_TELEGRAPH_MS and swing.
+A punch is one point, a shot two, and a hit knocks them back and delays
+the next swing. Their speed is scaled by act number exactly as guard
+speed is. Running out of health restarts the fight rather than ending it,
+with the beaten ones staying beaten, and no exit is offered while any of
+them is up.
 
 ## Item data format
 
@@ -646,6 +672,15 @@ fixture sheets need no changes to keep working. See Decisions on record
 for the numbers measured for Macario and Nanay and why this was needed;
 the same measurement is owed to Dead.png and to any outfit's walk/idle/
 dead sheets once real art exists for them.
+
+A sheet may also declare frameBottoms, one native-pixel bottom edge per
+frame, for art that draws movement INTO the cell: Macario's jump sheet
+sits its tucked frames 40 to 50 pixels higher than its standing ones, and
+the engine already moves him, so drawing that too would put him twice as
+high. With frameBottoms each frame is grounded by its own feet, and
+contentHeight is the standing frame's height, so he is the same size in
+the air as on the ground. Measured the same way as everything else, with
+measure-sprite.js, whose per-frame lines are exactly these numbers.
 
 A third optional field, footX, says where the character STANDS inside
 the cell horizontally, in the same native pixels. It is what lines the
@@ -2269,6 +2304,43 @@ A way back out, Lumabas at the room's left edge, was added although it
 was not asked for: without it a student who walks in is stuck in a room
 with nothing in it until the entablado has content. Going in sets no
 flag, so pumunta_entablado stays open and Act I does not finish.
+
+The moro-moro (Block 35). The proponent delivered a jump sheet and the
+Muslim girl's sheet with the scene's script: the love scene on the
+entablado, a man walking on from the right, and a fight with at least
+five enemies, placeholders for now.
+
+The jump is three named views of one sheet, chosen from velY rather than
+from a timer, so a short hop and a long fall both look right and the jump
+itself still happens the instant the button is pressed (the crouch frames
+are not played; waiting for them would add lag to the one control a
+student presses most). Landing holds frame 8 for LAND_POSE_MS, measured
+by the speed he lands at so stepping down a ramp is not a landing.
+frameBottoms, above, is what keeps the tucked frames on his body.
+
+The scene is written as an async function in content/act1.js out of seven
+plain calls (above). The alternative was a cutscene format in the engine,
+in data, which would have to grow a case for every beat a later scene
+wants; a content file that awaits a few small calls can already express
+anything those cases would.
+
+Combat is its own list, not a mode on guards. A guard's rules are the
+stealth rules, where a swing from the front is a mistake that costs a
+heart, and a fight where attacking is punished is not a fight. What they
+share is what should be shared: the same body, the same difficulty
+multiplier, the same damagePlayer and the same meter element.
+
+The pacing numbers are chosen, not measured, like the score budgets: 2
+points each, 700ms before the first swing, 1800ms between swings, a 350ms
+warning. Five enemies queue rather than stack, so only the one in front
+is swinging. All of it is worth re-tuning the first time a Grade 8
+student plays it on a phone.
+
+Two things about this content the proponents should decide before the
+pilot, not the engine: the man is called Muslim on screen, which is what
+the file was named, and his last line calls Maryam a puta. That is the
+script as given, and the game is played by Grade 8 students in a
+classroom with a teacher present.
 
 ## Pitfalls
 

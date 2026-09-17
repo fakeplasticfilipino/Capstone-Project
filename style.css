@@ -1058,6 +1058,29 @@ html, body {
   background: #e53935;
 }
 
+/* Block 35. Fighting enemies reuse the guard meter as a health bar, in
+   red, draining as they are hit. Just before a swing lands the enemy
+   lights up (enemy-windup); that warning is the whole of what teaches a
+   student when to step back, so it is loud on purpose. A beaten enemy
+   fades out where it fell. */
+.enemy-meter-fill {
+  background: #e53935;
+}
+
+.enemy-windup .sprite {
+  filter: brightness(1.6) sepia(1) saturate(5) hue-rotate(-25deg);
+}
+
+.enemy-hit .sprite {
+  filter: brightness(2.2);
+}
+
+.enemy-down {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
 .projectile {
   position: absolute;
   width: 14px;

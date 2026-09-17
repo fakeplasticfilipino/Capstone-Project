@@ -457,12 +457,90 @@ window.ACT_1 = {
       // wide. No story here yet; the only thing to do is leave, and leaving
       // puts Macario back at the stairs outside rather than at the start of
       // the road.
+      //
+      // Block 35. The moro-moro. Maryam is on stage when Macario walks in and
+      // the love scene opens by itself (arrivalDialogues). A man walks on
+      // from the right, the confrontation plays, he calls the guards and
+      // walks off, and five guards come in from the wings to fight. Beating
+      // them sets nagapiAngMgaGuwardiya. Until then every entry through the
+      // door plays the scene again (unlessFlag), which is also what happens
+      // after a reload in the middle of it: the fight is not saved, the
+      // flag that says it was won is.
+      //
+      // Maryam is a decoration: she only stands and speaks through the
+      // script, and a decoration can do both without the E-to-talk an NPC
+      // would bring. The man and the guards have no art yet
+      // (Assets/Act 1/Muslim.png, Assets/Act 1/Guwardiya.png) and draw as
+      // the dashed placeholder box naming those files.
       id: "entablado",
       worldWidth: 1176,
       startX: 260,
       backdrop: { src: "Assets/Act 1/Entablado.png" },
       ground: false,
       npcs: [],
+      decorations: [
+        {
+          // Muslim_Girl.png: 5 by 3, 13 frames, measured with
+          // measure-sprite.js. Drawn facing right, toward where Macario
+          // is placed. (Muslim_Woman.png in the same folder is a
+          // byte-for-byte copy and is not used.)
+          id: "maryam",
+          x: 330,
+          animation: {
+            src: "Assets/Act 1/Muslim_Girl.png", frames: 13, fps: 6, columns: 5,
+            contentTop: 73, contentHeight: 117, footX: 128,
+          },
+        },
+        {
+          id: "muslim",
+          x: 1300, // off stage, in the right wing
+          hidden: true,
+          animation: { src: "Assets/Act 1/Muslim.png", frames: 1, fps: 1 },
+        },
+      ],
+      arrivalDialogues: [
+        {
+          unlessFlag: "nagapiAngMgaGuwardiya",
+          x: 440, // beside Maryam, facing her
+          facing: -1,
+          lines: [
+            { speaker: "Maryam", text: "Oh Macario, bagamat iniibig kita, hindi tayo pwede magsama." },
+            { speaker: "Maryam", text: "Hindi pwede mag-sama ang muslim na babae at ang kristiyanong lalaki..." },
+            { speaker: "Macario", text: "Hindi ito maaari mahal ko, gagawin ko ang lahat magsama lang tayo!" },
+            { speaker: "Maryam", text: "Hindi ko kaya kung ikaw ay mawawala, Macario!" },
+            { speaker: "Macario", text: "..." },
+            { speaker: "Maryam", text: "Ano iyon?" },
+          ],
+          onComplete: async () => {
+            setCutscene(true);
+            turnPlayer(1); // toward the sound
+            showDecoration("muslim", true);
+            await moveDecoration("muslim", 800, 200);
+            await playDialogue([
+              { speaker: "Muslim", text: "Anong ginagawa mo dito, Maryam? Bakit kasama mo ang Kafir na ito?!" },
+              { speaker: "Maryam", text: "Hindi ikaw ang tunay kong mahal! Si Macario ang hinahanap ng puso ko!" },
+              { speaker: "Muslim", text: "Mga guwardiya, kunin niyo ang puta, patayin niyo ang Kafir!" },
+            ]);
+
+            // He leaves the fighting to his guards, who come in from the same
+            // wing, spaced so they arrive one after another.
+            moveDecoration("muslim", 1300, 260).then(() => showDecoration("muslim", false));
+            setCutscene(false);
+            setMusic("Assets/Prefab/Intense.mp3");
+            await spawnEnemies([1240, 1310, 1380, 1450, 1520].map((x, i) => ({
+              id: "guwardiya-" + (i + 1),
+              x,
+              hp: 2,
+              img: "Assets/Act 1/Guwardiya.png",
+            })));
+
+            setMusic(null);
+            state.flags.nagapiAngMgaGuwardiya = true;
+            markDirty();
+            showToast("Napatumba mo ang mga guwardiya!");
+          },
+        },
+      ],
       exits: [
         { id: "lumabas-entablado", x: 0, width: 80, label: "Lumabas",
           toScene: "tondo", toX: 2180, toFacing: -1 },

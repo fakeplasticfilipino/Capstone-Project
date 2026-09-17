@@ -128,6 +128,9 @@ const NPC_WIDTH = 80;
 // A guard's body is the same size as Macario's: guards catch, get hit and
 // get taken down, which are the same kind of contact his body has.
 const GUARD_WIDTH = PLAYER_WIDTH;
+// Block 35. A fighting enemy has the same body as a guard, for the same
+// reason: it hits, gets hit and gets knocked back like Macario does.
+const ENEMY_WIDTH = PLAYER_WIDTH;
 const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
 const GROUND_LEVEL = 60; // must match --ground-level in style.css
 const DISPLAY_HEIGHT = 134; // shared sprite height (player + animated NPCs)
@@ -210,7 +213,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 13;
+const ASSET_VERSION = 14;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -290,6 +293,11 @@ let STAGE = null; // the current scene's stage, or null if it has none
 let WORLD_WIDTH = 4400; // overwritten per scene
 let PLATFORMS = []; // one-way platforms, jumped up through and landed on
 let GUARDS = []; // patrolling guards, empty outside stealth scenes
+// Block 35. Enemies that fight rather than patrol, spawned by content at
+// run time (spawnEnemies). Declared up here because unloadScene and
+// updateHudVisibility, both reached at parse time, read it.
+let ENEMIES = [];
+let enemiesDone = null; // resolves the spawnEnemies promise
 let HIDE_SPOTS = []; // regions that suppress guard detection
 let HAZARDS = []; // ground regions that cost one health on contact
 let PICKUPS = []; // collectibles; currently only hearts
@@ -443,6 +451,8 @@ function unloadScene() {
   HIDE_SPOTS = [];
   HAZARDS = [];
   PICKUPS = [];
+  ENEMIES = []; // their elements are in actElements, removed above
+  enemiesDone = null;
   currentScene = null;
   currentSceneId = null;
 }
@@ -595,9 +605,14 @@ function buildDecorations(token) {
     // A decoration has no body, so its x is simply where it stands: a
     // zero-width box, with the art's feet on it.
     mountBody(el, dec.x, 0, dec.displayHeight || DISPLAY_HEIGHT);
+    // Block 35. A decoration may start hidden, for a character who walks on
+    // later in a scripted scene (showDecoration), and may be mirrored.
+    dec.currentX = dec.x;
+    if (dec.hidden) el.style.display = "none";
 
     const spriteEl = document.createElement("div");
     spriteEl.className = "sprite npc-sprite npc-anim-sprite";
+    if (dec.facing === -1) spriteEl.style.transform = "scaleX(-1)";
     el.appendChild(spriteEl);
     world.appendChild(el);
 
@@ -871,6 +886,40 @@ const BASE_SPRITE_SHEETS = {
     loop: false,
     contentTop: 47, contentHeight: 109, footX: 96,
   },
+
+  // Block 35. The jump: a 4 by 3 sheet, 9 frames. 0-2 crouch, 3 pushes
+  // off, 4-6 are in the air, 7 comes down, 8 lands. The crouch is not
+  // played: waiting for it before leaving the ground would put a delay
+  // on a jump the student expects the instant they press. Three views of
+  // the one image, chosen in the game loop from his vertical speed rather
+  // than from time, so a short hop and a long fall both look right.
+  //
+  // This artist drew the jump's height INTO the cell: the tucked frames sit
+  // 40 to 50 native pixels above the feet of the standing ones. The engine
+  // already moves Macario up and down, so drawing that offset as well
+  // would put him twice as high as his body. frameBottoms, one per frame
+  // and measured with measure-sprite.js, puts each frame's own feet on the
+  // ground of his body instead. contentHeight is the push-off frame's
+  // height (3), which is a standing figure, so he is the same size in the
+  // air as on the ground.
+  jumpRise: {
+    src: "Assets/Prefab/Macario_Jump.png", frames: 9, fps: 14, columns: 4,
+    startFrame: 3, endFrame: 6, loop: false,
+    contentTop: 44, contentHeight: 102, footX: 106,
+    frameBottoms: [146, 146, 146, 145, 108, 95, 96, 120, 145],
+  },
+  jumpFall: {
+    src: "Assets/Prefab/Macario_Jump.png", frames: 9, fps: 14, columns: 4,
+    startFrame: 7, endFrame: 7, loop: false,
+    contentTop: 44, contentHeight: 102, footX: 106,
+    frameBottoms: [146, 146, 146, 145, 108, 95, 96, 120, 145],
+  },
+  jumpLand: {
+    src: "Assets/Prefab/Macario_Jump.png", frames: 9, fps: 14, columns: 4,
+    startFrame: 8, endFrame: 8, loop: false,
+    contentTop: 44, contentHeight: 102, footX: 106,
+    frameBottoms: [146, 146, 146, 145, 108, 95, 96, 120, 145],
+  },
 };
 
 // The set actually in use. Reassigned by setOutfit, which is why this is
@@ -1058,6 +1107,9 @@ Promise.all([
   loadSpriteSheet(SPRITE_SHEETS.shootAim),
   loadSpriteSheet(SPRITE_SHEETS.shootFire),
   loadSpriteSheet(SPRITE_SHEETS.melee),
+  loadSpriteSheet(SPRITE_SHEETS.jumpRise),
+  loadSpriteSheet(SPRITE_SHEETS.jumpFall),
+  loadSpriteSheet(SPRITE_SHEETS.jumpLand),
 ]).then(() => {
   spritesReady = true;
   applyAnim(currentAnim, true);
@@ -1120,6 +1172,27 @@ function applyAnim(name, force) {
   // (bodySprite). Each sheet carries its own footX, so switching from idle
   // to walk to the shooting pose never slides him sideways.
   bodySprite(playerSpriteEl, sheet, DISPLAY_HEIGHT, PLAYER_WIDTH);
+  // Draw the clip's own first frame now. bodySprite leaves the picture on
+  // frame 0, which for a clip that starts later in its sheet (the fire
+  // clip at 3, the jump at 3) showed the wrong pose for one frame tick,
+  // long enough to see on a jump.
+  drawPlayerFrame(sheet);
+}
+
+// Positions the background on currentFrame. frameBottoms, when a sheet
+// has it, grounds each frame by its own feet (see jumpRise, above).
+function drawPlayerFrame(sheet) {
+  const columns = sheet.columns || sheet.frames;
+  const column = currentFrame % columns;
+  const row = Math.floor(currentFrame / columns);
+  const fit = spriteFit(sheet, DISPLAY_HEIGHT);
+  let topOffset = fit.topOffset;
+  if (Array.isArray(sheet.frameBottoms) && typeof sheet.frameBottoms[currentFrame] === "number") {
+    const contentHeight = sheet.contentHeight || sheet.frameHeight;
+    topOffset = (sheet.frameBottoms[currentFrame] + 1 - contentHeight) * fit.scale;
+  }
+  playerSpriteEl.style.backgroundPositionX = -(column * fit.displayFrameWidth) + "px";
+  playerSpriteEl.style.backgroundPositionY = -(row * fit.rowStep + topOffset) + "px";
 }
 
 function updateAnimFrame(now) {
@@ -1150,16 +1223,7 @@ function updateAnimFrame(now) {
       // Frame index to grid position. For a 5-column Walk sheet,
       // frame 5 wraps to column 0 of row 1 rather than running off
       // the right edge of the image.
-      const columns = sheet.columns || sheet.frames;
-      const column = currentFrame % columns;
-      const row = Math.floor(currentFrame / columns);
-
-      const fit = spriteFit(sheet, DISPLAY_HEIGHT);
-
-      playerSpriteEl.style.backgroundPositionX =
-        -(column * fit.displayFrameWidth) + "px";
-      playerSpriteEl.style.backgroundPositionY =
-        -(row * fit.rowStep + fit.topOffset) + "px";
+      drawPlayerFrame(sheet);
     }
   }
 
@@ -1377,7 +1441,9 @@ function findNearby() {
   // Block 34. Doorways to another scene. An exit is a zone on the road,
   // x and width like a hazard, reached the same edge-to-edge way an NPC
   // is, so standing at the stairs of the entablado is enough.
-  const exits = (currentScene && currentScene.exits) || [];
+  // No way out mid-fight (Block 35): walking out would unload the enemies
+  // and the fight with them.
+  const exits = enemiesAlive() ? [] : (currentScene && currentScene.exits) || [];
   for (const exit of exits) {
     const dist = edgeGap(posX, PLAYER_WIDTH, exit.x, exit.width || 80);
     if (dist < INTERACT_DISTANCE && dist < closestDist) {
@@ -1549,6 +1615,9 @@ function endDialogue() {
     if (finishedNpc.opensShopAfter && state.flags[finishedNpc.opensShopAfter]) {
       requestShop(finishedNpc.id);
     }
+  } else if (finishedMode === "script") {
+    const resolve = finishedSet.resolve;
+    if (resolve) setTimeout(resolve, 0); // after the state below is cleared
   } else if (finishedMode === "arrival") {
     // Set on the way OUT, not in: a reload mid-conversation should hear
     // it again rather than lose it.
@@ -1679,6 +1748,10 @@ async function fadeToScene(sceneId, placement) {
   await wait(400); // hold black briefly, same as runNightTransition
   blackout.classList.remove("visible");
 
+  // Each scene's own music, or Calm (Block 35), so a fight's track never
+  // follows him out of the room it was fought in.
+  setMusic(currentScene && currentScene.music);
+
   await wait(900); // fade back in
   cutscenePlaying = false;
 
@@ -1699,6 +1772,7 @@ function pendingArrival(scene) {
   return list.find((a) =>
     (!a.requiresFlag || state.flags[a.requiresFlag]) &&
     !(a.doneFlag && state.flags[a.doneFlag]) &&
+    !(a.unlessFlag && state.flags[a.unlessFlag]) &&
     Array.isArray(a.lines) && a.lines.length
   ) || null;
 }
@@ -1965,7 +2039,8 @@ function updateHudVisibility() {
     currentScene &&
       (currentScene.dangerous ||
         (currentScene.guards && currentScene.guards.length) ||
-        (currentScene.hazards && currentScene.hazards.length))
+        (currentScene.hazards && currentScene.hazards.length) ||
+        ENEMIES.some((e) => !e.dead))
   );
   hudEl.classList.toggle("hidden", !dangerous);
   if (dangerous) renderHearts();
@@ -2090,6 +2165,12 @@ function respawnInScene() {
     health = maxHealth;
     renderHearts();
   }
+
+  // Block 35. A lost fight starts over rather than ending: every enemy
+  // still standing goes back to where it came from at full strength, and
+  // the ones already beaten stay beaten, so a struggling student's second
+  // try is shorter than their first.
+  resetEnemies();
 
   GUARDS.forEach((guard) => {
     if (guard.disabled) return;
@@ -2306,6 +2387,18 @@ function meleeAttack() {
   const lo = Math.min(centre, reach);
   const hi = Math.max(centre, reach);
 
+  // Block 35. A fighting enemy is hit from any side: there is no stealth
+  // to reward. The nearest one in front takes it, one target per swing.
+  const target = ENEMIES
+    .filter((e) => !e.dead)
+    .map((e) => ({ e, c: e.pos + ENEMY_WIDTH / 2 }))
+    .filter(({ c }) => c >= lo - ENEMY_WIDTH / 2 && c <= hi)
+    .sort((a, b) => Math.abs(a.c - centre) - Math.abs(b.c - centre))[0];
+  if (target) {
+    hitEnemy(target.e, ENEMY_PUNCH_DAMAGE);
+    return;
+  }
+
   for (const guard of GUARDS) {
     if (guard.disabled) continue;
     const guardCentre = guard.pos + GUARD_WIDTH / 2;
@@ -2406,6 +2499,15 @@ function updateProjectile(step) {
   projectile.travelled += distance;
   projectile.el.style.left = projectile.x + "px";
 
+  for (const enemy of ENEMIES) {
+    if (enemy.dead) continue;
+    const enemyCentre = enemy.pos + ENEMY_WIDTH / 2;
+    if (Math.abs(enemyCentre - (projectile.x + PROJECTILE_SIZE / 2)) > 30) continue;
+    hitEnemy(enemy, ENEMY_SHOT_DAMAGE);
+    destroyProjectile();
+    return;
+  }
+
   for (const guard of GUARDS) {
     if (guard.disabled) continue;
     const guardCentre = guard.pos + GUARD_WIDTH / 2;
@@ -2434,6 +2536,270 @@ function destroyProjectile() {
 dialogueBox.addEventListener("click", () => {
   if (inDialogue) advanceDialogue();
 });
+
+// =============================================================
+// SCRIPTED SCENES AND COMBAT (Block 35)
+//
+// The moro-moro on the entablado is the first scene where things happen
+// to Macario rather than because he walked up to someone: Maryam's lines,
+// a man walking on from the wings, guards pouring in. Content writes that
+// sequence as an ordinary async function (content/act1.js) out of the
+// small calls below, the same way it already calls addQuest or
+// Acts.gotoScene. The engine still knows nothing about the play.
+// =============================================================
+
+// A real landing holds the landing frame this long. Short, because it is
+// a pose on a character who can already move again.
+const LAND_POSE_MS = 140;
+// Below this height off the ground he is walking down a slope, not jumping.
+const AIRBORNE_MIN_HEIGHT = 8;
+let landPoseUntil = 0;
+
+// Opens a conversation from a script and resolves when it is closed. It
+// uses the dialogue box exactly as talking to an NPC does, so E and a tap
+// advance it the same way.
+function playDialogue(lines) {
+  return new Promise((resolve) => {
+    activeNpc = null;
+    activeMode = "script";
+    activeSet = { lines, resolve };
+    inDialogue = true;
+    dialogueStep = 0;
+    dialogueBox.classList.remove("hidden");
+    showDialogueStep();
+  });
+}
+
+// Holds the world still for the parts of a script with no dialogue box on
+// screen (someone walking on). Same flag the stage cutscene and the scene
+// fade use, so controls hide and nothing can hurt him meanwhile.
+function setCutscene(on) {
+  cutscenePlaying = Boolean(on);
+  if (on) {
+    attackHoldStart = 0;
+    shooting = null;
+    clearTimeout(shootFireTimer);
+    keysPressed["a"] = false;
+    keysPressed["d"] = false;
+  }
+}
+
+function turnPlayer(dir) {
+  if (dir === 1 || dir === -1) facing = dir;
+}
+
+function decorationEl(id) {
+  return document.getElementById("dec-" + id);
+}
+
+function showDecoration(id, visible) {
+  const el = decorationEl(id);
+  if (el) el.style.display = visible ? "" : "none";
+}
+
+// Walks a decoration to x at pxPerSecond and resolves on arrival. A scene
+// change mid-walk removes the element, and the walk simply stops there.
+function moveDecoration(id, toX, pxPerSecond) {
+  const dec = ((currentScene && currentScene.decorations) || []).find((d) => d.id === id);
+  const el = decorationEl(id);
+  if (!dec || !el) return Promise.resolve();
+  const speed = Math.max(1, pxPerSecond || 160);
+  return new Promise((resolve) => {
+    let last = 0;
+    const tick = (now) => {
+      if (!el.isConnected) return resolve();
+      if (paused) { last = now; requestAnimationFrame(tick); return; }
+      const dt = last ? Math.min(now - last, 50) : 16;
+      last = now;
+      const from = typeof dec.currentX === "number" ? dec.currentX : dec.x;
+      const stepPx = (speed * dt) / 1000;
+      const next = Math.abs(toX - from) <= stepPx ? toX : from + Math.sign(toX - from) * stepPx;
+      dec.currentX = next;
+      el.style.left = next + "px";
+      if (next === toX) return resolve();
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+// ---- Combat -------------------------------------------------------
+//
+// Deliberately small, like stealth. An enemy walks at Macario, stops at
+// arm's length, and swings on a timer. The swing is telegraphed: the
+// enemy lights up for ENEMY_TELEGRAPH_MS before it lands, which is the
+// whole of what teaches a Grade 8 student when to step back. A punch takes
+// one point, a shot two; being hit knocks an enemy back and delays its
+// next swing, so punching the one in front is always a way through. Speed
+// is scaled by act exactly as guard speed is (difficultyMultiplier), which
+// keeps dynamic difficulty the one lever it was.
+
+const ENEMY_BASE_SPEED = 2.2;   // per 60fps frame; well under SPEED (5)
+const ENEMY_REACH = 55;         // centre to centre; under MELEE_RANGE (70)
+const ENEMY_SPACING = 50;       // enemies queue rather than stack
+const ENEMY_WINDUP_MS = 700;    // from reaching him to the first swing
+const ENEMY_COOLDOWN_MS = 1800; // between swings: a beat to punch back in
+const ENEMY_TELEGRAPH_MS = 350; // the lit-up warning before a swing
+const ENEMY_STAGGER_MS = 350;
+const ENEMY_KNOCKBACK = 45;
+const ENEMY_HIT_RECOIL = 40;    // how far a hit pushes Macario back
+const ENEMY_PUNCH_DAMAGE = 1;
+const ENEMY_SHOT_DAMAGE = 2;
+
+function enemiesAlive() {
+  return ENEMIES.some((e) => !e.dead);
+}
+
+// defs: [{ id, x, hp, speed, img | animation }]. Resolves once every one
+// of them is down. Content awaits it to carry the scene on after the fight.
+function spawnEnemies(defs) {
+  const token = actLoadToken;
+  const speedScale = difficultyMultiplier(currentActData && currentActData.number);
+
+  const spawned = (defs || []).map((def) => {
+    const hp = Math.max(1, def.hp || 2);
+    const enemy = Object.assign({}, def, {
+      pos: def.x,
+      hp,
+      maxHp: hp,
+      speed: (def.speed || ENEMY_BASE_SPEED) * speedScale,
+      facing: -1,
+      dead: false,
+      nextSwingAt: 0,
+      staggerUntil: 0,
+    });
+
+    const el = document.createElement("div");
+    el.className = "entity enemy";
+    el.id = "enemy-" + def.id;
+    mountBody(el, enemy.pos, ENEMY_WIDTH);
+
+    const meter = document.createElement("div");
+    meter.className = "guard-meter enemy-meter";
+    const fill = document.createElement("div");
+    fill.className = "guard-meter-fill enemy-meter-fill";
+    fill.style.width = "100%";
+    meter.appendChild(fill);
+    el.appendChild(meter);
+
+    const sprite = document.createElement("div");
+    sprite.className = "sprite npc-sprite" + (def.animation ? " npc-anim-sprite" : "");
+    el.appendChild(sprite);
+    world.appendChild(el);
+    if (def.animation) {
+      setupNpcAnimation(def.animation, sprite, DISPLAY_HEIGHT, token, ENEMY_WIDTH);
+    } else {
+      bodyPlaceholder(sprite, def.img || "Kaaway", DISPLAY_HEIGHT, ENEMY_WIDTH);
+    }
+
+    enemy.el = el;
+    enemy.fillEl = fill;
+    enemy.spriteEl = sprite;
+    actElements.push(el);
+    return enemy;
+  });
+
+  ENEMIES = ENEMIES.filter((e) => !e.dead).concat(spawned);
+  updateHudVisibility();
+
+  return new Promise((resolve) => {
+    enemiesDone = resolve;
+    if (!enemiesAlive()) finishFight();
+  });
+}
+
+function finishFight() {
+  updateHudVisibility();
+  const resolve = enemiesDone;
+  enemiesDone = null;
+  if (resolve) resolve();
+}
+
+function updateEnemies(step, now) {
+  if (!ENEMIES.length) return;
+  const playerCentre = posX + PLAYER_WIDTH / 2;
+
+  ENEMIES.forEach((enemy) => {
+    if (enemy.dead) return;
+    const centre = enemy.pos + ENEMY_WIDTH / 2;
+    const dx = playerCentre - centre;
+    const dir = Math.sign(dx) || enemy.facing;
+    const dist = Math.abs(dx);
+    enemy.facing = dir;
+
+    if (now >= enemy.staggerUntil) {
+      if (dist > ENEMY_REACH) {
+        // Wait behind a comrade who is already closer, instead of
+        // walking through him.
+        const blocked = ENEMIES.some((other) => {
+          if (other === enemy || other.dead) return false;
+          const oc = other.pos + ENEMY_WIDTH / 2;
+          return Math.sign(oc - centre) === dir &&
+            Math.abs(oc - centre) < ENEMY_SPACING &&
+            Math.abs(playerCentre - oc) < dist;
+        });
+        if (!blocked) {
+          enemy.pos += dir * Math.min(enemy.speed * step, dist - ENEMY_REACH);
+        }
+        enemy.nextSwingAt = 0;
+      } else {
+        if (!enemy.nextSwingAt) enemy.nextSwingAt = now + ENEMY_WINDUP_MS;
+        if (now >= enemy.nextSwingAt) {
+          enemy.nextSwingAt = now + ENEMY_COOLDOWN_MS;
+          const hit = damagePlayer("Nasugatan ka!", false);
+          if (hit && health > 0) {
+            posX = Math.max(0, Math.min(posX + dir * ENEMY_HIT_RECOIL, WORLD_WIDTH - PLAYER_WIDTH));
+            velY = HAZARD_RECOIL_VELOCITY;
+          }
+        }
+      }
+    }
+
+    const telegraph = enemy.nextSwingAt && enemy.nextSwingAt - now <= ENEMY_TELEGRAPH_MS && now < enemy.nextSwingAt;
+    enemy.el.classList.toggle("enemy-windup", Boolean(telegraph));
+    enemy.el.style.left = enemy.pos + "px";
+    if (enemy.animation && enemy.spriteEl) {
+      enemy.spriteEl.style.transform = dir < 0 ? "scaleX(-1)" : "";
+    }
+  });
+}
+
+function hitEnemy(enemy, damage) {
+  if (!enemy || enemy.dead) return;
+  const now = performance.now();
+  const away = Math.sign(enemy.pos + ENEMY_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) || 1;
+
+  enemy.hp -= damage;
+  enemy.fillEl.style.width = Math.max(0, (enemy.hp / enemy.maxHp) * 100) + "%";
+  enemy.el.classList.add("enemy-hit");
+  setTimeout(() => enemy.el && enemy.el.classList.remove("enemy-hit"), 150);
+
+  if (enemy.hp <= 0) {
+    enemy.dead = true;
+    enemy.el.classList.remove("enemy-windup");
+    enemy.el.classList.add("enemy-down");
+    if (!enemiesAlive()) finishFight();
+    return;
+  }
+
+  enemy.pos += away * ENEMY_KNOCKBACK;
+  enemy.staggerUntil = now + ENEMY_STAGGER_MS;
+  enemy.nextSwingAt = Math.max(enemy.nextSwingAt || 0, now + ENEMY_STAGGER_MS + ENEMY_WINDUP_MS);
+  enemy.el.style.left = enemy.pos + "px";
+}
+
+function resetEnemies() {
+  ENEMIES.forEach((enemy) => {
+    if (enemy.dead) return;
+    enemy.pos = enemy.x;
+    enemy.hp = enemy.maxHp;
+    enemy.nextSwingAt = 0;
+    enemy.staggerUntil = 0;
+    enemy.fillEl.style.width = "100%";
+    enemy.el.classList.remove("enemy-windup");
+    enemy.el.style.left = enemy.pos + "px";
+  });
+}
 
 // =============================================================
 // AUDIO (Block 30)
@@ -2468,6 +2834,9 @@ dialogueBox.addEventListener("click", () => {
 // =============================================================
 
 const MUSIC_SRC = "Assets/Prefab/Calm.mp3";
+// Block 35. The track now playing. A scene may name its own (music) and a
+// script may change it for a moment (setMusic, the fight). null is Calm.
+let musicSrc = MUSIC_SRC;
 const SFX_SOURCES = { gunShot: "Assets/Prefab/Gun_Shot.mp3" };
 
 // Music sits under everything else. It is the one sound that never
@@ -2515,6 +2884,19 @@ function tryPlay(el) {
   }
 }
 
+// Swaps the track. The old element is dropped rather than re-pointed, so
+// a track that is still buffering cannot finish loading into the new one.
+function setMusic(src) {
+  const next = src || MUSIC_SRC;
+  if (next === musicSrc) return;
+  musicSrc = next;
+  if (musicEl) {
+    musicEl.pause();
+    musicEl = null;
+  }
+  syncMusic();
+}
+
 function startMusic() {
   musicWanted = true;
   syncMusic();
@@ -2527,7 +2909,7 @@ function syncMusic() {
     return;
   }
   if (!musicEl) {
-    musicEl = assetAudio(MUSIC_SRC, true);
+    musicEl = assetAudio(musicSrc, true);
     musicEl.volume = MUSIC_VOLUME;
   }
   if (musicEl.paused) tryPlay(musicEl);
@@ -2726,6 +3108,11 @@ function setPaused(value) {
     const elapsed = performance.now() - pausedAt;
     if (invulnUntil) invulnUntil += elapsed;
     if (attackHoldStart) attackHoldStart += elapsed;
+    ENEMIES.forEach((e) => {
+      if (e.nextSwingAt) e.nextSwingAt += elapsed;
+      if (e.staggerUntil) e.staggerUntil += elapsed;
+    });
+    if (landPoseUntil) landPoseUntil += elapsed;
 
     // Resume on a fresh delta. Without this, the first frame back
     // integrates the entire pause in one step. It is clamped to
@@ -2802,17 +3189,23 @@ function gameLoop(now) {
 
   const surface = groundHeightAt(posX, previousY);
   if (posY <= surface) {
+    // Block 35. Touching down from a real fall holds the landing frame
+    // for a moment. Measured by the speed he lands at, so stepping down
+    // a ramp does not count as a landing.
+    if (!onGround && velY < -4) landPoseUntil = now + LAND_POSE_MS;
     posY = surface;
     velY = 0;
     onGround = true;
   } else {
     onGround = false;
   }
+  const airborne = !onGround && (velY > 0 || posY - surface > AIRBORNE_MIN_HEIGHT);
 
   // Walking or in the air is moving; anything else, including talking
   // or holding the attack button, is standing still.
   playerStill = !isWalking && onGround;
   if (canAct) updateGuards(step);
+  if (canAct) updateEnemies(step, now);
 
   // After the vertical resolution, so the ground test sees where the
   // player actually ended up this frame rather than where they were
@@ -2828,7 +3221,13 @@ function gameLoop(now) {
   // punching) — see updateAttackHoldPose, playShootFire and playMelee.
   if (canAct) updateAttackHoldPose(now);
   if (!cutscenePlaying && !shooting) {
-    applyAnim(isWalking && onGround ? "walk" : "idle");
+    if (airborne) {
+      applyAnim(velY > 0 ? "jumpRise" : "jumpFall");
+    } else if (!isWalking && now < landPoseUntil) {
+      applyAnim("jumpLand");
+    } else {
+      applyAnim(isWalking && onGround ? "walk" : "idle");
+    }
   }
   updateAnimFrame(now);
   npcAnimators.forEach((animator) => animator.update(now));

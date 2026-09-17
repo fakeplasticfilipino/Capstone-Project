@@ -3500,6 +3500,195 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAS. The jump poses, scripted scenes, and combat");
+  {
+    const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
+
+    // ---- The jump sheet, three views of one image, chosen by velocity.
+    const sheets = await page.evaluate(() => ({
+      rise: SPRITE_SHEETS.jumpRise, fall: SPRITE_SHEETS.jumpFall, land: SPRITE_SHEETS.jumpLand,
+    }));
+    ok("the jump sheet loads without falling back to a placeholder",
+       sheets.rise.failed === false && sheets.rise.columns === 4 && sheets.rise.frames === 9, sheets.rise);
+    ok("its three clips cover push-off, falling and landing",
+       sheets.rise.startFrame === 3 && sheets.rise.endFrame === 6 &&
+       sheets.fall.startFrame === 7 && sheets.land.startFrame === 8, sheets);
+
+    const jumped = await page.evaluate(() => new Promise((resolve) => {
+      posX = 300; posY = floorHeightAt(posX); velY = 0; onGround = true;
+      handleJumpPress();
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve({ anim: currentAnim, frame: currentFrame, velY })));
+    }));
+    ok("jumping switches to the rising pose at once", jumped.anim === "jumpRise" && jumped.velY > 0, jumped);
+    ok("and starts on its own first frame, not frame 0", jumped.frame >= 3, jumped);
+
+    const falling = await page.evaluate(() => new Promise((resolve) => {
+      const tick = () => {
+        if (velY > 0) return requestAnimationFrame(tick);
+        requestAnimationFrame(() => resolve({ anim: currentAnim, velY }));
+      };
+      tick();
+    }));
+    ok("coming down switches to the falling pose", falling.anim === "jumpFall" && falling.velY <= 0, falling);
+
+    const landed = await page.evaluate(() => new Promise((resolve) => {
+      const tick = () => {
+        if (!onGround) return requestAnimationFrame(tick);
+        requestAnimationFrame(() => resolve({ anim: currentAnim, onGround }));
+      };
+      tick();
+    }));
+    ok("landing holds the landing pose for a moment", landed.anim === "jumpLand", landed);
+    await page.waitForTimeout(400);
+    ok("then hands the pose back", (await page.evaluate(() => currentAnim)) === "idle");
+
+    // Each frame is grounded by its own feet, so the tucked poses are not
+    // drawn floating above the body as well as being moved up by physics.
+    const grounded = await page.evaluate(() => {
+      const sheet = SPRITE_SHEETS.jumpRise;
+      const fit = spriteFit(sheet, DISPLAY_HEIGHT);
+      const offsetFor = (frame) => (sheet.frameBottoms[frame] + 1 - sheet.contentHeight) * fit.scale;
+      return { standing: offsetFor(3), tucked: offsetFor(5), plain: fit.topOffset };
+    });
+    ok("frameBottoms shifts a tucked frame differently from a standing one",
+       Math.abs(grounded.standing - grounded.tucked) > 20, grounded);
+
+    // ---- A scripted conversation nobody walked up to.
+    const script = await page.evaluate(() => {
+      window.__scriptDone = false;
+      playDialogue([{ speaker: "A", text: "una" }, { speaker: "B", text: "huli" }])
+        .then(() => { window.__scriptDone = true; });
+      return { open: inDialogue, text: dialogueText.textContent };
+    });
+    ok("playDialogue opens the dialogue box from a script", script.open && script.text === "una", script);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(80);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+    ok("and resolves when the last line is closed",
+       await page.evaluate(() => window.__scriptDone === true && !inDialogue));
+
+    // ---- A character who walks on.
+    const walked = await page.evaluate(async () => {
+      const scene = SCENES.find((s) => s.id === "misyon");
+      scene.decorations = [{ id: "test-tao", x: 900, hidden: true,
+        animation: { src: "Assets/Missing_Actor.png", frames: 1, fps: 1 } }];
+      loadScene("misyon");
+      const el = () => document.getElementById("dec-test-tao");
+      const hidden = getComputedStyle(el()).display === "none";
+      showDecoration("test-tao", true);
+      const shown = getComputedStyle(el()).display !== "none";
+      await moveDecoration("test-tao", 700, 600);
+      return { hidden, shown, left: el().style.left, placeholder: el().textContent.includes("Missing_Actor.png") };
+    });
+    ok("a decoration can start hidden and be shown by a script", walked.hidden && walked.shown, walked);
+    ok("and walks to where the script sends it", walked.left === "700px", walked);
+    ok("drawing as the placeholder naming its missing file", walked.placeholder, walked);
+
+    // ---- Combat, in the fixture's safe scene, so the hearts and the
+    // doorway below mean the fight rather than the outpost's own guards.
+    const fight = await page.evaluate(() => {
+      window.__fightWon = false;
+      loadScene("tondo");
+      posX = 300; posY = floorHeightAt(posX); onGround = true; health = maxHealth;
+      const heartsBefore = document.getElementById("hud").classList.contains("hidden");
+      spawnEnemies([
+        { id: "t1", x: 520, hp: 2, img: "Assets/Kaaway.png" },
+        { id: "t2", x: 620, hp: 2, img: "Assets/Kaaway.png" },
+      ]).then(() => { window.__fightWon = true; });
+      return { count: ENEMIES.length, alive: enemiesAlive(), heartsBefore,
+               hearts: !document.getElementById("hud").classList.contains("hidden"),
+               speed: ENEMIES[0].speed, playerSpeed: SPEED };
+    });
+    ok("spawnEnemies puts them in the world", fight.count === 2 && fight.alive, fight);
+    ok("a safe scene shows no hearts until they arrive",
+       fight.heartsBefore === true && fight.hearts === true, fight);
+    ok("and they are slower than Macario, like a guard", fight.speed < fight.playerSpeed, fight);
+
+    // Long enough to cross the 180px between them at their own speed.
+    const closed = await page.evaluate(() => new Promise((resolve) => {
+      setTimeout(() => resolve({ gap: ENEMIES[0].pos - (posX + PLAYER_WIDTH),
+                                 spaced: Math.abs(ENEMIES[0].pos - ENEMIES[1].pos) }), 2500);
+    }));
+    ok("they walk to arm's length rather than into him", closed.gap > 0 && closed.gap < 80, closed);
+    ok("and queue instead of standing in each other", closed.spaced > 30, closed);
+
+    const swing = await page.evaluate(() => new Promise((resolve) => {
+      // From a clean slate: the walk above already cost him hearts, and a
+      // fight that runs long enough to lose restarts itself, which would
+      // make "health went down" read backwards.
+      health = maxHealth;
+      invulnUntil = 0;
+      ENEMIES.forEach((e) => { e.nextSwingAt = 0; });
+      const before = health;
+      window.__sawWindup = false;
+      const watch = setInterval(() => {
+        if (document.querySelector(".enemy-windup")) window.__sawWindup = true;
+      }, 30);
+      setTimeout(() => {
+        clearInterval(watch);
+        resolve({ before, after: health, telegraphed: window.__sawWindup });
+      }, ENEMY_WINDUP_MS + 400);
+    }));
+    ok("an enemy in reach takes a heart", swing.after === swing.before - 1, swing);
+    ok("after lighting up first, so the swing is readable", swing.telegraphed, swing);
+
+    const punched = await page.evaluate(() => {
+      const e = ENEMIES[0];
+      e.pos = posX + PLAYER_WIDTH + 10;
+      facing = 1;
+      const hpBefore = e.hp;
+      meleeAttack();
+      return { hpBefore, hp: e.hp, knocked: e.pos > posX + PLAYER_WIDTH + 10, width: e.fillEl.style.width };
+    });
+    ok("a punch takes a point and knocks him back", punched.hp === punched.hpBefore - 1 && punched.knocked, punched);
+    ok("and his bar drains", punched.width === "50%", punched);
+
+    const shot = await page.evaluate(() => {
+      const e = ENEMIES[0];
+      e.hp = 2;
+      e.pos = posX + PLAYER_WIDTH + 200;
+      // Clear the line of fire: whichever enemy the ball reaches first is
+      // the one it hits, which is correct behaviour and a flaky check.
+      ENEMIES.forEach((other) => { if (other !== e) other.pos = posX - 600; });
+      destroyProjectile();
+      throwProjectile();
+      return new Promise((resolve) => setTimeout(() => resolve({ dead: e.dead, down: e.el.classList.contains("enemy-down") }), 900));
+    });
+    ok("a shot is worth two, so it drops a two-point enemy", shot.dead && shot.down, shot);
+
+    const lost = await page.evaluate(() => {
+      const alive = ENEMIES.find((e) => !e.dead);
+      alive.hp = 1;
+      alive.pos = 1500;
+      health = 1;
+      invulnUntil = 0;
+      damagePlayer("test", false); // the losing hit
+      return { health, max: maxHealth, enemyBack: alive.pos === alive.x, hp: alive.hp,
+               deadStayDead: ENEMIES.filter((e) => e.dead).length };
+    });
+    ok("running out of health restarts the fight rather than ending it",
+       lost.health === lost.max && lost.enemyBack && lost.hp === 2, lost);
+    ok("and the ones already beaten stay beaten", lost.deadStayDead === 1, lost);
+
+    const exitBlocked = await page.evaluate(() => new Promise((resolve) => {
+      currentScene.exits = [{ id: "t-exit", x: posX, width: 100, label: "Lumabas", toScene: "misyon" }];
+      setTimeout(() => resolve({ during: nearby.type }), 200);
+    }));
+    ok("no doorway is offered while the fight is on", exitBlocked.during !== "exit", exitBlocked);
+
+    const won = await page.evaluate(() => new Promise((resolve) => {
+      ENEMIES.forEach((e) => { if (!e.dead) hitEnemy(e, 99); });
+      setTimeout(() => resolve({ won: window.__fightWon, hearts: document.getElementById("hud").classList.contains("hidden"),
+                                 exitAgain: nearby.type }), 400);
+    }));
+    ok("beating the last one resolves what the script is waiting on", won.won === true, won);
+    ok("the hearts go away with them", won.hearts, won);
+    ok("and the doorway is offered again", won.exitAgain === "exit", won);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

@@ -477,6 +477,89 @@ const talk = async (page, times) => {
   ok("with Entablado.png as its backdrop and no dirt strip",
      /Entablado\.png/.test(stage.src) && !/Labas/.test(stage.src) && stage.ground === "none", stage);
   ok("which does not finish Act I", stage.status === "playing" && stage.entabladoFlag !== true, stage);
+  // Block 35: the moro-moro plays as soon as the fade-in ends.
+  const loveScene = await page.evaluate(() => ({
+    open: inDialogue, line: dialogueSpeaker.textContent + ": " + dialogueText.textContent,
+    posX, facing,
+    maryam: (document.querySelector("#dec-maryam .sprite") || {}).style &&
+      document.querySelector("#dec-maryam .sprite").style.backgroundImage,
+    muslimHidden: document.getElementById("dec-muslim").style.display === "none",
+  }));
+  ok("Maryam opens the scene herself, with Macario placed beside her",
+     loveScene.open && loveScene.line === "Maryam: Oh Macario, bagamat iniibig kita, hindi tayo pwede magsama." &&
+     loveScene.posX === 440 && loveScene.facing === -1, loveScene);
+  ok("she is drawn from Muslim_Girl.png", /Muslim_Girl\.png/.test(loveScene.maryam || ""), loveScene);
+  ok("and the man is still off stage", loveScene.muslimHidden, loveScene);
+
+  const loveLines = [loveScene.line];
+  for (let i = 0; i < 5; i++) {
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+    loveLines.push(await page.evaluate(() => dialogueSpeaker.textContent + ": " + dialogueText.textContent));
+  }
+  ok("all six lines play, ending on Ano iyon?",
+     loveLines.length === 6 && loveLines[5] === "Maryam: Ano iyon?", loveLines);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(400);
+
+  // He walks on from the right wing while the world is held still.
+  const walkOn = await page.evaluate(() => ({
+    cutscene: cutscenePlaying, shown: document.getElementById("dec-muslim").style.display !== "none",
+    facing, placeholder: document.querySelector("#dec-muslim .sprite").textContent.includes("Muslim.png"),
+  }));
+  ok("the man walks on and Macario turns to look",
+     walkOn.cutscene && walkOn.shown && walkOn.facing === 1, walkOn);
+  ok("drawn as the placeholder naming Muslim.png, which has no art yet", walkOn.placeholder, walkOn);
+  await page.waitForTimeout(3200); // his walk on, then the confrontation opens
+  const confront = await page.evaluate(() => ({ open: inDialogue,
+    line: dialogueSpeaker.textContent + ": " + dialogueText.textContent,
+    left: document.getElementById("dec-muslim").style.left }));
+  ok("he arrives and speaks", confront.open &&
+     confront.line === "Muslim: Anong ginagawa mo dito, Maryam? Bakit kasama mo ang Kafir na ito?!" &&
+     confront.left === "800px", confront);
+  const confrontLines = [confront.line];
+  for (let i = 0; i < 2; i++) {
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+    confrontLines.push(await page.evaluate(() => dialogueSpeaker.textContent + ": " + dialogueText.textContent));
+  }
+  ok("Maryam answers him and he calls the guards",
+     confrontLines[1].startsWith("Maryam: Hindi ikaw ang tunay") &&
+     confrontLines[2].startsWith("Muslim: Mga guwardiya"), confrontLines);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(600);
+
+  const fight = await page.evaluate(() => ({
+    enemies: ENEMIES.length, alive: ENEMIES.filter((e) => !e.dead).length,
+    cutscene: cutscenePlaying, hearts: !document.getElementById("hud").classList.contains("hidden"),
+    music: musicEl && musicEl.src, placeholder: document.querySelector("#enemy-guwardiya-1 .sprite").textContent,
+  }));
+  ok("five guards come in and the fight starts", fight.enemies === 5 && fight.alive === 5 && !fight.cutscene, fight);
+  ok("the hearts show for it", fight.hearts, fight);
+  ok("Intense.mp3 plays while it lasts", /Intense\.mp3/.test(fight.music || ""), fight);
+  ok("each guard is the placeholder naming Guwardiya.png",
+     fight.placeholder.includes("Guwardiya.png"), fight.placeholder);
+
+  await walkTo(page, 40);
+  await page.waitForTimeout(150);
+  ok("the way out is closed while they are up",
+     (await page.evaluate(() => document.querySelector("#btn-interact .lbl").textContent)) !== "Lumabas");
+
+  // Beaten here rather than fought, since what is being checked is what
+  // winning does, not whether a headless browser can punch five guards.
+  await page.evaluate(() => ENEMIES.forEach((e) => hitEnemy(e, 99)));
+  await page.waitForTimeout(500);
+  const afterFight = await page.evaluate(() => ({
+    flag: state.flags.nagapiAngMgaGuwardiya, music: musicEl && musicEl.src,
+    hearts: document.getElementById("hud").classList.contains("hidden"),
+    status: Acts.status, entablado: state.flags.nasaEntablado,
+  }));
+  ok("winning sets its flag", afterFight.flag === true, afterFight);
+  ok("the music goes back to Calm", /Calm\.mp3/.test(afterFight.music || ""), afterFight);
+  ok("and the hearts go away", afterFight.hearts, afterFight);
+  ok("the fight does not finish Act I either",
+     afterFight.status === "playing" && afterFight.entablado !== true, afterFight);
+
   const stagePic = await page.evaluate(() => new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve(img.naturalWidth);

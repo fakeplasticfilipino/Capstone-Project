@@ -22,12 +22,12 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 18 Sep 2026, after Block 34 (the entablado, outside and
-in). Blocks 22 to 29 were audited against GitHub main
-(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 34
+Last updated: 18 Sep 2026, after Block 35 (the moro-moro on the
+entablado: the love scene, the confrontation and the first fight). Blocks 22 to 29 were audited against GitHub main
+(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 35
 were written to the device folder; whether they are pushed is not
-recorded. The suite was run against the device folder's files: 486
-passed, 0 failed; _dev/verify_new_scene.js 80 passed, 0 failed.
+recorded. The suite was run against the device folder's files: 515
+passed, 0 failed; _dev/verify_new_scene.js 97 passed, 0 failed.
 
 ## Start here
 
@@ -70,17 +70,22 @@ objective has no content (see Next action).
               road, now 2900px, stands the entablado (real art); Pasok
               at its stairs goes in.
     entablado the inside of the stage (Entablado.png as the whole
-              backdrop, no dirt strip). Nothing here yet; Lumabas at the
-              left edge goes back out to the stairs. Going in does not
-              complete pumunta_entablado.
+              backdrop, no dirt strip). Walking in plays the moro-moro by
+              itself: Maryam's six lines, a man walking on from the right
+              (placeholder), three more lines, then five guards
+              (placeholders) to fight, with Intense.mp3 under it. Winning
+              sets nagapiAngMgaGuwardiya and nothing else; until then
+              every entry replays the scene. Lumabas at the left edge goes
+              back out to the stairs, and is closed during the fight.
+              Neither going in nor winning completes pumunta_entablado.
 
 content/items.js ships three items: the two apples and the stage
 clothes (Damit). No Sandata or Anting-anting item exists yet. The
 harness fixture carries equipment, outfits, a consumable and a quest
 item, so those paths stay tested.
 
-Macario's art: idle, walk, melee punch (tap Atake) and shooting (hold
-Atake) are real sheets, measured with _dev/measure-sprite.js. His
+Macario's art: idle, walk, jump, melee punch (tap Atake) and shooting
+(hold Atake) are real sheets, measured with _dev/measure-sprite.js. His
 death pose is missing.
 
 The interface is a flat pixel-art theme (Block 29): square panels, hard
@@ -94,18 +99,18 @@ default. Intense.mp3 is in Assets/Prefab and unused on purpose.
 
 Current versions, which index.html must match on every push:
 
-    style.css v25        game.js v41          shell.js v13
+    style.css v26        game.js v42          shell.js v13
     inventory.js v8      acts.js v10          assessment.js v3
-    content/act1.js v24  content/items.js v7  content/act2-4.js v1
-    ASSET_VERSION 13 (in game.js)
+    content/act1.js v25  content/items.js v7  content/act2-4.js v1
+    ASSET_VERSION 14 (in game.js)
 
-Nothing from Blocks 14 to 34 has been seen on a phone. Everything in
+Nothing from Blocks 14 to 35 has been seen on a phone. Everything in
 that range is verified headlessly only. A device pass is owed before
 the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 34 are built. Blocks 22 to 34 were all this session, each
+Blocks 1 to 35 are built. Blocks 22 to 35 were all this session, each
 on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -135,14 +140,16 @@ on direct feedback from the proponent:
     34  the entablado: Entablado_Labas.png at the end of a 2900px road,
         a doorway into an "entablado" scene with Entablado.png as its
         own backdrop, and back out; scene backdrop, ground and exits
+    35  the moro-moro: jump poses; scripted scenes (playDialogue,
+        moveDecoration and the rest); combat with five enemies
 
-Push Blocks 30 to 34 together, with every file below in the same
+Push Blocks 30 to 35 together, with every file below in the same
 commit, or the ?v=N numbers will not match: game.js, acts.js, shell.js,
 inventory.js, style.css, index.html, content/act1.js, content/items.js,
 CLAUDE.md, TRACKER.md, _dev/test.js, _dev/verify_new_scene.js, and the
 new and renamed files in Assets/ (Act 1/Kutsero.png, Act 1/Tindero.png,
 Act 1/Lupa.jpg, Act 1/Entablado_Labas.png, Act 1/Entablado.png,
-Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
+Act 1/Muslim_Girl.png, Prefab/Macario_Jump.png, Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
 Prefab/Gun_Shot.mp3; Intense.mp3 may go too, nothing loads it yet).
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
@@ -154,8 +161,8 @@ changed meaning; whether it has been is not recorded.
 
 In order.
 
-1. Push Blocks 30 to 34 (see Right now for the file list), then a
-device pass on Blocks 14 to 34, on the phone, in landscape, from a private tab
+1. Push Blocks 30 to 35 (see Right now for the file list), then a
+device pass on Blocks 14 to 35, on the phone, in landscape, from a private tab
 (browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
@@ -194,19 +201,28 @@ device pass on Blocks 14 to 34, on the phone, in landscape, from a private tab
       beside Macario; Pasok appears at its stairs; inside, the painting
       fills the screen with its floor under his feet and no dirt strip;
       Lumabas at the left edge is findable and returns to the stairs.
+    The moro-moro: the jump pose reads as a jump and his feet land on the
+      ground; the scene opens by itself and each line is readable; the man
+      walking on is visible before he speaks; the fight is winnable with
+      the touch buttons, the warning before a swing is noticeable, and
+      five enemies at once do not drop the frame rate. Judge the pacing
+      numbers here (see CLAUDE.md, Block 35) against a real student.
     Kabayo: crisp pixels rather than a blur, standing on the road,
       roughly Macario's height. If he reads too small for a horse,
       that is one number (an NPC display height) to add.
 
-2. The entablado's story. The room exists (Block 34) and is empty. Act
-I's last objective, pumunta_entablado, has flag nasaEntablado, which
-nothing sets. The next content beat is what happens on that stage and
-where that flag is set, which is what finally lets Act I complete and run its post-test.
+2. What the moro-moro leads to. The scene ends on the fight being won
+(nagapiAngMgaGuwardiya) and stops there. Act I's last objective,
+pumunta_entablado, has flag nasaEntablado, which nothing sets, so the act
+still cannot finish. Decide what follows the fight and where that flag is
+set, which is what finally lets Act I complete and run its post-test.
 Write it against the resource person's source book (Content authority,
 under The milestone). The engine already has a stage and a death
 cutscene mechanic; see CLAUDE.md.
 
-3. Remaining art, chased with the artist: Mananahi.png (Assets/Act 1/),
+3. Remaining art, chased with the artist: Muslim.png and Guwardiya.png
+(Assets/Act 1/, the man and the five guards in the moro-moro, both
+placeholders now), Mananahi.png (Assets/Act 1/),
 Damit_Entablado.png (Assets/Act 1/, the clothes' tile picture; outfit
 sheets later if he should look different wearing them),
 Macario's Dead sheet, and
@@ -337,7 +353,7 @@ work through.
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest added for a quick look |
 | Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I has two scenes and cannot yet complete (fourth objective pending); Acts II to IV are stubs |
 | Player Movement | (BUILT) |
-| Combat Mechanics | (BUILT) Melee punch on a tap, takedown from behind, a ranged shot on a hold, each with real animation. No shipped act has a guard yet |
+| Combat Mechanics | (BUILT) Melee punch on a tap, takedown from behind, a ranged shot on a hold, each with real animation, plus enemies that fight back (Block 35). Act I ships one fight, the five guards in the moro-moro |
 | Stealth Mechanics | (BUILT) Patrols, detection meter, hide spots. Verified against the harness fixture; no shipped act uses them yet |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach measured edge to edge, NPCs that open the shop |
 | Narrative Delivery | (PARTIAL) Built. Act I uses it across two scenes and five NPCs, with conversations that open by themselves around the memory; Acts II to IV have none |
@@ -364,7 +380,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 486-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 515-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -428,6 +444,8 @@ submit_assessment).
     33  real Kutsero sheet; Tindero wired in; Lupa.jpg ground
     34  entablado outside and in; scene backdrop, ground: false, exits,
         gotoScene placement (section AR)
+    35  jump poses and frameBottoms; scripted scenes; combat enemies;
+        the moro-moro on the entablado (section AS)
 
 ## Blocks remaining
 
@@ -449,6 +467,12 @@ Real items for Sandata and Anting-anting, and outfit art, decided
 against the source material. The Damit slot has its first item
 (Block 32). (IN PROGRESS)
 
+Two decisions in the moro-moro's script belong to the proponents rather
+than to the build. The man is named Muslim on screen, after the file
+name, and his last line calls Maryam a puta. Both ship as written and
+both are easy to change; a Grade 8 classroom with a teacher present is
+the room they will be read in. (KNOWN, PROPONENT'S CALL)
+
 ## Blocked on other people
 
 These cannot be compressed at the end and do not depend on any block.
@@ -469,7 +493,8 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the remaining art with the artist: Mananahi.png, Damit_Entablado.png,
+Chase the remaining art with the artist: Muslim.png, Guwardiya.png,
+Mananahi.png, Damit_Entablado.png,
 Macario's Dead sheet and Mansanas.png (see Known
 problems for where each shows). Later, once real items and the entablado
 content are decided, the art they need. (NOT STARTED)
@@ -495,6 +520,8 @@ two fonts and four sound files. Still missing, each falling
 back to the dashed placeholder box naming the file (or, for the item,
 to its symbol):
 
+    Assets/Act 1/Muslim.png    the man in the moro-moro
+    Assets/Act 1/Guwardiya.png the five guards he calls
     Assets/Act 1/Mananahi.png  the Mananahi, on the tondo road
     Assets/Act 1/Damit_Entablado.png  the stage clothes' tile (the shirt
                                symbol stands in)
@@ -530,7 +557,9 @@ Block 13. The harness covers 823 by 412 and 740 by 360 in landscape,
 which is a floor rather than a survey. (PARTIAL)
 
 Dynamic difficulty cannot be demonstrated in the running game, because
-no shipped act has guards and Act I is the 1.00 multiplier. The same
+no shipped act has patrolling guards and Act I is the 1.00 multiplier.
+It does scale the moro-moro's enemies, which Act I now ships, but at
+1.00 that is not something a panel can see either. The same
 holds for the stage clothes' effect (Block 32): it slows a guard's
 notice, and Act I has no guard. The formula
 is documented and the harness proves it against a fabricated act. The
@@ -557,11 +586,11 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 486 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 80
+test.js: 515 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 97
 checks driving the REAL content/act1.js and content/items.js through
 the tondo, kutsero and entablado scenes. Both last ran green on 17 Sep 2026
-against the device folder after Block 34. Anything other than "0 failed"
+against the device folder after Block 35. Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright
 may need its browser path pointed at the preinstalled Chromium. Audio
