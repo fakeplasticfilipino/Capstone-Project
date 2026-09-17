@@ -86,7 +86,8 @@ window.ACT_1 = {
 
 // The item catalogue the shop/equip/effect sections (Block 10, P-Z) were
 // written against: two granted equipment items, two priced outfits and
-// one priced consumable (Block 22), same ids, prices and effects the
+// one priced consumable (Block 22, a stacking heal since Block 25) and
+// one quest item (Block 25), same ids, prices and effects the
 // assertions check by name. Kept separate from content/items.js on
 // purpose (see that file's header).
 const FIXTURE_ITEMS_JS = `
@@ -114,7 +115,12 @@ window.ITEMS = [
   {
     id: "gatas", name: "Gatas ng Kalabaw", kind: "consumable",
     price: 3, img: "Assets/Gatas.png",
-    effect: { maxHealthBonus: 1 },
+    use: { heal: 1 }, maxStack: 3,
+  },
+  {
+    id: "liham", name: "Lihim na Liham", kind: "quest",
+    price: 2, img: "Assets/Liham.png",
+    forQuest: "test_liham", buyFlag: "test_binilhAngLiham",
   },
 ];
 `;
@@ -874,37 +880,53 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     const shape = await page.evaluate(() => ({
       count: window.ITEMS.length,
-      // A consumable is the one kind that must NOT carry a slot — there
-      // is nothing to equip it into (see CLAUDE.md, Item data format) —
-      // so wellFormed checks for a slot everywhere except there, rather
-      // than requiring one unconditionally.
+      // Permanent items (equipment, cosmetic) carry a slot; consumables
+      // and quest items must not, since there is nothing to wear them in.
       wellFormed: window.ITEMS.every(
         (i) => i.id && i.kind && i.name &&
-          (i.kind === "consumable" ? !i.slot : Boolean(i.slot))
+          (Inventory.isPermanent(i) ? Boolean(i.slot) : !i.slot)
       ),
       slots: window.ITEMS.map((i) => i.slot),
       equipment: window.ITEMS.filter((i) => i.kind === "equipment").length,
       cosmetics: window.ITEMS.filter((i) => i.kind === "cosmetic").length,
       consumables: window.ITEMS.filter((i) => i.kind === "consumable").length,
-      // A cosmetic that carries an effect is not a cosmetic. This is the
-      // check that stops the outfit slot quietly becoming a third
-      // equipment slot.
+      quests: window.ITEMS.filter((i) => i.kind === "quest").length,
+      // A cosmetic that carries an effect is not a cosmetic.
       cosmeticsAreInert: window.ITEMS
         .filter((i) => i.kind === "cosmetic")
         .every((i) => !i.effect),
+      // A consumable does its thing when used, never while carried.
+      consumablesArePassiveFree: window.ITEMS
+        .filter((i) => i.kind === "consumable")
+        .every((i) => !i.effect && i.use),
       granted: window.ITEMS.filter((i) => i.grantedOnAct === 1).length,
       priced: window.ITEMS.filter((i) => (i.price || 0) > 0).length,
     }));
-    ok("the catalogue loaded", shape.count >= 5, shape.count);
-    ok("every item has an id, kind and name, and a slot unless it is a consumable",
+    ok("the catalogue loaded", shape.count >= 6, shape.count);
+    ok("every item has an id, kind and name, and a slot only if it is worn",
        shape.wellFormed, shape);
     ok("one weapon and one accessory",
        shape.slots.includes("weapon") && shape.slots.includes("accessory"),
        shape.slots);
     ok("two granted equipment items", shape.equipment === 2 && shape.granted === 2, shape);
-    ok("two priced cosmetics and one priced consumable",
-       shape.cosmetics === 2 && shape.consumables === 1 && shape.priced === 3, shape);
+    ok("two priced cosmetics, one consumable and one quest item",
+       shape.cosmetics === 2 && shape.consumables === 1 && shape.quests === 1 &&
+       shape.priced === 4, shape);
     ok("cosmetics carry no effect", shape.cosmeticsAreInert, shape);
+    ok("consumables carry a use and no passive effect", shape.consumablesArePassiveFree, shape);
+
+    const words = await page.evaluate(() => ({
+      weapon: Inventory.kindLabel(Inventory.item("sibat")),
+      accessory: Inventory.kindLabel(Inventory.item("agimat")),
+      outfit: Inventory.kindLabel(Inventory.item("damit-magsasaka")),
+      consumable: Inventory.kindLabel(Inventory.item("gatas")),
+      quest: Inventory.kindLabel(Inventory.item("liham")),
+    }));
+    ok("the three slots read as Sandata, Anting-anting and Damit",
+       words.weapon === "Sandata" && words.accessory === "Anting-anting" &&
+       words.outfit === "Damit", words);
+    ok("a consumable reads as Gamit and a quest item as Pang-misyon",
+       words.consumable === "Gamit" && words.quest === "Pang-misyon", words);
 
     await ctx.close();
   }
@@ -956,7 +978,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     const replaced = await page.evaluate(async () => {
       window.ITEMS.push({ id: "sibat-2", name: "Pangalawa", kind: "equipment",
                           slot: "weapon", price: 0, effect: {} });
-      Inventory.ownedIds.push("sibat-2");
+      Inventory.counts["sibat-2"] = 1;
       await Inventory.equip("sibat");
       await Inventory.equip("sibat-2");
       const weapons = __DB.player_equipment.filter((r) => r.slot === "weapon");
@@ -1066,141 +1088,143 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   console.log("\nT. The inventory screen");
   {
+    // Block 25: one way in, its own main-UI button. Selecting a tile and
+    // acting on it are two taps, so a student finding out what something
+    // is never wears it, eats it or spends it by accident.
     const { ctx, page } = await enterTestRoom();
 
     await page.click("#btn-pause");
     await page.waitForTimeout(150);
-    ok("the inventory button is offered on pause",
-       await visible(page, "#shell-inventory-open"));
-
-    await page.click("#shell-inventory-open");
+    ok("the pause menu no longer offers Imbentaryo",
+       await page.evaluate(() => !document.getElementById("shell-inventory-open") &&
+         ![...document.querySelectorAll("#shell-pause .lbl")]
+           .some((l) => l.textContent.includes("Imbentaryo"))));
+    await page.click("#shell-resume");
     await page.waitForTimeout(100);
+
+    await page.click("#btn-inventory");
+    await page.waitForTimeout(150);
     ok("the inventory panel opens", await visible(page, "#shell-inventory"));
     ok("shell state is inventory",
        (await page.evaluate(() => Shell.state)) === "inventory");
-    ok("both owned items are listed",
-       (await page.evaluate(() =>
-         document.querySelectorAll("#shell-items .inv-item").length)) === 2);
-    ok("the game is still paused behind it",
+    ok("the world paused itself for the visit",
        await page.evaluate(() => Game.isPaused()));
+    ok("the inventory no longer offers Tindahan",
+       await page.evaluate(() => !document.getElementById("shell-shop-open") &&
+         ![...document.querySelectorAll("#shell-inventory button .lbl")]
+           .some((l) => l.textContent.trim() === "Tindahan")));
+    ok("the box widens for the two-column layout",
+       await page.evaluate(() =>
+         document.getElementById("shell-box").classList.contains("shell-box-wide")));
 
-    await page.click('[data-item-id="agimat"]');
+    const slots = await page.evaluate(() =>
+      [...document.querySelectorAll("#shell-slots .inv-slot-label")].map((e) => e.textContent));
+    ok("three slots, named Sandata, Anting-anting and Damit",
+       JSON.stringify(slots) === JSON.stringify(["Sandata", "Anting-anting", "Damit"]), slots);
+    ok("both owned items are tiles",
+       (await page.evaluate(() =>
+         document.querySelectorAll("#shell-items .inv-tile").length)) === 2);
+    ok("something is selected on open, so the detail pane is never blank",
+       (await page.textContent("#shell-inv-detail")).trim().length > 0);
+
+    await page.click('#shell-items [data-item-id="agimat"]');
+    await page.waitForTimeout(120);
+    ok("tapping a tile selects it without wearing it",
+       (await page.evaluate(() => Inventory.equipped("accessory"))) === null);
+    ok("the detail pane shows what it is and what it does",
+       (await page.textContent("#shell-inv-detail")).includes("Agimat") &&
+       (await page.textContent("#shell-inv-detail")).includes("Anting-anting") &&
+       (await page.textContent("#shell-inv-detail")).includes("+1 puso"));
+    ok("the action offers Isuot",
+       (await page.textContent("#shell-inv-action")).includes("Isuot"));
+
+    await page.click("#shell-inv-action");
     await page.waitForTimeout(150);
-    ok("tapping an item equips it",
+    ok("Isuot equips it",
        (await page.evaluate(() => Inventory.equipped("accessory"))) === "agimat");
-    ok("the slot row shows the item name",
-       (await page.textContent("#shell-slots")).includes("Agimat"));
-    ok("the row offers to take it off now",
-       (await page.textContent('[data-item-id="agimat"]')).includes("Tanggalin"));
+    ok("the Anting-anting slot shows the item name",
+       (await page.textContent('#shell-slots [data-slot="accessory"]')).includes("Agimat"));
+    ok("the tile is badged as worn",
+       (await page.textContent('#shell-items [data-item-id="agimat"]')).includes("Nakasuot"));
+    ok("the action now offers Tanggalin",
+       (await page.textContent("#shell-inv-action")).includes("Tanggalin"));
     ok("no failure note on a good write",
        (await page.textContent("#shell-inventory-note")).trim() === "");
 
-    await page.click('[data-item-id="agimat"]');
+    await page.click("#shell-inv-action");
     await page.waitForTimeout(150);
-    ok("tapping it again takes it off",
+    ok("Tanggalin takes it off",
        (await page.evaluate(() => Inventory.equipped("accessory"))) === null);
 
     await page.click("#shell-inventory-back");
     await page.waitForTimeout(100);
-    ok("back returns to pause, not to the world",
-       await visible(page, "#shell-pause"));
-    ok("and the game is still paused",
-       await page.evaluate(() => Game.isPaused()));
-
-    await page.click("#shell-resume");
-    await page.waitForTimeout(100);
-    ok("resuming from there still works",
+    ok("back returns straight to the world",
+       (await page.evaluate(() => Shell.state)) === "playing" &&
        !(await page.evaluate(() => Game.isPaused())));
+    ok("the shell overlay is hidden again",
+       await page.evaluate(() =>
+         document.getElementById("shell").classList.contains("hidden")));
 
     await ctx.close();
   }
 
-  console.log("\nT2. Shop and inventory reached directly, without pausing first");
+  console.log("\nT2. Consumables and quest items on the inventory screen");
   {
-    // Block 13: #btn-inventory and #btn-shop sit next to #btn-pause in
-    // the main UI, so a student can reach either screen in one tap
-    // instead of pausing first. Opening either one still pauses the
-    // world underneath, exactly as the pause-menu path always has;
-    // what changes is only where "back" goes afterward.
     const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
 
-    ok("the inventory button is offered in the main UI",
-       await visible(page, "#btn-inventory"));
-    ok("the shop button is offered in the main UI",
-       await visible(page, "#btn-shop"));
-    ok("neither is inside the pause overlay",
-       await page.evaluate(() =>
-         !document.getElementById("shell").contains(
-           document.getElementById("btn-inventory")) &&
-         !document.getElementById("shell").contains(
-           document.getElementById("btn-shop"))));
+    await page.evaluate(async () => {
+      Game.addCurrency(20);
+      await Inventory.buy("gatas");
+      await Inventory.buy("gatas");
+      addQuest("test_liham", "Test");
+      await Inventory.buy("liham");
+      health = 2;
+      renderHearts();
+    });
 
     await page.click("#btn-inventory");
-    await page.waitForTimeout(100);
-    ok("tapping it opens the inventory panel directly",
-       await visible(page, "#shell-inventory"));
-    ok("shell state is inventory", (await page.evaluate(() => Shell.state)) === "inventory");
-    ok("the world paused itself for the visit",
-       await page.evaluate(() => Game.isPaused()));
+    await page.waitForTimeout(150);
+
+    ok("a stack shows its count on the tile",
+       (await page.textContent('#shell-items [data-item-id="gatas"]')).includes("×2"));
+    ok("a quest item is badged Misyon",
+       (await page.textContent('#shell-items [data-item-id="liham"]')).includes("Misyon"));
+
+    const order = await page.evaluate(() =>
+      [...document.querySelectorAll("#shell-items .inv-tile")].map((t) => t.dataset.itemId));
+    ok("tiles run permanent, then consumable, then quest",
+       order.indexOf("sibat") < order.indexOf("gatas") &&
+       order.indexOf("gatas") < order.indexOf("liham"), order);
+
+    await page.click('#shell-items [data-item-id="gatas"]');
+    await page.waitForTimeout(120);
+    ok("a consumable's action is Gamitin",
+       (await page.textContent("#shell-inv-action")).includes("Gamitin"));
+    ok("its detail says what it does and how many are carried",
+       (await page.textContent("#shell-inv-detail")).includes("Nagbabalik ng 1 puso") &&
+       (await page.textContent("#shell-inv-detail")).includes("2 / 3"));
+
+    await page.click("#shell-inv-action");
+    await page.waitForTimeout(150);
+    const ate = await page.evaluate(() => ({ health, count: Inventory.count("gatas") }));
+    ok("Gamitin heals one heart", ate.health === 3, ate);
+    ok("and spends one of the stack", ate.count === 1, ate);
+    ok("the screen says what happened",
+       (await page.textContent("#shell-inventory-note")).includes("Nagbalik ng 1 puso"));
+    ok("at full health Gamitin is refused, with the reason on the button",
+       (await page.isDisabled("#shell-inv-action")) &&
+       (await page.textContent("#shell-inv-action")).includes("Buo ang iyong puso"));
+
+    await page.click('#shell-items [data-item-id="liham"]');
+    await page.waitForTimeout(120);
+    ok("a quest item offers no action at all",
+       !(await page.evaluate(() => document.getElementById("shell-inv-action"))));
+    ok("and says it is for a quest",
+       (await page.textContent("#shell-inv-detail")).includes("Pang-misyon"));
 
     await page.click("#shell-inventory-back");
     await page.waitForTimeout(100);
-    ok("back skips pause entirely",
-       !(await visible(page, "#shell-pause")));
-    ok("the shell overlay is hidden again",
-       await page.evaluate(() =>
-         document.getElementById("shell").classList.contains("hidden")));
-    ok("shell state is back to playing",
-       (await page.evaluate(() => Shell.state)) === "playing");
-    ok("and the world is actually running again",
-       !(await page.evaluate(() => Game.isPaused())));
-
-    await page.click("#btn-shop");
-    await page.waitForTimeout(100);
-    ok("tapping the shop button opens the shop panel directly, skipping inventory",
-       await visible(page, "#shell-shop"));
-    ok("shell state is shop", (await page.evaluate(() => Shell.state)) === "shop");
-    ok("the world paused itself for this visit too",
-       await page.evaluate(() => Game.isPaused()));
-
-    await page.click("#shell-shop-back");
-    await page.waitForTimeout(100);
-    ok("back from a direct shop visit also resumes the world, not inventory",
-       (await page.evaluate(() => Shell.state)) === "playing" &&
-       !(await page.evaluate(() => Game.isPaused())));
-
-    // Chained: direct inventory, then into shop from inside it, then
-    // back out through both. Each hop should land where it came from.
-    await page.click("#btn-inventory");
-    await page.waitForTimeout(100);
-    await page.click("#shell-shop-open");
-    await page.waitForTimeout(100);
-    ok("shop reached from a direct inventory visit still opens",
-       await visible(page, "#shell-shop"));
-    await page.click("#shell-shop-back");
-    await page.waitForTimeout(100);
-    ok("backing out of that shop returns to inventory, not the world",
-       await visible(page, "#shell-inventory") &&
-       (await page.evaluate(() => Shell.state)) === "inventory");
-    await page.click("#shell-inventory-back");
-    await page.waitForTimeout(100);
-    ok("and backing out of that inventory finally resumes the world",
-       (await page.evaluate(() => Shell.state)) === "playing" &&
-       !(await page.evaluate(() => Game.isPaused())));
-
-    // The pause-menu path is untouched by any of the above: pause,
-    // then inventory, still returns to pause rather than the world.
-    await page.click("#btn-pause");
-    await page.waitForTimeout(100);
-    await page.click("#shell-inventory-open");
-    await page.waitForTimeout(100);
-    await page.click("#shell-inventory-back");
-    await page.waitForTimeout(100);
-    ok("the pause-menu route into inventory still returns to pause",
-       await visible(page, "#shell-pause"));
-    await page.click("#shell-resume");
-    await page.waitForTimeout(100);
-
     await ctx.close();
   }
 
@@ -1215,12 +1239,10 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the engine keeps its three hearts",
        (await page.evaluate(() => maxHealth)) === 3);
 
-    await page.click("#btn-pause");
-    await page.waitForTimeout(150);
     ok("no inventory button without the module",
-       !(await visible(page, "#shell-inventory-open")));
-    await page.click("#shell-resume");
-    await page.waitForTimeout(100);
+       !(await visible(page, "#btn-inventory")));
+    ok("and no shop button either",
+       !(await visible(page, "#btn-shop")));
 
     // The check that protects the study rather than the feature. Equipment
     // is a stated objective; the act flow is the finding.
@@ -1513,52 +1535,96 @@ const visible = (page, sel) => page.evaluate((s) => {
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => Game.addCurrency(60));
 
-    await page.click("#btn-pause");
+    await page.click("#btn-shop");
     await page.waitForTimeout(150);
-    await page.click("#shell-inventory-open");
-    await page.waitForTimeout(100);
-    ok("the balance shows on the inventory screen",
-       (await page.textContent("#shell-balance")).trim() === "60");
-
-    await page.click("#shell-shop-open");
-    await page.waitForTimeout(100);
-    ok("the shop opens", await visible(page, "#shell-shop"));
+    ok("the shop opens from its own button", await visible(page, "#shell-shop"));
     ok("shell state is shop",
        (await page.evaluate(() => Shell.state)) === "shop");
-    ok("both cosmetics and the consumable are listed",
-       (await page.evaluate(() =>
-         document.querySelectorAll("#shell-shop-list .inv-item").length)) === 3);
-    ok("the one you cannot afford is disabled",
-       await page.isDisabled('[data-buy-id="damit-katipunero"]'));
-    ok("the one you can afford is not",
-       !(await page.isDisabled('[data-buy-id="damit-magsasaka"]')));
+    ok("the world paused itself for the visit",
+       await page.evaluate(() => Game.isPaused()));
+    ok("the balance shows on the shop screen",
+       (await page.textContent("#shell-shop-balance")).trim() === "60");
 
-    await page.click('[data-buy-id="damit-magsasaka"]');
+    const listed = await page.evaluate(() =>
+      [...document.querySelectorAll("#shell-shop-list .inv-tile")].map((t) => t.dataset.shopId));
+    ok("both cosmetics and the consumable are listed",
+       listed.includes("damit-magsasaka") && listed.includes("damit-katipunero") &&
+       listed.includes("gatas"), listed);
+    ok("a quest item is not on the shelf while its quest is not open",
+       !listed.includes("liham"), listed);
+
+    await page.click('#shell-shop-list [data-shop-id="damit-katipunero"]');
+    await page.waitForTimeout(100);
+    ok("the one you cannot afford is disabled, and says why",
+       (await page.isDisabled("#shell-shop-action")) &&
+       (await page.textContent("#shell-shop-action")).includes("Kulang na barya"));
+
+    await page.click('#shell-shop-list [data-shop-id="damit-magsasaka"]');
+    await page.waitForTimeout(100);
+    ok("tapping a tile selects it without buying it",
+       !(await page.evaluate(() => Inventory.owns("damit-magsasaka"))) &&
+       (await page.textContent("#shell-shop-balance")).trim() === "60");
+    ok("the one you can afford offers Bilhin with its price",
+       !(await page.isDisabled("#shell-shop-action")) &&
+       (await page.textContent("#shell-shop-action")).includes("Bilhin: 50"));
+
+    await page.click("#shell-shop-action");
     await page.waitForTimeout(200);
     ok("buying deducts from the shown balance",
        (await page.textContent("#shell-shop-balance")).trim() === "10");
-    ok("the bought row reads as owned",
-       (await page.textContent('[data-buy-id="damit-magsasaka"]')).includes("Pag-aari"));
-    ok("the bought row stops responding",
-       await page.isDisabled('[data-buy-id="damit-magsasaka"]'));
-    ok("no failure note on a good purchase",
-       (await page.textContent("#shell-shop-note")).trim() === "");
+    ok("the bought tile reads as owned",
+       (await page.textContent('#shell-shop-list [data-shop-id="damit-magsasaka"]')).includes("Nasa iyo"));
+    ok("and cannot be bought twice",
+       (await page.isDisabled("#shell-shop-action")) &&
+       (await page.textContent("#shell-shop-action")).includes("Nasa iyo na"));
+    ok("the screen confirms the purchase",
+       (await page.textContent("#shell-shop-note")).includes("Binili"));
+
+    // A consumable stacks up to its maxStack, then the button says the
+    // bag is full.
+    await page.click('#shell-shop-list [data-shop-id="gatas"]');
+    await page.waitForTimeout(100);
+    await page.evaluate(() => Game.addCurrency(20));
+    for (let i = 0; i < 3; i++) {
+      await page.click("#shell-shop-action");
+      await page.waitForTimeout(120);
+    }
+    const stack = await page.evaluate(() => ({
+      count: Inventory.count("gatas"),
+      row: __DB.player_inventory.find((r) => r.item_id === "gatas"),
+      rows: __DB.player_inventory.filter((r) => r.item_id === "gatas").length,
+    }));
+    ok("a consumable can be bought more than once", stack.count === 3, stack);
+    ok("as one row holding the quantity, not three rows",
+       stack.rows === 1 && stack.row.quantity === 3, stack);
+    ok("a full stack refuses another, with the reason on the button",
+       (await page.isDisabled("#shell-shop-action")) &&
+       (await page.textContent("#shell-shop-action")).includes("Puno ang supot"));
+
+    // The quest item appears once its quest is open.
+    await page.click("#shell-shop-back");
+    await page.waitForTimeout(100);
+    await page.evaluate(() => addQuest("test_liham", "Test"));
+    await page.click("#btn-shop");
+    await page.waitForTimeout(150);
+    ok("a quest item is on the shelf while its quest is open",
+       await page.evaluate(() => !!document.querySelector('#shell-shop-list [data-shop-id="liham"]')));
 
     await page.click("#shell-shop-back");
     await page.waitForTimeout(100);
-    ok("back returns to the inventory", await visible(page, "#shell-inventory"));
-    ok("the new outfit is in the owned list",
-       (await page.evaluate(() =>
-         document.querySelectorAll("#shell-items .inv-item").length)) === 3);
-    ok("the inventory balance kept up",
-       (await page.textContent("#shell-balance")).trim() === "10");
+    ok("back returns straight to the world",
+       (await page.evaluate(() => Shell.state)) === "playing" &&
+       !(await page.evaluate(() => Game.isPaused())));
 
+    // What was bought is waiting in the inventory.
+    await page.click("#btn-inventory");
+    await page.waitForTimeout(150);
+    ok("the new outfit is among the owned tiles",
+       await page.evaluate(() => !!document.querySelector('#shell-items [data-item-id="damit-magsasaka"]')));
+    ok("the inventory balance kept up",
+       (await page.textContent("#shell-balance")).trim() !== "60");
     await page.click("#shell-inventory-back");
     await page.waitForTimeout(100);
-    await page.click("#shell-resume");
-    await page.waitForTimeout(100);
-    ok("resuming from the shop path still works",
-       !(await page.evaluate(() => Game.isPaused())));
 
     await ctx.close();
   }
@@ -1760,9 +1826,9 @@ const visible = (page, sel) => page.evaluate((s) => {
         "btn-interact", "btn-pause", "btn-inventory", "btn-shop",
         "gift-btn", "act-screen-btn",
         "quiz-btn", "quiz-back", "shell-start", "shell-title-settings",
-        "shell-resume", "shell-inventory-open", "shell-pause-settings",
+        "shell-resume", "shell-pause-settings",
         "shell-logout", "shell-settings-back", "shell-reset",
-        "shell-reset-yes", "shell-reset-no", "shell-shop-open",
+        "shell-reset-yes", "shell-reset-no",
         "shell-inventory-back", "shell-shop-back", "shell-logout-yes",
         "shell-logout-no", "auth-submit"];
       const missing = [];
@@ -2279,6 +2345,22 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("no session rows written for a guest",
        (await page.evaluate(() => (__DB.play_sessions || []).length)) === 0);
 
+    // Block 25. A guest has a working inventory in memory, so a quest
+    // that needs a purchase can be finished without an account, and
+    // still nothing is written.
+    const guestShop = await page.evaluate(async () => {
+      Game.addCurrency(10);
+      const bought = await Inventory.buy("gatas");
+      const worn = await Inventory.equip("gatas");
+      health = 1;
+      const used = await Inventory.use("gatas");
+      return { bought, worn, used, health, count: Inventory.count("gatas"),
+               rows: __DB.player_inventory.length };
+    });
+    ok("a guest can buy", guestShop.bought === true, guestShop);
+    ok("and use what they bought", guestShop.used === true && guestShop.health === 2, guestShop);
+    ok("without a single inventory row written", guestShop.rows === 0, guestShop);
+
     await page.waitForTimeout(1200);
     ok("still nothing written after time passes (no autosave for a guest)",
        (await page.evaluate(() => __DB.game_progress.length)) === 0);
@@ -2579,20 +2661,18 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the projectile also carries its own z-index, above #player's",
        Number(thrown.zIndex) > 1, thrown.zIndex);
 
-    // Gatas: a consumable (kind: "consumable", no slot — see
-    // content/items.js's Mansanas for the real one this fixture stands
-    // in for). Owning it applies its effect immediately, with no equip
-    // step to speak of, and both the ownership and the effect end the
-    // moment it is actually consumed.
+    // Gatas: a consumable (kind: "consumable", no slot). Since Block 25
+    // it does nothing while carried, heals when used, stacks, refuses to
+    // be worn, and puts a unit back on a failed write.
     const bought = await page.evaluate(async () => {
       health = 3;
       Game.addCurrency(10);
       const ok1 = await Inventory.buy("gatas");
-      return { ok1, max: maxHealth, health, owns: Inventory.owns("gatas") };
+      return { ok1, max: maxHealth, health, count: Inventory.count("gatas") };
     });
     ok("buying the consumable works", bought.ok1 === true, bought);
-    ok("its effect applies the instant it is owned, no equip step",
-       bought.max === 4 && bought.health === 4, bought);
+    ok("carrying it changes nothing about health",
+       bought.max === 3 && bought.health === 3, bought);
 
     const notWearable = await page.evaluate(async () => {
       const equipped = await Inventory.equip("gatas");
@@ -2602,20 +2682,28 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a consumable refuses to be equipped", notWearable.equipped === false, notWearable);
     ok("and refuses toggle() too", notWearable.toggled === false, notWearable);
 
-    const consumed = await page.evaluate(async () => {
-      const ok2 = await Inventory.consume("gatas");
+    const refusedFull = await page.evaluate(async () => {
+      health = maxHealth;
+      const used = await Inventory.use("gatas");
+      return { used, count: Inventory.count("gatas") };
+    });
+    ok("using a heal at full health is refused", refusedFull.used === false, refusedFull);
+    ok("and does not spend it", refusedFull.count === 1, refusedFull);
+
+    const used = await page.evaluate(async () => {
+      health = 1;
+      const ok2 = await Inventory.use("gatas");
       return {
-        ok2, max: maxHealth, health, owns: Inventory.owns("gatas"),
+        ok2, health, owns: Inventory.owns("gatas"),
         rows: __DB.player_inventory.filter((r) => r.item_id === "gatas").length,
       };
     });
-    ok("consuming it succeeds", consumed.ok2 === true, consumed);
-    ok("its effect ends with it", consumed.max === 3 && consumed.health === 3, consumed);
-    ok("it is no longer owned", !consumed.owns, consumed);
-    ok("and its row is gone from the database", consumed.rows === 0, consumed);
+    ok("using it succeeds", used.ok2 === true, used);
+    ok("it heals one heart", used.health === 2, used);
+    ok("the last one is no longer owned", !used.owns, used);
+    ok("and its row is gone from the database, not left at zero", used.rows === 0, used);
 
-    // A failed write must not lose the item — same rollback shape as
-    // buy()'s own failure test (Section X).
+    // A failed write must not lose the unit.
     const rolledBack = await page.evaluate(async () => {
       Game.addCurrency(10);
       await Inventory.buy("gatas");
@@ -2625,13 +2713,31 @@ const visible = (page, sel) => page.evaluate((s) => {
         return { delete: () => ({ eq: () => ({ eq: () =>
           Promise.resolve({ error: { message: "simulated" } }) }) }) };
       };
-      const failed = await Inventory.consume("gatas");
+      health = 1;
+      const failed = await Inventory.use("gatas");
       sb.from = realFrom;
-      return { failed, owns: Inventory.owns("gatas"), max: maxHealth };
+      return { failed, count: Inventory.count("gatas") };
     });
-    ok("a failed consume reports failure", rolledBack.failed === false, rolledBack);
-    ok("and rolls the item — and its effect — back",
-       rolledBack.owns && rolledBack.max === 4, rolledBack);
+    ok("a failed use reports failure", rolledBack.failed === false, rolledBack);
+    ok("and puts the unit back", rolledBack.count === 1, rolledBack);
+
+    // A quest item: consumed by the story, never used or worn.
+    const quest = await page.evaluate(async () => {
+      Game.addCurrency(10);
+      addQuest("test_liham", "Test");
+      const bought = await Inventory.buy("liham");
+      const second = await Inventory.buy("liham");
+      const used = await Inventory.use("liham");
+      const worn = await Inventory.equip("liham");
+      const flag = state.flags.test_binilhAngLiham === true;
+      const consumed = await Inventory.consume("liham");
+      return { bought, second, used, worn, flag, consumed, owns: Inventory.owns("liham") };
+    });
+    ok("a quest item can be bought while its quest is open", quest.bought === true, quest);
+    ok("but only one of it", quest.second === false, quest);
+    ok("it cannot be used or worn", quest.used === false && quest.worn === false, quest);
+    ok("its buyFlag is set", quest.flag, quest);
+    ok("the story can consume it", quest.consumed === true && !quest.owns, quest);
 
     await ctx.close();
   }

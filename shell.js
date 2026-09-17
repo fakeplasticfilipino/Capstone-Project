@@ -106,13 +106,14 @@ const Shell = {
       logoutConfirm: document.getElementById("shell-logout-yes"),
       logoutCancel: document.getElementById("shell-logout-no"),
       logoutNote: document.getElementById("shell-logout-note"),
-      inventoryOpen: document.getElementById("shell-inventory-open"),
+      box: document.getElementById("shell-box"),
       inventoryBack: document.getElementById("shell-inventory-back"),
       inventoryNote: document.getElementById("shell-inventory-note"),
       slots: document.getElementById("shell-slots"),
       items: document.getElementById("shell-items"),
       balance: document.getElementById("shell-balance"),
-      shopOpen: document.getElementById("shell-shop-open"),
+      invDetail: document.getElementById("shell-inv-detail"),
+      shopDetail: document.getElementById("shell-shop-detail"),
       shopBack: document.getElementById("shell-shop-back"),
       shopList: document.getElementById("shell-shop-list"),
       shopNote: document.getElementById("shell-shop-note"),
@@ -148,59 +149,48 @@ const Shell = {
 
     // The only guard on window.Inventory in this file, and it is the
     // same shape as the act flow's guard on window.Assessment: with the
-    // module absent the button never appears, and every other screen
-    // behaves exactly as it did before Block 10.
+    // module absent neither main-UI button appears (game.js gates their
+    // visibility the same way), and every other screen behaves exactly
+    // as it did before Block 10.
     //
-    // Two entry points now feed the same two panels: the pause-menu
-    // buttons (unchanged) and the main-UI buttons added in Block 13,
-    // which jump straight in from "playing" without pausing first.
-    // _openInventory/_openShop take which one asked so the matching
-    // close can undo exactly that, rather than assuming pause.
+    // Block 25 gave each screen exactly one way in from play: its own
+    // main-UI button, plus an opensShop NPC for the shop. The pause
+    // menu no longer carries Imbentaryo and the inventory no longer
+    // carries Tindahan, so there is no chain of screens to back out of
+    // and "back" always means back to the world.
     if (window.Inventory) {
-      this.el.inventoryOpen.classList.remove("hidden");
-      this.el.inventoryOpen.addEventListener("click", () =>
-        this._openInventory("paused")
-      );
       this.el.inventoryBack.addEventListener("click", () =>
         this._closeInventory()
       );
-      this.el.items.addEventListener("click", (e) => this._onItemTap(e));
+      this.el.items.addEventListener("click", (e) => this._onInventoryTap(e));
+      this.el.slots.addEventListener("click", (e) => this._onInventoryTap(e));
+      this.el.invDetail.addEventListener("click", (e) => this._onInventoryAction(e));
 
-      this.el.shopOpen.addEventListener("click", () =>
-        this._openShop("inventory")
-      );
       this.el.shopBack.addEventListener("click", () => this._closeShop());
-      this.el.shopList.addEventListener("click", (e) => this._onBuyTap(e));
+      this.el.shopList.addEventListener("click", (e) => this._onShopTap(e));
+      this.el.shopDetail.addEventListener("click", (e) => this._onShopAction(e));
 
-      // Main-UI buttons, next to #btn-pause. Visibility rides along
-      // with the movement controls (game.js), gated the same way, so
-      // this only ever needs to bind the click.
       if (this.el.mainInventoryBtn) {
         this.el.mainInventoryBtn.addEventListener("click", () =>
-          this._openInventory("playing")
+          this._openInventory()
         );
       }
       if (this.el.mainShopBtn) {
-        this.el.mainShopBtn.addEventListener("click", () =>
-          this._openShop("playing")
-        );
+        this.el.mainShopBtn.addEventListener("click", () => this._openShop());
       }
 
       // inventory.js owns the state and tells the screen when it moved,
       // including when it puts an optimistic change back after a failed
       // write. The shell only ever draws what it is told.
       Inventory.onChange(() => {
-        this._renderInventory();
+        if (this.state === "inventory") this._renderInventory();
         if (this.state === "shop") this._renderShop();
       });
 
       // game.js tells us when an NPC that opens the shop (opensShop:
-      // true — a Tindero, say) was pressed, the same direct-open path
-      // #btn-shop already uses. Registered only alongside the rest of
-      // this block, since _openShop itself is a no-op without
-      // window.Inventory anyway.
+      // true, Tindero) was pressed.
       if (window.Game && Game.onShopRequest) {
-        Game.onShopRequest(() => this._openShop("playing"));
+        Game.onShopRequest(() => this._openShop());
       }
     }
 
@@ -500,304 +490,526 @@ const Shell = {
   },
 
   // -----------------------------------------------------------
-  // Inventory
+  // Inventory and shop (rebuilt in Block 25)
   //
-  // Reached two ways since Block 13: through pause, as before, or
-  // directly from its own main-UI button next to #btn-pause, which
-  // skips the pause screen entirely. Either way the game stops for
-  // the whole visit, so an effect can never change under a running
-  // frame; a direct open pauses it itself instead of relying on
-  // openPause having already done so.
+  // Two wide panels with the same anatomy: a list on the left (the
+  // worn slots and owned items, or the goods for sale) and the
+  // selected item on the right, with the one action that item allows
+  // under it. Selecting and acting are two taps on purpose. A Grade 8
+  // student tapping a tile to find out what it is must not eat the
+  // last apple or spend their barya by doing so, and the detail pane
+  // is where the effect is explained before it happens.
   //
-  // invReturn records which door was used, because the two need
-  // different ways back out: from pause, back means pause; opened
-  // directly, back means resume.
+  // Each panel is reached only from its own main-UI button (and the
+  // shop from an opensShop NPC), never from pause and never from each
+  // other, so opening pauses the world and back resumes it. The world
+  // stops for the whole visit, so an effect can never change under a
+  // running frame.
+  //
+  // Everything is redrawn whole on every change. The lists are a
+  // handful of items on a screen that is only open while the game is
+  // paused, so the simple thing costs nothing and cannot drift out of
+  // step with Inventory's state.
   // -----------------------------------------------------------
 
-  _openInventory(from) {
-    if (!window.Inventory) return;
-    if (from === "playing") {
-      if (this.state !== "playing") return;
-      if (!window.Game) return;
-      // setPaused refuses during the stage cutscene, the same guard
-      // openPause honours; see the comment there.
-      if (!Game.setPaused(true)) return;
-      Game.setUiBlocked(true);
-      this.el.overlay.classList.remove("hidden");
-      this.invReturn = "playing";
-    } else {
-      if (this.state !== "paused") return;
-      this.invReturn = "paused";
-    }
-    this.state = "inventory";
-    this._renderInventory();
-    this._showPanel("inventory");
-  },
-
-  // Back to pause if pause is where this visit started; the student
-  // paused to get here, and resuming out from under them would hide
-  // the effect they just equipped before they saw the hearts change.
-  // Back to the world, fully resumed, if the main-UI button opened it
-  // directly, since there was never a pause screen to return to.
-  _closeInventory() {
-    if (this.state !== "inventory") return;
-    if (this.invReturn === "playing") {
-      this.state = "playing";
-      this.el.overlay.classList.add("hidden");
-      if (window.Game) {
-        Game.setUiBlocked(false);
-        Game.setPaused(false);
-      }
-      this._applyOrientation();
-    } else {
-      this.state = "paused";
-      this._showPanel("pause");
-    }
-  },
-
-  // Slots first, then everything owned. Both are redrawn whole rather
-  // than patched: the list is two items long on a screen that is only
-  // ever open while the game is paused, so the simple thing costs
-  // nothing and cannot drift out of step with Inventory's state.
-  // One symbol per slot. A fourth slot added to content later gets the
-  // bag rather than nothing, which is the same rule the placeholder
-  // box follows for a missing sprite: show something labelled.
   SLOT_ICONS: { weapon: "i-blade", accessory: "i-star", outfit: "i-shirt" },
+
+  invSelected: null,
+  shopSelected: null,
+
+  // The symbol an item falls back to. An item may name its own
+  // (icon: "i-apple"); otherwise its slot's, or a scroll for a quest
+  // item, or the bag.
+  _itemIcon(item) {
+    if (item && item.icon) return item.icon;
+    if (item && Inventory.isQuest(item)) return "i-scroll";
+    if (item && this.SLOT_ICONS[item.slot]) return this.SLOT_ICONS[item.slot];
+    return "i-bag";
+  },
 
   _slotIcon(slot) {
     return this.SLOT_ICONS[slot] || "i-bag";
   },
 
-  _renderInventory() {
+  // An item's picture: its img if that file exists, its symbol if not.
+  // This is the one place a missing image does NOT become the dashed
+  // placeholder box. A tile is too small for a box that names a file,
+  // and a screen of those teaches nothing; the symbol still says what
+  // kind of thing it is. The filename is kept in the title attribute so
+  // the artist can still find out what is owed. A failed path is
+  // remembered, so a redraw does not flash the broken image again.
+  _artFailed: new Set(),
+
+  _itemArt(item, extraClass) {
+    const art = document.createElement("span");
+    art.className = "inv-art" + (extraClass ? " " + extraClass : "");
+    art.appendChild(makeIcon(this._itemIcon(item)));
+
+    const src = item && item.img;
+    if (src && !this._artFailed.has(src)) {
+      art.title = src;
+      const img = document.createElement("img");
+      img.alt = "";
+      img.src = assetUrl(src);
+      img.onload = () => art.classList.add("inv-art-loaded");
+      img.onerror = () => {
+        this._artFailed.add(src);
+        img.remove();
+      };
+      art.appendChild(img);
+    } else if (src) {
+      art.title = src;
+    }
+    return art;
+  },
+
+  // A button built the house way: icon and label, label in .lbl.
+  _actionButton(id, icon, label, extraClass) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = id;
+    btn.className = "shell-btn " + (extraClass || "shell-btn-primary") + " inv-action";
+    btn.appendChild(makeIcon(icon));
+    const lbl = document.createElement("span");
+    lbl.className = "lbl";
+    lbl.textContent = label;
+    btn.appendChild(lbl);
+    return btn;
+  },
+
+  _note(el, text, good) {
+    if (!el) return;
+    el.textContent = text || "";
+    el.className = "shell-note" + (good ? " ok" : "");
+  },
+
+  // The part of both detail panes that describes an item: picture,
+  // name, what kind it is, what it says about itself, and what it does.
+  _detailHeader(item) {
+    const wrap = document.createDocumentFragment();
+
+    const top = document.createElement("div");
+    top.className = "inv-detail-top";
+    top.appendChild(this._itemArt(item, "inv-art-large"));
+
+    const titles = document.createElement("div");
+    titles.className = "inv-detail-titles";
+    const name = document.createElement("div");
+    name.className = "inv-detail-name";
+    name.textContent = item.name;
+    const chip = document.createElement("span");
+    chip.className = "inv-chip" + (Inventory.isQuest(item) ? " inv-chip-quest" : "");
+    chip.textContent = Inventory.kindLabel(item);
+    titles.appendChild(name);
+    titles.appendChild(chip);
+    top.appendChild(titles);
+    wrap.appendChild(top);
+
+    if (item.description) {
+      const desc = document.createElement("p");
+      desc.className = "inv-detail-desc";
+      desc.textContent = item.description;
+      wrap.appendChild(desc);
+    }
+
+    const lines = Inventory.effectLines(item);
+    if (lines.length) {
+      const list = document.createElement("ul");
+      list.className = "inv-effects";
+      lines.forEach((text) => {
+        const li = document.createElement("li");
+        li.textContent = text;
+        list.appendChild(li);
+      });
+      wrap.appendChild(list);
+    }
+
+    return wrap;
+  },
+
+  _emptyDetail(el, text) {
+    el.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = "inv-detail-empty";
+    p.textContent = text;
+    el.appendChild(p);
+  },
+
+  // A tile in either list.
+  _tile(item, attr, selected) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "inv-tile" + (selected ? " inv-tile-selected" : "");
+    btn.dataset[attr] = item.id;
+    btn.appendChild(this._itemArt(item));
+    const lbl = document.createElement("span");
+    lbl.className = "lbl";
+    lbl.textContent = item.name;
+    btn.appendChild(lbl);
+    return btn;
+  },
+
+  _badge(btn, text, kind) {
+    const b = document.createElement("span");
+    b.className = "inv-badge" + (kind ? " inv-badge-" + kind : "");
+    b.textContent = text;
+    btn.appendChild(b);
+  },
+
+  // -- Inventory ------------------------------------------------
+
+  _openInventory() {
     if (!window.Inventory) return;
-    if (!this.el.slots) return;
+    if (!this._pauseForScreen()) return;
+    this.state = "inventory";
+    this._note(this.el.inventoryNote, "");
+    this._renderInventory();
+    this._showPanel("inventory");
+  },
 
-    this.el.inventoryNote.textContent = "";
+  _closeInventory() {
+    if (this.state !== "inventory") return;
+    this._resumeFromScreen();
+  },
+
+  // Both screens pause the world themselves, since neither is reached
+  // through the pause menu any more. setPaused refuses during the
+  // stage cutscene, the same guard openPause honours.
+  _pauseForScreen() {
+    if (this.state !== "playing") return false;
+    if (!window.Game) return false;
+    if (!Game.setPaused(true)) return false;
+    Game.setUiBlocked(true);
+    this.el.overlay.classList.remove("hidden");
+    return true;
+  },
+
+  _resumeFromScreen() {
+    this.state = "playing";
+    this.el.overlay.classList.add("hidden");
+    if (window.Game) {
+      Game.setUiBlocked(false);
+      Game.setPaused(false);
+    }
+    this._applyOrientation();
+  },
+
+  // Keeps a selection that still exists; otherwise the first owned
+  // item, so the right-hand pane is never blank while there is
+  // something to show.
+  _pickInventorySelection() {
+    const owned = Inventory.ownedItems();
+    if (!owned.some((item) => item.id === this.invSelected)) {
+      const first =
+        owned.find((i) => Inventory.isPermanent(i)) ||
+        owned.find((i) => Inventory.isConsumable(i)) ||
+        owned[0];
+      this.invSelected = first ? first.id : null;
+    }
+  },
+
+  _renderInventory() {
+    if (!window.Inventory || !this.el.slots) return;
+
     this.el.balance.textContent = String(Inventory.balance());
+    this._pickInventorySelection();
 
+    // The three slots. A filled slot is a button that selects what is
+    // in it; an empty one is disabled and says so.
     this.el.slots.innerHTML = "";
     Inventory.SLOTS.forEach((slot) => {
       const item = Inventory.item(Inventory.equipped(slot.id));
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className =
+        "inv-slot" +
+        (item ? " inv-slot-filled" : " inv-slot-empty") +
+        (item && item.id === this.invSelected ? " inv-tile-selected" : "");
+      btn.dataset.slot = slot.id;
+      if (item) btn.dataset.itemId = item.id;
+      btn.disabled = !item;
 
-      const row = document.createElement("div");
-      row.className = "inv-slot";
+      if (item) btn.appendChild(this._itemArt(item));
+      else {
+        const art = document.createElement("span");
+        art.className = "inv-art inv-art-empty";
+        art.appendChild(makeIcon(this._slotIcon(slot.id)));
+        btn.appendChild(art);
+      }
 
+      const lbl = document.createElement("span");
+      lbl.className = "lbl";
       const label = document.createElement("span");
       label.className = "inv-slot-label";
-      label.appendChild(makeIcon(this._slotIcon(slot.id)));
-      const labelText = document.createElement("span");
-      labelText.textContent = slot.label;
-      label.appendChild(labelText);
-
+      label.textContent = slot.label;
       const value = document.createElement("span");
-      value.className = item ? "inv-slot-filled" : "inv-slot-empty";
-      value.textContent = item ? item.name : "Wala";
+      value.className = "inv-slot-value";
+      value.textContent = item ? item.name : "Walang nakasuot";
+      lbl.appendChild(label);
+      lbl.appendChild(value);
+      btn.appendChild(lbl);
 
-      row.appendChild(label);
-      row.appendChild(value);
-      this.el.slots.appendChild(row);
+      this.el.slots.appendChild(btn);
     });
 
+    // Owned items in one grid, ordered by group: what can be worn, then
+    // what can be used, then what the story will take. One grid rather
+    // than three headed sections because a phone held sideways has no
+    // height for three headings; the corner badge on each tile
+    // (Nakasuot, a count, Misyon) and the chip in the detail pane carry
+    // the group instead.
     this.el.items.innerHTML = "";
     const owned = Inventory.ownedItems();
+
+    const section = document.createElement("div");
+    section.className = "inv-section";
+    const heading = document.createElement("div");
+    heading.className = "shell-label";
+    heading.textContent = "Bitbit";
+    section.appendChild(heading);
 
     if (!owned.length) {
       const empty = document.createElement("div");
       empty.className = "inv-empty";
-      empty.textContent = "Wala ka pang gamit.";
-      this.el.items.appendChild(empty);
+      empty.textContent = "Walang gamit pa. Bumili sa Tindahan.";
+      section.appendChild(empty);
+    } else {
+      const grid = document.createElement("div");
+      grid.className = "inv-grid";
+      const rank = (i) =>
+        Inventory.isPermanent(i) ? 0 : Inventory.isConsumable(i) ? 1 : 2;
+      owned
+        .map((item, at) => ({ item, at }))
+        .sort((a, b) => rank(a.item) - rank(b.item) || a.at - b.at)
+        .forEach(({ item }) => {
+          const tile = this._tile(item, "itemId", item.id === this.invSelected);
+          if (Inventory.isWorn(item.id)) {
+            tile.classList.add("inv-tile-worn");
+            this._badge(tile, "Nakasuot", "worn");
+          } else if (Inventory.isConsumable(item)) {
+            this._badge(tile, "×" + Inventory.count(item.id), "count");
+          } else if (Inventory.isQuest(item)) {
+            tile.classList.add("inv-tile-quest");
+            this._badge(tile, "Misyon", "quest");
+          }
+          grid.appendChild(tile);
+        });
+      section.appendChild(grid);
+    }
+    this.el.items.appendChild(section);
+
+    this._renderInventoryDetail();
+  },
+
+  _renderInventoryDetail() {
+    const el = this.el.invDetail;
+    const item = Inventory.item(this.invSelected);
+    if (!item) {
+      this._emptyDetail(el, "Pumili ng gamit para makita dito.");
       return;
     }
 
-    owned.forEach((item) => {
-      // A consumable has no slot, so nothing to equip or unequip — the
-      // row shows it is owned and stops there, disabled the same way a
-      // shop row that is already owned is (.inv-item-owned), rather
-      // than offering an Isuot/Tanggalin toggle that would try to wear
-      // a unit item into a slot it does not have (equip() guards this
-      // too, but the row should never invite the tap to begin with).
-      const consumable = item.kind === "consumable";
-      const worn = !consumable && Inventory.equipped(item.slot) === item.id;
+    el.innerHTML = "";
+    el.appendChild(this._detailHeader(item));
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className =
-        "inv-item" + (worn ? " inv-item-worn" : consumable ? " inv-item-owned" : "");
-      btn.dataset.itemId = item.id;
-      btn.disabled = consumable;
-
-      // The slot's symbol, so a row says what kind of thing it is
-      // before the student reads the name. Outfit art does not exist
-      // yet, so this is also the only picture on the row. A consumable
-      // has no slot, so this is _slotIcon's own fallback, i-bag — a
-      // unit belongs in a bag, not a gear slot.
-      btn.appendChild(makeIcon(this._slotIcon(item.slot)));
-
-      const body = document.createElement("div");
-      body.className = "inv-item-body";
-
-      const name = document.createElement("div");
-      name.className = "inv-item-name";
-      name.textContent = item.name;
-
-      const action = document.createElement("span");
-      action.className = "inv-item-action";
-      action.textContent = consumable ? "Pag-aari" : worn ? "Tanggalin" : "Isuot";
-      name.appendChild(action);
-
-      const desc = document.createElement("div");
-      desc.className = "inv-item-desc";
-      desc.textContent = item.description || "";
-
-      body.appendChild(name);
-      body.appendChild(desc);
-      btn.appendChild(body);
-      this.el.items.appendChild(btn);
-    });
-  },
-
-  // Tapping what you are wearing takes it off; tapping anything else
-  // puts it on. One gesture, which is as much as a Grade 8 student on
-  // a phone should have to learn for a screen this small.
-  //
-  // Not awaited. Inventory applies the change to memory and fires its
-  // listener before the write leaves, so the screen has already moved;
-  // awaiting here would only add a stall on a slow connection. The
-  // failure path re-fires the listener with the old state, and the
-  // note below is what tells the student it did not take.
-  _onItemTap(e) {
-    const btn = e.target.closest("[data-item-id]");
-    if (!btn || !window.Inventory) return;
-
-    Inventory.toggle(btn.dataset.itemId).then((wrote) => {
-      if (this.state !== "inventory") return;
-      this.el.inventoryNote.textContent = wrote
-        ? ""
-        : "Hindi na-save. Suriin ang koneksyon.";
-    });
-  },
-
-  // -----------------------------------------------------------
-  // Shop
-  //
-  // Reached three ways since Block 13: off the inventory panel (the
-  // original path — the pause screen already carries four buttons at
-  // a width where a fifth starts to push the logout button off a
-  // phone), or directly from its own main-UI button, which — like
-  // direct-entry inventory — pauses the world itself and skips both
-  // pause and inventory.
-  //
-  // shopReturn mirrors invReturn: back means inventory if that is
-  // where this visit came from, or a full resume if the main-UI
-  // button opened it straight from the world.
-  // -----------------------------------------------------------
-
-  _openShop(from) {
-    if (!window.Inventory) return;
-    if (from === "playing") {
-      if (this.state !== "playing") return;
-      if (!window.Game) return;
-      if (!Game.setPaused(true)) return;
-      Game.setUiBlocked(true);
-      this.el.overlay.classList.remove("hidden");
-      this.shopReturn = "playing";
-    } else {
-      if (this.state !== "inventory") return;
-      this.shopReturn = "inventory";
+    if (Inventory.isConsumable(item)) {
+      const count = document.createElement("div");
+      count.className = "inv-detail-count";
+      count.textContent =
+        `Bitbit: ${Inventory.count(item.id)} / ${Inventory.maxStack(item)}`;
+      el.appendChild(count);
     }
+
+    if (Inventory.isPermanent(item)) {
+      const worn = Inventory.isWorn(item.id);
+      const btn = worn
+        ? this._actionButton("shell-inv-action", "i-cross", "Tanggalin", "shell-btn-ghost")
+        : this._actionButton("shell-inv-action", "i-check", "Isuot");
+      btn.dataset.action = worn ? "unequip" : "equip";
+      btn.dataset.itemId = item.id;
+      el.appendChild(btn);
+    } else if (Inventory.isConsumable(item)) {
+      const blocker = Inventory.useBlocker(item.id);
+      const btn = this._actionButton(
+        "shell-inv-action",
+        this._itemIcon(item),
+        blocker || "Gamitin"
+      );
+      btn.dataset.action = "use";
+      btn.dataset.itemId = item.id;
+      btn.disabled = Boolean(blocker);
+      el.appendChild(btn);
+    } else {
+      // A quest item has nothing to do from here. Said plainly rather
+      // than shown as a disabled button, which would look broken.
+      const hint = document.createElement("p");
+      hint.className = "inv-detail-hint";
+      hint.textContent = "Itago ito. Ibibigay sa tamang tauhan sa tamang oras.";
+      el.appendChild(hint);
+    }
+  },
+
+  _onInventoryTap(e) {
+    const btn = e.target.closest("[data-item-id]");
+    if (!btn || !window.Inventory || this.state !== "inventory") return;
+    this.invSelected = btn.dataset.itemId;
+    this._note(this.el.inventoryNote, "");
+    this._renderInventory();
+  },
+
+  // Not awaited for the screen's sake: Inventory applies the change to
+  // memory and fires its listener before the write leaves, so the
+  // screen has already moved. The result only decides the note.
+  _onInventoryAction(e) {
+    const btn = e.target.closest("[data-action]");
+    if (!btn || btn.disabled || !window.Inventory) return;
+    const id = btn.dataset.itemId;
+    const action = btn.dataset.action;
+    const item = Inventory.item(id);
+    this._note(this.el.inventoryNote, "");
+
+    let pending;
+    if (action === "use") pending = Inventory.use(id);
+    else if (action === "equip") pending = Inventory.equip(id);
+    else if (action === "unequip") pending = Inventory.unequip(item.slot);
+    else return;
+
+    pending.then((ok) => {
+      if (this.state !== "inventory") return;
+      if (!ok) {
+        this._note(this.el.inventoryNote, "Hindi na-save. Suriin ang koneksyon.");
+      } else if (action === "use") {
+        const heal = item && item.use && item.use.heal;
+        this._note(
+          this.el.inventoryNote,
+          heal ? `Nagbalik ng ${heal} puso.` : "Ginamit.",
+          true
+        );
+      }
+      this._renderInventory();
+    });
+  },
+
+  // -- Shop -----------------------------------------------------
+
+  _openShop() {
+    if (!window.Inventory) return;
+    if (!this._pauseForScreen()) return;
     this.state = "shop";
+    this._note(this.el.shopNote, "");
     this._renderShop();
     this._showPanel("shop");
   },
 
   _closeShop() {
     if (this.state !== "shop") return;
-    if (this.shopReturn === "playing") {
-      this.state = "playing";
-      this.el.overlay.classList.add("hidden");
-      if (window.Game) {
-        Game.setUiBlocked(false);
-        Game.setPaused(false);
-      }
-      this._applyOrientation();
-    } else {
-      this.state = "inventory";
-      this._renderInventory();
-      this._showPanel("inventory");
-    }
+    this._resumeFromScreen();
   },
 
-  // Every priced item, owned or not. An owned one stays on the list
-  // marked as owned rather than disappearing, so a student can see
+  // Every item for sale, owned or not. An owned permanent item stays
+  // listed with a tick rather than disappearing, so a student can see
   // what they already have instead of wondering where it went.
-  //
-  // A row whose art has not been drawn yet is still bought and still
-  // worn. The missing sheet falls back to the dashed placeholder the
-  // same way every other missing image in this game does, which is
-  // one behaviour to explain rather than two.
   _renderShop() {
-    if (!window.Inventory) return;
-    if (!this.el.shopList) return;
+    if (!window.Inventory || !this.el.shopList) return;
 
-    this.el.shopNote.textContent = "";
+    this.el.shopBalance.textContent = String(Inventory.balance());
 
-    const balance = Inventory.balance();
-    this.el.shopBalance.textContent = String(balance);
+    const goods = Inventory.forSale();
+    if (!goods.some((item) => item.id === this.shopSelected)) {
+      this.shopSelected = goods.length ? goods[0].id : null;
+    }
 
     this.el.shopList.innerHTML = "";
 
-    Inventory.forSale().forEach((item) => {
-      const owned = Inventory.owns(item.id);
-      const price = item.price || 0;
-      const affordable = balance >= price;
+    if (!goods.length) {
+      const empty = document.createElement("div");
+      empty.className = "inv-empty";
+      empty.textContent = "Walang paninda ngayon.";
+      this.el.shopList.appendChild(empty);
+    } else {
+      const section = document.createElement("div");
+      section.className = "inv-section";
+      const label = document.createElement("div");
+      label.className = "shell-label";
+      label.textContent = "Mabibili";
+      const grid = document.createElement("div");
+      grid.className = "inv-grid";
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "inv-item" + (owned ? " inv-item-owned" : "");
-      btn.dataset.buyId = item.id;
-      btn.disabled = owned || !affordable;
+      goods.forEach((item) => {
+        const tile = this._tile(item, "shopId", item.id === this.shopSelected);
+        const ownedPermanent = !Inventory.isConsumable(item) && Inventory.owns(item.id);
+        if (ownedPermanent) {
+          tile.classList.add("inv-tile-owned");
+          this._badge(tile, "Nasa iyo", "owned");
+        } else {
+          this._badge(tile, String(item.price || 0), "price");
+        }
+        if (Inventory.isQuest(item) && !ownedPermanent) {
+          tile.classList.add("inv-tile-quest");
+        }
+        grid.appendChild(tile);
+      });
 
-      // A tick on what is already owned, the slot's symbol on what is
-      // not. The row's state is then readable before the price is.
-      btn.appendChild(makeIcon(owned ? "i-check" : this._slotIcon(item.slot)));
+      section.appendChild(label);
+      section.appendChild(grid);
+      this.el.shopList.appendChild(section);
+    }
 
-      const body = document.createElement("div");
-      body.className = "inv-item-body";
-
-      const name = document.createElement("div");
-      name.className = "inv-item-name";
-      name.textContent = item.name;
-
-      const action = document.createElement("span");
-      action.className = "inv-item-action";
-      action.textContent = owned
-        ? "Pag-aari"
-        : affordable
-        ? `Bilhin: ${price}`
-        : `Kulang: ${price}`;
-      name.appendChild(action);
-
-      const desc = document.createElement("div");
-      desc.className = "inv-item-desc";
-      desc.textContent = item.description || "";
-
-      body.appendChild(name);
-      body.appendChild(desc);
-      btn.appendChild(body);
-      this.el.shopList.appendChild(btn);
-    });
+    this._renderShopDetail();
   },
 
-  _onBuyTap(e) {
+  _renderShopDetail() {
+    const el = this.el.shopDetail;
+    const item = Inventory.item(this.shopSelected);
+    if (!item) {
+      this._emptyDetail(el, "Pumili ng paninda para makita dito.");
+      return;
+    }
+
+    el.innerHTML = "";
+    el.appendChild(this._detailHeader(item));
+
+    if (Inventory.isConsumable(item)) {
+      const count = document.createElement("div");
+      count.className = "inv-detail-count";
+      count.textContent = `Bitbit: ${Inventory.count(item.id)} / ${Inventory.maxStack(item)}`;
+      el.appendChild(count);
+    }
+
+    const blocker = Inventory.buyBlocker(item.id);
+    const price = item.price || 0;
+    const btn = this._actionButton(
+      "shell-shop-action",
+      blocker === "Nasa iyo na" ? "i-check" : "i-coins",
+      blocker || `Bilhin: ${price} barya`
+    );
+    btn.dataset.buyId = item.id;
+    btn.disabled = Boolean(blocker);
+    el.appendChild(btn);
+  },
+
+  _onShopTap(e) {
+    const btn = e.target.closest("[data-shop-id]");
+    if (!btn || !window.Inventory || this.state !== "shop") return;
+    this.shopSelected = btn.dataset.shopId;
+    this._note(this.el.shopNote, "");
+    this._renderShop();
+  },
+
+  _onShopAction(e) {
     const btn = e.target.closest("[data-buy-id]");
-    if (!btn || !window.Inventory) return;
+    if (!btn || btn.disabled || !window.Inventory) return;
+    const item = Inventory.item(btn.dataset.buyId);
+    this._note(this.el.shopNote, "");
 
     Inventory.buy(btn.dataset.buyId).then((bought) => {
       if (this.state !== "shop") return;
       this._renderShop();
-      this.el.shopNote.textContent = bought
-        ? ""
-        : "Hindi natuloy ang pagbili.";
+      this._note(
+        this.el.shopNote,
+        bought ? `Binili: ${item ? item.name : ""}` : "Hindi natuloy ang pagbili.",
+        bought
+      );
     });
   },
 
@@ -948,6 +1160,12 @@ const Shell = {
       const panel = this.el.panels[key];
       if (panel) panel.classList.toggle("hidden", key !== name);
     });
+    // Inventory and shop are laid out in two columns and need the
+    // width a phone held sideways actually has; every other panel is a
+    // single column of buttons and keeps the narrow box.
+    if (this.el.box) {
+      this.el.box.classList.toggle("shell-box-wide", name === "inventory" || name === "shop");
+    }
   },
 
   // The label span rather than the button, which now holds an icon.

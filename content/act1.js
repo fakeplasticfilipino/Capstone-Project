@@ -44,7 +44,8 @@
 //     beyond setting its flag and its quest (Kabayo's, below, ends
 //     the scene)
 //   - an item can declare buyFlag, a story flag set in state.flags
-//     the moment it is bought (content/items.js, Mansanas), since
+//     the moment it is bought (content/items.js, "Mansanas para sa
+//     kabayo"), since
 //     Kabayo's gift button has no way to ask Inventory.owns()
 //     directly
 //
@@ -197,7 +198,7 @@ window.ACT_1 = {
               },
             },
           ],
-          // The gift button appears the moment Mansanas is bought
+          // The gift button appears the moment "Mansanas para sa kabayo" is bought
           // (Inventory buy() sets buyFlag — see content/items.js) and
           // stays until it is used. onComplete runs after the flag and
           // the quest are both set, same order endDialogue already
@@ -214,17 +215,16 @@ window.ACT_1 = {
               { speaker: "Kabayo", text: "Neighh!" },
             ],
             completesQuest: "bilhan_mansanas",
-            // The flashback resolving, not the act. Mansanas is a
-            // consumable (content/items.js) — this is the moment it is
-            // actually spent, Inventory.consume, rather than at
-            // purchase, so it is gone (and its +1 max health with it)
-            // once it is actually handed over rather than the instant
-            // it was bought. Then addQuest for the entablado errand
-            // Nanay actually sent him on, still open (its objective's
-            // flag is not set anywhere — see the header), and back to
-            // the story's present.
+            // The flashback resolving, not the act. "Mansanas para sa
+            // kabayo" is a quest item (content/items.js, Block 25), and
+            // this is the moment it is handed over, Inventory.consume.
+            // It is a different item from the Mansanas a student can
+            // eat, so eating apples can never use this one up. Then
+            // addQuest for the entablado errand Nanay actually sent him
+            // on, still open (its objective's flag is not set anywhere,
+            // see the header), and back to the story's present.
             onComplete: () => {
-              if (window.Inventory) Inventory.consume("mansanas");
+              if (window.Inventory) Inventory.consume("mansanas-kabayo");
               addQuest("pumunta_entablado", "Pumunta sa entablado");
               if (window.Acts) Acts.gotoScene("tondo");
             },

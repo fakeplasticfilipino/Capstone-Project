@@ -20,29 +20,31 @@ tracker that grows every session stops being useful.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: after Block 24, an overhaul of how every character's
-picture relates to its hitbox, reported directly by the proponent: a
-hazard (the red glass band in the kutsero scene) did not hurt Macario
-while he was drawn standing on it, and did hurt him once he was drawn
-past it on the right. Measured in pixels before touching code: his
-drawn feet stood about 140px to the right of the 40px box every
-collision read, because the sprite element was a whole scaled sheet
-cell (over 300px wide) pinned to the box's left edge with the
-character drawn in the middle of it. The same gap was behind Blocks 22
-and 23's throw fixes, which is why they kept missing. Rather than add
-a third offset, the engine now has one body model (see CLAUDE.md,
-Bodies, under Decisions on record): an .entity's own box is the body,
-and one function, bodySprite, stands the art's measured feet (a new
-per-sheet footX field) on the middle of it, for the player, NPCs,
-guards and decorations alike. Hazards hurt on any overlap with the
-body; platforms and hide spots still use its centre. The throw leaves
-from the body's front edge, replacing Block 23's offsetWidth reading.
-game.js v32, style.css v20, content/act1.js v17; no new asset, so
-ASSET_VERSION stays at 8. Verified by a new suite section (AM) that
-reads screenshots rather than style values, confirmed to fail 12 ways
-against the Block 23 code and pass against this one: 387 passed, 0
-failed. _dev/verify_new_scene.js, 28 passed, 0 failed. NOT RUN ON A
-PHONE.
+Last updated: after Block 25, an overhaul of the item and inventory
+system for polish, requested directly. Permanent items are worn in
+three slots, Sandata, Anting-anting and Damit. Consumables stack, do
+nothing while carried, and are used with Gamitin (Mansanas heals one
+heart, refused at full health). Quest items are carried until the story
+takes them and are sold only while their quest is open. At the
+proponent's direction the horse's apple is now its own quest item,
+"Mansanas para sa kabayo" (id mansanas-kabayo), separate from the
+Mansanas a student eats. Both screens were rebuilt as wide two-column
+panels (list on the left, the selected item and its one action on the
+right), selecting and acting became two taps, disabled actions say why,
+Tindahan was removed from the inventory and Imbentaryo from the pause
+menu, and guests can now buy and use items in memory, which is what
+lets a guest finish the kutsero scene. No schema change.
+db/reset_test_accounts.sql was rewritten and should be run once, since
+the old "mansanas" id now means a different item. game.js v33,
+style.css v21, shell.js v11, inventory.js v7, content/items.js v6,
+content/act1.js v18. Suite 407 passed, 0 failed;
+_dev/verify_new_scene.js 35 passed, 0 failed. NOT RUN ON A PHONE.
+
+Earlier, Block 24: the body model. Every character's art now stands
+on its logical body (mountBody, bodySprite, a per-sheet footX), hazards
+hurt on overlap, and a pixel-reading suite section (AM) proves the
+drawing and the hitbox agree. Fixed a hazard that hurt only when
+Macario was drawn past it. game.js v32, style.css v20, act1.js v17.
 
 Earlier, Block 23: a correction to Block 22's throw spawn point that
 read the sprite element's offsetWidth. Superseded by Block 24, which
@@ -166,9 +168,9 @@ ownership tables were already there.
 The Act I item bank is seeded. Both tests now serve ten matched items
 and the dashboard reports a real pre, post and gain.
 
-The automated suite has grown to 387 checks, after Block 24 added
-section AM on top of Block 23's 371 (see Blocks done). It is fully
-green: 387 passed, 0 failed, as of Block 24. The one check
+The automated suite has grown to 407 checks, after Block 25 rebuilt the
+inventory and shop sections on top of Block 24's 387 (see Blocks done).
+It is fully green: 407 passed, 0 failed, as of Block 25. The one check
 that used to fail for real here — unequipping a cosmetic outfit restores
 the base walk cycle — still passes, because the base walk sheet it
 asserts against is a real file. See Known problems, missing production
@@ -291,10 +293,13 @@ Blocks done, Blocks 20-21, and CLAUDE.md, Decisions on record, for the
 full reasoning.
 
 Separately, still outstanding: a device pass on the icon work, on
-play-as-guest, the new UI theme, and now Blocks 19 through 24 (for
+play-as-guest, the new UI theme, and now Blocks 19 through 25 (for
 Block 24: walk onto the kutsero hazard from both sides and confirm the
 heart goes only while his feet are on the glass, and that Nanay and
-the placeholder NPCs still look placed where intended), none of
+the placeholder NPCs still look placed where intended; for Block 25:
+open Tindahan and Imbentaryo on the phone and confirm both panels fit
+the screen sideways with Bumalik visible, that tiles are easy to tap,
+and that eating a Mansanas after the glass restores the heart), none of
 which have been seen on a phone yet, only in a headless browser, then
 Block 12's remaining polish, then the pilot. Writing Acts II through
 IV, against the source material this time, is the content work after
@@ -375,9 +380,12 @@ when. A fresh session should trust this over any memory of a chat.
 
     db/db_healthcheck.sql               read-only, run any time
     db/reset_test_accounts.sql          run before any full-flow test.
-                                        Clears inventory and equipment
-                                        as of Block 10, so a retest
-                                        sees the Act I grant happen
+                                        Rewritten in Block 25 (same seven
+                                        tables, no schema change). RUN IT
+                                        ONCE after pulling Block 25: the
+                                        id "mansanas" changed meaning, so
+                                        an old test save resumes owning
+                                        the wrong apple
     db/enrollment_setup.sql             only needed for a fresh database
 
 Supabase project reference: rkfnovfkroajottpmxxq
@@ -1143,6 +1151,58 @@ real content: 28 passed, 0 failed. Third, headless screenshots of
 idle, walk, aim and fire in both facings with the body box outlined.
 NOT RUN ON A PHONE. (COMPLETE)
 
+Block 25, the item and inventory overhaul. Requested for polish, with
+three rules: permanent items worn in Sandata, Anting-anting and Damit;
+consumables like an apple that are used up; Tindahan removed from the
+inventory and Imbentaryo from the pause menu. Clarified before building:
+Gamitin heals and story items cannot be eaten, with the horse's apple as
+its own quest item named "Mansanas para sa kabayo"; consumables stack
+with a count; and the SQL wanted is the test-account reset.
+
+inventory.js was rewritten around counts (item id to quantity) instead
+of a list of owned ids, and around three groups: permanent (equipment,
+cosmetic), consumable and quest. New: use(id), count(id), buyBlocker and
+useBlocker (the reasons shown on disabled buttons), kindLabel and
+effectLines (the Tagalog the screens show), forQuest shop filtering, and
+a single _writeCount that upserts the quantity or deletes at zero.
+Consumables no longer apply an effect while carried. Guests can buy,
+wear and use in memory with nothing written. game.js gained
+Game.health() and Game.heal(n).
+
+shell.js's inventory and shop code was replaced. Both are wide panels
+(#shell-box gets shell-box-wide): header with title, coin chip and
+Bumalik; slots and a tile grid on the left; the selected item's detail
+and its one action on the right. Tapping a tile selects; the action
+button acts. invReturn, shopReturn, _onItemTap and _onBuyTap are gone,
+along with #shell-inventory-open and #shell-shop-open in index.html.
+Three symbols were added (i-apple, i-scroll, i-heart). Item tiles show
+the item's symbol until its img exists, rather than the dashed
+placeholder box; see CLAUDE.md, Icons.
+
+content/items.js now holds Mansanas (consumable, 5 barya, heals 1,
+stacks to 5) and Mansanas para sa kabayo (quest, 5 barya, forQuest
+bilhan_mansanas, buyFlag binilhAngMansanas). Kabayo's gift consumes
+"mansanas-kabayo". No permanent items ship, since none have been
+decided against the source material; the slots render empty.
+
+db/reset_test_accounts.sql rewritten: same seven tables, comments
+updated for stacks, quest items and the changed "mansanas" id. No
+migration.
+
+Versions: game.js v33, style.css v21, shell.js v11, inventory.js v7,
+content/items.js v6, content/act1.js v18. ASSET_VERSION unchanged at 8.
+
+Verified: full suite 407 passed, 0 failed, with sections P, T, T2, U, Z
+and AL's consumable checks rewritten for the new model (two-tap select
+and act, slot labels, stacking to one row with a quantity, the full
+stack and full health refusals, quest items on the shelf only while
+their quest is open, the removed doors) and guest buying and using added
+to AH. _dev/verify_new_scene.js against the real content: both apples on
+the shelf, buying the horse's apple does not buy the food, eating the
+food heals without touching the quest item, and Kabayo still takes the
+right one; 35 passed, 0 failed. Headless screenshots of both panels at
+823 by 412. NOT RUN ON A PHONE. (COMPLETE)
+
 ## Blocks remaining
 
 Block 12, polish. (IN PROGRESS)
@@ -1417,10 +1477,10 @@ The harness lives at _dev/. Run it from the repository root:
     npm install
     node _dev/test.js
 
-387 checks, after Block 24 added section AM (bodies and pixels) on
-top of Block 23's 371 (see Blocks done). Anything other than "0
-failed" is a regression. It last ran 387 passed, 0 failed, in Block
-24 — run
+407 checks, after Block 25 rebuilt sections P, T, T2, U, Z and the
+consumable half of AL, and added guest-inventory checks to AH, on top of
+Block 24's 387 (see Blocks done). Anything other than "0 failed" is a
+regression. It last ran 407 passed, 0 failed, in Block 25 — run
 from a disposable sandbox with the repository staged into it and a
 symlinked global Playwright install, since that session had no shell on
 the device itself; the same command is what to run directly on the device

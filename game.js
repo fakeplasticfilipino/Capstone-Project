@@ -82,8 +82,8 @@ const mobileControls = document.getElementById("mobile-controls");
 const btnPause = document.getElementById("btn-pause");
 // Shop and inventory buttons added in Block 13. They ride the same
 // visibility branch as btnPause below, further gated on window.Inventory
-// so they never appear if that module fails to load — the same guard
-// shell.js applies to their pause-menu counterparts.
+// so they never appear if that module fails to load. Since Block 25
+// they are the only way into either screen from play.
 const btnInventoryMain = document.getElementById("btn-inventory");
 const btnShopMain = document.getElementById("btn-shop");
 
@@ -2758,6 +2758,22 @@ window.Game = {
   // a bonus and a multiplier and never learns what produced them, which is
   // the same line game.js holds against acts.js.
   setEffects,
+
+  // Block 25. Health as the inventory screen needs it: what the student
+  // has, to decide whether an apple would do anything, and a heal, which
+  // is the whole of what a consumable does to the engine. heal refuses at
+  // full health and reports it, so a use is never spent for nothing, the
+  // same rule a heart pickup follows. Numbers in, numbers out: the engine
+  // still never learns that the heal was an apple.
+  health: () => ({ health, max: maxHealth }),
+
+  heal(amount) {
+    const n = Math.max(0, Math.floor(Number(amount) || 0));
+    if (!n || health >= maxHealth) return false;
+    health = Math.min(maxHealth, health + n);
+    renderHearts();
+    return true;
+  },
 
   // Swaps the player's sprite sheets for an outfit's. Awaitable, because
   // the sheets have to load before the swap is visible.

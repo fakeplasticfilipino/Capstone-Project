@@ -148,26 +148,67 @@ const talk = async (page, times) => {
   ok("Tindero opens the shop directly, no dialogue", await visible(page, "#shell-shop"));
   ok("and no dialogue box was opened along the way", !(await visible(page, "#dialogue-box")));
 
-  const shopRow = await page.evaluate(() => {
-    const btn = document.querySelector('[data-buy-id="mansanas"]');
-    return btn ? { text: btn.textContent, disabled: btn.disabled } : null;
-  });
-  ok("Mansanas is listed for sale at 5 barya", shopRow && shopRow.text.includes("Mansanas") && shopRow.text.includes("5"), shopRow);
+  // Block 25: two apples on the shelf. The plain Mansanas is food; the
+  // one the quest needs is its own quest item, and only on the shelf
+  // because bilhan_mansanas is open.
+  const shelf = await page.evaluate(() =>
+    [...document.querySelectorAll("#shell-shop-list .inv-tile")].map((t) => ({
+      id: t.dataset.shopId, text: t.textContent })));
+  console.log("  shelf: " + JSON.stringify(shelf));
+  ok("Mansanas is on the shelf at 5 barya",
+     shelf.some((t) => t.id === "mansanas" && t.text.includes("5")), shelf);
+  ok("so is Mansanas para sa kabayo, at 5 barya",
+     shelf.some((t) => t.id === "mansanas-kabayo" && t.text.includes("para sa kabayo") && t.text.includes("5")), shelf);
 
-  await page.click('[data-buy-id="mansanas"]');
+  await page.click('#shell-shop-list [data-shop-id="mansanas-kabayo"]');
+  await page.waitForTimeout(120);
+  ok("its detail marks it as a quest item",
+     (await page.textContent("#shell-shop-detail")).includes("Pang-misyon"));
+  await page.click("#shell-shop-action");
   await page.waitForTimeout(200);
   const afterBuy = await page.evaluate(() => ({
-    owns: Inventory.owns("mansanas"),
+    owns: Inventory.owns("mansanas-kabayo"),
+    ownsFood: Inventory.owns("mansanas"),
     flag: state.flags.binilhAngMansanas,
     balance: Game.currency(),
   }));
-  ok("Mansanas is now owned", afterBuy.owns, afterBuy);
+  ok("Mansanas para sa kabayo is now owned", afterBuy.owns, afterBuy);
+  ok("buying it did not also buy the plain Mansanas", !afterBuy.ownsFood, afterBuy);
   ok("buyFlag set binilhAngMansanas", afterBuy.flag === true, afterBuy);
   ok("5 barya were spent", afterBuy.balance === balanceAfter - 5, afterBuy);
+
+  // And the plain one, with what is left, to prove it can be eaten
+  // without touching the quest item.
+  await page.click('#shell-shop-list [data-shop-id="mansanas"]');
+  await page.waitForTimeout(120);
+  await page.click("#shell-shop-action");
+  await page.waitForTimeout(200);
+  ok("the plain Mansanas can be bought too",
+     await page.evaluate(() => Inventory.count("mansanas") === 1));
 
   await page.click("#shell-shop-back");
   await page.waitForTimeout(150);
   ok("closing the shop resumes play", (await page.evaluate(() => Shell.state)) === "playing");
+
+  // --- Eat the plain apple from the inventory, hurt from the hazard. ---
+  await page.evaluate(() => { health = Math.max(1, maxHealth - 1); renderHearts(); });
+  await page.click("#btn-inventory");
+  await page.waitForTimeout(150);
+  await page.click('#shell-items [data-item-id="mansanas"]');
+  await page.waitForTimeout(100);
+  await page.click("#shell-inv-action");
+  await page.waitForTimeout(150);
+  const ate = await page.evaluate(() => ({ health, max: maxHealth,
+    food: Inventory.count("mansanas"), quest: Inventory.owns("mansanas-kabayo") }));
+  ok("eating Mansanas heals a heart", ate.health === ate.max, ate);
+  ok("and leaves the horse's apple alone", ate.food === 0 && ate.quest === true, ate);
+  ok("the quest item offers nothing to do from the inventory",
+     await page.evaluate(() => {
+       document.querySelector('#shell-items [data-item-id="mansanas-kabayo"]').click();
+       return !document.getElementById("shell-inv-action");
+     }));
+  await page.click("#shell-inventory-back");
+  await page.waitForTimeout(150);
 
   // --- Back to Kabayo: the gift button, then the memory ends. ---
   await walkTo(page, 280);
@@ -198,7 +239,7 @@ const talk = async (page, times) => {
     entabladoFlag: state.flags.nasaEntablado,
     objTotal: Acts.objectivesFor(1).length,
     objDone: Acts.countDone(1),
-    ownsMansanas: Inventory.owns("mansanas"),
+    ownsMansanas: Inventory.owns("mansanas-kabayo"),
     maxHealth: maxHealth,
   }));
   ok("the memory ends back in tondo", afterGift.room === "tondo", afterGift);
@@ -209,7 +250,7 @@ const talk = async (page, times) => {
   ok("its objective's flag is not set — nothing completes it yet", afterGift.entabladoFlag !== true, afterGift.entabladoFlag);
   ok("Act I now has four objectives, three of them done", afterGift.objTotal === 4 && afterGift.objDone === 3, afterGift);
   ok("Mansanas is consumed, not kept, once it is actually given away", afterGift.ownsMansanas === false, afterGift);
-  ok("and its +1 max health goes with it", afterGift.maxHealth === 3, afterGift);
+  ok("and max health is still its base three, since no apple ever raised it", afterGift.maxHealth === 3, afterGift);
 
   // The flashback resolving must NOT end Act I — it is a memory within
   // the act, not the act's own ending. Confirmed two ways: status stays

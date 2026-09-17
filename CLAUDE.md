@@ -92,9 +92,10 @@ Built forward from that reset since, one verified passage at a time
 is now two scenes, tondo and a kutsero flashback, with a fourth
 objective (pumunta_entablado) that keeps the act open once the
 flashback resolves, since the flashback is a memory within the act, not
-the act's own ending. content/items.js correspondingly holds one real
-item, Mansanas (kind: "consumable" as of Block 22 — see Item data
-format, below). See TRACKER.md, Right now and Blocks done (Blocks
+the act's own ending. content/items.js correspondingly holds two real
+items as of Block 25: Mansanas, a consumable a student eats to heal,
+and "Mansanas para sa kabayo", the quest item Kabayo takes (see Item
+data format, below). See TRACKER.md, Right now and Blocks done (Blocks
 19-23), for exactly what is built, what still has no content (the
 entablado itself, a guard, anything past the flashback), and for the
 two engine bugs Blocks 22-23 fixed along the way that are unrelated to
@@ -154,11 +155,13 @@ checks window.Assessment before calling it, and the flow collapses to
 playing then completed without it.
 
 Inventory, in inventory.js. Owns player_inventory and player_equipment and
-is the only file that reads or writes either, and owns the shop. It reduces the student's
-equipped items to plain numbers and hands them to the engine through
-Game.setEffects, so game.js never learns that an item exists. Optional the
-same way assessment.js is: acts.js checks window.Inventory before calling
-it and shell.js hides the inventory button without it.
+is the only file that reads or writes either, and owns the shop's rules
+(what is for sale, what can be bought, what can be used). It reduces the
+student's worn items to plain numbers and hands them to the engine through
+Game.setEffects, and a consumable's heal through Game.heal, so game.js
+never learns that an item exists. Optional the same way assessment.js is:
+acts.js checks window.Inventory before calling it, and game.js and
+shell.js keep both the inventory and shop buttons hidden without it.
 
 Shell, in shell.js. Owns every screen that is not the game world: title,
 pause, settings, inventory and logout. Unlike assessment.js it is NOT
@@ -220,6 +223,8 @@ game.js exposes window.Game and nothing else:
     stats()              { damageTaken, detections, playMs }, a copy
     resetStats()         called by Acts.enterAct, and by nothing else
     setEffects(obj)      { maxHealthBonus, projectileSpeedMult }
+    health()             { health, max }, a copy; Block 25
+    heal(n)              false and no change at full health; Block 25
     setOutfit(sheets)    awaitable; null restores the base sprites
     currency()
     addCurrency(n)
@@ -361,8 +366,8 @@ Game.onShopRequest(fn) is the facade call shell.js registers a single
 listener with, the same shape Inventory.onChange(fn) already uses in
 the opposite direction: game.js knows an NPC just asked for the shop
 (opensShop, pressed) but does not know what a shop is or how to draw
-one; shell.js knows how to open one (Shell._openShop("playing"), the
-same direct-open path #btn-shop uses) but has no reason to watch every
+one; shell.js knows how to open one (Shell._openShop(), the same
+path #btn-shop uses) but has no reason to watch every
 NPC interaction for one that wants it. Registered once, in shell.js's
 init, alongside Inventory.onChange, since _openShop is a no-op without
 window.Inventory anyway. This is not the one documented exception to
@@ -378,51 +383,60 @@ low-end phone would buy nothing. Only ownership is stored.
 
     {
       id, name, description,
-      kind: "equipment" | "cosmetic" | "consumable",
-      slot: "weapon" | "accessory" | "outfit",   omitted for a consumable
+      kind: "equipment" | "cosmetic" | "consumable" | "quest",
+      slot: "weapon" | "accessory" | "outfit",   equipment and cosmetic
+                                                 only; shown as Sandata,
+                                                 Anting-anting, Damit
       price,                                     in-game currency; 0 is
                                                  not for sale
-      img,
+      img,                                       picture on the tiles
+      icon: "i-apple",                           optional; symbol shown
+                                                 until img exists
       grantedOnAct: 1,                           optional; handed over on
                                                  entering that act
-      effect: { projectileSpeedMult: 1.5 }       equipment or consumable
-            | { maxHealthBonus: 1 }
+      effect: { projectileSpeedMult: 1.5 }       equipment only; applies
+            | { maxHealthBonus: 1 }              while worn
       sheets: { walk: {...} }                    cosmetic only; any of
                                                  idle, walk, dead
+      use: { heal: 1 },                          consumable only; applied
+                                                 once by Gamitin
+      maxStack: 5,                               consumable only; default 5
+      forQuest: "questId",                       quest only; on sale only
+                                                 while that quest is open
       buyFlag: "someFlag"                        optional; see below
     }
 
-kind: "consumable" (Block 22) is the one kind with no slot at all: there
-is nothing to equip it into, so Inventory.equip()/toggle() refuse one
-outright rather than writing it into an equipment row under a slot it
-does not have. Its effect, if it has one, applies for as long as it is
-simply owned (Inventory.effects() sums it in alongside whatever is
-actually equipped) — there is no equip step for a consumable to apply
-it through — and stops the moment it is actually used up,
-Inventory.consume(id): an optimistic ownedIds removal plus a
-player_inventory delete, rolled back on a failed write the same way
-buy() rolls back its own optimistic write. Content calls consume() at
-the moment the item is genuinely spent, not at purchase — Mansanas
-(content/items.js), given to Kabayo (content/act1.js), is the first
-one. Buying one still goes through buy() exactly like equipment or a
-cosmetic does; only the effect timing and the lack of a slot differ. A
-consumable does not stack — buy() already refuses a second purchase of
-anything already owned, consumable or not — so "unit" here means one
-unit ever, not a counted quantity; the DB's own quantity column on
-player_inventory (used, at 1, by every kind) is there for a future
-stacking model this project does not build.
+There are three groups, and the inventory screen, the shop and
+inventory.js all speak in them.
+
+Permanent items are kind "equipment" (slot weapon or accessory) or kind
+"cosmetic" (slot outfit). Bought or granted once, kept, and worn in the
+slot they name, one item per slot. Equipment's effect applies only while
+worn. A cosmetic carries sheets and never an effect, which is what makes
+it cosmetic. The slot ids are what player_equipment.slot stores and are
+never renamed; Sandata, Anting-anting and Damit are the labels.
+
+Consumables are kind "consumable". No slot, so equip and toggle refuse
+one. They stack: buying another adds to player_inventory.quantity on the
+same row, up to maxStack. Carrying one does nothing. Gamitin
+(Inventory.use) applies its use once and spends one; a use that would do
+nothing, a heal at full health, is refused and spends nothing, the same
+rule a heart pickup follows. The last unit's row is deleted rather than
+left at quantity 0. use.heal is the only use built.
+
+Quest items are kind "quest". No slot, no use, never more than one. They
+exist to be handed over: content calls Inventory.consume(id) at that
+moment (Kabayo's gift takes "mansanas-kabayo"). A quest item with
+forQuest is listed in the shop only while that quest is logged and not
+done, so it is neither a spoiler before the quest nor a trap after it.
 
 buyFlag names a story flag, in state.flags rather than in the
 ownership table inventory.js otherwise owns entirely, set the moment
-the item is bought (Inventory.buy, inventory.js) and not before —
-granting via grantedOnAct does not set it. It exists because a gift's
-requiresFlag (Act data format, above) can only ever read state.flags,
-never call Inventory.owns() directly, and nothing before Mansanas
-(content/items.js, Block 20) needed a purchase to be legible to the
-gift system. Optimistic and rolled back together with the ownership
-row on a failed write, and set only once: a flag already true from an
-earlier session is left alone rather than re-marked dirty for
-nothing.
+the item is bought (Inventory.buy) and not before; granting via
+grantedOnAct does not set it. It exists because a gift's requiresFlag
+(Act data format, above) can only ever read state.flags, never call
+Inventory.owns() directly. Optimistic and rolled back together with the
+ownership row on a failed write, and set only once.
 
 A cosmetic's sheets take the sprite sheet shape below. An outfit replaces
 whichever of the three it declares and leaves the rest alone, so a skin
@@ -437,24 +451,20 @@ it makes the throw both quicker and more frequent from one lever.
 Effects are deliberately small and few. A faster projectile and one extra
 heart are the whole design brief; anything that needs a balance spreadsheet
 is out of scope. Bonuses add and multipliers multiply, so an item with
-neither contributes nothing, which is what makes a cosmetic a cosmetic.
-
-Cosmetics are period-correct outfits and change the player sprite only.
-They never affect gameplay, and carry no effect object at all, which is
-what makes them cosmetic.
+neither contributes nothing.
 
 The outfit art does not exist yet. A missing sheet falls back to the
 dashed placeholder box naming the file it wanted, exactly like every other
-missing image in this project, including Idle.png and Dead.png today. An
-outfit with no art is still bought, still worn, and still shown that way.
-There is deliberately no gate hiding it until the art lands: one behaviour
-for a missing image is easier to explain than two, and the placeholder is
-how the artist finds out what to draw.
+missing sprite in this project. An outfit with no art is still bought,
+still worn, and still shown that way. The item's own tile picture (img)
+is the one exception to the placeholder rule; see Icons.
 
 An item id is a text key with no foreign key behind it. An item deleted
 from the content file leaves an orphan ownership row that inventory.js
 ignores, which is the correct failure: a student's save is not corrupted by
-an edit to a content file.
+an edit to a content file. For the same reason an id is never reused for a
+different item. Block 25 had to break that once, when "mansanas" stopped
+meaning the horse's apple; see Decisions on record.
 
 ## Icons
 
@@ -503,6 +513,15 @@ identical marks would be decoration; the letters are also what lets a
 teacher say "pindutin ang B" out loud. The text size choices get the
 same letter at three sizes, which is the one icon in this game that
 carries its meaning without a word beside it.
+
+An item's picture on the inventory and shop tiles is the one missing
+image that does NOT become the dashed placeholder box. A tile is too small
+for a box that names a file, and a grid of those would teach nothing, so
+the tile shows the item's symbol (its icon field, else its slot's symbol,
+a scroll for a quest item, else the bag) and the img loads over it when
+the file exists. The filename is kept in the tile's title attribute so the
+artist can still find out what is owed. Sprites, NPCs and outfit sheets
+keep the placeholder box.
 
 A button whose label is written in JavaScript still declares an empty
 .lbl span in index.html. Adding an icon to a button with no span was
@@ -893,6 +912,7 @@ than a reward. Unequipping clamps health down to the new maximum.
 Equipment effects derive from player_equipment and are not written into
 save_state. There is no second copy of the truth to fall out of step.
 
+(Superseded by Block 25, below: each screen now has exactly one door.)
 The inventory and shop screens were reached from pause and from nowhere
 else through Block 12. Block 13 added a second door: #btn-inventory and
 #btn-shop, next to #btn-pause in the main UI rather than in the mobile
@@ -1128,7 +1148,7 @@ against the REAL (not fixture-routed) content, now risks auto-completing
 the act the instant it loads, because the real Act I has only the one
 objective and that flag is already true.
 
-Block 13 gave inventory and shop their own main-UI buttons, #btn-inventory
+(Superseded by Block 25, below.) Block 13 gave inventory and shop their own main-UI buttons, #btn-inventory
 and #btn-shop, next to #btn-pause, so either screen is one tap from
 gameplay instead of two or three through the pause menu. Both panels kept
 their original pause-menu doors too; nothing about the Block 10/11 flow was
@@ -1671,6 +1691,8 @@ own z-index: 2, one above #player's, so an overlap that happens
 anyway (Macario stepping back into his own throw, say) is still never
 hidden behind him.
 
+(The consumable model in the next paragraph is superseded by Block 25,
+below: consumables no longer apply an effect while carried.)
 Mansanas (content/items.js) was kind: "equipment", slot: "accessory" —
 buyable, wearable, ownership permanent once bought. On direct
 feedback: it should be "a unit type... rather than something you own
@@ -1829,6 +1851,75 @@ with CSS animations frozen so a bobbing pickup does not read as part
 of him. A check written against style values would have passed the
 old model, which is the lesson Block 23's assertion already taught.
 
+Inventory and shop (Block 25). Requested as an overhaul for polish, with
+three explicit rules: permanent items worn in Sandata, Anting-anting and
+Damit; consumables like an apple that are used up instead; and Tindahan
+removed from the inventory screen and Imbentaryo removed from the pause
+menu.
+
+One door each. The inventory opens only from #btn-inventory, the shop
+only from #btn-shop or an opensShop NPC. With the pause-menu and
+inventory-to-shop doors gone, shell.js no longer tracks which door was
+used (invReturn and shopReturn are deleted): opening pauses the world and
+back resumes it, always.
+
+Both are wide panels with the same anatomy, because a phone held sideways
+has width and no height: a header with the title, a coin balance chip and
+Bumalik (so back never scrolls away), then a list on the left and the
+selected item on the right. The inventory list is the three slots and one
+grid of owned tiles, ordered permanent, consumable, quest, with a corner
+badge (Nakasuot, a count, Misyon) instead of three headed sections, which
+did not fit the height. The detail pane shows the picture, the name, a
+kind chip, the description, what the item does in Tagalog
+(Inventory.effectLines) and the one action the item allows: Isuot or
+Tanggalin, Gamitin, or for a quest item a line of text and no button. The
+shop's pane carries Bilhin with the price. A disabled action says why on
+the button itself (Kulang na barya, Nasa iyo na, Puno ang supot, Buo ang
+iyong puso) rather than just greying out.
+
+Selecting and acting are two taps, on purpose. Before, tapping an
+inventory row wore it and tapping a shop row bought it. A Grade 8
+student tapping to find out what something is must not eat the last
+apple or spend their barya doing so, and the detail pane is where what
+will happen is explained before it happens.
+
+Consumables do their one thing when used, and nothing while carried.
+Block 22's "+1 max health while owned" is gone: with stacking, carrying
+five apples would have meant five extra hearts and made hoarding the
+point. Stacks are capped (default 5) for the same reason. Heal is
+refused at full health rather than wasted. A heal is applied to the
+engine before its write and is not undone if the write fails; the unit
+is put back instead, since a heart that reappears and then vanishes
+reads as damage.
+
+Two apples, not one, at the proponent's direction. "mansanas" is now the
+consumable a student eats. The horse's apple is its own quest item,
+"mansanas-kabayo" (Mansanas para sa kabayo), so eating apples can never
+use up the one the quest needs, and the screen says plainly which one
+is the errand. Reusing the "mansanas" id for a different item breaks the
+never-reuse rule above: a test save that bought the old apple resumes
+owning the food apple with binilhAngMansanas set. No study account has
+played the kutsero scene, so db/reset_test_accounts.sql was the whole
+remedy; the rule stands for every id after this.
+
+Guests get the whole system in memory. Every inventory write path used
+to return early without currentUserId, which meant a guest could never
+buy the horse's apple and could not finish the kutsero scene. Now
+inventory.js distinguishes "can play" (signed in or guest) from "can
+write" (signed in), and a guest's items vanish with the tab like the rest
+of a guest's play.
+
+No schema change. Stacks use player_inventory.quantity and its update
+policy, both in schema v3, and reset_my_play_data() already deletes the
+row whatever it holds. The engine gained Game.health() and Game.heal(n),
+numbers in and out, so game.js still never learns what an item is.
+
+No permanent items ship. The catalogue's equipment was cleared with the
+Act I reset for want of source material, and nothing in this block puts
+invented equipment back; the slots render empty and say so. The harness
+fixture carries two equipment items, two outfits, a consumable and a
+quest item, so every path is covered regardless.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -1976,6 +2067,17 @@ for art centred the way Macario's and Nanay's are, and wrong for art
 drawn off-centre, where the character will visibly stand to one side
 of his hitbox. Run measure-sprite.js on every new sheet and paste all
 three numbers, not just the two vertical ones.
+
+Tile clicks and action clicks are separate listeners on separate
+containers (the list and the detail pane) in both panels. A new action
+added to a tile directly would bring back the one-tap purchase this
+design removed. Put actions in the detail pane.
+
+An item's count lives in Inventory.counts, not in a list of ids. Code
+that asks "is it owned" uses Inventory.owns(id); code that needs how
+many uses Inventory.count(id). Writing a count goes through _writeCount,
+which deletes at zero, because a row left at quantity 0 reads as owned
+to anything that only checks the row exists.
 
 ## Accounts
 
