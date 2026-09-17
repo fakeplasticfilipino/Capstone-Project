@@ -1067,8 +1067,11 @@ html, body {
   background: #e53935;
 }
 
+/* Two filter functions rather than four (Block 36): the four-stage version
+   read no better and a filter is re-run every frame it is on, five enemies
+   at a time, on the phone this is drawn for. */
 .enemy-windup .sprite {
-  filter: brightness(1.6) sepia(1) saturate(5) hue-rotate(-25deg);
+  filter: brightness(1.7) saturate(3);
 }
 
 .enemy-hit .sprite {

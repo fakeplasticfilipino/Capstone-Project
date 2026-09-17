@@ -512,6 +512,9 @@ window.ACT_1 = {
             { speaker: "Maryam", text: "Ano iyon?" },
           ],
           onComplete: async () => {
+            // Fetched while the love scene is still being read, so the
+            // swap when the fight starts is instant (Block 36).
+            prepareMusic("Assets/Prefab/Intense.mp3");
             setCutscene(true);
             turnPlayer(1); // toward the sound
             showDecoration("muslim", true);

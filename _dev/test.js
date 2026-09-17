@@ -3689,6 +3689,90 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAT. The frame does no work it does not have to (Block 36)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
+
+    // Standing still, the loop must not write to the DOM at all: every
+    // write here costs a style recalculation and a layout on the phone
+    // this is built for, sixty times a second, for nothing.
+    const idle = await page.evaluate(() => new Promise((resolve) => {
+      const counts = { label: 0, playerLeft: 0, playerBottom: 0, camera: 0, layoutReads: 0 };
+      const lbl = document.querySelector("#btn-interact .lbl");
+      const text = Object.getOwnPropertyDescriptor(Node.prototype, "textContent");
+      Object.defineProperty(lbl, "textContent", {
+        configurable: true, get: text.get,
+        set(v) { counts.label++; text.set.call(this, v); },
+      });
+      const styleOf = (el) => {
+        const decl = el.style;
+        ["left", "bottom", "transform"].forEach((prop) => {
+          const key = el.id === "player" ? (prop === "left" ? "playerLeft" : "playerBottom") : "camera";
+          const original = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, prop);
+          if (!original) return;
+          Object.defineProperty(decl, prop, {
+            configurable: true,
+            get() { return original.get.call(this); },
+            set(v) { counts[key]++; original.set.call(this, v); },
+          });
+        });
+      };
+      styleOf(document.getElementById("player"));
+      styleOf(document.getElementById("world"));
+      const cw = Object.getOwnPropertyDescriptor(Element.prototype, "clientWidth");
+      Object.defineProperty(Element.prototype, "clientWidth", {
+        configurable: true,
+        get() { counts.layoutReads++; return cw.get.call(this); },
+      });
+
+      keysPressed["a"] = false; keysPressed["d"] = false;
+      posX = 300; posY = floorHeightAt(posX); velY = 0;
+      let frames = 0;
+      const tick = () => {
+        if (++frames < 90) return requestAnimationFrame(tick);
+        Object.defineProperty(Element.prototype, "clientWidth", { configurable: true, get: cw.get });
+        resolve({ counts, frames });
+      };
+      requestAnimationFrame(tick);
+    }));
+    ok("standing still writes no button label", idle.counts.label === 0, idle.counts);
+    ok("and does not move the player element", idle.counts.playerLeft === 0 && idle.counts.playerBottom === 0, idle.counts);
+    ok("and does not rewrite the camera", idle.counts.camera === 0, idle.counts);
+    ok("and never reads the layout back mid-frame", idle.counts.layoutReads === 0, idle.counts);
+
+    // The world element is the scene's width, not a fixed 4400: everything
+    // layered on it is painted and held at that width.
+    const widths = await page.evaluate(() => {
+      loadScene("tondo");
+      const tondo = { world: world.style.width, scene: WORLD_WIDTH };
+      loadScene("misyon");
+      return { tondo, misyon: { world: world.style.width, scene: WORLD_WIDTH },
+               tiles: document.getElementById("skyline").querySelectorAll(".skyline-tile").length,
+               nightTiles: document.getElementById("skyline-night").querySelectorAll(".skyline-tile").length };
+    });
+    ok("the world is exactly as wide as the scene",
+       widths.tondo.world === widths.tondo.scene + "px" && widths.misyon.world === widths.misyon.scene + "px", widths);
+    ok("the backdrop is tiled across that width", widths.tiles > 0, widths);
+    ok("and the night layer is not built until a scene turns to night", widths.nightTiles === 0, widths);
+
+    // One element per track, kept across a swap, so coming back to Calm
+    // does not download it again.
+    const music = await page.evaluate(async () => {
+      startMusic();
+      const first = musicEl;
+      setMusic("Assets/Prefab/Intense.mp3");
+      const second = musicEl;
+      setMusic(null);
+      return { calmKept: musicEl === first, swapped: second !== first,
+               tracks: musicEls.size, src: musicEl && musicEl.src };
+    });
+    ok("swapping the track swaps the element", music.swapped, music);
+    ok("and swapping back reuses the one already fetched",
+       music.calmKept && music.tracks === 2 && /Calm\.mp3/.test(music.src), music);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

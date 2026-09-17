@@ -19,6 +19,25 @@
 
 const world = document.getElementById("world");
 const viewport = document.getElementById("viewport");
+
+// Block 36. The camera needs the viewport's width every frame, and reading
+// it back from the layout after the frame's own writes forced the browser
+// to lay the whole world out again, every frame, to answer. It changes
+// only when the window or the phone's orientation does, so it is measured
+// then and remembered.
+let viewportWidth = 0;
+
+function measureViewport() {
+  viewportWidth = viewport.clientWidth || viewportWidth;
+  return viewportWidth;
+}
+
+window.addEventListener("resize", () => {
+  measureViewport();
+});
+window.addEventListener("orientationchange", () => {
+  setTimeout(measureViewport, 200); // after the browser has settled the new size
+});
 const player = document.getElementById("player");
 
 const dialogueBox = document.getElementById("dialogue-box");
@@ -49,7 +68,13 @@ function setLabel(el, text) {
     span.className = "lbl";
     el.appendChild(span);
   }
-  (span || el).textContent = text;
+  const target = span || el;
+  // Only when it actually changes (Block 36). The game loop writes the
+  // interact button every frame, and writing the same word back still
+  // dirties the element, which cost a style recalculation and a layout
+  // sixty times a second on a phone that has neither to spare.
+  if (target.textContent === text) return;
+  target.textContent = text;
 }
 
 // Points an existing button's icon at a different symbol. Used where
@@ -417,6 +442,15 @@ function loadScene(sceneId) {
     .getElementById("ground-tiles")
     .classList.toggle("ground-hidden", scene.ground === false);
 
+  // Block 36. The world element was a fixed 4400px whatever the scene
+  // actually was, so the backdrop, the ground strip and every layer over
+  // them were painted and held in memory at that width even in a room one
+  // screen wide. Sized to the scene instead, which is the same number the
+  // camera already clamps to. Set BEFORE the backdrop is built, because
+  // that reads the world's width to know how many tiles to lay.
+  world.style.width = WORLD_WIDTH + "px";
+  measureViewport();
+
   buildSkylineTiles();
   buildNpcs(token);
   buildDecorations(token);
@@ -494,7 +528,11 @@ function unloadAct() {
 // no resize handling anywhere in this engine; see CLAUDE.md) and pushed to
 // actElements, so unloadScene removes them with everything else the scene
 // made.
-function buildSkylineTiles() {
+// Block 36. The night layer is built only when a scene actually turns to
+// night (runNightTransition), rather than at every scene load. It is
+// invisible until then, and a second full set of backdrop tiles is a
+// second set of textures for a phone to hold for nothing.
+function buildSkylineTiles(layerIds) {
   const backdrop = currentScene && currentScene.backdrop;
 
   // Block 34. A scene's own backdrop is one painting of one room, not a
@@ -519,7 +557,7 @@ function buildSkylineTiles() {
     return;
   }
 
-  ["skyline", "skyline-night"].forEach((id) => {
+  (layerIds || ["skyline"]).forEach((id) => {
     const layer = document.getElementById(id);
     if (!layer) return;
     const height = layer.clientHeight;
@@ -1271,6 +1309,11 @@ let currentRoom = "road"; // the current scene id, persisted as-is
 let authGated = true; // true until the player is logged in
 let inDialogue = false;
 let cutscenePlaying = false; // locks movement for the whole stage sequence
+// What was last written to the player element, so an unmoved frame writes
+// nothing (Block 36).
+let lastDrawnX = null;
+let lastDrawnY = null;
+let lastCameraX = null;
 
 // Raised while acts.js or assessment.js has a full-screen overlay up.
 // Kept separate from cutscenePlaying so a trivia card or a test does
@@ -1645,6 +1688,7 @@ async function runNightTransition() {
   blackout.classList.add("visible");
   await wait(900); // fade to black
 
+  buildSkylineTiles(["skyline-night"]); // built now rather than at every load
   skylineNight.classList.add("visible"); // swap while hidden behind black
   markDirty();
 
@@ -2757,7 +2801,10 @@ function updateEnemies(step, now) {
 
     const telegraph = enemy.nextSwingAt && enemy.nextSwingAt - now <= ENEMY_TELEGRAPH_MS && now < enemy.nextSwingAt;
     enemy.el.classList.toggle("enemy-windup", Boolean(telegraph));
-    enemy.el.style.left = enemy.pos + "px";
+    if (enemy.pos !== enemy.drawnPos) {
+      enemy.el.style.left = enemy.pos + "px";
+      enemy.drawnPos = enemy.pos;
+    }
     if (enemy.animation && enemy.spriteEl) {
       enemy.spriteEl.style.transform = dir < 0 ? "scaleX(-1)" : "";
     }
@@ -2858,6 +2905,10 @@ let audioPrefs = { music: true, sfx: true };
 
 let musicEl = null;
 let musicWanted = false; // the world has been entered; music belongs on
+// Block 36. One element per track, kept. Dropping the old one on every
+// swap meant coming back to Calm downloaded two megabytes again, on a
+// phone, in the middle of play.
+const musicEls = new Map();
 
 let audioCtx = null;
 const sfxBuffers = {}; // name -> AudioBuffer, once decoded
@@ -2884,16 +2935,32 @@ function tryPlay(el) {
   }
 }
 
-// Swaps the track. The old element is dropped rather than re-pointed, so
-// a track that is still buffering cannot finish loading into the new one.
+function musicElementFor(src) {
+  let el = musicEls.get(src);
+  if (!el) {
+    el = assetAudio(src, true);
+    el.volume = MUSIC_VOLUME;
+    musicEls.set(src, el);
+  }
+  return el;
+}
+
+// Fetches a track without playing it, so a swap at a dramatic moment is
+// not the moment the phone starts downloading two megabytes. Content calls
+// this when a scene that will need the track is entered.
+function prepareMusic(src) {
+  if (!src) return;
+  musicElementFor(src);
+}
+
+// Swaps the track. The one playing is paused and kept, so switching back
+// is instant and costs no network.
 function setMusic(src) {
   const next = src || MUSIC_SRC;
   if (next === musicSrc) return;
+  if (musicEl) musicEl.pause();
   musicSrc = next;
-  if (musicEl) {
-    musicEl.pause();
-    musicEl = null;
-  }
+  musicEl = null;
   syncMusic();
 }
 
@@ -2908,10 +2975,7 @@ function syncMusic() {
     if (musicEl && !musicEl.paused) musicEl.pause();
     return;
   }
-  if (!musicEl) {
-    musicEl = assetAudio(musicSrc, true);
-    musicEl.volume = MUSIC_VOLUME;
-  }
+  musicEl = musicElementFor(musicSrc);
   if (musicEl.paused) tryPlay(musicEl);
 }
 
@@ -3232,14 +3296,26 @@ function gameLoop(now) {
   updateAnimFrame(now);
   npcAnimators.forEach((animator) => animator.update(now));
 
-  player.style.left = posX + "px";
-  player.style.bottom = posY + "px";
+  // Writing the same pixel back still invalidates the element, so both
+  // are written only when they move (Block 36). Standing still, reading
+  // dialogue or in a shop, this is the difference between a frame that
+  // lays out and one that does not.
+  if (posX !== lastDrawnX) {
+    player.style.left = posX + "px";
+    lastDrawnX = posX;
+  }
+  if (posY !== lastDrawnY) {
+    player.style.bottom = posY + "px";
+    lastDrawnY = posY;
+  }
 
   // Camera: centre the player, clamped to world bounds.
-  const viewportWidth = viewport.clientWidth;
-  let cameraX = posX - viewportWidth / 2 + PLAYER_WIDTH / 2;
+  let cameraX = posX - (viewportWidth || measureViewport()) / 2 + PLAYER_WIDTH / 2;
   cameraX = Math.max(0, Math.min(cameraX, WORLD_WIDTH - viewportWidth));
-  world.style.transform = `translateX(${-cameraX}px)`;
+  if (cameraX !== lastCameraX) {
+    world.style.transform = `translateX(${-cameraX}px)`;
+    lastCameraX = cameraX;
+  }
 
   // Interact and gift buttons follow whichever NPC or stage is nearby.
   if (!inDialogue && !cutscenePlaying && !authGated && !uiBlocked) {

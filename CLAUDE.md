@@ -2342,6 +2342,38 @@ the file was named, and his last line calls Maryam a puta. That is the
 script as given, and the game is played by Grade 8 students in a
 classroom with a teacher present.
 
+Performance (Block 36). Reported as the game getting laggy once the
+entablado and the fight were in. Measured rather than guessed, with
+Chrome's own counters (layout count, style recalculation, script time)
+over four seconds of play at a sixth of this machine's speed, and with
+the DOM writes the loop makes per frame counted directly.
+
+What it found, per frame: the interact button's label was written every
+frame whether or not the word changed, which dirties the element; the
+camera read viewport.clientWidth back from the layout after the frame's
+own writes, which forces the browser to lay the whole world out again to
+answer; the player's left and bottom and the camera transform were
+written every frame even when nothing had moved; the world element was a
+fixed 4400px whatever the scene was, so the backdrop, ground and every
+layer over them were painted at that width in a room one screen wide;
+the night backdrop was tiled at every scene load although no shipped
+scene turns to night; and every music swap threw the old element away, so
+coming back to Calm downloaded two megabytes again.
+
+Standing in tondo went from 243 layouts in four seconds to none at all,
+walking from 482 to 242, and the five-enemy fight from 604 to 301, with
+layout time down by two thirds in each. Section AT holds those where
+they are by counting the writes rather than by timing anything, since a
+timing check on a build machine says nothing about a phone.
+
+What was NOT done, and why: paint and raster could not be measured
+honestly here (a headless browser's compositor is not a phone's), so
+nothing was changed on a guess about them. If the phone is still slow
+after this, the next levers in order are the size of the backdrop art,
+the mirrored tiles' paint area, and the grayscale filter in the
+flashback, and each should be measured on the device before being
+touched.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -2521,6 +2553,13 @@ the next frame.
 
 A new sound file is an Assets/ change like any other: bump ASSET_VERSION,
 because every audio load goes through assetUrl too.
+
+The game loop runs sixty times a second on a phone chosen for being
+slow, so anything added to it writes only when the value changes, and
+nothing in it reads a layout property back (clientWidth, offsetWidth,
+getBoundingClientRect). A single read after a write forces a full layout
+of a world thousands of pixels wide, every frame. Measure the viewport
+once per scene load instead, as measureViewport does.
 
 An item's count lives in Inventory.counts, not in a list of ids. Code
 that asks "is it owned" uses Inventory.owns(id); code that needs how

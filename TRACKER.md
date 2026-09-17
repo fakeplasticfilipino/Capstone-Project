@@ -22,11 +22,11 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 18 Sep 2026, after Block 35 (the moro-moro on the
-entablado: the love scene, the confrontation and the first fight). Blocks 22 to 29 were audited against GitHub main
-(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 35
+Last updated: 18 Sep 2026, after Block 36 (performance: the loop's
+per-frame waste, measured and cut). Blocks 22 to 29 were audited against GitHub main
+(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 36
 were written to the device folder; whether they are pushed is not
-recorded. The suite was run against the device folder's files: 515
+recorded. The suite was run against the device folder's files: 524
 passed, 0 failed; _dev/verify_new_scene.js 97 passed, 0 failed.
 
 ## Start here
@@ -99,18 +99,18 @@ default. Intense.mp3 is in Assets/Prefab and unused on purpose.
 
 Current versions, which index.html must match on every push:
 
-    style.css v26        game.js v42          shell.js v13
+    style.css v27        game.js v43          shell.js v13
     inventory.js v8      acts.js v10          assessment.js v3
-    content/act1.js v25  content/items.js v7  content/act2-4.js v1
+    content/act1.js v26  content/items.js v7  content/act2-4.js v1
     ASSET_VERSION 14 (in game.js)
 
-Nothing from Blocks 14 to 35 has been seen on a phone. Everything in
+Nothing from Blocks 14 to 36 has been seen on a phone. Everything in
 that range is verified headlessly only. A device pass is owed before
 the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 35 are built. Blocks 22 to 35 were all this session, each
+Blocks 1 to 36 are built. Blocks 22 to 36 were all this session, each
 on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -142,8 +142,11 @@ on direct feedback from the proponent:
         own backdrop, and back out; scene backdrop, ground and exits
     35  the moro-moro: jump poses; scripted scenes (playDialogue,
         moveDecoration and the rest); combat with five enemies
+    36  performance: no layout read or needless DOM write per frame, the
+        world sized to its scene, night tiles built only when needed,
+        music tracks kept rather than refetched
 
-Push Blocks 30 to 35 together, with every file below in the same
+Push Blocks 30 to 36 together, with every file below in the same
 commit, or the ?v=N numbers will not match: game.js, acts.js, shell.js,
 inventory.js, style.css, index.html, content/act1.js, content/items.js,
 CLAUDE.md, TRACKER.md, _dev/test.js, _dev/verify_new_scene.js, and the
@@ -161,8 +164,8 @@ changed meaning; whether it has been is not recorded.
 
 In order.
 
-1. Push Blocks 30 to 35 (see Right now for the file list), then a
-device pass on Blocks 14 to 35, on the phone, in landscape, from a private tab
+1. Push Blocks 30 to 36 (see Right now for the file list), then a
+device pass on Blocks 14 to 36, on the phone, in landscape, from a private tab
 (browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
@@ -207,6 +210,10 @@ device pass on Blocks 14 to 35, on the phone, in landscape, from a private tab
       the touch buttons, the warning before a swing is noticeable, and
       five enemies at once do not drop the frame rate. Judge the pacing
       numbers here (see CLAUDE.md, Block 35) against a real student.
+    Speed after Block 36: whether the game still feels laggy, and where.
+      Name the scene and what is happening, since the remaining levers
+      (backdrop art size, the mirrored tiles, the flashback's grey
+      filter) are worth measuring on the device before touching.
     Kabayo: crisp pixels rather than a blur, standing on the road,
       roughly Macario's height. If he reads too small for a horse,
       that is one number (an NPC display height) to add.
@@ -374,13 +381,13 @@ The paper specifies ten.
 
 | Requirement | Status |
 |---|---|
-| Performance | (BUILT) No build step, no framework, plain script tags. Measured on a 4GB Android phone: smooth, at least 30fps. Not re-measured since Blocks 24 to 29 |
+| Performance | (PARTIAL) No build step, no framework, plain script tags. Measured on a 4GB Android phone at Block 13: smooth, at least 30fps. Reported laggy after Block 35; Block 36 cut the loop's per-frame layout and DOM writes (none at all while standing, halved while walking and fighting), measured with Chrome's counters on a throttled build machine. Unconfirmed on the device |
 | Reliability | (BUILT) Debounced save, ten second autosave backstop, beforeunload flush, logout flush |
 | Usability | (BUILT) Tagalog throughout. Every touch target measured on screen at 44px or more. Icons beside every label. Pixel theme with a legible body face and a three-step text size setting. Portrait shows a rotate notice |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 515-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 524-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -446,6 +453,8 @@ submit_assessment).
         gotoScene placement (section AR)
     35  jump poses and frameBottoms; scripted scenes; combat enemies;
         the moro-moro on the entablado (section AS)
+    36  per-frame layout and DOM writes cut; world sized per scene;
+        lazy night tiles; music elements kept (section AT)
 
 ## Blocks remaining
 
@@ -553,7 +562,8 @@ Block 29 and keeps its earlier look. It is a separate page for teachers,
 so this is a consistency gap, not a fault. (KNOWN)
 
 Only one phone has been tested, a 4GB Android device, and not since
-Block 13. The harness covers 823 by 412 and 740 by 360 in landscape,
+Block 13, which is also why Block 35's fight and Block 36's speed work
+are both unconfirmed where they matter. The harness covers 823 by 412 and 740 by 360 in landscape,
 which is a floor rather than a survey. (PARTIAL)
 
 Dynamic difficulty cannot be demonstrated in the running game, because
@@ -586,11 +596,11 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 515 checks against a fixture act and item catalogue (so
+test.js: 524 checks against a fixture act and item catalogue (so
 mechanics stay tested whatever Act I ships). verify_new_scene.js: 97
 checks driving the REAL content/act1.js and content/items.js through
 the tondo, kutsero and entablado scenes. Both last ran green on 17 Sep 2026
-against the device folder after Block 35. Anything other than "0 failed"
+against the device folder after Block 36. Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright
 may need its browser path pointed at the preinstalled Chromium. Audio
