@@ -285,7 +285,7 @@ Scene shape:
       id,                                        persisted as current_room
       worldWidth, startX,
       dangerous: true,                           optional; shows the hearts
-      greyFilter: true,                          optional; desaturates #skyline
+      greyFilter: true,                          optional; greys backdrop + ground
       arrivalDialogues: [{ requiresFlag,         optional; opens by itself
                            doneFlag, x, facing,  after a fade into the scene
                            lines, onComplete }],
@@ -2016,7 +2016,8 @@ join must differ no more than columns either side of nearby points in the
 same painting. The same check fails against unmirrored tiles (about twice
 the nearby difference), so it can tell a seam from no seam.
 
-Melee clip and Kutsero's art (Block 27). Two commissioned sheets
+Melee clip and Kutsero's art (Block 27; the Kutsero sheet turned out to be
+the Tindero's, see Block 33). Two commissioned sheets
 arrived: Assets/Prefab/Macario_Melee.jpg (4 by 3, 12 frames, a punch)
 and Assets/Act 1/Kutsero.png (5 by 3, 14 frames, a front-facing idle).
 Both were measured with measure-sprite.js. The melee sheet is a PNG with
@@ -2199,6 +2200,25 @@ against the fixture guard by driving updateGuards directly.
 
 The fifth objective changes Act I's drip to floor(50 / 5) = 10 a
 objective, which is what the fixture act already used.
+
+Art sorted out (Block 33). The sheet shipped as Kutsero.png in Block 27
+was the Tindero, misnamed. The artist renamed it Tindero.png and delivered
+the real kutsero (straw hat, sash) as Kutsero.png: 5 by 3, 12 frames,
+contentTop 74, contentHeight 117, footX 128. Tindero's sheet was
+remeasured and is unchanged (14 frames, 69, 121, 128); he is now an
+animation def instead of a missing static img. The pitfall this is an
+instance of: a file name is not evidence of what is drawn in it, so a
+new sheet is looked at, not only measured.
+
+The ground is Assets/Act 1/Lupa.jpg, replacing the Cement_Tile.png the
+CSS had named since before any art existed. It is a 447px seamless
+texture (edge columns differ from each other by about as much as any two
+neighbouring columns), drawn at 120px rather than the old 30px tile size
+so its blotches stay visible. With real ground under a greyed memory
+the road was still brown, so greyFilter now greys #ground-tiles along
+with #skyline. Characters stay in colour, as they always have.
+ASSET_VERSION to 12, which also stops phones serving the old picture
+cached under Kutsero.png.
 
 ## Pitfalls
 

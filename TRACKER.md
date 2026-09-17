@@ -22,12 +22,12 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 17 Sep 2026, after Block 32 (the first equipment, the
-tailor quest, Nanay's rewritten opening). Blocks 22 to 29 were audited against GitHub main
-(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 32
+Last updated: 17 Sep 2026, after Block 33 (Kutsero and Tindero art
+sorted out, Lupa.jpg ground). Blocks 22 to 29 were audited against GitHub main
+(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 33
 were written to the device folder; whether they are pushed is not
 recorded. The suite was run against the device folder's files: 476
-passed, 0 failed; _dev/verify_new_scene.js 68 passed, 0 failed.
+passed, 0 failed; _dev/verify_new_scene.js 72 passed, 0 failed.
 
 ## Start here
 
@@ -88,18 +88,18 @@ default. Intense.mp3 is in Assets/Prefab and unused on purpose.
 
 Current versions, which index.html must match on every push:
 
-    style.css v23        game.js v39          shell.js v13
+    style.css v24        game.js v40          shell.js v13
     inventory.js v8      acts.js v9           assessment.js v3
-    content/act1.js v22  content/items.js v7  content/act2-4.js v1
-    ASSET_VERSION 11 (in game.js)
+    content/act1.js v23  content/items.js v7  content/act2-4.js v1
+    ASSET_VERSION 12 (in game.js)
 
-Nothing from Blocks 14 to 32 has been seen on a phone. Everything in
+Nothing from Blocks 14 to 33 has been seen on a phone. Everything in
 that range is verified headlessly only. A device pass is owed before
 the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 32 are built. Blocks 22 to 32 were all this session, each
+Blocks 1 to 33 are built. Blocks 22 to 33 were all this session, each
 on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -124,13 +124,15 @@ on direct feedback from the proponent:
         stillDetectionMult; soldBy stock per seller; opensShopAfter;
         200 barya from Nanay; the tailor quest (fifth objective);
         Nanay's opening rewritten
+    33  the real Kutsero sheet; the old one renamed Tindero and wired
+        in; Lupa.jpg as the ground, greyed in the memory
 
-Push Blocks 30 to 32 together, with every file below in the same
+Push Blocks 30 to 33 together, with every file below in the same
 commit, or the ?v=N numbers will not match: game.js, shell.js,
-inventory.js, index.html, content/act1.js, content/items.js,
+inventory.js, style.css, index.html, content/act1.js, content/items.js,
 CLAUDE.md, TRACKER.md, _dev/test.js, _dev/verify_new_scene.js, and the
-new files in Assets/
-(Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
+new and renamed files in Assets/ (Act 1/Kutsero.png, Act 1/Tindero.png,
+Act 1/Lupa.jpg, Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
 Prefab/Gun_Shot.mp3; Intense.mp3 and Act 1/Entablado.png may go too,
 nothing loads them yet).
 
@@ -143,8 +145,8 @@ changed meaning; whether it has been is not recorded.
 
 In order.
 
-1. Push Blocks 30 to 32 (see Right now for the file list), then a
-device pass on Blocks 14 to 32, on the phone, in landscape, from a private tab
+1. Push Blocks 30 to 33 (see Right now for the file list), then a
+device pass on Blocks 14 to 33, on the phone, in landscape, from a private tab
 (browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
@@ -194,7 +196,7 @@ cutscene mechanic; see CLAUDE.md.
 3. Remaining art, chased with the artist: Mananahi.png (Assets/Act 1/),
 Damit_Entablado.png (Assets/Act 1/, the clothes' tile picture; outfit
 sheets later if he should look different wearing them),
-Tindero.png, Macario's Dead sheet, Cement_Tile.png (ground), and
+Macario's Dead sheet, and
 Mansanas.png (item icon; the apple symbol stands in). Each new sheet
 needs measure-sprite.js and all three numbers pasted.
 
@@ -451,8 +453,8 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the remaining art with the artist: Mananahi.png, Tindero.png,
-Macario's Dead sheet, Cement_Tile.png and Mansanas.png (see Known
+Chase the remaining art with the artist: Mananahi.png, Damit_Entablado.png,
+Macario's Dead sheet and Mansanas.png (see Known
 problems for where each shows). Later, once real items and the entablado
 content are decided, the art they need. (NOT STARTED)
 
@@ -471,7 +473,7 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 ## Known problems
 
 Missing production art. Assets/ holds real art for Nanay, Kutsero,
-Kabayo, Tondo.png, and Macario's idle, walk, melee and shooting sheets,
+Kabayo, Tindero, Tondo.png, Lupa.jpg (the ground), and Macario's idle, walk, melee and shooting sheets,
 plus the two fonts and four sound files. Assets/Act 1/Entablado.png
 also exists and is not referenced by anything yet; it is presumably for
 the entablado beat (Next action, item 2). Still missing, each falling
@@ -481,16 +483,13 @@ to its symbol):
     Assets/Act 1/Mananahi.png  the Mananahi, on the tondo road
     Assets/Act 1/Damit_Entablado.png  the stage clothes' tile (the shirt
                                symbol stands in)
-    Assets/Tindero.png         Tindero, in the kutsero scene
     Assets/Dead.png            Macario's death pose
-    Assets/Cement_Tile.png     the ground strip; its placeholder is the
-                               dashed line along the bottom of the world
     Assets/Mansanas.png        the apple tile in the shop and inventory
     Assets/Act 1/Tondo_Night.png  night backdrop; no shipped scene
                                switches to night yet, so nothing shows
 
 Nothing in the suite fails for these; only verify_new_scene.js checks
-that named NPCs (Kutsero, Kabayo) draw real art. (KNOWN)
+that named NPCs (Kutsero, Kabayo, Tindero) and the ground draw real art. (KNOWN)
 
 Browsers cache index.html. It carries no version number of its own, so
 a phone that loaded an old copy keeps requesting the old ?v=N files

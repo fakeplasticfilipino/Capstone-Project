@@ -79,12 +79,10 @@
 // where her feet are across the cell, which is the point game.js
 // stands on the middle of her body (CLAUDE.md, Bodies, Block 24).
 //
-// Kutsero (Block 27) and Kabayo (Block 30) have real art in
-// Assets/Act 1/. Tindero still has none: img points at
-// Assets/Tindero.png, which does not exist, so he falls back to the
-// dashed placeholder box naming the file, the same fallback every
-// other missing image in this project uses. Nothing needs wiring once
-// that file lands in Assets/ under that name.
+// Kutsero, Kabayo and Tindero have real art in Assets/Act 1/ (Block 33
+// sorted out a Kutsero and Tindero mix-up in the file names). The
+// Mananahi has none yet and draws as the dashed placeholder box naming
+// her file.
 // =============================================================
 
 window.ACT_1 = {
@@ -368,13 +366,14 @@ window.ACT_1 = {
           id: "kutsero",
           x: 750,
           label: "Kutsero",
-          // Real commissioned art (Block 27): a 5 by 3 sheet, 14 of its 15
-          // cells used, measured with _dev/measure-sprite.js the same way
-          // Nanay's was. He faces the camera, so there is no facing to get
-          // wrong from either side.
+          // Real art. Block 27 wired in a sheet that turned out to be the
+          // Tindero, saved under this name by mistake; Block 33 has the
+          // real kutsero (straw hat, sash): a 5 by 3 sheet, 12 of its 15
+          // cells used, measured with _dev/measure-sprite.js. Front-facing,
+          // so no facing to get wrong from either side.
           animation: {
-            src: "Assets/Act 1/Kutsero.png", frames: 14, fps: 6, columns: 5,
-            contentTop: 69, contentHeight: 121, footX: 128,
+            src: "Assets/Act 1/Kutsero.png", frames: 12, fps: 6, columns: 5,
+            contentTop: 74, contentHeight: 117, footX: 128,
           },
           stage: 0,
           dialogueSets: [
@@ -415,7 +414,13 @@ window.ACT_1 = {
           id: "tindero",
           x: 1950,
           label: "Tindero",
-          img: "Assets/Tindero.png",
+          // Block 33. The sheet Block 27 shipped as Kutsero.png, renamed by
+          // the artist to what it always was: 5 by 3, 14 of 15 cells, the
+          // same numbers it was measured with then (remeasured, unchanged).
+          animation: {
+            src: "Assets/Act 1/Tindero.png", frames: 14, fps: 6, columns: 5,
+            contentTop: 69, contentHeight: 121, footX: 128,
+          },
           opensShop: true,
         },
       ],

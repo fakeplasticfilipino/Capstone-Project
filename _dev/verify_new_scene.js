@@ -14,7 +14,7 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const PORT = 8096;
 const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png", ".mp3": "audio/mpeg" };
+const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg", ".mp3": "audio/mpeg" };
 
 const server = http.createServer((req, res) => {
   const rel = decodeURIComponent(req.url.split("?")[0]).replace(/^\/+/, "");
@@ -118,6 +118,8 @@ const talk = async (page, times) => {
   await page.waitForTimeout(900);
   const inKutsero = await page.evaluate(() => ({ room: currentRoom, grey: document.getElementById("skyline").classList.contains("grey-filter") }));
   ok("landed in the kutsero scene, greyed out", inKutsero.room === "kutsero" && inKutsero.grey, inKutsero);
+  ok("the ground is greyed with it (Block 33)",
+     await page.evaluate(() => getComputedStyle(document.getElementById("ground-tiles")).filter === "grayscale(1)"));
   const memoryLine = await page.evaluate(() => ({ open: inDialogue, speaker: dialogueSpeaker.textContent, text: dialogueText.textContent }));
   ok("the memory opens with Nanay's voice after the fade-in",
      memoryLine.open && memoryLine.speaker === "Nanay" && memoryLine.text === "Ilang taon ka nga noon?...", memoryLine);
@@ -139,6 +141,17 @@ const talk = async (page, times) => {
   });
   ok("Kutsero draws his sprite sheet, not the placeholder box",
      kutseroArt.bg.includes("Kutsero.png") && kutseroArt.text === "", kutseroArt);
+  // Block 33: the Tindero and the ground have real art too.
+  const moreArt = await page.evaluate(() => {
+    const t = document.querySelector("#npc-tindero .sprite");
+    const g = document.getElementById("ground-tiles");
+    return { tindero: t.style.backgroundImage, tText: t.textContent,
+             ground: getComputedStyle(g).backgroundImage, gText: g.textContent };
+  });
+  ok("Tindero draws Tindero.png, not the placeholder box",
+     moreArt.tindero.includes("Tindero.png") && moreArt.tText === "", moreArt);
+  ok("the ground is Lupa.jpg, not the missing-file placeholder",
+     moreArt.ground.includes("Lupa.jpg") && moreArt.gText === "", moreArt);
 
   // --- Kabayo's art and sound (Block 30). ---
   const kabayoArt = await page.evaluate(() => {
@@ -331,6 +344,8 @@ const talk = async (page, times) => {
   }));
   ok("the memory ends back in tondo", afterGift.room === "tondo", afterGift);
   ok("no longer greyed out", afterGift.grey === false, afterGift);
+  ok("and neither is the ground",
+     await page.evaluate(() => getComputedStyle(document.getElementById("ground-tiles")).filter === "none"));
   ok("the third objective's flag is set", afterGift.flag === true, afterGift);
   ok("the apple quest is marked done in the log", afterGift.questDone && afterGift.questDone.done === true, afterGift.questDone);
   ok("a new, open quest to reach the entablado is logged", afterGift.entabladoQuest && afterGift.entabladoQuest.done === false, afterGift.entabladoQuest);

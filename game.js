@@ -210,7 +210,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 11;
+const ASSET_VERSION = 12;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -387,6 +387,12 @@ function loadScene(sceneId) {
   // grey.
   document
     .getElementById("skyline")
+    .classList.toggle("grey-filter", Boolean(scene.greyFilter));
+  // The ground is part of the backdrop too. It was a missing-file
+  // placeholder until Lupa.jpg (Block 33), so nobody saw a brown road
+  // under a grey memory until then. Characters stay in colour, as before.
+  document
+    .getElementById("ground-tiles")
     .classList.toggle("grey-filter", Boolean(scene.greyFilter));
 
   buildSkylineTiles();
@@ -629,8 +635,8 @@ checkBackgroundImage(
 );
 checkBackgroundImage(
   document.getElementById("ground-tiles"),
-  "Assets/Cement_Tile.png",
-  "Assets/Cement_Tile.png"
+  "Assets/Act 1/Lupa.jpg",
+  "Assets/Act 1/Lupa.jpg"
 );
 
 function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth) {
