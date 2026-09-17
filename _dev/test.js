@@ -3257,6 +3257,78 @@ const visible = (page, sel) => page.evaluate((s) => {
     await c2.close();
   }
 
+  console.log("\nAP. Arrival dialogues and skipped dialogue sets");
+  {
+    // Block 31, against scenes and an NPC added to the fixture at run time,
+    // so the mechanism is checked apart from what Act I ships.
+    const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      const tondo = SCENES.find((sc) => sc.id === "tondo");
+      tondo.arrivalDialogues = [
+        { requiresFlag: "test_bumalik", doneFlag: "test_narinig", x: 900, facing: -1,
+          lines: [{ speaker: "A", text: "una" }, { speaker: "B", text: "ikalawa" }],
+          onComplete: () => { window.__arrivalDone = (window.__arrivalDone || 0) + 1; } },
+      ];
+      tondo.npcs = [{ id: "test-ina", x: 300, label: "Ina", stage: 0, dialogueSets: [
+        { skipIfFlag: "test_umalis", lines: [{ speaker: "Ina", text: "unang bilin" }], onComplete: () => {} },
+        { lines: [{ speaker: "Ina", text: "paalam" }], onComplete: () => {} },
+      ] }];
+    });
+
+    const gated = await page.evaluate(async () => {
+      await fadeToScene("tondo");
+      return { open: inDialogue, room: currentRoom };
+    });
+    ok("an arrival whose requiresFlag is unset does not open", gated.room === "tondo" && !gated.open, gated);
+
+    const midFade = await page.evaluate(() => new Promise((resolve) => {
+      state.flags.test_bumalik = true;
+      const done = fadeToScene("tondo");
+      setTimeout(() => resolve({ open: inDialogue, posX, facing, black: blackout.classList.contains("visible") }), 1100);
+      window.__fade = done;
+    }));
+    ok("under the blackout Macario is already placed, with nothing open yet",
+       !midFade.open && midFade.black && midFade.posX === 900 && midFade.facing === -1, midFade);
+    const arrived = await page.evaluate(async () => {
+      await window.__fade;
+      return { open: inDialogue, text: dialogueText.textContent, playing: !cutscenePlaying };
+    });
+    ok("once the fade-in ends, its first line is open", arrived.open && arrived.text === "una" && arrived.playing, arrived);
+
+    await page.keyboard.press("e");
+    await page.waitForTimeout(80);
+    ok("E advances it like any conversation", (await page.evaluate(() => dialogueText.textContent)) === "ikalawa");
+    await page.keyboard.press("e");
+    await page.waitForTimeout(80);
+    const closed = await page.evaluate(() => ({ open: inDialogue, flag: state.flags.test_narinig, done: window.__arrivalDone }));
+    ok("closing it sets its doneFlag and runs onComplete once", !closed.open && closed.flag === true && closed.done === 1, closed);
+
+    const again = await page.evaluate(async () => {
+      await fadeToScene("tondo");
+      return { open: inDialogue, done: window.__arrivalDone };
+    });
+    ok("it does not play a second time", !again.open && again.done === 1, again);
+
+    const talks = await page.evaluate(() => {
+      const ina = NPCS.find((n) => n.id === "test-ina");
+      posX = 230;
+      startDialogue(ina);
+      const first = dialogueText.textContent;
+      advanceDialogue();
+      state.flags.test_umalis = true;
+      loadScene("tondo"); // stage back to 0, as any return to a scene does
+      const ina2 = NPCS.find((n) => n.id === "test-ina");
+      startDialogue(ina2);
+      const second = dialogueText.textContent;
+      advanceDialogue();
+      return { first, second };
+    });
+    ok("a set is played normally while its skipIfFlag is unset", talks.first === "unang bilin", talks);
+    ok("and skipped once it is set, even after stage resets to 0", talks.second === "paalam", talks);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

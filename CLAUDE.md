@@ -285,6 +285,9 @@ Scene shape:
       worldWidth, startX,
       dangerous: true,                           optional; shows the hearts
       greyFilter: true,                          optional; desaturates #skyline
+      arrivalDialogues: [{ requiresFlag,         optional; opens by itself
+                           doneFlag, x, facing,  after a fade into the scene
+                           lines, onComplete }],
       npcs: [...],
       stage: {...} | omitted,
       decorations: [...],
@@ -331,6 +334,15 @@ whatever the previous scene set. See Decisions on record for the
 scene it was added for and for Acts.gotoScene now fading to black
 around every scene change instead of swapping instantly.
 
+arrivalDialogues are conversations nobody starts: they open the moment a
+fade into the scene (Acts.gotoScene) finishes. The first entry whose
+requiresFlag is set, or that has none, and whose doneFlag is not yet set
+is the one that plays; closing it sets doneFlag and runs onComplete. x
+and facing, when given, place Macario while the screen is still black.
+They play only through a fade, never on a login or reload into the
+scene, so a student who reloads during the fade skips that one line of
+story rather than meeting it over a title screen or a test.
+
 NPC shape:
 
     {
@@ -342,7 +354,8 @@ NPC shape:
       opensShop: true,                           optional; see below
       nearSound: "Assets/X.mp3",                 optional; loops while near
       stage: 0,                                  conversation index
-      dialogueSets: [{ lines: [{speaker, text}], onComplete() }],
+      dialogueSets: [{ lines: [{speaker, text}], onComplete(),
+                       skipIfFlag }],            skipIfFlag optional
       gift: { buttonLabel, requiresFlag, givenFlag,
               responseLines, completesQuest,
               onComplete() }                     optional; onComplete optional
@@ -355,7 +368,10 @@ GUARD_WIDTH (40) wide, the same way. A decoration has no body: its x is
 the point it stands on.
 
 Talking to an NPC advances through dialogueSets one per conversation,
-holding on the last. onComplete fires once, when that conversation ends.
+holding on the last. A set whose skipIfFlag is already true is passed
+over when a conversation starts, because buildNpcs resets stage to 0 on
+every scene load and a scene the story returns to would otherwise
+replay its first beat. onComplete fires once, when that conversation ends.
 A gift's onComplete fires once, right after its flag and its quest are
 both set (endDialogue, game.js), the same position in the sequence a
 dialogueSet's own onComplete already has. Most gifts have nothing
@@ -2102,6 +2118,34 @@ play, since a headless browser cannot listen: buffers started and
 <audio> play() calls are spied on, so the fallback path cannot pass a
 check silently. Two of its checks were run against deliberately broken
 copies (no gunshot call, no release band) to confirm they fail.
+
+Conversations around the memory (Block 31). Requested as script: Nanay's
+voice opening the flashback, Macario back beside her for her reply when
+it ends, a Mananahi down the road asking to be paid for his stage
+costume, and a new first line for Nanay about his money.
+
+The two lines nobody walks up to needed an engine piece, arrivalDialogues
+(Act data format), rather than an NPC placed out of sight to be talked
+to. It lives in fadeToScene, the one path that changes scene inside an
+act: the conversation is chosen and Macario placed under the blackout,
+and it opens only after the fade-in, so the first line is read against
+the scene it belongs to. Its once-only rule is a flag in state.flags,
+the same persistence objectives already use, and not a field on the
+scene, which is rebuilt from content on every load.
+
+Returning to tondo exposed a fault Block 20 had only worked around:
+buildNpcs resets every NPC's stage to 0, so talking to Nanay after the
+memory replayed her errand. The firstTime guard stopped the scene change
+but not the lines. skipIfFlag fixes the cause, reading the flag at the
+moment a conversation starts, so a reload lands on the same set.
+
+tondo grew from one screen to 2150px, the kutsero scene's width, for the
+road. The Mananahi is hidden until the apple is given to Kabayo, which
+is set before the fade back, so buildNpcs draws her when tondo is
+rebuilt; revealNpcsByFlag is not needed and still runs only where it did.
+Her art does not exist yet (Assets/Act 1/Mananahi.png). Her last line
+asks for payment, and nothing is built behind it yet: no item, no
+objective. The dialogue speaker is "Mana", as written.
 
 ## Pitfalls
 

@@ -40,6 +40,8 @@ const visible = (page, sel) => page.evaluate((s) => {
   return getComputedStyle(el).display !== "none" && r.width > 0 && r.height > 0;
 }, sel);
 
+const INTERACT_DISTANCE_FOR_TEST = 90; // game.js INTERACT_DISTANCE
+
 const walkTo = async (page, x) => {
   await page.evaluate((tx) => { posX = tx; }, x);
   await page.waitForTimeout(80); // let the game loop fold the new posX into `nearby`
@@ -85,11 +87,36 @@ const talk = async (page, times) => {
 
   // --- Nanay, then the fade into kutsero (covered fully in Block 19's
   // own verification; just enough here to land in the memory). ---
+  ok("the Mananahi is not on the road before the memory",
+     await page.evaluate(() => document.getElementById("npc-mananahi").style.display === "none"));
   await walkTo(page, 280);
-  await talk(page, 4); // 5 lines total
-  await page.waitForTimeout(2200); // the fade (900+400+900ms)
+  await page.keyboard.press("e");
+  await page.waitForTimeout(120);
+  const nanayOpening = [];
+  for (let i = 0; i < 5; i++) {
+    nanayOpening.push(await page.evaluate(() => dialogueSpeaker.textContent + ": " + dialogueText.textContent));
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+  }
+  ok("Nanay opens with his money, then asks where he is going (Block 31)",
+     nanayOpening[0] === "Nanay: Anak, Macario, yung pera mo!" &&
+     nanayOpening[1] === "Nanay: Saan ka ba pupunta?" &&
+     nanayOpening[2].startsWith("Macario: Sa entablado"), nanayOpening);
+
+  // During the fade nothing is open yet; the memory's first line waits
+  // for the fade-in to finish.
+  await page.waitForTimeout(1500);
+  ok("no dialogue opens while the screen is still fading",
+     await page.evaluate(() => !inDialogue && cutscenePlaying));
+  await page.waitForTimeout(900);
   const inKutsero = await page.evaluate(() => ({ room: currentRoom, grey: document.getElementById("skyline").classList.contains("grey-filter") }));
   ok("landed in the kutsero scene, greyed out", inKutsero.room === "kutsero" && inKutsero.grey, inKutsero);
+  const memoryLine = await page.evaluate(() => ({ open: inDialogue, speaker: dialogueSpeaker.textContent, text: dialogueText.textContent }));
+  ok("the memory opens with Nanay's voice after the fade-in",
+     memoryLine.open && memoryLine.speaker === "Nanay" && memoryLine.text === "Ilang taon ka nga noon?...", memoryLine);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(150);
+  ok("E closes it and play goes on", await page.evaluate(() => !inDialogue && state.flags.nagsimulaAngAlaala === true));
 
   // --- Kabayo: unchanged from Block 19, still adds the quest. ---
   await walkTo(page, 280); // Kabayo sits at x=300
@@ -258,7 +285,27 @@ const talk = async (page, times) => {
   }
   console.log("  gift lines: " + JSON.stringify(giftLines));
 
-  await page.waitForTimeout(2200); // the fade back to tondo
+  await page.waitForTimeout(2400); // the fade back to tondo
+  // Block 31. Back in the present, beside Nanay, and she answers.
+  const returnScene = await page.evaluate(() => ({
+    open: inDialogue, first: dialogueSpeaker.textContent + ": " + dialogueText.textContent,
+    posX, facing, gap: edgeGap(posX, PLAYER_WIDTH, 300, NPC_WIDTH),
+  }));
+  ok("the return opens a conversation by itself",
+     returnScene.open && returnScene.first === "Macario: Naaalala mo pa pala yon ma?", returnScene);
+  ok("with Macario standing beside his mother, facing her",
+     returnScene.gap < INTERACT_DISTANCE_FOR_TEST && returnScene.facing === 1, returnScene);
+  const returnLines = [returnScene.first];
+  for (let i = 0; i < 5; i++) {
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+    returnLines.push(await page.evaluate(() => dialogueSpeaker.textContent + ": " + dialogueText.textContent));
+  }
+  ok("all six lines play in order, ending on mag ingat",
+     returnLines.length === 6 && returnLines[5] === "Nanay: Okay sige, mag ingat ka ha!", returnLines);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(150);
+  ok("and it closes", await page.evaluate(() => !inDialogue && state.flags.nakabalikMulaSaAlaala === true));
   const afterGift = await page.evaluate(() => ({
     room: currentRoom,
     grey: document.getElementById("skyline").classList.contains("grey-filter"),
@@ -294,6 +341,40 @@ const talk = async (page, times) => {
   console.log("  after the flashback resolves: " + JSON.stringify(afterFlashback));
   ok("Act I is still playing — the flashback ending did not finish the act", afterFlashback.status === "playing", afterFlashback);
   ok("no transition screen appeared", afterFlashback.transitionVisible === false, afterFlashback);
+
+  // --- Block 31: Nanay does not replay her errand, and the Mananahi. ---
+  await walkTo(page, 210);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(150);
+  const nanayAgain = await page.evaluate(() => ({ text: dialogueText.textContent, room: currentRoom }));
+  ok("talking to Nanay again skips the errand she already gave",
+     nanayAgain.text === "Mag-ingat ka lagi, anak.", nanayAgain);
+  await talk(page, 1);
+  await page.waitForTimeout(300);
+  ok("and does not send him back into the memory",
+     await page.evaluate(() => currentRoom === "tondo" && !cutscenePlaying));
+
+  const mana = await page.evaluate(() => {
+    const el = document.getElementById("npc-mananahi");
+    return { exists: !!el, shown: el && el.style.display !== "none", width: WORLD_WIDTH,
+             placeholder: el && el.textContent.includes("Mananahi.png") };
+  });
+  ok("the road is longer and the Mananahi is on it", mana.exists && mana.shown && mana.width === 2150, mana);
+  ok("drawn as the placeholder naming Mananahi.png until the art exists", mana.placeholder, mana);
+  await walkTo(page, 1420);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(120);
+  const manaLines = [];
+  for (let i = 0; i < 6; i++) {
+    manaLines.push(await page.evaluate(() => dialogueSpeaker.textContent + ": " + dialogueText.textContent));
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+  }
+  ok("her conversation plays as written",
+     manaLines[0] === "Mana: Oh, kamusta ka na Macario? Ang laki laki mo na" &&
+     manaLines[4] === "Macario: Andiyan na ba yung damit ko para sa entablado?" &&
+     manaLines[5] === "Mana: Oo, pero bayad muna hehe...", manaLines);
+  ok("and closes", await page.evaluate(() => !inDialogue));
 
   await ctx.close();
   await browser.close();

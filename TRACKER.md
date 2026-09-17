@@ -22,12 +22,12 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 17 Sep 2026, after Block 30 (audio and Kabayo's art).
-Blocks 22 to 29 were audited against GitHub main (commit 58f4a43, "UI
-Overhaul") earlier the same day. Block 30 was written to the device
-folder and is NOT pushed yet. The suite was run against the device
-folder's files: 453 passed, 0 failed; _dev/verify_new_scene.js 41
-passed, 0 failed.
+Last updated: 17 Sep 2026, after Block 31 (conversations around the
+memory, the Mananahi). Blocks 22 to 29 were audited against GitHub main
+(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 and 31
+were written to the device folder; whether they are pushed is not
+recorded. The suite was run against the device folder's files: 461
+passed, 0 failed; _dev/verify_new_scene.js 56 passed, 0 failed.
 
 ## Start here
 
@@ -46,16 +46,23 @@ Act I is two scenes and is the only act with content. Acts II to IV are
 registered stubs. Act I cannot be completed yet, on purpose: its fourth
 objective has no content (see Next action).
 
-    tondo     Nanay (real art) sends Macario on an errand. Talking to
-              her completes objectives 1 and 2 and fades into:
+    tondo     Nanay (real art) reminds Macario of his money and sends
+              him on an errand. Talking to her completes objectives 1
+              and 2 and fades into:
     kutsero   a greyed-out flashback. Kabayo the horse (real art,
               neighing while Macario is near) asks for an apple; Kutsero (real art) gives 10
               barya; a glass hazard sits on the road; Tindero
               (placeholder box, opensShop) sells Mansanas (food, heals
               one heart) and "Mansanas para sa kabayo" (quest item).
+              The memory opens with Nanay's voice after the fade-in.
               Giving Kabayo the quest apple completes objective 3 and
               fades back to tondo with a fourth quest, "Pumunta sa
               entablado", that nothing can complete yet.
+    tondo     (after) Macario stands beside Nanay and a six-line
+              exchange plays by itself. Further down the road, now
+              2150px, the Mananahi (placeholder box) talks about his
+              stage costume and asks to be paid. Nothing follows that
+              yet.
 
 content/items.js ships exactly those two items. No Sandata,
 Anting-anting or Damit item exists yet; the slots render empty. The
@@ -77,18 +84,18 @@ default. Intense.mp3 is in Assets/Prefab and unused on purpose.
 
 Current versions, which index.html must match on every push:
 
-    style.css v23        game.js v37          shell.js v12
+    style.css v23        game.js v38          shell.js v12
     inventory.js v7      acts.js v9           assessment.js v3
-    content/act1.js v20  content/items.js v6  content/act2-4.js v1
+    content/act1.js v21  content/items.js v6  content/act2-4.js v1
     ASSET_VERSION 11 (in game.js)
 
-Nothing from Blocks 14 to 30 has been seen on a phone. Everything in
+Nothing from Blocks 14 to 31 has been seen on a phone. Everything in
 that range is verified headlessly only. A device pass is owed before
 the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 30 are built. Blocks 22 to 30 were all this session, each
+Blocks 1 to 31 are built. Blocks 22 to 31 were all this session, each
 on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -106,11 +113,14 @@ on direct feedback from the proponent:
     30  Kabayo's 22-frame sheet (pixelated scaling); audio: Calm.mp3
         music, Gun_Shot.mp3 on a shot, Horse.mp3 near Kabayo, and
         Musika and Mga tunog switches in settings
+    31  arrival dialogues (the memory's opening line, the return to
+        Nanay), skipIfFlag so Nanay does not replay her errand, Nanay's
+        new opening, a longer tondo road and the Mananahi
 
-Block 30 is on the device folder only. Push it with every file below in
-the same commit, or the ?v=N numbers will not match: game.js,
-shell.js, index.html, content/act1.js, CLAUDE.md, TRACKER.md,
-_dev/test.js, _dev/verify_new_scene.js, and the new files in Assets/
+Push Blocks 30 and 31 together, with every file below in the same
+commit, or the ?v=N numbers will not match: game.js, shell.js,
+index.html, content/act1.js, CLAUDE.md, TRACKER.md, _dev/test.js,
+_dev/verify_new_scene.js, and the new files in Assets/
 (Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
 Prefab/Gun_Shot.mp3; Intense.mp3 and Act 1/Entablado.png may go too,
 nothing loads them yet).
@@ -124,8 +134,8 @@ changed meaning; whether it has been is not recorded.
 
 In order.
 
-1. Push Block 30 (see Right now for the file list), then a device pass
-on Blocks 14 to 30, on the phone, in landscape, from a private tab
+1. Push Blocks 30 and 31 (see Right now for the file list), then a
+device pass on Blocks 14 to 31, on the phone, in landscape, from a private tab
 (browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
@@ -149,11 +159,21 @@ on Blocks 14 to 30, on the phone, in landscape, from a private tab
       out walking on; Musika and Mga tunog Patay silence each; locking
       the phone silences the game; the music is not too loud against
       the gunshot.
+    The memory and the return: the memory's line waits for the fade-in;
+      coming back, Macario is already beside Nanay when the screen
+      clears, not seen jumping there; talking to her again gives
+      "Mag-ingat ka lagi, anak."; the Mananahi is absent before the
+      memory and on the road after it; the dialogue box does not hide
+      whoever is speaking.
     Kabayo: crisp pixels rather than a blur, standing on the road,
       roughly Macario's height. If he reads too small for a horse,
       that is one number (an NPC display height) to add.
 
-2. The entablado. Act I's fourth objective, pumunta_entablado, has flag
+2. The Mananahi's payment. Her last line asks to be paid for the stage
+costume, and nothing answers it yet. Decide what paying is (barya at a
+button, a gift, an outfit in the Damit slot) before the entablado.
+
+3. The entablado. Act I's fourth objective, pumunta_entablado, has flag
 nasaEntablado, which nothing sets. The next content beat is a scene (or
 a use of tondo) where Macario reaches the entablado and that flag is
 set, which is what finally lets Act I complete and run its post-test.
@@ -161,12 +181,12 @@ Write it against the resource person's source book (Content authority,
 under The milestone). The engine already has a stage and a death
 cutscene mechanic; see CLAUDE.md.
 
-3. Remaining art, chased with the artist: Tindero.png, Macario's Dead
-sheet, Cement_Tile.png (ground), and
+4. Remaining art, chased with the artist: Mananahi.png (Assets/Act 1/),
+Tindero.png, Macario's Dead sheet, Cement_Tile.png (ground), and
 Mansanas.png (item icon; the apple symbol stands in). Each new sheet
 needs measure-sprite.js and all three numbers pasted.
 
-4. Then Block 12's remaining polish, the pilot, and Acts II to IV
+5. Then Block 12's remaining polish, the pilot, and Acts II to IV
 against the source material.
 
 ## The milestone
@@ -263,7 +283,7 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-The framework is complete. Act I has two scenes, four NPCs and four
+The framework is complete. Act I has two scenes, five NPCs and four
 objectives, three of them playable end to end; the fourth waits on the
 entablado content. Acts II to IV are registered stubs with no content.
 
@@ -292,7 +312,7 @@ work through.
 | Combat Mechanics | (BUILT) Melee punch on a tap, takedown from behind, a ranged shot on a hold, each with real animation. No shipped act has a guard yet |
 | Stealth Mechanics | (BUILT) Patrols, detection meter, hide spots. Verified against the harness fixture; no shipped act uses them yet |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach measured edge to edge, NPCs that open the shop |
-| Narrative Delivery | (PARTIAL) Built. Act I uses it across two scenes and four NPCs; Acts II to IV have none |
+| Narrative Delivery | (PARTIAL) Built. Act I uses it across two scenes and five NPCs, with conversations that open by themselves around the memory; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups, and healing by eating a Mansanas |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, a two-column inventory, stacking consumables, quest items, granting and buying. No equipment item ships yet; verified against the fixture catalogue |
@@ -316,7 +336,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 453-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 461-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -373,6 +393,8 @@ submit_assessment).
     29  flat pixel theme; VT323 and Press Start 2P self-hosted
     30  Kabayo's sheet, pixelated scaling; music, gunshot, nearSound
         ambience, Musika and Mga tunog switches (section AO)
+    31  arrivalDialogues, skipIfFlag (section AP); memory
+        conversations; Mananahi on a longer tondo road
 
 ## Blocks remaining
 
@@ -414,7 +436,7 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the remaining art with the artist: Tindero.png,
+Chase the remaining art with the artist: Mananahi.png, Tindero.png,
 Macario's Dead sheet, Cement_Tile.png and Mansanas.png (see Known
 problems for where each shows). Later, once real items and the entablado
 content are decided, the art they need. (NOT STARTED)
@@ -441,6 +463,7 @@ the entablado beat (Next action, item 2). Still missing, each falling
 back to the dashed placeholder box naming the file (or, for the item,
 to its symbol):
 
+    Assets/Act 1/Mananahi.png  the Mananahi, on the tondo road
     Assets/Tindero.png         Tindero, in the kutsero scene
     Assets/Dead.png            Macario's death pose
     Assets/Cement_Tile.png     the ground strip; its placeholder is the
@@ -501,11 +524,11 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 453 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 41
+test.js: 461 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 56
 checks driving the REAL content/act1.js and content/items.js through
 the tondo and kutsero scenes. Both last ran green on 17 Sep 2026
-against the device folder after Block 30, not yet pushed. Anything other than "0 failed"
+against the device folder after Block 31. Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright
 may need its browser path pointed at the preinstalled Chromium. Audio

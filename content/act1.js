@@ -31,6 +31,14 @@
 // the entablado is the next piece of content this act needs; nothing
 // here builds it yet.
 //
+// Block 31 added the conversations around the memory. Nanay's opening
+// now starts with his money ("yung pera mo"). The memory opens with her
+// voice the moment its fade-in ends, and closing it puts Macario back
+// beside her for her reply before he sets off. Both are a scene's
+// arrivalDialogues (CLAUDE.md, Act data format). Past her, further down
+// a road that is now twice as long, the Mananahi waits with his stage
+// costume, and her asking to be paid is where this passage stops.
+//
 // The engine gained the pieces of support this needed, documented in
 // CLAUDE.md (Act data format, Decisions on record):
 //   - a scene can declare greyFilter to desaturate the shared Tondo
@@ -105,8 +113,30 @@ window.ACT_1 = {
   scenes: [
     {
       id: "tondo",
-      worldWidth: 1176, // one screen at the tuned --zoom; nothing here needs more room yet
+      // Widened in Block 31 from one screen (1176) to hold the road the
+      // Mananahi stands on, the same width the kutsero scene already has.
+      worldWidth: 2150,
       startX: 80,
+      // Block 31. The moment the flashback ends, back in the present,
+      // Macario is standing with his mother and she answers the memory.
+      // requiresFlag is the apple given to Kabayo, which is what sends
+      // him back here; doneFlag keeps it to that one return.
+      arrivalDialogues: [
+        {
+          requiresFlag: "binilhanNgMansanasAngKabayo",
+          doneFlag: "nakabalikMulaSaAlaala",
+          x: 210, // Nanay's body starts at 300, so a 50px gap, facing her
+          facing: 1,
+          lines: [
+            { speaker: "Macario", text: "Naaalala mo pa pala yon ma?" },
+            { speaker: "Nanay", text: "Abay siyempre, matanda ako pero hindi ako ulyanin!" },
+            { speaker: "Nanay", text: "... Saan ka nga ulit pupunta?" },
+            { speaker: "Macario", text: "Hahaha" },
+            { speaker: "Macario", text: "Kailangan ko ng pumuntang trabaho ma, hinihintay na ako ng mga kapwa kong artista" },
+            { speaker: "Nanay", text: "Okay sige, mag ingat ka ha!" },
+          ],
+        },
+      ],
       npcs: [
         {
           id: "nanay",
@@ -119,8 +149,13 @@ window.ACT_1 = {
           },
           dialogueSets: [
             {
+              // Once the trip to work has started, this beat has happened
+              // and she moves on to her second set, including after the
+              // flashback returns Macario here (game.js, startDialogue).
+              skipIfFlag: "nasaDaanPatungoSaTrabaho",
               lines: [
-                { speaker: "Nanay", text: "Macario, anak, saan ka pupunta?" },
+                { speaker: "Nanay", text: "Anak, Macario, yung pera mo!" },
+                { speaker: "Nanay", text: "Saan ka ba pupunta?" },
                 { speaker: "Macario", text: "Sa entablado nay, huli na ‘ho ako" },
                 { speaker: "Nanay", text: "Paki-bigay nga ito sa kutsero, naaalala mo pa ba siya? Nag-trabaho ka sakaniya dati, ang bata bata mo pa noon…" },
                 { speaker: "Macario", text: "Nay, mahuhuli na po a-" },
@@ -160,6 +195,42 @@ window.ACT_1 = {
             },
           ],
         },
+
+        {
+          // Block 31. Down the road toward the entablado, met only after
+          // the flashback: before it, Macario has not yet been sent on his
+          // way, and asking after a stage costume would come out of
+          // order. Hidden until the apple is given to Kabayo, which is set
+          // before the fade back to this scene, so buildNpcs already draws
+          // her when tondo is rebuilt (and on any reload after).
+          //
+          // Assets/Act 1/Mananahi.png does not exist yet, so she is the
+          // dashed placeholder box naming that file. If the art arrives as
+          // a sprite sheet rather than a single picture, img becomes an
+          // animation def measured with _dev/measure-sprite.js.
+          //
+          // Her request for payment is where this passage stops. Nothing
+          // is for sale here yet and no objective is set.
+          id: "mananahi",
+          x: 1500,
+          label: "Mananahi",
+          img: "Assets/Act 1/Mananahi.png",
+          startsHidden: true,
+          revealedByFlag: "binilhanNgMansanasAngKabayo",
+          stage: 0,
+          dialogueSets: [
+            {
+              lines: [
+                { speaker: "Mana", text: "Oh, kamusta ka na Macario? Ang laki laki mo na" },
+                { speaker: "Macario", text: "Ayos lang naman, ito, buhay pa din" },
+                { speaker: "Mana", text: "Magpagupit ka na! Nagmumukha ka ng dalaga" },
+                { speaker: "Macario", text: "Hahaha, saka na, malay natin ganahan ako" },
+                { speaker: "Macario", text: "Andiyan na ba yung damit ko para sa entablado?" },
+                { speaker: "Mana", text: "Oo, pero bayad muna hehe..." },
+              ],
+            },
+          ],
+        },
       ],
     },
 
@@ -173,6 +244,17 @@ window.ACT_1 = {
       worldWidth: 2150,
       startX: 80,
       greyFilter: true,
+      // Block 31. Nanay's voice carries into the memory, opening it the
+      // moment the fade-in ends. Once only, so a later visit (none today)
+      // would not replay it.
+      arrivalDialogues: [
+        {
+          doneFlag: "nagsimulaAngAlaala",
+          lines: [
+            { speaker: "Nanay", text: "Ilang taon ka nga noon?..." },
+          ],
+        },
+      ],
       hazards: [
         // Between Kutsero and Tindero, not before Kutsero — the errand
         // itself is safe, the road to the stall is not. Declaring this

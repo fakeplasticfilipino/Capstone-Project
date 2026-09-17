@@ -1376,7 +1376,21 @@ function handleInteractPress() {
 function startDialogue(npc) {
   activeNpc = npc;
   activeMode = "npc";
-  const setIndex = Math.min(npc.stage, npc.dialogueSets.length - 1);
+  let setIndex = Math.min(npc.stage, npc.dialogueSets.length - 1);
+  // Block 31. buildNpcs resets stage to 0 on every scene load, which is
+  // right for a scene seen once and wrong for one the story comes back
+  // to: returning to tondo after the flashback replayed Nanay's opening
+  // errand. A set whose skipIfFlag is already true is a beat that has
+  // happened, so conversation starts past it. Read from the flags rather
+  // than stored on the NPC, so a reload lands on the same set.
+  while (
+    setIndex < npc.dialogueSets.length - 1 &&
+    npc.dialogueSets[setIndex].skipIfFlag &&
+    state.flags[npc.dialogueSets[setIndex].skipIfFlag]
+  ) {
+    setIndex++;
+  }
+  npc.stage = setIndex;
   activeSet = npc.dialogueSets[setIndex];
   inDialogue = true;
   dialogueStep = 0;
@@ -1452,6 +1466,12 @@ function endDialogue() {
         finishedNpc.stage++;
       }
     }
+  } else if (finishedMode === "arrival") {
+    // Set on the way OUT, not in: a reload mid-conversation should hear
+    // it again rather than lose it.
+    if (finishedSet.doneFlag) state.flags[finishedSet.doneFlag] = true;
+    markDirty();
+    if (finishedSet.onComplete) finishedSet.onComplete();
   } else if (finishedMode === "cutscene-part1") {
     // First half of the poem is done. Fade to night, then continue.
     runNightTransition();
@@ -1550,11 +1570,52 @@ async function fadeToScene(sceneId) {
 
   loadScene(sceneId); // swap while hidden behind black
 
+  // Block 31. Chosen and placed while the screen is still black, so a
+  // student never sees Macario jump from the scene's startX to where the
+  // conversation needs him.
+  const arrival = pendingArrival(currentScene);
+  if (arrival && typeof arrival.x === "number") {
+    posX = Math.max(0, Math.min(arrival.x, WORLD_WIDTH - PLAYER_WIDTH));
+    posY = groundHeightAt(posX);
+    velY = 0;
+    if (arrival.facing === 1 || arrival.facing === -1) facing = arrival.facing;
+  }
+
   await wait(400); // hold black briefly, same as runNightTransition
   blackout.classList.remove("visible");
 
   await wait(900); // fade back in
   cutscenePlaying = false;
+
+  // After the fade-in rather than during it, so the first line is read
+  // against the scene it belongs to and not against black.
+  if (arrival) startArrivalDialogue(arrival);
+}
+
+// A scene's arrivalDialogues are conversations that open by themselves
+// when the scene is entered through a fade, with nobody to talk to: a
+// voice in a memory, or a reply the moment the memory ends. The first
+// entry whose requiresFlag is set (or that has none) and whose doneFlag
+// is not yet set is the one that plays. doneFlag is what makes it once
+// only, and it lives in state.flags, so it survives a reload the way an
+// objective does.
+function pendingArrival(scene) {
+  const list = (scene && scene.arrivalDialogues) || [];
+  return list.find((a) =>
+    (!a.requiresFlag || state.flags[a.requiresFlag]) &&
+    !(a.doneFlag && state.flags[a.doneFlag]) &&
+    Array.isArray(a.lines) && a.lines.length
+  ) || null;
+}
+
+function startArrivalDialogue(arrival) {
+  activeNpc = null;
+  activeMode = "arrival";
+  activeSet = arrival;
+  inDialogue = true;
+  dialogueStep = 0;
+  dialogueBox.classList.remove("hidden");
+  showDialogueStep();
 }
 
 // =============================================================
