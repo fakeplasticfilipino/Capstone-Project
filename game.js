@@ -153,6 +153,11 @@ const NPC_WIDTH = 80;
 // A guard's body is the same size as Macario's: guards catch, get hit and
 // get taken down, which are the same kind of contact his body has.
 const GUARD_WIDTH = PLAYER_WIDTH;
+// Block 38. Read by buildGuards, which loadAct can reach at parse time, so
+// they sit up here rather than with the rest of the hostile-guard numbers
+// (the temporal dead zone pitfall in CLAUDE.md).
+const GUARD_HP = 2;
+const GUARD_CHASE_SPEED = 2.6; // per 60fps frame; SPEED is 5
 // Block 35. A fighting enemy has the same body as a guard, for the same
 // reason: it hits, gets hit and gets knocked back like Macario does.
 const ENEMY_WIDTH = PLAYER_WIDTH;
@@ -1914,6 +1919,11 @@ function buildGuards(token) {
       // Block 37. A guard that shoots fires once its meter fills instead
       // of catching, and then waits this long before it can fire again.
       nextShotAt: 0,
+      // Block 38. A shooting guard who has seen Macario stays on him.
+      hostile: false,
+      hp: def.hp || GUARD_HP,
+      maxHp: def.hp || GUARD_HP,
+      chaseSpeed: GUARD_CHASE_SPEED * speedScale,
       // What was last written to the page, so the loop writes only on a
       // change (Block 36).
       drawnFill: -1,
@@ -2042,6 +2052,14 @@ function updateGuards(step) {
       return;
     }
 
+    // Block 38. Once he has seen Macario he no longer patrols or looks:
+    // he hunts. See updateHostileGuard.
+    if (guard.hostile) {
+      updateHostileGuard(guard, step, now);
+      drawGuard(guard);
+      return;
+    }
+
     // Patrol. A guard whose bounds collapse to a point is a stationary
     // sentry and keeps the facing the level gave it. Without this it
     // reaches its limit every frame and flips constantly, which reads as
@@ -2075,22 +2093,23 @@ function updateGuards(step) {
       // fill outright: standing in plain view is still a way to be
       // caught, only a slower one.
       const stillMult = playerStill ? equipEffects.stillDetectionMult : 1;
+      guard.disguised = stillMult < 1;
       guard.alert = Math.min(1, guard.alert + (guard.alertRate || 0.012) * stillMult * step);
+      // Block 38. The first time the clothes are what is holding a guard
+      // back in a scene, say so. The meter turning blue (drawGuard) says
+      // it every time after.
+      if (guard.disguised && currentScene && !currentScene._disguiseNoted) {
+        currentScene._disguiseNoted = true;
+        showToast("Artista lang ang tingin niya sa iyo. Huwag kang gagalaw.");
+      }
     } else {
+      guard.disguised = false;
       guard.alert = Math.max(0, guard.alert - (guard.decayRate || 0.02) * step);
     }
 
     if (guard.alert >= 1) {
-      if (guard.shoots) {
-        // Block 37. A full meter is a shot rather than a catch. It holds
-        // full, drawn red, until the cooldown lets him fire, then empties.
-        if (now >= guard.nextShotAt) {
-          guardFire(guard, now);
-          guard.alert = 0;
-        }
-      } else {
-        caughtBy(guard);
-      }
+      if (guard.shoots) becomeHostile(guard, now);
+      else caughtBy(guard);
     }
 
     drawGuard(guard);
@@ -2107,10 +2126,20 @@ function drawGuard(guard) {
     guard.fillEl.style.width = fill + "%";
     guard.drawnFill = fill;
   }
-  const alerted = !guard.disabled && guard.alert >= 1;
+  const alerted = !guard.disabled && (guard.alert >= 1 || guard.hostile);
   if (alerted !== guard.drawnAlerted) {
     guard.el.classList.toggle("guard-alerted", alerted);
     guard.drawnAlerted = alerted;
+  }
+  const hostile = !guard.disabled && guard.hostile;
+  if (hostile !== guard.drawnHostile) {
+    guard.el.classList.toggle("guard-hostile", hostile);
+    guard.drawnHostile = hostile;
+  }
+  const disguised = !guard.disabled && !guard.hostile && Boolean(guard.disguised);
+  if (disguised !== guard.drawnDisguised) {
+    guard.el.classList.toggle("guard-disguised", disguised);
+    guard.drawnDisguised = disguised;
   }
   if (guard.facing !== guard.drawnFacing) {
     guard.el.classList.toggle("guard-facing-left", guard.facing === -1);
@@ -2123,32 +2152,86 @@ function drawGuard(guard) {
 }
 
 // =============================================================
-// GUARD SHOTS (Block 37)
+// HOSTILE GUARDS AND THEIR SHOTS (Blocks 37 and 38)
 //
-// A guard declared shoots: true fires a visible bullet along the road the
-// moment his meter fills. It travels at chest height in the direction he
-// faces, so it can be jumped, it passes under a student on a platform, and
-// it can be outrun past its range. A hit costs one heart and knocks
-// Macario back the way the bullet was going, like the glass on the road;
-// it does not send him to the start of the scene. Running out of hearts
-// still does, to the scene's last checkpoint (respawnInScene).
+// A guard declared shoots: true does not catch. When his meter fills he
+// turns hostile and stays that way, the way an enemy in most games does
+// once it has spotted the player: he stops patrolling, turns to face
+// Macario wherever he goes, closes to GUARD_HOLD_DISTANCE at a run and
+// fires every GUARD_SHOT_COOLDOWN_MS while in range. Block 37 had him fire
+// once and go back to watching, which read as a guard who forgot what he
+// had just seen.
 //
-// The shot is where being seen is counted, once per shot, so a student
-// who stands in view is counted once per bullet rather than every frame.
+// Hostility ends only two ways: the guard goes down (two punches, or a
+// takedown before he turned), or Macario runs out of hearts, which resets
+// every guard to his post (respawnInScene). Being seen is counted once,
+// on the turn, not per shot. The chase speed is well under Macario's, so
+// running is always a way out of range, and his bullets fly at chest
+// height, so a jump or a platform still gets over them.
+//
+// Each bullet is visible and travels the way he faces. A hit costs one
+// heart and knocks Macario on the way the bullet was going, like the
+// glass on the road; it does not send him to the start of the scene.
 // =============================================================
+
+const GUARD_HOLD_DISTANCE = 170;    // centre to centre; he shoots from here
+const GUARD_FIRE_RANGE_EXTRA = 160; // past detectRadius, he still fires
+const GUARD_AIM_MS = 450;           // from turning hostile to the first shot
+const GUARD_HIT_KNOCKBACK = 40;
+const GUARD_HIT_STAGGER_MS = 600;
+
+function becomeHostile(guard, now) {
+  if (guard.hostile || guard.disabled) return;
+  guard.hostile = true;
+  guard.alert = 1;
+  guard.nextShotAt = now + GUARD_AIM_MS;
+  detections += 1;
+  showToast("Nakita ka! Hinahabol ka ng bantay!");
+}
+
+function updateHostileGuard(guard, step, now) {
+  const dx = posX + PLAYER_WIDTH / 2 - (guard.pos + GUARD_WIDTH / 2);
+  const dist = Math.abs(dx);
+  if (dx !== 0) guard.facing = Math.sign(dx);
+
+  if (dist > GUARD_HOLD_DISTANCE) {
+    const move = Math.min(guard.chaseSpeed * step, dist - GUARD_HOLD_DISTANCE);
+    guard.pos += move * guard.facing;
+    guard.pos = Math.max(0, Math.min(guard.pos, WORLD_WIDTH - GUARD_WIDTH));
+    guard.el.style.left = guard.pos + "px";
+  }
+
+  const range = (guard.detectRadius || 240) + GUARD_FIRE_RANGE_EXTRA;
+  if (now >= guard.nextShotAt && dist <= range) guardFire(guard, now);
+}
+
+// A punch on a guard who is already fighting. He takes it rather than
+// dropping at once, the same way the moro-moro's guards do.
+function hitGuard(guard) {
+  guard.hp -= 1;
+  if (guard.hp <= 0) {
+    disableGuard(guard, "Napatumba mo ang bantay.");
+    return;
+  }
+  const away = Math.sign(guard.pos + GUARD_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) || 1;
+  guard.pos = Math.max(0, Math.min(guard.pos + away * GUARD_HIT_KNOCKBACK, WORLD_WIDTH - GUARD_WIDTH));
+  guard.el.style.left = guard.pos + "px";
+  guard.nextShotAt = Math.max(guard.nextShotAt, performance.now() + GUARD_HIT_STAGGER_MS);
+  guard.el.classList.add("guard-firing");
+  setTimeout(() => guard.el && guard.el.classList.remove("guard-firing"), 150);
+}
 
 const GUARD_BULLET_SPEED = 9;       // per 60fps frame; well under a dodge
 const GUARD_BULLET_SIZE = 10;       // must match .guard-bullet's CSS width
 const GUARD_BULLET_HEIGHT = 70;     // above the guard's floor: chest height
 const GUARD_BULLET_RANGE_EXTRA = 120; // past his detectRadius, then gone
-const GUARD_SHOT_COOLDOWN_MS = 1500;
+const GUARD_SHOT_COOLDOWN_MS = 1300;
 const GUARD_BULLET_RECOIL = 50;
 const PLAYER_HIT_HEIGHT = 110;      // how tall the body is for a bullet
 
 
 function guardFire(guard, now) {
   guard.nextShotAt = now + GUARD_SHOT_COOLDOWN_MS;
-  detections += 1;
   playSfx("gunShot");
 
   const el = document.createElement("div");
@@ -2403,6 +2486,9 @@ function respawnInScene() {
     guard.facing = guard.facingStart || 1;
     guard.alert = 0;
     guard.nextShotAt = 0;
+    guard.hostile = false;
+    guard.disguised = false;
+    guard.hp = guard.maxHp || GUARD_HP;
     if (guard.el) guard.el.style.left = guard.pos + "px";
     drawGuard(guard);
   });
@@ -2660,8 +2746,16 @@ function meleeAttack() {
     // Behind means the guard is facing away from Macario.
     const behind = Math.sign(guardCentre - centre) === guard.facing;
 
-    if (behind && guard.alert < 1) {
+    if (guard.hostile) {
+      // Block 38. Already fighting: a punch is a hit, not a mistake.
+      hitGuard(guard);
+    } else if (behind && guard.alert < 1) {
       disableGuard(guard, "Natumba ang bantay.");
+    } else if (guard.shoots) {
+      // From the front he sees it coming, turns on Macario, and it costs
+      // a heart, the same price the stealth rule always charged.
+      becomeHostile(guard, performance.now());
+      damagePlayer("Nakita ka ng bantay!");
     } else {
       guard.alert = 1;
       damagePlayer("Nakita ka ng bantay!");

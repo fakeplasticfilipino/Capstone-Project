@@ -1112,6 +1112,29 @@ html, body {
   filter: brightness(1.8);
 }
 
+/* Block 38. A hostile guard has seen him and is hunting: a red "!" over
+   the meter, the sign most games use for exactly this, so a student can
+   tell a guard who is looking from one who is coming. */
+.guard.guard-hostile::before {
+  content: "!";
+  position: absolute;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Press Start 2P", monospace;
+  font-size: 22px;
+  color: #ff5252;
+  text-shadow: 2px 2px 0 #1a0f08;
+  pointer-events: none;
+}
+
+/* The stage clothes at work: while they are what is slowing a guard's
+   meter, the meter is pale blue instead of yellow. It is the only way to
+   see the effect happen rather than take it on trust. */
+.guard-disguised .guard-meter-fill {
+  background: #7fc8f8;
+}
+
 /* A guard's shot. Red and square rather than Macario's gold ball, so the
    two can never be mistaken, and above #player like his is. */
 .guard-bullet {

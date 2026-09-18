@@ -22,13 +22,15 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 18 Sep 2026, after Block 37 (the end of the play, the
-Katipunan, and the pamphlet street; Act I can now be completed). Blocks
+Last updated: 18 Sep 2026, after Block 38 (hostile guards and a
+stronger stage-clothes disguise), which followed Block 37 (the end of the
+play, the Katipunan, and the pamphlet street; Act I can now be
+completed). Blocks
 22 to 29 were audited against GitHub main (commit 58f4a43, "UI
-Overhaul") earlier the same day. Blocks 30 to 37 were written to the
+Overhaul") earlier the same day. Blocks 30 to 38 were written to the
 device folder; the proponent pushes them. The suite was run against the
-device folder's files: 538 passed, 0 failed; _dev/verify_new_scene.js
-131 passed, 0 failed.
+device folder's files: 544 passed, 0 failed; _dev/verify_new_scene.js
+138 passed, 0 failed.
 
 ## Start here
 
@@ -97,8 +99,12 @@ check against it (see Next action).
               polyeto (0/3)" (objective 6 done). Tumuloy at the end of the
               road opens only now.
     lansangan a 7200px street on the Tondo backdrop, in colour. No gun
-              (a hold punches). Four guards (Bantay.png placeholders) who
-              shoot when their meter fills, their sight drawn on the road;
+              (a hold punches). Four guards (Bantay.png placeholders),
+              their sight drawn on the road; once one's meter fills he
+              turns hostile (a red "!"), chases and shoots until punched
+              down twice or Macario runs out of hearts. In the stage
+              clothes, standing still fills a meter five times slower,
+              drawn pale blue;
               three platforms of different heights that are out of sight;
               a heart on the high one. Three citizens (Mamamayan.png
               placeholders) each take a pamphlet through Iabot ang
@@ -126,18 +132,19 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    style.css v28        game.js v44          shell.js v13
-    inventory.js v8      acts.js v10          assessment.js v3
-    content/act1.js v27  content/items.js v7  content/act2-4.js v1
+    style.css v29        game.js v45          shell.js v13
+    inventory.js v9      acts.js v10          assessment.js v3
+    content/act1.js v27  content/items.js v8  content/act2-4.js v1
     ASSET_VERSION 14 (in game.js)
 
-Nothing from Blocks 14 to 37 has been seen on a phone. Everything in
+Nothing from Blocks 14 to 38 has been seen on a phone, apart from a
+first play of Block 37 by the proponent that led to Block 38. Everything in
 that range is verified headlessly only. A device pass is owed before
 the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 37 are built. Blocks 22 to 37 were one build session, 17 to
+Blocks 1 to 38 are built. Blocks 22 to 38 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -177,8 +184,11 @@ Blocks 1 to 37 are built. Blocks 22 to 37 were one build session, 17 to
         pamphlets; guards that shoot, sight drawn on the road, platforms
         out of sight, noRanged, checkpoints, gated exits; Act I
         completable
+    38  guards hostile once they have seen him (chase, shoot, two
+        punches to drop); stage clothes 0.2 with a blue meter and a
+        toast
 
-Push Blocks 30 to 37 together, with every file below in the same
+Push Blocks 30 to 38 together, with every file below in the same
 commit, or the ?v=N numbers will not match: game.js, acts.js, shell.js,
 inventory.js, style.css, index.html, content/act1.js, content/items.js,
 CLAUDE.md, TRACKER.md, _dev/test.js, _dev/verify_new_scene.js, and the
@@ -199,8 +209,8 @@ changed meaning; whether it has been is not recorded.
 
 In order.
 
-1. Push Blocks 30 to 37 (see Right now for the file list), then a
-device pass on Blocks 14 to 37, on the phone, in landscape, from a private tab
+1. Push Blocks 30 to 38 (see Right now for the file list), then a
+device pass on Blocks 14 to 38, on the phone, in landscape, from a private tab
 (browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
@@ -256,7 +266,10 @@ device pass on Blocks 14 to 37, on the phone, in landscape, from a private tab
       time to jump; the high ledge (with the heart) is reachable but
       takes a try or two; standing on any platform is safe; with the
       stage clothes on, freezing as the second guard walks toward you
-      lets him pass; a hold on Atake punches and says there is no gun;
+      lets him pass, with his meter pale blue and crawling; a guard who
+      does see him turns red with a "!", runs after him and keeps
+      shooting, never goes back to patrolling, and drops after two
+      punches; running away outpaces him; a hold on Atake punches and says there is no gun;
       the road feels long without dragging; running out of hearts
       restarts at the last citizen. The third pamphlet runs the
       post-test.
@@ -450,7 +463,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 538-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 544-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -522,6 +535,8 @@ submit_assessment).
         (placeholder script); shooting guards, sight bands, platform
         cover, noRanged, checkpoints, exit requiresFlag, setQuestText
         (section AU); Act I completable
+    38  hostile guards (chase, fire, hp 2); stage clothes 0.2, blue
+        meter and toast (section AU)
 
 ## Blocks remaining
 
@@ -675,12 +690,12 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 538 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 131
+test.js: 544 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 138
 checks driving the REAL content/act1.js and content/items.js through
 every Act I scene, from Nanay to the third pamphlet and the post-test.
 Both last ran green on 18 Sep 2026 against the device folder's files
-after Block 37 (Playwright's headless shell pointed at the sandbox's
+after Block 38 (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright

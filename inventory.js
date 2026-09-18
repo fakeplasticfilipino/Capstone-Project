@@ -617,7 +617,9 @@ const Inventory = {
       lines.push(`Paghagis ×${e.projectileSpeedMult} na bilis`);
     }
     if (typeof e.stillDetectionMult === "number" && e.stillDetectionMult < 1) {
-      lines.push("Kapag nakatayo lang at hindi nakilos, mabagal ka lang mapapansin ng mga gwardya.");
+      // Block 38. States how much, since "mabagal" alone undersold it.
+      const times = Math.round(1 / e.stillDetectionMult);
+      lines.push(`Kapag nakatayo ka lang, ${times}× na mas mabagal kang mapapansin ng mga bantay.`);
     }
     const u = item.use || {};
     if (typeof u.heal === "number" && u.heal > 0) {

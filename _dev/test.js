@@ -3381,7 +3381,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("Inventory.effects starts from a neutral multiplier", summed.effects.stillDetectionMult === 1, summed.effects);
     ok("and effectLines describes the effect in Tagalog",
-       summed.lines.some((l) => l.includes("mabagal ka lang mapapansin ng mga gwardya")), summed.lines);
+       summed.lines.some((l) => l.includes("2× na mas mabagal kang mapapansin ng mga bantay")), summed.lines);
 
     const stock = await page.evaluate(() => ({
       corner: Inventory.forSale(null).map((i) => i.id),
@@ -3773,7 +3773,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAU. Guards that shoot, sight from a platform, no gun, gated exits, checkpoints (Block 37)");
+  console.log("\nAU. Hostile guards, sight from a platform, no gun, gated exits, checkpoints (Blocks 37 and 38)");
   {
     // Against the fixture guard with fields switched on at run time, and
     // driven with the loop paused, so none of it depends on Act I's
@@ -3797,28 +3797,36 @@ const visible = (page, sel) => page.evaluate((s) => {
        band.exists && band.width === band.radius + "px", band);
     ok("and it turns with him", band.right === false && band.left === true, band);
 
-    // A shooter in front of Macario: the full meter is a shot, not a catch.
+    // A shooter in front of Macario: the full meter turns him hostile
+    // (Block 38), and a hostile guard fires, chases and does not calm down.
     const fired = await page.evaluate(() => {
       setPaused(true);
       setEffects({});
       const g = GUARDS[0];
       g.disabled = false; g.shoots = true; g.facing = 1; g.alert = 0; g.nextShotAt = 0;
+      g.hostile = false; g.hp = 2;
       g.patrolFrom = g.patrolTo = g.pos;
       posX = g.pos + GUARD_WIDTH + 100; posY = floorHeightAt(posX); onGround = true;
       health = maxHealth; invulnUntil = 0;
       const startX = posX;
       const detections = Game.stats().detections;
       let frames = 0;
-      while (!GUARD_BULLETS.length && frames < 400) { updateGuards(1); frames++; }
-      const r = { frames, bullets: GUARD_BULLETS.length, dom: document.querySelectorAll(".guard-bullet").length,
-                  alert: g.alert, cooling: g.nextShotAt > performance.now(),
-                  detections: Game.stats().detections - detections, posX, startX, health };
+      while (!g.hostile && frames < 400) { updateGuards(1); frames++; }
+      const turned = { frames, hostile: g.hostile, bulletsAtTurn: GUARD_BULLETS.length,
+                       marked: g.el.classList.contains("guard-hostile") };
+      g.nextShotAt = 0; // skip the aim delay, which is measured in real time
+      updateGuards(1);
+      const r = Object.assign(turned, {
+        bullets: GUARD_BULLETS.length, dom: document.querySelectorAll(".guard-bullet").length,
+        cooling: g.nextShotAt > performance.now(),
+        detections: Game.stats().detections - detections, posX, startX, health });
       setPaused(false);
       return r;
     });
-    ok("a shooting guard fires once his meter fills", fired.bullets === 1 && fired.dom === 1 && fired.frames > 50, fired);
-    ok("his meter empties and he cools down before the next", fired.alert === 0 && fired.cooling, fired);
-    ok("the shot counts one detection and does not catch him",
+    ok("a shooting guard turns hostile when his meter fills, marked with a !",
+       fired.hostile && fired.marked && fired.frames > 50 && fired.bulletsAtTurn === 0, fired);
+    ok("and then fires, and cools down before the next", fired.bullets === 1 && fired.dom === 1 && fired.cooling, fired);
+    ok("being seen counts one detection and does not catch him",
        fired.detections === 1 && fired.posX === fired.startX && fired.health === 3, fired);
 
     const hit = await page.evaluate(() => {
@@ -3837,7 +3845,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     const jumped = await page.evaluate(() => {
       setPaused(true);
       const g = GUARDS[0];
-      g.alert = 1; g.nextShotAt = 0; invulnUntil = 0;
+      g.hostile = true; g.nextShotAt = 0; invulnUntil = 0;
       const before = health;
       updateGuards(0);
       posY = floorHeightAt(posX) + 110; onGround = false; // in the air over it
@@ -3850,10 +3858,60 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("a bullet can be jumped", jumped.after === jumped.before, jumped);
 
+    const chase = await page.evaluate(() => {
+      setPaused(true);
+      const g = GUARDS[0];
+      g.nextShotAt = performance.now() + 60000; // no shots during the chase
+      posX = g.pos + GUARD_WIDTH + 600; posY = floorHeightAt(posX); onGround = true;
+      const from = g.pos;
+      for (let i = 0; i < 60; i++) updateGuards(1);
+      const closed = g.pos - from;
+      // Out of his sight entirely, behind him and far: he stays hostile.
+      posX = Math.max(0, g.pos - 900);
+      for (let i = 0; i < 300; i++) updateGuards(1);
+      const r = { closed, hostile: g.hostile, facing: g.facing, alert: g.alert,
+                  speedPerFrame: closed / 60 };
+      setPaused(false);
+      return r;
+    });
+    ok("a hostile guard runs at Macario, slower than Macario can run",
+       chase.closed > 100 && chase.speedPerFrame < 5, chase);
+    ok("and does not go back to looking when Macario gets away",
+       chase.hostile && chase.facing === -1 && chase.alert === 1, chase);
+
+    const punches = await page.evaluate(() => {
+      setPaused(true);
+      const g = GUARDS[0];
+      health = maxHealth; invulnUntil = 0;
+      posX = g.pos - 60; facing = 1; posY = floorHeightAt(posX);
+      meleeAttack();
+      const after1 = { disabled: g.disabled, hp: g.hp, health };
+      posX = g.pos - 60;
+      meleeAttack();
+      const after2 = { disabled: g.disabled, sight: getComputedStyle(g.el.querySelector(".guard-sight")).display };
+      setPaused(false);
+      return { after1, after2 };
+    });
+    ok("punching a hostile guard hurts him instead of Macario",
+       !punches.after1.disabled && punches.after1.hp === 1 && punches.after1.health === 3, punches);
+    ok("and a second punch puts him down", punches.after2.disabled && punches.after2.sight === "none", punches);
+
+    const reset = await page.evaluate(() => {
+      const g = GUARDS[0];
+      g.disabled = false; g.drawnDown = false; g.el.classList.remove("guard-down");
+      g.hostile = true;
+      respawnInScene();
+      updateGuards(0);
+      return { hostile: g.hostile, hp: g.hp, marked: g.el.classList.contains("guard-hostile") };
+    });
+    ok("running out of hearts sends every guard back to his post, calm",
+       !reset.hostile && reset.hp === 2 && !reset.marked, reset);
+
     const sight = await page.evaluate(() => {
       setPaused(true);
       const g = GUARDS[0];
-      g.shoots = false; g.nextShotAt = 0;
+      g.shoots = false; g.hostile = false; g.nextShotAt = 0; g.facing = 1;
+      g.disabled = false;
       posX = g.pos + GUARD_WIDTH + 100;
       const floor = floorHeightAt(posX);
       const fillAt = (height, grounded) => {
@@ -3871,6 +3929,25 @@ const visible = (page, sel) => page.evaluate((s) => {
        sight.floor > 0 && sight.onPlatform === 0, sight);
     ok("a low step is not, and neither is the middle of a jump",
        sight.low > 0 && sight.midJump > 0, sight);
+
+    const tint = await page.evaluate(() => {
+      setPaused(true);
+      const g = GUARDS[0];
+      g.alert = 0; posY = floorHeightAt(posX); onGround = true;
+      setEffects({ stillDetectionMult: 0.2 });
+      playerStill = true; updateGuards(1);
+      const still = g.el.classList.contains("guard-disguised");
+      playerStill = false; updateGuards(1);
+      const moving = g.el.classList.contains("guard-disguised");
+      setEffects({});
+      playerStill = true; updateGuards(1);
+      const without = g.el.classList.contains("guard-disguised");
+      g.alert = 0;
+      setPaused(false);
+      return { still, moving, without };
+    });
+    ok("the meter turns blue while the clothes are what is slowing it, and only then",
+       tint.still && !tint.moving && !tint.without, tint);
 
     const gun = await page.evaluate(() => {
       destroyProjectile();

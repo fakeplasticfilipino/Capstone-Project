@@ -75,7 +75,11 @@ window.ITEMS = [
     img: "Assets/Act 1/Damit_Entablado.png",
     icon: "i-shirt", // shown until the picture exists
     soldBy: "mananahi",
-    effect: { stillDetectionMult: 0.5 },
+    // Block 38: 0.2, five times slower, up from 0.5, on the proponent's
+    // report that half speed was visible but not convincing. A guard's
+    // meter that fills in about 1.4s takes about 7s while he stands still
+    // in these, which is long enough for a patrol to walk past him.
+    effect: { stillDetectionMult: 0.2 },
   },
 
   // The apple the horse is waiting for. A separate item from the one

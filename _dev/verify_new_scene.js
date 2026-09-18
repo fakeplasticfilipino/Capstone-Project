@@ -421,7 +421,7 @@ const talk = async (page, times) => {
 
   const detail = await page.evaluate(() => document.getElementById("shell-shop-detail").textContent);
   ok("priced at 100 barya, with its effect in the description",
-     detail.includes("100") && detail.includes("mabagal ka lang mapapansin ng mga gwardya"), detail);
+     detail.includes("100") && detail.includes("5× na mas mabagal kang mapapansin ng mga bantay"), detail);
   await page.click("#shell-shop-action");
   await page.waitForTimeout(250);
   const bought = await page.evaluate(() => ({ owns: Inventory.owns("damit-entablado"), balance: Game.currency() }));
@@ -440,7 +440,7 @@ const talk = async (page, times) => {
     mult: equipEffects.stillDetectionMult, sheet: SPRITE_SHEETS.idle.src,
   }));
   ok("it is worn in the Damit slot", worn.worn && worn.slot === "damit-entablado", worn);
-  ok("and wearing it halves detection while standing still", worn.mult === 0.5, worn);
+  ok("and wearing it makes detection five times slower while standing still", worn.mult === 0.2, worn);
   ok("with no outfit art, Macario keeps his own sprites", /Macario_Idle/.test(worn.sheet), worn);
   await page.click("#shell-inventory-back");
   await page.waitForTimeout(150);
@@ -682,33 +682,95 @@ const talk = async (page, times) => {
   ok("the gun is disabled here: no aim pose and no shot on a hold",
      aiming !== "aim" && !noGun.projectile && noGun.shooting === "melee" && noGun.toast === "Hindi puwedeng bumaril dito.", { aiming, noGun });
 
-  // A guard who sees him shoots, and the bullet costs a heart without
-  // sending him back to the start.
-  const shot = await page.evaluate(async () => {
+  // Block 38. In the stage clothes, standing still in a guard's sight: the
+  // meter crawls, and is blue while the clothes are what is holding it.
+  const disguise = await page.evaluate(async () => {
     const g = GUARDS.find((x) => x.id === "bantay-1");
     g.pos = 1000; g.facing = -1; g.alert = 0; g.nextShotAt = 0;
     g.patrolFrom = g.patrolTo = 1000; // hold him still for the measurement
     posX = 900; posY = GROUND_LEVEL; velY = 0;
     health = maxHealth; renderHearts(); invulnUntil = 0;
+    await new Promise((r) => setTimeout(r, 3000));
+    return { alert: g.alert, hostile: g.hostile, blue: g.el.classList.contains("guard-disguised"),
+             fill: getComputedStyle(g.fillEl).backgroundColor,
+             toast: document.getElementById("toast").textContent };
+  });
+  ok("in the stage clothes, three seconds in plain sight standing still barely fills his meter",
+     !disguise.hostile && disguise.alert > 0.1 && disguise.alert < 0.6, disguise);
+  ok("the meter is blue while the clothes hold him, and the first time says why",
+     disguise.blue && disguise.fill === "rgb(127, 200, 248)" && /Artista lang/.test(disguise.toast), disguise);
+
+  // Without them, the same spot: he turns hostile, then shoots, and the
+  // bullet costs a heart without sending Macario back to the start.
+  const shot = await page.evaluate(async () => {
+    const g = GUARDS.find((x) => x.id === "bantay-1");
+    const worn = equipEffects.stillDetectionMult;
+    setEffects({ stillDetectionMult: 1 });
+    g.alert = 0; invulnUntil = 0; health = maxHealth; renderHearts();
+    const detections0 = Game.stats().detections;
     const start = performance.now();
-    await new Promise((r) => { const t = setInterval(() => { if (GUARD_BULLETS.length || performance.now() - start > 4000) { clearInterval(t); r(); } }, 16); });
+    let turnedAt = null;
+    await new Promise((r) => { const t = setInterval(() => {
+      if (g.hostile && turnedAt === null) turnedAt = performance.now() - start;
+      if (GUARD_BULLETS.length || performance.now() - start > 5000) { clearInterval(t); r(); } }, 16); });
     const firedAt = performance.now() - start;
+    const marked = g.el.classList.contains("guard-hostile");
     const bulletShown = document.querySelectorAll(".guard-bullet").length;
     await new Promise((r) => setTimeout(r, 600));
-    return { firedAt, bulletShown, health, max: maxHealth, posX, detections: Game.stats().detections };
+    setEffects({ stillDetectionMult: worn });
+    return { turnedAt, firedAt, marked, bulletShown, health, max: maxHealth, posX,
+             detections: Game.stats().detections - detections0 };
   });
-  // He is wearing the stage clothes and standing still, so the meter takes
-  // about 2.8s rather than 1.4s.
-  ok("standing in a guard's sight, his meter fills and he fires a visible bullet",
-     shot.bulletShown === 1 && shot.firedAt > 2000 && shot.firedAt < 3600, shot);
+  ok("without the clothes his meter fills in under two seconds and he turns hostile, marked !",
+     shot.turnedAt > 900 && shot.turnedAt < 2000 && shot.marked, shot);
+  ok("then fires a visible bullet", shot.bulletShown === 1 && shot.firedAt > shot.turnedAt, shot);
   ok("the bullet takes one heart and knocks him back, not to the start",
      shot.health === shot.max - 1 && shot.posX < 900 && shot.posX > 600, shot);
-  ok("being shot at counts as being detected", shot.detections >= 1, shot);
+  ok("being seen counts once", shot.detections === 1, shot);
+
+  // Hostile means hostile: he comes after Macario and keeps shooting.
+  const hunt = await page.evaluate(async () => {
+    const g = GUARDS.find((x) => x.id === "bantay-1");
+    GUARD_BULLETS.forEach((b) => b.el.remove()); GUARD_BULLETS.length = 0;
+    health = maxHealth; renderHearts(); invulnUntil = 0;
+    const from = g.pos;
+    posX = 250; posY = GROUND_LEVEL; velY = 0; // well out of the sight he had
+    let shots = 0;
+    const t0 = performance.now();
+    await new Promise((r) => { const t = setInterval(() => {
+      shots = Math.max(shots, document.querySelectorAll(".guard-bullet").length);
+      if (performance.now() - t0 > 3500) { clearInterval(t); r(); } }, 16); });
+    return { from, pos: g.pos, hostile: g.hostile, facing: g.facing, shots };
+  });
+  ok("a hostile guard chases Macario out of the sight he started with",
+     hunt.hostile && hunt.facing === -1 && hunt.pos < hunt.from - 300, hunt);
+  ok("and keeps shooting at him rather than going back to looking", hunt.shots >= 1, hunt);
+
+  // Two punches put a hostile guard down.
+  const fought = await page.evaluate(() => {
+    const g = GUARDS.find((x) => x.id === "bantay-1");
+    GUARD_BULLETS.forEach((b) => b.el.remove()); GUARD_BULLETS.length = 0;
+    posX = g.pos - 60; facing = 1; posY = GROUND_LEVEL; invulnUntil = 0; health = maxHealth;
+    meleeAttack();
+    posX = g.pos - 60; facing = 1;
+    meleeAttack();
+    return { disabled: g.disabled, health };
+  });
+  ok("two punches put a hostile guard down", fought.disabled && fought.health === 3, fought);
+  await page.evaluate(() => { respawnInScene(); });
+  ok("a guard put down stays down through a respawn",
+     await page.evaluate(() => { const g = GUARDS.find((x) => x.id === "bantay-1"); return g.disabled; }));
+  await page.evaluate(() => {
+    const g = GUARDS.find((x) => x.id === "bantay-1");
+    g.disabled = false; g.drawnDown = false; g.el.classList.remove("guard-down");
+    g.hostile = false; g.alert = 0; g.hp = 2;
+  });
 
   // Standing on a platform is out of sight.
   const onPlat = await page.evaluate(async () => {
     const g = GUARDS.find((x) => x.id === "bantay-1");
-    g.alert = 0; g.pos = 1000; g.facing = -1;
+    g.alert = 0; g.pos = 1000; g.facing = -1; g.hostile = false;
+    GUARD_BULLETS.forEach((b) => b.el.remove()); GUARD_BULLETS.length = 0;
     posX = 1050; posY = 200; velY = 0; // over the low platform, falling onto it
     await new Promise((r) => setTimeout(r, 1500));
     return { alert: g.alert, onGround, height: posY - GROUND_LEVEL, bullets: GUARD_BULLETS.length };
@@ -716,7 +778,7 @@ const talk = async (page, times) => {
   ok("standing on a platform over a guard, he does not see Macario",
      onPlat.onGround && onPlat.height === 75 && onPlat.alert === 0 && onPlat.bullets === 0, onPlat);
 
-  // The stage clothes (Block 32) halve the fill while standing still, here
+  // The stage clothes (Block 32, 0.2 since Block 38) slow the fill while standing still, here
   // in shipped content, against a real guard.
   const fillRate = await page.evaluate(async () => {
     const g = GUARDS.find((x) => x.id === "bantay-1");
@@ -736,8 +798,8 @@ const talk = async (page, times) => {
     g.nextShotAt = 0;
     return { worn, withClothes, without, ratio: withClothes / without };
   });
-  ok("wearing the stage clothes, a guard's meter fills at half speed while Macario stands still",
-     fillRate.worn === 0.5 && fillRate.ratio > 0.4 && fillRate.ratio < 0.6, fillRate);
+  ok("wearing the stage clothes, a guard's meter fills at a fifth of the speed while Macario stands still",
+     fillRate.worn === 0.2 && fillRate.ratio > 0.1 && fillRate.ratio < 0.3, fillRate);
 
   // Guard 2's stretch is built for the clothes: freeze as he walks toward
   // Macario and he passes before the meter fills.

@@ -308,7 +308,7 @@ Scene shape:
       guards: [{ id, x, patrolFrom, patrolTo,    optional
                  speed, facing, detectRadius,
                  alertRate, decayRate,
-                 shoots,                         optional; Block 37
+                 shoots, hp,                     optional; Blocks 37, 38
                  animation }],
       noRanged: true,                            optional; no shot here
       checkpoints: [{ x, flag }]                 optional; respawn points
@@ -326,9 +326,11 @@ Every guard draws his sight on the road (.guard-sight): a band from the
 middle of his body, detectRadius long, on the side he faces. A guard does
 not see Macario while he stands on a platform GUARD_SIGHT_CLEARANCE (60)
 or more above the floor; in the middle of a jump he is still seen. A
-guard with shoots: true fires a bullet when his meter fills instead of
-catching, then cools down for GUARD_SHOT_COOLDOWN_MS; see Decisions on
-record, Block 37.
+guard with shoots: true does not catch: when his meter fills he turns
+hostile for good (a red "!"), chases and fires until he is punched down
+(hp, default 2) or Macario runs out of hearts; see Decisions on record,
+Blocks 37 and 38. While worn equipment is what slows a meter, it is
+drawn pale blue.
 
 noRanged: true takes Macario's shot away in that scene: a long hold on
 Atake punches and says why. checkpoints are where a respawn puts him: the
@@ -564,7 +566,7 @@ it makes the throw both quicker and more frequent from one lever.
 
 stillDetectionMult (Block 32) scales how fast a guard's meter fills
 while Macario stands still on the ground, and only slows it: a value of 1
-or more is ignored. Decay is untouched, and walking or jumping fills at
+or more is ignored. The stage clothes carry 0.2 since Block 38. Decay is untouched, and walking or jumping fills at
 the normal rate.
 
 soldBy names the NPC whose shop sells the item. A seller with any stock
@@ -2445,7 +2447,9 @@ rule for a placeholder. givePamphlet counts all three flags rather than
 adding one, so the order does not matter and a reload cannot miscount,
 and rewrites the quest line through setQuestText, the one new global.
 
-Guards that shoot. The request was that guards can shoot; the smallest
+Guards that shoot. (Superseded in part by Block 38: a full meter now turns
+a guard hostile rather than firing once, and detections count on the
+turn.) The request was that guards can shoot; the smallest
 honest version is that a full meter is a shot instead of a catch. The
 bullet is visible and slow enough to see (9 px a frame), travels at chest
 height the way he faces, and can be jumped, passes under a student on a
@@ -2467,7 +2471,8 @@ no front, and a mechanic learned without a tutorial has to be visible.
 Real guard art turns with his facing; a placeholder does not, so its
 filename stays readable.
 
-The stage clothes. stillDetectionMult was built in Block 32 against a
+The stage clothes. (Block 38 raised the effect to 0.2, about 7s.)
+stillDetectionMult was built in Block 32 against a
 fixture guard because Act I had none. The second guard's stretch is laid
 out for it: a student who freezes as he walks toward them is passed in
 about 2.4s, the meter takes about 2.8s to fill while standing still in
@@ -2498,6 +2503,45 @@ Assets/, so ASSET_VERSION is unchanged.
 Tuning, all chosen and none measured, like every number of its kind:
 guard radii of 200 to 300, a 1.5s shot cooldown, 60 of platform height
 for cover, and a road 7200px long. Judge them on a phone.
+
+Hostile guards, and a stronger disguise (Block 38). Reported after
+playing Block 37: a guard who fired once and went back to watching read
+as one who had forgotten what he saw, and the stage clothes' effect was
+visible but not convincing. The request was the ordinary game behaviour,
+detected then hostile.
+
+A shooting guard whose meter fills is now hostile until one of two
+things happens: he is put down, or Macario runs out of hearts and every
+guard goes back to his post. While hostile he ignores his patrol and his
+sight, faces Macario wherever he is, runs at him at GUARD_CHASE_SPEED
+(2.6, about half Macario's), stops at GUARD_HOLD_DISTANCE (170) and
+fires every GUARD_SHOT_COOLDOWN_MS (1300), the first shot GUARD_AIM_MS
+(450) after he turns. He does not give up on distance: that is the
+"back to looking" the proponent ruled out. Running still works because he
+is slower, and a platform or a jump still gets over his bullets, so no
+chase is unwinnable.
+
+Because he always faces Macario, a takedown from behind is impossible
+once he is hostile, so a punch on a hostile guard is now a hit rather
+than a mistake: he has hp (2 by default, like the moro-moro's guards),
+each punch knocks him back and delays his next shot, and the second puts
+him down. A punch from the front on a guard who has not yet seen Macario
+still costs a heart, and now also turns him hostile.
+
+detections is counted once, on the turn, not per shot, which is what the
+stealth term measures: how often he was seen, not how long a chase ran.
+
+The stage clothes go from 0.5 to 0.2, five times slower: about 7 seconds
+in plain sight standing still instead of 1.4, so a patrol walking toward
+a frozen student passes him every time. Two things make it visible rather
+than a number on trust: the meter is pale blue whenever the clothes are
+what is holding it back, and the first time in a scene a toast says why
+("Artista lang ang tingin niya sa iyo."). The item's line now says how
+much, "5× na mas mabagal", computed from the value. Once a guard is
+hostile the clothes do nothing, since he already knows.
+
+The first-time toast is remembered on the scene object for the session,
+not saved, and costs nothing if it repeats after a reload.
 
 ## Pitfalls
 
