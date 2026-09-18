@@ -22,12 +22,13 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 18 Sep 2026, after Block 36 (performance: the loop's
-per-frame waste, measured and cut). Blocks 22 to 29 were audited against GitHub main
-(commit 58f4a43, "UI Overhaul") earlier the same day. Blocks 30 to 36
-were written to the device folder; whether they are pushed is not
-recorded. The suite was run against the device folder's files: 524
-passed, 0 failed; _dev/verify_new_scene.js 97 passed, 0 failed.
+Last updated: 18 Sep 2026, after Block 37 (the end of the play, the
+Katipunan, and the pamphlet street; Act I can now be completed). Blocks
+22 to 29 were audited against GitHub main (commit 58f4a43, "UI
+Overhaul") earlier the same day. Blocks 30 to 37 were written to the
+device folder; the proponent pushes them. The suite was run against the
+device folder's files: 538 passed, 0 failed; _dev/verify_new_scene.js
+131 passed, 0 failed.
 
 ## Start here
 
@@ -42,14 +43,17 @@ score, feedback, currency, the shop, equipment and outfits,
 play-as-guest, sound, settings and the full reset (which needs schema
 v5), and the teacher dashboard.
 
-Speed: smooth on a real 4GB Android phone when last measured there, at
-Block 13. The proponent reported lag after Block 35, and Block 36 cut the
-game loop's per-frame layout and DOM work against Chrome's counters on a
-throttled build machine. Whether that fixed it on the phone is unknown.
+Speed: the lag reported after Block 35 is fixed. Block 36 cut the game
+loop's per-frame layout and DOM work, and the proponent confirmed the
+game runs smoothly on the Android phone afterwards, 18 Sep 2026. On a PC
+the animation looks slightly uneven; that is a development machine, not
+the target device, and the proponent has ruled it out of scope.
 
-Act I is three scenes and is the only act with content. Acts II to IV are
-registered stubs. Act I cannot be completed yet, on purpose: the fifth
-and last objective has no content (see Next action).
+Act I is four scenes and is the only act with content. Acts II to IV are
+registered stubs. Act I can be completed: the third pamphlet finishes it
+and runs the post-test. Everything from the end of the fight on (Block
+37) is a placeholder script, written ahead of the source book and owed a
+check against it (see Next action).
 
     tondo     Nanay (real art) hands Macario his money (200 barya) and
               brings up the kutsero, and the memory cuts him off.
@@ -71,8 +75,8 @@ and last objective has no content (see Next action).
               is 2900px, the Mananahi (placeholder box) talks about his
               stage costume, which completes it, and her shop opens:
               Damit para sa Entablado, 100 barya, worn in Damit, halves
-              how fast a guard notices him while he stands still. No
-              guard exists in Act I yet to notice. At the end of the
+              how fast a guard notices him while he stands still (the
+              lansangan's guards are what it is for). At the end of the
               road, now 2900px, stands the entablado (real art); Pasok
               at its stairs goes in.
     entablado the inside of the stage (Entablado.png as the whole
@@ -80,10 +84,27 @@ and last objective has no content (see Next action).
               itself: Maryam's six lines, a man walking on from the right
               (placeholder), three more lines, then five guards
               (placeholders) to fight, with Intense.mp3 under it. Winning
-              sets nagapiAngMgaGuwardiya and nothing else; until then
-              every entry replays the scene. Lumabas at the left edge goes
-              back out to the stairs, and is closed during the fight.
-              Neither going in nor winning completes pumunta_entablado.
+              sets nagapiAngMgaGuwardiya; until then every entry replays
+              the scene. Then Maryam announces the Christian kingdom won,
+              that she will convert and marry Macario, and the audience
+              cheers (dialogue only), which completes pumunta_entablado
+              (objective 5). Lumabas at the left edge goes back out to the
+              stairs, and is closed during the fight. The guards share
+              the man's placeholder, Muslim.png.
+    tondo     (after the play) Bonifacio and a Katipunero (placeholders)
+              wait at the stairs; a twelve-line meeting opens by itself:
+              greeting, the password, and the task, "Ipamahagi ang mga
+              polyeto (0/3)" (objective 6 done). Tumuloy at the end of the
+              road opens only now.
+    lansangan a 7200px street on the Tondo backdrop, in colour. No gun
+              (a hold punches). Four guards (Bantay.png placeholders) who
+              shoot when their meter fills, their sight drawn on the road;
+              three platforms of different heights that are out of sight;
+              a heart on the high one. Three citizens (Mamamayan.png
+              placeholders) each take a pamphlet through Iabot ang
+              polyeto. Running out of hearts restarts at the last one
+              reached. The third pamphlet completes objective 7 and Act I.
+              Bumalik at the left edge returns to tondo.
 
 content/items.js ships three items: the two apples and the stage
 clothes (Damit). No Sandata or Anting-anting item exists yet. The
@@ -105,18 +126,18 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    style.css v27        game.js v43          shell.js v13
+    style.css v28        game.js v44          shell.js v13
     inventory.js v8      acts.js v10          assessment.js v3
-    content/act1.js v26  content/items.js v7  content/act2-4.js v1
+    content/act1.js v27  content/items.js v7  content/act2-4.js v1
     ASSET_VERSION 14 (in game.js)
 
-Nothing from Blocks 14 to 36 has been seen on a phone. Everything in
+Nothing from Blocks 14 to 37 has been seen on a phone. Everything in
 that range is verified headlessly only. A device pass is owed before
 the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 36 are built. Blocks 22 to 36 were one build session, 17 to
+Blocks 1 to 37 are built. Blocks 22 to 37 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -151,8 +172,13 @@ Blocks 1 to 36 are built. Blocks 22 to 36 were one build session, 17 to
     36  performance: no layout read or needless DOM write per frame, the
         world sized to its scene, night tiles built only when needed,
         music tracks kept rather than refetched
+    37  placeholder script for the rest of Act I: Maryam's ending, the
+        Katipunan at the stairs, the lansangan street with three
+        pamphlets; guards that shoot, sight drawn on the road, platforms
+        out of sight, noRanged, checkpoints, gated exits; Act I
+        completable
 
-Push Blocks 30 to 36 together, with every file below in the same
+Push Blocks 30 to 37 together, with every file below in the same
 commit, or the ?v=N numbers will not match: game.js, acts.js, shell.js,
 inventory.js, style.css, index.html, content/act1.js, content/items.js,
 CLAUDE.md, TRACKER.md, _dev/test.js, _dev/verify_new_scene.js, and the
@@ -173,8 +199,8 @@ changed meaning; whether it has been is not recorded.
 
 In order.
 
-1. Push Blocks 30 to 36 (see Right now for the file list), then a
-device pass on Blocks 14 to 36, on the phone, in landscape, from a private tab
+1. Push Blocks 30 to 37 (see Right now for the file list), then a
+device pass on Blocks 14 to 37, on the phone, in landscape, from a private tab
 (browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
@@ -219,26 +245,36 @@ device pass on Blocks 14 to 36, on the phone, in landscape, from a private tab
       the touch buttons, the warning before a swing is noticeable, and
       five enemies at once do not drop the frame rate. Judge the pacing
       numbers here (see CLAUDE.md, Block 35) against a real student.
-    Speed after Block 36: whether the game still feels laggy, and where.
-      Name the scene and what is happening, since the remaining levers
-      (backdrop art size, the mirrored tiles, the flashback's grey
-      filter) are worth measuring on the device before touching.
     Kabayo: crisp pixels rather than a blur, standing on the road,
       roughly Macario's height. If he reads too small for a horse,
       that is one number (an NPC display height) to add.
+    After the play (Block 37): Maryam's ending plays straight after the
+      fight; out the door, Bonifacio's meeting opens by itself; Tumuloy
+      appears at the road's end only after it.
+    The street: the yellow sight band on the road is noticeable and
+      reads as which way a guard faces; a guard's bullet is visible in
+      time to jump; the high ledge (with the heart) is reachable but
+      takes a try or two; standing on any platform is safe; with the
+      stage clothes on, freezing as the second guard walks toward you
+      lets him pass; a hold on Atake punches and says there is no gun;
+      the road feels long without dragging; running out of hearts
+      restarts at the last citizen. The third pamphlet runs the
+      post-test.
 
-2. What the moro-moro leads to. The scene ends on the fight being won
-(nagapiAngMgaGuwardiya) and stops there. Act I's last objective,
-pumunta_entablado, has flag nasaEntablado, which nothing sets, so the act
-still cannot finish. Decide what follows the fight and where that flag is
-set, which is what finally lets Act I complete and run its post-test.
-Write it against the resource person's source book (Content authority,
-under The milestone). The engine already has a stage and a death
-cutscene mechanic; see CLAUDE.md.
+2. Check Block 37's placeholder script against the resource person's
+source book (Content authority, under The milestone), line by line:
+Maryam's ending, the meeting at the stairs (above all the password, Anak
+ng Bayan and the dilim and liwanag lines, and whether Bonifacio himself
+met Sakay after a performance), who the second Katipunero is, what the
+pamphlets were and who received them. content/act1.js marks the block.
+Act I is now completable, so this is also what stands between the build
+and a pilot.
 
-3. Remaining art, chased with the artist: Muslim.png and Guwardiya.png
-(Assets/Act 1/, the man and the five guards in the moro-moro, both
-placeholders now), Mananahi.png (Assets/Act 1/),
+3. Remaining art, chased with the artist: Muslim.png (Assets/Act 1/, the
+man in the moro-moro, whose sprite his five guards share; there is no
+Guwardiya.png), Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png
+(the street's guards), Mamamayan.png (the three citizens, one sprite
+shared unless the artist draws three) (all Assets/Act 1/),
 Damit_Entablado.png (Assets/Act 1/, the clothes' tile picture; outfit
 sheets later if he should look different wearing them),
 Macario's Dead sheet, and
@@ -251,19 +287,18 @@ against the source material.
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs. Everything through Block 36 is written to the device
-folder and passing its checks there; what is NOT known is whether any of
-it is pushed, and nothing since Block 13 has been seen on a phone. So the
-first two things a session can do that nobody else can do later are in
-Next action, in order: get the range pushed, and get a device pass done
-against the checklist there, including whether Block 36 actually fixed
-the lag the proponent reported.
+header directs. Everything through Block 37 is written to the device
+folder and passing its checks there; the proponent handles the push, and
+nothing since Block 13 except Block 36's speed fix has been seen on a
+phone. So the first things a session can do are in Next action, in
+order: a device pass against the checklist there, then checking Block
+37's placeholder script against the source book with the proponents.
 
-Three questions are waiting on the proponents rather than on code, and a
-session should ask rather than assume: what happens after the moro-moro's
-fight (which is what Act I's last objective needs), whether the man in
-that scene keeps the on-screen name Muslim, and whether his last line
-keeps the word puta. See Known problems and Blocked on other people.
+Two questions are waiting on the proponents rather than on code, and a
+session should ask rather than assume: whether the man in the moro-moro
+keeps the on-screen name Muslim, and whether his last line keeps the word
+puta. And Block 37's placeholder script waits on the source book (Next
+action, 2). See Known problems and Blocked on other people.
 
 ## The milestone
 
@@ -359,17 +394,19 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-The framework is complete. Act I has three scenes, five NPCs and five
-objectives, four of them playable end to end; the fifth waits on the
-entablado content. Acts II to IV are registered stubs with no content.
+The framework is complete. Act I has four scenes, ten NPCs and seven
+objectives, all playable end to end, so the act completes and runs its
+post-test; its last stretch (Block 37) is a placeholder script awaiting
+the source book. Acts II to IV are registered stubs with no content.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
 equipment, cosmetic rewards. (IN PROGRESS) All four are built and
 tested. Health, hazards and the shop are exercised by shipped content.
-Equipment is now exercised by shipped content (the stage clothes).
-Dynamic difficulty, and the clothes' effect, need a guard, which Act I
-does not ship yet, and outfits need art; all are proven against the
-harness fixture. What remains is content and art, not code.
+Equipment is exercised by shipped content: the stage clothes, whose
+effect the lansangan's guards now test (Block 37). Dynamic difficulty is
+built but Act I is its 1.00 multiplier, and outfits need art; both are
+proven against the harness fixture. What remains is content and art,
+not code.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and
 post-tests, server-side grading, in-game performance scoring,
@@ -384,15 +421,15 @@ work through.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest added for a quick look |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I has two scenes and cannot yet complete (fourth objective pending); Acts II to IV are stubs |
+| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I has four scenes and can be completed, which unlocks Act II; Acts II to IV are stubs |
 | Player Movement | (BUILT) |
 | Combat Mechanics | (BUILT) Melee punch on a tap, takedown from behind, a ranged shot on a hold, each with real animation, plus enemies that fight back (Block 35). Act I ships one fight, the five guards in the moro-moro |
-| Stealth Mechanics | (BUILT) Patrols, detection meter, hide spots. Verified against the harness fixture; no shipped act uses them yet |
+| Stealth Mechanics | (BUILT) Patrols, a detection meter, sight drawn on the road, hide spots, platforms out of sight, guards that shoot. Act I's lansangan uses them (four guards, three platforms) |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach measured edge to edge, NPCs that open the shop |
-| Narrative Delivery | (PARTIAL) Built. Act I uses it across two scenes and five NPCs, with conversations that open by themselves around the memory; Acts II to IV have none |
+| Narrative Delivery | (PARTIAL) Built. Act I uses it across four scenes and ten NPCs, with conversations that open by themselves and a scripted play; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups, and healing by eating a Mansanas |
-| Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, a two-column inventory, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one equipment item, the stage clothes (Damit, slower detection while still); its effect has no guard to act on yet |
+| Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, a two-column inventory, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one equipment item, the stage clothes (Damit, slower detection while still), which matters against the lansangan's guards |
 | Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No outfit ships yet; verified against the fixture catalogue |
 | Trivia | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Act Assessment | (BUILT) Act I seeded; Acts II to IV not seeded |
@@ -407,13 +444,13 @@ The paper specifies ten.
 
 | Requirement | Status |
 |---|---|
-| Performance | (PARTIAL) No build step, no framework, plain script tags. Measured on a 4GB Android phone at Block 13: smooth, at least 30fps. Reported laggy after Block 35; Block 36 cut the loop's per-frame layout and DOM writes (none at all while standing, halved while walking and fighting), measured with Chrome's counters on a throttled build machine. Unconfirmed on the device |
+| Performance | (BUILT) No build step, no framework, plain script tags. Reported laggy after Block 35; Block 36 cut the loop's per-frame layout and DOM writes (none at all while standing, halved while walking and fighting) and the phone was confirmed smooth again on 18 Sep 2026. Not re-measured in frames per second since Block 13 |
 | Reliability | (BUILT) Debounced save, ten second autosave backstop, beforeunload flush, logout flush |
 | Usability | (BUILT) Tagalog throughout. Every touch target measured on screen at 44px or more. Icons beside every label. Pixel theme with a legible body face and a three-step text size setting. Portrait shows a rotate notice |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 524-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 538-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -481,6 +518,10 @@ submit_assessment).
         the moro-moro on the entablado (section AS)
     36  per-frame layout and DOM writes cut; world sized per scene;
         lazy night tiles; music elements kept (section AT)
+    37  play ending, Katipunan meeting, lansangan pamphlet street
+        (placeholder script); shooting guards, sight bands, platform
+        cover, noRanged, checkpoints, exit requiresFlag, setQuestText
+        (section AU); Act I completable
 
 ## Blocks remaining
 
@@ -492,8 +533,8 @@ now folded into Next action, item 1: label sizes on the touch buttons,
 whether dialogue and quest text read comfortably at each text size,
 and whether the inventory and shop fit without scrolling to Bumalik.
 
-Act I's entablado beat, then Acts II to IV, written against the source
-material. (NOT STARTED)
+Act I's Block 37 placeholder script checked against the source book,
+then Acts II to IV written against it. (NOT STARTED)
 
 Seed trivia and assessment items for Acts II to IV. Until then those
 acts skip their tests with a notice, which is deliberate. (NOT STARTED)
@@ -528,8 +569,9 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the remaining art with the artist: Muslim.png, Guwardiya.png,
-Mananahi.png, Damit_Entablado.png,
+Chase the remaining art with the artist: Muslim.png (his guards share
+it), Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png,
+Mamamayan.png, Damit_Entablado.png,
 Macario's Dead sheet and Mansanas.png (see Known
 problems for where each shows). Later, once real items and the entablado
 content are decided, the art they need. (NOT STARTED)
@@ -555,9 +597,15 @@ two fonts and four sound files. Still missing, each falling
 back to the dashed placeholder box naming the file (or, for the item,
 to its symbol):
 
-    Assets/Act 1/Muslim.png    the man in the moro-moro
-    Assets/Act 1/Guwardiya.png the five guards he calls
+    Assets/Act 1/Muslim.png    the man in the moro-moro, and the five
+                               guards he calls (one sprite, by decision)
     Assets/Act 1/Mananahi.png  the Mananahi, on the tondo road
+    Assets/Act 1/Bonifacio.png   Bonifacio, outside the entablado
+    Assets/Act 1/Katipunero.png  the second Katipunero, beside him
+    Assets/Act 1/Bantay.png    the four guards on the lansangan (a
+                               sheet facing right; see CLAUDE.md,
+                               Pitfalls, for facing)
+    Assets/Act 1/Mamamayan.png the three citizens, one shared sprite
     Assets/Act 1/Damit_Entablado.png  the stage clothes' tile (the shirt
                                symbol stands in)
     Assets/Dead.png            Macario's death pose
@@ -587,20 +635,25 @@ The teacher dashboard (teacher.html, teacher.css) was not restyled by
 Block 29 and keeps its earlier look. It is a separate page for teachers,
 so this is a consistency gap, not a fault. (KNOWN)
 
-Only one phone has been tested, a 4GB Android device, and not since
-Block 13, which is also why Block 35's fight and Block 36's speed work
-are both unconfirmed where they matter. The harness covers 823 by 412 and 740 by 360 in landscape,
-which is a floor rather than a survey. (PARTIAL)
+Only one phone has been tested, a 4GB Android device. Block 36's speed
+work was confirmed on it; everything else added since Block 13, including
+Block 35's fight, is still unseen there. The harness covers 823 by 412
+and 740 by 360 in landscape, which is a floor rather than a survey.
+(PARTIAL)
+
+On a PC the animation looks slightly uneven, which the proponent has
+ruled out of scope: students play on phones, where it is smooth. The
+likely cause, if it is ever worth chasing, is that sprite frames are
+stepped against a clock tuned for a 60Hz screen while a desktop monitor
+often refreshes faster. Nothing was changed for it, on purpose.
+(KNOWN, OUT OF SCOPE)
 
 Dynamic difficulty cannot be demonstrated in the running game, because
-no shipped act has patrolling guards and Act I is the 1.00 multiplier.
-It does scale the moro-moro's enemies, which Act I now ships, but at
-1.00 that is not something a panel can see either. The same
-holds for the stage clothes' effect (Block 32): it slows a guard's
-notice, and Act I has no guard. The formula
-is documented and the harness proves it against a fabricated act. The
-honest answer to a panel is that the lever is built and the acts it
-scales are not written yet. (BY DESIGN)
+Act I is the 1.00 multiplier. It scales the lansangan's guards and the
+moro-moro's enemies, but at 1.00 that is not something a panel can see.
+The formula is documented and the harness proves it against a
+fabricated act. The honest answer to a panel is that the lever is built
+and the acts it scales are not written yet. (BY DESIGN)
 
 ## Deferred
 
@@ -622,11 +675,13 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 524 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 97
+test.js: 538 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 131
 checks driving the REAL content/act1.js and content/items.js through
-the tondo, kutsero and entablado scenes. Both last ran green on 17 Sep 2026
-against the device folder after Block 36. Anything other than "0 failed"
+every Act I scene, from Nanay to the third pamphlet and the post-test.
+Both last ran green on 18 Sep 2026 against the device folder's files
+after Block 37 (Playwright's headless shell pointed at the sandbox's
+preinstalled Chromium). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright
 may need its browser path pointed at the preinstalled Chromium. Audio

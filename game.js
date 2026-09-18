@@ -281,6 +281,17 @@ function completeQuest(id) {
   markDirty();
 }
 
+// Block 37. Rewrites a logged quest's line, for a task that counts
+// ("Ipamahagi ang mga polyeto (1/3)"). Does nothing for a quest not
+// logged, so content cannot add one by accident through here.
+function setQuestText(id, text) {
+  const q = quests.find((q) => q.id === id);
+  if (!q || q.text === text) return;
+  q.text = text;
+  renderQuests();
+  markDirty();
+}
+
 // Emptied on an act change. The log is "Mga Gawain", the tasks in
 // front of you now, not a permanent record of everything ever done.
 function clearQuests() {
@@ -322,6 +333,11 @@ let GUARDS = []; // patrolling guards, empty outside stealth scenes
 // run time (spawnEnemies). Declared up here because unloadScene and
 // updateHudVisibility, both reached at parse time, read it.
 let ENEMIES = [];
+// Block 37. Shots from guards in flight. Declared up here with the other
+// scene lists, not beside the code that fires them, because unloadScene
+// clears them and loadAct reaches unloadScene at parse time (the temporal
+// dead zone pitfall in CLAUDE.md).
+let GUARD_BULLETS = [];
 let enemiesDone = null; // resolves the spawnEnemies promise
 let HIDE_SPOTS = []; // regions that suppress guard detection
 let HAZARDS = []; // ground regions that cost one health on contact
@@ -486,6 +502,7 @@ function unloadScene() {
   HAZARDS = [];
   PICKUPS = [];
   ENEMIES = []; // their elements are in actElements, removed above
+  GUARD_BULLETS = []; // likewise
   enemiesDone = null;
   currentScene = null;
   currentSceneId = null;
@@ -1119,10 +1136,14 @@ function showPlaceholder(el, filename, width, height) {
   el.style.lineHeight = "1.3";
   el.style.overflowWrap = "break-word";
   el.textContent = filename;
+  // Block 37. Marked so a rule that mirrors real art for facing (a guard
+  // turning, style.css) can leave a box of text readable.
+  el.classList.add("sprite-placeholder");
 }
 
 // Undo showPlaceholder's inline styles so a real sprite renders cleanly.
 function clearPlaceholder(el) {
+  el.classList.remove("sprite-placeholder");
   el.textContent = "";
   el.style.display = "";
   el.style.border = "";
@@ -1488,6 +1509,9 @@ function findNearby() {
   // and the fight with them.
   const exits = enemiesAlive() ? [] : (currentScene && currentScene.exits) || [];
   for (const exit of exits) {
+    // Block 37. An exit may wait on a story flag: the road out of tondo
+    // opens only once the Katipunan has given Macario somewhere to go.
+    if (exit.requiresFlag && !state.flags[exit.requiresFlag]) continue;
     const dist = edgeGap(posX, PLAYER_WIDTH, exit.x, exit.width || 80);
     if (dist < INTERACT_DISTANCE && dist < closestDist) {
       closest = exit;
@@ -1887,6 +1911,14 @@ function buildGuards(token) {
       facingStart: def.facing || 1,
       alert: 0,
       disabled: false,
+      // Block 37. A guard that shoots fires once its meter fills instead
+      // of catching, and then waits this long before it can fire again.
+      nextShotAt: 0,
+      // What was last written to the page, so the loop writes only on a
+      // change (Block 36).
+      drawnFill: -1,
+      drawnFacing: 0,
+      drawnAlerted: null,
     })
   );
 
@@ -1902,6 +1934,18 @@ function buildGuards(token) {
     fill.className = "guard-meter-fill";
     meter.appendChild(fill);
     el.appendChild(meter);
+
+    // Block 37. The ground he can see, drawn. Which way a guard faces and
+    // how far he sees are the whole of the stealth rule, and neither was
+    // visible before: a placeholder box has no front. The band starts at
+    // the middle of his body and runs detectRadius, the same centre to
+    // centre distance updateGuards measures, so the picture and the rule
+    // are one number. It lies on the floor, so standing on a platform
+    // above it reads as being out of his sight, which is what it is.
+    const sight = document.createElement("div");
+    sight.className = "guard-sight";
+    sight.style.width = (guard.detectRadius || 240) + "px";
+    el.appendChild(sight);
 
     if (guard.animation) {
       const sprite = document.createElement("div");
@@ -1974,16 +2018,27 @@ function inHideSpot(x) {
 // whole test.
 // =============================================================
 
+// Block 37. Standing on a platform at least this high above the floor is
+// out of a guard's sight. A guard watches the road, and a student who has
+// climbed onto a roof or a stack of crates has left it. Only while standing
+// there: in the middle of a jump he is still in view, or every hop would be
+// a way through.
+const GUARD_SIGHT_CLEARANCE = 60;
+
+function aboveGuardSight() {
+  return onGround && posY - floorHeightAt(posX) >= GUARD_SIGHT_CLEARANCE;
+}
+
 function updateGuards(step) {
   if (!GUARDS.length) return;
 
-  const hidden = inHideSpot(posX);
+  const hidden = inHideSpot(posX) || aboveGuardSight();
+  const now = performance.now();
 
   GUARDS.forEach((guard) => {
     if (guard.disabled) {
       guard.alert = 0;
-      if (guard.fillEl) guard.fillEl.style.width = "0%";
-      if (guard.el) guard.el.classList.add("guard-down");
+      drawGuard(guard);
       return;
     }
 
@@ -2025,11 +2080,135 @@ function updateGuards(step) {
       guard.alert = Math.max(0, guard.alert - (guard.decayRate || 0.02) * step);
     }
 
-    guard.fillEl.style.width = Math.round(guard.alert * 100) + "%";
-    guard.el.classList.toggle("guard-alerted", guard.alert >= 1);
+    if (guard.alert >= 1) {
+      if (guard.shoots) {
+        // Block 37. A full meter is a shot rather than a catch. It holds
+        // full, drawn red, until the cooldown lets him fire, then empties.
+        if (now >= guard.nextShotAt) {
+          guardFire(guard, now);
+          guard.alert = 0;
+        }
+      } else {
+        caughtBy(guard);
+      }
+    }
 
-    if (guard.alert >= 1) caughtBy(guard);
+    drawGuard(guard);
   });
+}
+
+// Writes a guard's meter and facing only when they change (Block 36): a
+// scene with several guards on a long road would otherwise dirty every
+// one of them every frame.
+function drawGuard(guard) {
+  if (!guard.el) return;
+  const fill = guard.disabled ? 0 : Math.round(guard.alert * 100);
+  if (fill !== guard.drawnFill) {
+    guard.fillEl.style.width = fill + "%";
+    guard.drawnFill = fill;
+  }
+  const alerted = !guard.disabled && guard.alert >= 1;
+  if (alerted !== guard.drawnAlerted) {
+    guard.el.classList.toggle("guard-alerted", alerted);
+    guard.drawnAlerted = alerted;
+  }
+  if (guard.facing !== guard.drawnFacing) {
+    guard.el.classList.toggle("guard-facing-left", guard.facing === -1);
+    guard.drawnFacing = guard.facing;
+  }
+  if (guard.disabled && !guard.drawnDown) {
+    guard.el.classList.add("guard-down");
+    guard.drawnDown = true;
+  }
+}
+
+// =============================================================
+// GUARD SHOTS (Block 37)
+//
+// A guard declared shoots: true fires a visible bullet along the road the
+// moment his meter fills. It travels at chest height in the direction he
+// faces, so it can be jumped, it passes under a student on a platform, and
+// it can be outrun past its range. A hit costs one heart and knocks
+// Macario back the way the bullet was going, like the glass on the road;
+// it does not send him to the start of the scene. Running out of hearts
+// still does, to the scene's last checkpoint (respawnInScene).
+//
+// The shot is where being seen is counted, once per shot, so a student
+// who stands in view is counted once per bullet rather than every frame.
+// =============================================================
+
+const GUARD_BULLET_SPEED = 9;       // per 60fps frame; well under a dodge
+const GUARD_BULLET_SIZE = 10;       // must match .guard-bullet's CSS width
+const GUARD_BULLET_HEIGHT = 70;     // above the guard's floor: chest height
+const GUARD_BULLET_RANGE_EXTRA = 120; // past his detectRadius, then gone
+const GUARD_SHOT_COOLDOWN_MS = 1500;
+const GUARD_BULLET_RECOIL = 50;
+const PLAYER_HIT_HEIGHT = 110;      // how tall the body is for a bullet
+
+
+function guardFire(guard, now) {
+  guard.nextShotAt = now + GUARD_SHOT_COOLDOWN_MS;
+  detections += 1;
+  playSfx("gunShot");
+
+  const el = document.createElement("div");
+  el.className = "guard-bullet";
+  world.appendChild(el);
+  actElements.push(el);
+
+  const dir = guard.facing;
+  const x = dir >= 0
+    ? guard.pos + GUARD_WIDTH
+    : guard.pos - GUARD_BULLET_SIZE;
+  const y = floorHeightAt(guard.pos) + GUARD_BULLET_HEIGHT;
+  el.style.left = x + "px";
+  el.style.bottom = y + "px";
+
+  GUARD_BULLETS.push({
+    el, x, y, dir,
+    left: (guard.detectRadius || 240) + GUARD_BULLET_RANGE_EXTRA,
+  });
+
+  guard.el.classList.add("guard-firing");
+  setTimeout(() => guard.el && guard.el.classList.remove("guard-firing"), 180);
+}
+
+function updateGuardBullets(step) {
+  if (!GUARD_BULLETS.length) return;
+
+  GUARD_BULLETS = GUARD_BULLETS.filter((bullet) => {
+    const distance = GUARD_BULLET_SPEED * step;
+    bullet.x += distance * bullet.dir;
+    bullet.left -= distance;
+    bullet.el.style.left = bullet.x + "px";
+
+    const overlapsX =
+      bullet.x + GUARD_BULLET_SIZE > posX && bullet.x < posX + PLAYER_WIDTH;
+    const overlapsY =
+      bullet.y + GUARD_BULLET_SIZE > posY && bullet.y < posY + PLAYER_HIT_HEIGHT;
+
+    if (overlapsX && overlapsY && !inHideSpot(posX)) {
+      bullet.el.remove();
+      const hit = damagePlayer("Tinamaan ka ng bala!", false);
+      if (hit && health > 0) {
+        posX += bullet.dir * GUARD_BULLET_RECOIL;
+        posX = Math.max(0, Math.min(posX, WORLD_WIDTH - PLAYER_WIDTH));
+        velY = HAZARD_RECOIL_VELOCITY;
+      }
+      return false;
+    }
+
+    if (bullet.left <= 0 || bullet.x < 0 || bullet.x > WORLD_WIDTH) {
+      bullet.el.remove();
+      return false;
+    }
+    return true;
+  });
+}
+
+function clearGuardBullets() {
+  GUARD_BULLETS.forEach((bullet) => bullet.el.remove());
+  GUARD_BULLETS = [];
 }
 
 // Dialogue, cutscenes and overlays all suspend detection. Being spotted
@@ -2191,7 +2370,7 @@ function damagePlayer(reason, respawn) {
 // only restored when it ran out, so a player on one heart still feels it.
 function respawnInScene() {
   const scene = currentScene;
-  posX = scene && typeof scene.startX === "number" ? scene.startX : 0;
+  posX = respawnX(scene);
   posY = floorHeightAt(posX);
   velY = 0;
   facing = 1;
@@ -2216,14 +2395,30 @@ function respawnInScene() {
   // try is shorter than their first.
   resetEnemies();
 
+  clearGuardBullets();
+
   GUARDS.forEach((guard) => {
     if (guard.disabled) return;
     guard.pos = guard.x;
     guard.facing = guard.facingStart || 1;
     guard.alert = 0;
-    if (guard.fillEl) guard.fillEl.style.width = "0%";
+    guard.nextShotAt = 0;
     if (guard.el) guard.el.style.left = guard.pos + "px";
+    drawGuard(guard);
   });
+}
+
+// Block 37. Where a respawn puts Macario: the furthest checkpoint whose
+// flag is set, else the scene's startX. A scene declares checkpoints as
+// [{ x, flag }], and the flags are story flags already being set for
+// another reason (a pamphlet handed over), so a long road does not send a
+// student who ran out of hearts all the way back for work already done.
+function respawnX(scene) {
+  let x = scene && typeof scene.startX === "number" ? scene.startX : 0;
+  ((scene && scene.checkpoints) || []).forEach((cp) => {
+    if (cp.flag && state.flags[cp.flag] && cp.x > x) x = cp.x;
+  });
+  return x;
 }
 
 // =============================================================
@@ -2342,6 +2537,12 @@ let shootFireTimer = null; // hands the pose back after fire or melee
 // ATTACK_HOLD_MS still alone decides which one a release is.
 const AIM_POSE_DELAY_MS = 150;
 
+// Block 37. A scene that declares noRanged: true has no shot: a courier
+// carrying pamphlets past the guardia is not there to start a gunfight.
+function rangedDisabled() {
+  return Boolean(currentScene && currentScene.noRanged);
+}
+
 function startAttackHold() {
   if (authGated || uiBlocked || inDialogue || cutscenePlaying) return;
   attackHoldStart = performance.now();
@@ -2352,6 +2553,7 @@ function startAttackHold() {
 // tap goes straight from idle or walk into the punch.
 function updateAttackHoldPose(now) {
   if (!attackHoldStart || shooting === "aim") return;
+  if (rangedDisabled()) return; // nothing to aim
   if (now - attackHoldStart < AIM_POSE_DELAY_MS) return;
   shooting = "aim";
   applyAnim("shootAim", true);
@@ -2367,7 +2569,14 @@ function endAttackHold() {
     return;
   }
 
-  if (held >= ATTACK_HOLD_MS) {
+  if (held >= ATTACK_HOLD_MS && rangedDisabled()) {
+    // Block 37. A scene can take the gun away (noRanged). A hold still
+    // does something, a punch, so the button never feels dead, and says
+    // why it was not a shot.
+    showToast("Hindi puwedeng bumaril dito.");
+    meleeAttack();
+    playMelee();
+  } else if (held >= ATTACK_HOLD_MS) {
     // Fire the instant the throw happens, not before, so the muzzle
     // flash frame lands with the projectile actually appearing.
     throwProjectile();
@@ -2464,8 +2673,7 @@ function meleeAttack() {
 function disableGuard(guard, message) {
   guard.disabled = true;
   guard.alert = 0;
-  if (guard.fillEl) guard.fillEl.style.width = "0%";
-  if (guard.el) guard.el.classList.add("guard-down");
+  drawGuard(guard);
   if (message) showToast(message);
 }
 
@@ -3269,6 +3477,7 @@ function gameLoop(now) {
   // or holding the attack button, is standing still.
   playerStill = !isWalking && onGround;
   if (canAct) updateGuards(step);
+  if (canAct) updateGuardBullets(step);
   if (canAct) updateEnemies(step, now);
 
   // After the vertical resolution, so the ground test sees where the

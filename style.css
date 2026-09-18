@@ -1067,6 +1067,62 @@ html, body {
   background: #e53935;
 }
 
+/* Block 37. What a guard can see, laid on the road in front of him: from
+   the middle of his body, detectRadius long (game.js sets the width), in
+   the meter's own yellow. It is the only thing that says which way a
+   placeholder box is facing, and it lies on the floor so a student on a
+   platform can see he is above it. A guard who is down sees nothing. */
+.guard-sight {
+  position: absolute;
+  /* Half on the dirt, half above it: a light on the road rather than a
+     line lost in the ground's own edge. Sized for --zoom 0.7, where 16px
+     lands at about 11 on glass. */
+  bottom: -8px;
+  left: 50%;
+  height: 16px;
+  background: linear-gradient(to right, rgba(244, 197, 66, 0.8), rgba(244, 197, 66, 0.35) 70%, rgba(244, 197, 66, 0));
+  pointer-events: none;
+}
+
+.guard-facing-left .guard-sight {
+  left: auto;
+  right: 50%;
+  background: linear-gradient(to left, rgba(244, 197, 66, 0.8), rgba(244, 197, 66, 0.35) 70%, rgba(244, 197, 66, 0));
+}
+
+.guard-alerted .guard-sight {
+  background: linear-gradient(to right, rgba(229, 57, 53, 0.85), rgba(229, 57, 53, 0.4) 70%, rgba(229, 57, 53, 0));
+}
+
+.guard-facing-left.guard-alerted .guard-sight {
+  background: linear-gradient(to left, rgba(229, 57, 53, 0.85), rgba(229, 57, 53, 0.4) 70%, rgba(229, 57, 53, 0));
+}
+
+.guard-down .guard-sight {
+  display: none;
+}
+
+/* Real guard art turns with him. A placeholder box does not, or its
+   filename would read backwards; the band above shows his facing. */
+.guard-facing-left .npc-sprite:not(.sprite-placeholder) {
+  transform: scaleX(-1);
+}
+
+.guard-firing .npc-sprite {
+  filter: brightness(1.8);
+}
+
+/* A guard's shot. Red and square rather than Macario's gold ball, so the
+   two can never be mistaken, and above #player like his is. */
+.guard-bullet {
+  position: absolute;
+  width: 10px;
+  height: 6px;
+  background: #ff5252;
+  box-shadow: 0 0 0 2px #1a0f08;
+  z-index: 2;
+}
+
 /* Two filter functions rather than four (Block 36): the four-stage version
    read no better and a filter is re-run every frame it is on, five enemies
    at a time, on the phone this is drawn for. */

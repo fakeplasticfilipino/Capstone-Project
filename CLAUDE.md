@@ -97,17 +97,19 @@ and two purchasable outfits it carried were content decisions made without
 the source material either.
 
 Built forward from that reset since, one verified passage at a time
-(Blocks 19 to 21, then 31 to 35): Act I is no longer the one-scene blank
-slate above. It is three scenes. tondo is the road, from Nanay's errand
+(Blocks 19 to 21, then 31 to 37): Act I is no longer the one-scene blank
+slate above. It is four scenes. tondo is the road, from Nanay's errand
 past the Mananahi to the entablado at its end; kutsero is the flashback,
 which resolves without ending the act because a memory is not the act's
 own ending; entablado is the stage, where the moro-moro plays out and the
-first fight happens. Five objectives, the last of which
-(pumunta_entablado) has no flag-setter anywhere, which is what keeps the
-act open. content/items.js holds three items: two apples and the stage
-clothes, the first equipment. TRACKER.md, Start here, describes exactly
-what Act I contains today and what still has no content (anything after
-the fight, a patrolling guard, Acts II to IV).
+first fight happens; lansangan is the street past the end of the road,
+where Macario carries the Katipunan's pamphlets past guards. Seven
+objectives, and since Block 37 every one has a flag-setter, so Act I can
+be completed and runs its post-test. Block 37's script is a placeholder
+written ahead of the source book (see Decisions on record).
+content/items.js holds three items: two apples and the stage clothes, the
+first equipment. TRACKER.md, Start here, describes exactly what Act I
+contains today.
 
 None of this touched the ENGINE. Every mechanic the fuller version
 exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
@@ -305,7 +307,11 @@ Scene shape:
       pickups: [{ id, x, y, type: "heart" }],    optional; restores one health
       guards: [{ id, x, patrolFrom, patrolTo,    optional
                  speed, facing, detectRadius,
-                 alertRate, decayRate, img }]
+                 alertRate, decayRate,
+                 shoots,                         optional; Block 37
+                 animation }],
+      noRanged: true,                            optional; no shot here
+      checkpoints: [{ x, flag }]                 optional; respawn points
     }
 
 Acts written before scenes existed declare worldWidth, startX, npcs, stage
@@ -315,6 +321,19 @@ implicit scene, so content/act2.js through act4.js need no changes. Do not
 
 A guard whose patrolFrom and patrolTo are within 1px of each other is a
 stationary sentry and keeps its given facing.
+
+Every guard draws his sight on the road (.guard-sight): a band from the
+middle of his body, detectRadius long, on the side he faces. A guard does
+not see Macario while he stands on a platform GUARD_SIGHT_CLEARANCE (60)
+or more above the floor; in the middle of a jump he is still seen. A
+guard with shoots: true fires a bullet when his meter fills instead of
+catching, then cools down for GUARD_SHOT_COOLDOWN_MS; see Decisions on
+record, Block 37.
+
+noRanged: true takes Macario's shot away in that scene: a long hold on
+Atake punches and says why. checkpoints are where a respawn puts him: the
+furthest x whose flag is set, else startX. Both are read at the moment
+they are needed, not stored.
 
 A hazard's reason is the Tagalog toast shown on contact and defaults to
 "Nasugatan ka!". Hazards sit on the base floor and are cleared by jumping;
@@ -331,8 +350,8 @@ Acts II through IV are kept from reporting progress they have not made.
 That also means the act after it stays locked, which is correct. The
 same mechanism works one objective at a time: an objective whose flag
 nothing in content ever sets keeps the act from finishing without
-needing to be left out of the array, which is how Act I currently
-stops short of the courier task.
+needing to be left out of the array, which is how Act I was held open
+through Blocks 19 to 36.
 
 greyFilter reuses whatever backdrop #skyline already has (Assets/Act
 1/Tondo.png, at present) rather than needing a second background
@@ -354,7 +373,8 @@ reached edge to edge like an NPC. The interact button reads its label
 (default Pasok), and E calls Acts.gotoScene(toScene, { x: toX, facing:
 toFacing }), the same fade every scene change uses. Without toX the new
 scene's startX applies; an arrival dialogue's own x still wins over
-both. A building to walk into is a decoration for the picture plus an
+both. An exit may declare requiresFlag, and stays shut (no prompt) until
+that flag is set. A building to walk into is a decoration for the picture plus an
 exit at its door; a decoration with a single still image is an animation
 def with frames: 1. A decoration may also declare hidden: true, for a
 character a script brings on later, and facing: -1 to mirror its art.
@@ -454,6 +474,7 @@ of them plain globals in game.js, like addQuest:
     moveDecoration(id, x, pxPerSecond)   resolves on arrival
     spawnEnemies(defs)           resolves when every one of them is down
     setMusic(src | null)         null is the scene's own track, else Calm
+    setQuestText(id, text)       rewrites a logged quest's line (Block 37)
 
 An enemy def is { id, x, hp, speed, img | animation }. Enemies fight
 rather than patrol and are a separate list from guards: they walk at
@@ -2369,11 +2390,114 @@ timing check on a build machine says nothing about a phone.
 
 What was NOT done, and why: paint and raster could not be measured
 honestly here (a headless browser's compositor is not a phone's), so
-nothing was changed on a guess about them. If the phone is still slow
-after this, the next levers in order are the size of the backdrop art,
-the mirrored tiles' paint area, and the grayscale filter in the
-flashback, and each should be measured on the device before being
-touched.
+nothing was changed on a guess about them. It turned out not to be
+needed. The proponent confirmed the phone runs smoothly after this
+block, which closes the report. If speed is ever a question again, the
+next levers in order are the size of the backdrop art, the mirrored
+tiles' paint area, and the grayscale filter in the flashback, each
+measured on the device first.
+
+The same report noted that the animation looks slightly uneven on a PC.
+That was left alone by decision: the target device is a phone, where it
+is smooth, and the desktop camera is zoomed in 1.75 against the phone's
+0.7, which magnifies anything imperfect. The likely cause is sprite
+frames being stepped against a clock tuned for a 60Hz screen on a
+monitor that refreshes faster; smoothing that would trade real
+simplicity in the animator for a machine no student plays on.
+
+After the play, the Katipunan, and the pamphlets (Block 37). Requested as
+a placeholder for the rest of Act I: Maryam ends the moro-moro by
+announcing the Christian kingdom's victory, her conversion and her
+marriage to Macario, with the audience cheering in dialogue only; outside,
+Bonifacio and a second Katipunero greet him and speak in code, and give
+him a task; the road leads on to a second street on the same backdrop,
+where he hands pamphlets to three people past guards who shoot, with his
+own gun taken away, the stage clothes' effect working, and two or three
+varied platforms to stay out of sight.
+
+The whole script is a placeholder written ahead of the source book, and
+says so at the top of the script block in content/act1.js. Three things
+in it read as fact and must be checked against the book before the
+pilot: the password exchange (Anak ng Bayan, and the dilim and liwanag
+lines), that Bonifacio himself met Sakay after a performance, and what
+the pamphlets were. The second Katipunero is unnamed for the same
+reason.
+
+The last pamphlet finishes Act I and runs the post-test, at the
+proponent's direction. The end of the play now sets nasaEntablado, so
+all seven objectives have flag-setters for the first time. Seven
+objectives make the drip floor(50 / 7) = 7 a objective. A save that won
+the fight before this block walks into the ending instead of nothing: a
+second arrival dialogue on the entablado requires nagapiAngMgaGuwardiya
+and uses nasaEntablado itself as its doneFlag, so the ending plays once
+however it is reached.
+
+The meeting outside opens by itself on the fade out of the entablado
+(arrivalDialogues). Bonifacio carries the same lines as his first
+dialogue set, skipped once nakausapAngKatipunan is set, because an
+arrival plays only through a fade and a student who reloads before it
+would otherwise have nobody to get the task from.
+
+The pamphlets are three gifts (Iabot ang polyeto), the mechanism Kabayo's
+apple already uses, rather than an inventory item: a quest item is one of
+a kind by definition, and a stack of three would have meant a new item
+rule for a placeholder. givePamphlet counts all three flags rather than
+adding one, so the order does not matter and a reload cannot miscount,
+and rewrites the quest line through setQuestText, the one new global.
+
+Guards that shoot. The request was that guards can shoot; the smallest
+honest version is that a full meter is a shot instead of a catch. The
+bullet is visible and slow enough to see (9 px a frame), travels at chest
+height the way he faces, and can be jumped, passes under a student on a
+platform, and runs out past detectRadius plus 120. A hit costs one heart
+and knocks Macario on the way the bullet was going, like the glass on the
+road, rather than sending him to the start; a catch sending him back
+works on a short corridor, and this road is 7200px. Being shot at is
+where detections is counted, once per shot. The meter holds red until the
+1.5s cooldown lets him fire again. The gunshot sound is the one Macario's
+own pistol uses.
+
+Sight from a platform. Platforms were one-way ledges with no stealth
+meaning, and the request was platforms to avoid sight. The rule is the
+simplest one a student can see: standing on anything 60 or more above the
+floor is off the road a guard is watching. Only while standing, so a hop
+in front of a guard is not a way through. The guard's sight is now drawn
+on the road for the same reason the meter is drawn: a placeholder box has
+no front, and a mechanic learned without a tutorial has to be visible.
+Real guard art turns with his facing; a placeholder does not, so its
+filename stays readable.
+
+The stage clothes. stillDetectionMult was built in Block 32 against a
+fixture guard because Act I had none. The second guard's stretch is laid
+out for it: a student who freezes as he walks toward them is passed in
+about 2.4s, the meter takes about 2.8s to fill while standing still in
+the clothes and 1.4s without. The Katipunero says so in the briefing, and
+verify_new_scene.js checks it against the real guard, not the fixture.
+
+No gun. A scene declares noRanged, and a long hold punches instead of
+aiming and throwing, with a toast saying why, so the button never goes
+dead. The alternative, hiding Atake's hold, would have left a student
+pressing a button that does something in every other scene and nothing
+here without a word.
+
+Checkpoints. Running out of hearts on a 7200px road would send a student
+back past work already done, which is what the no-game-over rule is
+against. A scene's checkpoints name story flags already being set (the
+first and second pamphlet), so no new save state exists for them.
+
+Exits may wait on a flag (requiresFlag), because the road out of tondo
+should not open before anyone has given Macario a reason to take it.
+
+Art. The moro-moro's guards share the man's sprite, Muslim.png, at the
+proponent's direction; there is no Guwardiya.png. The street's guards are
+the town's rather than his, so they have their own placeholder,
+Bantay.png. Bonifacio.png, Katipunero.png and Mamamayan.png (shared by
+the three citizens) are placeholders too. No new file was added under
+Assets/, so ASSET_VERSION is unchanged.
+
+Tuning, all chosen and none measured, like every number of its kind:
+guard radii of 200 to 300, a 1.5s shot cooldown, 60 of platform height
+for cover, and a road 7200px long. Judge them on a phone.
 
 ## Pitfalls
 
@@ -2567,6 +2691,16 @@ that asks "is it owned" uses Inventory.owns(id); code that needs how
 many uses Inventory.count(id). Writing a count goes through _writeCount,
 which deletes at zero, because a row left at quantity 0 reads as owned
 to anything that only checks the row exists.
+
+A guard's placeholder is not mirrored when he turns, on purpose, and real
+guard art is (style.css, .guard-facing-left). That assumes the art faces
+right, as Macario's does. If a guard sheet arrives drawn facing left, it
+will walk backwards; the fix is in the CSS rule, not the content.
+
+A new element that a loop-time system creates per scene (Block 37's
+bullets) is declared with the scene lists near the top of game.js, not
+beside the code that uses it, because unloadScene resets it and loadAct
+reaches unloadScene at parse time.
 
 ## Accounts
 

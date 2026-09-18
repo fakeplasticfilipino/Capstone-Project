@@ -79,26 +79,140 @@
 // where her feet are across the cell, which is the point game.js
 // stands on the middle of her body (CLAUDE.md, Bodies, Block 24).
 //
+// Block 37, a placeholder pass written ahead of the source book and to be
+// corrected against it: the moro-moro now ends with Maryam announcing the
+// Christian kingdom's victory, her conversion and her marriage to Macario,
+// which sets nasaEntablado at last. Outside, Bonifacio and a second
+// Katipunero meet him at the stairs, exchange the password, and hand him
+// pamphlets. The road out of tondo then leads to "lansangan", a long street
+// with guards who shoot, no gun for Macario, and three people to give a
+// pamphlet to. The third one finishes Act I, which runs the post-test.
+//
 // Kutsero, Kabayo and Tindero have real art in Assets/Act 1/ (Block 33
 // sorted out a Kutsero and Tindero mix-up in the file names). The
 // Mananahi has none yet and draws as the dashed placeholder box naming
 // her file.
 // =============================================================
 
+// =============================================================
+// Block 37 script pieces, shared by more than one entry below (an arrival
+// conversation and the NPC who carries the same lines for a reload), so
+// each is written once. Plain top-level declarations: nothing here runs at
+// parse time, and state, addQuest and the rest belong to game.js, which is
+// loaded by the time any of these are called.
+//
+// PLACEHOLDER SCRIPT. Every line in this block was written ahead of the
+// resource person's source book, to give the scenes a shape. Check each one
+// against the book before the pilot, above all anything a student could
+// take as fact: the password, who met Sakay, and what the pamphlets were.
+// =============================================================
+
+// The end of the moro-moro: the Christian kingdom wins, and the princess
+// converts and marries the hero, which is how the form traditionally ends.
+const PLAY_ENDING = [
+  { speaker: "Maryam", text: "Mga manonood! Nagwagi ang kaharian ng mga Kristiyano!" },
+  { speaker: "Maryam", text: "Mula ngayon, tatalikuran ko ang dati kong pananampalataya. Ako ay magpapabinyag." },
+  { speaker: "Maryam", text: "At ako ay pakakasal kay Macario!" },
+  { speaker: "Macario", text: "Mahal ko, wala nang hahadlang sa atin!" },
+  { speaker: "Mga Manonood", text: "Mabuhay! Mabuhay ang magkasintahan!" },
+  { speaker: "Mga Manonood", text: "(Hiyawan at palakpakan)" },
+];
+
+function endOfPlay() {
+  state.flags.nasaEntablado = true;
+  completeQuest("pumunta_entablado");
+  markDirty();
+}
+
+// Outside the entablado. Greeting, the password asked and answered, then
+// the task. The costume line is what tells a student the stage clothes'
+// effect (stillDetectionMult, content/items.js) is worth something now.
+const KATIPUNAN_MEETING = [
+  { speaker: "Bonifacio", text: "Macario! Mahusay ang pagganap mo kanina." },
+  { speaker: "Macario", text: "Salamat, Andres. Hindi ko inaasahang manonood ka." },
+  { speaker: "Katipunero", text: "Kapatid, saan ka nanggaling?" },
+  { speaker: "Macario", text: "Sa dilim." },
+  { speaker: "Katipunero", text: "At saan ka patungo?" },
+  { speaker: "Macario", text: "Sa liwanag. Anak ng Bayan." },
+  { speaker: "Bonifacio", text: "Mabuti. Ligtas tayong mag-usap." },
+  { speaker: "Bonifacio", text: "May mga papel na kailangang makarating sa tatlong kapatid sa kabilang lansangan." },
+  { speaker: "Bonifacio", text: "Nagbabantay ang mga guardia civil doon. Iwan mo ang baril mo; hindi ito laban." },
+  { speaker: "Katipunero", text: "Kung makita ka, tumigil ka lang. Suot ang damit pang-entablado, aakalain nilang artista ka lang na pauwi." },
+  { speaker: "Katipunero", text: "Kung kailangan, umakyat ka. Ang bantay ay nakatingin sa daan, hindi sa itaas." },
+  { speaker: "Macario", text: "Makakaasa kayo." },
+];
+
+const PAMPHLET_FLAGS = ["nabigyanSiMangingisda", "nabigyanSiLabandera", "nabigyanSiKarpintero"];
+
+function pamphletText(n) {
+  return "Ipamahagi ang mga polyeto (" + n + "/" + PAMPHLET_FLAGS.length + ")";
+}
+
+function katipunanTask() {
+  addQuest("kausapin_katipunan", "Kausapin ang mga Katipunero");
+  completeQuest("kausapin_katipunan");
+  addQuest("ipamahagi_polyeto", pamphletText(0));
+  markDirty();
+}
+
+// A citizen's gift has just been handed over, so its flag is already set
+// (endDialogue, game.js). Counts all three rather than adding one, so the
+// order they are reached in does not matter and a reload cannot miscount.
+// The third finishes the objective, and with it Act I.
+function givePamphlet() {
+  const n = PAMPHLET_FLAGS.filter((f) => state.flags[f]).length;
+  setQuestText("ipamahagi_polyeto", pamphletText(n));
+  if (n >= PAMPHLET_FLAGS.length) {
+    state.flags.naipamahagiAngPolyeto = true;
+    completeQuest("ipamahagi_polyeto");
+    showToast("Naipamahagi mo ang lahat ng polyeto!");
+  } else {
+    showToast("Polyeto: " + n + " sa " + PAMPHLET_FLAGS.length);
+  }
+  markDirty();
+}
+
+// One citizen: talks before and after, and takes a pamphlet through the
+// gift button (Iabot ang polyeto), the same mechanism Kabayo's apple uses.
+// All three share one placeholder picture until the artist says otherwise.
+function citizen(id, x, label, flag, before, thanks) {
+  return {
+    id, x, label,
+    img: "Assets/Act 1/Mamamayan.png",
+    stage: 0,
+    dialogueSets: [
+      { skipIfFlag: flag, lines: before, onComplete: () => {} },
+      { lines: thanks, onComplete: () => {} },
+    ],
+    gift: {
+      buttonLabel: "Iabot ang polyeto",
+      requiresFlag: "nakausapAngKatipunan",
+      givenFlag: flag,
+      responseLines: [
+        { speaker: "Macario", text: "Anak ng Bayan. Para sa iyo ito, kapatid." },
+        thanks[0],
+      ],
+      onComplete: givePamphlet,
+    },
+  };
+}
+
 window.ACT_1 = {
   number: 1,
   title: "Origins",
   titleTagalog: "Ang Pinagmulan ni Macario",
 
-  // Five objectives since Block 32, which added kausapin_mananahi. The
-  // first two complete together, in Nanay's
-  // onComplete below, since in the story the trip to work starts the
-  // moment that conversation ends. The third has a real ending: giving
-  // Kabayo the apple (his gift, binilhanNgMansanasAngKabayo) sets it —
-  // that is the flashback resolving, not the act. The fourth,
-  // pumunta_entablado, is the one that actually closes Act I, and
-  // nothing in this file sets its flag yet: see the header above for
-  // why that is deliberate.
+  // Seven objectives since Block 37. The first two complete together, in
+  // Nanay's onComplete below, since in the story the trip to work starts
+  // the moment that conversation ends. The third, giving Kabayo the apple,
+  // is the flashback resolving, not the act. The fourth is the tailor
+  // (Block 32). The fifth, pumunta_entablado, was held open by having no
+  // flag-setter until Block 37; the end of the play now sets it. The sixth
+  // is the meeting with the Katipunan, and the seventh, the pamphlets, is
+  // the last: it is what finishes Act I and runs the post-test.
+  //
+  // Seven objectives make the currency drip floor(50 / 7) = 7 barya each,
+  // with the remainder paid on completion (CLAUDE.md, Decisions on record).
   objectives: [
     { id: "kausapin_nanay", label: "Kausapin si Nanay", flag: "nakausapKayNanay" },
     { id: "pumunta_trabaho", label: "Pumunta sa trabaho", flag: "nasaDaanPatungoSaTrabaho" },
@@ -108,7 +222,13 @@ window.ACT_1 = {
     // clothes is not required to finish it: the act should not be locked
     // behind a purchase (CLAUDE.md, the no-game-over rule).
     { id: "kausapin_mananahi", label: "Kausapin ang mananahi", flag: "nakausapAngMananahi" },
+    // Set when the play is over (Maryam's announcement, entablado scene).
     { id: "pumunta_entablado", label: "Pumunta sa entablado", flag: "nasaEntablado" },
+    // Block 37. The meeting at the stairs, and the pamphlets. The last one
+    // is the last objective, so handing over the third pamphlet finishes
+    // Act I and runs its post-test.
+    { id: "kausapin_katipunan", label: "Kausapin ang mga Katipunero", flag: "nakausapAngKatipunan" },
+    { id: "ipamahagi_polyeto", label: "Ipamahagi ang mga polyeto", flag: "naipamahagiAngPolyeto" },
   ],
 
   // Only the first two are known from the start. "Bilhan ng mansanas
@@ -150,6 +270,11 @@ window.ACT_1 = {
       exits: [
         { id: "pasok-entablado", x: 2330, width: 140, label: "Pasok",
           toScene: "entablado" },
+        // Block 37. The end of the road, open only once the Katipunan has
+        // given Macario the pamphlets. Same Tondo backdrop on the other
+        // side, through the usual fade.
+        { id: "tumuloy-lansangan", x: 2780, width: 120, label: "Tumuloy",
+          toScene: "lansangan", requiresFlag: "nakausapAngKatipunan" },
       ],
       startX: 80,
       // Block 31. The moment the flashback ends, back in the present,
@@ -177,6 +302,18 @@ window.ACT_1 = {
             addQuest("kausapin_mananahi", "Kausapin ang mananahi");
             markDirty();
           },
+        },
+        // Block 37. Out of the entablado after the play: Bonifacio and a
+        // second Katipunero are waiting at the stairs. Plays once, through
+        // the fade out of the entablado; a student who reloads before it
+        // opens gets the same conversation from Bonifacio (below).
+        {
+          requiresFlag: "nasaEntablado",
+          doneFlag: "nakausapAngKatipunan",
+          x: 2180, // the stairs; Katipunero's body ends at 2090
+          facing: -1,
+          lines: KATIPUNAN_MEETING,
+          onComplete: katipunanTask,
         },
       ],
       npcs: [
@@ -286,6 +423,65 @@ window.ACT_1 = {
                 { speaker: "Macario", text: "Andiyan na ba yung damit ko para sa entablado?" },
                 { speaker: "Mana", text: "Oo, pero bayad muna hehe..." },
               ],
+            },
+          ],
+        },
+
+        {
+          // Block 37. Waiting outside the entablado once the play is over.
+          // No art yet: Assets/Act 1/Bonifacio.png is the placeholder box.
+          id: "bonifacio",
+          x: 1900,
+          label: "Bonifacio",
+          img: "Assets/Act 1/Bonifacio.png",
+          startsHidden: true,
+          revealedByFlag: "nasaEntablado",
+          stage: 0,
+          dialogueSets: [
+            {
+              // The meeting itself, for the student who reloaded before
+              // the arrival conversation could open. Skipped once it has
+              // happened either way.
+              skipIfFlag: "nakausapAngKatipunan",
+              lines: KATIPUNAN_MEETING,
+              onComplete: () => {
+                state.flags.nakausapAngKatipunan = true;
+                katipunanTask();
+              },
+            },
+            {
+              lines: [
+                { speaker: "Bonifacio", text: "Sa dulo ng daan, tumuloy ka. Tatlong kapatid ang naghihintay." },
+                { speaker: "Bonifacio", text: "Huwag kang magpapakita sa mga bantay." },
+              ],
+              onComplete: () => {},
+            },
+          ],
+        },
+
+        {
+          // The second Katipunero, unnamed until the source says who.
+          // Assets/Act 1/Katipunero.png is the placeholder box.
+          id: "katipunero",
+          x: 2010,
+          label: "Katipunero",
+          img: "Assets/Act 1/Katipunero.png",
+          startsHidden: true,
+          revealedByFlag: "nasaEntablado",
+          stage: 0,
+          dialogueSets: [
+            {
+              lines: [
+                { speaker: "Katipunero", text: "Kay Andres ka makipag-usap, kapatid." },
+              ],
+              skipIfFlag: "nakausapAngKatipunan",
+              onComplete: () => {},
+            },
+            {
+              lines: [
+                { speaker: "Katipunero", text: "Kung makita ka ng bantay, tumigil ka lang. Isa ka lang artistang pauwi." },
+              ],
+              onComplete: () => {},
             },
           ],
         },
@@ -469,9 +665,14 @@ window.ACT_1 = {
       //
       // Maryam is a decoration: she only stands and speaks through the
       // script, and a decoration can do both without the E-to-talk an NPC
-      // would bring. The man and the guards have no art yet
-      // (Assets/Act 1/Muslim.png, Assets/Act 1/Guwardiya.png) and draw as
-      // the dashed placeholder box naming those files.
+      // would bring. The man has no art yet (Assets/Act 1/Muslim.png) and
+      // draws as the dashed placeholder box naming that file. His guards
+      // share his sprite (Block 37): there is no separate guard picture.
+      //
+      // Block 37. Winning the fight is not the end of the play any more:
+      // Maryam announces the Christian kingdom's victory, her conversion and
+      // her marriage to Macario, the audience cheers, and that sets
+      // nasaEntablado, the objective this scene exists for.
       id: "entablado",
       worldWidth: 1176,
       startX: 260,
@@ -534,19 +735,138 @@ window.ACT_1 = {
               id: "guwardiya-" + (i + 1),
               x,
               hp: 2,
-              img: "Assets/Act 1/Guwardiya.png",
+              animation: { src: "Assets/Act 1/Muslim.png", frames: 1, fps: 1 },
             })));
 
             setMusic(null);
             state.flags.nagapiAngMgaGuwardiya = true;
             markDirty();
             showToast("Napatumba mo ang mga guwardiya!");
+
+            await playDialogue(PLAY_ENDING);
+            endOfPlay();
           },
+        },
+        // Block 37. A student who won the fight on an earlier build, or who
+        // reloaded between the last guard falling and Maryam's lines, walks
+        // in to the ending instead of nothing. doneFlag is nasaEntablado
+        // itself, so the ending plays once however it is reached.
+        {
+          requiresFlag: "nagapiAngMgaGuwardiya",
+          doneFlag: "nasaEntablado",
+          x: 440,
+          facing: -1,
+          lines: PLAY_ENDING,
+          onComplete: endOfPlay,
         },
       ],
       exits: [
         { id: "lumabas-entablado", x: 0, width: 80, label: "Lumabas",
           toScene: "tondo", toX: 2180, toFacing: -1 },
+      ],
+    },
+
+    {
+      // Block 37. The street past the end of the tondo road: the same Tondo
+      // backdrop, reached through the usual fade, long on purpose (7200px,
+      // a little under three tondo roads) so the errand takes real time.
+      //
+      // Macario carries pamphlets for the Katipunan and three people along
+      // the road are waiting for one each. Four guards watch the road and
+      // shoot when their meter fills (shoots: true, game.js); he has no gun
+      // here (noRanged), so the ways past are to stay out of sight, to take
+      // a guard down from behind, or to stand still and trust the stage
+      // clothes, which halve how fast a guard's meter fills while he does.
+      //
+      // Each guard is placed to teach one of those:
+      //   1 patrols over the first, low, wide platform: climb and wait.
+      //   2 patrols a stretch with a small high ledge above it, and a
+      //     radius short enough that a student in the stage clothes who
+      //     freezes can let him walk past (about 2.4s to cross; the meter
+      //     takes 2.8s while still in the clothes, 1.4s without).
+      //   3 is a sentry facing the way Macario comes, under a long walkway:
+      //     go over him and drop down behind, where a punch takes him down.
+      //   4 patrols the last stretch before the third citizen, quicker.
+      // Numbers are chosen, not measured, like every other tuning number in
+      // this game; judge them on a phone.
+      //
+      // The guards have no art yet: Assets/Act 1/Bantay.png is their
+      // placeholder box, and the road's sight bands show which way each
+      // faces. The citizens share Assets/Act 1/Mamamayan.png.
+      id: "lansangan",
+      worldWidth: 7200,
+      startX: 200,
+      noRanged: true,
+      // Once, on the way in: who he is looking for, and the one rule.
+      arrivalDialogues: [
+        {
+          doneFlag: "nakaratingSaLansangan",
+          lines: [
+            { speaker: "Macario", text: "Isang mangingisda, isang labandera, at isang karpintero." },
+            { speaker: "Macario", text: "Walang dapat makakita sa akin na may dalang polyeto." },
+          ],
+        },
+      ],
+      exits: [
+        // The way back, so nobody is stuck on a street they walked into.
+        { id: "bumalik-tondo", x: 0, width: 80, label: "Bumalik",
+          toScene: "tondo", toX: 2740, toFacing: -1 },
+      ],
+      // Running out of hearts starts him at the last person he reached
+      // rather than at the start of a 7200px road.
+      checkpoints: [
+        { x: 1900, flag: "nabigyanSiMangingisda" },
+        { x: 4000, flag: "nabigyanSiLabandera" },
+      ],
+      // Three platforms, each a different shape: low and wide, small and
+      // high, long. All clear GUARD_SIGHT_CLEARANCE (60 above the floor,
+      // game.js), so standing on any of them is out of a guard's sight.
+      platforms: [
+        { x: 960, y: 135, width: 220 },   // 75 up, easy to reach
+        { x: 2700, y: 172, width: 100 },  // 112 up, near the top of a jump
+        { x: 4300, y: 150, width: 520 },  // 90 up, a walkway over a sentry,
+                                          // starting just out of his sight
+      ],
+      // A heart on the high ledge, worth the harder jump.
+      pickups: [
+        { id: "puso-lansangan", x: 2740, y: 172, type: "heart" },
+      ],
+      guards: [
+        { id: "bantay-1", x: 1000, patrolFrom: 820, patrolTo: 1400,
+          speed: 1.4, facing: -1, detectRadius: 240, shoots: true,
+          animation: { src: "Assets/Act 1/Bantay.png", frames: 1, fps: 1 } },
+        { id: "bantay-2", x: 2500, patrolFrom: 2350, patrolTo: 3150,
+          speed: 1.4, facing: -1, detectRadius: 200, shoots: true,
+          animation: { src: "Assets/Act 1/Bantay.png", frames: 1, fps: 1 } },
+        { id: "bantay-3", x: 4640, patrolFrom: 4640, patrolTo: 4640,
+          facing: -1, detectRadius: 300, shoots: true,
+          animation: { src: "Assets/Act 1/Bantay.png", frames: 1, fps: 1 } },
+        { id: "bantay-4", x: 5600, patrolFrom: 5400, patrolTo: 6250,
+          speed: 1.6, facing: 1, detectRadius: 200, shoots: true,
+          animation: { src: "Assets/Act 1/Bantay.png", frames: 1, fps: 1 } },
+      ],
+      npcs: [
+        citizen("mangingisda", 1800, "Mangingisda", "nabigyanSiMangingisda",
+          [
+            { speaker: "Mangingisda", text: "Psst. Ikaw ba ang artista?" },
+            { speaker: "Macario", text: "Anak ng Bayan." },
+            { speaker: "Mangingisda", text: "Ah, kapatid. May dala ka ba para sa akin?" },
+          ],
+          [{ speaker: "Mangingisda", text: "Salamat, kapatid. Babasahin ko ito mamayang gabi." }]),
+        citizen("labandera", 3900, "Labandera", "nabigyanSiLabandera",
+          [
+            { speaker: "Labandera", text: "Maraming bantay ngayon. Mag-ingat ka." },
+            { speaker: "Macario", text: "Anak ng Bayan." },
+            { speaker: "Labandera", text: "Kapatid! Iabot mo na, bago may makakita." },
+          ],
+          [{ speaker: "Labandera", text: "Itatago ko ito sa mga labada. Walang maghahanap doon." }]),
+        citizen("karpintero", 6600, "Karpintero", "nabigyanSiKarpintero",
+          [
+            { speaker: "Karpintero", text: "Nakalampas ka sa mga bantay? Magaling." },
+            { speaker: "Macario", text: "Anak ng Bayan." },
+            { speaker: "Karpintero", text: "Kapatid. Ako ang huli sa listahan mo, hindi ba?" },
+          ],
+          [{ speaker: "Karpintero", text: "Ipapasa ko ito sa mga kasama ko sa talyer. Salamat, kapatid." }]),
       ],
     },
   ],

@@ -3773,6 +3773,160 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAU. Guards that shoot, sight from a platform, no gun, gated exits, checkpoints (Block 37)");
+  {
+    // Against the fixture guard with fields switched on at run time, and
+    // driven with the loop paused, so none of it depends on Act I's
+    // content or on frame timing.
+    const { ctx, page } = await enterTestRoom();
+
+    const band = await page.evaluate(() => {
+      const g = GUARDS[0];
+      const sight = g.el.querySelector(".guard-sight");
+      setPaused(true);
+      g.patrolFrom = g.patrolTo = g.pos;
+      g.facing = 1; updateGuards(0);
+      const right = g.el.classList.contains("guard-facing-left");
+      g.facing = -1; updateGuards(0);
+      const left = g.el.classList.contains("guard-facing-left");
+      setPaused(false);
+      return { exists: Boolean(sight), width: sight && sight.style.width,
+               radius: g.detectRadius || 240, right, left };
+    });
+    ok("every guard draws his sight on the road, detectRadius long",
+       band.exists && band.width === band.radius + "px", band);
+    ok("and it turns with him", band.right === false && band.left === true, band);
+
+    // A shooter in front of Macario: the full meter is a shot, not a catch.
+    const fired = await page.evaluate(() => {
+      setPaused(true);
+      setEffects({});
+      const g = GUARDS[0];
+      g.disabled = false; g.shoots = true; g.facing = 1; g.alert = 0; g.nextShotAt = 0;
+      g.patrolFrom = g.patrolTo = g.pos;
+      posX = g.pos + GUARD_WIDTH + 100; posY = floorHeightAt(posX); onGround = true;
+      health = maxHealth; invulnUntil = 0;
+      const startX = posX;
+      const detections = Game.stats().detections;
+      let frames = 0;
+      while (!GUARD_BULLETS.length && frames < 400) { updateGuards(1); frames++; }
+      const r = { frames, bullets: GUARD_BULLETS.length, dom: document.querySelectorAll(".guard-bullet").length,
+                  alert: g.alert, cooling: g.nextShotAt > performance.now(),
+                  detections: Game.stats().detections - detections, posX, startX, health };
+      setPaused(false);
+      return r;
+    });
+    ok("a shooting guard fires once his meter fills", fired.bullets === 1 && fired.dom === 1 && fired.frames > 50, fired);
+    ok("his meter empties and he cools down before the next", fired.alert === 0 && fired.cooling, fired);
+    ok("the shot counts one detection and does not catch him",
+       fired.detections === 1 && fired.posX === fired.startX && fired.health === 3, fired);
+
+    const hit = await page.evaluate(() => {
+      setPaused(true);
+      const x0 = posX;
+      let frames = 0;
+      while (GUARD_BULLETS.length && frames < 200) { updateGuardBullets(1); frames++; }
+      const r = { health, max: maxHealth, moved: posX - x0, room: currentRoom,
+                  dom: document.querySelectorAll(".guard-bullet").length };
+      setPaused(false);
+      return r;
+    });
+    ok("the bullet costs one heart and knocks him on, not back to the start",
+       hit.health === hit.max - 1 && hit.moved === 50 && hit.dom === 0, hit);
+
+    const jumped = await page.evaluate(() => {
+      setPaused(true);
+      const g = GUARDS[0];
+      g.alert = 1; g.nextShotAt = 0; invulnUntil = 0;
+      const before = health;
+      updateGuards(0);
+      posY = floorHeightAt(posX) + 110; onGround = false; // in the air over it
+      let frames = 0;
+      while (GUARD_BULLETS.length && frames < 200) { updateGuardBullets(1); frames++; }
+      const r = { before, after: health };
+      posY = floorHeightAt(posX); onGround = true;
+      setPaused(false);
+      return r;
+    });
+    ok("a bullet can be jumped", jumped.after === jumped.before, jumped);
+
+    const sight = await page.evaluate(() => {
+      setPaused(true);
+      const g = GUARDS[0];
+      g.shoots = false; g.nextShotAt = 0;
+      posX = g.pos + GUARD_WIDTH + 100;
+      const floor = floorHeightAt(posX);
+      const fillAt = (height, grounded) => {
+        g.alert = 0; posY = floor + height; onGround = grounded; playerStill = true;
+        for (let i = 0; i < 20; i++) updateGuards(1);
+        const a = g.alert; g.alert = 0; return a;
+      };
+      const r = { floor: fillAt(0, true), onPlatform: fillAt(75, true),
+                  low: fillAt(40, true), midJump: fillAt(75, false) };
+      posY = floor; onGround = true;
+      setPaused(false);
+      return r;
+    });
+    ok("standing on a platform 60 or more above the floor is out of sight",
+       sight.floor > 0 && sight.onPlatform === 0, sight);
+    ok("a low step is not, and neither is the middle of a jump",
+       sight.low > 0 && sight.midJump > 0, sight);
+
+    const gun = await page.evaluate(() => {
+      destroyProjectile();
+      currentScene.noRanged = true;
+      attackHoldStart = performance.now() - 600;
+      endAttackHold();
+      const blocked = { projectile: Boolean(projectile), shooting };
+      currentScene.noRanged = false;
+      attackHoldStart = performance.now() - 600;
+      endAttackHold();
+      const allowed = Boolean(projectile);
+      destroyProjectile();
+      return { blocked, allowed };
+    });
+    ok("a scene with noRanged turns a long hold into a punch, with no shot",
+       !gun.blocked.projectile && gun.blocked.shooting === "melee", gun);
+    ok("and a scene without it still throws", gun.allowed, gun);
+
+    const gated = await page.evaluate(() => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      currentScene.exits = (currentScene.exits || []).concat([
+        { id: "test-gate", x: 900, width: 80, label: "Tumuloy", toScene: "tondo", requiresFlag: "test_bukas" }]);
+      posX = 900 - 40 - 20;
+      const closed = findNearby().type;
+      state.flags.test_bukas = true;
+      const open = findNearby();
+      return { closed, open: open.type, id: open.ref && open.ref.id };
+    });
+    ok("an exit with requiresFlag stays shut until the flag is set",
+       gated.closed !== "exit" && gated.open === "exit" && gated.id === "test-gate", gated);
+
+    const respawn = await page.evaluate(() => {
+      currentScene.checkpoints = [{ x: 900, flag: "test_cp" }, { x: 1400, flag: "test_cp_later" }];
+      respawnInScene();
+      const before = posX;
+      state.flags.test_cp = true;
+      respawnInScene();
+      const after = posX;
+      return { start: currentScene.startX, before, after };
+    });
+    ok("a respawn uses the furthest checkpoint whose flag is set",
+       respawn.before === respawn.start && respawn.after === 900, respawn);
+
+    const quest = await page.evaluate(() => {
+      addQuest("test_bilang", "Bilang (0/3)");
+      setQuestText("test_bilang", "Bilang (1/3)");
+      setQuestText("wala_ito", "x");
+      return { text: quests.find((q) => q.id === "test_bilang").text,
+               stray: quests.some((q) => q.id === "wala_ito"),
+               shown: [...document.querySelectorAll("#quest-list li")].some((li) => li.textContent === "Bilang (1/3)") };
+    });
+    ok("setQuestText rewrites a logged quest and adds nothing",
+       quest.text === "Bilang (1/3)" && !quest.stray && quest.shown, quest);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

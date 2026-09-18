@@ -1,3 +1,7 @@
+// Block 37 extended this past the entablado to the end of Act I: the
+// play ending, the Katipunan meeting, the lansangan street (shooting
+// guards, platform cover, no gun, the stage clothes against a real
+// guard) and the third pamphlet running the post-test.
 // One-off verification script for the extended kutsero scene: Kabayo,
 // Kutsero (+10 barya), the road hazard, Tindero's Tindahan (Mansanas,
 // 5 barya), and giving the apple back to Kabayo to end the memory —
@@ -350,7 +354,7 @@ const talk = async (page, times) => {
   ok("the apple quest is marked done in the log", afterGift.questDone && afterGift.questDone.done === true, afterGift.questDone);
   ok("a new, open quest to reach the entablado is logged", afterGift.entabladoQuest && afterGift.entabladoQuest.done === false, afterGift.entabladoQuest);
   ok("its objective's flag is not set — nothing completes it yet", afterGift.entabladoFlag !== true, afterGift.entabladoFlag);
-  ok("Act I now has five objectives, three of them done", afterGift.objTotal === 5 && afterGift.objDone === 3, afterGift);
+  ok("Act I now has seven objectives, three of them done", afterGift.objTotal === 7 && afterGift.objDone === 3, afterGift);
   ok("Mansanas is consumed, not kept, once it is actually given away", afterGift.ownsMansanas === false, afterGift);
   ok("and max health is still its base three, since no apple ever raised it", afterGift.maxHealth === 3, afterGift);
 
@@ -411,7 +415,7 @@ const talk = async (page, times) => {
     balance: Game.currency(),
   }));
   ok("the conversation completes the tailor quest", afterMana.quest && afterMana.quest.done === true, afterMana.quest);
-  ok("and its objective, four of five done", afterMana.done === 4, afterMana);
+  ok("and its objective, four of seven done", afterMana.done === 4, afterMana);
   ok("it ends straight into her shop", !afterMana.open && afterMana.shop === "shop", afterMana);
   ok("which sells the stage clothes and nothing else", afterMana.shelf.length === 1 && afterMana.shelf[0] === "damit-entablado", afterMana.shelf);
 
@@ -537,8 +541,8 @@ const talk = async (page, times) => {
   ok("five guards come in and the fight starts", fight.enemies === 5 && fight.alive === 5 && !fight.cutscene, fight);
   ok("the hearts show for it", fight.hearts, fight);
   ok("Intense.mp3 plays while it lasts", /Intense\.mp3/.test(fight.music || ""), fight);
-  ok("each guard is the placeholder naming Guwardiya.png",
-     fight.placeholder.includes("Guwardiya.png"), fight.placeholder);
+  ok("each guard shares the man's sprite, the placeholder naming Muslim.png (Block 37)",
+     fight.placeholder.includes("Muslim.png"), fight.placeholder);
 
   await walkTo(page, 40);
   await page.waitForTimeout(150);
@@ -560,6 +564,26 @@ const talk = async (page, times) => {
   ok("the fight does not finish Act I either",
      afterFight.status === "playing" && afterFight.entablado !== true, afterFight);
 
+  // Block 37. Maryam's announcement follows the fight, then the audience.
+  const endingLines = [];
+  for (let i = 0; i < 6; i++) {
+    endingLines.push(await page.evaluate(() => inDialogue && dialogueSpeaker.textContent + ": " + dialogueText.textContent));
+    await page.keyboard.press("e");
+    await page.waitForTimeout(140);
+  }
+  ok("Maryam announces the Christian kingdom won",
+     endingLines[0] === "Maryam: Mga manonood! Nagwagi ang kaharian ng mga Kristiyano!", endingLines);
+  ok("that she will convert and marry Macario",
+     /magpapabinyag/.test(endingLines[1] || "") && /pakakasal kay Macario/.test(endingLines[2] || ""), endingLines);
+  ok("and the audience cheers, in dialogue only",
+     endingLines[4] === "Mga Manonood: Mabuhay! Mabuhay ang magkasintahan!" &&
+     endingLines[5] === "Mga Manonood: (Hiyawan at palakpakan)", endingLines);
+  const afterPlay = await page.evaluate(() => ({ open: inDialogue, flag: state.flags.nasaEntablado,
+    quest: quests.find((q) => q.id === "pumunta_entablado"), done: Acts.countDone(1), status: Acts.status }));
+  ok("the end of the play completes Pumunta sa entablado, five of seven",
+     !afterPlay.open && afterPlay.flag === true && afterPlay.quest.done && afterPlay.done === 5 &&
+     afterPlay.status === "playing", afterPlay);
+
   const stagePic = await page.evaluate(() => new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve(img.naturalWidth);
@@ -577,6 +601,193 @@ const talk = async (page, times) => {
     src: document.getElementById("skyline").style.getPropertyValue("--skyline-src") }));
   ok("leaving lands back outside at the stairs, facing the road",
      out.room === "tondo" && out.posX === 2180 && out.facing === -1 && out.src === "", out);
+
+  // --- Block 37. The Katipunan at the stairs. ---
+  const meet = await page.evaluate(() => ({
+    open: inDialogue, line: dialogueSpeaker.textContent + ": " + dialogueText.textContent,
+    bonifacio: document.getElementById("npc-bonifacio").style.display !== "none",
+    katipunero: document.getElementById("npc-katipunero").style.display !== "none",
+    bPlaceholder: document.querySelector("#npc-bonifacio .sprite").textContent,
+  }));
+  ok("Bonifacio and a Katipunero are waiting outside", meet.bonifacio && meet.katipunero, meet);
+  ok("drawn as placeholders until art exists", /Bonifacio\.png/.test(meet.bPlaceholder), meet);
+  ok("the meeting opens by itself with Bonifacio's greeting",
+     meet.open && meet.line === "Bonifacio: Macario! Mahusay ang pagganap mo kanina.", meet);
+  ok("the road out is closed before the task is given",
+     await page.evaluate(() => { const saved = posX; posX = 2800; const n = findNearby(); posX = saved; return n.type !== "exit"; }));
+  const meetLines = [meet.line];
+  for (let i = 0; i < 11; i++) {
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+    meetLines.push(await page.evaluate(() => inDialogue && dialogueSpeaker.textContent + ": " + dialogueText.textContent));
+  }
+  ok("they exchange the password", meetLines.includes("Macario: Sa liwanag. Anak ng Bayan."), meetLines);
+  ok("and he is told to leave the gun and trust the stage clothes",
+     meetLines.some((l) => /Iwan mo ang baril/.test(l || "")) &&
+     meetLines.some((l) => /damit pang-entablado/.test(l || "")), meetLines);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(200);
+  const task = await page.evaluate(() => ({ open: inDialogue, flag: state.flags.nakausapAngKatipunan,
+    quest: quests.find((q) => q.id === "ipamahagi_polyeto"), done: Acts.countDone(1) }));
+  ok("closing it gives the pamphlet task, 0 of 3", !task.open && task.flag === true &&
+     task.quest && task.quest.text === "Ipamahagi ang mga polyeto (0/3)" && !task.quest.done, task);
+  ok("and completes the meeting objective, six of seven", task.done === 6, task);
+  await talk(page, 1);
+  await walkTo(page, 1830);
+  await talk(page, 2);
+  ok("Bonifacio repeats the direction afterwards rather than the meeting",
+     await page.evaluate(() => !inDialogue && NPCS.find((n) => n.id === "bonifacio").stage === 1));
+
+  await walkTo(page, 2720);
+  await page.waitForTimeout(100);
+  ok("at the end of the road the prompt reads Tumuloy",
+     (await page.evaluate(() => document.querySelector("#btn-interact .lbl").textContent)) === "Tumuloy");
+  await page.keyboard.press("e");
+  await page.waitForTimeout(2600);
+
+  // --- The street. ---
+  const street = await page.evaluate(() => ({
+    room: currentRoom, width: WORLD_WIDTH, guards: GUARDS.length, shooters: GUARDS.filter((g) => g.shoots).length,
+    platforms: PLATFORMS.length, heights: PLATFORMS.map((p) => p.y - GROUND_LEVEL),
+    citizens: NPCS.length, grey: document.getElementById("skyline").classList.contains("grey-filter"),
+    src: document.getElementById("skyline").style.getPropertyValue("--skyline-src"),
+    hearts: !document.getElementById("hud").classList.contains("hidden"),
+    open: inDialogue, line: dialogueSpeaker.textContent + ": " + dialogueText.textContent,
+    guardPlaceholder: document.querySelector("#guard-bantay-1 .sprite").textContent,
+  }));
+  ok("Tumuloy fades to the street, on the Tondo backdrop in colour",
+     street.room === "lansangan" && street.src === "" && !street.grey, street);
+  ok("the road is long: 7200px", street.width === 7200, street);
+  ok("four guards, all of whom shoot, drawn as Bantay.png placeholders",
+     street.guards === 4 && street.shooters === 4 && /Bantay\.png/.test(street.guardPlaceholder), street);
+  ok("three platforms of different heights, all above a guard's sight",
+     street.platforms === 3 && new Set(street.heights).size === 3 && street.heights.every((h) => h >= 60), street.heights);
+  ok("three citizens and the hearts showing", street.citizens === 3 && street.hearts, street);
+  ok("Macario says who he is looking for on the way in",
+     street.open && /mangingisda/.test(street.line), street.line);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(120);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(150);
+
+  // No gun: a long hold punches and throws nothing.
+  await page.evaluate(() => { posX = 300; });
+  await page.keyboard.down("j");
+  await page.waitForTimeout(550);
+  const aiming = await page.evaluate(() => shooting);
+  await page.keyboard.up("j");
+  await page.waitForTimeout(60);
+  const noGun = await page.evaluate(() => ({ projectile: Boolean(projectile), shooting,
+    toast: document.getElementById("toast").textContent }));
+  ok("the gun is disabled here: no aim pose and no shot on a hold",
+     aiming !== "aim" && !noGun.projectile && noGun.shooting === "melee" && noGun.toast === "Hindi puwedeng bumaril dito.", { aiming, noGun });
+
+  // A guard who sees him shoots, and the bullet costs a heart without
+  // sending him back to the start.
+  const shot = await page.evaluate(async () => {
+    const g = GUARDS.find((x) => x.id === "bantay-1");
+    g.pos = 1000; g.facing = -1; g.alert = 0; g.nextShotAt = 0;
+    g.patrolFrom = g.patrolTo = 1000; // hold him still for the measurement
+    posX = 900; posY = GROUND_LEVEL; velY = 0;
+    health = maxHealth; renderHearts(); invulnUntil = 0;
+    const start = performance.now();
+    await new Promise((r) => { const t = setInterval(() => { if (GUARD_BULLETS.length || performance.now() - start > 4000) { clearInterval(t); r(); } }, 16); });
+    const firedAt = performance.now() - start;
+    const bulletShown = document.querySelectorAll(".guard-bullet").length;
+    await new Promise((r) => setTimeout(r, 600));
+    return { firedAt, bulletShown, health, max: maxHealth, posX, detections: Game.stats().detections };
+  });
+  // He is wearing the stage clothes and standing still, so the meter takes
+  // about 2.8s rather than 1.4s.
+  ok("standing in a guard's sight, his meter fills and he fires a visible bullet",
+     shot.bulletShown === 1 && shot.firedAt > 2000 && shot.firedAt < 3600, shot);
+  ok("the bullet takes one heart and knocks him back, not to the start",
+     shot.health === shot.max - 1 && shot.posX < 900 && shot.posX > 600, shot);
+  ok("being shot at counts as being detected", shot.detections >= 1, shot);
+
+  // Standing on a platform is out of sight.
+  const onPlat = await page.evaluate(async () => {
+    const g = GUARDS.find((x) => x.id === "bantay-1");
+    g.alert = 0; g.pos = 1000; g.facing = -1;
+    posX = 1050; posY = 200; velY = 0; // over the low platform, falling onto it
+    await new Promise((r) => setTimeout(r, 1500));
+    return { alert: g.alert, onGround, height: posY - GROUND_LEVEL, bullets: GUARD_BULLETS.length };
+  });
+  ok("standing on a platform over a guard, he does not see Macario",
+     onPlat.onGround && onPlat.height === 75 && onPlat.alert === 0 && onPlat.bullets === 0, onPlat);
+
+  // The stage clothes (Block 32) halve the fill while standing still, here
+  // in shipped content, against a real guard.
+  const fillRate = await page.evaluate(async () => {
+    const g = GUARDS.find((x) => x.id === "bantay-1");
+    const measure = async () => {
+      g.alert = 0; g.pos = 1000; g.facing = -1; g.nextShotAt = performance.now() + 60000;
+      posX = 850; posY = GROUND_LEVEL; velY = 0;
+      await new Promise((r) => setTimeout(r, 50));
+      g.alert = 0;
+      await new Promise((r) => setTimeout(r, 500));
+      return g.alert;
+    };
+    const worn = equipEffects.stillDetectionMult;
+    const withClothes = await measure();
+    setEffects({ stillDetectionMult: 1 });
+    const without = await measure();
+    setEffects({ stillDetectionMult: worn });
+    g.nextShotAt = 0;
+    return { worn, withClothes, without, ratio: withClothes / without };
+  });
+  ok("wearing the stage clothes, a guard's meter fills at half speed while Macario stands still",
+     fillRate.worn === 0.5 && fillRate.ratio > 0.4 && fillRate.ratio < 0.6, fillRate);
+
+  // Guard 2's stretch is built for the clothes: freeze as he walks toward
+  // Macario and he passes before the meter fills.
+  const freeze = await page.evaluate(async () => {
+    const g = GUARDS.find((x) => x.id === "bantay-2");
+    GUARD_BULLETS.forEach((b) => b.el.remove()); GUARD_BULLETS.length = 0;
+    health = maxHealth; renderHearts(); invulnUntil = 0;
+    g.pos = 3150; g.facing = -1; g.alert = 0; g.nextShotAt = 0;
+    posX = 2890; posY = GROUND_LEVEL; velY = 0; // just past his sight
+    const start = health;
+    await new Promise((r) => setTimeout(r, 4200));
+    return { start, health, peak: g.alert, passed: g.pos + 20 < posX + 20 };
+  });
+  ok("freezing in the stage clothes lets guard 2 walk past without a shot",
+     freeze.health === freeze.start && freeze.passed, freeze);
+
+  // The three pamphlets.
+  const give = async (x) => {
+    await page.evaluate(() => { GUARD_BULLETS.forEach((b) => b.el.remove()); GUARD_BULLETS.length = 0; GUARDS.forEach((g) => { g.disabled = true; }); });
+    await walkTo(page, x);
+    await page.waitForTimeout(80);
+    const button = await visible(page, "#gift-btn");
+    const label = await page.evaluate(() => document.querySelector("#gift-btn .lbl") ? document.querySelector("#gift-btn .lbl").textContent : document.getElementById("gift-btn").textContent);
+    await page.click("#gift-btn");
+    await page.waitForTimeout(120);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(250);
+    return { button, label, quest: await page.evaluate(() => quests.find((q) => q.id === "ipamahagi_polyeto")) };
+  };
+  const first = await give(1720);
+  ok("at the Mangingisda, Iabot ang polyeto", first.button && first.label === "Iabot ang polyeto", first);
+  ok("and the count goes to 1/3", first.quest.text === "Ipamahagi ang mga polyeto (1/3)", first.quest);
+  await page.evaluate(() => { health = 1; });
+  await page.evaluate(() => { invulnUntil = 0; damagePlayer("test", false); });
+  await page.waitForTimeout(100);
+  ok("running out of hearts after the first pamphlet restarts at it, not at the road's start",
+     await page.evaluate(() => currentRoom === "lansangan" && posX === 1900 && health === maxHealth));
+  const second = await give(3820);
+  ok("the Labandera makes it 2/3", second.quest.text === "Ipamahagi ang mga polyeto (2/3)", second.quest);
+  ok("and Act I is still playing", await page.evaluate(() => Acts.status === "playing"));
+  const third = await give(6520);
+  ok("the Karpintero makes it 3/3 and completes the task",
+     third.quest.done === true && /3\/3/.test(third.quest.text), third.quest);
+  await page.waitForTimeout(1500);
+  const end = await page.evaluate(() => ({ flag: state.flags.naipamahagiAngPolyeto, done: Acts.countDone(1),
+    status: Acts.status, quiz: !document.getElementById("quiz").classList.contains("hidden") }));
+  ok("the third pamphlet finishes Act I: seven of seven, and the post-test opens",
+     end.flag === true && end.done === 7 && end.status === "posttest" && end.quiz, end);
 
   await ctx.close();
   await browser.close();
