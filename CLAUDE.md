@@ -434,8 +434,9 @@ dialogueSet's own onComplete already has. Most gifts have nothing
 further to do once given; Kabayo's (content/act1.js, Blocks 20-21)
 uses it to add the next quest, "Pumunta sa entablado", and leave the
 scene, Acts.gotoScene("tondo") — the kutsero scene is a flashback, and
-resolving it returns Macario to tondo without finishing Act I, which
-still has an open fourth objective (pumunta_entablado) nothing sets.
+resolving it returns Macario to tondo without finishing Act I, whose
+later objectives (the entablado, the Katipunan, the pamphlets) are
+still open.
 
 opensShop: true skips dialogue entirely: pressing E opens Tindahan
 directly (Game.onShopRequest, below), and the NPC needs no
@@ -2781,8 +2782,8 @@ but a fresh headless fetch of the same files shows her fine, suspect this
 before suspecting the code: hard refresh, or open the live URL in a
 private window, and confirm the v=N numbers referenced by index.html
 actually match a bump made after the file they reference last changed.
-This session's own edits keep the numbers matched (see the Run log in
-TRACKER.md for the values in effect after Block 13); nothing here reaches
+Each session's edits keep the numbers matched (TRACKER.md, Start here,
+lists the versions currently in effect); nothing here reaches
 outside this environment to commit or push, so keeping index.html and
 the files it names in step is the pushing side's responsibility, not
 something a later Claude session can verify by fetching GitHub alone.

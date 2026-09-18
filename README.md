@@ -46,27 +46,29 @@ See TRACKER.md, which is the only file in this repository that describes
 status. Anything about progress stated anywhere else, including here, may
 be out of date.
 
-In short: every system is built and live, and the game ran smoothly on a
-real Android phone when it was last measured there, several rounds of
-work ago; everything since needs a phone pass. Assessment, performance
+In short: every system is built and live, and the game runs smoothly on
+a real Android phone; the newest content still needs a full pass on
+one. Assessment, performance
 scoring, equipment, currency, cosmetics and the teacher dashboard all work
 end to end as mechanics, none of which depends on what story content
 happens to be loaded, and all of which stays covered by the automated
-suite even while Act I's content below is thin.
+suite whatever story content is loaded.
 
 The story is being written one passage at a time against the resource
-person's source material. Act I has three scenes. Macario's mother gives
-him his money and sends him to work; a flashback to his time with a
-kutsero has him buy an apple for the horse; back in the present, a tailor
-down the road has his stage costume waiting, and the stage itself at the
-end of that road opens into a moro-moro performance that turns into a
-fight. What follows that fight is the next thing to write, and until it
-exists Act I cannot be completed. The shop sells three items. Acts II
+person's source material. Act I is complete and playable end to end,
+in four scenes. Macario's mother gives him his money and sends him to
+work; a flashback to his time with a kutsero has him buy an apple for
+the horse; back in the present, a tailor down the road has his stage
+costume waiting, and the stage at the end of that road opens into a
+moro-moro performance that turns into a fight. Afterwards Bonifacio and
+a fellow Katipunero meet him outside and send him down a guarded street
+to hand out pamphlets, and the last pamphlet ends the act and opens its
+post-test. The passage after the fight is a working draft, still to be
+checked against the source material. The shop sells three items. Acts II
 through IV are registered and loadable but empty.
 
-Some character art is still owed, and anything missing draws as a dashed
-box naming the file it wants, which is the intended behaviour rather than
-a fault.
+A few characters use stand-in art, made from recoloured frames of the
+commissioned sprites, until the artist's own drawings arrive.
 
 ## Stack
 
@@ -124,8 +126,7 @@ be used to complete an act for the study.
     shell.js              title screen, pause, settings, inventory and
                           shop screens, logout
     inventory.js          item ownership, equipment, consumables, the shop
-    content/act1.js       Act I as data: three scenes so far; see
-                          TRACKER.md
+    content/act1.js       Act I as data: four scenes; see TRACKER.md
     content/act2.js       Acts II to IV, registered but not yet written
     content/act3.js
     content/act4.js
@@ -151,6 +152,8 @@ be used to complete an act for the study.
     _dev/test.js          headless test suite
     _dev/verify_new_scene.js   the same, against the real Act I content
     _dev/measure-sprite.js     measures a sprite sheet's placement numbers
+    _dev/key-black.py          turns a sprite sheet on black into a PNG
+    _dev/make-placeholder-sprites.py   rebuilds the stand-in art
     _dev/sb-stub.js       fake Supabase client used by the suite
     _dev/README.md        how to run it
 
@@ -184,7 +187,7 @@ never touches the live Supabase project. See _dev/README.md.
     node _dev/verify_new_scene.js
 
 The same rig against the real Act I content rather than the suite's own
-fixture, played from Nanay's first line through to the fight on the
-entablado.
+fixture, played from Nanay's first line through to the last pamphlet
+and the post-test.
 
 Neither is a substitute for playing it on a phone.

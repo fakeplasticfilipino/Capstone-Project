@@ -22,15 +22,15 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 18 Sep 2026, after Block 41 (stand-in stills for every
-remaining placeholder), which followed Block 40 (the man in the
-moro-moro and his guards on real walk and attack sheets). Blocks 30 to
-39 are pushed: the device's reflog shows origin/main at 1db4d33
-("modernized dashboard", Block 39). Blocks 40 and 41 are written to the
-device folder and not yet pushed. The suite was run
-against the device folder's files: 554 passed, 0 failed;
-_dev/verify_new_scene.js 143 passed, 0 failed. The proponent played
-Blocks 37 and 38 and reported everything functional.
+Last updated: 18 Sep 2026, end of session, after Block 41 (stand-in
+stills for every remaining placeholder). Everything through Block 41 is
+pushed: the device's reflog shows origin/main at 088f5e4 ("official
+placeholders", Block 41), after 27e0df9 ("added sprites muslim", Block
+40) and 1db4d33 ("modernized dashboard", Block 39), and the device
+folder's TRACKER.md, CLAUDE.md and index.html match what was written.
+The suite was run against the device folder's files: 554 passed, 0
+failed; _dev/verify_new_scene.js 143 passed, 0 failed. The proponent
+played Blocks 37 and 38 and reported everything functional.
 
 ## Start here
 
@@ -69,8 +69,8 @@ check against it (see Next action).
               (quest item).
               The memory opens with Nanay's voice after the fade-in.
               Giving Kabayo the quest apple completes objective 3 and
-              fades back to tondo with a fourth quest, "Pumunta sa
-              entablado", that nothing can complete yet.
+              fades back to tondo with the quest "Pumunta sa
+              entablado", which the end of the play completes.
     tondo     (after) Macario stands beside Nanay and an eight-line
               exchange plays by itself, ending with a quest, "Kausapin
               ang mananahi" (objective 4). Further down the road, which
@@ -78,15 +78,16 @@ check against it (see Next action).
               stage costume, which completes it, and her shop opens:
               Damit para sa Entablado, 100 barya, worn in Damit, makes
               a guard notice him five times slower while he stands
-              still (the lansangan's guards are what it is for). At the end of the
-              road, now 2900px, stands the entablado (real art); Pasok
-              at its stairs goes in.
+              still (the lansangan's guards are what it is for). At
+              the end of the road stands the entablado (real art);
+              Pasok at its stairs goes in.
     entablado the inside of the stage (Entablado.png as the whole
               backdrop, no dirt strip). Walking in plays the moro-moro by
               itself: Maryam's six lines, a man walking on from the right
               (real walk sheet; he stands still to talk and turns to walk
               off), three more lines, then five guards on the same walk
-              sheet, swinging with the real sword attack sheet, to fight, with Intense.mp3 under it. Winning
+              sheet, swinging with the real sword attack sheet, to
+              fight, with Intense.mp3 under it. Winning
               sets nagapiAngMgaGuwardiya; until then every entry replays
               the scene. Then Maryam announces the Christian kingdom won,
               that she will convert and marry Macario, and the audience
@@ -147,7 +148,7 @@ the pilot.
 The teacher dashboard (teacher.html) was restyled in Block 39: a light
 report page, six summary figures each with its n, and a roster that can
 be searched and sorted, with Act I's status, objectives and play time.
-Its versions are listed with the others below.
+Its versions are in the list above.
 
 ## Right now
 
@@ -205,15 +206,11 @@ Blocks 1 to 41 are built. Blocks 22 to 41 were one build session, 17 to
         street guards, built from the commissioned sheets, plus apple
         and stage-clothes tile pictures
 
-Blocks 30 to 39 are pushed (1db4d33). Push Blocks 40 and 41 as one
-commit: game.js, content/act1.js, index.html, CLAUDE.md, TRACKER.md,
-_dev/verify_new_scene.js, _dev/key-black.py,
-_dev/make-placeholder-sprites.py, _dev/README.md, and the new pictures:
-Assets/Act 1/ Muslim_Walk.png, Muslim_Attack.png, Mananahi.png,
-Bonifacio.png, Katipunero.png, Mamamayan.png, Bantay.png,
-Damit_Entablado.png, and Assets/Mansanas.png. The Muslim .jpg originals
-may be pushed or not; nothing loads them. Assets/Act 1/Muslim_Woman.png
-is a byte-for-byte copy of Muslim_Girl.png and nothing loads it.
+Everything through Block 41 is pushed (088f5e4); nothing is waiting to
+be pushed. Assets/Act 1/Muslim_Walk.jpg and Muslim_Attack.jpg are the
+artist's originals, kept beside the keyed PNGs the game loads, and
+Assets/Act 1/Muslim_Woman.png is a byte-for-byte copy of Muslim_Girl.png;
+nothing loads any of the three.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/reset_test_accounts.sql
@@ -225,9 +222,8 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. Push Blocks 40 and 41 (see Right now), then a device pass on Blocks 14 to
-40, on the phone, in landscape, from a private tab (browsers cache
-index.html; see Known problems). Check:
+1. A device pass on Blocks 14 to 41, on the phone, in landscape, from a
+private tab (browsers cache index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
       which would mean Assets/Fonts did not upload), text readable at
@@ -295,8 +291,8 @@ index.html; see Known problems). Check:
       lets him pass, with his meter pale blue and crawling; a guard who
       does see him turns red with a "!", runs after him and keeps
       shooting, never goes back to patrolling, and drops after two
-      punches; running away outpaces him; a hold on Atake punches and says there is no gun;
-      the road feels long without dragging; running out of hearts
+      punches; running away outpaces him; a hold on Atake punches and
+      says there is no gun; the road feels long without dragging; running out of hearts
       restarts at the last citizen. The third pamphlet runs the
       post-test.
     Teacher dashboard (Block 39), as guro@example.com on a laptop and a
@@ -336,12 +332,11 @@ against the source material.
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs. Everything through Block 39 is pushed and Blocks 40
-and 41 are written to the device folder, all passing their checks; the proponent
-handles the push. So the first things a session can do are in Next
-action, in order: a device pass against the checklist there, then
-checking Block 37's placeholder script against the source book with the
-proponents.
+header directs. Everything through Block 41 is pushed and passing its
+checks; the proponent handles the push. So the first things a session
+can do are in Next action, in order: a device pass against the
+checklist there, then checking Block 37's placeholder script against
+the source book with the proponents.
 
 Two questions are waiting on the proponents rather than on code, and a
 session should ask rather than assume: whether the man in the moro-moro
@@ -472,8 +467,8 @@ work through.
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest added for a quick look |
 | Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I has four scenes and can be completed, which unlocks Act II; Acts II to IV are stubs |
 | Player Movement | (BUILT) |
-| Combat Mechanics | (BUILT) Melee punch on a tap, takedown from behind, a ranged shot on a hold, each with real animation, plus enemies that fight back (Block 35). Act I ships one fight, the five guards in the moro-moro |
-| Stealth Mechanics | (BUILT) Patrols, a detection meter, sight drawn on the road, hide spots, platforms out of sight, guards that shoot. Act I's lansangan uses them (four guards, three platforms) |
+| Combat Mechanics | (BUILT) Melee punch on a tap, takedown from behind, a ranged shot on a hold, each with real animation, plus enemies that fight back (Block 35) with real walk and sword-attack art (Block 40). Act I ships the moro-moro's five guards, and the street's guards turn hostile and can be punched down (Block 38) |
+| Stealth Mechanics | (BUILT) Patrols, a detection meter, sight drawn on the road, hide spots, platforms out of sight, guards that turn hostile and shoot once they see him (Block 38). Act I's lansangan uses them (four guards, three platforms) |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach measured edge to edge, NPCs that open the shop |
 | Narrative Delivery | (PARTIAL) Built. Act I uses it across four scenes and ten NPCs, with conversations that open by themselves and a scripted play; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
