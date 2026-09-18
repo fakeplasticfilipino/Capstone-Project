@@ -380,6 +380,11 @@ that flag is set. A building to walk into is a decoration for the picture plus a
 exit at its door; a decoration with a single still image is an animation
 def with frames: 1. A decoration may also declare hidden: true, for a
 character a script brings on later, and facing: -1 to mirror its art.
+Block 40 added two more for a character with only a walk sheet:
+walkOnly steps the sheet only while moveDecoration is carrying him and
+holds its first frame otherwise, and faceMovement turns the art toward
+where he is walking (art assumed to face right) and leaves it there
+when he stops.
 
 arrivalDialogues are conversations nobody starts: they open the moment a
 fade into the scene (Acts.gotoScene) finishes. The first entry whose
@@ -478,7 +483,11 @@ of them plain globals in game.js, like addQuest:
     setMusic(src | null)         null is the scene's own track, else Calm
     setQuestText(id, text)       rewrites a logged quest's line (Block 37)
 
-An enemy def is { id, x, hp, speed, img | animation }. Enemies fight
+An enemy def is { id, x, hp, speed, img | animation, attackAnimation }.
+attackAnimation (Block 40) is optional: with it, the walk sheet steps
+only while he walks and the attack sheet replaces it for each swing,
+from the start of the telegraph to ENEMY_ATTACK_FOLLOW_MS after the
+blow, played once from its first frame. Enemies fight
 rather than patrol and are a separate list from guards: they walk at
 Macario, stop at ENEMY_REACH, light up for ENEMY_TELEGRAPH_MS and swing.
 A punch is one point, a shot two, and a hit knocks them back and delays
@@ -751,6 +760,18 @@ frames - 1 when absent, so every sheet before this one is unaffected.
 The two fields describe frame RANGE only; contentTop/contentHeight are
 still measured once for the whole sheet, since every frame in it shares
 the same cell geometry regardless of which named entry plays it.
+
+A sheet may declare headroom (Block 40), native pixels above
+contentTop that are still drawn, for a pose that reaches over the head,
+a raised sword. The character is still sized by contentHeight, so he
+stays everyone else's height; the sprite element just grows upward.
+Capped at contentTop.
+
+A sheet delivered as a JPEG has no alpha channel and would draw inside
+a black rectangle. _dev/key-black.py (Pillow, dev-time only) floods the
+black background out from each cell's edges into a PNG beside the
+original; the PNG is what the content names and what measure-sprite.js
+measures. A PNG export from the artist is still the better fix.
 
 A sheet scaled up by 2 or more is drawn with image-rendering:
 pixelated, set by bodySprite from the fit itself rather than declared
@@ -2493,8 +2514,9 @@ first and second pamphlet), so no new save state exists for them.
 Exits may wait on a flag (requiresFlag), because the road out of tondo
 should not open before anyone has given Macario a reason to take it.
 
-Art. The moro-moro's guards share the man's sprite, Muslim.png, at the
-proponent's direction; there is no Guwardiya.png. The street's guards are
+Art. The moro-moro's guards share the man's sprite at the proponent's
+direction (Muslim.png then; his real walk and attack sheets since Block
+40); there is no Guwardiya.png. The street's guards are
 the town's rather than his, so they have their own placeholder,
 Bantay.png. Bonifacio.png, Katipunero.png and Mamamayan.png (shared by
 the three citizens) are placeholders too. No new file was added under
@@ -2570,6 +2592,35 @@ Every value is written as text, never as HTML: a student's name is
 whatever was typed into a profile. _dev/sb-stub.js learned .in() and
 the classes and assessment_scores tables so section AV can drive the
 page; before this block the dashboard had no coverage at all.
+
+The man in the moro-moro gets real art (Block 40). Two sheets arrived in
+Assets/Act 1: Muslim_Walk.jpg (4 by 3, 12 frames) and Muslim_Attack.jpg
+(4 by 4, 15 frames, a sword swing). Both are true JPEGs on black, not
+PNGs under a .jpg name like Macario_Melee.jpg, so they were keyed to
+Muslim_Walk.png and Muslim_Attack.png with _dev/key-black.py and the
+originals kept. The flood runs from each cell's edges through near-black
+only, because his hair and vest are nearly black too and a plain colour
+key would have punched holes in him.
+
+Measured with measure-sprite.js. The walk is clean: contentTop 43,
+contentHeight 70, footX 72. The attack is not: the sword crosses into
+neighbouring cells, so its union box is the whole cell and useless. Its
+numbers are the standing body instead, top 30 and feet at 126 in frames
+0 to 3, so contentHeight 97, footX 88 from the standing feet, and
+headroom 29 so the raised sword shows without the one stray row that
+frame 5's blade leaks into the top of frame 9. Below the feet the blade
+is cut at the floor line, which reads as the tip at the ground.
+
+He is the one character who walks on and stands to talk with only a
+walk sheet, which needed walkOnly and faceMovement on decorations. His
+five guards share both sheets, as decided in Block 37, which needed
+attackAnimation on enemies: a second sprite inside the same body,
+swapped in on the change rather than rewritten every frame. The swap
+starts with the telegraph, so the wind-up the student is taught to
+watch for is now the sword going back, not only the flash.
+setupNpcAnimation gained an optional playing() gate and loop: false for
+both. The street's Bantay guards are the town's, not his, and keep their
+own placeholder. ASSET_VERSION to 15.
 
 ## Pitfalls
 

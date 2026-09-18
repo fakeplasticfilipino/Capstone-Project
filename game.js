@@ -243,7 +243,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 14;
+const ASSET_VERSION = 15;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -676,12 +676,18 @@ function buildDecorations(token) {
     el.appendChild(spriteEl);
     world.appendChild(el);
 
+    // Block 40. A decoration with walkOnly steps its sheet only while
+    // moveDecoration is carrying it, so a walk cycle stands still when he
+    // does instead of walking on the spot.
+    dec.moving = false;
+    dec.spriteEl = spriteEl;
     setupNpcAnimation(
       dec.animation,
       spriteEl,
       dec.displayHeight || DISPLAY_HEIGHT,
       token,
-      0
+      0,
+      dec.walkOnly ? { playing: () => dec.moving } : undefined
     );
 
     actElements.push(el);
@@ -752,11 +758,19 @@ checkBackgroundImage(
   "Assets/Act 1/Lupa.jpg"
 );
 
-function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth) {
+// opts (Block 40), both optional:
+//   playing()  the animation steps only while this returns true, and is
+//              held on its first frame otherwise, restarting from it each
+//              time it turns true again. A walk cycle for someone who is
+//              standing still, or an attack played once per swing.
+//   loop       false holds the last frame instead of wrapping.
+function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth, opts) {
   displayHeight = displayHeight || DISPLAY_HEIGHT;
   bodyWidth = bodyWidth || 0;
+  opts = opts || {};
   let frame = 0;
   let lastTime = 0;
+  let wasPlaying = true;
 
   loadSpriteSheet(sheet).then(() => {
     // The act may have changed while this image was loading.
@@ -773,16 +787,37 @@ function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth) {
     const columns = sheet.columns || sheet.frames;
     const fit = bodySprite(el, sheet, displayHeight, bodyWidth);
 
+    const draw = () => {
+      const column = frame % columns;
+      const row = Math.floor(frame / columns);
+      el.style.backgroundPositionX = -(column * fit.displayFrameWidth) + "px";
+      el.style.backgroundPositionY = -(row * fit.rowStep + fit.topOffset) + "px";
+    };
+
     npcAnimators.push({
       update(now) {
+        if (opts.playing) {
+          const playing = Boolean(opts.playing(now));
+          if (!playing) {
+            // Written once on the change, not every frame (Block 36).
+            if (wasPlaying || frame !== 0) { frame = 0; draw(); }
+            wasPlaying = false;
+            return;
+          }
+          if (!wasPlaying) {
+            wasPlaying = true;
+            frame = 0;
+            lastTime = now;
+            draw();
+            return;
+          }
+        }
         const frameDuration = 1000 / sheet.fps;
         if (now - lastTime >= frameDuration) {
           lastTime = now;
+          if (opts.loop === false && frame === sheet.frames - 1) return;
           frame = (frame + 1) % sheet.frames;
-          const column = frame % columns;
-          const row = Math.floor(frame / columns);
-          el.style.backgroundPositionX = -(column * fit.displayFrameWidth) + "px";
-          el.style.backgroundPositionY = -(row * fit.rowStep + fit.topOffset) + "px";
+          draw();
         }
       },
     });
@@ -1013,10 +1048,16 @@ let SPRITE_SHEETS = BASE_SPRITE_SHEETS;
 // exactly as it always has.
 function spriteFit(sheet, displayHeight) {
   const contentHeight = sheet.contentHeight || sheet.frameHeight;
-  const contentTop = sheet.contentTop || 0;
+  // Block 40. headroom is native pixels ABOVE contentTop still to be
+  // shown, for a pose that reaches over the head (a raised sword). The
+  // character is still sized by contentHeight, so he stays the height of
+  // everyone else; the element just grows upward to show the reach.
+  const headroom = Math.min(sheet.headroom || 0, sheet.contentTop || 0);
+  const contentTop = (sheet.contentTop || 0) - headroom;
   const scale = displayHeight / contentHeight;
   return {
     scale,
+    boxHeight: displayHeight + headroom * scale,
     displayFrameWidth: sheet.frameWidth * scale,
     // The scaled distance from one row to the next in the background
     // image. Equal to displayHeight only in the no-correction case
@@ -1052,7 +1093,7 @@ function spriteFit(sheet, displayHeight) {
 function bodySprite(el, sheet, displayHeight, bodyWidth) {
   const fit = spriteFit(sheet, displayHeight);
   el.style.width = fit.displayFrameWidth + "px";
-  el.style.height = displayHeight + "px";
+  el.style.height = fit.boxHeight + "px";
   el.style.left = bodyWidth / 2 - fit.footOffset + "px";
   el.style.transformOrigin = fit.footOffset + "px 100%";
   // Quoted: an unquoted CSS url() breaks on the first space in the path,
@@ -2950,10 +2991,18 @@ function moveDecoration(id, toX, pxPerSecond) {
   const el = decorationEl(id);
   if (!dec || !el) return Promise.resolve();
   const speed = Math.max(1, pxPerSecond || 160);
+  // Block 40. faceMovement turns the art toward where he is walking, and
+  // leaves it that way when he stops. The art is assumed to face right.
+  const from0 = typeof dec.currentX === "number" ? dec.currentX : dec.x;
+  if (dec.faceMovement && dec.spriteEl && toX !== from0) {
+    dec.spriteEl.style.transform = toX < from0 ? "scaleX(-1)" : "";
+  }
+  dec.moving = true;
   return new Promise((resolve) => {
     let last = 0;
+    const done = () => { dec.moving = false; resolve(); };
     const tick = (now) => {
-      if (!el.isConnected) return resolve();
+      if (!el.isConnected) return done();
       if (paused) { last = now; requestAnimationFrame(tick); return; }
       const dt = last ? Math.min(now - last, 50) : 16;
       last = now;
@@ -2962,7 +3011,7 @@ function moveDecoration(id, toX, pxPerSecond) {
       const next = Math.abs(toX - from) <= stepPx ? toX : from + Math.sign(toX - from) * stepPx;
       dec.currentX = next;
       el.style.left = next + "px";
-      if (next === toX) return resolve();
+      if (next === toX) return done();
       requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
@@ -2986,6 +3035,7 @@ const ENEMY_SPACING = 50;       // enemies queue rather than stack
 const ENEMY_WINDUP_MS = 700;    // from reaching him to the first swing
 const ENEMY_COOLDOWN_MS = 1800; // between swings: a beat to punch back in
 const ENEMY_TELEGRAPH_MS = 350; // the lit-up warning before a swing
+const ENEMY_ATTACK_FOLLOW_MS = 280; // the attack clip's follow-through
 const ENEMY_STAGGER_MS = 350;
 const ENEMY_KNOCKBACK = 45;
 const ENEMY_HIT_RECOIL = 40;    // how far a hit pushes Macario back
@@ -3031,9 +3081,26 @@ function spawnEnemies(defs) {
     const sprite = document.createElement("div");
     sprite.className = "sprite npc-sprite" + (def.animation ? " npc-anim-sprite" : "");
     el.appendChild(sprite);
+
+    // Block 40. An enemy may bring an attack sheet beside its walk sheet.
+    // The walk steps only while he is walking; the attack is a second
+    // sprite, shown and played once from its first frame for each swing,
+    // starting with the telegraph so the wind-up IS the warning.
+    let attackSprite = null;
+    if (def.animation && def.attackAnimation) {
+      attackSprite = document.createElement("div");
+      attackSprite.className = "sprite npc-sprite npc-anim-sprite enemy-attack-sprite";
+      attackSprite.style.display = "none";
+      el.appendChild(attackSprite);
+    }
     world.appendChild(el);
     if (def.animation) {
-      setupNpcAnimation(def.animation, sprite, DISPLAY_HEIGHT, token, ENEMY_WIDTH);
+      setupNpcAnimation(def.animation, sprite, DISPLAY_HEIGHT, token, ENEMY_WIDTH,
+        def.attackAnimation ? { playing: () => enemy.walking && !enemy.attacking } : undefined);
+      if (attackSprite) {
+        setupNpcAnimation(def.attackAnimation, attackSprite, DISPLAY_HEIGHT, token, ENEMY_WIDTH,
+          { playing: () => enemy.attacking, loop: false });
+      }
     } else {
       bodyPlaceholder(sprite, def.img || "Kaaway", DISPLAY_HEIGHT, ENEMY_WIDTH);
     }
@@ -3041,6 +3108,10 @@ function spawnEnemies(defs) {
     enemy.el = el;
     enemy.fillEl = fill;
     enemy.spriteEl = sprite;
+    enemy.attackSpriteEl = attackSprite;
+    enemy.walking = false;
+    enemy.attacking = false;
+    enemy.attackEnd = 0;
     actElements.push(el);
     return enemy;
   });
@@ -3087,8 +3158,10 @@ function updateEnemies(step, now) {
         if (!blocked) {
           enemy.pos += dir * Math.min(enemy.speed * step, dist - ENEMY_REACH);
         }
+        enemy.walking = !blocked;
         enemy.nextSwingAt = 0;
       } else {
+        enemy.walking = false;
         if (!enemy.nextSwingAt) enemy.nextSwingAt = now + ENEMY_WINDUP_MS;
         if (now >= enemy.nextSwingAt) {
           enemy.nextSwingAt = now + ENEMY_COOLDOWN_MS;
@@ -3102,13 +3175,37 @@ function updateEnemies(step, now) {
     }
 
     const telegraph = enemy.nextSwingAt && enemy.nextSwingAt - now <= ENEMY_TELEGRAPH_MS && now < enemy.nextSwingAt;
-    enemy.el.classList.toggle("enemy-windup", Boolean(telegraph));
+    if (Boolean(telegraph) !== enemy.drawnWindup) {
+      enemy.el.classList.toggle("enemy-windup", Boolean(telegraph));
+      enemy.drawnWindup = Boolean(telegraph);
+    }
+
+    // Block 40. The attack clip runs from the start of the telegraph to
+    // ENEMY_ATTACK_FOLLOW_MS after the blow, so the lunge lands on the hit.
+    // A stagger cancels it.
+    if (telegraph && !enemy.attacking && now >= enemy.staggerUntil) {
+      enemy.attacking = true;
+      enemy.attackEnd = enemy.nextSwingAt + ENEMY_ATTACK_FOLLOW_MS;
+    }
+    if (enemy.attacking && (now >= enemy.attackEnd || now < enemy.staggerUntil)) {
+      enemy.attacking = false;
+    }
+    if (enemy.attackSpriteEl && enemy.attacking !== enemy.drawnAttacking) {
+      enemy.attackSpriteEl.style.display = enemy.attacking ? "" : "none";
+      enemy.spriteEl.style.visibility = enemy.attacking ? "hidden" : "";
+      enemy.drawnAttacking = enemy.attacking;
+    }
+
     if (enemy.pos !== enemy.drawnPos) {
       enemy.el.style.left = enemy.pos + "px";
       enemy.drawnPos = enemy.pos;
     }
-    if (enemy.animation && enemy.spriteEl) {
-      enemy.spriteEl.style.transform = dir < 0 ? "scaleX(-1)" : "";
+    // Facing, written only when it turns (Block 36). The art faces right.
+    if (enemy.animation && enemy.spriteEl && dir !== enemy.drawnFacing) {
+      const flip = dir < 0 ? "scaleX(-1)" : "";
+      enemy.spriteEl.style.transform = flip;
+      if (enemy.attackSpriteEl) enemy.attackSpriteEl.style.transform = flip;
+      enemy.drawnFacing = dir;
     }
   });
 }
@@ -3146,7 +3243,11 @@ function resetEnemies() {
     enemy.staggerUntil = 0;
     enemy.fillEl.style.width = "100%";
     enemy.el.classList.remove("enemy-windup");
+    enemy.drawnWindup = false;
+    enemy.attacking = false;
+    enemy.walking = false;
     enemy.el.style.left = enemy.pos + "px";
+    enemy.drawnPos = enemy.pos;
   });
 }
 

@@ -509,15 +509,36 @@ const talk = async (page, times) => {
   // He walks on from the right wing while the world is held still.
   const walkOn = await page.evaluate(() => ({
     cutscene: cutscenePlaying, shown: document.getElementById("dec-muslim").style.display !== "none",
-    facing, placeholder: document.querySelector("#dec-muslim .sprite").textContent.includes("Muslim.png"),
+    facing, art: document.querySelector("#dec-muslim .sprite").style.backgroundImage,
+    text: document.querySelector("#dec-muslim .sprite").textContent,
+    flip: document.querySelector("#dec-muslim .sprite").style.transform,
+    moving: currentScene.decorations.find((d) => d.id === "muslim").moving,
   }));
   ok("the man walks on and Macario turns to look",
      walkOn.cutscene && walkOn.shown && walkOn.facing === 1, walkOn);
-  ok("drawn as the placeholder naming Muslim.png, which has no art yet", walkOn.placeholder, walkOn);
-  await page.waitForTimeout(3200); // his walk on, then the confrontation opens
+  ok("he is drawn from the real walk sheet, Muslim_Walk.png (Block 40)",
+     /Muslim_Walk\.png/.test(walkOn.art) && walkOn.text === "", walkOn);
+  ok("walking, and facing the way he walks, toward Macario", walkOn.moving && walkOn.flip === "scaleX(-1)", walkOn);
+  const stepping = await page.evaluate(() => new Promise((resolve) => {
+    const el = document.querySelector("#dec-muslim .sprite");
+    const seen = new Set();
+    const t = setInterval(() => seen.add(el.style.backgroundPosition), 30);
+    setTimeout(() => { clearInterval(t); resolve(seen.size); }, 600);
+  }));
+  ok("his walk cycle steps while he walks", stepping >= 3, stepping);
+  await page.waitForTimeout(2600); // his walk on, then the confrontation opens
   const confront = await page.evaluate(() => ({ open: inDialogue,
     line: dialogueSpeaker.textContent + ": " + dialogueText.textContent,
     left: document.getElementById("dec-muslim").style.left }));
+  const standing = await page.evaluate(() => new Promise((resolve) => {
+    const el = document.querySelector("#dec-muslim .sprite");
+    const seen = new Set();
+    const t = setInterval(() => seen.add(el.style.backgroundPosition), 30);
+    setTimeout(() => { clearInterval(t); resolve({ frames: seen.size,
+      moving: currentScene.decorations.find((d) => d.id === "muslim").moving }); }, 500);
+  }));
+  ok("and stands still, not walking on the spot, while he talks",
+     standing.frames === 1 && !standing.moving, standing);
   ok("he arrives and speaks", confront.open &&
      confront.line === "Muslim: Anong ginagawa mo dito, Maryam? Bakit kasama mo ang Kafir na ito?!" &&
      confront.left === "800px", confront);
@@ -536,13 +557,36 @@ const talk = async (page, times) => {
   const fight = await page.evaluate(() => ({
     enemies: ENEMIES.length, alive: ENEMIES.filter((e) => !e.dead).length,
     cutscene: cutscenePlaying, hearts: !document.getElementById("hud").classList.contains("hidden"),
-    music: musicEl && musicEl.src, placeholder: document.querySelector("#enemy-guwardiya-1 .sprite").textContent,
+    music: musicEl && musicEl.src,
+    walk: document.querySelector("#enemy-guwardiya-1 .sprite").style.backgroundImage,
+    attack: (document.querySelector("#enemy-guwardiya-1 .enemy-attack-sprite") || { style: {} }).style.backgroundImage,
   }));
   ok("five guards come in and the fight starts", fight.enemies === 5 && fight.alive === 5 && !fight.cutscene, fight);
   ok("the hearts show for it", fight.hearts, fight);
   ok("Intense.mp3 plays while it lasts", /Intense\.mp3/.test(fight.music || ""), fight);
-  ok("each guard shares the man's sprite, the placeholder naming Muslim.png (Block 37)",
-     fight.placeholder.includes("Muslim.png"), fight.placeholder);
+  ok("each guard shares the man's walk and attack sheets (Block 40)",
+     /Muslim_Walk\.png/.test(fight.walk || "") && /Muslim_Attack\.png/.test(fight.attack || ""), fight);
+
+  // A swing: the attack sprite replaces the walk from the telegraph on,
+  // and hands back afterwards.
+  const swing = await page.evaluate(async () => {
+    invulnUntil = performance.now() + 60000;
+    const e = ENEMIES[0];
+    const start = performance.now();
+    while (!e.attacking && performance.now() - start < 6000) await new Promise((r) => setTimeout(r, 16));
+    const atk = e.attackSpriteEl;
+    const during = { attacking: e.attacking, shown: atk.style.display !== "none",
+      walkHidden: e.spriteEl.style.visibility === "hidden",
+      flip: atk.style.transform };
+    while (e.attacking && performance.now() - start < 9000) await new Promise((r) => setTimeout(r, 16));
+    const after = { shown: atk.style.display !== "none", walkHidden: e.spriteEl.style.visibility === "hidden" };
+    invulnUntil = 0;
+    return { during, after };
+  });
+  ok("a guard's swing plays the attack sheet in place of his walk, facing Macario",
+     swing.during.attacking && swing.during.shown && swing.during.walkHidden &&
+     swing.during.flip === "scaleX(-1)", swing);
+  ok("and goes back to the walk sheet after the blow", !swing.after.shown && !swing.after.walkHidden, swing);
 
   await walkTo(page, 40);
   await page.waitForTimeout(150);

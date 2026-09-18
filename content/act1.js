@@ -142,6 +142,22 @@ const KATIPUNAN_MEETING = [
   { speaker: "Macario", text: "Makakaasa kayo." },
 ];
 
+// Block 40. The man in the moro-moro, and the five guards who share his
+// sprite. Both sheets were delivered as JPEGs on black and keyed to PNGs
+// with _dev/key-black.py; the .jpg originals stay beside them. Numbers from
+// _dev/measure-sprite.js. The attack sheet's union box runs the full cell
+// because the sword crosses into neighbouring cells, so its pair is the
+// standing body (frames 0 to 3: top 30, feet at 126) and headroom 29 shows
+// the sword raised above his head without drawing the stray tip that
+// reaches row 0 of frame 9 from the frame above it. footX 88 is where he
+// stands in the standing frames; the lunge frames move the sword, not
+// the feet. One def serves every guard: loading a sheet only fills in the
+// same measured geometry again.
+const MUSLIM_WALK = { src: "Assets/Act 1/Muslim_Walk.png", frames: 12, fps: 10,
+  columns: 4, contentTop: 43, contentHeight: 70, footX: 72 };
+const MUSLIM_ATTACK = { src: "Assets/Act 1/Muslim_Attack.png", frames: 15, fps: 24,
+  columns: 4, contentTop: 30, contentHeight: 97, footX: 88, headroom: 29 };
+
 const PAMPHLET_FLAGS = ["nabigyanSiMangingisda", "nabigyanSiLabandera", "nabigyanSiKarpintero"];
 
 function pamphletText(n) {
@@ -693,10 +709,18 @@ window.ACT_1 = {
           },
         },
         {
+          // Block 40. Real art: the walk sheet the artist delivered as
+          // Muslim_Walk.jpg, keyed to a transparent PNG (_dev/key-black.py)
+          // and measured with measure-sprite.js. It steps only while he is
+          // walking (walkOnly) and turns to face the way he walks
+          // (faceMovement), so he walks on facing Maryam and Macario, stands
+          // still to speak, and turns to walk off.
           id: "muslim",
           x: 1300, // off stage, in the right wing
           hidden: true,
-          animation: { src: "Assets/Act 1/Muslim.png", frames: 1, fps: 1 },
+          walkOnly: true,
+          faceMovement: true,
+          animation: MUSLIM_WALK,
         },
       ],
       arrivalDialogues: [
@@ -735,7 +759,8 @@ window.ACT_1 = {
               id: "guwardiya-" + (i + 1),
               x,
               hp: 2,
-              animation: { src: "Assets/Act 1/Muslim.png", frames: 1, fps: 1 },
+              animation: MUSLIM_WALK,
+              attackAnimation: MUSLIM_ATTACK,
             })));
 
             setMusic(null);

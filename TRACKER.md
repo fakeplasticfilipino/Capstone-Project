@@ -22,14 +22,13 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 18 Sep 2026, after Block 39 (the teacher dashboard
-restyled), and audited the same day against the code and the device
-folder's git history. Blocks 30 to 38 are pushed: the device's reflog
-shows origin/main at a054ba0 ("fixed npc ai", Block 38), after 23ef262
-("completed act 1 scene", Block 37) and 61c354b ("updated trackers").
-Block 39 is written to the device folder and not yet pushed. The suite
-was run against the device folder's files: 554 passed, 0 failed;
-_dev/verify_new_scene.js 138 passed, 0 failed. The proponent played
+Last updated: 18 Sep 2026, after Block 40 (the man in the moro-moro and
+his guards on real walk and attack sheets). Blocks 30 to 39 are pushed:
+the device's reflog shows origin/main at 1db4d33 ("modernized
+dashboard", Block 39), after a054ba0 ("fixed npc ai", Block 38). Block
+40 is written to the device folder and not yet pushed. The suite was run
+against the device folder's files: 554 passed, 0 failed;
+_dev/verify_new_scene.js 143 passed, 0 failed. The proponent played
 Blocks 37 and 38 and reported everything functional.
 
 ## Start here
@@ -84,15 +83,15 @@ check against it (see Next action).
     entablado the inside of the stage (Entablado.png as the whole
               backdrop, no dirt strip). Walking in plays the moro-moro by
               itself: Maryam's six lines, a man walking on from the right
-              (placeholder), three more lines, then five guards
-              (placeholders) to fight, with Intense.mp3 under it. Winning
+              (real walk sheet; he stands still to talk and turns to walk
+              off), three more lines, then five guards on the same walk
+              sheet, swinging with the real sword attack sheet, to fight, with Intense.mp3 under it. Winning
               sets nagapiAngMgaGuwardiya; until then every entry replays
               the scene. Then Maryam announces the Christian kingdom won,
               that she will convert and marry Macario, and the audience
               cheers (dialogue only), which completes pumunta_entablado
               (objective 5). Lumabas at the left edge goes back out to the
-              stairs, and is closed during the fight. The guards share
-              the man's placeholder, Muslim.png.
+              stairs, and is closed during the fight.
     tondo     (after the play) Bonifacio and a Katipunero (placeholders)
               wait at the stairs; a twelve-line meeting opens by itself:
               greeting, the password, and the task, "Ipamahagi ang mga
@@ -132,10 +131,11 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    style.css v29        game.js v45          shell.js v13
+    style.css v29        game.js v46          shell.js v13
     inventory.js v9      acts.js v10          assessment.js v3
-    content/act1.js v27  content/items.js v8  content/act2-4.js v1
-    ASSET_VERSION 14 (in game.js)
+    content/act1.js v28  content/items.js v8  content/act2-4.js v1
+    ASSET_VERSION 15 (in game.js)
+    teacher.css v2       teacher.js v2        (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
 and confirmed Block 36's speed fix on the phone. Whether the rest of
@@ -146,12 +146,11 @@ the pilot.
 The teacher dashboard (teacher.html) was restyled in Block 39: a light
 report page, six summary figures each with its n, and a roster that can
 be searched and sorted, with Act I's status, objectives and play time.
-Its versions are teacher.css v2 and teacher.js v2, named in
-teacher.html, which index.html does not load.
+Its versions are listed with the others below.
 
 ## Right now
 
-Blocks 1 to 39 are built. Blocks 22 to 39 were one build session, 17 to
+Blocks 1 to 40 are built. Blocks 22 to 40 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -197,11 +196,15 @@ Blocks 1 to 39 are built. Blocks 22 to 39 were one build session, 17 to
     39  teacher dashboard restyled: light report layout, summary
         figures with n, search and sort, Act I status, objectives and
         play time per student; first harness coverage of the page
+    40  the man in the moro-moro and his five guards on real art:
+        Muslim_Walk and Muslim_Attack, keyed from JPEG to PNG; walking
+        decorations, attack sheets for enemies, sheet headroom
 
-Blocks 30 to 38 are pushed (a054ba0). Push Block 39 as one commit:
-teacher.html, teacher.css, teacher.js, _dev/sb-stub.js, _dev/test.js,
-CLAUDE.md and TRACKER.md. teacher.html names teacher.css?v=2 and
-teacher.js?v=2, so the three go together. Assets/Act 1/Muslim_Woman.png
+Blocks 30 to 39 are pushed (1db4d33). Push Block 40 as one commit:
+game.js, content/act1.js, index.html, CLAUDE.md, TRACKER.md,
+_dev/verify_new_scene.js, _dev/key-black.py, and Assets/Act 1/
+Muslim_Walk.png and Muslim_Attack.png (the game loads the PNGs; the
+.jpg originals may be pushed or not, nothing loads them). Assets/Act 1/Muslim_Woman.png
 is a byte-for-byte copy of Muslim_Girl.png and nothing loads it.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
@@ -214,8 +217,8 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. Push Block 39 (see Right now), then a device pass on Blocks 14 to
-38, on the phone, in landscape, from a private tab (browsers cache
+1. Push Block 40 (see Right now), then a device pass on Blocks 14 to
+40, on the phone, in landscape, from a private tab (browsers cache
 index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
@@ -263,6 +266,11 @@ index.html; see Known problems). Check:
     Kabayo: crisp pixels rather than a blur, standing on the road,
       roughly Macario's height. If he reads too small for a horse,
       that is one number (an NPC display height) to add.
+    The man and his guards (Block 40): he walks on facing left, stands
+      still while he talks, turns and walks off; the guards walk rather
+      than slide, and each swing shows the sword going back before it
+      lands; no black boxes around any of them; the sword is not cut off
+      oddly at the top.
     After the play (Block 37): Maryam's ending plays straight after the
       fight; out the door, Bonifacio's meeting opens by itself; Tumuloy
       appears at the road's end only after it.
@@ -292,16 +300,19 @@ pamphlets were and who received them. content/act1.js marks the block.
 Act I is now completable, so this is also what stands between the build
 and a pilot.
 
-3. Remaining art, chased with the artist: Muslim.png (Assets/Act 1/, the
-man in the moro-moro, whose sprite his five guards share; there is no
-Guwardiya.png), Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png
+3. Remaining art, chased with the artist: Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png
 (the street's guards), Mamamayan.png (the three citizens, one sprite
 shared unless the artist draws three) (all Assets/Act 1/),
 Damit_Entablado.png (Assets/Act 1/, the clothes' tile picture; outfit
 sheets later if he should look different wearing them),
 Macario's Dead sheet, and
 Mansanas.png (item icon; the apple symbol stands in). Each new sheet
-needs measure-sprite.js and all three numbers pasted.
+needs measure-sprite.js and all three numbers pasted. Ask for PNG
+exports with transparency: Muslim_Walk and Muslim_Attack came as JPEGs
+on black and had to be keyed (_dev/key-black.py), and the attack sheet's
+sword crosses into neighbouring cells, which a re-export with the sword
+inside each cell would fix. An idle sheet for him would also let him
+breathe while he talks rather than hold a walk frame.
 
 4. Then Block 12's remaining polish, the pilot, and Acts II to IV
 against the source material.
@@ -309,7 +320,7 @@ against the source material.
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs. Everything through Block 38 is pushed and Block 39 is
+header directs. Everything through Block 39 is pushed and Block 40 is
 written to the device folder, all passing their checks; the proponent
 handles the push. So the first things a session can do are in Next
 action, in order: a device pass against the checklist there, then
@@ -548,6 +559,8 @@ submit_assessment).
         meter and toast (section AU)
     39  teacher dashboard restyle, search, sort, Act I columns (section
         AV)
+    40  Muslim walk and attack sheets; walkOnly, faceMovement,
+        attackAnimation, headroom, playing() gate; key-black.py
 
 ## Blocks remaining
 
@@ -595,8 +608,7 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the remaining art with the artist: Muslim.png (his guards share
-it), Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png,
+Chase the remaining art with the artist: Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png,
 Mamamayan.png, Damit_Entablado.png,
 Macario's Dead sheet and Mansanas.png (see Known
 problems for where each shows). Later, once real items and the entablado
@@ -617,14 +629,13 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 ## Known problems
 
 Missing production art. Assets/ holds real art for Nanay, Kutsero,
-Kabayo, Tindero, both entablado pictures, Tondo.png, Lupa.jpg (the
+Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack,
+shared by his guards), both entablado pictures, Tondo.png, Lupa.jpg (the
 ground), and Macario's idle, walk, melee and shooting sheets, plus the
 two fonts and four sound files. Still missing, each falling
 back to the dashed placeholder box naming the file (or, for the item,
 to its symbol):
 
-    Assets/Act 1/Muslim.png    the man in the moro-moro, and the five
-                               guards he calls (one sprite, by decision)
     Assets/Act 1/Mananahi.png  the Mananahi, on the tondo road
     Assets/Act 1/Bonifacio.png   Bonifacio, outside the entablado
     Assets/Act 1/Katipunero.png  the second Katipunero, beside him
@@ -703,11 +714,11 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/verify_new_scene.js
 
 test.js: 554 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 138
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 143
 checks driving the REAL content/act1.js and content/items.js through
 every Act I scene, from Nanay to the third pamphlet and the post-test.
 Both last ran green on 18 Sep 2026 against the device folder's files
-after Block 39 (Playwright's headless shell pointed at the sandbox's
+after Block 40 (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright

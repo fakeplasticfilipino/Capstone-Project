@@ -84,3 +84,15 @@ so a failure line reads as the defect.
 
 When a block adds a system, add its checks here in the same commit. The
 suite is only worth keeping if it stays honest about what is covered.
+
+## Sheets delivered as JPEG
+
+A JPEG has no transparency, so a sheet delivered as one draws inside a
+black box. key-black.py writes a PNG beside it with the black background
+removed, flooding in from each cell's edges so the character's own dark
+hair and clothes survive:
+
+    python3 _dev/key-black.py "Assets/Act 1/Muslim_Walk.jpg" --columns=4 --rows=3
+
+It needs Pillow and is dev-time only. Measure the PNG with
+measure-sprite.js afterwards, and point the content at the PNG.
