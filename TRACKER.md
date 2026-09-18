@@ -22,11 +22,12 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 18 Sep 2026, after Block 40 (the man in the moro-moro and
-his guards on real walk and attack sheets). Blocks 30 to 39 are pushed:
-the device's reflog shows origin/main at 1db4d33 ("modernized
-dashboard", Block 39), after a054ba0 ("fixed npc ai", Block 38). Block
-40 is written to the device folder and not yet pushed. The suite was run
+Last updated: 18 Sep 2026, after Block 41 (stand-in stills for every
+remaining placeholder), which followed Block 40 (the man in the
+moro-moro and his guards on real walk and attack sheets). Blocks 30 to
+39 are pushed: the device's reflog shows origin/main at 1db4d33
+("modernized dashboard", Block 39). Blocks 40 and 41 are written to the
+device folder and not yet pushed. The suite was run
 against the device folder's files: 554 passed, 0 failed;
 _dev/verify_new_scene.js 143 passed, 0 failed. The proponent played
 Blocks 37 and 38 and reported everything functional.
@@ -73,7 +74,7 @@ check against it (see Next action).
     tondo     (after) Macario stands beside Nanay and an eight-line
               exchange plays by itself, ending with a quest, "Kausapin
               ang mananahi" (objective 4). Further down the road, which
-              is 2900px, the Mananahi (placeholder box) talks about his
+              is 2900px, the Mananahi (stand-in still) talks about his
               stage costume, which completes it, and her shop opens:
               Damit para sa Entablado, 100 barya, worn in Damit, makes
               a guard notice him five times slower while he stands
@@ -92,13 +93,13 @@ check against it (see Next action).
               cheers (dialogue only), which completes pumunta_entablado
               (objective 5). Lumabas at the left edge goes back out to the
               stairs, and is closed during the fight.
-    tondo     (after the play) Bonifacio and a Katipunero (placeholders)
+    tondo     (after the play) Bonifacio and a Katipunero (stand-ins)
               wait at the stairs; a twelve-line meeting opens by itself:
               greeting, the password, and the task, "Ipamahagi ang mga
               polyeto (0/3)" (objective 6 done). Tumuloy at the end of the
               road opens only now.
     lansangan a 7200px street on the Tondo backdrop, in colour. No gun
-              (a hold punches). Four guards (Bantay.png placeholders),
+              (a hold punches). Four guards (Bantay.png stand-ins),
               their sight drawn on the road; once one's meter fills he
               turns hostile (a red "!"), chases and shoots until punched
               down twice or Macario runs out of hearts. In the stage
@@ -106,7 +107,7 @@ check against it (see Next action).
               drawn pale blue;
               three platforms of different heights that are out of sight;
               a heart on the high one. Three citizens (Mamamayan.png
-              placeholders) each take a pamphlet through Iabot ang
+              stand-ins) each take a pamphlet through Iabot ang
               polyeto. Running out of hearts restarts at the last one
               reached. The third pamphlet completes objective 7 and Act I.
               Bumalik at the left edge returns to tondo.
@@ -131,10 +132,10 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    style.css v29        game.js v46          shell.js v13
+    style.css v29        game.js v47          shell.js v13
     inventory.js v9      acts.js v10          assessment.js v3
-    content/act1.js v28  content/items.js v8  content/act2-4.js v1
-    ASSET_VERSION 15 (in game.js)
+    content/act1.js v29  content/items.js v8  content/act2-4.js v1
+    ASSET_VERSION 16 (in game.js)
     teacher.css v2       teacher.js v2        (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
@@ -150,7 +151,7 @@ Its versions are listed with the others below.
 
 ## Right now
 
-Blocks 1 to 40 are built. Blocks 22 to 40 were one build session, 17 to
+Blocks 1 to 41 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -199,12 +200,19 @@ Blocks 1 to 40 are built. Blocks 22 to 40 were one build session, 17 to
     40  the man in the moro-moro and his five guards on real art:
         Muslim_Walk and Muslim_Attack, keyed from JPEG to PNG; walking
         decorations, attack sheets for enemies, sheet headroom
+    41  no dashed boxes left in Act I: stand-in stills for the
+        Mananahi, Bonifacio, the Katipunero, the townspeople and the
+        street guards, built from the commissioned sheets, plus apple
+        and stage-clothes tile pictures
 
-Blocks 30 to 39 are pushed (1db4d33). Push Block 40 as one commit:
-game.js, content/act1.js, index.html, CLAUDE.md, TRACKER.md,
-_dev/verify_new_scene.js, _dev/key-black.py, and Assets/Act 1/
-Muslim_Walk.png and Muslim_Attack.png (the game loads the PNGs; the
-.jpg originals may be pushed or not, nothing loads them). Assets/Act 1/Muslim_Woman.png
+Blocks 30 to 39 are pushed (1db4d33). Push Blocks 40 and 41 as one
+commit: game.js, content/act1.js, index.html, CLAUDE.md, TRACKER.md,
+_dev/verify_new_scene.js, _dev/key-black.py,
+_dev/make-placeholder-sprites.py, _dev/README.md, and the new pictures:
+Assets/Act 1/ Muslim_Walk.png, Muslim_Attack.png, Mananahi.png,
+Bonifacio.png, Katipunero.png, Mamamayan.png, Bantay.png,
+Damit_Entablado.png, and Assets/Mansanas.png. The Muslim .jpg originals
+may be pushed or not; nothing loads them. Assets/Act 1/Muslim_Woman.png
 is a byte-for-byte copy of Muslim_Girl.png and nothing loads it.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
@@ -217,7 +225,7 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. Push Block 40 (see Right now), then a device pass on Blocks 14 to
+1. Push Blocks 40 and 41 (see Right now), then a device pass on Blocks 14 to
 40, on the phone, in landscape, from a private tab (browsers cache
 index.html; see Known problems). Check:
 
@@ -266,6 +274,11 @@ index.html; see Known problems). Check:
     Kabayo: crisp pixels rather than a blur, standing on the road,
       roughly Macario's height. If he reads too small for a horse,
       that is one number (an NPC display height) to add.
+    Stand-in art (Block 41): the Mananahi, Bonifacio, the Katipunero,
+      the three townspeople and the street guards all stand on the road
+      at the same height as the real characters, no dashed boxes
+      anywhere; the apple and stage-clothes tiles show pictures in the
+      shop and inventory.
     The man and his guards (Block 40): he walks on facing left, stands
       still while he talks, turns and walks off; the guards walk rather
       than slide, and each swing shows the sword going back before it
@@ -300,13 +313,16 @@ pamphlets were and who received them. content/act1.js marks the block.
 Act I is now completable, so this is also what stands between the build
 and a pilot.
 
-3. Remaining art, chased with the artist: Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png
-(the street's guards), Mamamayan.png (the three citizens, one sprite
-shared unless the artist draws three) (all Assets/Act 1/),
-Damit_Entablado.png (Assets/Act 1/, the clothes' tile picture; outfit
-sheets later if he should look different wearing them),
-Macario's Dead sheet, and
-Mansanas.png (item icon; the apple symbol stands in). Each new sheet
+3. Real art, chased with the artist, to replace Block 41's stand-ins:
+Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png (the street's
+guards), Mamamayan.png (the three citizens, one sprite shared unless
+the artist draws three), Damit_Entablado.png (all Assets/Act 1/) and
+Assets/Mansanas.png. The stand-ins are recoloured frames of the
+commissioned sheets, so they will look like near relations of Tindero,
+Kutsero and Nanay. Replacing one is dropping the new file over the same
+name and updating its STILL entry in content/act1.js (frames, columns,
+and the three measured numbers). Macario's Dead sheet is still missing
+and has no stand-in; no shipped scene plays it. Each new sheet
 needs measure-sprite.js and all three numbers pasted. Ask for PNG
 exports with transparency: Muslim_Walk and Muslim_Attack came as JPEGs
 on black and had to be keyed (_dev/key-black.py), and the attack sheet's
@@ -320,8 +336,8 @@ against the source material.
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs. Everything through Block 39 is pushed and Block 40 is
-written to the device folder, all passing their checks; the proponent
+header directs. Everything through Block 39 is pushed and Blocks 40
+and 41 are written to the device folder, all passing their checks; the proponent
 handles the push. So the first things a session can do are in Next
 action, in order: a device pass against the checklist there, then
 checking Block 37's placeholder script against the source book with the
@@ -561,6 +577,7 @@ submit_assessment).
         AV)
     40  Muslim walk and attack sheets; walkOnly, faceMovement,
         attackAnimation, headroom, playing() gate; key-black.py
+    41  stand-in stills and tile pictures; make-placeholder-sprites.py
 
 ## Blocks remaining
 
@@ -608,9 +625,9 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the remaining art with the artist: Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png,
-Mamamayan.png, Damit_Entablado.png,
-Macario's Dead sheet and Mansanas.png (see Known
+Chase the real art with the artist for Block 41's stand-ins (Mananahi,
+Bonifacio, Katipunero, Bantay, Mamamayan, Damit_Entablado, Mansanas)
+and Macario's Dead sheet (see Known
 problems for where each shows). Later, once real items and the entablado
 content are decided, the art they need. (NOT STARTED)
 
@@ -632,26 +649,31 @@ Missing production art. Assets/ holds real art for Nanay, Kutsero,
 Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack,
 shared by his guards), both entablado pictures, Tondo.png, Lupa.jpg (the
 ground), and Macario's idle, walk, melee and shooting sheets, plus the
-two fonts and four sound files. Still missing, each falling
-back to the dashed placeholder box naming the file (or, for the item,
-to its symbol):
+two fonts and four sound files.
+
+Stand-ins, not the artist's (Block 41, made by
+_dev/make-placeholder-sprites.py from the commissioned sheets), owed
+real art:
 
     Assets/Act 1/Mananahi.png  the Mananahi, on the tondo road
     Assets/Act 1/Bonifacio.png   Bonifacio, outside the entablado
     Assets/Act 1/Katipunero.png  the second Katipunero, beside him
     Assets/Act 1/Bantay.png    the four guards on the lansangan (a
-                               sheet facing right; see CLAUDE.md,
-                               Pitfalls, for facing)
-    Assets/Act 1/Mamamayan.png the three citizens, one shared sprite
-    Assets/Act 1/Damit_Entablado.png  the stage clothes' tile (the shirt
-                               symbol stands in)
-    Assets/Dead.png            Macario's death pose
+                               front-facing still; real art should
+                               face right, see CLAUDE.md, Pitfalls)
+    Assets/Act 1/Mamamayan.png the three citizens, one shared still
+    Assets/Act 1/Damit_Entablado.png  the stage clothes' tile
     Assets/Mansanas.png        the apple tile in the shop and inventory
+
+Still missing outright, falling back to the dashed placeholder box:
+
+    Assets/Dead.png            Macario's death pose; no shipped scene
+                               plays it
     Assets/Act 1/Tondo_Night.png  night backdrop; no shipped scene
                                switches to night yet, so nothing shows
 
-Nothing in the suite fails for these; only verify_new_scene.js checks
-that named NPCs (Kutsero, Kabayo, Tindero) and the ground draw real art. (KNOWN)
+verify_new_scene.js checks that every Act I character draws a picture
+rather than a box. (KNOWN)
 
 Browsers cache index.html. It carries no version number of its own, so
 a phone that loaded an old copy keeps requesting the old ?v=N files

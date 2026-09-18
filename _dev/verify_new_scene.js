@@ -387,10 +387,12 @@ const talk = async (page, times) => {
   const mana = await page.evaluate(() => {
     const el = document.getElementById("npc-mananahi");
     return { exists: !!el, shown: el && el.style.display !== "none", width: WORLD_WIDTH,
-             placeholder: el && el.textContent.includes("Mananahi.png") };
+             art: el && el.querySelector(".sprite").style.backgroundImage,
+             text: el && el.textContent };
   });
   ok("the road is longer and the Mananahi is on it", mana.exists && mana.shown && mana.width === 2900, mana);
-  ok("drawn as the placeholder naming Mananahi.png until the art exists", mana.placeholder, mana);
+  ok("drawn from her stand-in still, Mananahi.png, not a box (Block 41)",
+     /Mananahi\.png/.test(mana.art || "") && mana.text === "", mana);
   await walkTo(page, 1420);
   await page.keyboard.press("e");
   await page.waitForTimeout(120);
@@ -651,10 +653,12 @@ const talk = async (page, times) => {
     open: inDialogue, line: dialogueSpeaker.textContent + ": " + dialogueText.textContent,
     bonifacio: document.getElementById("npc-bonifacio").style.display !== "none",
     katipunero: document.getElementById("npc-katipunero").style.display !== "none",
-    bPlaceholder: document.querySelector("#npc-bonifacio .sprite").textContent,
+    bArt: document.querySelector("#npc-bonifacio .sprite").style.backgroundImage,
+    kArt: document.querySelector("#npc-katipunero .sprite").style.backgroundImage,
   }));
   ok("Bonifacio and a Katipunero are waiting outside", meet.bonifacio && meet.katipunero, meet);
-  ok("drawn as placeholders until art exists", /Bonifacio\.png/.test(meet.bPlaceholder), meet);
+  ok("both drawn from their stand-in stills (Block 41)",
+     /Bonifacio\.png/.test(meet.bArt || "") && /Katipunero\.png/.test(meet.kArt || ""), meet);
   ok("the meeting opens by itself with Bonifacio's greeting",
      meet.open && meet.line === "Bonifacio: Macario! Mahusay ang pagganap mo kanina.", meet);
   ok("the road out is closed before the task is given",
@@ -697,13 +701,15 @@ const talk = async (page, times) => {
     src: document.getElementById("skyline").style.getPropertyValue("--skyline-src"),
     hearts: !document.getElementById("hud").classList.contains("hidden"),
     open: inDialogue, line: dialogueSpeaker.textContent + ": " + dialogueText.textContent,
-    guardPlaceholder: document.querySelector("#guard-bantay-1 .sprite").textContent,
+    guardArt: document.querySelector("#guard-bantay-1 .sprite").style.backgroundImage,
+    citizenArt: document.querySelector("#npc-mangingisda .sprite").style.backgroundImage,
   }));
   ok("Tumuloy fades to the street, on the Tondo backdrop in colour",
      street.room === "lansangan" && street.src === "" && !street.grey, street);
   ok("the road is long: 7200px", street.width === 7200, street);
-  ok("four guards, all of whom shoot, drawn as Bantay.png placeholders",
-     street.guards === 4 && street.shooters === 4 && /Bantay\.png/.test(street.guardPlaceholder), street);
+  ok("four guards, all of whom shoot, drawn from the Bantay.png still, and citizens from Mamamayan.png",
+     street.guards === 4 && street.shooters === 4 && /Bantay\.png/.test(street.guardArt || "") &&
+     /Mamamayan\.png/.test(street.citizenArt || ""), street);
   ok("three platforms of different heights, all above a guard's sight",
      street.platforms === 3 && new Set(street.heights).size === 3 && street.heights.every((h) => h >= 60), street.heights);
   ok("three citizens and the hearts showing", street.citizens === 3 && street.hearts, street);

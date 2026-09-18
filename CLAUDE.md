@@ -2622,6 +2622,34 @@ setupNpcAnimation gained an optional playing() gate and loop: false for
 both. The street's Bantay guards are the town's, not his, and keep their
 own placeholder. ASSET_VERSION to 15.
 
+Stand-in stills for the remaining placeholders (Block 41). Requested:
+PNG sprites for everything still drawn as a dashed box, in the style of
+the existing art, still frames acceptable. Nothing could be drawn from
+scratch in that painted style at that quality, so each is a frame of a
+commissioned sheet recoloured and given a prop, which keeps the
+artist's outline, shading and proportions: Bonifacio is the Tindero in
+white camisa and red trousers and sash; the Katipunero is the Kutsero in
+red; the townspeople are the Kutsero in faded blue; the guardia civil is
+the Tindero in navy with a kepi and a rifle; the Mananahi is Nanay with
+a green tapis, a maroon skirt and a tape measure. The apple and the
+stage clothes' tile are 32px pixel drawings scaled up nearest neighbour.
+
+_dev/make-placeholder-sprites.py builds all seven, so the choices are
+reproducible and adjustable rather than baked into files. Each
+character is one 256px frame in the sheet's own cell, measured with
+measure-sprite.js and declared in a STILL table in content/act1.js as
+an animation def with frames: 1, which is what puts it through
+bodySprite like every other character; a static img NPC would not be
+scaled to DISPLAY_HEIGHT or stood on its feet. Bantay's footX is set to
+the body's 128 by hand, because his rifle butt sits in the rows
+measure-sprite.js averages.
+
+They are stand-ins, and say so in the content and in TRACKER.md. They
+read as relations of the characters they came from, which is fine for
+a pilot and not what a finished game should ship. Real art replaces
+each one by overwriting the file and updating its STILL entry.
+ASSET_VERSION to 16.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -2816,8 +2844,9 @@ which deletes at zero, because a row left at quantity 0 reads as owned
 to anything that only checks the row exists.
 
 A guard's placeholder is not mirrored when he turns, on purpose, and real
-guard art is (style.css, .guard-facing-left). That assumes the art faces
-right, as Macario's does. If a guard sheet arrives drawn facing left, it
+guard art is (style.css, .guard-facing-left), including Block 41's
+front-facing Bantay still, whose rifle simply changes hands. That
+assumes directional art faces right, as Macario's does. If a guard sheet arrives drawn facing left, it
 will walk backwards; the fix is in the CSS rule, not the content.
 
 A new element that a loop-time system creates per scene (Block 37's

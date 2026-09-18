@@ -90,8 +90,8 @@
 //
 // Kutsero, Kabayo and Tindero have real art in Assets/Act 1/ (Block 33
 // sorted out a Kutsero and Tindero mix-up in the file names). The
-// Mananahi has none yet and draws as the dashed placeholder box naming
-// her file.
+// Mananahi, Bonifacio, the Katipunero, the townspeople and the street's
+// guards are stand-in stills (Block 41, STILL below) until theirs exist.
 // =============================================================
 
 // =============================================================
@@ -158,6 +158,27 @@ const MUSLIM_WALK = { src: "Assets/Act 1/Muslim_Walk.png", frames: 12, fps: 10,
 const MUSLIM_ATTACK = { src: "Assets/Act 1/Muslim_Attack.png", frames: 15, fps: 24,
   columns: 4, contentTop: 30, contentHeight: 97, footX: 88, headroom: 29 };
 
+// Block 41. Stand-in stills for the characters the artist has not drawn
+// yet, made by _dev/make-placeholder-sprites.py from frames of the
+// commissioned sheets (recoloured, with a prop or two), so they share the
+// painted style. One frame each, measured with measure-sprite.js. Real
+// art replaces them by dropping a sheet over the same file name and
+// changing frames, columns and the three numbers here. Bantay's footX is
+// the body's, 128; the tool reads 130 because his rifle butt is in the
+// bottom rows it averages.
+const STILL = {
+  mananahi:   { src: "Assets/Act 1/Mananahi.png",   frames: 1, fps: 1,
+                contentTop: 45, contentHeight: 166, footX: 128 },
+  bonifacio:  { src: "Assets/Act 1/Bonifacio.png",  frames: 1, fps: 1,
+                contentTop: 69, contentHeight: 121, footX: 128 },
+  katipunero: { src: "Assets/Act 1/Katipunero.png", frames: 1, fps: 1,
+                contentTop: 74, contentHeight: 117, footX: 128 },
+  mamamayan:  { src: "Assets/Act 1/Mamamayan.png",  frames: 1, fps: 1,
+                contentTop: 74, contentHeight: 117, footX: 128 },
+  bantay:     { src: "Assets/Act 1/Bantay.png",     frames: 1, fps: 1,
+                contentTop: 69, contentHeight: 121, footX: 128 },
+};
+
 const PAMPHLET_FLAGS = ["nabigyanSiMangingisda", "nabigyanSiLabandera", "nabigyanSiKarpintero"];
 
 function pamphletText(n) {
@@ -190,11 +211,11 @@ function givePamphlet() {
 
 // One citizen: talks before and after, and takes a pamphlet through the
 // gift button (Iabot ang polyeto), the same mechanism Kabayo's apple uses.
-// All three share one placeholder picture until the artist says otherwise.
+// All three share one stand-in still until the artist says otherwise.
 function citizen(id, x, label, flag, before, thanks) {
   return {
     id, x, label,
-    img: "Assets/Act 1/Mamamayan.png",
+    animation: STILL.mamamayan,
     stage: 0,
     dialogueSets: [
       { skipIfFlag: flag, lines: before, onComplete: () => {} },
@@ -407,10 +428,8 @@ window.ACT_1 = {
           // before the fade back to this scene, so buildNpcs already draws
           // her when tondo is rebuilt (and on any reload after).
           //
-          // Assets/Act 1/Mananahi.png does not exist yet, so she is the
-          // dashed placeholder box naming that file. If the art arrives as
-          // a sprite sheet rather than a single picture, img becomes an
-          // animation def measured with _dev/measure-sprite.js.
+          // Drawn from a stand-in still (Block 41) until the artist's
+          // Mananahi.png replaces it; see STILL above.
           //
           // Block 32. The first conversation completes the tailor quest and
           // ends straight into her shop (opensShopAfter), which stocks only
@@ -419,7 +438,7 @@ window.ACT_1 = {
           id: "mananahi",
           x: 1500,
           label: "Mananahi",
-          img: "Assets/Act 1/Mananahi.png",
+          animation: STILL.mananahi,
           startsHidden: true,
           revealedByFlag: "binilhanNgMansanasAngKabayo",
           opensShopAfter: "nakausapAngMananahi",
@@ -445,11 +464,11 @@ window.ACT_1 = {
 
         {
           // Block 37. Waiting outside the entablado once the play is over.
-          // No art yet: Assets/Act 1/Bonifacio.png is the placeholder box.
+          // A stand-in still until real art exists (Block 41).
           id: "bonifacio",
           x: 1900,
           label: "Bonifacio",
-          img: "Assets/Act 1/Bonifacio.png",
+          animation: STILL.bonifacio,
           startsHidden: true,
           revealedByFlag: "nasaEntablado",
           stage: 0,
@@ -477,11 +496,11 @@ window.ACT_1 = {
 
         {
           // The second Katipunero, unnamed until the source says who.
-          // Assets/Act 1/Katipunero.png is the placeholder box.
+          // A stand-in still until real art exists (Block 41).
           id: "katipunero",
           x: 2010,
           label: "Katipunero",
-          img: "Assets/Act 1/Katipunero.png",
+          animation: STILL.katipunero,
           startsHidden: true,
           revealedByFlag: "nasaEntablado",
           stage: 0,
@@ -681,9 +700,8 @@ window.ACT_1 = {
       //
       // Maryam is a decoration: she only stands and speaks through the
       // script, and a decoration can do both without the E-to-talk an NPC
-      // would bring. The man has no art yet (Assets/Act 1/Muslim.png) and
-      // draws as the dashed placeholder box naming that file. His guards
-      // share his sprite (Block 37): there is no separate guard picture.
+      // would bring. The man and his guards share one walk sheet and one
+      // attack sheet (Block 40): there is no separate guard picture.
       //
       // Block 37. Winning the fight is not the end of the play any more:
       // Maryam announces the Christian kingdom's victory, her conversion and
@@ -815,9 +833,10 @@ window.ACT_1 = {
       // Numbers are chosen, not measured, like every other tuning number in
       // this game; judge them on a phone.
       //
-      // The guards have no art yet: Assets/Act 1/Bantay.png is their
-      // placeholder box, and the road's sight bands show which way each
-      // faces. The citizens share Assets/Act 1/Mamamayan.png.
+      // The guards are a stand-in still (STILL.bantay, above), not the
+      // artist's, front-facing, so the road's sight bands are still what
+      // shows which way each faces. The citizens share one stand-in still,
+      // Assets/Act 1/Mamamayan.png.
       id: "lansangan",
       worldWidth: 7200,
       startX: 200,
@@ -859,16 +878,16 @@ window.ACT_1 = {
       guards: [
         { id: "bantay-1", x: 1000, patrolFrom: 820, patrolTo: 1400,
           speed: 1.4, facing: -1, detectRadius: 240, shoots: true,
-          animation: { src: "Assets/Act 1/Bantay.png", frames: 1, fps: 1 } },
+          animation: STILL.bantay },
         { id: "bantay-2", x: 2500, patrolFrom: 2350, patrolTo: 3150,
           speed: 1.4, facing: -1, detectRadius: 200, shoots: true,
-          animation: { src: "Assets/Act 1/Bantay.png", frames: 1, fps: 1 } },
+          animation: STILL.bantay },
         { id: "bantay-3", x: 4640, patrolFrom: 4640, patrolTo: 4640,
           facing: -1, detectRadius: 300, shoots: true,
-          animation: { src: "Assets/Act 1/Bantay.png", frames: 1, fps: 1 } },
+          animation: STILL.bantay },
         { id: "bantay-4", x: 5600, patrolFrom: 5400, patrolTo: 6250,
           speed: 1.6, facing: 1, detectRadius: 200, shoots: true,
-          animation: { src: "Assets/Act 1/Bantay.png", frames: 1, fps: 1 } },
+          animation: STILL.bantay },
       ],
       npcs: [
         citizen("mangingisda", 1800, "Mangingisda", "nabigyanSiMangingisda",

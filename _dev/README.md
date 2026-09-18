@@ -96,3 +96,11 @@ hair and clothes survive:
 
 It needs Pillow and is dev-time only. Measure the PNG with
 measure-sprite.js afterwards, and point the content at the PNG.
+
+## Stand-in art
+
+make-placeholder-sprites.py rebuilds the stand-in stills for characters
+the artist has not drawn yet (recoloured frames of the commissioned
+sheets) and the apple and stage-clothes tiles. Pillow, dev-time only:
+
+    python3 _dev/make-placeholder-sprites.py
