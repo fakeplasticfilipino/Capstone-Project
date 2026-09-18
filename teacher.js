@@ -15,6 +15,14 @@
 // round trips are irrelevant. If this ever becomes a bottleneck it
 // converts to an RPC without changing any rendering code.
 //
+// THE LAYOUT (v2, after Block 38)
+// Restyled as a light report page with a class toolbar, six summary
+// figures each carrying its own n, and a roster that can be searched and
+// sorted by any column. Act I's status, objectives and play time were
+// added to the roster from act_progress columns the query can already
+// read (schema v4). Searching and sorting happen on rows already fetched;
+// nothing here adds a query or widens one beyond the teacher's own class.
+//
 // SECURITY NOTE
 // The role check below is a usability guard, not the security
 // boundary. What actually prevents one teacher reading another
@@ -35,15 +43,20 @@ const logoutBtn = document.getElementById("logout-btn");
 const classPickerRow = document.getElementById("class-picker-row");
 const classPicker = document.getElementById("class-picker");
 
+const toolbarEl = document.getElementById("toolbar");
+const classNameEl = document.getElementById("class-name");
+const refreshBtn = document.getElementById("refresh-btn");
+const updatedAtEl = document.getElementById("updated-at");
+
 const summaryEl = document.getElementById("summary");
-const statStudents = document.getElementById("stat-students");
-const statStarted = document.getElementById("stat-started");
-const statPre = document.getElementById("stat-pre");
-const statPost = document.getElementById("stat-post");
-const statGain = document.getElementById("stat-gain");
+const stat = (id) => document.getElementById(id);
 
 const rosterSection = document.getElementById("roster-section");
 const rosterBody = document.getElementById("roster-body");
+const rosterCountEl = document.getElementById("roster-count");
+const rosterSearch = document.getElementById("roster-search");
+const noMatchEl = document.getElementById("no-match");
+const sortHeaders = document.querySelectorAll("#roster th[data-sort]");
 
 const noClassEl = document.getElementById("no-class");
 const noStudentsEl = document.getElementById("no-students");
@@ -51,6 +64,23 @@ const loadErrorEl = document.getElementById("load-error");
 const loadingEl = document.getElementById("loading");
 
 let teacherProfile = null;
+let classesById = new Map();
+let currentClassId = null;
+let currentRows = [];
+let sortKey = "name";
+let sortDir = 1; // 1 ascending, -1 descending
+
+// act_progress.status, in the order a student moves through it, so
+// sorting by status sorts by how far along each student is.
+const STATUS = {
+  none:      { label: "Hindi pa nagsisimula", pill: "pill-none",    order: 0 },
+  locked:    { label: "Naka-lock",            pill: "pill-locked",  order: 1 },
+  trivia:    { label: "Trivia",               pill: "pill-test",    order: 2 },
+  pretest:   { label: "Pre-test",             pill: "pill-test",    order: 3 },
+  playing:   { label: "Naglalaro",            pill: "pill-playing", order: 4 },
+  posttest:  { label: "Post-test",            pill: "pill-test",    order: 5 },
+  completed: { label: "Tapos",                pill: "pill-done",    order: 6 },
+};
 
 // =============================================================
 // Access gate
@@ -126,6 +156,7 @@ async function loadClasses(teacherId) {
     return;
   }
 
+  classesById = new Map(classes.map((c) => [c.id, c]));
   classPicker.innerHTML = "";
   classes.forEach((c) => {
     const opt = document.createElement("option");
@@ -150,6 +181,10 @@ async function loadClasses(teacherId) {
 // =============================================================
 
 async function loadRoster(classId) {
+  currentClassId = classId;
+  const cls = classesById.get(classId);
+  classNameEl.textContent = cls ? cls.class_name : "";
+  toolbarEl.classList.remove("hidden");
   showLoading();
 
   // 1. Students in this class.
@@ -182,7 +217,7 @@ async function loadRoster(classId) {
       .in("student_id", ids),
     sb
       .from("act_progress")
-      .select("student_id, act_number, status, performance_score")
+      .select("student_id, act_number, status, performance_score, objectives_done, objectives_total, elapsed_ms")
       .in("student_id", ids),
     sb
       .from("assessment_scores")
@@ -204,8 +239,12 @@ async function loadRoster(classId) {
     scoresRes.data || []
   );
 
-  renderRoster(rows);
+  currentRows = rows;
+  renderRoster();
   renderSummary(rows);
+  updatedAtEl.textContent = "Na-update " + new Date().toLocaleTimeString("en-PH", {
+    hour: "numeric", minute: "2-digit",
+  });
 
   loadingEl.classList.add("hidden");
   noStudentsEl.classList.add("hidden");
@@ -251,8 +290,18 @@ function buildRoster(students, progress, acts, scores) {
         scored.length
       : null;
 
+    const act1 = studentActs.find((a) => Number(a.act_number) === 1) || null;
+    const status = act1 && STATUS[act1.status] ? act1.status : "none";
+
     return {
       name: student.full_name || "(walang pangalan)",
+      status,
+      objectivesDone: act1 ? act1.objectives_done : null,
+      objectivesTotal: act1 ? act1.objectives_total : null,
+      objectives: act1 && act1.objectives_total
+        ? Number(act1.objectives_done) / Number(act1.objectives_total)
+        : null,
+      elapsed: act1 && act1.elapsed_ms ? Number(act1.elapsed_ms) : null,
       currentAct: prog ? prog.current_act : null,
       hasPlayed: Boolean(prog),
       actsCompleted: studentActs.filter((a) => a.status === "completed").length,
@@ -271,48 +320,140 @@ function buildRoster(students, progress, acts, scores) {
 // Rendering
 // =============================================================
 
-function renderRoster(rows) {
+function renderRoster() {
+  const query = rosterSearch.value.trim().toLowerCase();
+  const rows = currentRows
+    .filter((r) => !query || r.name.toLowerCase().includes(query))
+    .sort(compareRows);
+
   rosterBody.innerHTML = "";
 
   rows.forEach((row) => {
     const tr = document.createElement("tr");
 
     tr.appendChild(cell(row.name, "cell-name"));
-    tr.appendChild(cell(row.currentAct !== null ? "Act " + row.currentAct : null));
-    tr.appendChild(cell(row.hasPlayed ? `${row.actsCompleted}/${TOTAL_ACTS}` : null));
-    tr.appendChild(cell(row.pre ? fraction(row.pre) : null));
-    tr.appendChild(cell(row.post ? fraction(row.post) : null));
+    tr.appendChild(statusCell(row.status));
+    tr.appendChild(cell(
+      row.currentAct !== null ? "Act " + row.currentAct : null,
+      null,
+      row.hasPlayed ? `${row.actsCompleted} sa ${TOTAL_ACTS} tapos` : null
+    ));
+    tr.appendChild(cell(
+      row.objectivesTotal ? `${row.objectivesDone}/${row.objectivesTotal}` : null, "num"));
+    tr.appendChild(cell(
+      row.pre ? Math.round(row.prePct) + "%" : null, "num", row.pre ? fraction(row.pre) : null));
+    tr.appendChild(cell(
+      row.post ? Math.round(row.postPct) + "%" : null, "num", row.post ? fraction(row.post) : null));
     tr.appendChild(gainCell(row.gain));
-    tr.appendChild(
-      cell(row.performance !== null ? row.performance.toFixed(1) : null)
-    );
+    tr.appendChild(cell(row.performance !== null ? row.performance.toFixed(1) : null, "num"));
+    tr.appendChild(cell(formatDuration(row.elapsed), "num"));
     tr.appendChild(cell(formatDate(row.lastActive)));
 
     rosterBody.appendChild(tr);
   });
+
+  const total = currentRows.length;
+  rosterCountEl.textContent = query
+    ? `${rows.length} sa ${total} mag-aaral ang tumugma`
+    : `${total} mag-aaral`;
+  noMatchEl.classList.toggle("hidden", rows.length > 0);
+
+  sortHeaders.forEach((th) => {
+    if (th.dataset.sort === sortKey) {
+      th.setAttribute("aria-sort", sortDir === 1 ? "ascending" : "descending");
+    } else {
+      th.removeAttribute("aria-sort");
+    }
+  });
 }
 
+// Missing values always sort last, whichever way the column is sorted,
+// so a teacher sorting by score sees scores first rather than a block
+// of dashes.
+function compareRows(a, b) {
+  const va = sortValue(a, sortKey);
+  const vb = sortValue(b, sortKey);
+  if (va === null && vb === null) return a.name.localeCompare(b.name);
+  if (va === null) return 1;
+  if (vb === null) return -1;
+  const diff = typeof va === "string" ? va.localeCompare(vb) : va - vb;
+  return diff !== 0 ? diff * sortDir : a.name.localeCompare(b.name);
+}
+
+function sortValue(row, key) {
+  switch (key) {
+    case "name": return row.name.toLowerCase();
+    case "status": return STATUS[row.status].order;
+    case "lastActive": return row.lastActive ? new Date(row.lastActive).getTime() : null;
+    default: {
+      const v = row[key];
+      return v === null || v === undefined ? null : Number(v);
+    }
+  }
+}
+
+sortHeaders.forEach((th) => {
+  th.querySelector("button").addEventListener("click", () => {
+    const key = th.dataset.sort;
+    if (key === sortKey) {
+      sortDir = -sortDir;
+    } else {
+      sortKey = key;
+      // Names and status read naturally ascending; numbers and dates are
+      // usually wanted highest or latest first.
+      sortDir = key === "name" || key === "status" ? 1 : -1;
+    }
+    renderRoster();
+  });
+});
+
+rosterSearch.addEventListener("input", () => renderRoster());
+
+refreshBtn.addEventListener("click", async () => {
+  if (!currentClassId) return;
+  refreshBtn.disabled = true;
+  await loadRoster(currentClassId);
+  refreshBtn.disabled = false;
+});
+
 function renderSummary(rows) {
+  const n = rows.length;
   const started = rows.filter((r) => r.hasPlayed);
+  const done = rows.filter((r) => r.status === "completed");
   const withPre = rows.filter((r) => r.prePct !== null);
   const withPost = rows.filter((r) => r.postPct !== null);
   const withGain = rows.filter((r) => r.gain !== null);
 
-  statStudents.textContent = rows.length;
-  statStarted.textContent = started.length;
-  statPre.textContent = withPre.length
-    ? average(withPre.map((r) => r.prePct)).toFixed(0) + "%"
-    : "-";
-  statPost.textContent = withPost.length
-    ? average(withPost.map((r) => r.postPct)).toFixed(0) + "%"
-    : "-";
+  stat("stat-students").textContent = n;
+  stat("stat-started").textContent = started.length;
+  stat("stat-started-sub").textContent = percentOf(started.length, n) + " ng klase";
+  stat("stat-done").textContent = done.length;
+  stat("stat-done-sub").textContent = percentOf(done.length, n) + " ng klase";
 
+  stat("stat-pre").textContent = withPre.length
+    ? average(withPre.map((r) => r.prePct)).toFixed(0) + "%"
+    : "—";
+  stat("stat-pre-sub").textContent = `n = ${withPre.length}`;
+  stat("stat-post").textContent = withPost.length
+    ? average(withPost.map((r) => r.postPct)).toFixed(0) + "%"
+    : "—";
+  stat("stat-post-sub").textContent = `n = ${withPost.length}`;
+
+  const gainEl = stat("stat-gain");
+  gainEl.classList.remove("gain-positive", "gain-negative");
   if (withGain.length) {
     const avgGain = average(withGain.map((r) => r.gain));
-    statGain.textContent = signed(avgGain) + "%";
+    gainEl.textContent = signed(avgGain) + "%";
+    if (Math.round(avgGain) > 0) gainEl.classList.add("gain-positive");
+    if (Math.round(avgGain) < 0) gainEl.classList.add("gain-negative");
   } else {
-    statGain.textContent = "-";
+    gainEl.textContent = "—";
   }
+  stat("stat-gain-sub").textContent = `n = ${withGain.length}, may pre at post`;
+}
+
+function percentOf(part, whole) {
+  return whole ? Math.round((part / whole) * 100) + "%" : "0%";
 }
 
 // =============================================================
@@ -321,28 +462,48 @@ function renderSummary(rows) {
 
 // A null value renders as a dash in a muted colour, so "no data yet"
 // is visually distinct from a real zero.
-function cell(value, className) {
+// sub is an optional second, smaller line (the raw score under a
+// percentage, say). Everything is written as text, never as HTML, since
+// a student's name is whatever was typed into their profile.
+function cell(value, className, sub) {
   const td = document.createElement("td");
+  const align = className === "num" ? "num" : "";
   if (value === null || value === undefined || value === "") {
-    td.textContent = "-";
-    td.className = "cell-empty";
+    td.textContent = "—";
+    td.className = ["cell-empty", align].filter(Boolean).join(" ");
   } else {
     td.textContent = value;
     if (className) td.className = className;
+    if (sub) {
+      const small = document.createElement("span");
+      small.className = "cell-sub";
+      small.textContent = sub;
+      td.appendChild(small);
+    }
   }
+  return td;
+}
+
+function statusCell(status) {
+  const td = document.createElement("td");
+  const info = STATUS[status] || STATUS.none;
+  const pill = document.createElement("span");
+  pill.className = "pill " + info.pill;
+  pill.textContent = info.label;
+  td.appendChild(pill);
   return td;
 }
 
 function gainCell(gain) {
   const td = document.createElement("td");
   if (gain === null) {
-    td.textContent = "-";
-    td.className = "cell-empty";
+    td.textContent = "—";
+    td.className = "cell-empty num";
     return td;
   }
   td.textContent = signed(gain) + "%";
-  td.className =
-    gain > 0 ? "gain-positive" : gain < 0 ? "gain-negative" : "gain-neutral";
+  td.className = "num " +
+    (Math.round(gain) > 0 ? "gain-positive" : Math.round(gain) < 0 ? "gain-negative" : "gain-neutral");
   return td;
 }
 
@@ -369,15 +530,27 @@ function signed(value) {
   return rounded > 0 ? "+" + rounded : String(rounded);
 }
 
+// Play time as minutes, or hours and minutes once it passes an hour.
+function formatDuration(ms) {
+  if (!ms) return null;
+  const minutes = Math.round(ms / 60000);
+  if (minutes < 1) return "<1m";
+  if (minutes < 60) return minutes + "m";
+  return Math.floor(minutes / 60) + "h " + (minutes % 60) + "m";
+}
+
 function formatDate(iso) {
   if (!iso) return null;
   const d = new Date(iso);
   if (isNaN(d.getTime())) return null;
+  // The year only when it is not this one: a school term fits in one,
+  // and the column stays narrow enough to fit a laptop screen.
+  const sameYear = d.getFullYear() === new Date().getFullYear();
   return d.toLocaleDateString("en-PH", {
-    year: "numeric",
+    year: sameYear ? undefined : "numeric",
     month: "short",
     day: "numeric",
-  });
+  }) + ", " + d.toLocaleTimeString("en-PH", { hour: "numeric", minute: "2-digit" });
 }
 
 // =============================================================
@@ -399,6 +572,7 @@ function showLoadError(message, error) {
   rosterSection.classList.add("hidden");
   noStudentsEl.classList.add("hidden");
 
+  toolbarEl.classList.add("hidden");
   loadErrorEl.textContent = message + " Tingnan ang console para sa detalye.";
 
   // Surface the single most likely cause rather than leaving the

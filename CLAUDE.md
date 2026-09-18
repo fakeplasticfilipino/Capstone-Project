@@ -2543,6 +2543,34 @@ hostile the clothes do nothing, since he already knows.
 The first-time toast is remembered on the scene object for the session,
 not saved, and costs nothing if it repeats after a reload.
 
+The teacher dashboard restyled (Block 39). Requested as making it more
+professional. It is now a light report page rather than the old gold on
+black: teachers read tables of numbers on school laptops and projectors,
+where dark text on a light page reads best, and the game's wood and
+green survive only as accents so the two pages still belong together.
+The pixel theme was not carried over for the same reason.
+
+What it shows: the class name, six summary figures (students, started,
+finished Act I, and average pre-test, post-test and gain), each with the
+n it was averaged over, because an average over three students and one
+over forty otherwise read the same; and one roster row per student with
+Act I's status as a pill, objectives done, both scores as a percentage
+over the raw score, gain, performance, play time and last activity. The
+status, objectives and play time come from act_progress columns the
+dashboard's existing query can already read (schema v4), so no query was
+added and none was widened. The four scoped queries and the no-chart
+rule both stand.
+
+Search and sort work on rows already fetched. Missing values sort last
+in either direction, so sorting by score shows scores first. A refresh
+button reruns the same load. The performance formula is printed under
+the table, since an instructor will ask what the number is.
+
+Every value is written as text, never as HTML: a student's name is
+whatever was typed into a profile. _dev/sb-stub.js learned .in() and
+the classes and assessment_scores tables so section AV can drive the
+page; before this block the dashboard had no coverage at all.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes

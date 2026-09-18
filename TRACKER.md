@@ -22,15 +22,15 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 18 Sep 2026, after Block 38 (hostile guards and a
-stronger stage-clothes disguise), which followed Block 37 (the end of the
-play, the Katipunan, and the pamphlet street; Act I can now be
-completed). Blocks
-22 to 29 were audited against GitHub main (commit 58f4a43, "UI
-Overhaul") earlier the same day. Blocks 30 to 38 were written to the
-device folder; the proponent pushes them. The suite was run against the
-device folder's files: 544 passed, 0 failed; _dev/verify_new_scene.js
-138 passed, 0 failed.
+Last updated: 18 Sep 2026, after Block 39 (the teacher dashboard
+restyled), and audited the same day against the code and the device
+folder's git history. Blocks 30 to 38 are pushed: the device's reflog
+shows origin/main at a054ba0 ("fixed npc ai", Block 38), after 23ef262
+("completed act 1 scene", Block 37) and 61c354b ("updated trackers").
+Block 39 is written to the device folder and not yet pushed. The suite
+was run against the device folder's files: 554 passed, 0 failed;
+_dev/verify_new_scene.js 138 passed, 0 failed. The proponent played
+Blocks 37 and 38 and reported everything functional.
 
 ## Start here
 
@@ -76,9 +76,9 @@ check against it (see Next action).
               ang mananahi" (objective 4). Further down the road, which
               is 2900px, the Mananahi (placeholder box) talks about his
               stage costume, which completes it, and her shop opens:
-              Damit para sa Entablado, 100 barya, worn in Damit, halves
-              how fast a guard notices him while he stands still (the
-              lansangan's guards are what it is for). At the end of the
+              Damit para sa Entablado, 100 barya, worn in Damit, makes
+              a guard notice him five times slower while he stands
+              still (the lansangan's guards are what it is for). At the end of the
               road, now 2900px, stands the entablado (real art); Pasok
               at its stairs goes in.
     entablado the inside of the stage (Entablado.png as the whole
@@ -137,14 +137,21 @@ Current versions, which index.html must match on every push:
     content/act1.js v27  content/items.js v8  content/act2-4.js v1
     ASSET_VERSION 14 (in game.js)
 
-Nothing from Blocks 14 to 38 has been seen on a phone, apart from a
-first play of Block 37 by the proponent that led to Block 38. Everything in
-that range is verified headlessly only. A device pass is owed before
-the pilot; the checklist is under Next action.
+The proponent has played Blocks 37 and 38 and reported them functional,
+and confirmed Block 36's speed fix on the phone. Whether the rest of
+Blocks 14 to 38 has been through a full pass on the phone is not
+recorded, so the device checklist under Next action still stands before
+the pilot.
+
+The teacher dashboard (teacher.html) was restyled in Block 39: a light
+report page, six summary figures each with its n, and a roster that can
+be searched and sorted, with Act I's status, objectives and play time.
+Its versions are teacher.css v2 and teacher.js v2, named in
+teacher.html, which index.html does not load.
 
 ## Right now
 
-Blocks 1 to 38 are built. Blocks 22 to 38 were one build session, 17 to
+Blocks 1 to 39 are built. Blocks 22 to 39 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
@@ -187,31 +194,29 @@ Blocks 1 to 38 are built. Blocks 22 to 38 were one build session, 17 to
     38  guards hostile once they have seen him (chase, shoot, two
         punches to drop); stage clothes 0.2 with a blue meter and a
         toast
+    39  teacher dashboard restyled: light report layout, summary
+        figures with n, search and sort, Act I status, objectives and
+        play time per student; first harness coverage of the page
 
-Push Blocks 30 to 38 together, with every file below in the same
-commit, or the ?v=N numbers will not match: game.js, acts.js, shell.js,
-inventory.js, style.css, index.html, content/act1.js, content/items.js,
-CLAUDE.md, TRACKER.md, _dev/test.js, _dev/verify_new_scene.js, and the
-new and renamed files in Assets/ (Act 1/Kutsero.png, Act 1/Tindero.png,
-Act 1/Lupa.jpg, Act 1/Entablado_Labas.png, Act 1/Entablado.png,
-Act 1/Muslim_Girl.png, Act 1/Horse.png, Act 1/Horse.mp3,
-Prefab/Macario_Jump.png, Prefab/Calm.mp3, Prefab/Gun_Shot.mp3,
-Prefab/Intense.mp3), plus README.md, which was rewritten for the same
-range. Assets/Act 1/Muslim_Woman.png is a byte-for-byte copy of
-Muslim_Girl.png and nothing loads it; it need not be pushed.
+Blocks 30 to 38 are pushed (a054ba0). Push Block 39 as one commit:
+teacher.html, teacher.css, teacher.js, _dev/sb-stub.js, _dev/test.js,
+CLAUDE.md and TRACKER.md. teacher.html names teacher.css?v=2 and
+teacher.js?v=2, so the three go together. Assets/Act 1/Muslim_Woman.png
+is a byte-for-byte copy of Muslim_Girl.png and nothing loads it.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/reset_test_accounts.sql
 should be run once after Block 25, because the item id "mansanas"
-changed meaning; whether it has been is not recorded.
+changed meaning, and is also the way to clear hi@example.com before a
+demo; whether it has been run is not recorded.
 
 ## Next action
 
 In order.
 
-1. Push Blocks 30 to 38 (see Right now for the file list), then a
-device pass on Blocks 14 to 38, on the phone, in landscape, from a private tab
-(browsers cache index.html; see Known problems). Check:
+1. Push Block 39 (see Right now), then a device pass on Blocks 14 to
+38, on the phone, in landscape, from a private tab (browsers cache
+index.html; see Known problems). Check:
 
     Title, pause, settings: pixel fonts show (not plain monospace,
       which would mean Assets/Fonts did not upload), text readable at
@@ -273,6 +278,10 @@ device pass on Blocks 14 to 38, on the phone, in landscape, from a private tab
       the road feels long without dragging; running out of hearts
       restarts at the last citizen. The third pamphlet runs the
       post-test.
+    Teacher dashboard (Block 39), as guro@example.com on a laptop and a
+      projector: the class name, six figures and the roster load; the
+      search box and each column's sort work; a student who has not
+      played reads Hindi pa nagsisimula with dashes.
 
 2. Check Block 37's placeholder script against the resource person's
 source book (Content authority, under The milestone), line by line:
@@ -300,12 +309,12 @@ against the source material.
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs. Everything through Block 37 is written to the device
-folder and passing its checks there; the proponent handles the push, and
-nothing since Block 13 except Block 36's speed fix has been seen on a
-phone. So the first things a session can do are in Next action, in
-order: a device pass against the checklist there, then checking Block
-37's placeholder script against the source book with the proponents.
+header directs. Everything through Block 38 is pushed and Block 39 is
+written to the device folder, all passing their checks; the proponent
+handles the push. So the first things a session can do are in Next
+action, in order: a device pass against the checklist there, then
+checking Block 37's placeholder script against the source book with the
+proponents.
 
 Two questions are waiting on the proponents rather than on code, and a
 session should ask rather than assume: whether the man in the moro-moro
@@ -448,7 +457,7 @@ work through.
 | Act Assessment | (BUILT) Act I seeded; Acts II to IV not seeded |
 | Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded but not scored |
 | Progress Tracking | (BUILT) Completion, scores, damage taken, detections, elapsed time |
-| Teacher Monitoring | (BUILT) |
+| Teacher Monitoring | (BUILT) Class roster and summary per class, scoped by RLS; since Block 39 searchable and sortable, with Act I status, objectives, scores, gain, performance and play time per student. Basic summaries, no charts, by decision |
 | Data Synchronization | (CHANGED) Writes go straight to Supabase and the game requires a connection. There is no offline queue, so "upon internet availability" is not implemented as worded |
 
 ## Non-functional requirements
@@ -463,7 +472,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 544-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 554-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -537,12 +546,14 @@ submit_assessment).
         (section AU); Act I completable
     38  hostile guards (chase, fire, hp 2); stage clothes 0.2, blue
         meter and toast (section AU)
+    39  teacher dashboard restyle, search, sort, Act I columns (section
+        AV)
 
 ## Blocks remaining
 
-Block 12, polish. (IN PROGRESS) Audio is now built (Block 30); what
-remains of it is Intense.mp3, waiting for a scene with danger in it,
-and whatever the device pass says about volume. Everything else in
+Block 12, polish. (IN PROGRESS) Audio is built (Block 30) and
+Intense.mp3 now plays for the moro-moro's fight (Block 35); what remains
+of it is whatever the device pass says about volume. Everything else in
 Block 12 is a device check
 now folded into Next action, item 1: label sizes on the touch buttons,
 whether dialogue and quest text read comfortably at each text size,
@@ -646,9 +657,10 @@ it. To stop tracking it: add "Claude outputs/" to .gitignore, then run
 git rm -r --cached "Claude outputs" and commit; the local copies stay.
 (KNOWN, PROPONENT'S CALL)
 
-The teacher dashboard (teacher.html, teacher.css) was not restyled by
-Block 29 and keeps its earlier look. It is a separate page for teachers,
-so this is a consistency gap, not a fault. (KNOWN)
+The teacher dashboard is deliberately not in the game's pixel theme:
+Block 39 made it a light report page for teachers reading numbers on a
+laptop or projector, sharing only the game's wood and green as accents.
+(BY DESIGN)
 
 Only one phone has been tested, a 4GB Android device. Block 36's speed
 work was confirmed on it; everything else added since Block 13, including
@@ -690,12 +702,12 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 544 checks against a fixture act and item catalogue (so
+test.js: 554 checks against a fixture act and item catalogue (so
 mechanics stay tested whatever Act I ships). verify_new_scene.js: 138
 checks driving the REAL content/act1.js and content/items.js through
 every Act I scene, from Nanay to the third pamphlet and the post-test.
 Both last ran green on 18 Sep 2026 against the device folder's files
-after Block 38 (Playwright's headless shell pointed at the sandbox's
+after Block 39 (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright

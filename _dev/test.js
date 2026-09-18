@@ -4004,6 +4004,130 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAV. The teacher dashboard");
+  {
+    // teacher.html had no coverage before its restyle. Seeded with one
+    // class of four students at different points, against the stub, which
+    // understands .in() for the dashboard's scoped queries.
+    const seed = {
+      session: { user: { id: "t1" } },
+      profiles: [
+        { id: "t1", role: "teacher", full_name: "Gng. Cruz" },
+        { id: "s1", role: "student", full_name: "mag-aaral01", class_id: "c1" },
+        { id: "s2", role: "student", full_name: "mag-aaral02", class_id: "c1" },
+        { id: "s3", role: "student", full_name: "mag-aaral03", class_id: "c1" },
+        { id: "s4", role: "student", full_name: "mag-aaral04", class_id: "c1" },
+        { id: "x9", role: "student", full_name: "ibang-klase", class_id: "c2" },
+      ],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+      game_progress: [
+        { student_id: "s1", current_act: 2, updated_at: "2026-09-18T08:00:00Z" },
+        { student_id: "s2", current_act: 1, updated_at: "2026-09-18T09:00:00Z" },
+        { student_id: "s3", current_act: 1, updated_at: "2026-09-18T07:00:00Z" },
+      ],
+      act_progress: [
+        { student_id: "s1", act_number: 1, status: "completed", performance_score: 82.5,
+          objectives_done: 7, objectives_total: 7, elapsed_ms: 38 * 60000 },
+        { student_id: "s2", act_number: 1, status: "playing", performance_score: null,
+          objectives_done: 3, objectives_total: 7, elapsed_ms: 12 * 60000 },
+        { student_id: "s3", act_number: 1, status: "completed", performance_score: 64,
+          objectives_done: 7, objectives_total: 7, elapsed_ms: 75 * 60000 },
+      ],
+      assessment_scores: [
+        { student_id: "s1", act_number: 1, test_type: "pre", score: 4, max_score: 10 },
+        { student_id: "s1", act_number: 1, test_type: "post", score: 9, max_score: 10 },
+        { student_id: "s2", act_number: 1, test_type: "pre", score: 6, max_score: 10 },
+        { student_id: "s3", act_number: 1, test_type: "pre", score: 5, max_score: 10 },
+        { student_id: "s3", act_number: 1, test_type: "post", score: 7, max_score: 10 },
+      ],
+    };
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const page = await ctx.newPage();
+    page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+    await page.route("**/supabaseClient.js*", (route) =>
+      route.fulfill({ body: STUB, contentType: "text/javascript" }));
+    await page.route("**/cdn.jsdelivr.net/**", (route) =>
+      route.fulfill({ body: "", contentType: "text/javascript" }));
+    await page.addInitScript((st) => { window.__TEST = st; }, seed);
+    await page.goto("http://localhost:" + PORT + "/teacher.html");
+    await page.waitForTimeout(500);
+
+    const first = await page.evaluate(() => ({
+      gate: document.getElementById("gate").classList.contains("hidden"),
+      cls: document.getElementById("class-name").textContent,
+      teacher: document.getElementById("dash-teacher-name").textContent,
+      rows: [...document.querySelectorAll("#roster-body tr")].map((tr) =>
+        [...tr.children].map((td) => td.textContent)),
+      students: document.getElementById("stat-students").textContent,
+      started: document.getElementById("stat-started").textContent,
+      done: document.getElementById("stat-done").textContent,
+      pre: document.getElementById("stat-pre").textContent,
+      post: document.getElementById("stat-post").textContent,
+      gain: document.getElementById("stat-gain").textContent,
+      gainSub: document.getElementById("stat-gain-sub").textContent,
+    }));
+    ok("a teacher gets past the gate to the class",
+       first.gate && first.cls === "MAC8-RIZAL" && first.teacher === "Gng. Cruz", first);
+    ok("the roster lists only that class's students, by name",
+       first.rows.length === 4 && first.rows[0][0] === "mag-aaral01" &&
+       !first.rows.some((r) => r[0] === "ibang-klase"), first.rows);
+    ok("the summary counts the class: 4 students, 3 started, 2 finished Act I",
+       first.students === "4" && first.started === "3" && first.done === "2", first);
+    ok("and averages only who has sat each test, with the n shown",
+       first.pre === "50%" && first.post === "80%" && first.gain === "+35%" &&
+       /n = 2, may pre at post/.test(first.gainSub), first);
+    ok("each row shows status, objectives, scores, gain and play time",
+       first.rows[0][1] === "Tapos" && first.rows[0][3] === "7/7" &&
+       first.rows[0][4].startsWith("40%") && first.rows[0][5].startsWith("90%") &&
+       first.rows[0][6] === "+50%" && first.rows[0][7] === "82.5" && first.rows[0][8] === "38m" &&
+       first.rows[2][8] === "1h 15m", first.rows);
+    ok("a student who never played reads as not started, with dashes",
+       first.rows[3][1] === "Hindi pa nagsisimula" && first.rows[3][4] === "—", first.rows[3]);
+
+    await page.fill("#roster-search", "03");
+    await page.waitForTimeout(100);
+    const searched = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[0].textContent),
+      count: document.getElementById("roster-count").textContent,
+    }));
+    ok("searching narrows the roster and says how many matched",
+       searched.rows.length === 1 && searched.rows[0] === "mag-aaral03" && /1 sa 4/.test(searched.count), searched);
+    await page.fill("#roster-search", "");
+
+    await page.click('#roster th[data-sort="gain"] button');
+    await page.waitForTimeout(100);
+    const sorted = await page.evaluate(() => ({
+      order: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[0].textContent),
+      aria: document.querySelector('#roster th[data-sort="gain"]').getAttribute("aria-sort"),
+    }));
+    ok("sorting by gain puts the highest first and the missing last",
+       sorted.aria === "descending" && sorted.order[0] === "mag-aaral01" &&
+       sorted.order[1] === "mag-aaral03", sorted);
+
+    await page.click("#refresh-btn");
+    await page.waitForTimeout(300);
+    ok("refresh reloads the roster in place",
+       await page.evaluate(() => document.querySelectorAll("#roster-body tr").length === 4 &&
+         /Na-update/.test(document.getElementById("updated-at").textContent)));
+    await ctx.close();
+
+    // A student who opens the page is sent back to the game.
+    const sctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const spage = await sctx.newPage();
+    await spage.route("**/supabaseClient.js*", (route) =>
+      route.fulfill({ body: STUB, contentType: "text/javascript" }));
+    await spage.route("**/cdn.jsdelivr.net/**", (route) =>
+      route.fulfill({ body: "", contentType: "text/javascript" }));
+    await spage.addInitScript((st) => { window.__TEST = st; },
+      Object.assign({}, seed, { session: { user: { id: "s1" } } }));
+    await spage.goto("http://localhost:" + PORT + "/teacher.html");
+    await spage.waitForTimeout(300);
+    ok("a student account is refused at the gate",
+       await spage.evaluate(() => document.getElementById("gate-msg").textContent === "Hindi teacher account ito." &&
+         document.getElementById("dash").classList.contains("hidden")));
+    await sctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

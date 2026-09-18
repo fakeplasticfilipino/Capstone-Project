@@ -20,6 +20,8 @@
     ],
     game_progress: T.game_progress || [],
     act_progress: T.act_progress || [],
+    classes: T.classes || [],
+    assessment_scores: T.assessment_scores || [],
     player_inventory: T.player_inventory || [],
     player_equipment: T.player_equipment || [],
   };
@@ -30,8 +32,11 @@
   window.__DB = db;
   window.__CALLS = [];
 
+  // A filter is [column, value] for eq, or [column, list, "in"] for the
+  // teacher dashboard's .in("student_id", ids).
   const match = (rows, filters) =>
-    rows.filter((r) => filters.every(([k, v]) => r[k] === v));
+    rows.filter((r) => filters.every(([k, v, op]) =>
+      op === "in" ? v.includes(r[k]) : r[k] === v));
 
   function builder(table, op, payload, opts) {
     const filters = [];
@@ -90,6 +95,7 @@
     const b = {
       select() { return b; },
       eq(k, v) { filters.push([k, v]); return b; },
+      in(k, list) { filters.push([k, list, "in"]); return b; },
       order() { return b; },
       maybeSingle() { mode = "maybe"; return exec("maybe"); },
       single() { return exec("single"); },

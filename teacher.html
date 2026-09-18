@@ -1,100 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MACARIO — Teacher Dashboard</title>
-  <link rel="stylesheet" href="teacher.css?v=1" />
+  <title>MACARIO — Dashboard ng Guro</title>
+  <link rel="stylesheet" href="teacher.css?v=2" />
 </head>
 <body>
   <!-- Covers the page until the session and role are confirmed, so a
        student never briefly sees dashboard content before the bounce. -->
   <div id="gate">
-    <div id="gate-msg">Sinusuri ang account...</div>
+    <div id="gate-card">
+      <div class="brand-mark" aria-hidden="true">M</div>
+      <div id="gate-msg">Sinusuri ang account...</div>
+    </div>
   </div>
 
   <div id="dash" class="hidden">
     <header id="dash-header">
-      <div>
-        <h1 id="dash-title">MACARIO</h1>
-        <p id="dash-subtitle">Teacher Dashboard</p>
-      </div>
-      <div id="dash-user">
-        <span id="dash-teacher-name"></span>
-        <button id="logout-btn">Log Out</button>
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">M</div>
+          <div>
+            <h1 id="dash-title">MACARIO</h1>
+            <p id="dash-subtitle">Dashboard ng Guro</p>
+          </div>
+        </div>
+        <div id="dash-user">
+          <div class="user-meta">
+            <span id="dash-teacher-name"></span>
+            <span class="user-role">Guro</span>
+          </div>
+          <button id="logout-btn" type="button">Mag-log out</button>
+        </div>
       </div>
     </header>
 
     <main id="dash-body">
-      <!-- Class picker. Hidden when the teacher owns only one class,
-           since a dropdown with a single option is just noise. -->
-      <div id="class-picker-row" class="hidden">
-        <label for="class-picker">Klase</label>
-        <select id="class-picker"></select>
-      </div>
+      <!-- The class in view, and the controls that act on it. -->
+      <section id="toolbar" class="hidden">
+        <div class="toolbar-title">
+          <p class="eyebrow">Klase</p>
+          <h2 id="class-name"></h2>
+          <!-- Class picker. Hidden when the teacher owns only one class,
+               since a dropdown with a single option is just noise. -->
+          <div id="class-picker-row" class="hidden">
+            <label for="class-picker" class="sr-only">Pumili ng klase</label>
+            <select id="class-picker"></select>
+          </div>
+        </div>
+        <div class="toolbar-actions">
+          <span id="updated-at" class="muted"></span>
+          <button id="refresh-btn" type="button" class="btn-secondary">I-refresh</button>
+        </div>
+      </section>
 
       <!-- Shown when the teacher owns no classes at all. -->
       <div id="no-class" class="notice hidden">
-        Walang klaseng nakatalaga sa account na ito.
+        <strong>Walang klaseng nakatalaga sa account na ito.</strong>
         <span class="notice-sub">
           Create a class row in Supabase with teacher_id set to this
           account, then reload.
         </span>
       </div>
 
-      <!-- Class-level summary figures. -->
-      <section id="summary" class="hidden">
+      <!-- Class-level summary figures. Each carries its own n, because an
+           average over three students and one over forty read the same
+           otherwise. -->
+      <section id="summary" class="hidden" aria-label="Buod ng klase">
         <div class="stat">
-          <span class="stat-label">Mga Mag-aaral</span>
-          <span class="stat-value" id="stat-students">-</span>
+          <span class="stat-label">Mga mag-aaral</span>
+          <span class="stat-value" id="stat-students">—</span>
+          <span class="stat-sub" id="stat-students-sub">nakatala sa klase</span>
         </div>
         <div class="stat">
-          <span class="stat-label">Nagsimula Na</span>
-          <span class="stat-value" id="stat-started">-</span>
+          <span class="stat-label">Nagsimula na</span>
+          <span class="stat-value" id="stat-started">—</span>
+          <span class="stat-sub" id="stat-started-sub"></span>
         </div>
         <div class="stat">
-          <span class="stat-label">Ave. Pre-Test</span>
-          <span class="stat-value" id="stat-pre">-</span>
+          <span class="stat-label">Natapos ang Act I</span>
+          <span class="stat-value" id="stat-done">—</span>
+          <span class="stat-sub" id="stat-done-sub"></span>
         </div>
         <div class="stat">
-          <span class="stat-label">Ave. Post-Test</span>
-          <span class="stat-value" id="stat-post">-</span>
+          <span class="stat-label">Ave. pre-test</span>
+          <span class="stat-value" id="stat-pre">—</span>
+          <span class="stat-sub" id="stat-pre-sub"></span>
         </div>
         <div class="stat">
-          <span class="stat-label">Ave. Gain</span>
-          <span class="stat-value" id="stat-gain">-</span>
+          <span class="stat-label">Ave. post-test</span>
+          <span class="stat-value" id="stat-post">—</span>
+          <span class="stat-sub" id="stat-post-sub"></span>
+        </div>
+        <div class="stat stat-accent">
+          <span class="stat-label">Ave. gain</span>
+          <span class="stat-value" id="stat-gain">—</span>
+          <span class="stat-sub" id="stat-gain-sub"></span>
         </div>
       </section>
 
       <!-- Roster. -->
-      <section id="roster-section" class="hidden">
-        <h2 class="section-title">Talaan ng mga Mag-aaral</h2>
+      <section id="roster-section" class="card hidden">
+        <div class="card-head">
+          <div>
+            <h2 class="section-title">Talaan ng mga Mag-aaral</h2>
+            <p class="muted" id="roster-count"></p>
+          </div>
+          <div class="search">
+            <label for="roster-search" class="sr-only">Hanapin ang mag-aaral</label>
+            <input id="roster-search" type="search" placeholder="Hanapin ang mag-aaral" autocomplete="off" />
+          </div>
+        </div>
         <div class="table-wrap">
           <table id="roster">
             <thead>
               <tr>
-                <th>Pangalan</th>
-                <th>Kasalukuyang Act</th>
-                <th>Natapos</th>
-                <th>Act I Pre</th>
-                <th>Act I Post</th>
-                <th>Gain</th>
-                <th>Performance</th>
-                <th>Huling Aktibo</th>
+                <th data-sort="name" aria-sort="ascending"><button type="button">Mag-aaral</button></th>
+                <th data-sort="status"><button type="button">Katayuan (Act I)</button></th>
+                <th data-sort="currentAct"><button type="button">Act</button></th>
+                <th data-sort="objectives" class="num"><button type="button">Layunin</button></th>
+                <th data-sort="prePct" class="num"><button type="button">Pre-test</button></th>
+                <th data-sort="postPct" class="num"><button type="button">Post-test</button></th>
+                <th data-sort="gain" class="num"><button type="button">Gain</button></th>
+                <th data-sort="performance" class="num"><button type="button">Performance</button></th>
+                <th data-sort="elapsed" class="num"><button type="button">Oras</button></th>
+                <th data-sort="lastActive"><button type="button">Huling aktibo</button></th>
               </tr>
             </thead>
             <tbody id="roster-body"></tbody>
           </table>
+          <div id="no-match" class="empty-row hidden">Walang tumugma sa hinanap.</div>
         </div>
-        <p class="table-note">
-          Ang gain ay ang pagkakaiba ng post-test at pre-test, nakabatay
-          sa porsyento. Ang gitling ay nangangahulugang wala pang datos.
-        </p>
+        <div class="table-notes">
+          <p><strong>Gain</strong> ay ang post-test bawas ang pre-test, sa porsyento, para sa Act I.</p>
+          <p><strong>Performance</strong> (0 hanggang 100) = 50 × pagkumpleto + 25 × kaligtasan + 25 × pag-iingat sa bantay. Ang oras ay itinatala ngunit hindi binibilang sa marka.</p>
+          <p>Ang gitling (—) ay nangangahulugang wala pang datos.</p>
+        </div>
       </section>
 
       <!-- Class exists but has no enrolled students. -->
       <div id="no-students" class="notice hidden">
-        Walang mag-aaral na nakatala sa klaseng ito.
+        <strong>Walang mag-aaral na nakatala sa klaseng ito.</strong>
         <span class="notice-sub">
           Set profiles.class_id for the students who belong to this class.
         </span>
@@ -103,12 +150,15 @@
       <!-- Query failure. -->
       <div id="load-error" class="notice error hidden"></div>
 
-      <div id="loading" class="notice">Kinukuha ang datos...</div>
+      <div id="loading" class="notice">
+        <span class="spinner" aria-hidden="true"></span>
+        Kinukuha ang datos...
+      </div>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabaseClient.js"></script>
-  <script src="teacher.js?v=1"></script>
+  <script src="teacher.js?v=2"></script>
 </body>
 </html>
