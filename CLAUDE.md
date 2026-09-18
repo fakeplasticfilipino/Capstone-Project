@@ -97,16 +97,17 @@ and two purchasable outfits it carried were content decisions made without
 the source material either.
 
 Built forward from that reset since, one verified passage at a time
-(Blocks 19-21): Act I is no longer the one-scene blank slate above. It
-is now two scenes, tondo and a kutsero flashback, with a fourth
-objective (pumunta_entablado) that keeps the act open once the
-flashback resolves, since the flashback is a memory within the act, not
-the act's own ending. content/items.js correspondingly holds two real
-items as of Block 25: Mansanas, a consumable a student eats to heal,
-and "Mansanas para sa kabayo", the quest item Kabayo takes (see Item
-data format, below). TRACKER.md, Start here, describes exactly what
-Act I contains today and what still has no content (the entablado
-itself, a guard, anything past the flashback).
+(Blocks 19 to 21, then 31 to 35): Act I is no longer the one-scene blank
+slate above. It is three scenes. tondo is the road, from Nanay's errand
+past the Mananahi to the entablado at its end; kutsero is the flashback,
+which resolves without ending the act because a memory is not the act's
+own ending; entablado is the stage, where the moro-moro plays out and the
+first fight happens. Five objectives, the last of which
+(pumunta_entablado) has no flag-setter anywhere, which is what keeps the
+act open. content/items.js holds three items: two apples and the stage
+clothes, the first equipment. TRACKER.md, Start here, describes exactly
+what Act I contains today and what still has no content (anything after
+the fight, a patrolling guard, Acts II to IV).
 
 None of this touched the ENGINE. Every mechanic the fuller version
 exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
@@ -120,10 +121,10 @@ record for why the harness was rebuilt this way instead of shrinking
 alongside the content.
 
 Acts II through IV are still registered, loadable stubs waiting to be
-written. Once Act I's content comes back for real, it should be built one
-verified passage at a time against whatever the resource person's source
-material actually says, not reassembled from the version now sitting in
-git history.
+written. Act I's remaining beats, and all of theirs, should be built the
+same way the passages since the reset were: one verified passage at a
+time against whatever the resource person's source material actually
+says, not reassembled from the version sitting in git history.
 
 ## Stack
 

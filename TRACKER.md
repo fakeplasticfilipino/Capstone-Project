@@ -35,34 +35,40 @@ What MACARIO is right now, in one screen.
 
 Every engine system is built and covered by the suite: movement and
 jump, one-way platforms, health, hazards, heart pickups, guards with a
-detection meter, hide spots, melee and a ranged shot, dynamic
-difficulty, the act state machine, trivia, pre-test and post-test with
-server-side grading, the weighted performance score, feedback, currency,
-the shop, equipment and outfits, play-as-guest, settings and the full
-reset (which needs schema v5), and the teacher dashboard. Performance
-was confirmed smooth on a real 4GB Android phone in landscape.
+detection meter, hide spots, melee and a ranged shot, enemies that fight
+back, scripted scenes, dynamic difficulty, the act state machine, trivia,
+pre-test and post-test with server-side grading, the weighted performance
+score, feedback, currency, the shop, equipment and outfits,
+play-as-guest, sound, settings and the full reset (which needs schema
+v5), and the teacher dashboard.
+
+Speed: smooth on a real 4GB Android phone when last measured there, at
+Block 13. The proponent reported lag after Block 35, and Block 36 cut the
+game loop's per-frame layout and DOM work against Chrome's counters on a
+throttled build machine. Whether that fixed it on the phone is unknown.
 
 Act I is three scenes and is the only act with content. Acts II to IV are
-registered stubs. Act I cannot be completed yet, on purpose: its fourth
-objective has no content (see Next action).
+registered stubs. Act I cannot be completed yet, on purpose: the fifth
+and last objective has no content (see Next action).
 
     tondo     Nanay (real art) hands Macario his money (200 barya) and
               brings up the kutsero, and the memory cuts him off.
               Talking to her completes objectives 1 and 2 and fades
               into:
     kutsero   a greyed-out flashback. Kabayo the horse (real art,
-              neighing while Macario is near) asks for an apple; Kutsero (real art) gives 10
-              barya; a glass hazard sits on the road; Tindero
-              (placeholder box, opensShop) sells Mansanas (food, heals
-              one heart) and "Mansanas para sa kabayo" (quest item).
+              neighing while Macario is near) asks for an apple;
+              Kutsero (real art) gives 10 barya; a glass hazard sits on
+              the road; Tindero (real art, opensShop) sells Mansanas
+              (food, heals one heart) and "Mansanas para sa kabayo"
+              (quest item).
               The memory opens with Nanay's voice after the fade-in.
               Giving Kabayo the quest apple completes objective 3 and
               fades back to tondo with a fourth quest, "Pumunta sa
               entablado", that nothing can complete yet.
     tondo     (after) Macario stands beside Nanay and an eight-line
               exchange plays by itself, ending with a quest, "Kausapin
-              ang mananahi" (objective 4). Further down the road, now
-              2150px, the Mananahi (placeholder box) talks about his
+              ang mananahi" (objective 4). Further down the road, which
+              is 2900px, the Mananahi (placeholder box) talks about his
               stage costume, which completes it, and her shop opens:
               Damit para sa Entablado, 100 barya, worn in Damit, halves
               how fast a guard notices him while he stands still. No
@@ -92,10 +98,10 @@ The interface is a flat pixel-art theme (Block 29): square panels, hard
 outlines, Press Start 2P for titles and VT323 for everything read, both
 self-hosted in Assets/Fonts.
 
-Sound (Block 30): Calm.mp3 loops as background music from the moment the
-world is entered, Gun_Shot.mp3 plays on every shot, and Horse.mp3 loops
-near Kabayo. Settings has Musika and Mga tunog switches, both on by
-default. Intense.mp3 is in Assets/Prefab and unused on purpose.
+Sound: Calm.mp3 loops as background music from the moment the world is
+entered, Gun_Shot.mp3 plays on every shot, Horse.mp3 loops near Kabayo,
+and Intense.mp3 plays for the fight on the entablado and stops when it is
+won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
@@ -110,8 +116,8 @@ the pilot; the checklist is under Next action.
 
 ## Right now
 
-Blocks 1 to 36 are built. Blocks 22 to 36 were all this session, each
-on direct feedback from the proponent:
+Blocks 1 to 36 are built. Blocks 22 to 36 were one build session, 17 to
+18 September 2026, each on direct feedback from the proponent:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
     23  a throw spawn correction, superseded by 24
@@ -152,8 +158,11 @@ inventory.js, style.css, index.html, content/act1.js, content/items.js,
 CLAUDE.md, TRACKER.md, _dev/test.js, _dev/verify_new_scene.js, and the
 new and renamed files in Assets/ (Act 1/Kutsero.png, Act 1/Tindero.png,
 Act 1/Lupa.jpg, Act 1/Entablado_Labas.png, Act 1/Entablado.png,
-Act 1/Muslim_Girl.png, Prefab/Macario_Jump.png, Act 1/Horse.png, Act 1/Horse.mp3, Prefab/Calm.mp3,
-Prefab/Gun_Shot.mp3; Intense.mp3 may go too, nothing loads it yet).
+Act 1/Muslim_Girl.png, Act 1/Horse.png, Act 1/Horse.mp3,
+Prefab/Macario_Jump.png, Prefab/Calm.mp3, Prefab/Gun_Shot.mp3,
+Prefab/Intense.mp3), plus README.md, which was rewritten for the same
+range. Assets/Act 1/Muslim_Woman.png is a byte-for-byte copy of
+Muslim_Girl.png and nothing loads it; it need not be pushed.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/reset_test_accounts.sql
@@ -238,6 +247,23 @@ needs measure-sprite.js and all three numbers pasted.
 
 4. Then Block 12's remaining polish, the pilot, and Acts II to IV
 against the source material.
+
+## Where a new session picks up
+
+Read this file's Start here and Next action, then CLAUDE.md as its own
+header directs. Everything through Block 36 is written to the device
+folder and passing its checks there; what is NOT known is whether any of
+it is pushed, and nothing since Block 13 has been seen on a phone. So the
+first two things a session can do that nobody else can do later are in
+Next action, in order: get the range pushed, and get a device pass done
+against the checklist there, including whether Block 36 actually fixed
+the lag the proponent reported.
+
+Three questions are waiting on the proponents rather than on code, and a
+session should ask rather than assume: what happens after the moro-moro's
+fight (which is what Act I's last objective needs), whether the man in
+that scene keeps the on-screen name Muslim, and whether his last line
+keeps the word puta. See Known problems and Blocked on other people.
 
 ## The milestone
 
