@@ -22,18 +22,23 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 20 Sep 2026, end of session, after Block 47 (the guard's
-cone looking straight ahead from his eyes), which followed Block 46 (no
+Last updated: 20 Sep 2026, end of session, after Block 48 (the quest
+system rebuilt as one chain, the current task with a closed Tapos na
+list, and the play started by talking to Maryam), which followed Block
+47 (the guard's cone looking straight ahead from his eyes), which
+followed Block 46 (no
 mirror, the backdrop standing on the floor, the cone from his eyes),
 which followed Block 45 (the streets back on Tondo.png), which followed
 Blocks 42 (the guide, the vision cone, a ten-citizen street, a
 consistency pass), 43 (painted panels with shadow trees) and 44 (the
 repository reorganised) the same day. Blocks through 41 are pushed
 (088f5e4). Whether Blocks 42 to 44 have been pushed since is not
-recorded here; Blocks 45 to 47 are in the device folder and NOT yet
-pushed. Push everything as one commit (see Right now). test.js 578
-passed, 0 failed; verify_new_scene.js 167 passed, 0 failed. None of
-Blocks 42 to 47 has been played on the phone.
+recorded here; Blocks 45 to 48 are in the device folder and NOT yet
+pushed. Push everything as one commit (see Right now). test.js 587
+passed, 0 failed; verify_new_scene.js 182 passed, 0 failed. None of
+Blocks 42 to 48 has been played on the phone. Block 48 changes Act I's
+objectives from seven to eleven, so db/scripts/reset_test_accounts.sql
+should be run on the test accounts before a full-flow test.
 
 ## Start here
 
@@ -72,52 +77,64 @@ it is not. It hides in dialogue, cutscenes, screens and the fight. Everything fr
 37) is a placeholder script, written ahead of the source book and owed a
 check against it (see Next action).
 
+    The quest log (Block 48) shows one task, the step in hand, with the
+    finished ones under a "Tapos na (n)" button that starts closed on
+    every scene load. Act I's eleven objectives are one chain in story
+    order, each gated behind the one before:
+
+      1  Kausapin si Nanay                tondo
+      2  Lapitan ang kabayo               kutsero (the memory)
+      3  Humingi ng barya sa Kutsero
+      4  Bumili ng mansanas sa Tindero
+      5  Ibigay ang mansanas sa kabayo
+      6  Kausapin ang Mananahi            tondo, after the memory
+      7  Pumunta sa entablado
+      8  Kausapin si Maryam               entablado
+      9  Tapusin ang dula
+     10  Kausapin si Bonifacio sa labas   tondo, at the stairs
+     11  Ipamahagi ang mga polyeto (n/10) lansangan
+
     tondo     Nanay (real art) hands Macario his money (200 barya) and
               brings up the kutsero, and the memory cuts him off.
-              Talking to her completes objectives 1 and 2 and fades
-              into:
-    kutsero   a greyed-out flashback. Kabayo the horse (real art,
-              neighing while Macario is near) asks for an apple;
-              Kutsero (real art) gives 10 barya; a glass hazard sits on
-              the road; Tindero (real art, opensShop) sells Mansanas
-              (food, heals one heart) and "Mansanas para sa kabayo"
-              (quest item).
-              The memory opens with Nanay's voice after the fade-in.
-              Giving Kabayo the quest apple completes objective 3 and
-              fades back to tondo with the quest "Pumunta sa
-              entablado", which the end of the play completes.
+              Talking to her completes step 1 and fades into:
+    kutsero   a greyed-out flashback. The memory opens with Nanay's voice
+              after the fade-in. Kabayo the horse (real art, neighing
+              while Macario is near) is hungry; Kutsero (real art) sends
+              Macario to the horse until he has seen it, then gives 10
+              barya; a glass hazard sits on the road; Tindero (real art,
+              opensShop) sells Mansanas (food, heals one heart) and,
+              only while buying it is the task, "Mansanas para sa
+              kabayo" (quest item). Giving it to Kabayo fades back to
+              tondo.
     tondo     (after) Macario stands beside Nanay and an eight-line
-              exchange plays by itself, ending with a quest, "Kausapin
-              ang mananahi" (objective 4). Further down the road, which
-              is 2900px, the Mananahi (stand-in still) talks about his
-              stage costume, which completes it, and her shop opens:
-              Damit para sa Entablado, 100 barya, worn in Damit, makes
-              a guard notice him five times slower while he stands
-              still (the lansangan's guards are what it is for). At
-              the end of the road stands the entablado (real art);
-              Pasok at its stairs goes in.
+              exchange plays by itself, ending on the errand to the
+              Mananahi. Further down the road, which is 2900px, the
+              Mananahi (stand-in still) talks about his stage costume,
+              and her shop opens: Damit para sa Entablado, 100 barya,
+              worn in Damit, makes a guard notice him five times slower
+              while he stands still. At the end of the road stands the
+              entablado (real art); Pasok at its stairs opens only after
+              the Mananahi.
     entablado the inside of the stage (Entablado.png as the whole
-              backdrop, no dirt strip). Walking in plays the moro-moro by
-              itself: Maryam's six lines, a man walking on from the right
-              (real walk sheet; he stands still to talk and turns to walk
-              off), three more lines, then five guards on the same walk
-              sheet, swinging with the real sword attack sheet, to
-              fight, with Intense.mp3 under it. Winning
-              sets nagapiAngMgaGuwardiya; until then every entry replays
-              the scene. Then Maryam announces the Christian kingdom won,
-              that she will convert and marry Macario, and the audience
-              cheers (dialogue only), which completes pumunta_entablado
-              (objective 5). Lumabas at the left edge goes back out to the
-              stairs, and is closed during the fight.
+              backdrop, no dirt strip). Walking in, Macario says he must
+              talk to Maryam first; nothing starts until he does. Talking
+              to her plays her six lines, then a man walks on from the
+              right (real walk sheet), three more lines, then five guards
+              on the same walk sheet, swinging with the real sword attack
+              sheet, to fight, with Intense.mp3 under it; nobody can be
+              talked to mid-fight. Winning sets nagapiAngMgaGuwardiya;
+              until then talking to Maryam replays the scene. Then Maryam
+              announces the Christian kingdom won, that she will convert
+              and marry Macario, and the audience cheers (dialogue only),
+              which completes step 9. Lumabas at the left edge goes back
+              out to the stairs, and is closed during the fight.
     tondo     (after the play) Bonifacio and a Katipunero (stand-ins)
               wait at the stairs; a twelve-line meeting opens by itself:
-              greeting, the password, and the task, "Ipamahagi ang mga
-              polyeto (0/3)" (objective 6 done). Tumuloy at the end of the
-              road opens only now.
-    lansangan an 11000px street on the Tondo backdrop, in colour. No
-              gun (a hold punches). Eight guards (Bantay.png stand-ins),
-              each with a faint cone of sight on the road that stays
-              below every platform; once one's meter fills he turns
+              greeting, the password, and the task (step 10 done).
+              Tumuloy at the end of the road opens only now.
+    lansangan an 11000px street on Tondo.png. No gun (a hold punches).
+              Eight guards (Bantay.png stand-ins), each with a faint cone
+              of sight from his eyes; once one's meter fills he turns
               hostile (a red "!"), chases and shoots until punched down
               twice or Macario runs out of hearts. In the stage clothes,
               standing still fills a meter five times slower, drawn pale
@@ -128,7 +145,7 @@ check against it (see Next action).
               each take a pamphlet through Iabot ang polyeto. Running out
               of hearts restarts after the second, fourth, sixth or
               eighth citizen, whichever is furthest. The tenth pamphlet
-              completes objective 7 and Act I. Bumalik at the left edge
+              completes step 11 and Act I. Bumalik at the left edge
               returns to tondo.
 
 content/items.js ships three items: the two apples and the stage
@@ -151,9 +168,9 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v34    js/game.js v52       js/shell.js v13
+    css/style.css v35    js/game.js v53       js/shell.js v13
     js/inventory.js v9   js/acts.js v10       js/assessment.js v3
-    content/act1.js v34  content/items.js v9  content/act2-4.js v1
+    content/act1.js v35  content/items.js v10  content/act2-4.js v1
     ASSET_VERSION 18 (in js/game.js)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
@@ -170,9 +187,9 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 47 are built. Blocks 22 to 41 were one build session, 17 to
+Blocks 1 to 48 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
-42 to 47 were 20 September:
+42 to 48 were 20 September:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
     23  a throw spawn correction, superseded by 24
@@ -239,8 +256,11 @@ Blocks 1 to 47 are built. Blocks 22 to 41 were one build session, 17 to
     46  mirroring removed; the backdrop drawn whole, standing on the
         floor, with its sky colour above; the guard's cone from his eyes
     47  the cone looks straight ahead instead of down at the road
+    48  quests rebuilt: eleven objectives as one gated chain, the log
+        showing only the task in hand with a closed Tapos na list; the
+        play starts by talking to Maryam, not by walking in
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 to 47 are in
+Everything through Block 41 is pushed (088f5e4). Blocks 42 to 48 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
 file, so the push is a commit of deletions and additions that git shows
 as renames: stage everything (git add -A) rather than picking files, or
@@ -260,9 +280,19 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. A device pass on Blocks 14 to 44, on the phone, in landscape, from a
+1. A device pass on Blocks 14 to 48, on the phone, in landscape, from a
 private tab (browsers cache index.html; see Known problems). Check:
 
+    The quest log (Block 48): only one task shows at a time and it is
+      always what to do next; Tapos na (n) appears once something is
+      done, starts closed, opens and closes on a tap without moving
+      Macario, and is closed again after every scene change; the done
+      list is readable at each text size. The Kutsero talks about the
+      horse until Macario has seen it; the horse's apple is not on the
+      Tindero's shelf before the Kutsero; Pasok stays shut until the
+      Mananahi; the play waits until Maryam is talked to. Failure looks
+      like a task that is already done, two tasks at once, or a step
+      that cannot be reached.
     After the reorganisation (Block 44), first of all: the live site
       loads at all, with pictures, music and the pixel fonts; the
       entablado's inside painting shows when he walks in; the teacher
@@ -339,7 +369,8 @@ private tab (browsers cache index.html; see Known problems). Check:
       fills the screen with its floor under his feet and no dirt strip;
       Lumabas at the left edge is findable and returns to the stairs.
     The moro-moro: the jump pose reads as a jump and his feet land on the
-      ground; the scene opens by itself and each line is readable; the man
+      ground; walking in does not start the play, talking to Maryam
+      does (Block 48), and each line is readable; the man
       walking on is visible before he speaks; the fight is winnable with
       the touch buttons, the warning before a swing is noticeable, and
       five enemies at once do not drop the frame rate. Judge the pacing
@@ -410,7 +441,7 @@ against the source material.
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
 header directs. Everything through Block 41 is pushed and passing its
-checks; Blocks 42 to 47 are in the device folder, passing their checks, and wait
+checks; Blocks 42 to 48 are in the device folder, passing their checks, and wait
 on the proponent's push. So the first things a session can do are in
 Next action, in order: a device pass against the
 checklist there, then checking Block 37's placeholder script against
@@ -515,8 +546,8 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-The framework is complete. Act I has four scenes, seventeen NPCs and
-seven objectives, all playable end to end, so the act completes and runs its
+The framework is complete. Act I has four scenes, eighteen NPCs and
+eleven objectives, all playable end to end, so the act completes and runs its
 post-test; its last stretch (Block 37) is a placeholder script awaiting
 the source book. Acts II to IV are registered stubs with no content.
 
@@ -547,7 +578,7 @@ work through.
 | Combat Mechanics | (BUILT) Melee punch on a tap, takedown from behind, a ranged shot on a hold, each with real animation, plus enemies that fight back (Block 35) with real walk and sword-attack art (Block 40). Act I ships the moro-moro's five guards, and the street's guards turn hostile and can be punched down (Block 38) |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a cone of sight drawn on the road (Block 42), hide spots, platforms out of sight, guards that turn hostile and shoot once they see him (Block 38). Act I's lansangan uses them (eight guards, seven platforms) |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach measured edge to edge, NPCs that open the shop |
-| Narrative Delivery | (PARTIAL) Built. Act I uses it across four scenes and seventeen NPCs, with conversations that open by themselves and a scripted play; Acts II to IV have none |
+| Narrative Delivery | (PARTIAL) Built. Act I uses it across four scenes and eighteen NPCs, with conversations that open by themselves and a scripted play; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups, and healing by eating a Mansanas |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, a two-column inventory, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one equipment item, the stage clothes (Damit, slower detection while still), which matters against the lansangan's guards |
@@ -571,7 +602,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 578-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 587-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -660,6 +691,8 @@ submit_assessment).
     45  mirrorPanels; Act I's streets on Tondo.png again
     46  panelSky, panels on the floor; cone origin at eye height
     47  level cone, evenly open about the eye line
+    48  linearObjectives, countFlags, dialogue sets with requiresFlag,
+        Tapos na toggle, no talking mid-fight (section AY)
 
 ## Blocks remaining
 
@@ -832,12 +865,12 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 578 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 167
+test.js: 587 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 182
 checks driving the REAL content/act1.js and content/items.js through
 every Act I scene, from Nanay to the tenth pamphlet and the post-test,
 following the guide at every step.
-Both last ran green on 20 Sep 2026 against the Block 47 files written to
+Both last ran green on 20 Sep 2026 against the Block 48 files written to
 the device folder (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the

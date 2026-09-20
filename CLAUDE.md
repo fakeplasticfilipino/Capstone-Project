@@ -325,7 +325,10 @@ world belongs to the scene.
       number, title,
       titleTagalog,                              shown on the title card
       developmentNotice,                         optional; marks a stub
-      objectives: [{ id, label, flag }],
+      objectives: [{ id, label, flag,
+                     countFlags }],              countFlags optional (Block 48)
+      linearObjectives: true,                    optional; the quest log is
+                                                 the objective chain (Block 48)
       startingQuests: [{ id, text }],
       guide: [{ scene, requiresFlag,             optional; where to go
                 unlessFlag, questOpen,           next (Block 42)
@@ -509,7 +512,7 @@ NPC shape:
       nearSound: "assets/audio/sfx/x.mp3",       optional; loops while near
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete(),
-                       skipIfFlag }],            skipIfFlag optional
+                       skipIfFlag, requiresFlag }],  both optional
       gift: { buttonLabel, requiresFlag, givenFlag,
               responseLines, completesQuest,
               onComplete() }                     optional; onComplete optional
@@ -521,8 +524,25 @@ on record). A guard's x and patrol bounds are the left edge of a body
 GUARD_WIDTH (40) wide, the same way. A decoration has no body: its x is
 the point it stands on.
 
+linearObjectives (Block 48) makes the objectives the quest log. They
+are one chain in story order; the task in hand is the first whose flag
+is not set, and a set flag marks every earlier step done
+(syncObjectiveChain, game.js), so an old save or a step passed another
+way never leaves the chain behind the student. The quests array is
+rebuilt from the chain on every markDirty, so forQuest and the guide's
+questOpen see the step in hand as the one open quest, and content calls
+no addQuest or completeQuest: setting the step's flag is completing it.
+countFlags adds "(n/N)" to a step's line from those flags. Such an act
+declares no startingQuests. An act without linearObjectives keeps
+addQuest, completeQuest and setQuestText. Either way the log draws open
+quests under "Gawain" and done ones in a "Tapos na (n)" list behind a
+button, closed at every scene load.
+
 Talking to an NPC advances through dialogueSets one per conversation,
-holding on the last. A set whose skipIfFlag is already true is passed
+holding on the last. An NPC with any set that declares requiresFlag
+(Block 48) instead picks from the flags on every conversation: the first
+set neither passed (skipIfFlag) nor still waiting (requiresFlag), else
+the last. Nobody can be talked to while enemies are up. A set whose skipIfFlag is already true is passed
 over when a conversation starts, because buildNpcs resets stage to 0 on
 every scene load and a scene the story returns to would otherwise
 replay its first beat. onComplete fires once, when that conversation ends.
@@ -2990,6 +3010,55 @@ the drawn cone now crosses every platform a guard walks near, so the
 picture no longer says "up there he cannot see you". The platforms still
 work; the briefing line ("Ang bantay ay nakatingin sa daan, hindi sa
 itaas") is what tells a student so. style.css v34.
+
+The quest system rebuilt (Block 48). Requested because quests had grown
+inconsistent over many blocks: some objectives were logged the moment
+they started and some only when done, "Pumunta sa trabaho" was ticked the
+instant Nanay finished talking, before Macario had gone anywhere, three
+steps of the memory (the horse, the barya, the purchase) were in no log
+at all, and the log grew into a list of struck-through lines. The request
+was that the log show the current objective, that finished ones go into
+a Tapos na section that starts closed, and that Macario's job start by
+talking to Maryam rather than by walking onto the stage.
+
+Act I's objectives are now eleven steps in story order (content/act1.js,
+and TRACKER.md, Start here, lists them) and the log is drawn from them
+(linearObjectives, Act data format), so there is one source of truth for
+what a student is doing, the objective counter the dashboard reads and
+the line on screen being the same list. Every content call to addQuest,
+completeQuest and setQuestText is gone. The chain rule, first unset step
+is current and a later flag fills in the earlier ones, is what keeps the
+log honest for a save made before a step existed.
+
+A chain is only honest if its order cannot be broken, so each step is
+gated behind the one before by the story itself, not by the log: the
+Kutsero sends Macario to the horse until he has seen it (the new
+requiresFlag on dialogue sets), the horse's apple is on sale only while
+buying it is the task (its forQuest names that step), Pasok stays shut
+until the Mananahi (it had been open from the start, so the play could
+be walked into before the memory), and the play waits for Maryam.
+Without the gates a student could skip a step inside a scene the story
+then leaves, and Act I could never complete.
+
+Maryam is an NPC now, not a decoration. Walking in, Macario says he must
+talk to her first; her first conversation is the love scene and its
+onComplete runs the rest of the play (playMoroMoro, the old arrival
+script moved unchanged). Until the fight is won that conversation
+replays, as the arrival did. Nobody can be talked to while enemies are
+up, which matters now that she stands in the middle of the fight.
+
+The log: "Gawain" holds the task in hand only; "Tapos na (n)" is an icon
+and label button (Icons) that opens and closes the done list, sized 44px
+on glass, closed at every scene load, and it does not pause the game.
+renderQuests writes only when what it shows changed.
+
+Eleven objectives make the drip floor(50 / 11) = 4 barya a step, the
+remainder paid on completion. Pumunta sa trabaho's flag,
+nasaDaanPatungoSaTrabaho, is still set by Nanay, because her own dialogue
+sets skip on it; no objective reads it. Old test saves: run
+db/scripts/reset_test_accounts.sql rather than trust a mid-act save,
+although the chain rule means one will not get stuck. game.js v53,
+style.css v35, content/act1.js v35, content/items.js v10.
 
 ## Pitfalls
 

@@ -297,22 +297,138 @@ function setQuestText(id, text) {
   markDirty();
 }
 
-// Emptied on an act change. The log is "Mga Gawain", the tasks in
-// front of you now, not a permanent record of everything ever done.
+// Emptied on an act change. The log is the tasks of the act in hand,
+// not a permanent record of every act.
 function clearQuests() {
   quests.length = 0;
   renderQuests();
   markDirty();
 }
 
+// =============================================================
+// THE QUEST LOG (Block 48)
+//
+// Two sections. At the top, "Gawain": what to do now. Below it, a
+// "Tapos na (n)" button over the tasks already done, which starts
+// closed every time a scene loads and opens or closes on a tap; the
+// top section never grows with history, so the one line a student needs
+// is always the one in front of them.
+//
+// An act that declares linearObjectives drives the log from its
+// objectives instead of from addQuest calls scattered through content.
+// Its objectives are one chain, in the order the story plays them; the
+// current task is the first whose flag is not set, and everything
+// before it is done. That rule is also applied to the flags themselves
+// (syncObjectiveChain): a set flag marks every earlier step done, so a
+// save from before a step existed, or a step passed some other way,
+// never leaves the chain stuck on something already behind the student,
+// and the act can still complete. The quests array is rebuilt from the
+// chain, so everything that reads it (a shop item that waits on a quest
+// with forQuest, the guide's questOpen) sees the current step as the
+// one open quest.
+//
+// An objective may declare countFlags, and its line then ends with the
+// count of those set, "(3/10)", worked out here rather than rewritten
+// by content.
+//
+// Acts without linearObjectives keep the old behaviour: addQuest,
+// completeQuest and setQuestText, with open quests at the top and done
+// ones in the closed section.
+// =============================================================
+
+let questDoneOpen = false;
+let questDrawnKey = null;
+
+function objectiveLine(o) {
+  if (!Array.isArray(o.countFlags)) return o.label;
+  const n = o.countFlags.filter((f) => state.flags[f]).length;
+  return o.label + " (" + n + "/" + o.countFlags.length + ")";
+}
+
+// Backfills the chain and rebuilds the quests array from it. Returns
+// nothing; renderQuests draws. Safe to call as often as markDirty is.
+function syncObjectiveChain() {
+  const act = currentActData;
+  if (!act || !act.linearObjectives) return;
+  const list = act.objectives || [];
+  let last = -1;
+  list.forEach((o, i) => { if (state.flags[o.flag]) last = i; });
+  for (let i = 0; i < last; i++) state.flags[list[i].flag] = true;
+
+  const next = [];
+  for (let i = 0; i < list.length; i++) {
+    const o = list[i];
+    const done = Boolean(state.flags[o.flag]);
+    next.push({ id: o.id, text: objectiveLine(o), done });
+    if (!done) break;
+  }
+  quests.length = 0;
+  quests.push(...next);
+}
+
 function renderQuests() {
+  syncObjectiveChain();
+  const current = quests.filter((q) => !q.done);
+  const done = quests.filter((q) => q.done);
+
+  // Written only when something shown changed: markDirty calls this
+  // from the loop's own paths, and rebuilding identical lists would
+  // dirty the page for nothing (Block 36).
+  const key = JSON.stringify([current.map((q) => q.text), done.map((q) => q.text), questDoneOpen]);
+  if (key === questDrawnKey) return;
+  questDrawnKey = key;
+
   questListEl.innerHTML = "";
-  quests.forEach((q) => {
+  current.forEach((q) => {
     const li = document.createElement("li");
     li.textContent = q.text;
-    if (q.done) li.classList.add("completed");
     questListEl.appendChild(li);
   });
+  if (!current.length) {
+    const li = document.createElement("li");
+    li.className = "quest-none";
+    li.textContent = done.length ? "Wala nang gawain." : "Walang gawain.";
+    questListEl.appendChild(li);
+  }
+
+  const els = questDoneEls();
+  if (!els.toggle || !els.list) return;
+  els.toggle.classList.toggle("hidden", !done.length);
+  els.toggle.setAttribute("aria-expanded", questDoneOpen ? "true" : "false");
+  els.toggle.classList.toggle("open", questDoneOpen);
+  setLabel(els.toggle, "Tapos na (" + done.length + ")");
+  els.list.classList.toggle("hidden", !questDoneOpen || !done.length);
+  els.list.innerHTML = "";
+  done.forEach((q) => {
+    const li = document.createElement("li");
+    li.textContent = q.text;
+    li.className = "completed";
+    els.list.appendChild(li);
+  });
+}
+
+// A cache hung off the function, like the HUD's: renderQuests is reached
+// at parse time through loadAct, before a const further down would exist.
+function questDoneEls() {
+  if (!questDoneEls.cache) {
+    const toggle = document.getElementById("quest-done-toggle");
+    questDoneEls.cache = { toggle, list: document.getElementById("quest-done-list") };
+    if (toggle) {
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        questDoneOpen = !questDoneOpen;
+        renderQuests();
+      });
+    }
+  }
+  return questDoneEls.cache;
+}
+
+// Closed again whenever a scene loads, so the log always opens on the
+// task in hand.
+function collapseDoneQuests() {
+  questDoneOpen = false;
+  renderQuests();
 }
 
 // =============================================================
@@ -491,6 +607,7 @@ function loadScene(sceneId) {
   velY = 0;
 
   updateHudVisibility();
+  collapseDoneQuests();
 }
 
 function unloadScene() {
@@ -1660,7 +1777,10 @@ function findNearby() {
   let closestType = null;
   let closestDist = Infinity;
 
-  for (const npc of NPCS) {
+  // Block 48. Nobody to talk to mid-fight: the moro-moro's Maryam is an
+  // NPC now, standing in the middle of it.
+  const talkable = enemiesAlive() ? [] : NPCS;
+  for (const npc of talkable) {
     if (npc.hidden) continue;
     const dist = edgeGap(posX, PLAYER_WIDTH, npc.x, NPC_WIDTH);
     if (dist < INTERACT_DISTANCE && dist < closestDist) {
@@ -1767,6 +1887,18 @@ function startDialogue(npc) {
     state.flags[npc.dialogueSets[setIndex].skipIfFlag]
   ) {
     setIndex++;
+  }
+  // Block 48. A set may also wait on a flag (requiresFlag). An NPC that
+  // declares one picks its set from the flags alone, each time: the first
+  // set that is neither passed (skipIfFlag) nor still waiting
+  // (requiresFlag), else the last. That lets someone say one thing
+  // before a step of the story and another after it, whichever order
+  // the student meets them in, without a conversation moving him on.
+  if (npc.dialogueSets.some((d) => d.requiresFlag)) {
+    const i = npc.dialogueSets.findIndex((d) =>
+      !(d.skipIfFlag && state.flags[d.skipIfFlag]) &&
+      !(d.requiresFlag && !state.flags[d.requiresFlag]));
+    setIndex = i === -1 ? npc.dialogueSets.length - 1 : i;
   }
   npc.stage = setIndex;
   activeSet = npc.dialogueSets[setIndex];
@@ -4366,6 +4498,9 @@ function applyLoadedState(row) {
 }
 
 function markDirty() {
+  // Block 48. Flags are set by content directly and then markDirty is
+  // called, so this is the one place a change of step is always seen.
+  if (currentActData && currentActData.linearObjectives) renderQuests();
   saveDirty = true;
   clearTimeout(saveDebounceTimer);
   saveDebounceTimer = setTimeout(() => {

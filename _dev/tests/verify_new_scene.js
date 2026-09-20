@@ -63,6 +63,16 @@ const talk = async (page, times) => {
   }
 };
 
+// Block 48. What the quest log shows: the one task in hand, and the
+// closed "Tapos na" list with its count.
+const log = (page) => page.evaluate(() => ({
+  current: [...document.querySelectorAll("#quest-list li")].map((li) => li.textContent),
+  toggle: (document.querySelector("#quest-done-toggle .lbl") || {}).textContent,
+  toggleShown: !document.getElementById("quest-done-toggle").classList.contains("hidden"),
+  open: !document.getElementById("quest-done-list").classList.contains("hidden"),
+  done: [...document.querySelectorAll("#quest-done-list li")].map((li) => li.textContent),
+}));
+
 // Block 42. What the guide points at right now: its label, and whether it
 // is drawn over the target or as a tab at the screen's edge.
 const guide = (page) => page.evaluate(() => {
@@ -158,6 +168,9 @@ const panels = (page) => page.evaluate(async () => {
   ok("in front of Macario, and behind the guide's arrow",
      p0.treeZ > p0.playerZ && p0.markerZ > p0.treeZ, p0);
   ok("and nobody he has to reach stands behind it", p0.blocked.length === 0, p0.blocked);
+  const l0 = await log(page);
+  ok("the quest log opens on one task, Kausapin si Nanay, with nothing done yet (Block 48)",
+     JSON.stringify(l0.current) === '["Kausapin si Nanay"]' && !l0.toggleShown, l0);
   const g0 = await guide(page);
   ok("the guide stands over Nanay from the first frame", g0.label === "Nanay" && g0.marker && g0.text === "Nanay", g0);
   ok("the Mananahi is not on the road before the memory",
@@ -204,11 +217,26 @@ const panels = (page) => page.evaluate(async () => {
   await page.waitForTimeout(150);
   ok("E closes it and play goes on", await page.evaluate(() => !inDialogue && state.flags.nagsimulaAngAlaala === true));
 
-  // --- Kabayo: unchanged from Block 19, still adds the quest. ---
+  // Block 48. In the memory the task is the horse; the Kutsero, asked
+  // first, only sends Macario to it and pays nothing.
+  const lMem = await log(page);
+  ok("in the memory the task is Lapitan ang kabayo, and Nanay's is under a closed Tapos na (1)",
+     JSON.stringify(lMem.current) === '["Lapitan ang kabayo"]' && lMem.toggleShown &&
+     lMem.toggle === "Tapos na (1)" && !lMem.open, lMem);
+  const early = await page.evaluate(() => Game.currency());
+  await walkTo(page, 730);
+  await talk(page, 1);
+  const earlyLine = await page.evaluate(() => ({ barya: Game.currency(), flag: state.flags.nakahingiNgBarya }));
+  ok("the Kutsero asked before the horse points to it and pays nothing",
+     earlyLine.barya === early && !earlyLine.flag, earlyLine);
+
+  // --- Kabayo. ---
   await walkTo(page, 280); // Kabayo sits at x=300
   await talk(page, 2); // 2 lines, 3 presses to fully close the box
   const questsAfterKabayo = await page.evaluate(() => quests.map((q) => q.id));
-  ok("the apple quest is logged after meeting Kabayo", questsAfterKabayo.includes("bilhan_mansanas"), questsAfterKabayo);
+  ok("meeting Kabayo moves the task on to the Kutsero",
+     questsAfterKabayo[questsAfterKabayo.length - 1] === "humingi_barya" &&
+     JSON.stringify((await log(page)).current) === '["Humingi ng barya sa Kutsero"]', questsAfterKabayo);
   const gK = await guide(page);
   ok("and the guide moves on to the Kutsero", gK.label === "Kutsero", gK);
 
@@ -269,7 +297,12 @@ const panels = (page) => page.evaluate(async () => {
   ok("Kutsero points him to Tindero", kutseroLines[1].speaker === "Kutsero" &&
      kutseroLines[1].text === "O, heto, Macario. 'Yung malaking mansanas, doon sa Tindero sa dulo ng daan.", kutseroLines[1]);
   const balanceAfter = await page.evaluate(() => Game.currency());
-  ok("Kutsero pays 10 barya", balanceAfter === balanceBefore + 10, { balanceBefore, balanceAfter });
+  // His 10, and the act's drip for the step it finishes (4 a step since
+  // Block 48), which rides the next save and may or may not be in yet.
+  ok("Kutsero pays 10 barya", balanceAfter === balanceBefore + 10 || balanceAfter === balanceBefore + 14,
+     { balanceBefore, balanceAfter });
+  await page.waitForTimeout(1000);
+  const settled = await page.evaluate(() => Game.currency());
   const gT = await guide(page);
   ok("then the guide points on to the Tindero, off screen to the right, with the distance",
      gT.label === "Tindero" && gT.edge === "right" && /^Tindero \d+m$/.test(gT.text), gT);
@@ -280,14 +313,14 @@ const panels = (page) => page.evaluate(async () => {
   await talk(page, 1);
   await page.waitForTimeout(120);
   const balanceAfterRevisit = await page.evaluate(() => Game.currency());
-  ok("a repeat visit to Kutsero does not pay again", balanceAfterRevisit === balanceAfter, balanceAfterRevisit);
+  ok("a repeat visit to Kutsero does not pay again", balanceAfterRevisit === settled, balanceAfterRevisit);
   // Block 42. Nor does rebuilding the scene, which is what a reload into
   // the memory does: the barya is paid once per save, not once per visit.
   await page.evaluate(() => { loadScene("kutsero"); posX = 730; });
   await page.waitForTimeout(150);
   await talk(page, 1);
   await page.waitForTimeout(120);
-  ok("nor does a reload into the memory", (await page.evaluate(() => Game.currency())) === balanceAfter,
+  ok("nor does a reload into the memory", (await page.evaluate(() => Game.currency())) === settled,
      await page.evaluate(() => Game.currency()));
 
   // --- The hazard between Kutsero and Tindero. ---
@@ -341,7 +374,8 @@ const panels = (page) => page.evaluate(async () => {
   ok("Mansanas para sa kabayo is now owned", afterBuy.owns, afterBuy);
   ok("buying it did not also buy the plain Mansanas", !afterBuy.ownsFood, afterBuy);
   ok("buyFlag set binilhAngMansanas", afterBuy.flag === true, afterBuy);
-  ok("5 barya were spent", afterBuy.balance === balanceAfter - 5, afterBuy);
+  ok("5 barya were spent (plus the step's drip of 4, if its save is in)",
+     afterBuy.balance === settled - 5 || afterBuy.balance === settled - 1, afterBuy);
 
   // And the plain one, with what is left, to prove it can be eaten
   // without touching the quest item.
@@ -443,9 +477,24 @@ const panels = (page) => page.evaluate(async () => {
      await page.evaluate(() => getComputedStyle(document.getElementById("ground-tiles")).filter === "none"));
   ok("the third objective's flag is set", afterGift.flag === true, afterGift);
   ok("the apple quest is marked done in the log", afterGift.questDone && afterGift.questDone.done === true, afterGift.questDone);
-  ok("a new, open quest to reach the entablado is logged", afterGift.entabladoQuest && afterGift.entabladoQuest.done === false, afterGift.entabladoQuest);
-  ok("its objective's flag is not set — nothing completes it yet", afterGift.entabladoFlag !== true, afterGift.entabladoFlag);
-  ok("Act I now has seven objectives, three of them done", afterGift.objTotal === 7 && afterGift.objDone === 3, afterGift);
+  ok("the entablado is not the task yet: the Mananahi comes first", !afterGift.entabladoQuest, afterGift.entabladoQuest);
+  ok("its flags are not set — nothing completes it yet", afterGift.entabladoFlag !== true, afterGift.entabladoFlag);
+  ok("Act I has eleven objectives, the five up to the horse done (Block 48)",
+     afterGift.objTotal === 11 && afterGift.objDone === 5, afterGift);
+  const lBack = await log(page);
+  ok("back in tondo the task is the Mananahi, with five under a closed Tapos na",
+     JSON.stringify(lBack.current) === '["Kausapin ang Mananahi"]' && lBack.toggle === "Tapos na (5)" && !lBack.open, lBack);
+  await page.click("#quest-done-toggle");
+  await page.waitForTimeout(100);
+  const lOpen = await log(page);
+  ok("tapping Tapos na opens the finished tasks, in the order they were done",
+     lOpen.open && JSON.stringify(lOpen.done) === JSON.stringify(["Kausapin si Nanay", "Lapitan ang kabayo",
+       "Humingi ng barya sa Kutsero", "Bumili ng mansanas sa Tindero", "Ibigay ang mansanas sa kabayo"]), lOpen);
+  await page.click("#quest-done-toggle");
+  await page.waitForTimeout(100);
+  ok("and tapping it again closes them", !(await log(page)).open);
+  ok("the entablado's door is shut until the Mananahi (Block 48)",
+     await page.evaluate(() => { const saved = posX; posX = 2360; const n = findNearby(); posX = saved; return n.type !== "exit"; }));
   ok("Mansanas is consumed, not kept, once it is actually given away", afterGift.ownsMansanas === false, afterGift);
   ok("and max health is still its base three, since no apple ever raised it", afterGift.maxHealth === 3, afterGift);
 
@@ -508,7 +557,7 @@ const panels = (page) => page.evaluate(async () => {
     balance: Game.currency(),
   }));
   ok("the conversation completes the tailor quest", afterMana.quest && afterMana.quest.done === true, afterMana.quest);
-  ok("and its objective, four of seven done", afterMana.done === 4, afterMana);
+  ok("and its objective, six of eleven done", afterMana.done === 6, afterMana);
   ok("it ends straight into her shop", !afterMana.open && afterMana.shop === "shop", afterMana);
   ok("which sells the stage clothes and nothing else", afterMana.shelf.length === 1 && afterMana.shelf[0] === "damit-entablado", afterMana.shelf);
 
@@ -576,19 +625,35 @@ const panels = (page) => page.evaluate(async () => {
   ok("with entablado-inside.png as its backdrop and no dirt strip",
      /entablado-inside\.png/.test(stage.src) && !/outside/.test(stage.src) && stage.ground === "none", stage);
   ok("which does not finish Act I", stage.status === "playing" && stage.entabladoFlag !== true, stage);
-  // Block 35: the moro-moro plays as soon as the fade-in ends.
-  const loveScene = await page.evaluate(() => ({
+  // Block 48: walking in no longer starts the play. Macario says who he
+  // is looking for, and the student walks to Maryam and talks to her.
+  const arrived = await page.evaluate(() => ({
     open: inDialogue, line: dialogueSpeaker.textContent + ": " + dialogueText.textContent,
     posX, facing,
-    maryam: (document.querySelector("#dec-maryam .sprite") || {}).style &&
-      document.querySelector("#dec-maryam .sprite").style.backgroundImage,
+    maryam: (document.querySelector("#npc-maryam .sprite") || {}).style &&
+      document.querySelector("#npc-maryam .sprite").style.backgroundImage,
     muslimHidden: document.getElementById("dec-muslim").style.display === "none",
   }));
-  ok("Maryam opens the scene herself, with Macario placed beside her",
-     loveScene.open && loveScene.line === "Maryam: O Macario, bagama't iniibig kita, hindi tayo puwedeng magsama." &&
-     loveScene.posX === 440 && loveScene.facing === -1, loveScene);
-  ok("she is drawn from maryam.png", /maryam\.png/.test(loveScene.maryam || ""), loveScene);
-  ok("and the man is still off stage", loveScene.muslimHidden, loveScene);
+  ok("walking in, Macario says he must talk to Maryam first; the play does not start",
+     arrived.open && /makausap si Maryam/.test(arrived.line) && arrived.posX === 700 && arrived.facing === -1, arrived);
+  ok("she is drawn from maryam.png, as someone to talk to", /maryam\.png/.test(arrived.maryam || ""), arrived);
+  ok("and the man is still off stage", arrived.muslimHidden, arrived);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(200);
+  const lStage = await log(page);
+  ok("the task is now Kausapin si Maryam", JSON.stringify(lStage.current) === '["Kausapin si Maryam"]', lStage);
+  const gMy = await guide(page);
+  ok("and the guide points at her", gMy.label === "Maryam", gMy);
+  await page.waitForTimeout(1200);
+  ok("nothing happens while he stands away from her",
+     await page.evaluate(() => !inDialogue && !cutscenePlaying && ENEMIES.length === 0));
+  await walkTo(page, 420);
+  await page.keyboard.press("e");
+  await page.waitForTimeout(150);
+  const loveScene = await page.evaluate(() => ({
+    open: inDialogue, line: dialogueSpeaker.textContent + ": " + dialogueText.textContent }));
+  ok("talking to Maryam opens the love scene",
+     loveScene.open && loveScene.line === "Maryam: O Macario, bagama't iniibig kita, hindi tayo puwedeng magsama.", loveScene);
 
   const loveLines = [loveScene.line];
   for (let i = 0; i < 5; i++) {
@@ -600,6 +665,8 @@ const panels = (page) => page.evaluate(async () => {
      loveLines.length === 6 && loveLines[5] === "Maryam: Ano iyon?", loveLines);
   await page.keyboard.press("e");
   await page.waitForTimeout(400);
+  const lPlay = await log(page);
+  ok("and the task becomes Tapusin ang dula", JSON.stringify(lPlay.current) === '["Tapusin ang dula"]', lPlay);
 
   // He walks on from the right wing while the world is held still.
   const walkOn = await page.evaluate(() => ({
@@ -687,6 +754,8 @@ const panels = (page) => page.evaluate(async () => {
   await page.waitForTimeout(150);
   ok("the way out is closed while they are up",
      (await page.evaluate(() => document.querySelector("#btn-interact .lbl").textContent)) !== "Lumabas");
+  ok("and nobody can be talked to mid-fight, Maryam included (Block 48)",
+     await page.evaluate(() => { const saved = posX; posX = 420; const n = findNearby(); posX = saved; return n.type !== "npc"; }));
 
   // Beaten here rather than fought, since what is being checked is what
   // winning does, not whether a headless browser can punch five guards.
@@ -718,10 +787,13 @@ const panels = (page) => page.evaluate(async () => {
      endingLines[4] === "Mga Manonood: Mabuhay! Mabuhay ang magkasintahan!" &&
      endingLines[5] === "Mga Manonood: (Hiyawan at palakpakan)", endingLines);
   const afterPlay = await page.evaluate(() => ({ open: inDialogue, flag: state.flags.nasaEntablado,
-    quest: quests.find((q) => q.id === "pumunta_entablado"), done: Acts.countDone(1), status: Acts.status }));
-  ok("the end of the play completes Pumunta sa entablado, five of seven",
-     !afterPlay.open && afterPlay.flag === true && afterPlay.quest.done && afterPlay.done === 5 &&
+    quest: quests.find((q) => q.id === "tapusin_dula"), done: Acts.countDone(1), status: Acts.status }));
+  ok("the end of the play completes Tapusin ang dula, nine of eleven",
+     !afterPlay.open && afterPlay.flag === true && afterPlay.quest.done && afterPlay.done === 9 &&
      afterPlay.status === "playing", afterPlay);
+  const lOut = await log(page);
+  ok("and the task becomes Bonifacio outside",
+     JSON.stringify(lOut.current) === '["Kausapin si Bonifacio sa labas"]' && lOut.toggle === "Tapos na (9)", lOut);
 
   // The URL the backdrop tile actually computes to, not the one the
   // content names: Block 44 moved the stylesheet into css/, and a url()
@@ -780,7 +852,9 @@ const panels = (page) => page.evaluate(async () => {
     quest: quests.find((q) => q.id === "ipamahagi_polyeto"), done: Acts.countDone(1) }));
   ok("closing it gives the pamphlet task, 0 of 10", !task.open && task.flag === true &&
      task.quest && task.quest.text === "Ipamahagi ang mga polyeto (0/10)" && !task.quest.done, task);
-  ok("and completes the meeting objective, six of seven", task.done === 6, task);
+  ok("and completes the meeting objective, ten of eleven", task.done === 10, task);
+  ok("the quest log shows only the pamphlets, with their count",
+     JSON.stringify((await log(page)).current) === '["Ipamahagi ang mga polyeto (0/10)"]');
   const gS = await guide(page);
   ok("and the guide points to the road out, the Lansangan", gS.label === "Lansangan" && gS.edge === "right", gS);
   await talk(page, 1);
@@ -1074,8 +1148,8 @@ const panels = (page) => page.evaluate(async () => {
   await page.waitForTimeout(1500);
   const end = await page.evaluate(() => ({ flag: state.flags.naipamahagiAngPolyeto, done: Acts.countDone(1),
     status: Acts.status, quiz: !document.getElementById("quiz").classList.contains("hidden") }));
-  ok("the tenth pamphlet finishes Act I: seven of seven, and the post-test opens",
-     end.flag === true && end.done === 7 && end.status === "posttest" && end.quiz, end);
+  ok("the tenth pamphlet finishes Act I: eleven of eleven, and the post-test opens",
+     end.flag === true && end.done === 11 && end.status === "posttest" && end.quiz, end);
 
   await ctx.close();
   await browser.close();

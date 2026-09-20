@@ -4372,6 +4372,98 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAY. The quest log: the task in hand, and a closed list of done ones (Block 48)");
+  {
+    const { ctx, page } = await enterTestRoom();
+
+    // Old behaviour, for an act without linearObjectives: open quests on
+    // top, done ones under the closed Tapos na button.
+    const plain = await page.evaluate(() => {
+      clearQuests();
+      addQuest("t_a", "Una");
+      addQuest("t_b", "Ikalawa");
+      completeQuest("t_a");
+      const cur = [...document.querySelectorAll("#quest-list li")].map((li) => li.textContent);
+      const tog = document.getElementById("quest-done-toggle");
+      return { cur, shown: !tog.classList.contains("hidden"), label: tog.querySelector(".lbl").textContent,
+               open: !document.getElementById("quest-done-list").classList.contains("hidden") };
+    });
+    ok("done quests leave the top list for a closed Tapos na (1)",
+       JSON.stringify(plain.cur) === '["Ikalawa"]' && plain.shown && plain.label === "Tapos na (1)" && !plain.open, plain);
+
+    await page.click("#quest-done-toggle");
+    await page.waitForTimeout(80);
+    const opened = await page.evaluate(() => ({
+      open: !document.getElementById("quest-done-list").classList.contains("hidden"),
+      items: [...document.querySelectorAll("#quest-done-list li")].map((li) => li.textContent),
+      expanded: document.getElementById("quest-done-toggle").getAttribute("aria-expanded"),
+      paused: isPaused() }));
+    ok("a tap opens it, listing what is done, without pausing the game",
+       opened.open && JSON.stringify(opened.items) === '["Una"]' && opened.expanded === "true" && !opened.paused, opened);
+    const target = await page.evaluate(() => {
+      const r = document.getElementById("quest-done-toggle").getBoundingClientRect();
+      return { h: r.height };
+    });
+    ok("the button is at least 44px tall on the screen", target.h >= 44, target);
+    ok("and it closes again whenever a scene loads",
+       await page.evaluate(() => { loadScene(currentSceneId); return document.getElementById("quest-done-list").classList.contains("hidden"); }));
+
+    // A linear chain: the first unset step is the task, a later flag
+    // backfills the earlier ones, and a counted step shows its count.
+    const chain = await page.evaluate(() => {
+      const act = currentActData;
+      const saved = { objectives: act.objectives, linear: act.linearObjectives, flags: Object.assign({}, state.flags) };
+      act.linearObjectives = true;
+      act.objectives = [
+        { id: "c1", label: "Isa", flag: "t_c1" },
+        { id: "c2", label: "Dalawa", flag: "t_c2" },
+        { id: "c3", label: "Tatlo", flag: "t_c3", countFlags: ["t_k1", "t_k2"] },
+      ];
+      const read = () => ({
+        cur: [...document.querySelectorAll("#quest-list li")].map((li) => li.textContent),
+        label: document.querySelector("#quest-done-toggle .lbl").textContent,
+        ids: quests.map((q) => q.id + (q.done ? "+" : "")),
+      });
+      renderQuests();
+      const a = read();
+      state.flags.t_c2 = true; markDirty();
+      const b = Object.assign(read(), { backfilled: state.flags.t_c1 === true });
+      state.flags.t_k1 = true; markDirty();
+      const c = read();
+      state.flags.t_c3 = true; markDirty();
+      const d = read();
+      act.objectives = saved.objectives; act.linearObjectives = saved.linear;
+      Object.keys(state.flags).forEach((k) => { if (!(k in saved.flags)) delete state.flags[k]; });
+      clearQuests();
+      return { a, b, c, d };
+    });
+    ok("the task is the first step whose flag is not set",
+       JSON.stringify(chain.a.cur) === '["Isa"]' && JSON.stringify(chain.a.ids) === '["c1"]', chain.a);
+    ok("a later step's flag marks the earlier ones done and moves the task on",
+       chain.b.backfilled && JSON.stringify(chain.b.cur) === '["Tatlo (0/2)"]' && chain.b.label === "Tapos na (2)", chain.b);
+    ok("a counted step shows its count from the flags", JSON.stringify(chain.c.cur) === '["Tatlo (1/2)"]', chain.c);
+    ok("with every step done, the top says so and all three are under Tapos na",
+       JSON.stringify(chain.d.cur) === '["Wala nang gawain."]' && chain.d.label === "Tapos na (3)", chain.d);
+
+    // A dialogue set may wait on a flag: picked from the flags each time.
+    const sets = await page.evaluate(() => {
+      const npc = { id: "t_npc", x: 400, label: "T", stage: 0, dialogueSets: [
+        { skipIfFlag: "t_seen", lines: [{ speaker: "T", text: "bago" }], onComplete: () => {} },
+        { requiresFlag: "t_seen", skipIfFlag: "t_paid", lines: [{ speaker: "T", text: "habang" }], onComplete: () => {} },
+        { lines: [{ speaker: "T", text: "pagkatapos" }], onComplete: () => {} },
+      ] };
+      const pick = () => { startDialogue(npc); const t = dialogueText.textContent; endDialogue(); return t; };
+      const out = [pick(), pick()];
+      state.flags.t_seen = true; out.push(pick());
+      state.flags.t_paid = true; out.push(pick());
+      delete state.flags.t_seen; delete state.flags.t_paid;
+      return out;
+    });
+    ok("a set that waits on a flag is skipped until it is set, however often he is asked",
+       JSON.stringify(sets) === '["bago","bago","habang","pagkatapos"]', sets);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

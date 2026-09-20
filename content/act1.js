@@ -129,8 +129,47 @@ const PLAY_ENDING = [
 
 function endOfPlay() {
   state.flags.nasaEntablado = true;
-  completeQuest("pumunta_entablado");
   markDirty();
+}
+
+// Block 48. The moro-moro after Maryam's love scene, which Macario now
+// starts by talking to her rather than it opening the moment he walks in.
+// Moved here unchanged from the entablado's arrival dialogue (Block 35):
+// the man walks on, the confrontation, the fight, the ending.
+async function playMoroMoro() {
+  // Fetched while the love scene is still being read, so the swap when
+  // the fight starts is instant (Block 36).
+  prepareMusic("assets/audio/music/intense.mp3");
+  setCutscene(true);
+  turnPlayer(1); // toward the sound
+  showDecoration("muslim", true);
+  await moveDecoration("muslim", 800, 200);
+  await playDialogue([
+    { speaker: "Muslim", text: "Anong ginagawa mo dito, Maryam? Bakit kasama mo ang Kafir na ito?!" },
+    { speaker: "Maryam", text: "Hindi ikaw ang tunay kong mahal! Si Macario ang hinahanap ng puso ko!" },
+    { speaker: "Muslim", text: "Mga guwardiya, kunin niyo ang puta, patayin niyo ang Kafir!" },
+  ]);
+
+  // He leaves the fighting to his guards, who come in from the same
+  // wing, spaced so they arrive one after another.
+  moveDecoration("muslim", 1300, 260).then(() => showDecoration("muslim", false));
+  setCutscene(false);
+  setMusic("assets/audio/music/intense.mp3");
+  await spawnEnemies([1240, 1310, 1380, 1450, 1520].map((x, i) => ({
+    id: "guwardiya-" + (i + 1),
+    x,
+    hp: 2,
+    animation: MUSLIM_WALK,
+    attackAnimation: MUSLIM_ATTACK,
+  })));
+
+  setMusic(null);
+  state.flags.nagapiAngMgaGuwardiya = true;
+  markDirty();
+  showToast("Napatumba mo ang mga guwardiya!");
+
+  await playDialogue(PLAY_ENDING);
+  endOfPlay();
 }
 
 // Outside the entablado. Greeting, the password asked and answered, then
@@ -285,14 +324,10 @@ const TONDO_PANELS = ["assets/backgrounds/act1/tondo.png"];
 // row, so the picture's own sky simply carries on upward.
 const TONDO_SKY = "#72a8d0";
 
-function pamphletText(n) {
-  return "Ipamahagi ang mga polyeto (" + n + "/" + PAMPHLET_FLAGS.length + ")";
-}
-
+// The meeting is done: the pamphlet step becomes the task in hand. The
+// quest log follows the flag (Block 48); nothing here writes to it.
 function katipunanTask() {
-  addQuest("kausapin_katipunan", "Kausapin ang mga Katipunero");
-  completeQuest("kausapin_katipunan");
-  addQuest("ipamahagi_polyeto", pamphletText(0));
+  state.flags.nakausapAngKatipunan = true;
   markDirty();
 }
 
@@ -300,12 +335,11 @@ function katipunanTask() {
 // (endDialogue, game.js). Counts every flag rather than adding one, so the
 // order they are reached in does not matter and a reload cannot miscount.
 // The last finishes the objective, and with it Act I.
+// The quest line's count comes from the objective's countFlags (Block 48).
 function givePamphlet() {
   const n = PAMPHLET_FLAGS.filter((f) => state.flags[f]).length;
-  setQuestText("ipamahagi_polyeto", pamphletText(n));
   if (n >= PAMPHLET_FLAGS.length) {
     state.flags.naipamahagiAngPolyeto = true;
-    completeQuest("ipamahagi_polyeto");
     showToast("Naipamahagi mo ang lahat ng polyeto!");
   } else {
     showToast("Polyeto: " + n + " sa " + PAMPHLET_FLAGS.length);
@@ -344,52 +378,54 @@ window.ACT_1 = {
   title: "Origins",
   titleTagalog: "Ang Pinagmulan ni Macario",
 
-  // Seven objectives since Block 37. The first two complete together, in
-  // Nanay's onComplete below, since in the story the trip to work starts
-  // the moment that conversation ends. The third, giving Kabayo the apple,
-  // is the flashback resolving, not the act. The fourth is the tailor
-  // (Block 32). The fifth, pumunta_entablado, was held open by having no
-  // flag-setter until Block 37; the end of the play now sets it. The sixth
-  // is the meeting with the Katipunan, and the seventh, the pamphlets, is
-  // the last: it is what finishes Act I and runs the post-test.
+  // Block 48. Act I's objectives are one chain, in the order the story
+  // plays them, and the quest log is drawn from it (linearObjectives,
+  // game.js): the task in hand is the first step whose flag is not set,
+  // finished steps go under "Tapos na". Every step is something the
+  // student does, named for who or where, and the story gates each one
+  // behind the one before (the Kutsero talks about the horse until
+  // Macario has seen it, the apple is on sale only while buying it is the
+  // task, the entablado stays shut until the Mananahi, the play waits for
+  // Maryam), so the chain cannot be finished out of order.
   //
-  // Seven objectives make the currency drip floor(50 / 7) = 7 barya each,
-  // with the remainder paid on completion (CLAUDE.md, Decisions on record).
+  // Nothing in this file calls addQuest or completeQuest any more; each
+  // step is done when its flag is set. Pumunta sa trabaho is gone: it
+  // finished the moment Nanay stopped talking, before Macario went
+  // anywhere. His job now starts when he talks to Maryam on the stage.
+  //
+  // Eleven objectives make the currency drip floor(50 / 11) = 4 barya
+  // each, the remainder paid on completion (CLAUDE.md, Decisions on
+  // record).
+  linearObjectives: true,
   objectives: [
     { id: "kausapin_nanay", label: "Kausapin si Nanay", flag: "nakausapKayNanay" },
-    { id: "pumunta_trabaho", label: "Pumunta sa trabaho", flag: "nasaDaanPatungoSaTrabaho" },
-    { id: "bilhan_mansanas", label: "Bilhan ng mansanas ang kabayo", flag: "binilhanNgMansanasAngKabayo" },
-    // Block 32. Given by Nanay when Macario is back from the memory, and
-    // done when the conversation with the Mananahi ends. Buying the
-    // clothes is not required to finish it: the act should not be locked
-    // behind a purchase (CLAUDE.md, the no-game-over rule).
-    { id: "kausapin_mananahi", label: "Kausapin ang mananahi", flag: "nakausapAngMananahi" },
-    // Set when the play is over (Maryam's announcement, entablado scene).
-    { id: "pumunta_entablado", label: "Pumunta sa entablado", flag: "nasaEntablado" },
-    // Block 37. The meeting at the stairs, and the pamphlets. The last one
-    // is the last objective, so handing over the third pamphlet finishes
-    // Act I and runs its post-test.
-    { id: "kausapin_katipunan", label: "Kausapin ang mga Katipunero", flag: "nakausapAngKatipunan" },
-    { id: "ipamahagi_polyeto", label: "Ipamahagi ang mga polyeto", flag: "naipamahagiAngPolyeto" },
+    // The memory.
+    { id: "lapitan_kabayo", label: "Lapitan ang kabayo", flag: "nakitaAngKabayo" },
+    { id: "humingi_barya", label: "Humingi ng barya sa Kutsero", flag: "nakahingiNgBarya" },
+    { id: "bumili_mansanas", label: "Bumili ng mansanas sa Tindero", flag: "binilhAngMansanas" },
+    { id: "bilhan_mansanas", label: "Ibigay ang mansanas sa kabayo", flag: "binilhanNgMansanasAngKabayo" },
+    // Back in tondo. Buying the clothes is not required: the act should
+    // not be locked behind a purchase (CLAUDE.md, the no-game-over rule).
+    { id: "kausapin_mananahi", label: "Kausapin ang Mananahi", flag: "nakausapAngMananahi" },
+    // The job.
+    { id: "pumunta_entablado", label: "Pumunta sa entablado", flag: "nakapasokSaEntablado" },
+    { id: "kausapin_maryam", label: "Kausapin si Maryam", flag: "nakausapSiMaryam" },
+    { id: "tapusin_dula", label: "Tapusin ang dula", flag: "nasaEntablado" },
+    // Block 37's placeholder ending.
+    { id: "kausapin_katipunan", label: "Kausapin si Bonifacio sa labas", flag: "nakausapAngKatipunan" },
+    { id: "ipamahagi_polyeto", label: "Ipamahagi ang mga polyeto", flag: "naipamahagiAngPolyeto",
+      countFlags: PAMPHLET_FLAGS },
   ],
 
-  // Only the first two are known from the start. "Bilhan ng mansanas
-  // ang kabayo" is added by Kabayo's own onComplete, in the kutsero
-  // scene below, the moment Macario actually meets the horse — a
-  // quest log entry for a fact the player does not know yet would be
-  // a spoiler for no reason.
-  startingQuests: [
-    { id: "kausapin_nanay", text: "Kausapin si Nanay" },
-    { id: "pumunta_trabaho", text: "Pumunta sa trabaho" },
-  ],
+  // The chain is the quest log, so there is nothing to add at the start.
+  startingQuests: [],
 
-  // Block 42. Where to go next, for the guide (game.js, updateGuide). The
-  // first entry whose scene and conditions hold is the target; within a
-  // scene the later steps of the story come first, so a student who does
-  // things out of order is sent to what is left rather than back.
+  // Block 42, following Block 48's chain. Where to go next, for the guide
+  // (game.js, updateGuide). The first entry whose scene and conditions
+  // hold is the target; within a scene the later steps come first.
   guide: [
     // tondo, at the start: his mother.
-    { scene: "tondo", unlessFlag: "nasaDaanPatungoSaTrabaho", npc: "nanay" },
+    { scene: "tondo", unlessFlag: "nakausapKayNanay", npc: "nanay" },
     // After the meeting: the road out to the street.
     { scene: "tondo", requiresFlag: "nakausapAngKatipunan",
       unlessFlag: "naipamahagiAngPolyeto", exit: "tumuloy-lansangan",
@@ -397,20 +433,21 @@ window.ACT_1 = {
     // After the play, for a student who reloaded before the meeting opened.
     { scene: "tondo", requiresFlag: "nasaEntablado", npc: "bonifacio" },
     // After the tailor: the stage.
-    { scene: "tondo", requiresFlag: "nakausapAngMananahi",
-      unlessFlag: "nasaEntablado", exit: "pasok-entablado", label: "Entablado" },
+    { scene: "tondo", requiresFlag: "nakausapAngMananahi", exit: "pasok-entablado",
+      label: "Entablado" },
     // Back from the memory: the tailor.
     { scene: "tondo", requiresFlag: "binilhanNgMansanasAngKabayo", npc: "mananahi" },
 
     // The memory: the horse, the kutsero, the stall, and back to the horse.
     { scene: "kutsero", requiresFlag: "binilhAngMansanas", npc: "kabayo" },
     { scene: "kutsero", requiresFlag: "nakahingiNgBarya", npc: "tindero" },
-    { scene: "kutsero", questOpen: "bilhan_mansanas", npc: "kutsero" },
+    { scene: "kutsero", requiresFlag: "nakitaAngKabayo", npc: "kutsero" },
     { scene: "kutsero", npc: "kabayo" },
 
-    // The stage runs itself; once the play is over, the way out.
+    // The stage: Maryam until the play is won, then the way out.
     { scene: "entablado", requiresFlag: "nasaEntablado",
       exit: "lumabas-entablado", label: "Labas" },
+    { scene: "entablado", unlessFlag: "nagapiAngMgaGuwardiya", npc: "maryam" },
 
     // The street: whichever citizen still waiting is nearest.
     { scene: "lansangan", unlessFlag: "naipamahagiAngPolyeto",
@@ -448,8 +485,10 @@ window.ACT_1 = {
       // any flag: nothing inside has story yet, and pumunta_entablado's
       // flag is still set by nothing, so going in does not finish Act I.
       exits: [
+        // Block 48. Shut until the Mananahi, the step before it, so the
+        // play cannot start ahead of the story.
         { id: "pasok-entablado", x: 2330, width: 140, label: "Pasok",
-          toScene: "entablado" },
+          toScene: "entablado", requiresFlag: "nakausapAngMananahi" },
         // Block 37. The end of the road, open only once the Katipunan has
         // given Macario the pamphlets. Same Tondo backdrop on the other
         // side, through the usual fade.
@@ -478,10 +517,9 @@ window.ACT_1 = {
             { speaker: "Nanay", text: "'Wag mong kalimutang dumaan sa mananahi para sa damit mo." },
             { speaker: "Macario", text: "Opo, Nay." },
           ],
-          onComplete: () => {
-            addQuest("kausapin_mananahi", "Kausapin ang mananahi");
-            markDirty();
-          },
+          // The next step, the Mananahi, is already the task in hand: the
+          // apple given to Kabayo is what finished the one before it.
+          onComplete: () => {},
         },
         // Block 37. Out of the entablado after the play: Bonifacio and a
         // second Katipunero are waiting at the stairs. Plays once, through
@@ -541,9 +579,9 @@ window.ACT_1 = {
               onComplete: () => {
                 const firstTime = !state.flags.nasaDaanPatungoSaTrabaho;
                 state.flags.nakausapKayNanay = true;
+                // Kept, though no objective reads it since Block 48: it is
+                // what skips this set on a later visit.
                 state.flags.nasaDaanPatungoSaTrabaho = true;
-                completeQuest("kausapin_nanay");
-                completeQuest("pumunta_trabaho");
                 // "yung pera mo": his money, 200 barya, once. It is what
                 // pays the Mananahi's 100 later, and the firstTime guard
                 // is what stops a second visit paying it again.
@@ -590,7 +628,6 @@ window.ACT_1 = {
             {
               onComplete: () => {
                 state.flags.nakausapAngMananahi = true;
-                completeQuest("kausapin_mananahi");
                 markDirty();
               },
               lines: [
@@ -729,8 +766,10 @@ window.ACT_1 = {
                 { speaker: "Kabayo", text: "Neighh" },
                 { speaker: "Macario", text: "Gutom ka na ba? Saglit lang ha, ibibili muna kita ng mansanas." },
               ],
+              // Block 48. Seeing the horse is the first step of the memory.
               onComplete: () => {
-                addQuest("bilhan_mansanas", "Bilhan ng mansanas ang kabayo");
+                state.flags.nakitaAngKabayo = true;
+                markDirty();
               },
             },
           ],
@@ -750,18 +789,14 @@ window.ACT_1 = {
               { speaker: "Macario", text: "Heto, kumain ka na." },
               { speaker: "Kabayo", text: "Neighh!" },
             ],
-            completesQuest: "bilhan_mansanas",
             // The flashback resolving, not the act. "Mansanas para sa
             // kabayo" is a quest item (content/items.js, Block 25), and
             // this is the moment it is handed over, Inventory.consume.
             // It is a different item from the Mansanas a student can
-            // eat, so eating apples can never use this one up. Then
-            // addQuest for the entablado errand Nanay actually sent him
-            // on, still open (its objective's flag is not set anywhere,
-            // see the header), and back to the story's present.
+            // eat, so eating apples can never use this one up. Then back
+            // to the story's present.
             onComplete: () => {
               if (window.Inventory) Inventory.consume("mansanas-kabayo");
-              addQuest("pumunta_entablado", "Pumunta sa entablado");
               if (window.Acts) Acts.gotoScene("tondo");
             },
           },
@@ -783,8 +818,19 @@ window.ACT_1 = {
           stage: 0,
           dialogueSets: [
             {
+              // Block 48. Before Macario has seen the horse, the Kutsero
+              // sends him to it, so the barya is asked for with a reason.
+              // Picked by flags each time (game.js, requiresFlag).
+              skipIfFlag: "nakitaAngKabayo",
+              lines: [
+                { speaker: "Kutsero", text: "O, Macario! Nakita mo na ba ang kabayo ko? Mukhang gutom na siya." },
+              ],
+              onComplete: () => {},
+            },
+            {
               // Block 42. Skipped once the barya has been given, so leaving
               // the memory and reloading back into it cannot pay twice.
+              requiresFlag: "nakitaAngKabayo",
               skipIfFlag: "nakahingiNgBarya",
               lines: [
                 { speaker: "Macario", text: "Kutsero, pahingi po ng barya. Ibibili ko lang ng mansanas si Kabayo." },
@@ -867,23 +913,54 @@ window.ACT_1 = {
       // nasaEntablado, the objective this scene exists for.
       id: "entablado",
       worldWidth: 1176,
-      startX: 260,
+      startX: 700,
       backdrop: { src: "assets/backgrounds/act1/entablado-inside.png" },
       ground: false,
-      npcs: [],
-      decorations: [
+      npcs: [
         {
-          // Muslim_Girl.png: 5 by 3, 13 frames, measured with
-          // measure-sprite.js. Drawn facing right, toward where Macario
-          // is placed. (Muslim_Woman.png in the same folder is a
-          // byte-for-byte copy and is not used.)
+          // Block 48. Maryam is someone to talk to now, not scenery: the
+          // play starts when Macario speaks to her, not the moment he walks
+          // in. maryam.png (was Muslim_Girl.png): 5 by 3, 13 frames,
+          // measured with measure-sprite.js, drawn facing right, toward
+          // where he comes from. Her body is 290 to 370, so she stands
+          // where the decoration stood (330). The love scene is her first
+          // conversation and replays on every visit until the fight is won
+          // (the fight is not saved, the flag that says it was won is).
           id: "maryam",
-          x: 330,
+          x: 290,
+          label: "Maryam",
           animation: {
             src: "assets/sprites/characters/maryam.png", frames: 13, fps: 6, columns: 5,
             contentTop: 73, contentHeight: 117, footX: 128,
           },
+          stage: 0,
+          dialogueSets: [
+            {
+              skipIfFlag: "nagapiAngMgaGuwardiya",
+              lines: [
+                { speaker: "Maryam", text: "O Macario, bagama't iniibig kita, hindi tayo puwedeng magsama." },
+                { speaker: "Maryam", text: "Hindi puwedeng magsama ang Muslim na babae at ang Kristiyanong lalaki..." },
+                { speaker: "Macario", text: "Hindi ito maaari, mahal ko! Gagawin ko ang lahat, magsama lang tayo!" },
+                { speaker: "Maryam", text: "Hindi ko kaya kung ikaw ay mawawala, Macario!" },
+                { speaker: "Macario", text: "..." },
+                { speaker: "Maryam", text: "Ano iyon?" },
+              ],
+              onComplete: () => {
+                state.flags.nakausapSiMaryam = true;
+                markDirty();
+                playMoroMoro();
+              },
+            },
+            {
+              lines: [
+                { speaker: "Maryam", text: "Ang galing mo kanina, Macario. Hinihintay ka na yata sa labas." },
+              ],
+              onComplete: () => {},
+            },
+          ],
         },
+      ],
+      decorations: [
         {
           // Block 40. Real art: the walk sheet the artist delivered as
           // Muslim_Walk.jpg, keyed to a transparent PNG (_dev/tools/key-black.py)
@@ -901,52 +978,15 @@ window.ACT_1 = {
       ],
       arrivalDialogues: [
         {
-          unlessFlag: "nagapiAngMgaGuwardiya",
-          x: 440, // beside Maryam, facing her
+          // Block 48. Walking in no longer starts the play. Macario says
+          // who he is looking for, from the right of the stage, and the
+          // student walks to Maryam to begin. Once only.
+          doneFlag: "nakapasokSaEntablado",
+          x: 700,
           facing: -1,
           lines: [
-            { speaker: "Maryam", text: "O Macario, bagama't iniibig kita, hindi tayo puwedeng magsama." },
-            { speaker: "Maryam", text: "Hindi puwedeng magsama ang Muslim na babae at ang Kristiyanong lalaki..." },
-            { speaker: "Macario", text: "Hindi ito maaari, mahal ko! Gagawin ko ang lahat, magsama lang tayo!" },
-            { speaker: "Maryam", text: "Hindi ko kaya kung ikaw ay mawawala, Macario!" },
-            { speaker: "Macario", text: "..." },
-            { speaker: "Maryam", text: "Ano iyon?" },
+            { speaker: "Macario", text: "Nahuli ba ako? Kailangan kong makausap si Maryam bago magsimula ang dula." },
           ],
-          onComplete: async () => {
-            // Fetched while the love scene is still being read, so the
-            // swap when the fight starts is instant (Block 36).
-            prepareMusic("assets/audio/music/intense.mp3");
-            setCutscene(true);
-            turnPlayer(1); // toward the sound
-            showDecoration("muslim", true);
-            await moveDecoration("muslim", 800, 200);
-            await playDialogue([
-              { speaker: "Muslim", text: "Anong ginagawa mo dito, Maryam? Bakit kasama mo ang Kafir na ito?!" },
-              { speaker: "Maryam", text: "Hindi ikaw ang tunay kong mahal! Si Macario ang hinahanap ng puso ko!" },
-              { speaker: "Muslim", text: "Mga guwardiya, kunin niyo ang puta, patayin niyo ang Kafir!" },
-            ]);
-
-            // He leaves the fighting to his guards, who come in from the same
-            // wing, spaced so they arrive one after another.
-            moveDecoration("muslim", 1300, 260).then(() => showDecoration("muslim", false));
-            setCutscene(false);
-            setMusic("assets/audio/music/intense.mp3");
-            await spawnEnemies([1240, 1310, 1380, 1450, 1520].map((x, i) => ({
-              id: "guwardiya-" + (i + 1),
-              x,
-              hp: 2,
-              animation: MUSLIM_WALK,
-              attackAnimation: MUSLIM_ATTACK,
-            })));
-
-            setMusic(null);
-            state.flags.nagapiAngMgaGuwardiya = true;
-            markDirty();
-            showToast("Napatumba mo ang mga guwardiya!");
-
-            await playDialogue(PLAY_ENDING);
-            endOfPlay();
-          },
         },
         // Block 37. A student who won the fight on an earlier build, or who
         // reloaded between the last guard falling and Maryam's lines, walks

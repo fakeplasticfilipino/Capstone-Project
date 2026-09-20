@@ -96,7 +96,7 @@ window.ITEMS = [
     price: 5,
     img: "assets/items/mansanas.png",
     icon: "i-apple",
-    forQuest: "bilhan_mansanas",
+    forQuest: "bumili_mansanas",
     buyFlag: "binilhAngMansanas",
   },
 ];
