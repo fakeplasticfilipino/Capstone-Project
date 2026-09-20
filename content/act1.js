@@ -92,6 +92,15 @@
 // sorted out a Kutsero and Tindero mix-up in the file names). The
 // Mananahi, Bonifacio, the Katipunero, the townspeople and the street's
 // guards are stand-in stills (Block 41, STILL below) until theirs exist.
+//
+// Block 42, polish without changing the story. The act declares a guide
+// (ACT_1.guide, below): an ordered list of where to go next, which the
+// engine draws as an arrow over the target or a tab at the screen's edge,
+// so a student always knows where the next conversation is. The
+// lansangan grew to 11000px with ten citizens and eight guards, and a
+// consistency pass tidied names and spelling (the Mananahi speaks as
+// "Mananahi", the Kutsero's barya is paid once per save rather than once
+// per visit, and every count in the dialogue matches the street).
 // =============================================================
 
 // =============================================================
@@ -135,7 +144,7 @@ const KATIPUNAN_MEETING = [
   { speaker: "Katipunero", text: "At saan ka patungo?" },
   { speaker: "Macario", text: "Sa liwanag. Anak ng Bayan." },
   { speaker: "Bonifacio", text: "Mabuti. Ligtas tayong mag-usap." },
-  { speaker: "Bonifacio", text: "May mga papel na kailangang makarating sa tatlong kapatid sa kabilang lansangan." },
+  { speaker: "Bonifacio", text: "May mga papel na kailangang makarating sa sampung kapatid sa kabilang lansangan." },
   { speaker: "Bonifacio", text: "Nagbabantay ang mga guardia civil doon. Iwan mo ang baril mo; hindi ito laban." },
   { speaker: "Katipunero", text: "Kung makita ka, tumigil ka lang. Suot ang damit pang-entablado, aakalain nilang artista ka lang na pauwi." },
   { speaker: "Katipunero", text: "Kung kailangan, umakyat ka. Ang bantay ay nakatingin sa daan, hindi sa itaas." },
@@ -179,7 +188,89 @@ const STILL = {
                 contentTop: 69, contentHeight: 121, footX: 128 },
 };
 
-const PAMPHLET_FLAGS = ["nabigyanSiMangingisda", "nabigyanSiLabandera", "nabigyanSiKarpintero"];
+// Block 42. Ten people on the street, left to right, each waiting for one
+// pamphlet. One table rather than ten calls, so the count in the quest
+// line, the guide's list and the flags cannot disagree. The first three
+// flags are Block 37's, kept so an older save still counts what it gave.
+//
+// PLACEHOLDER SCRIPT, like the rest of Block 37: every line below was
+// written ahead of the source book. The trades are ordinary workers of
+// Tondo, which is all the item bank commits to about who the Katipunan's
+// members were (CLAUDE.md, Decisions on record).
+const CITIZENS = [
+  { id: "mangingisda", x: 450, label: "Mangingisda", flag: "nabigyanSiMangingisda",
+    before: [
+      { speaker: "Mangingisda", text: "Psst. Ikaw ba ang artista?" },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Mangingisda", text: "Ah, kapatid. May dala ka ba para sa akin?" },
+    ],
+    thanks: "Salamat, kapatid. Babasahin ko ito mamayang gabi." },
+  { id: "labandera", x: 1800, label: "Labandera", flag: "nabigyanSiLabandera",
+    before: [
+      { speaker: "Labandera", text: "Maraming bantay ngayon. Mag-ingat ka." },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Labandera", text: "Kapatid! Iabot mo na, bago may makakita." },
+    ],
+    thanks: "Itatago ko ito sa mga labada. Walang maghahanap doon." },
+  { id: "kargador", x: 3500, label: "Kargador", flag: "nabigyanSiKargador",
+    before: [
+      { speaker: "Kargador", text: "Mabigat ang pasan ko. Mas mabigat yata ang dala mo." },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Kargador", text: "Kapatid. Isingit mo sa mga sako." },
+    ],
+    thanks: "Walang bantay na maghahalughog ng sako ng bigas. Salamat." },
+  { id: "tindera", x: 5100, label: "Tindera", flag: "nabigyanSiTindera",
+    before: [
+      { speaker: "Tindera", text: "Bili na, bili na! ... Ay, ikaw pala." },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Tindera", text: "Kapatid, ilagay mo sa ilalim ng bilao." },
+    ],
+    thanks: "Mababasa ito ng bawat suki ko. Salamat, kapatid." },
+  { id: "panday", x: 6650, label: "Panday", flag: "nabigyanSiPanday",
+    before: [
+      { speaker: "Panday", text: "Mainit dito sa pandayan. Ano ang kailangan mo?" },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Panday", text: "Kapatid. Akin na, bago bumalik ang bantay." },
+    ],
+    thanks: "Itatago ko ito sa ilalim ng palihan. Salamat." },
+  { id: "sapatero", x: 8250, label: "Sapatero", flag: "nabigyanSiSapatero",
+    before: [
+      { speaker: "Sapatero", text: "Sira ba ang sapatos mo, o may iba kang dala?" },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Sapatero", text: "Ah, kapatid. Iabot mo nang mabilis." },
+    ],
+    thanks: "Isisingit ko ito sa bawat sapatos na aayusin ko." },
+  { id: "tabakera", x: 9050, label: "Tabakera", flag: "nabigyanSiTabakera",
+    before: [
+      { speaker: "Tabakera", text: "Galing ako sa pagawaan ng tabako. Pagod na kami roon." },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Tabakera", text: "Kapatid! Marami kaming naghihintay nito." },
+    ],
+    thanks: "Ipapasa ko ito sa mga kasama ko sa pagawaan." },
+  { id: "panadero", x: 10300, label: "Panadero", flag: "nabigyanSiPanadero",
+    before: [
+      { speaker: "Panadero", text: "Mainit pa ang pandesal. Pero hindi iyan ang hanap mo, ano?" },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Panadero", text: "Kapatid. Isasama ko sa bilao ng tinapay." },
+    ],
+    thanks: "Kasama ng tinapay, darating ito sa bawat bahay." },
+  { id: "manghahabi", x: 10550, label: "Manghahabi", flag: "nabigyanSiManghahabi",
+    before: [
+      { speaker: "Manghahabi", text: "Mahaba pa ang hinahabi ko. Sino ka?" },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Manghahabi", text: "Kapatid, ikaw pala. Iabot mo rito." },
+    ],
+    thanks: "Isisingit ko ito sa mga tela. Salamat, kapatid." },
+  { id: "karpintero", x: 10800, label: "Karpintero", flag: "nabigyanSiKarpintero",
+    before: [
+      { speaker: "Karpintero", text: "Nakalampas ka sa mga bantay? Magaling." },
+      { speaker: "Macario", text: "Anak ng Bayan." },
+      { speaker: "Karpintero", text: "Kapatid. Ako ang huli sa daan mo, hindi ba?" },
+    ],
+    thanks: "Ipapasa ko ito sa mga kasama ko sa talyer. Salamat, kapatid." },
+];
+
+const PAMPHLET_FLAGS = CITIZENS.map((c) => c.flag);
 
 function pamphletText(n) {
   return "Ipamahagi ang mga polyeto (" + n + "/" + PAMPHLET_FLAGS.length + ")";
@@ -193,9 +284,9 @@ function katipunanTask() {
 }
 
 // A citizen's gift has just been handed over, so its flag is already set
-// (endDialogue, game.js). Counts all three rather than adding one, so the
+// (endDialogue, game.js). Counts every flag rather than adding one, so the
 // order they are reached in does not matter and a reload cannot miscount.
-// The third finishes the objective, and with it Act I.
+// The last finishes the objective, and with it Act I.
 function givePamphlet() {
   const n = PAMPHLET_FLAGS.filter((f) => state.flags[f]).length;
   setQuestText("ipamahagi_polyeto", pamphletText(n));
@@ -211,8 +302,9 @@ function givePamphlet() {
 
 // One citizen: talks before and after, and takes a pamphlet through the
 // gift button (Iabot ang polyeto), the same mechanism Kabayo's apple uses.
-// All three share one stand-in still until the artist says otherwise.
-function citizen(id, x, label, flag, before, thanks) {
+// All ten share one stand-in still until the artist says otherwise.
+function citizen({ id, x, label, flag, before, thanks }) {
+  thanks = [{ speaker: label, text: thanks }];
   return {
     id, x, label,
     animation: STILL.mamamayan,
@@ -278,6 +370,40 @@ window.ACT_1 = {
     { id: "pumunta_trabaho", text: "Pumunta sa trabaho" },
   ],
 
+  // Block 42. Where to go next, for the guide (game.js, updateGuide). The
+  // first entry whose scene and conditions hold is the target; within a
+  // scene the later steps of the story come first, so a student who does
+  // things out of order is sent to what is left rather than back.
+  guide: [
+    // tondo, at the start: his mother.
+    { scene: "tondo", unlessFlag: "nasaDaanPatungoSaTrabaho", npc: "nanay" },
+    // After the meeting: the road out to the street.
+    { scene: "tondo", requiresFlag: "nakausapAngKatipunan",
+      unlessFlag: "naipamahagiAngPolyeto", exit: "tumuloy-lansangan",
+      label: "Lansangan" },
+    // After the play, for a student who reloaded before the meeting opened.
+    { scene: "tondo", requiresFlag: "nasaEntablado", npc: "bonifacio" },
+    // After the tailor: the stage.
+    { scene: "tondo", requiresFlag: "nakausapAngMananahi",
+      unlessFlag: "nasaEntablado", exit: "pasok-entablado", label: "Entablado" },
+    // Back from the memory: the tailor.
+    { scene: "tondo", requiresFlag: "binilhanNgMansanasAngKabayo", npc: "mananahi" },
+
+    // The memory: the horse, the kutsero, the stall, and back to the horse.
+    { scene: "kutsero", requiresFlag: "binilhAngMansanas", npc: "kabayo" },
+    { scene: "kutsero", requiresFlag: "nakahingiNgBarya", npc: "tindero" },
+    { scene: "kutsero", questOpen: "bilhan_mansanas", npc: "kutsero" },
+    { scene: "kutsero", npc: "kabayo" },
+
+    // The stage runs itself; once the play is over, the way out.
+    { scene: "entablado", requiresFlag: "nasaEntablado",
+      exit: "lumabas-entablado", label: "Labas" },
+
+    // The street: whichever citizen still waiting is nearest.
+    { scene: "lansangan", unlessFlag: "naipamahagiAngPolyeto",
+      npcs: CITIZENS.map((c) => c.id) },
+  ],
+
   scenes: [
     {
       id: "tondo",
@@ -325,15 +451,15 @@ window.ACT_1 = {
           x: 210, // Nanay's body starts at 300, so a 50px gap, facing her
           facing: 1,
           lines: [
-            { speaker: "Macario", text: "Naaalala mo pa pala yon ma?" },
-            { speaker: "Nanay", text: "Abay siyempre, matanda ako pero hindi ako ulyanin!" },
+            { speaker: "Macario", text: "Naaalala mo pa pala 'yon, Nay?" },
+            { speaker: "Nanay", text: "Aba'y siyempre, matanda na ako pero hindi ako ulyanin!" },
             { speaker: "Nanay", text: "... Saan ka nga ulit pupunta?" },
             { speaker: "Macario", text: "Hahaha" },
-            { speaker: "Macario", text: "Kailangan ko ng pumuntang trabaho ma, hinihintay na ako ng mga kapwa kong artista" },
-            { speaker: "Nanay", text: "Okay sige, mag ingat ka ha!" },
+            { speaker: "Macario", text: "Kailangan ko nang pumunta sa trabaho, Nay. Hinihintay na ako ng mga kapwa ko artista." },
+            { speaker: "Nanay", text: "O sige, mag-ingat ka ha!" },
             // Block 32. The errand to the tailor, and the quest it gives.
-            { speaker: "Nanay", text: "Wag mo kalimutang dumaan sa mananahi para sa kadamitan mo" },
-            { speaker: "Macario", text: "Opo nay" },
+            { speaker: "Nanay", text: "'Wag mong kalimutang dumaan sa mananahi para sa damit mo." },
+            { speaker: "Macario", text: "Opo, Nay." },
           ],
           onComplete: () => {
             addQuest("kausapin_mananahi", "Kausapin ang mananahi");
@@ -373,11 +499,11 @@ window.ACT_1 = {
                 // Block 32 script. She hands over his money (200 barya,
                 // paid in onComplete), mentions the kutsero, and the memory
                 // cuts him off.
-                { speaker: "Nanay", text: "Macario anak, yung pera mo." },
-                { speaker: "Macario", text: "Salamat Nay." },
-                { speaker: "Nanay", text: "Hinahanap ka nung kutsero na naghatid sakin dito, kamusta ka na raw." },
-                { speaker: "Macario", text: "Nay, mauuna na ako, medyo huli na ako sa trabaho eh" },
-                { speaker: "Nanay", text: "Naaalala mo ba nung nagtrabaho ka sakaniya?" },
+                { speaker: "Nanay", text: "Macario, anak, 'yung pera mo." },
+                { speaker: "Macario", text: "Salamat, Nay." },
+                { speaker: "Nanay", text: "Hinahanap ka nung kutserong naghatid sa akin dito. Kumusta ka na raw." },
+                { speaker: "Macario", text: "Nay, mauuna na ako. Medyo huli na ako sa trabaho, eh." },
+                { speaker: "Nanay", text: "Naaalala mo ba nung nagtrabaho ka sa kaniya?" },
                 { speaker: "Macario", text: "Nay, huli na 'ho ak-" },
               ],
               // Cut off mid-sentence, on purpose — Nanay's errand pulls
@@ -413,7 +539,7 @@ window.ACT_1 = {
               // Holds here on every later visit, same as before.
               lines: [
                 { speaker: "Nanay", text: "Mag-ingat ka lagi, anak." },
-                { speaker: "Macario", text: "Opo, Nanay." },
+                { speaker: "Macario", text: "Opo, Nay." },
               ],
               onComplete: () => {},
             },
@@ -451,12 +577,12 @@ window.ACT_1 = {
                 markDirty();
               },
               lines: [
-                { speaker: "Mana", text: "Oh, kamusta ka na Macario? Ang laki laki mo na" },
-                { speaker: "Macario", text: "Ayos lang naman, ito, buhay pa din" },
-                { speaker: "Mana", text: "Magpagupit ka na! Nagmumukha ka ng dalaga" },
-                { speaker: "Macario", text: "Hahaha, saka na, malay natin ganahan ako" },
-                { speaker: "Macario", text: "Andiyan na ba yung damit ko para sa entablado?" },
-                { speaker: "Mana", text: "Oo, pero bayad muna hehe..." },
+                { speaker: "Mananahi", text: "O, kumusta ka na, Macario? Ang laki-laki mo na!" },
+                { speaker: "Macario", text: "Ayos lang naman. Heto, buhay pa rin." },
+                { speaker: "Mananahi", text: "Magpagupit ka na! Nagmumukha ka nang dalaga." },
+                { speaker: "Macario", text: "Hahaha, saka na. Malay natin, ganahan ako." },
+                { speaker: "Macario", text: "Nandiyan na ba 'yung damit ko para sa entablado?" },
+                { speaker: "Mananahi", text: "Oo, pero bayad muna, hehe..." },
               ],
             },
           ],
@@ -486,7 +612,7 @@ window.ACT_1 = {
             },
             {
               lines: [
-                { speaker: "Bonifacio", text: "Sa dulo ng daan, tumuloy ka. Tatlong kapatid ang naghihintay." },
+                { speaker: "Bonifacio", text: "Sa dulo ng daan, tumuloy ka. Sampung kapatid ang naghihintay." },
                 { speaker: "Bonifacio", text: "Huwag kang magpapakita sa mga bantay." },
               ],
               onComplete: () => {},
@@ -515,6 +641,9 @@ window.ACT_1 = {
             {
               lines: [
                 { speaker: "Katipunero", text: "Kung makita ka ng bantay, tumigil ka lang. Isa ka lang artistang pauwi." },
+                // Block 42. The street's seventh guard stands with his back to
+                // the road, the one place a takedown is the plain answer.
+                { speaker: "Katipunero", text: "At kung nakatalikod ang bantay, lapitan mo at patumbahin mula sa likod." },
               ],
               onComplete: () => {},
             },
@@ -577,7 +706,7 @@ window.ACT_1 = {
             {
               lines: [
                 { speaker: "Kabayo", text: "Neighh" },
-                { speaker: "Macario", text: "Gutom ka na ba? Saglit lang ha, bili muna akong mansanas" },
+                { speaker: "Macario", text: "Gutom ka na ba? Saglit lang ha, ibibili muna kita ng mansanas." },
               ],
               onComplete: () => {
                 addQuest("bilhan_mansanas", "Bilhan ng mansanas ang kabayo");
@@ -593,7 +722,7 @@ window.ACT_1 = {
           // in the background while the player was still standing next
           // to Kabayo in a greyed-out scene.
           gift: {
-            buttonLabel: "Ibigay ang Mansanas",
+            buttonLabel: "Ibigay ang mansanas",
             requiresFlag: "binilhAngMansanas",
             givenFlag: "binilhanNgMansanasAngKabayo",
             responseLines: [
@@ -633,17 +762,25 @@ window.ACT_1 = {
           stage: 0,
           dialogueSets: [
             {
+              // Block 42. Skipped once the barya has been given, so leaving
+              // the memory and reloading back into it cannot pay twice.
+              skipIfFlag: "nakahingiNgBarya",
               lines: [
-                { speaker: "Macario", text: "Kutsero, pahingi akong barya, bili lang akong mansanas" },
-                { speaker: "Kutsero", text: "O eto Macario, yung malaking mansanas dun sa Tindero sa may dulo." },
+                { speaker: "Macario", text: "Kutsero, pahingi po ng barya. Ibibili ko lang ng mansanas si Kabayo." },
+                { speaker: "Kutsero", text: "O, heto, Macario. 'Yung malaking mansanas, doon sa Tindero sa dulo ng daan." },
               ],
               // +10 barya, straight through the currency facade
               // (Game.addCurrency) — the same call acts.js uses to pay
               // out objectives, just triggered from a conversation
               // instead. Guarded on window.Game the way every other
               // content onComplete guards on window.Acts.
+              // Block 42. The flag is what the guide reads to send Macario on
+              // to the Tindero, and what keeps the barya to one payment.
               onComplete: () => {
-                if (window.Game) Game.addCurrency(10);
+                const firstTime = !state.flags.nakahingiNgBarya;
+                state.flags.nakahingiNgBarya = true;
+                if (firstTime && window.Game) Game.addCurrency(10);
+                markDirty();
               },
             },
             {
@@ -747,9 +884,9 @@ window.ACT_1 = {
           x: 440, // beside Maryam, facing her
           facing: -1,
           lines: [
-            { speaker: "Maryam", text: "Oh Macario, bagamat iniibig kita, hindi tayo pwede magsama." },
-            { speaker: "Maryam", text: "Hindi pwede mag-sama ang muslim na babae at ang kristiyanong lalaki..." },
-            { speaker: "Macario", text: "Hindi ito maaari mahal ko, gagawin ko ang lahat magsama lang tayo!" },
+            { speaker: "Maryam", text: "O Macario, bagama't iniibig kita, hindi tayo puwedeng magsama." },
+            { speaker: "Maryam", text: "Hindi puwedeng magsama ang Muslim na babae at ang Kristiyanong lalaki..." },
+            { speaker: "Macario", text: "Hindi ito maaari, mahal ko! Gagawin ko ang lahat, magsama lang tayo!" },
             { speaker: "Maryam", text: "Hindi ko kaya kung ikaw ay mawawala, Macario!" },
             { speaker: "Macario", text: "..." },
             { speaker: "Maryam", text: "Ano iyon?" },
@@ -810,43 +947,57 @@ window.ACT_1 = {
     },
 
     {
-      // Block 37. The street past the end of the tondo road: the same Tondo
-      // backdrop, reached through the usual fade, long on purpose (7200px,
-      // a little under three tondo roads) so the errand takes real time.
+      // Block 37, rebuilt in Block 42. The street past the end of the tondo
+      // road: the same Tondo backdrop, reached through the usual fade, long
+      // on purpose (11000px, about four tondo roads) so the errand takes
+      // real time.
       //
-      // Macario carries pamphlets for the Katipunan and three people along
-      // the road are waiting for one each. Four guards watch the road and
-      // shoot when their meter fills (shoots: true, game.js); he has no gun
-      // here (noRanged), so the ways past are to stay out of sight, to take
-      // a guard down from behind, or to stand still and trust the stage
-      // clothes, which halve how fast a guard's meter fills while he does.
+      // Macario carries pamphlets for the Katipunan, and ten people along
+      // the road are waiting for one each (CITIZENS, above). Eight guards
+      // watch the road and turn hostile when their meter fills (shoots:
+      // true, game.js); he has no gun here (noRanged), so the ways past are
+      // to stay out of sight on a platform, to take a guard down from
+      // behind, to run, or to stand still and trust the stage clothes,
+      // which slow a guard's meter to a fifth while he does.
       //
-      // Each guard is placed to teach one of those:
-      //   1 patrols over the first, low, wide platform: climb and wait.
-      //   2 patrols a stretch with a small high ledge above it, and a
-      //     radius short enough that a student in the stage clothes who
-      //     freezes can let him walk past (about 2.4s to cross; the meter
-      //     takes 2.8s while still in the clothes, 1.4s without).
+      // The road teaches one thing per stretch, then mixes them:
+      //   the Mangingisda stands before any guard: the first pamphlet is
+      //     given in safety, so the gift button is learned before the
+      //     danger is.
+      //   1 patrols under a low, wide platform: climb and wait.
+      //   2 patrols a stretch with a small high ledge (and a heart) above
+      //     it, with a short sight, so a student in the stage clothes who
+      //     freezes can let him walk past.
       //   3 is a sentry facing the way Macario comes, under a long walkway:
-      //     go over him and drop down behind, where a punch takes him down.
-      //   4 patrols the last stretch before the third citizen, quicker.
+      //     go over him and drop down behind.
+      //   4 patrols quicker, with a platform in the middle of his beat.
+      //   5 and 6 patrol toward each other over one shared platform (with a
+      //     heart): wait up there until both have turned away.
+      //   7 is a sentry with his back turned: walk up and take him down
+      //     from behind, or run past him.
+      //   8 patrols quickly under two steps, the higher one with a heart.
+      //   The last three citizens stand in a quiet square past every guard.
       // Numbers are chosen, not measured, like every other tuning number in
       // this game; judge them on a phone.
       //
+      // Every guard's cone (style.css, .guard-sight) stays below the height
+      // of every platform here, which is the rule itself drawn: up there,
+      // he cannot see you.
+      //
       // The guards are a stand-in still (STILL.bantay, above), not the
-      // artist's, front-facing, so the road's sight bands are still what
+      // artist's, front-facing, so the cones on the road are still what
       // shows which way each faces. The citizens share one stand-in still,
       // Assets/Act 1/Mamamayan.png.
       id: "lansangan",
-      worldWidth: 7200,
+      worldWidth: 11000,
       startX: 200,
       noRanged: true,
-      // Once, on the way in: who he is looking for, and the one rule.
+      // Once, on the way in: how many he is looking for, and the one rule.
       arrivalDialogues: [
         {
           doneFlag: "nakaratingSaLansangan",
           lines: [
-            { speaker: "Macario", text: "Isang mangingisda, isang labandera, at isang karpintero." },
+            { speaker: "Macario", text: "Sampung kapatid ang naghihintay sa kahabaan ng lansangang ito." },
             { speaker: "Macario", text: "Walang dapat makakita sa akin na may dalang polyeto." },
           ],
         },
@@ -856,27 +1007,36 @@ window.ACT_1 = {
         { id: "bumalik-tondo", x: 0, width: 80, label: "Bumalik",
           toScene: "tondo", toX: 2740, toFacing: -1 },
       ],
-      // Running out of hearts starts him at the last person he reached
-      // rather than at the start of a 7200px road.
+      // Running out of hearts starts him at the furthest of these whose
+      // citizen has been given a pamphlet, rather than at the start of an
+      // 11000px road. Each is just past its citizen and outside every
+      // guard's sight and patrol.
       checkpoints: [
-        { x: 1900, flag: "nabigyanSiMangingisda" },
-        { x: 4000, flag: "nabigyanSiLabandera" },
+        { x: 1900, flag: "nabigyanSiLabandera" },
+        { x: 5200, flag: "nabigyanSiTindera" },
+        { x: 8350, flag: "nabigyanSiSapatero" },
+        { x: 10400, flag: "nabigyanSiPanadero" },
       ],
-      // Three platforms, each a different shape: low and wide, small and
-      // high, long. All clear GUARD_SIGHT_CLEARANCE (60 above the floor,
-      // game.js), so standing on any of them is out of a guard's sight.
+      // Seven platforms of five heights. All clear GUARD_SIGHT_CLEARANCE
+      // (60 above the floor, game.js), so standing on any of them is out
+      // of a guard's sight.
       platforms: [
-        { x: 960, y: 135, width: 220 },   // 75 up, easy to reach
-        { x: 2700, y: 172, width: 100 },  // 112 up, near the top of a jump
-        { x: 4300, y: 150, width: 520 },  // 90 up, a walkway over a sentry,
-                                          // starting just out of his sight
+        { x: 960, y: 135, width: 220 },   // 75 up, easy to reach (guard 1)
+        { x: 2700, y: 172, width: 100 },  // 112 up, near the top of a jump (2)
+        { x: 4300, y: 150, width: 520 },  // 90 up, a walkway over a sentry (3)
+        { x: 5850, y: 145, width: 180 },  // 85 up, mid-beat (4)
+        { x: 7250, y: 150, width: 320 },  // 90 up, shared by guards 5 and 6
+        { x: 9560, y: 138, width: 200 },  // 78 up, a first step (8)
+        { x: 9820, y: 175, width: 110 },  // 115 up, the second, with a heart
       ],
-      // A heart on the high ledge, worth the harder jump.
+      // Three hearts, each on a platform, worth the climb.
       pickups: [
         { id: "puso-lansangan", x: 2740, y: 172, type: "heart" },
+        { id: "puso-lansangan-2", x: 7400, y: 150, type: "heart" },
+        { id: "puso-lansangan-3", x: 9860, y: 175, type: "heart" },
       ],
       guards: [
-        { id: "bantay-1", x: 1000, patrolFrom: 820, patrolTo: 1400,
+        { id: "bantay-1", x: 1000, patrolFrom: 900, patrolTo: 1400,
           speed: 1.4, facing: -1, detectRadius: 240, shoots: true,
           animation: STILL.bantay },
         { id: "bantay-2", x: 2500, patrolFrom: 2350, patrolTo: 3150,
@@ -885,33 +1045,23 @@ window.ACT_1 = {
         { id: "bantay-3", x: 4640, patrolFrom: 4640, patrolTo: 4640,
           facing: -1, detectRadius: 300, shoots: true,
           animation: STILL.bantay },
-        { id: "bantay-4", x: 5600, patrolFrom: 5400, patrolTo: 6250,
+        { id: "bantay-4", x: 5600, patrolFrom: 5550, patrolTo: 6300,
           speed: 1.6, facing: 1, detectRadius: 200, shoots: true,
           animation: STILL.bantay },
+        { id: "bantay-5", x: 7000, patrolFrom: 7000, patrolTo: 7500,
+          speed: 1.3, facing: 1, detectRadius: 200, shoots: true,
+          animation: STILL.bantay },
+        { id: "bantay-6", x: 7900, patrolFrom: 7300, patrolTo: 7900,
+          speed: 1.3, facing: -1, detectRadius: 200, shoots: true,
+          animation: STILL.bantay },
+        { id: "bantay-7", x: 8600, patrolFrom: 8600, patrolTo: 8600,
+          facing: 1, detectRadius: 260, shoots: true,
+          animation: STILL.bantay },
+        { id: "bantay-8", x: 9400, patrolFrom: 9400, patrolTo: 10000,
+          speed: 1.6, facing: 1, detectRadius: 220, shoots: true,
+          animation: STILL.bantay },
       ],
-      npcs: [
-        citizen("mangingisda", 1800, "Mangingisda", "nabigyanSiMangingisda",
-          [
-            { speaker: "Mangingisda", text: "Psst. Ikaw ba ang artista?" },
-            { speaker: "Macario", text: "Anak ng Bayan." },
-            { speaker: "Mangingisda", text: "Ah, kapatid. May dala ka ba para sa akin?" },
-          ],
-          [{ speaker: "Mangingisda", text: "Salamat, kapatid. Babasahin ko ito mamayang gabi." }]),
-        citizen("labandera", 3900, "Labandera", "nabigyanSiLabandera",
-          [
-            { speaker: "Labandera", text: "Maraming bantay ngayon. Mag-ingat ka." },
-            { speaker: "Macario", text: "Anak ng Bayan." },
-            { speaker: "Labandera", text: "Kapatid! Iabot mo na, bago may makakita." },
-          ],
-          [{ speaker: "Labandera", text: "Itatago ko ito sa mga labada. Walang maghahanap doon." }]),
-        citizen("karpintero", 6600, "Karpintero", "nabigyanSiKarpintero",
-          [
-            { speaker: "Karpintero", text: "Nakalampas ka sa mga bantay? Magaling." },
-            { speaker: "Macario", text: "Anak ng Bayan." },
-            { speaker: "Karpintero", text: "Kapatid. Ako ang huli sa listahan mo, hindi ba?" },
-          ],
-          [{ speaker: "Karpintero", text: "Ipapasa ko ito sa mga kasama ko sa talyer. Salamat, kapatid." }]),
-      ],
+      npcs: CITIZENS.map(citizen),
     },
   ],
 };

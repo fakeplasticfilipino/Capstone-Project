@@ -1067,35 +1067,37 @@ html, body {
   background: #e53935;
 }
 
-/* Block 37. What a guard can see, laid on the road in front of him: from
-   the middle of his body, detectRadius long (game.js sets the width), in
-   the meter's own yellow. It is the only thing that says which way a
-   placeholder box is facing, and it lies on the floor so a student on a
-   platform can see he is above it. A guard who is down sees nothing. */
+/* Block 42. What a guard can see: a soft cone laid along the road in
+   front of him, replacing Block 37's flat band. It starts narrow at his
+   waist, in the middle of his body, and fans down to the dirt,
+   detectRadius long (game.js sets the width), which is the same centre to
+   centre distance updateGuards measures. Its top edge stays under 54px,
+   below GUARD_SIGHT_CLEARANCE (60): every platform in the game stands
+   above it, so the picture says what the rule says, that standing up
+   there is out of his sight. Faint on purpose, a light on the road rather
+   than a wall. Facing left is the same cone mirrored about his middle. A
+   guard who is down sees nothing. */
 .guard-sight {
   position: absolute;
-  /* Half on the dirt, half above it: a light on the road rather than a
-     line lost in the ground's own edge. Sized for --zoom 0.7, where 16px
-     lands at about 11 on glass. */
-  bottom: -8px;
+  bottom: -6px;
   left: 50%;
-  height: 16px;
-  background: linear-gradient(to right, rgba(244, 197, 66, 0.8), rgba(244, 197, 66, 0.35) 70%, rgba(244, 197, 66, 0));
+  height: 60px;
+  background: linear-gradient(to right, rgba(244, 197, 66, 0.6), rgba(244, 197, 66, 0.32) 60%, rgba(244, 197, 66, 0));
+  clip-path: polygon(0 8%, 100% 0, 100% 100%, 0 40%);
+  transform-origin: 0 50%;
   pointer-events: none;
 }
 
 .guard-facing-left .guard-sight {
-  left: auto;
-  right: 50%;
-  background: linear-gradient(to left, rgba(244, 197, 66, 0.8), rgba(244, 197, 66, 0.35) 70%, rgba(244, 197, 66, 0));
+  transform: scaleX(-1);
 }
 
 .guard-alerted .guard-sight {
-  background: linear-gradient(to right, rgba(229, 57, 53, 0.85), rgba(229, 57, 53, 0.4) 70%, rgba(229, 57, 53, 0));
+  background: linear-gradient(to right, rgba(229, 57, 53, 0.62), rgba(229, 57, 53, 0.34) 60%, rgba(229, 57, 53, 0));
 }
 
-.guard-facing-left.guard-alerted .guard-sight {
-  background: linear-gradient(to left, rgba(229, 57, 53, 0.85), rgba(229, 57, 53, 0.4) 70%, rgba(229, 57, 53, 0));
+.guard-disguised .guard-sight {
+  background: linear-gradient(to right, rgba(127, 200, 248, 0.6), rgba(127, 200, 248, 0.32) 60%, rgba(127, 200, 248, 0));
 }
 
 .guard-down .guard-sight {
@@ -3083,6 +3085,96 @@ body.text-lg #dialogue-text { font-size: 27px; }
 #gift-btn {
   font-size: 21px;
 }
+
+/* =============================================================
+   THE GUIDE (Block 42)
+
+   Where to go next. Over the target, a name tab and a bobbing arrow,
+   drawn in the world so it stays over them as the camera moves. When the
+   target is off screen, a tab at that edge of the screen with the way to
+   walk and the distance. Neither takes a tap: the guide points, the
+   buttons act. Colours are the chrome's green on the chrome's panel, so
+   it reads as interface rather than as something in the scene.
+   ============================================================= */
+#guide-marker {
+  position: absolute;
+  z-index: 3;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  animation: guide-bob 1.1s ease-in-out infinite;
+}
+
+#guide-marker.hidden,
+#guide-edge.hidden {
+  display: none;
+}
+
+#guide-marker .guide-label,
+#guide-edge .guide-label {
+  font-family: var(--px-font);
+  font-size: 24px;
+  line-height: 1;
+  color: #fffbe8;
+  background: var(--px-panel);
+  border: 3px solid var(--px-green-hi);
+  box-shadow: 0 0 0 2px var(--px-ink);
+  padding: 3px 8px 4px;
+  white-space: nowrap;
+}
+
+#guide-marker .guide-label:empty {
+  display: none;
+}
+
+#guide-marker .guide-arrow {
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 18px solid var(--px-green-hi);
+  filter: drop-shadow(0 3px 0 var(--px-ink));
+}
+
+/* A transform rather than a margin, so the bob is composited and never
+   lays the world out again (Block 36). */
+@keyframes guide-bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -10px); }
+}
+
+#guide-edge {
+  position: absolute;
+  top: 38%;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+#guide-edge.guide-edge-left { left: 10px; }
+#guide-edge.guide-edge-right { right: 10px; flex-direction: row-reverse; }
+
+#guide-edge .guide-arrow {
+  width: 0;
+  height: 0;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  filter: drop-shadow(2px 2px 0 var(--px-ink));
+  animation: px-blink 1.2s steps(1, end) infinite;
+}
+
+#guide-edge.guide-edge-left .guide-arrow { border-right: 20px solid var(--px-green-hi); }
+#guide-edge.guide-edge-right .guide-arrow { border-left: 20px solid var(--px-green-hi); }
+
+body.text-sm #guide-marker .guide-label,
+body.text-sm #guide-edge .guide-label { font-size: 21px; }
+body.text-lg #guide-marker .guide-label,
+body.text-lg #guide-edge .guide-label { font-size: 28px; }
 
 /* EVERY TAPPABLE THING ON A SCREEN, at 44px on glass.
 

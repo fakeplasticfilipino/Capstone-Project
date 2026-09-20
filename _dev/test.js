@@ -4128,6 +4128,158 @@ const visible = (page, sel) => page.evaluate((s) => {
     await sctx.close();
   }
 
+  console.log("\nAW. The guide and the vision cone (Block 42)");
+  {
+    // Against the fixture act, which declares no guide, so one is put on
+    // it at run time. The guide only reads data (NPCS, the scene's exits,
+    // flags and quests), so a stand-in NPC needs no element.
+    const { ctx, page } = await enterTestRoom();
+
+    const none = await page.evaluate(() => {
+      currentActData.guide = undefined;
+      return { target: guideTarget(),
+               marker: document.getElementById("guide-marker").classList.contains("hidden"),
+               edge: document.getElementById("guide-edge").classList.contains("hidden") };
+    });
+    ok("an act with no guide draws nothing", none.target === null && none.marker && none.edge, none);
+
+    const state0 = (x) => page.evaluate(async (px) => {
+      posX = px; posY = floorHeightAt(px); velY = 0;
+      await new Promise((r) => setTimeout(r, 120));
+      const m = document.getElementById("guide-marker");
+      const e = document.getElementById("guide-edge");
+      return {
+        target: guideTarget(),
+        marker: !m.classList.contains("hidden"), markerLeft: m.style.left,
+        markerText: m.querySelector(".guide-label").textContent,
+        edge: !e.classList.contains("hidden"),
+        side: e.classList.contains("guide-edge-left") ? "left" : e.classList.contains("guide-edge-right") ? "right" : null,
+        edgeText: e.querySelector(".guide-label").textContent,
+      };
+    }, x);
+
+    await page.evaluate(() => {
+      currentActData.guide = [
+        { scene: "misyon", requiresFlag: "test_gabay_c", x: 150, label: "Kanan" },
+        { scene: "misyon", unlessFlag: "test_gabay_a", x: 400, label: "Dito" },
+        { scene: "misyon", requiresFlag: "test_gabay_a", x: 2800, label: "Doon" },
+      ];
+    });
+    const near = await state0(200);
+    ok("a target on screen gets the arrow over it, named",
+       near.marker && !near.edge && near.markerLeft === "400px" && near.markerText === "Dito", near);
+
+    await page.evaluate(() => { state.flags.test_gabay_a = true; });
+    const far = await state0(100);
+    ok("a flag moves the guide to the next goal, and off screen it becomes a tab on that side",
+       !far.marker && far.edge && far.side === "right" && far.target.label === "Doon", far);
+    ok("the tab gives the distance in metres",
+       far.edgeText === "Doon " + Math.round((2800 - (100 + 20)) / 80) + "m", far);
+    const behind = await state0(2850);
+    ok("walking up to it turns the tab back into the arrow over it",
+       behind.marker && !behind.edge && behind.markerText === "Doon", behind);
+    await page.evaluate(() => { currentActData.guide[2].x = 100; });
+    const left = await state0(2700);
+    ok("a target behind him is pointed to on the left", left.edge && left.side === "left", left);
+
+    await page.evaluate(() => { state.flags.test_gabay_c = true; });
+    const first = await state0(2700);
+    ok("the first entry whose conditions hold wins", first.target && first.target.label === "Kanan", first);
+    await page.evaluate(() => { delete state.flags.test_gabay_c; });
+
+    // Several NPCs: the nearest still waiting for a gift.
+    const pick = await page.evaluate(() => {
+      const fake = (id, x, flag) => ({ id, x, label: id, hidden: false,
+        gift: { requiresFlag: "x", givenFlag: flag } });
+      NPCS.push(fake("una", 500, "test_bigay_1"), fake("dalawa", 1500, "test_bigay_2"),
+                fake("tago", 900, "test_bigay_3"));
+      NPCS[NPCS.length - 1].hidden = true;
+      currentActData.guide = [{ scene: "misyon", npcs: ["una", "dalawa", "tago"] }];
+      posX = 1100;
+      const a = guideTarget();
+      state.flags.test_bigay_2 = true;
+      const b = guideTarget();
+      state.flags.test_bigay_1 = true;
+      const c = guideTarget();
+      NPCS.splice(NPCS.length - 3, 3);
+      return { a: a && a.label, b: b && b.label, c };
+    });
+    ok("of several, the guide picks the nearest visible one still waiting, and stops when none is",
+       pick.a === "dalawa" && pick.b === "una" && pick.c === null, pick);
+
+    const quest = await page.evaluate(() => {
+      currentActData.guide = [
+        { scene: "misyon", questOpen: "test_gabay_q", x: 300, label: "Q" },
+        { scene: "misyon", unlessQuest: "test_gabay_q", x: 600, label: "Wala" },
+        { scene: "tondo", x: 300, label: "Ibang eksena" },
+      ];
+      const before = guideTarget();
+      addQuest("test_gabay_q", "Pagsubok");
+      const open = guideTarget();
+      completeQuest("test_gabay_q");
+      const done = guideTarget();
+      return { before: before && before.label, open: open && open.label, done };
+    });
+    ok("entries can wait on a quest being open, or on it not yet being logged, and name a scene",
+       quest.before === "Wala" && quest.open === "Q" && quest.done === null, quest);
+
+    // Hidden while he cannot act on it.
+    await page.evaluate(() => { currentActData.guide = [{ scene: "misyon", x: 400, label: "Dito" }]; });
+    await state0(200);
+    await page.evaluate(() => { playDialogue([{ speaker: "Pagsubok", text: "Isang linya." }]); });
+    await page.waitForTimeout(120);
+    const talking = await page.evaluate(() => ({
+      marker: !document.getElementById("guide-marker").classList.contains("hidden"),
+      edge: !document.getElementById("guide-edge").classList.contains("hidden") }));
+    ok("the guide hides while a conversation is open", !talking.marker && !talking.edge, talking);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(150);
+    ok("and comes back when it closes", (await state0(200)).marker);
+
+    // Nothing written while standing still (Block 36).
+    const writes = await page.evaluate(() => new Promise((resolve) => {
+      let n = 0;
+      const mo = new MutationObserver((list) => { n += list.length; });
+      ["guide-marker", "guide-edge"].forEach((id) =>
+        mo.observe(document.getElementById(id), { attributes: true, childList: true, subtree: true, characterData: true }));
+      setTimeout(() => { mo.disconnect(); resolve(n); }, 500);
+    }));
+    ok("standing still, the loop writes nothing to the guide", writes === 0, writes);
+    await page.evaluate(() => { currentActData.guide = undefined; });
+
+    // The cone. Measured on screen and converted back to world pixels, so
+    // it checks what is drawn rather than a style value.
+    const cone = await page.evaluate(() => {
+      const g = GUARDS[0];
+      setPaused(true);
+      g.patrolFrom = g.patrolTo = g.pos;
+      const measure = (dir) => {
+        g.facing = dir; updateGuards(0);
+        const el = g.el.querySelector(".guard-sight");
+        const r = el.getBoundingClientRect();
+        const body = g.el.getBoundingClientRect();
+        const scale = el.offsetHeight / r.height;
+        const centre = body.left + body.width / 2;
+        return { top: (body.bottom - r.top) * scale, near: dir > 0 ? r.left : r.right,
+                 far: dir > 0 ? r.right : r.left, centre, reach: r.width * scale,
+                 clip: getComputedStyle(el).clipPath };
+      };
+      const right = measure(1);
+      const leftC = measure(-1);
+      setPaused(false);
+      return { right, left: leftC, radius: g.detectRadius || 240, clearance: GUARD_SIGHT_CLEARANCE };
+    });
+    ok("a guard's sight is a cone, clipped to a wedge", /^polygon/.test(cone.right.clip), cone.right.clip);
+    ok("its top stays under the height a platform hides him at",
+       cone.right.top < cone.clearance && cone.left.top < cone.clearance, cone);
+    ok("it starts at the middle of his body and runs detectRadius, facing right",
+       Math.abs(cone.right.near - cone.right.centre) < 2 && Math.abs(cone.right.reach - cone.radius) < 2, cone.right);
+    ok("and mirrors about his middle facing left",
+       Math.abs(cone.left.near - cone.left.centre) < 2 && cone.left.far < cone.left.centre &&
+       Math.abs(cone.left.reach - cone.radius) < 2, cone.left);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

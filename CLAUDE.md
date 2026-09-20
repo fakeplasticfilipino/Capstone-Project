@@ -279,6 +279,10 @@ world belongs to the scene.
       developmentNotice,                         optional; marks a stub
       objectives: [{ id, label, flag }],
       startingQuests: [{ id, text }],
+      guide: [{ scene, requiresFlag,             optional; where to go
+                unlessFlag, questOpen,           next (Block 42)
+                unlessQuest,
+                npc | npcs | exit | x, label }],
       scenes: [ {...}, {...} ]
     }
 
@@ -322,8 +326,11 @@ implicit scene, so content/act2.js through act4.js need no changes. Do not
 A guard whose patrolFrom and patrolTo are within 1px of each other is a
 stationary sentry and keeps its given facing.
 
-Every guard draws his sight on the road (.guard-sight): a band from the
-middle of his body, detectRadius long, on the side he faces. A guard does
+Every guard draws his sight on the road (.guard-sight): since Block 42 a
+soft cone from the middle of his body, narrow at his waist and fanning
+down to the dirt, detectRadius long, on the side he faces. Its top stays
+under GUARD_SIGHT_CLEARANCE, so every platform stands above it, which is
+the rule below drawn. A guard does
 not see Macario while he stands on a platform GUARD_SIGHT_CLEARANCE (60)
 or more above the floor; in the middle of a jump he is still seen. A
 guard with shoots: true does not catch: when his meter fills he turns
@@ -346,6 +353,22 @@ A scene counts as dangerous, and therefore shows the hearts, if it declares
 dangerous, or declares any guard, or declares any hazard. The explicit flag
 still wins. The derivation exists because a scene that adds a hazard and
 forgets the flag would take a heart the student cannot see.
+
+guide (Block 42) is the act's list of where to go next. The first entry
+whose scene matches and whose conditions hold is the target: requiresFlag
+and unlessFlag as everywhere else, questOpen (logged and not done) and
+unlessQuest (not logged at all). It names a place the engine can already
+find: npc, an exit by id (skipped while its requiresFlag is unset), a
+plain x, or npcs, a list from which the nearest visible one whose gift
+has not been given is picked. An entry whose conditions hold but whose
+place is not there (a hidden NPC, every citizen served) ends the search
+rather than falling back to an earlier step. List the later steps of the
+story first within a scene, so a student who does things out of order is
+sent to what is left. label overrides the NPC's or exit's own. On screen,
+the engine draws a name tab and a bobbing arrow over the target
+(#guide-marker, in the world); off screen, a tab at that screen edge with
+the way and the distance in metres (#guide-edge, 80px to the metre). Both
+hide in dialogue, a cutscene, a screen or a fight.
 
 An act with an empty objectives array can never complete, which is how
 Acts II through IV are kept from reporting progress they have not made.
@@ -2269,7 +2292,8 @@ is set before the fade back, so buildNpcs draws her when tondo is
 rebuilt; revealNpcsByFlag is not needed and still runs only where it did.
 Her art does not exist yet (Assets/Act 1/Mananahi.png). Her last line
 asks for payment, and nothing is built behind it yet: no item, no
-objective. The dialogue speaker is "Mana", as written.
+objective. The dialogue speaker was "Mana", as written, until Block 42
+made it "Mananahi" to match the guide's label for her.
 
 The first equipment (Block 32). Requested as script and mechanics: Nanay
 hands Macario 200 barya with his money line, the return conversation
@@ -2651,6 +2675,68 @@ a pilot and not what a finished game should ship. Real art replaces
 each one by overwriting the file and updating its STILL entry.
 ASSET_VERSION to 16.
 
+The guide, the cone and a longer street (Block 42). Requested as
+improving Act I without changing its story: consistency, a way for
+students to know where to go, a cone rather than a line for a guard's
+sight, and ten citizens with more guards on the pamphlet street. Asked
+and answered before building: a guide arrow rather than a practice area
+or first-time control hints; a low cone under the existing rules rather
+than true cone detection; and a street of about 11000px.
+
+The guide is an arrow, not a tutorial, on purpose. The quest log already
+says what to do; what was missing was where, on roads up to 11000px long
+at a zoom that shows a few hundred of them. A practice area would have
+cost minutes of a one-hour session that also holds both tests. The
+engine reads the act's guide list (Act data format) and never learns
+what a goal means, the same line it holds everywhere else. It is hidden
+whenever a student could not act on it, and like the rest of the loop it
+writes to the page only when what it shows changes (Block 36); section
+AW counts the writes while standing still.
+
+The cone is the same rule drawn better, not a new rule. True cone
+detection would have made a platform hide Macario only beyond some
+distance from a guard, which would have needed the street redesigned
+around it and a new thing to teach. The low cone keeps "up there, he
+cannot see you" true everywhere and makes it visible: its top edge is
+under GUARD_SIGHT_CLEARANCE, so a student standing on any platform is
+standing over it. It is still detectRadius long from the middle of his
+body, so the picture and the test are one number. Faint on purpose; it
+turns red with the meter when he turns, and pale blue while the stage
+clothes are holding him.
+
+The street is 11000px with ten citizens and eight guards, each stretch
+teaching one way past before the next mixes them (content/act1.js lists
+them): the first citizen stands before any guard, so the gift button is
+learned in safety; a low platform, a high ledge, a walkway over a
+sentry, a platform mid-beat, two guards sharing one platform, a sentry
+with his back turned for a takedown, and two steps. Three hearts, all on
+platforms. Checkpoints after the second, fourth, sixth and eighth
+citizens, each outside every guard's beat and sight, and
+verify_new_scene.js checks that no citizen or checkpoint stands in a
+guard's sight at either end of his patrol. The citizens are one table
+(CITIZENS), from which the gifts, the flags, the quest count and the
+guide's list are all derived, so they cannot disagree. The first three
+flags are Block 37's, so an old save still counts what it gave. The
+seven new people are placeholder script like the rest of Block 37, and
+their trades are ordinary workers of Tondo, which is as far as the item
+bank goes.
+
+Consistency, without touching the story: every count in the dialogue
+says ten; the Mananahi speaks as "Mananahi" (not "Mana"), matching the
+name the guide shows; Macario calls his mother "Nay" throughout; the
+Kutsero's barya is paid once per save (skipIfFlag on a new flag,
+nakahingiNgBarya, which also tells the guide to send Macario on to the
+Tindero), where before a reload into the memory paid it again; the
+gift button reads "Ibigay ang mansanas" in the same case as "Iabot ang
+polyeto"; and spelling was brought to one standard ('yung, 'yon, 'wag,
+mag-ingat, puwede, kumusta, bagama't, Muslim and Kristiyano capitalised).
+The man in the moro-moro's lines were not touched; they are the
+proponents' open decision (Block 35). The Katipunero's repeat line gained
+the takedown from behind, since the street now has a guard built for it.
+
+game.js v48, style.css v30, content/act1.js v30. No new file under
+Assets/, so ASSET_VERSION is unchanged at 16.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -2849,6 +2935,11 @@ guard art is (style.css, .guard-facing-left), including Block 41's
 front-facing Bantay still, whose rifle simply changes hands. That
 assumes directional art faces right, as Macario's does. If a guard sheet arrives drawn facing left, it
 will walk backwards; the fix is in the CSS rule, not the content.
+
+The guide's elements (#guide-marker in #world, #guide-edge beside the
+toast) are static in index.html, like #player, and are never pushed to
+actElements. A scene load must not remove them; the guide hides and
+repositions them itself.
 
 A new element that a loop-time system creates per scene (Block 37's
 bullets) is declared with the scene lists near the top of game.js, not

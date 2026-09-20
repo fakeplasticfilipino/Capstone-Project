@@ -22,15 +22,14 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 18 Sep 2026, end of session, after Block 41 (stand-in
-stills for every remaining placeholder). Everything through Block 41 is
-pushed: the device's reflog shows origin/main at 088f5e4 ("official
-placeholders", Block 41), after 27e0df9 ("added sprites muslim", Block
-40) and 1db4d33 ("modernized dashboard", Block 39), and the device
-folder's TRACKER.md, CLAUDE.md and index.html match what was written.
-The suite was run against the device folder's files: 554 passed, 0
-failed; _dev/verify_new_scene.js 143 passed, 0 failed. The proponent
-played Blocks 37 and 38 and reported everything functional.
+Last updated: 20 Sep 2026, end of session, after Block 42 (the guide,
+the vision cone, a ten-citizen street and a consistency pass). Blocks
+through 41 are pushed (088f5e4). Block 42 was written into the device
+folder this session and is NOT yet pushed: game.js, style.css,
+index.html, content/act1.js, _dev/test.js, _dev/verify_new_scene.js,
+CLAUDE.md and TRACKER.md. Run against those files: test.js 570 passed,
+0 failed; verify_new_scene.js 158 passed, 0 failed. Not yet played on
+the phone.
 
 ## Start here
 
@@ -52,8 +51,13 @@ the animation looks slightly uneven; that is a development machine, not
 the target device, and the proponent has ruled it out of scope.
 
 Act I is four scenes and is the only act with content. Acts II to IV are
-registered stubs. Act I can be completed: the third pamphlet finishes it
-and runs the post-test. Everything from the end of the fight on (Block
+registered stubs. Act I can be completed: the tenth pamphlet finishes it
+and runs the post-test.
+
+A guide (Block 42) shows where to go next throughout Act I: a name tab
+and bobbing arrow over the next person or door when it is on screen, and
+a tab at the screen's edge with the way and the distance in metres when
+it is not. It hides in dialogue, cutscenes, screens and the fight. Everything from the end of the fight on (Block
 37) is a placeholder script, written ahead of the source book and owed a
 check against it (see Next action).
 
@@ -99,19 +103,22 @@ check against it (see Next action).
               greeting, the password, and the task, "Ipamahagi ang mga
               polyeto (0/3)" (objective 6 done). Tumuloy at the end of the
               road opens only now.
-    lansangan a 7200px street on the Tondo backdrop, in colour. No gun
-              (a hold punches). Four guards (Bantay.png stand-ins),
-              their sight drawn on the road; once one's meter fills he
-              turns hostile (a red "!"), chases and shoots until punched
-              down twice or Macario runs out of hearts. In the stage
-              clothes, standing still fills a meter five times slower,
-              drawn pale blue;
-              three platforms of different heights that are out of sight;
-              a heart on the high one. Three citizens (Mamamayan.png
-              stand-ins) each take a pamphlet through Iabot ang
-              polyeto. Running out of hearts restarts at the last one
-              reached. The third pamphlet completes objective 7 and Act I.
-              Bumalik at the left edge returns to tondo.
+    lansangan an 11000px street on the Tondo backdrop, in colour. No
+              gun (a hold punches). Eight guards (Bantay.png stand-ins),
+              each with a faint cone of sight on the road that stays
+              below every platform; once one's meter fills he turns
+              hostile (a red "!"), chases and shoots until punched down
+              twice or Macario runs out of hearts. In the stage clothes,
+              standing still fills a meter five times slower, drawn pale
+              blue (the cone too). Seven platforms of five heights, all
+              out of sight; three hearts, each on a platform. Ten
+              citizens (Mamamayan.png stand-ins), the first before any
+              guard and the last three in a quiet square past them all,
+              each take a pamphlet through Iabot ang polyeto. Running out
+              of hearts restarts after the second, fourth, sixth or
+              eighth citizen, whichever is furthest. The tenth pamphlet
+              completes objective 7 and Act I. Bumalik at the left edge
+              returns to tondo.
 
 content/items.js ships three items: the two apples and the stage
 clothes (Damit). No Sandata or Anting-anting item exists yet. The
@@ -133,9 +140,9 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    style.css v29        game.js v47          shell.js v13
+    style.css v30        game.js v48          shell.js v13
     inventory.js v9      acts.js v10          assessment.js v3
-    content/act1.js v29  content/items.js v8  content/act2-4.js v1
+    content/act1.js v30  content/items.js v8  content/act2-4.js v1
     ASSET_VERSION 16 (in game.js)
     teacher.css v2       teacher.js v2        (named in teacher.html)
 
@@ -152,8 +159,9 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 41 are built. Blocks 22 to 41 were one build session, 17 to
-18 September 2026, each on direct feedback from the proponent:
+Blocks 1 to 42 are built. Blocks 22 to 41 were one build session, 17 to
+18 September 2026, each on direct feedback from the proponent; Block 42
+was 20 September:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
     23  a throw spawn correction, superseded by 24
@@ -205,9 +213,14 @@ Blocks 1 to 41 are built. Blocks 22 to 41 were one build session, 17 to
         Mananahi, Bonifacio, the Katipunero, the townspeople and the
         street guards, built from the commissioned sheets, plus apple
         and stage-clothes tile pictures
+    42  the guide (arrow over the next goal, edge tab with distance);
+        guard sight as a low cone; the lansangan at 11000px with ten
+        citizens, eight guards, seven platforms, three hearts and four
+        checkpoints; a consistency pass on Act I's lines and names
 
-Everything through Block 41 is pushed (088f5e4); nothing is waiting to
-be pushed. Assets/Act 1/Muslim_Walk.jpg and Muslim_Attack.jpg are the
+Everything through Block 41 is pushed (088f5e4). Block 42 is in the
+device folder and waiting to be pushed, with every file's ?v=N bumped
+as listed above. Assets/Act 1/Muslim_Walk.jpg and Muslim_Attack.jpg are the
 artist's originals, kept beside the keyed PNGs the game loads, and
 Assets/Act 1/Muslim_Woman.png is a byte-for-byte copy of Muslim_Girl.png;
 nothing loads any of the three.
@@ -222,8 +235,27 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. A device pass on Blocks 14 to 41, on the phone, in landscape, from a
+1. A device pass on Blocks 14 to 42, on the phone, in landscape, from a
 private tab (browsers cache index.html; see Known problems). Check:
+
+    The guide (Block 42): from the first frame an arrow named Nanay
+      stands over her; after each step it names the next person or door
+      (Kutsero, Tindero, back to Kabayo, the Mananahi, Entablado, Labas,
+      Lansangan, then each citizen); when the target is off screen a tab
+      at that edge says the name and the metres, and the number falls as
+      he walks; it never covers the quest log, hearts or buttons, and it
+      is gone while anyone is talking and during the fight. Failure looks
+      like an arrow over the wrong person, or one that stays on screen
+      during dialogue.
+    The cones (Block 42): each street guard has a faint yellow wedge on
+      the road in front of him, easy to read but not loud; it flips when
+      he turns, goes red when he turns hostile and blue while the stage
+      clothes hold him; standing on any platform, Macario is visibly
+      above it and is not seen.
+    The longer street: ten citizens reachable, the count reads n/10,
+      the road feels long but not tedious (judge whether 11000px is too
+      much for the class period), and the fourth and eighth guards are
+      passable with the touch controls.
 
     Title, pause, settings: pixel fonts show (not plain monospace,
       which would mean Assets/Fonts did not upload), text readable at
@@ -283,8 +315,8 @@ private tab (browsers cache index.html; see Known problems). Check:
     After the play (Block 37): Maryam's ending plays straight after the
       fight; out the door, Bonifacio's meeting opens by itself; Tumuloy
       appears at the road's end only after it.
-    The street: the yellow sight band on the road is noticeable and
-      reads as which way a guard faces; a guard's bullet is visible in
+    The street: the yellow cone on the road reads as which way a guard
+      faces; a guard's bullet is visible in
       time to jump; the high ledge (with the heart) is reachable but
       takes a try or two; standing on any platform is safe; with the
       stage clothes on, freezing as the second guard walks toward you
@@ -292,9 +324,8 @@ private tab (browsers cache index.html; see Known problems). Check:
       does see him turns red with a "!", runs after him and keeps
       shooting, never goes back to patrolling, and drops after two
       punches; running away outpaces him; a hold on Atake punches and
-      says there is no gun; the road feels long without dragging; running out of hearts
-      restarts at the last citizen. The third pamphlet runs the
-      post-test.
+      says there is no gun; running out of hearts restarts at the last
+      checkpoint citizen. The tenth pamphlet runs the post-test.
     Teacher dashboard (Block 39), as guro@example.com on a laptop and a
       projector: the class name, six figures and the roster load; the
       search box and each column's sort work; a student who has not
@@ -305,14 +336,15 @@ source book (Content authority, under The milestone), line by line:
 Maryam's ending, the meeting at the stairs (above all the password, Anak
 ng Bayan and the dilim and liwanag lines, and whether Bonifacio himself
 met Sakay after a performance), who the second Katipunero is, what the
-pamphlets were and who received them. content/act1.js marks the block.
+pamphlets were and who received them (ten people since Block 42, all
+placeholder). content/act1.js marks the block.
 Act I is now completable, so this is also what stands between the build
 and a pilot.
 
 3. Real art, chased with the artist, to replace Block 41's stand-ins:
 Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png (the street's
-guards), Mamamayan.png (the three citizens, one sprite shared unless
-the artist draws three), Damit_Entablado.png (all Assets/Act 1/) and
+guards), Mamamayan.png (the ten citizens, one sprite shared unless
+the artist draws more), Damit_Entablado.png (all Assets/Act 1/) and
 Assets/Mansanas.png. The stand-ins are recoloured frames of the
 commissioned sheets, so they will look like near relations of Tindero,
 Kutsero and Nanay. Replacing one is dropping the new file over the same
@@ -438,8 +470,8 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-The framework is complete. Act I has four scenes, ten NPCs and seven
-objectives, all playable end to end, so the act completes and runs its
+The framework is complete. Act I has four scenes, seventeen NPCs and
+seven objectives, all playable end to end, so the act completes and runs its
 post-test; its last stretch (Block 37) is a placeholder script awaiting
 the source book. Acts II to IV are registered stubs with no content.
 
@@ -468,9 +500,9 @@ work through.
 | Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I has four scenes and can be completed, which unlocks Act II; Acts II to IV are stubs |
 | Player Movement | (BUILT) |
 | Combat Mechanics | (BUILT) Melee punch on a tap, takedown from behind, a ranged shot on a hold, each with real animation, plus enemies that fight back (Block 35) with real walk and sword-attack art (Block 40). Act I ships the moro-moro's five guards, and the street's guards turn hostile and can be punched down (Block 38) |
-| Stealth Mechanics | (BUILT) Patrols, a detection meter, sight drawn on the road, hide spots, platforms out of sight, guards that turn hostile and shoot once they see him (Block 38). Act I's lansangan uses them (four guards, three platforms) |
+| Stealth Mechanics | (BUILT) Patrols, a detection meter, a cone of sight drawn on the road (Block 42), hide spots, platforms out of sight, guards that turn hostile and shoot once they see him (Block 38). Act I's lansangan uses them (eight guards, seven platforms) |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach measured edge to edge, NPCs that open the shop |
-| Narrative Delivery | (PARTIAL) Built. Act I uses it across four scenes and ten NPCs, with conversations that open by themselves and a scripted play; Acts II to IV have none |
+| Narrative Delivery | (PARTIAL) Built. Act I uses it across four scenes and seventeen NPCs, with conversations that open by themselves and a scripted play; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups, and healing by eating a Mansanas |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, a two-column inventory, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one equipment item, the stage clothes (Damit, slower detection while still), which matters against the lansangan's guards |
@@ -490,11 +522,11 @@ The paper specifies ten.
 |---|---|
 | Performance | (BUILT) No build step, no framework, plain script tags. Reported laggy after Block 35; Block 36 cut the loop's per-frame layout and DOM writes (none at all while standing, halved while walking and fighting) and the phone was confirmed smooth again on 18 Sep 2026. Not re-measured in frames per second since Block 13 |
 | Reliability | (BUILT) Debounced save, ten second autosave backstop, beforeunload flush, logout flush |
-| Usability | (BUILT) Tagalog throughout. Every touch target measured on screen at 44px or more. Icons beside every label. Pixel theme with a legible body face and a three-step text size setting. Portrait shows a rotate notice |
+| Usability | (BUILT) Tagalog throughout. A guide arrow to the next goal (Block 42). Every touch target measured on screen at 44px or more. Icons beside every label. Pixel theme with a legible body face and a three-step text size setting. Portrait shows a rotate notice |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 554-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 570-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -573,6 +605,9 @@ submit_assessment).
     40  Muslim walk and attack sheets; walkOnly, faceMovement,
         attackAnimation, headroom, playing() gate; key-black.py
     41  stand-in stills and tile pictures; make-placeholder-sprites.py
+    42  guide (ACT guide list, updateGuide, section AW); guard sight
+        cone; lansangan 11000px, ten citizens (CITIZENS table), eight
+        guards; Act I consistency pass
 
 ## Blocks remaining
 
@@ -653,10 +688,10 @@ real art:
     Assets/Act 1/Mananahi.png  the Mananahi, on the tondo road
     Assets/Act 1/Bonifacio.png   Bonifacio, outside the entablado
     Assets/Act 1/Katipunero.png  the second Katipunero, beside him
-    Assets/Act 1/Bantay.png    the four guards on the lansangan (a
+    Assets/Act 1/Bantay.png    the eight guards on the lansangan (a
                                front-facing still; real art should
                                face right, see CLAUDE.md, Pitfalls)
-    Assets/Act 1/Mamamayan.png the three citizens, one shared still
+    Assets/Act 1/Mamamayan.png the ten citizens, one shared still
     Assets/Act 1/Damit_Entablado.png  the stage clothes' tile
     Assets/Mansanas.png        the apple tile in the shop and inventory
 
@@ -730,12 +765,13 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 554 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 143
+test.js: 570 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 158
 checks driving the REAL content/act1.js and content/items.js through
-every Act I scene, from Nanay to the third pamphlet and the post-test.
-Both last ran green on 18 Sep 2026 against the device folder's files
-after Block 40 (Playwright's headless shell pointed at the sandbox's
+every Act I scene, from Nanay to the tenth pamphlet and the post-test,
+following the guide at every step.
+Both last ran green on 20 Sep 2026 against the Block 42 files written to
+the device folder (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright
