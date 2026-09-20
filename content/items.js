@@ -31,7 +31,7 @@
 //
 //   {
 //     id: "sibat", name: "Sibat", kind: "equipment", slot: "weapon",
-//     description: "...", price: 20, img: "Assets/Items/Sibat.png",
+//     description: "...", price: 20, img: "assets/Items/Sibat.png",
 //     effect: { projectileSpeedMult: 1.5 },
 //   },
 //
@@ -51,7 +51,7 @@ window.ITEMS = [
     description: "Sariwang mansanas mula kay Tindero. Kainin para magbalik ng lakas.",
     kind: "consumable",
     price: 5,
-    img: "Assets/Mansanas.png",
+    img: "assets/items/mansanas.png",
     icon: "i-apple", // shown until Mansanas.png exists
     use: { heal: 1 },
     maxStack: 5,
@@ -72,7 +72,7 @@ window.ITEMS = [
     kind: "equipment",
     slot: "outfit",
     price: 100,
-    img: "Assets/Act 1/Damit_Entablado.png",
+    img: "assets/items/damit-entablado.png",
     icon: "i-shirt", // shown until the picture exists
     soldBy: "mananahi",
     // Block 38: 0.2, five times slower, up from 0.5, on the proponent's
@@ -94,7 +94,7 @@ window.ITEMS = [
     description: "Malaking mansanas na ipinabili para sa kabayo ng kutsero.",
     kind: "quest",
     price: 5,
-    img: "Assets/Mansanas.png",
+    img: "assets/items/mansanas.png",
     icon: "i-apple",
     forQuest: "bilhan_mansanas",
     buyFlag: "binilhAngMansanas",

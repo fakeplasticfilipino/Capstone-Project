@@ -119,46 +119,49 @@ be used to complete an act for the study.
 ## Layout
 
     index.html            student entry point, the game
-    game.js               engine: rendering, physics, dialogue, combat,
+    teacher.html          teacher entry point, the dashboard
+
+    css/style.css         game styles, including the pixel theme
+    css/teacher.css       dashboard styles
+
+    js/game.js            engine: rendering, physics, dialogue, combat,
                           stealth, health, save/load
-    acts.js               act flow controller, owns act_progress writes
-    assessment.js         trivia card, pre-test, post-test, feedback
-    shell.js              title screen, pause, settings, inventory and
+    js/acts.js            act flow controller, owns act_progress writes
+    js/assessment.js      trivia card, pre-test, post-test, feedback
+    js/shell.js           title screen, pause, settings, inventory and
                           shop screens, logout
-    inventory.js          item ownership, equipment, consumables, the shop
+    js/inventory.js       item ownership, equipment, consumables, the shop
+    js/teacher.js         dashboard: roster, aggregation, rendering
+    js/supabaseClient.js  shared Supabase client
+
     content/act1.js       Act I as data: four scenes; see TRACKER.md
     content/act2.js       Acts II to IV, registered but not yet written
     content/act3.js
     content/act4.js
     content/items.js      the item catalogue; three items so far
-    style.css             game styles, including the pixel theme
 
-    teacher.html          teacher entry point
-    teacher.js            dashboard: roster, aggregation, rendering
-    teacher.css           dashboard styles
+    assets/sprites/       player/, characters/, enemies/ sprite sheets
+    assets/backgrounds/   per act: street paintings, the entablado, ground
+    assets/items/         inventory and shop tile pictures
+    assets/audio/         music/ and sfx/
+    assets/fonts/         the two self-hosted pixel fonts (OFL)
 
-    supabaseClient.js     shared Supabase client
-    Assets/               sprite sheets, backgrounds, music and sound
-                          effects, and the two self-hosted pixel fonts
-                          (Assets/Fonts, OFL)
+    db/migrations/        schema, numbered in running order; which have
+                          run is recorded in TRACKER.md's Run log
+    db/seeds/             the Act I item bank, role and class setup
+    db/scripts/           health check, test account reset
 
-    db/applied/           migrations already run against the live project
-    db/macario_items_v3.sql     revised Act I item bank, matched pairs
-    db/db_healthcheck.sql       read-only; checks tables, RLS and columns
-    db/reset_test_accounts.sql  clears test account play data
-    db/enrollment_setup.sql     role and class assignment helper
-    create_accounts.js    admin script, runs locally only, not in git
-
-    _dev/test.js          headless test suite
-    _dev/verify_new_scene.js   the same, against the real Act I content
-    _dev/measure-sprite.js     measures a sprite sheet's placement numbers
-    _dev/key-black.py          turns a sprite sheet on black into a PNG
-    _dev/make-placeholder-sprites.py   rebuilds the stand-in art
-    _dev/sb-stub.js       fake Supabase client used by the suite
-    _dev/README.md        how to run it
+    _dev/tests/           headless test suite and Act I walkthrough,
+                          with a fake Supabase client
+    _dev/tools/           sprite measuring, keying and stand-in tools;
+                          create_accounts.js (runs locally, not in git)
+    _dev/README.md        how to run them
 
     CLAUDE.md             architecture and conventions
     TRACKER.md            status, next action, and what has been run
+
+Asset files are lowercase and hyphenated, with no spaces, because GitHub
+Pages is case sensitive where Windows is not.
 
 Script order in index.html matters. Act content files must load before
 game.js, acts.js must load after it, then assessment.js, then shell.js
@@ -178,13 +181,13 @@ constraint and by the grading function.
 ## Tests
 
     npm install
-    node _dev/test.js
+    node _dev/tests/test.js
 
 Serves the repository, opens index.html in headless Chromium at phone
 dimensions, and drives the real game against a fake in-memory database. It
 never touches the live Supabase project. See _dev/README.md.
 
-    node _dev/verify_new_scene.js
+    node _dev/tests/verify_new_scene.js
 
 The same rig against the real Act I content rather than the suite's own
 fixture, played from Nanay's first line through to the last pamphlet

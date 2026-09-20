@@ -64,7 +64,7 @@
 //     Kabayo's gift button has no way to ask Inventory.owns()
 //     directly
 //
-// Nanay has real commissioned art: Assets/Act 1/Nanay.png, a
+// Nanay has real commissioned art: assets/sprites/characters/nanay.png, a
 // 5-column by 3-row sheet, 14 of its 15 cells used. See CLAUDE.md's
 // Pitfalls for the quoting fix that was needed in game.js before a
 // path with a space in it (this one) would actually render.
@@ -88,7 +88,7 @@
 // with guards who shoot, no gun for Macario, and three people to give a
 // pamphlet to. The third one finishes Act I, which runs the post-test.
 //
-// Kutsero, Kabayo and Tindero have real art in Assets/Act 1/ (Block 33
+// Kutsero, Kabayo and Tindero have real art in assets/sprites/characters/ (Block 33
 // sorted out a Kutsero and Tindero mix-up in the file names). The
 // Mananahi, Bonifacio, the Katipunero, the townspeople and the street's
 // guards are stand-in stills (Block 41, STILL below) until theirs exist.
@@ -153,8 +153,8 @@ const KATIPUNAN_MEETING = [
 
 // Block 40. The man in the moro-moro, and the five guards who share his
 // sprite. Both sheets were delivered as JPEGs on black and keyed to PNGs
-// with _dev/key-black.py; the .jpg originals stay beside them. Numbers from
-// _dev/measure-sprite.js. The attack sheet's union box runs the full cell
+// with _dev/tools/key-black.py; the .jpg originals stay beside them. Numbers from
+// _dev/tools/measure-sprite.js. The attack sheet's union box runs the full cell
 // because the sword crosses into neighbouring cells, so its pair is the
 // standing body (frames 0 to 3: top 30, feet at 126) and headroom 29 shows
 // the sword raised above his head without drawing the stray tip that
@@ -162,13 +162,13 @@ const KATIPUNAN_MEETING = [
 // stands in the standing frames; the lunge frames move the sword, not
 // the feet. One def serves every guard: loading a sheet only fills in the
 // same measured geometry again.
-const MUSLIM_WALK = { src: "Assets/Act 1/Muslim_Walk.png", frames: 12, fps: 10,
+const MUSLIM_WALK = { src: "assets/sprites/enemies/muslim-walk.png", frames: 12, fps: 10,
   columns: 4, contentTop: 43, contentHeight: 70, footX: 72 };
-const MUSLIM_ATTACK = { src: "Assets/Act 1/Muslim_Attack.png", frames: 15, fps: 24,
+const MUSLIM_ATTACK = { src: "assets/sprites/enemies/muslim-attack.png", frames: 15, fps: 24,
   columns: 4, contentTop: 30, contentHeight: 97, footX: 88, headroom: 29 };
 
 // Block 41. Stand-in stills for the characters the artist has not drawn
-// yet, made by _dev/make-placeholder-sprites.py from frames of the
+// yet, made by _dev/tools/make-placeholder-sprites.py from frames of the
 // commissioned sheets (recoloured, with a prop or two), so they share the
 // painted style. One frame each, measured with measure-sprite.js. Real
 // art replaces them by dropping a sheet over the same file name and
@@ -176,15 +176,15 @@ const MUSLIM_ATTACK = { src: "Assets/Act 1/Muslim_Attack.png", frames: 15, fps: 
 // the body's, 128; the tool reads 130 because his rifle butt is in the
 // bottom rows it averages.
 const STILL = {
-  mananahi:   { src: "Assets/Act 1/Mananahi.png",   frames: 1, fps: 1,
+  mananahi:   { src: "assets/sprites/characters/mananahi.png",   frames: 1, fps: 1,
                 contentTop: 45, contentHeight: 166, footX: 128 },
-  bonifacio:  { src: "Assets/Act 1/Bonifacio.png",  frames: 1, fps: 1,
+  bonifacio:  { src: "assets/sprites/characters/bonifacio.png",  frames: 1, fps: 1,
                 contentTop: 69, contentHeight: 121, footX: 128 },
-  katipunero: { src: "Assets/Act 1/Katipunero.png", frames: 1, fps: 1,
+  katipunero: { src: "assets/sprites/characters/katipunero.png", frames: 1, fps: 1,
                 contentTop: 74, contentHeight: 117, footX: 128 },
-  mamamayan:  { src: "Assets/Act 1/Mamamayan.png",  frames: 1, fps: 1,
+  mamamayan:  { src: "assets/sprites/characters/mamamayan.png",  frames: 1, fps: 1,
                 contentTop: 74, contentHeight: 117, footX: 128 },
-  bantay:     { src: "Assets/Act 1/Bantay.png",     frames: 1, fps: 1,
+  bantay:     { src: "assets/sprites/enemies/bantay.png",     frames: 1, fps: 1,
                 contentTop: 69, contentHeight: 121, footX: 128 },
 };
 
@@ -413,7 +413,7 @@ window.ACT_1 = {
       worldWidth: 2900,
       // Block 43. The road as two paintings side by side, with a shadow
       // tree over the join at 1450 (game.js, PANEL_WIDTH).
-      panels: ["Assets/Act 1/Background/1.jpg", "Assets/Act 1/Background/2.jpg"],
+      panels: ["assets/backgrounds/act1/street-01.jpg", "assets/backgrounds/act1/street-02.jpg"],
       // Block 34. The outside of the entablado, as scenery. Its picture has
       // a transparent background, measured the way a sprite is (the
       // drawing's alpha box, feet at the bottom of the stairs), drawn 400px
@@ -425,7 +425,7 @@ window.ACT_1 = {
           x: 2400,
           displayHeight: 400,
           animation: {
-            src: "Assets/Act 1/Entablado_Labas.png", frames: 1, fps: 1,
+            src: "assets/backgrounds/act1/entablado-outside.png", frames: 1, fps: 1,
             contentTop: 14, contentHeight: 914, footX: 835,
           },
         },
@@ -489,7 +489,7 @@ window.ACT_1 = {
           label: "Nanay",
           stage: 0,
           animation: {
-            src: "Assets/Act 1/Nanay.png", frames: 14, fps: 6, columns: 5,
+            src: "assets/sprites/characters/nanay.png", frames: 14, fps: 6, columns: 5,
             contentTop: 45, contentHeight: 166, footX: 127,
           },
           dialogueSets: [
@@ -665,7 +665,7 @@ window.ACT_1 = {
       worldWidth: 2150,
       // Block 43. Two paintings of their own, greyed with the rest of the
       // memory; one tree at 1450, between the glass and the Tindero.
-      panels: ["Assets/Act 1/Background/3.jpg", "Assets/Act 1/Background/4.jpg"],
+      panels: ["assets/backgrounds/act1/street-03.jpg", "assets/backgrounds/act1/street-04.jpg"],
       startX: 80,
       greyFilter: true,
       // Block 31. Nanay's voice carries into the memory, opening it the
@@ -693,7 +693,7 @@ window.ACT_1 = {
           label: "Kabayo",
           // Real art (Block 30): a single strip of 22 frames, 32px cells,
           // a grazing loop that starts and ends with his head up. Measured
-          // with _dev/measure-sprite.js. It warns that the grazing frames
+          // with _dev/tools/measure-sprite.js. It warns that the grazing frames
           // are shorter than the union; that is his head going down, not
           // a mis-scaled pose, so the union pair is the right one: it
           // keeps his raised ears inside the box. He is drawn facing left,
@@ -701,12 +701,12 @@ window.ACT_1 = {
           // At DISPLAY_HEIGHT a 32px cell is scaled about four and a half
           // times, which is what switches bodySprite to pixelated scaling.
           animation: {
-            src: "Assets/Act 1/Horse.png", frames: 22, fps: 8,
+            src: "assets/sprites/characters/kabayo.png", frames: 22, fps: 8,
             contentTop: 2, contentHeight: 30, footX: 19,
           },
           // Loops while Macario is within talking range and fades out
           // when he leaves (game.js, updateNearSounds).
-          nearSound: "Assets/Act 1/Horse.mp3",
+          nearSound: "assets/audio/sfx/horse.mp3",
           stage: 0,
           dialogueSets: [
             {
@@ -759,10 +759,10 @@ window.ACT_1 = {
           // Real art. Block 27 wired in a sheet that turned out to be the
           // Tindero, saved under this name by mistake; Block 33 has the
           // real kutsero (straw hat, sash): a 5 by 3 sheet, 12 of its 15
-          // cells used, measured with _dev/measure-sprite.js. Front-facing,
+          // cells used, measured with _dev/tools/measure-sprite.js. Front-facing,
           // so no facing to get wrong from either side.
           animation: {
-            src: "Assets/Act 1/Kutsero.png", frames: 12, fps: 6, columns: 5,
+            src: "assets/sprites/characters/kutsero.png", frames: 12, fps: 6, columns: 5,
             contentTop: 74, contentHeight: 117, footX: 128,
           },
           stage: 0,
@@ -816,7 +816,7 @@ window.ACT_1 = {
           // the artist to what it always was: 5 by 3, 14 of 15 cells, the
           // same numbers it was measured with then (remeasured, unchanged).
           animation: {
-            src: "Assets/Act 1/Tindero.png", frames: 14, fps: 6, columns: 5,
+            src: "assets/sprites/characters/tindero.png", frames: 14, fps: 6, columns: 5,
             contentTop: 69, contentHeight: 121, footX: 128,
           },
           opensShop: true,
@@ -853,7 +853,7 @@ window.ACT_1 = {
       id: "entablado",
       worldWidth: 1176,
       startX: 260,
-      backdrop: { src: "Assets/Act 1/Entablado.png" },
+      backdrop: { src: "assets/backgrounds/act1/entablado-inside.png" },
       ground: false,
       npcs: [],
       decorations: [
@@ -865,13 +865,13 @@ window.ACT_1 = {
           id: "maryam",
           x: 330,
           animation: {
-            src: "Assets/Act 1/Muslim_Girl.png", frames: 13, fps: 6, columns: 5,
+            src: "assets/sprites/characters/maryam.png", frames: 13, fps: 6, columns: 5,
             contentTop: 73, contentHeight: 117, footX: 128,
           },
         },
         {
           // Block 40. Real art: the walk sheet the artist delivered as
-          // Muslim_Walk.jpg, keyed to a transparent PNG (_dev/key-black.py)
+          // Muslim_Walk.jpg, keyed to a transparent PNG (_dev/tools/key-black.py)
           // and measured with measure-sprite.js. It steps only while he is
           // walking (walkOnly) and turns to face the way he walks
           // (faceMovement), so he walks on facing Maryam and Macario, stands
@@ -900,7 +900,7 @@ window.ACT_1 = {
           onComplete: async () => {
             // Fetched while the love scene is still being read, so the
             // swap when the fight starts is instant (Block 36).
-            prepareMusic("Assets/Prefab/Intense.mp3");
+            prepareMusic("assets/audio/music/intense.mp3");
             setCutscene(true);
             turnPlayer(1); // toward the sound
             showDecoration("muslim", true);
@@ -915,7 +915,7 @@ window.ACT_1 = {
             // wing, spaced so they arrive one after another.
             moveDecoration("muslim", 1300, 260).then(() => showDecoration("muslim", false));
             setCutscene(false);
-            setMusic("Assets/Prefab/Intense.mp3");
+            setMusic("assets/audio/music/intense.mp3");
             await spawnEnemies([1240, 1310, 1380, 1450, 1520].map((x, i) => ({
               id: "guwardiya-" + (i + 1),
               x,
@@ -993,13 +993,13 @@ window.ACT_1 = {
       // The guards are a stand-in still (STILL.bantay, above), not the
       // artist's, front-facing, so the cones on the road are still what
       // shows which way each faces. The citizens share one stand-in still,
-      // Assets/Act 1/Mamamayan.png.
+      // assets/sprites/characters/mamamayan.png.
       id: "lansangan",
       worldWidth: 11000,
       // Block 43. All eight paintings, one after another, with a shadow
       // tree over each of the seven joins.
-      panels: ["Assets/Act 1/Background/5.jpg", "Assets/Act 1/Background/6.jpg", "Assets/Act 1/Background/9.jpg", "Assets/Act 1/Background/12.jpg",
-               "Assets/Act 1/Background/1.jpg", "Assets/Act 1/Background/2.jpg", "Assets/Act 1/Background/3.jpg", "Assets/Act 1/Background/4.jpg"],
+      panels: ["assets/backgrounds/act1/street-05.jpg", "assets/backgrounds/act1/street-06.jpg", "assets/backgrounds/act1/street-07.jpg", "assets/backgrounds/act1/street-08.jpg",
+               "assets/backgrounds/act1/street-01.jpg", "assets/backgrounds/act1/street-02.jpg", "assets/backgrounds/act1/street-03.jpg", "assets/backgrounds/act1/street-04.jpg"],
       startX: 200,
       noRanged: true,
       // Once, on the way in: how many he is looking for, and the one rule.

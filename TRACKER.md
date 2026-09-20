@@ -22,16 +22,15 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 20 Sep 2026, end of session, after Block 43 (painted
-panel backdrops with shadow trees), which followed Block 42 (the guide,
-the vision cone, a ten-citizen street and a consistency pass) the same
-day. Blocks through 41 are pushed (088f5e4). Blocks 42 and 43 are in the
-device folder and NOT yet pushed: game.js, style.css, index.html,
-content/act1.js, _dev/test.js, _dev/verify_new_scene.js, CLAUDE.md,
-TRACKER.md, and the new Assets/Act 1/Background/12.jpg (the other
-paintings were already in that folder). Run against those files:
-test.js 576 passed, 0 failed; verify_new_scene.js 165 passed, 0 failed.
-Neither block has been played on the phone.
+Last updated: 20 Sep 2026, end of session, after Block 44 (the
+repository reorganised), which followed Blocks 42 (the guide, the vision
+cone, a ten-citizen street, a consistency pass) and 43 (painted panel
+backdrops with shadow trees) the same day. Blocks through 41 are pushed
+(088f5e4). Blocks 42 to 44 are in the device folder and NOT yet pushed;
+push them as one commit, since Block 44 moved nearly every file (see
+Right now). Run against the reorganised files: test.js 576 passed, 0
+failed; verify_new_scene.js 165 passed, 0 failed. None of the three has
+been played on the phone.
 
 ## Start here
 
@@ -57,7 +56,7 @@ registered stubs. Act I can be completed: the tenth pamphlet finishes it
 and runs the post-test.
 
 The streets are painted panels (Block 43): tondo, the memory and the
-lansangan each run through paintings from Assets/Act 1/Background laid
+lansangan each run through paintings from assets/backgrounds/act1 laid
 side by side, with a dark shadow tree over every join that Macario and
 everyone else walk behind. Tondo.png is no longer shown in Act I.
 
@@ -133,12 +132,12 @@ harness fixture carries equipment, outfits, a consumable and a quest
 item, so those paths stay tested.
 
 Macario's art: idle, walk, jump, melee punch (tap Atake) and shooting
-(hold Atake) are real sheets, measured with _dev/measure-sprite.js. His
+(hold Atake) are real sheets, measured with _dev/tools/measure-sprite.js. His
 death pose is missing.
 
 The interface is a flat pixel-art theme (Block 29): square panels, hard
 outlines, Press Start 2P for titles and VT323 for everything read, both
-self-hosted in Assets/Fonts.
+self-hosted in assets/fonts.
 
 Sound: Calm.mp3 loops as background music from the moment the world is
 entered, Gun_Shot.mp3 plays on every shot, Horse.mp3 loops near Kabayo,
@@ -147,15 +146,15 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    style.css v31        game.js v49          shell.js v13
-    inventory.js v9      acts.js v10          assessment.js v3
-    content/act1.js v31  content/items.js v8  content/act2-4.js v1
-    ASSET_VERSION 17 (in game.js)
-    teacher.css v2       teacher.js v2        (named in teacher.html)
+    css/style.css v32    js/game.js v50       js/shell.js v13
+    js/inventory.js v9   js/acts.js v10       js/assessment.js v3
+    content/act1.js v32  content/items.js v9  content/act2-4.js v1
+    ASSET_VERSION 18 (in js/game.js)
+    css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
 and confirmed Block 36's speed fix on the phone. Whether the rest of
-Blocks 14 to 42 has been through a full pass on the phone is not
+Blocks 14 to 44 has been through a full pass on the phone is not
 recorded, so the device checklist under Next action still stands before
 the pilot.
 
@@ -166,9 +165,9 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 43 are built. Blocks 22 to 41 were one build session, 17 to
+Blocks 1 to 44 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
-42 and 43 were 20 September:
+42 to 44 were 20 September:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
     23  a throw spawn correction, superseded by 24
@@ -226,17 +225,23 @@ Blocks 1 to 43 are built. Blocks 22 to 41 were one build session, 17 to
         checkpoints; a consistency pass on Act I's lines and names
     43  the new Background paintings side by side in tondo, the memory
         and the lansangan, with a shadow tree over each join
+    44  the repository reorganised: css/, js/, assets/ by type with
+        lowercase hyphenated names, db/migrations, seeds and scripts,
+        _dev/tests and _dev/tools; private documents and old screenshots
+        moved to a gitignored docs-private/ (CLAUDE.md, Repository layout)
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 and 43 are in
-the device folder and waiting to be pushed, with every file's ?v=N and
-ASSET_VERSION bumped as listed above. Push Assets/Act 1/Background with
-them, or the streets draw nothing behind the characters. Assets/Act 1/Muslim_Walk.jpg and Muslim_Attack.jpg are the
-artist's originals, kept beside the keyed PNGs the game loads, and
-Assets/Act 1/Muslim_Woman.png is a byte-for-byte copy of Muslim_Girl.png;
-nothing loads any of the three.
+Everything through Block 41 is pushed (088f5e4). Blocks 42 to 44 are in
+the device folder and waiting to be pushed. Block 44 moved nearly every
+file, so the push is a commit of deletions and additions that git shows
+as renames: stage everything (git add -A) rather than picking files, or
+the site will load a page whose scripts and pictures are not there. The
+old Assets/ folder, the root scripts and stylesheets, the old db/ and
+_dev/ files, "Claude outputs", the proposal and the validation form
+should all show as deleted or moved; if any still show as present in
+git status, they were not deleted on the computer.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
-reset) is NOT confirmed run; see Run log. db/reset_test_accounts.sql
+reset) is NOT confirmed run; see Run log. db/scripts/reset_test_accounts.sql
 should be run once after Block 25, because the item id "mansanas"
 changed meaning, and is also the way to clear hi@example.com before a
 demo; whether it has been run is not recorded.
@@ -245,9 +250,15 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. A device pass on Blocks 14 to 43, on the phone, in landscape, from a
+1. A device pass on Blocks 14 to 44, on the phone, in landscape, from a
 private tab (browsers cache index.html; see Known problems). Check:
 
+    After the reorganisation (Block 44), first of all: the live site
+      loads at all, with pictures, music and the pixel fonts; the
+      entablado's inside painting shows when he walks in; the teacher
+      dashboard still loads and is styled. Failure looks like a white
+      unstyled page or characters as dashed boxes naming assets/ files,
+      which means part of the push is missing.
     The paintings and trees (Block 43): tondo, the memory and the street
       show the new paintings, not Tondo.png; a dark tree stands at each
       join, the join itself cannot be seen, and Macario, the guards and
@@ -279,7 +290,7 @@ private tab (browsers cache index.html; see Known problems). Check:
       passable with the touch controls.
 
     Title, pause, settings: pixel fonts show (not plain monospace,
-      which would mean Assets/Fonts did not upload), text readable at
+      which would mean assets/fonts did not upload), text readable at
       Maliit, Katamtaman and Malaki.
     Guest mode: the button enters Act I with no login.
     tondo: Nanay's dialogue reads comfortably; the prompt arrow blinks.
@@ -365,8 +376,8 @@ and a pilot.
 3. Real art, chased with the artist, to replace Block 41's stand-ins:
 Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png (the street's
 guards), Mamamayan.png (the ten citizens, one sprite shared unless
-the artist draws more), Damit_Entablado.png (all Assets/Act 1/) and
-Assets/Mansanas.png. The stand-ins are recoloured frames of the
+the artist draws more), damit-entablado.png and mansanas.png (all
+under assets/, see Known problems). The stand-ins are recoloured frames of the
 commissioned sheets, so they will look like near relations of Tindero,
 Kutsero and Nanay. Replacing one is dropping the new file over the same
 name and updating its STILL entry in content/act1.js (frames, columns,
@@ -374,7 +385,7 @@ and the three measured numbers). Macario's Dead sheet is still missing
 and has no stand-in; no shipped scene plays it. Each new sheet
 needs measure-sprite.js and all three numbers pasted. Ask for PNG
 exports with transparency: Muslim_Walk and Muslim_Attack came as JPEGs
-on black and had to be keyed (_dev/key-black.py), and the attack sheet's
+on black and had to be keyed (_dev/tools/key-black.py), and the attack sheet's
 sword crosses into neighbouring cells, which a re-export with the sword
 inside each cell would fix. An idle sheet for him would also let him
 breathe while he talks rather than hold a walk frame.
@@ -386,7 +397,7 @@ against the source material.
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
 header directs. Everything through Block 41 is pushed and passing its
-checks; Blocks 42 and 43 are in the device folder, passing their checks, and wait
+checks; Blocks 42 to 44 are in the device folder, passing their checks, and wait
 on the proponent's push. So the first things a session can do are in
 Next action, in order: a device pass against the
 checklist there, then checking Block 37's placeholder script against
@@ -443,14 +454,13 @@ the session at the time of the rewrite; do not go looking for it on disk.
 What has actually been applied to the live Supabase project, and
 when. A fresh session should trust this over any memory of a chat.
 
-    db/applied/macario_schema.sql       RUN
-    db/applied/macario_schema_v2.sql    RUN
-    db/applied/macario_schema_v3.sql    RUN
-    db/applied/macario_schema_v4.sql    RUN, 19 Aug 2026
+    db/migrations/001_macario_schema.sql       RUN
+    db/migrations/002_macario_schema_v2.sql    RUN
+    db/migrations/003_macario_schema_v3.sql    RUN
+    db/migrations/004_macario_schema_v4.sql    RUN, 19 Aug 2026
 
-    db/macario_schema_v5.sql            NOT RUN, per this file's own
-                                        bookkeeping (not present in
-                                        db/applied/ on this device). A
+    db/migrations/005_macario_schema_v5.sql            NOT RUN, per this file's own
+                                        bookkeeping. A
                                         prior chat ended with a reset-
                                         related problem reported fixed
                                         ("everything worked") without
@@ -465,26 +475,26 @@ when. A fresh session should trust this over any memory of a chat.
                                         the three functions behind the
                                         in-game full reset. No tables,
                                         no columns, no policy changes,
-                                        so the ERD stays at eleven. Move
-                                        it to db/applied/ once confirmed
-                                        run and date this line
+                                        so the ERD stays at eleven. Change
+                                        this line to RUN and date it once
+                                        confirmed
 
-    db/macario_items_v3.sql             RUN, 28 Aug 2026
+    db/seeds/macario_items_v3.sql             RUN, 28 Aug 2026
 
-    db/db_healthcheck.sql               read-only, run any time
-    db/reset_test_accounts.sql          run before any full-flow test.
+    db/scripts/db_healthcheck.sql               read-only, run any time
+    db/scripts/reset_test_accounts.sql          run before any full-flow test.
                                         Rewritten in Block 25 (same seven
                                         tables, no schema change). Owed
                                         once after Block 25, because the
                                         id "mansanas" changed meaning;
                                         NOT RECORDED AS RUN since. Record
                                         the date here when it is
-    db/enrollment_setup.sql             only needed for a fresh database
+    db/seeds/enrollment_setup.sql             only needed for a fresh database
 
 Supabase project reference: rkfnovfkroajottpmxxq
 
 The database holds eleven tables, matching the revised ERD. Confirm
-with db/db_healthcheck.sql, which checks all eleven, confirms the two
+with db/scripts/db_healthcheck.sql, which checks all eleven, confirms the two
 v4 drops happened, and verifies every migration column.
 
 ## The three stated objectives
@@ -632,6 +642,8 @@ submit_assessment).
         guards; Act I consistency pass
     43  scene panels and shadow trees (buildPanelBackdrop, section AX);
         Background paintings in tondo, kutsero and lansangan
+    44  repository reorganised; custom-property url() made absolute;
+        the entablado backdrop check reads the computed URL
 
 ## Blocks remaining
 
@@ -699,39 +711,39 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 
 ## Known problems
 
-Missing production art. Assets/ holds real art for Nanay, Kutsero,
+Missing production art. assets/ holds real art for Nanay, Kutsero,
 Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack,
-shared by his guards), both entablado pictures, Tondo.png, the eight
-street paintings in Assets/Act 1/Background, Lupa.jpg (the ground), and Macario's idle, walk, melee and shooting sheets, plus the
-two fonts and four sound files.
+shared by his guards), both entablado pictures, tondo.png, the eight
+street paintings, the ground, and Macario's idle, walk, melee and
+shooting sheets, plus the two fonts and four sound files.
 
 Stand-ins, not the artist's (Block 41, made by
-_dev/make-placeholder-sprites.py from the commissioned sheets), owed
+_dev/tools/make-placeholder-sprites.py from the commissioned sheets), owed
 real art:
 
-    Assets/Act 1/Mananahi.png  the Mananahi, on the tondo road
-    Assets/Act 1/Bonifacio.png   Bonifacio, outside the entablado
-    Assets/Act 1/Katipunero.png  the second Katipunero, beside him
-    Assets/Act 1/Bantay.png    the eight guards on the lansangan (a
-                               front-facing still; real art should
-                               face right, see CLAUDE.md, Pitfalls)
-    Assets/Act 1/Mamamayan.png the ten citizens, one shared still
-    Assets/Act 1/Damit_Entablado.png  the stage clothes' tile
-    Assets/Mansanas.png        the apple tile in the shop and inventory
+    sprites/characters/mananahi.png    the Mananahi, on the tondo road
+    sprites/characters/bonifacio.png   Bonifacio, outside the entablado
+    sprites/characters/katipunero.png  the second Katipunero, beside him
+    sprites/enemies/bantay.png         the eight guards on the lansangan
+                                       (a front-facing still; real art
+                                       should face right, see CLAUDE.md,
+                                       Pitfalls)
+    sprites/characters/mamamayan.png   the ten citizens, one shared still
+    items/damit-entablado.png          the stage clothes' tile
+    items/mansanas.png                 the apple tile in the shop and
+                                       inventory
+
+All under assets/.
 
 Still missing outright, falling back to the dashed placeholder box:
 
-    Assets/Dead.png            Macario's death pose; no shipped scene
-                               plays it
-    Assets/Act 1/Tondo_Night.png  night backdrop; no shipped scene
-                               switches to night yet, so nothing shows
+    sprites/player/macario-dead.png    Macario's death pose; no shipped
+                                       scene plays it
+    backgrounds/act1/tondo-night.png   night backdrop; no shipped scene
+                                       switches to night, so nothing shows
 
 verify_new_scene.js checks that every Act I character draws a picture
 rather than a box. (KNOWN)
-
-Assets/Act 1/Background also holds the twelfth painting's original
-WebP (about 2MB) and "9 (1).jpg", a byte-for-byte copy of 9.jpg. The
-game loads neither; delete them or leave them. (KNOWN, PROPONENT'S CALL)
 
 Characters and the backdrop can be missing on a slow connection. Seen
 by the proponent on slow internet and reproduced headless on 20 Sep 2026
@@ -758,13 +770,6 @@ changes applied" was exactly this: GitHub and the live site were both
 serving the new files. Test from a private tab, or clear the site's data
 in Chrome, before suspecting the code. Keep every changed file's ?v=N
 bumped in the same push. (KNOWN, BY DESIGN OF PAGES)
-
-The "Claude outputs" folder of preview screenshots is tracked in git
-and published with the site, about 5MB of images the game never loads.
-Harmless, but a public repository for a study probably should not carry
-it. To stop tracking it: add "Claude outputs/" to .gitignore, then run
-git rm -r --cached "Claude outputs" and commit; the local copies stay.
-(KNOWN, PROPONENT'S CALL)
 
 The teacher dashboard is deliberately not in the game's pixel theme:
 Block 39 made it a light report page for teachers reading numbers on a
@@ -808,8 +813,8 @@ again.
 The harness lives at _dev/. Run it from the repository root:
 
     npm install
-    node _dev/test.js
-    node _dev/verify_new_scene.js
+    node _dev/tests/test.js
+    node _dev/tests/verify_new_scene.js
 
 test.js: 576 checks against a fixture act and item catalogue (so
 mechanics stay tested whatever Act I ships). verify_new_scene.js: 165

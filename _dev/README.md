@@ -9,7 +9,7 @@ without rebuilding a test rig first.
 From the repository root:
 
     npm install
-    node _dev/test.js
+    node _dev/tests/test.js
 
 Expected output ends with a count. Anything other than "0 failed" is a
 regression.
@@ -50,7 +50,7 @@ TRACKER.md's Verification section carries the current check count.
 
 ## Measuring a sprite sheet
 
-    node _dev/measure-sprite.js <path-to-png> --columns=N --frames=M
+    node _dev/tools/measure-sprite.js <path-to-png> --columns=N --frames=M
 
 A sprite's frame is a fixed-size cell; the character drawn inside it
 rarely fills that cell edge to edge, and how much of it gets filled
@@ -71,7 +71,7 @@ frame's content height strays far from that union, which means a single
 number cannot correct that sheet (a raised weapon, a crouch) and it is
 worth looking at by eye before trusting the tool.
 
-Only 8-bit, non-interlaced PNGs are supported (every sheet in Assets/ is
+Only 8-bit, non-interlaced PNGs are supported (every sheet in assets/ is
 one); anything else is refused with what to re-export as, rather than
 silently measured wrong.
 
@@ -92,7 +92,7 @@ black box. key-black.py writes a PNG beside it with the black background
 removed, flooding in from each cell's edges so the character's own dark
 hair and clothes survive:
 
-    python3 _dev/key-black.py "Assets/Act 1/Muslim_Walk.jpg" --columns=4 --rows=3
+    python3 _dev/tools/key-black.py assets/sprites/enemies/muslim-walk.jpg --columns=4 --rows=3
 
 It needs Pillow and is dev-time only. Measure the PNG with
 measure-sprite.js afterwards, and point the content at the PNG.
@@ -103,4 +103,4 @@ make-placeholder-sprites.py rebuilds the stand-in stills for characters
 the artist has not drawn yet (recoloured frames of the commissioned
 sheets) and the apple and stage-clothes tiles. Pillow, dev-time only:
 
-    python3 _dev/make-placeholder-sprites.py
+    python3 _dev/tools/make-placeholder-sprites.py

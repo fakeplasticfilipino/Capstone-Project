@@ -76,12 +76,60 @@ one decision is what removed the mobile control overflow from the work
 rather than fixing it, because the overflow only ever happened in
 portrait.
 
+## Repository layout
+
+Since Block 44. Everything a browser loads is at the top or in a folder
+named for what it holds; everything else is under _dev/ or db/, or kept
+off the repository.
+
+    index.html, teacher.html   the two pages; they must stay at the root,
+                               because the Pages URL serves index.html
+    css/                       style.css (the game), teacher.css
+    js/                        the engine and its modules, one file each
+                               (game, acts, inventory, assessment, shell,
+                               teacher, supabaseClient)
+    content/                   act data and the item catalogue
+    assets/
+      sprites/player/          Macario's sheets, macario-<pose>.png
+      sprites/characters/      everyone who talks, <name>.png
+      sprites/enemies/         guards and fighters
+      backgrounds/act1/        street-01..08.jpg, tondo.png, the
+                               entablado inside and out, ground-lupa.jpg
+      items/                   inventory and shop tile pictures
+      audio/music/, audio/sfx/
+      fonts/                   the two woff2 faces and their licences
+    db/                        migrations/, seeds/, scripts/ (Database)
+    _dev/tests/                the harness and its fixtures
+    _dev/tools/                measure-sprite.js, key-black.py,
+                               make-placeholder-sprites.py, and
+                               create_accounts.js (gitignored)
+    docs-private/              gitignored; the proposal, the validation
+                               form and old screenshots, kept on the
+                               proponent's computer only
+
+Asset names are lowercase and hyphenated, with no spaces, and named for
+what is drawn, not for who delivered it or when: a new character is
+assets/sprites/characters/<name>.png, a new act's paintings go in
+assets/backgrounds/act2/. Spaces in a path were what needed the quoted
+url() fix under Pitfalls, and a capital letter that differs between a
+file and its reference works on Windows and 404s on GitHub Pages, which
+is case sensitive.
+
+_dev/ keeps its underscore on purpose: GitHub Pages builds with Jekyll,
+which does not publish folders that start with one, so the harness is in
+the repository without being served to students.
+
+Decisions on record before Block 44 name files by their old paths
+(Assets/Act 1/Nanay.png, Assets/Prefab/Macario_Idle.png, db/applied/,
+_dev/test.js and so on). They are history and were left as written;
+Block 44 lists where each one went.
+
 ## Act I's content: a deliberate reset, then built forward again
 
 content/act1.js has gone through three shapes: a proving ground (one room,
 one example of every engine system, placeholder dialogue about buko and
 errands), a full narrative written directly against the ten item pairs in
-db/macario_items_v3.sql (two scenes, five objectives, a stage cutscene, a
+db/seeds/macario_items_v3.sql (two scenes, five objectives, a stage cutscene, a
 guard corridor), and a reset back to one scene, one NPC (Nanay, Macario's
 mother, with real commissioned art) and one exchange. All three are in
 git history; none should be restored by copying old code back in without
@@ -115,7 +163,7 @@ None of this touched the ENGINE. Every mechanic the fuller version
 exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
 detection, hazards, hideSpots, platforms, pickups, the shop, equip and
 item-effect system — is unchanged, still fully implemented, and still
-fully covered by _dev/test.js, which now carries its own private fixture
+fully covered by _dev/tests/test.js, which now carries its own private fixture
 scene and item catalogue (FIXTURE_ACT1_JS / FIXTURE_ITEMS_JS, near the top
 of that file) so those mechanics stay tested independent of whatever
 content/act1.js and content/items.js actually ship. See Decisions on
@@ -294,11 +342,11 @@ Scene shape:
       dangerous: true,                           optional; shows the hearts
       greyFilter: true,                          optional; greys backdrop + ground
       backdrop: { src },                         optional; own picture, drawn once
-      panels: ["Assets/...jpg", ...],            optional; paintings side by
+      panels: ["assets/...jpg", ...],            optional; paintings side by
       panelWidth: 1450,                          side, a shadow tree at each
                                                  join (Block 43)
       ground: false,                             optional; hides the dirt strip
-      music: "Assets/X.mp3",                     optional; this scene's track
+      music: "assets/audio/music/x.mp3",         optional; this scene's track
       exits: [{ id, x, width, label, toScene,    optional; doorways
                 toX, toFacing }],
       arrivalDialogues: [{ requiresFlag,         optional; opens by itself
@@ -381,8 +429,8 @@ nothing in content ever sets keeps the act from finishing without
 needing to be left out of the array, which is how Act I was held open
 through Blocks 19 to 36.
 
-greyFilter reuses whatever backdrop #skyline already has (Assets/Act
-1/Tondo.png, at present) rather than needing a second background
+greyFilter reuses whatever backdrop #skyline already has (the scene's
+panels since Block 43, else assets/backgrounds/act1/tondo.png) rather than needing a second background
 asset for a flashback or memory beat. It is read once, in loadScene,
 and toggled rather than only ever added, so a scene without it clears
 whatever the previous scene set. See Decisions on record for the
@@ -442,13 +490,13 @@ NPC shape:
 
     {
       id, x, label,
-      img: "Assets/X.png"                        static, or
+      img: "assets/sprites/characters/x.png"     static, or
       animation: { src, frames, fps },           sprite sheet
       startsHidden: true,                        optional
       revealedByFlag: "someFlag",                optional; unhides when set
       opensShop: true,                           optional; see below
       opensShopAfter: "someFlag",                optional; talks, then sells
-      nearSound: "Assets/X.mp3",                 optional; loops while near
+      nearSound: "assets/audio/sfx/x.mp3",       optional; loops while near
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete(),
                        skipIfFlag }],            skipIfFlag optional
@@ -653,10 +701,9 @@ use href="#i-name". They cost no request, cannot 404, and inherit
 currentColor, so an icon is whatever colour its button already is.
 That is why they are strokes rather than glyphs.
 
-There is no icon art and none can be invented. Assets/ holds commissioned
-character and backdrop art (Assets/Act 1 for one act's art, Assets/Prefab
-for Macario's own sheets and the shared sounds), the two fonts
-(Assets/Fonts), and no icons. The three sound symbols (i-music, i-sound,
+There is no icon art and none can be invented. assets/ holds commissioned
+character and backdrop art, sound and the two fonts (see Repository
+layout), and no icons. The three sound symbols (i-music, i-sound,
 i-mute) are inline strokes like the rest, not art.
 TRACKER.md, Known problems, lists which referenced art files are still
 missing. Any NPC, guard or decoration without real art falls back to the
@@ -707,7 +754,7 @@ Sheets may be a single horizontal strip or a grid. The optional columns
 field is how many frames sit across one row; omit it and it defaults to
 the frame count, which is the single-strip case.
 
-    { src: "Assets/Walk.png", frames: 12, fps: 12, columns: 5 }
+    { src: "assets/sprites/player/macario-walk.png", frames: 12, fps: 12, columns: 5 }
 
 loadSpriteSheet derives frameWidth, rows, and frameHeight from that.
 frameHeight is always derived from naturalHeight divided by rows, never
@@ -719,14 +766,14 @@ inside it, and real art rarely fills its cell edge to edge. Two more
 optional fields, contentTop and contentHeight, say where the character
 actually sits within that cell, in the sheet's own native pixels:
 
-    { src: "Assets/Prefab/Macario_Idle.png", frames: 16, fps: 6,
+    { src: "assets/sprites/player/macario-idle.png", frames: 16, fps: 6,
       columns: 5, contentTop: 73, contentHeight: 106 }
 
 Measure both from the real art's alpha channel — the union of every
 frame's non-transparent bounding box, so no pose gets clipped — never by
 eye, and never by hand either: run
 
-    node _dev/measure-sprite.js <path-to-png> --columns=N --frames=M
+    node _dev/tools/measure-sprite.js <path-to-png> --columns=N --frames=M
 
 which prints every frame's own box, flags any frame whose content
 height strays far enough from the union that a single number cannot
@@ -767,7 +814,7 @@ drawing, because a pose that reaches (Macario_Shooting.png's extended
 arm) drags the whole drawing's centre forward of where he stands.
 Omit it and the sheet is assumed to stand in the middle of its cell.
 
-    { src: "Assets/Prefab/Macario_Idle.png", frames: 16, fps: 6,
+    { src: "assets/sprites/player/macario-idle.png", frames: 16, fps: 6,
       columns: 5, contentTop: 73, contentHeight: 106, footX: 130 }
 
 A change to footX, like contentTop/contentHeight, is a change to the
@@ -777,7 +824,7 @@ Every image load goes through assetUrl(), which appends the ASSET_VERSION
 constant in game.js. Images are not covered by the v=N strings in
 index.html, so without this the browser and the Pages CDN serve stale
 sprites indefinitely after a file is replaced. Bump ASSET_VERSION whenever
-anything in Assets/ changes, and bump the game.js script version too, since
+anything in assets/ changes, and bump the game.js script version too, since
 the browser must refetch game.js to learn the new asset version. A change
 to contentTop/contentHeight is a change to the CONTENT file that declares
 them (game.js for the player, content/actN.js for an NPC), not to the
@@ -786,7 +833,7 @@ image, so it needs that file's own v=N bumped rather than ASSET_VERSION.
 A sheet may also declare startFrame and endFrame, in frame numbers
 rather than pixels, to play only part of itself:
 
-    { src: "Assets/Prefab/Macario_Shooting.png", frames: 12, fps: 8,
+    { src: "assets/sprites/player/macario-shoot.png", frames: 12, fps: 8,
       columns: 5, startFrame: 0, endFrame: 2, loop: false,
       contentTop: 63, contentHeight: 126, footX: 117 }
 
@@ -809,7 +856,7 @@ stays everyone else's height; the sprite element just grows upward.
 Capped at contentTop.
 
 A sheet delivered as a JPEG has no alpha channel and would draw inside
-a black rectangle. _dev/key-black.py (Pillow, dev-time only) floods the
+a black rectangle. _dev/tools/key-black.py (Pillow, dev-time only) floods the
 black background out from each cell's edges into a PNG beside the
 original; the PNG is what the content names and what measure-sprite.js
 measures. A PNG export from the artist is still the better fix.
@@ -1174,7 +1221,7 @@ takes no arguments, so there is no student_id in the request for
 anyone to edit.
 
 WHO MAY CALL IT is a named list inside is_reset_allowed(), copying the
-precedent in db/reset_test_accounts.sql, which names the two test
+precedent in db/scripts/reset_test_accounts.sql, which names the two test
 accounts explicitly rather than taking a role. A role check would not
 work: pilot students and study students are both role 'student', and
 create_accounts.js issues both as mag-aaralNN@example.com, so no
@@ -1206,7 +1253,7 @@ between the wipe and the reload puts part of the old student straight
 back, which is the difference between a fresh start and a half-wiped
 account that looks fine and is not.
 
-db/reset_test_accounts.sql stays. It clears the same seven tables for
+db/scripts/reset_test_accounts.sql stays. It clears the same seven tables for
 the named test accounts without anyone logging in, which is still the
 right tool when an account is wedged or when several need clearing at
 once.
@@ -1292,7 +1339,7 @@ nothing re-checks, and the guard corridor already makes reaching that NPC
 hard without it.
 
 Every historical fact stated in content/act1.js is stated because a
-correct answer in db/macario_items_v3.sql already commits to it: Tondo,
+correct answer in db/seeds/macario_items_v3.sql already commits to it: Tondo,
 the tailor-and-barber trade, the moro-moro, 1894, the Katipunan's aim of
 independence through revolution rather than reform, why it had to stay
 secret, the danger to a messenger, and that its members were ordinary
@@ -1306,7 +1353,7 @@ correct or extend these beats rather than the other way around.
 The tondo scene's opening NPC is Nanay (Macario's mother), not a generic
 neighbor. She was a neighbor originally, carrying the same two LO1 facts
 (Tondo, mananahi at barbero); once real commissioned art existed for
-Macario's mother specifically (Assets/Act 1/Nanay.png, a 5-column by
+Macario's mother specifically (assets/sprites/characters/nanay.png, a 5-column by
 3-row, 14-frame sheet), she replaced the neighbor rather than being added
 alongside her, since a mother stating her son's trade and their place in
 Tondo fits those same two facts at least as well as a neighbor did, and
@@ -1334,7 +1381,7 @@ from Block 8 onward (F through AG) drives the game through a "resuming
 student, mid Act I" fixture that used to mean the real misyon scene: its
 guard, hazard, hideSpot, platform and pickup, and the real item
 catalogue's shop/equip/effect behaviour. Rather than deleting all of that
-coverage along with the narrative, _dev/test.js now carries its own
+coverage along with the narrative, _dev/tests/test.js now carries its own
 private fixture (FIXTURE_ACT1_JS and FIXTURE_ITEMS_JS, defined near the
 top of the file) reproducing that same gameplay skeleton and catalogue,
 served in place of content/act1.js and content/items.js ONLY inside the
@@ -1394,7 +1441,7 @@ report which state a session is in for anything that needs to ask
 guard against in the future should a guest ever reach them). Reset,
 logout, and the teacher dashboard are all meaningless for a session that
 never wrote a row and were left untouched rather than special-cased.
-See _dev/test.js, AH, for the coverage: the button entering the world
+See _dev/tests/test.js, AH, for the coverage: the button entering the world
 without a login box, no rows appearing in any table across a played
 session, and a reload landing back on a fresh title screen rather than
 resuming, since there is nothing to resume from.
@@ -1426,15 +1473,15 @@ new red. Logout's border stays a separate, pre-existing danger red
 read as visually close in a palette this red-heavy, which is a tradeoff
 worth revisiting if a tester ever confuses "the button that logs me out"
 with "the button that does the main thing," but splitting them further
-seemed premature without that evidence. See _dev/test.js: no new coverage
+seemed premature without that evidence. See _dev/tests/test.js: no new coverage
 was added for this block, since it changes only color values and the
 existing suite already exercises every screen touched; the full 327-check
 suite (310 plus Block 14's 17) was re-run after the retheme with no
 regressions.
 
 Macario's own base walk and idle sprites are real commissioned art, not
-Claude-drawn placeholders: Assets/Prefab/Macario_Walking.png (1280x1024,
-a full 5-column by 4-row grid, 20 frames) and Assets/Prefab/Macario_Idle.png
+Claude-drawn placeholders: assets/sprites/player/macario-walk.png (1280x1024,
+a full 5-column by 4-row grid, 20 frames) and assets/sprites/player/macario-idle.png
 (same 1280x1024, 5 by 4 grid, but only 16 of the 20 cells are real frames —
 the last row has one frame, not five). Both live in Assets/Prefab, not
 Assets/ directly, matching the folder's purpose from the earlier
@@ -1451,7 +1498,7 @@ treat that pair as a first guess to revisit once someone has. Dead.png is
 still missing and still falls back to the placeholder box, which is the
 fallback system working as designed, not a fault. ASSET_VERSION bumped to
 6 and game.js's own script version to v24, since the browser must refetch
-game.js to learn the new asset version. _dev/test.js, section Y, had three
+game.js to learn the new asset version. _dev/tests/test.js, section Y, had three
 assertions that hardcoded the old Assets/Walk.png and Assets/Idle.png
 path strings as the expected "base sheet restored" value; all three were
 updated to the new paths, and the one check that had actually been failing
@@ -1495,7 +1542,7 @@ backgroundPosition or backgroundSize directly, so none needed updating,
 only the visual verification above.
 
 The three sheets above were measured by a one-off script, written and
-discarded in the same session. _dev/measure-sprite.js is that script
+discarded in the same session. _dev/tools/measure-sprite.js is that script
 made permanent, once it was clear this would come up again for Dead.png
 and for outfit art: it takes any sheet plus its columns/frames and
 prints the same contentTop/contentHeight a person would otherwise have
@@ -1581,13 +1628,13 @@ controls) kept their prior appearance. style.css's own script version
 was bumped in index.html for the cache-buster reason stated under
 Pitfalls.
 
-A third real commissioned sprite, Assets/Prefab/Macario_Shooting.png (a
+A third real commissioned sprite, assets/sprites/player/macario-shoot.png (a
 500x500, 5 by 5 grid, 25 frames), was added and wired in as Macario's
 ranged-attack pose — there was previously no dedicated animation for
 that action at all; holding the attack button to throw (Ibato) left
 whatever pose (idle or walk) the player was already in unchanged while
 the projectile spawned. Measured the same way as the other two
-(_dev/measure-sprite.js, contentTop 23, contentHeight 51 of a 100px
+(_dev/tools/measure-sprite.js, contentTop 23, contentHeight 51 of a 100px
 cell), but this sheet needed something the other two did not: it is one
 continuous 25-frame clip — an aim/draw-up sequence, a muzzle flash
 around frame 15, then several unused recovery frames — and only part of
@@ -1631,7 +1678,7 @@ this feature could have introduced, so respawnInScene and
 startPerformance now both clear attackHoldStart, shooting and the fire
 timer defensively, the same two lines in both places.
 
-Covered in _dev/test.js, section AI: both sheets load without falling
+Covered in _dev/tests/test.js, section AI: both sheets load without falling
 back to a placeholder and declare the right frame ranges; pressing
 attack switches to the aim pose immediately; a long hold climbs to and
 holds on frame 12 rather than looping past it; a quick release cancels
@@ -1643,12 +1690,12 @@ than leaving it stuck. 341 passed, 0 failed. ASSET_VERSION to 7 and
 game.js's own script version to v26, for the same reason as the last
 two sprites.
 
-Assets/Act 1/Tondo.png is now real commissioned art (1983x793, a painted
+assets/backgrounds/act1/tondo.png is now real commissioned art (1983x793, a painted
 Tondo river-village scene, not a texture drawn to tile seamlessly) and
 replaces the placeholder path the CSS and game.js previously pointed at
 (Assets/Tondo.png, root). It lives in Assets/Act 1/ rather than
 Assets/Prefab/, matching Nanay.png, since this backdrop is Act I's alone
-(see Act data format). Assets/Act 1/Tondo_Night.png was renamed to match
+(see Act data format). assets/backgrounds/act1/tondo-night.png was renamed to match
 proactively, on the same reasoning, even though that file still does not
 exist on this device (see TRACKER.md, Known problems) — dropping it in
 later is now the only step left. checkBackgroundImage's two skyline calls
@@ -1691,8 +1738,8 @@ nothing in this engine relies on the old behavior first: inHideSpot()
 guard detection math and has no visual effect of its own, so there is no
 "Macario visually ducks behind cover" mechanic this could break.
 
-Covered in _dev/test.js, section AJ: #player's computed z-index is
-positive; the skyline loads Assets/Act 1/Tondo.png without falling back
+Covered in _dev/tests/test.js, section AJ: #player's computed z-index is
+positive; the skyline loads assets/backgrounds/act1/tondo.png without falling back
 to the placeholder; buildSkylineShadows() places at least one
 .tree-shadow div with an explicit position and width; and unloadScene
 removes them. 346 passed, 0 failed. game.js's own script version to
@@ -1803,7 +1850,7 @@ ASSET_VERSION stays at 8.
 Verified two ways. First, the full existing suite, extended with a
 new section (AK) covering opensShop/Game.onShopRequest, a gift's
 onComplete, and an item's buyFlag against the fixture content: 354
-passed, 0 failed. Second, _dev/verify_new_scene.js (Block 19's
+passed, 0 failed. Second, _dev/tests/verify_new_scene.js (Block 19's
 one-off, extended rather than replaced) drives the REAL content/act1.js
 end to end: Nanay into the fade, Kabayo's quest, Kutsero's two lines
 checked verbatim and the 10-barya payment (and its absence on a repeat
@@ -1840,7 +1887,7 @@ are unchanged from Block 20.
 
 Verified by re-running the full suite unchanged (354 passed, 0 failed
 — none of Block 21's changes touch anything the fixture-driven suite
-exercises) and by rewriting _dev/verify_new_scene.js's ending: it no
+exercises) and by rewriting _dev/tests/verify_new_scene.js's ending: it no
 longer walks the post-test/transition flow at all, and instead asserts
 the opposite of what Block 20 confirmed — Acts.objectivesFor(1).length
 === 4, Acts.countDone(1) === 3, a new pumunta_entablado quest logged
@@ -1933,7 +1980,7 @@ fixture consumable (gatas) bought, confirmed to apply its effect
 immediately with no equip step, confirmed to refuse equip()/toggle(),
 consumed with its effect and ownership both ending, and rolled back
 correctly on a simulated failed write — 371 passed, 0 failed. Second,
-_dev/verify_new_scene.js, extended with two more checks on the real
+_dev/tests/verify_new_scene.js, extended with two more checks on the real
 Mansanas exchange: no longer owned and the +1 max health gone,
 immediately after it is actually given to Kabayo — 28 passed, 0
 failed. Not run on a phone, so the hitbox and throw fixes specifically
@@ -1974,13 +2021,13 @@ again; PROJECTILE_SPAWN_GAP (30) still adds its own clearance beyond
 that. Falls back to PLAYER_WIDTH only if asked to throw before any
 sheet has finished loading, when offsetWidth would read 0.
 
-_dev/test.js's own Section AL assertion was too weak to have caught
+_dev/tests/test.js's own Section AL assertion was too weak to have caught
 this: it checked the throw against posX + PLAYER_WIDTH, the same
 narrower bound the buggy code used, so it could not fail regardless
 of which fix was in place. Rewritten to check against
 playerSpriteEl.offsetWidth instead — the box a player actually sees —
 so it would have failed against the Block 22 version and now passes
-against this one. game.js's script version to v31; _dev/test.js is
+against this one. game.js's script version to v31; _dev/tests/test.js is
 dev-only and unversioned.
 
 Verified with a one-off screenshot script (_dev/screenshot_throw.js,
@@ -2101,7 +2148,7 @@ use up the one the quest needs, and the screen says plainly which one
 is the errand. Reusing the "mansanas" id for a different item breaks the
 never-reuse rule above: a test save that bought the old apple resumes
 owning the food apple with binilhAngMansanas set. No study account has
-played the kutsero scene, so db/reset_test_accounts.sql was the whole
+played the kutsero scene, so db/scripts/reset_test_accounts.sql was the whole
 remedy; the rule stands for every id after this.
 
 Guests get the whole system in memory. Every inventory write path used
@@ -2159,8 +2206,8 @@ the nearby difference), so it can tell a seam from no seam.
 
 Melee clip and Kutsero's art (Block 27; the Kutsero sheet turned out to be
 the Tindero's, see Block 33). Two commissioned sheets
-arrived: Assets/Prefab/Macario_Melee.jpg (4 by 3, 12 frames, a punch)
-and Assets/Act 1/Kutsero.png (5 by 3, 14 frames, a front-facing idle).
+arrived: assets/sprites/player/macario-melee.png (4 by 3, 12 frames, a punch)
+and assets/sprites/characters/kutsero.png (5 by 3, 14 frames, a front-facing idle).
 Both were measured with measure-sprite.js. The melee sheet is a PNG with
 transparency saved under a .jpg name; browsers decode by content, so it
 is referenced as delivered, and renaming it later means changing the src
@@ -2184,7 +2231,7 @@ Kutsero changed from a static img (a placeholder, since the file never
 existed) to an animation def in content/act1.js, which is all an NPC
 needs to go through bodySprite. ASSET_VERSION to 9.
 
-The redrawn shooting sheet (Block 28). Assets/Prefab/Macario_Shooting.png
+The redrawn shooting sheet (Block 28). assets/sprites/player/macario-shoot.png
 was replaced with a 5 by 3 sheet of 12 frames, the muzzle flash on frame 4
 counting from one (index 3). shootAim is now frames 0-2, held on 2;
 shootFire is 3-11 at 18fps, half a second, and starts on the flash so the
@@ -2307,7 +2354,7 @@ tondo grew from one screen to 2150px, the kutsero scene's width, for the
 road. The Mananahi is hidden until the apple is given to Kabayo, which
 is set before the fade back, so buildNpcs draws her when tondo is
 rebuilt; revealNpcsByFlag is not needed and still runs only where it did.
-Her art does not exist yet (Assets/Act 1/Mananahi.png). Her last line
+Her art does not exist yet (assets/sprites/characters/mananahi.png). Her last line
 asks for payment, and nothing is built behind it yet: no item, no
 objective. The dialogue speaker was "Mana", as written, until Block 42
 made it "Mananahi" to match the guide's label for her.
@@ -2352,7 +2399,7 @@ animation def instead of a missing static img. The pitfall this is an
 instance of: a file name is not evidence of what is drawn in it, so a
 new sheet is looked at, not only measured.
 
-The ground is Assets/Act 1/Lupa.jpg, replacing the Cement_Tile.png the
+The ground is assets/backgrounds/act1/ground-lupa.jpg, replacing the Cement_Tile.png the
 CSS had named since before any art existed. It is a 447px seamless
 texture (edge columns differ from each other by about as much as any two
 neighbouring columns), drawn at 120px rather than the old 30px tile size
@@ -2631,7 +2678,7 @@ button reruns the same load. The performance formula is printed under
 the table, since an instructor will ask what the number is.
 
 Every value is written as text, never as HTML: a student's name is
-whatever was typed into a profile. _dev/sb-stub.js learned .in() and
+whatever was typed into a profile. _dev/tests/sb-stub.js learned .in() and
 the classes and assessment_scores tables so section AV can drive the
 page; before this block the dashboard had no coverage at all.
 
@@ -2639,7 +2686,7 @@ The man in the moro-moro gets real art (Block 40). Two sheets arrived in
 Assets/Act 1: Muslim_Walk.jpg (4 by 3, 12 frames) and Muslim_Attack.jpg
 (4 by 4, 15 frames, a sword swing). Both are true JPEGs on black, not
 PNGs under a .jpg name like Macario_Melee.jpg, so they were keyed to
-Muslim_Walk.png and Muslim_Attack.png with _dev/key-black.py and the
+Muslim_Walk.png and Muslim_Attack.png with _dev/tools/key-black.py and the
 originals kept. The flood runs from each cell's edges through near-black
 only, because his hair and vest are nearly black too and a plain colour
 key would have punched holes in him.
@@ -2676,7 +2723,7 @@ the Tindero in navy with a kepi and a rifle; the Mananahi is Nanay with
 a green tapis, a maroon skirt and a tape measure. The apple and the
 stage clothes' tile are 32px pixel drawings scaled up nearest neighbour.
 
-_dev/make-placeholder-sprites.py builds all seven, so the choices are
+_dev/tools/make-placeholder-sprites.py builds all seven, so the choices are
 reproducible and adjustable rather than baked into files. Each
 character is one 256px frame in the sheet's own cell, measured with
 measure-sprite.js and declared in a STILL table in content/act1.js as
@@ -2800,6 +2847,83 @@ paintings' flowerbed edge; the paintings' own dirt road reads as the
 road behind them. ASSET_VERSION to 17; game.js v49, style.css v31,
 content/act1.js v31.
 
+The repository reorganised (Block 44). Requested as cleaning the
+directory so it looks professional. Nothing about how the game plays
+changed; only where files live and what they are called. See
+Repository layout, above, for the result and the naming rule.
+
+Where each old path went, for reading the Decisions on record above:
+
+    Assets/Act 1/Nanay.png, Kutsero.png, Tindero.png,
+      Mananahi.png, Bonifacio.png, Katipunero.png,
+      Mamamayan.png                    assets/sprites/characters/<name>.png
+    Assets/Act 1/Horse.png             assets/sprites/characters/kabayo.png
+    Assets/Act 1/Muslim_Girl.png       assets/sprites/characters/maryam.png
+    Assets/Act 1/Muslim_Walk.png,
+      Muslim_Attack.png                assets/sprites/enemies/muslim-walk.png,
+                                       muslim-attack.png
+    Assets/Act 1/Bantay.png            assets/sprites/enemies/bantay.png
+    Assets/Prefab/Macario_Idle.png,
+      _Walking, _Jump, _Shooting       assets/sprites/player/macario-idle.png,
+                                       -walk, -jump, -shoot
+    Assets/Prefab/Macario_Melee.jpg    assets/sprites/player/macario-melee.png
+    Assets/Dead.png (missing)          assets/sprites/player/macario-dead.png
+    Assets/Act 1/Background/1..6.jpg   assets/backgrounds/act1/street-01..06.jpg
+    Assets/Act 1/Background/9.jpg      assets/backgrounds/act1/street-07.jpg
+    Assets/Act 1/Background/12.jpg     assets/backgrounds/act1/street-08.jpg
+    Assets/Act 1/Tondo.png             assets/backgrounds/act1/tondo.png
+    Assets/Act 1/Tondo_Night.png       assets/backgrounds/act1/tondo-night.png
+    Assets/Act 1/Entablado.png         assets/backgrounds/act1/entablado-inside.png
+    Assets/Act 1/Entablado_Labas.png   assets/backgrounds/act1/entablado-outside.png
+    Assets/Act 1/Lupa.jpg              assets/backgrounds/act1/ground-lupa.jpg
+    Assets/Mansanas.png                assets/items/mansanas.png
+    Assets/Act 1/Damit_Entablado.png   assets/items/damit-entablado.png
+    Assets/Prefab/Calm.mp3, Intense    assets/audio/music/calm.mp3, intense.mp3
+    Assets/Prefab/Gun_Shot.mp3         assets/audio/sfx/gunshot.mp3
+    Assets/Act 1/Horse.mp3             assets/audio/sfx/horse.mp3
+    Assets/Fonts/*                     assets/fonts/vt323.woff2,
+                                       press-start-2p.woff2, OFL-*.txt
+    style.css, teacher.css             css/
+    game.js and the other scripts      js/
+    _dev/test.js, verify_new_scene.js,
+      sb-stub.js, fixtures/            _dev/tests/
+    _dev/measure-sprite.js, key-black.py,
+      make-placeholder-sprites.py,
+      create_accounts.js               _dev/tools/
+    db/applied/macario_schema*.sql,
+      db/macario_schema_v5.sql         db/migrations/001..005_*.sql
+    db/macario_items_v3.sql,
+      enrollment_setup.sql             db/seeds/
+    db/db_healthcheck.sql,
+      reset_test_accounts.sql          db/scripts/
+
+The melee sheet took its true extension on the way: it was always a PNG
+saved under a .jpg name (Block 27). db/applied/ as a folder that meant
+"has been run" is gone; the migrations are numbered in running order
+and TRACKER.md's Run log is the one record of what has run, which it
+already was.
+
+Removed: the WebP original of street-08 and "9 (1).jpg" (copies of
+files kept), Muslim_Woman.png (a byte-for-byte copy of maryam.png), and,
+from the repository only, the "Claude outputs" screenshots, the proposal
+PDF and the instrument validation form, which now sit in docs-private/
+on the proponent's computer: the repository is public and published, so
+anything in it can be downloaded from the game's URL.
+
+Two things moving the stylesheet broke, both caught before shipping.
+Every url() in css/style.css is now ../assets/, because a url() in a
+stylesheet resolves against the stylesheet, not the page. And a scene's
+own backdrop, which game.js writes into the --skyline-src custom
+property, came out as css/assets/... and 404'd: a url() inside a custom
+property resolves against the stylesheet that reads the variable. It is
+now written as an absolute URL, and verify_new_scene.js loads the URL
+the backdrop tile actually computes to rather than the name the content
+gives (it failed on the broken version).
+
+ASSET_VERSION to 18; game.js v50, style.css v32, content/act1.js v32,
+content/items.js v9. Every other file's URL changed with its folder, so
+its version number did not need to.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -2882,7 +3006,7 @@ the placeholder.
 
 setupNpcAnimation and setupPlayerAnimation (game.js) used to build their
 CSS background-image with an unquoted url(${...}). That breaks the moment
-an asset path has a space in it — Assets/Act 1/Nanay.png does — and it
+an asset path has a space in it — assets/sprites/characters/nanay.png does — and it
 breaks silently in a way that looks like a loading failure but isn't:
 loadSpriteSheet's preload Image() still succeeds (browsers tolerate a
 literal space in an <img>/Image src), so naturalWidth/naturalHeight,
@@ -2905,14 +3029,14 @@ loaded; the
 same trap applies to any seed that sets every flag the real act currently
 declares. The act silently finishes and jumps to the real post-test
 before #btn-pause or anything else in the test ever becomes visible. Every
-_dev/test.js call site that seeds atTestRoom()-shaped flags now passes
+_dev/tests/test.js call site that seeds atTestRoom()-shaped flags now passes
 fixtureRoutes() to newPage() for exactly this reason (see Decisions on
 record); a new call site that skips it and seeds those flags against the
 real content will hang on a `page.click` timeout with no other clue why.
 
 A student (or a developer) reporting "I can't see Nanay anywhere" is not
 necessarily a code problem. Driving the actual shipped content/act1.js and
-game.js headlessly (real files, not the _dev/test.js fixture) confirms the
+game.js headlessly (real files, not the _dev/tests/test.js fixture) confirms the
 sprite loads, the CSS is quoted correctly, and the dialogue plays; the
 files themselves are not the fault. Checked against the live GitHub main
 branch during Block 13: raw.githubusercontent.com already served the
@@ -2977,7 +3101,7 @@ or an event listener, all of which run after parsing. That is why
 buildNpcs only resets npc.nearSoundOn and leaves the sound itself to
 the next frame.
 
-A new sound file is an Assets/ change like any other: bump ASSET_VERSION,
+A new sound file is an assets/ change like any other: bump ASSET_VERSION,
 because every audio load goes through assetUrl too.
 
 The game loop runs sixty times a second on a phone chosen for being
@@ -3004,6 +3128,14 @@ panelWidth. Moving an NPC, exit or checkpoint onto one of those x values,
 or changing panelWidth, puts someone behind a trunk; move them or run
 verify_new_scene.js, which fails on it.
 
+A url() in css/style.css resolves against css/, so a path to a picture
+there starts ../assets/. A url() that game.js puts into a custom
+property (--skyline-src) resolves against whichever stylesheet reads it,
+which is also css/, so game.js writes those as absolute URLs (new
+URL(assetUrl(src), document.baseURI)). Setting backgroundImage directly
+on an element, as the sprites and panels do, resolves against the page
+and needs neither.
+
 The guide's elements (#guide-marker in #world, #guide-edge beside the
 toast) are static in index.html, like #player, and are never pushed to
 actElements. A scene load must not remove them; the guide hides and
@@ -3020,13 +3152,16 @@ guro@example.com, teacher.
 hi@example.com, student, enrolled in class MAC8-RIZAL.
 
 Both are named in two places that matter, and the two lists are the
-same list for the same reason: db/reset_test_accounts.sql, which
+same list for the same reason: db/scripts/reset_test_accounts.sql, which
 clears them from the SQL editor, and is_reset_allowed() in schema v5,
 which is what lets the in-game reset run at all. A pilot account added
 for the session goes in both. A study account goes in neither, ever.
 
 Supabase project reference: rkfnovfkroajottpmxxq
 
-Migrations and database tooling live in db/. Those already applied are in
-db/applied/. TRACKER.md's Run log records which have actually been run
-against the live project; trust it over a filename.
+Database files live in db/: migrations/ numbered in the order they are
+meant to run, seeds/ for data (the item bank, enrollment), and scripts/
+for tools run by hand in the SQL editor (the health check, the test
+account reset). Whether a migration has been run against the live
+project is recorded in TRACKER.md's Run log and nowhere else, not by
+which folder a file is in.
