@@ -4260,7 +4260,13 @@ const visible = (page, sel) => page.evaluate((s) => {
         const body = g.el.getBoundingClientRect();
         const scale = el.offsetHeight / r.height;
         const centre = body.left + body.width / 2;
-        return { top: (body.bottom - r.top) * scale, near: dir > 0 ? r.left : r.right,
+        const top = (body.bottom - r.top) * scale;
+        // Where the cone's point sits and whether it opens evenly: the
+        // polygon's y values, in percent of the element's height.
+        const m = getComputedStyle(el).clipPath.match(/polygon\(([^)]+)\)/);
+        const ys = m ? m[1].split(",").map((p) => parseFloat(p.trim().split(/\s+/)[1]) || 0) : [];
+        const eye = top - ((ys[0] + ys[3]) / 200) * el.offsetHeight;
+        return { top, eye, ys, near: dir > 0 ? r.left : r.right,
                  far: dir > 0 ? r.right : r.left, centre, reach: r.width * scale,
                  clip: getComputedStyle(el).clipPath };
       };
@@ -4270,8 +4276,11 @@ const visible = (page, sel) => page.evaluate((s) => {
       return { right, left: leftC, radius: g.detectRadius || 240, clearance: GUARD_SIGHT_CLEARANCE };
     });
     ok("a guard's sight is a cone, clipped to a wedge", /^polygon/.test(cone.right.clip), cone.right.clip);
-    ok("its top stays under the height a platform hides him at",
-       cone.right.top < cone.clearance && cone.left.top < cone.clearance, cone);
+    ok("its point is at eye height, about 118 above the road (Block 46)",
+       cone.right.eye > 110 && cone.right.eye < 126 && Math.abs(cone.left.eye - cone.right.eye) < 1, cone);
+    ok("and it looks straight ahead, opening evenly above and below his eye line (Block 47)",
+       cone.right.ys.length === 4 && Math.abs((cone.right.ys[0] + cone.right.ys[3]) / 2 - 50) < 0.5 &&
+       Math.abs((cone.right.ys[1] + cone.right.ys[2]) / 2 - 50) < 0.5, cone.right.ys);
     ok("it starts at the middle of his body and runs detectRadius, facing right",
        Math.abs(cone.right.near - cone.right.centre) < 2 && Math.abs(cone.right.reach - cone.radius) < 2, cone.right);
     ok("and mirrors about his middle facing left",
@@ -4345,6 +4354,19 @@ const visible = (page, sel) => page.evaluate((s) => {
                panels: document.querySelectorAll(".skyline-panel").length,
                tondoTiles: document.querySelectorAll("#skyline .skyline-tile").length };
     });
+    const flipped = await page.evaluate(() => {
+      const scene = SCENES.find((sc) => sc.id === "misyon");
+      scene.panels = ["assets/backgrounds/act1/tondo.png"];
+      scene.mirrorPanels = true;
+      loadScene("misyon");
+      const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
+      const out = tiles.map((t) => t.classList.contains("skyline-tile-mirrored"));
+      delete scene.mirrorPanels;
+      return { out, transform: tiles[1] && getComputedStyle(tiles[1]).transform };
+    });
+    ok("mirrorPanels flips every second panel and only those (Block 45)",
+       JSON.stringify(flipped.out) === "[false,true,false]" && /matrix\(-1/.test(flipped.transform), flipped);
+
     ok("a scene without panels gets Tondo.png's tiles back and no trees",
        gone.trees === 0 && gone.panels === 0 && gone.tondoTiles > 0, gone);
     await ctx.close();

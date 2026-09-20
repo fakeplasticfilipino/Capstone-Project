@@ -262,13 +262,20 @@ html, body {
   transform: scaleX(-1);
 }
 
-/* Block 43. A painting in a row of different paintings: it covers its
-   panel, bottom first, so the road stays under the characters' feet and
-   a short screen loses a little sky rather than the ground. game.js sets
-   the picture on the element itself, since each panel has its own. */
+/* Block 43, redrawn in Block 46. A panel's picture is drawn whole, its
+   full width and its own shape, standing on the floor: the panel starts
+   at --ground-level, so the bottom of the painting meets the dirt strip
+   instead of running down behind it. Above the picture's top edge is the
+   scene's panelSky colour (game.js). On a screen shorter than the picture
+   it is the top of the sky that goes past the screen's edge, never the
+   ground. game.js sets the picture on the element, since each panel can
+   have its own. */
 .skyline-panel {
-  background-size: cover;
+  top: 0;
+  bottom: var(--ground-level);
+  background-size: 100% auto;
   background-position: center bottom;
+  background-repeat: no-repeat;
 }
 
 /* The shade of a shadow tree on the paintings either side of a join,
@@ -1114,23 +1121,30 @@ html, body {
   background: #e53935;
 }
 
-/* Block 42. What a guard can see: a soft cone laid along the road in
-   front of him, replacing Block 37's flat band. It starts narrow at his
-   waist, in the middle of his body, and fans down to the dirt,
-   detectRadius long (game.js sets the width), which is the same centre to
-   centre distance updateGuards measures. Its top edge stays under 54px,
-   below GUARD_SIGHT_CLEARANCE (60): every platform in the game stands
-   above it, so the picture says what the rule says, that standing up
-   there is out of his sight. Faint on purpose, a light on the road rather
-   than a wall. Facing left is the same cone mirrored about his middle. A
-   guard who is down sees nothing. */
+/* Block 42; from his eyes since Block 46; straight ahead since Block 47.
+   What a guard can see: a soft cone that leaves his eyes, about 118
+   above the road on the Bantay still (his eyes are 107 native pixels
+   above his feet, 121 of which are drawn 134 tall), and looks straight
+   ahead the way an eye does, widening evenly above and below that line,
+   detectRadius long (game.js sets the width), the same centre to centre
+   distance updateGuards measures. It is a picture of where he is looking
+   and how far; the rule itself is unchanged (in front of him, within
+   detectRadius, and not standing on a platform 60 or more up), so a
+   student on a platform can stand inside the drawn cone and still be
+   out of sight. Faint on purpose. Facing left is the same cone mirrored
+   about his middle. A guard who is down sees nothing.
+
+   The element runs from 73 to 163 above the road, 90 tall, centred on
+   his eyes (118): a point at the eyes (45.5% to 54.5%, about 8 pixels)
+   opening to the full 90 at the far end, about 10 degrees either side
+   of level at a 240 radius. */
 .guard-sight {
   position: absolute;
-  bottom: -6px;
+  bottom: 73px;
   left: 50%;
-  height: 60px;
+  height: 90px;
   background: linear-gradient(to right, rgba(244, 197, 66, 0.6), rgba(244, 197, 66, 0.32) 60%, rgba(244, 197, 66, 0));
-  clip-path: polygon(0 8%, 100% 0, 100% 100%, 0 40%);
+  clip-path: polygon(0 45.5%, 100% 0, 100% 100%, 0 54.5%);
   transform-origin: 0 50%;
   pointer-events: none;
 }

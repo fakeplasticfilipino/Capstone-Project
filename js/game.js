@@ -659,12 +659,21 @@ function buildPanelBackdrop(scene) {
 
   for (let i = 0, x = 0; x < WORLD_WIDTH; i++, x += width) {
     const tile = document.createElement("div");
-    tile.className = "skyline-tile skyline-panel";
+    // Block 45. mirrorPanels flips every second panel, as Block 26 did
+    // for Tondo's tiles: a flipped copy meets its neighbour at the same
+    // column of the painting, so even under the tree nothing jumps. Safe
+    // with cover, because it crops both edges of every panel alike.
+    const mirrored = scene.mirrorPanels && i % 2 === 1;
+    tile.className = "skyline-tile skyline-panel" + (mirrored ? " skyline-tile-mirrored" : "");
     tile.style.left = x + "px";
     // One pixel of overlap, as with Tondo's tiles, so two fractional
     // edges never leave a hairline of the layer showing through.
     tile.style.width = width + 1 + "px";
     tile.style.backgroundImage = `url("${assetUrl(scene.panels[i % scene.panels.length])}")`;
+    // Block 46. The whole picture stands on the floor (.skyline-panel):
+    // anything above its top edge is panelSky, so the sky carries on up
+    // a tall screen instead of ending in the page's own colour.
+    if (scene.panelSky) tile.style.backgroundColor = scene.panelSky;
     layer.appendChild(tile);
     actElements.push(tile);
   }

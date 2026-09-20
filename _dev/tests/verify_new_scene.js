@@ -108,6 +108,11 @@ const panels = (page) => page.evaluate(async () => {
     grey: trees.length ? getComputedStyle(trees[0]).filter : null,
     loaded: widths.every((w) => w > 0), widths, blocked,
     tondoTiles: document.querySelectorAll("#skyline .skyline-tile:not(.skyline-panel)").length,
+    srcs, noneMirrored: tiles.every((t) => !t.classList.contains("skyline-tile-mirrored")),
+    // Block 46: the picture stands on the floor, whole, with sky above it.
+    onFloor: tiles.every((t) => getComputedStyle(t).bottom === GROUND_LEVEL + "px" &&
+      /^100%( auto)?$/.test(getComputedStyle(t).backgroundSize)),
+    sky: tiles.length ? getComputedStyle(tiles[0]).backgroundColor : null,
   };
 });
 
@@ -143,8 +148,11 @@ const panels = (page) => page.evaluate(async () => {
   // --- Nanay, then the fade into kutsero (covered fully in Block 19's
   // own verification; just enough here to land in the memory). ---
   const p0 = await panels(page);
-  ok("tondo is drawn from the new paintings, two panels and no tondo.png tiles",
-     p0.tiles === p0.expectedTiles && p0.tiles === 2 && p0.tondoTiles === 0 && p0.loaded, p0);
+  ok("tondo is Tondo.png, as two panels, neither mirrored (Block 46)",
+     p0.tiles === p0.expectedTiles && p0.tiles === 2 && p0.tondoTiles === 0 && p0.loaded &&
+     p0.srcs.length === 1 && /tondo\.png$/.test(p0.srcs[0]) && p0.noneMirrored, p0);
+  ok("each picture stands whole on the floor, with its own sky colour above",
+     p0.onFloor && p0.sky === "rgb(114, 168, 208)", p0);
   ok("a shadow tree stands over the join", p0.joins.length === 1 &&
      JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
   ok("in front of Macario, and behind the guide's arrow",
@@ -184,9 +192,9 @@ const panels = (page) => page.evaluate(async () => {
   const inKutsero = await page.evaluate(() => ({ room: currentRoom, grey: document.getElementById("skyline").classList.contains("grey-filter") }));
   ok("landed in the kutsero scene, greyed out", inKutsero.room === "kutsero" && inKutsero.grey, inKutsero);
   const pK = await panels(page);
-  ok("the memory has its own two paintings and one tree, greyed with it",
+  ok("the memory is the same Tondo, one tree, greyed with it",
      pK.tiles === 2 && pK.treesAt.length === 1 && pK.loaded && pK.grey === "grayscale(1)" &&
-     pK.blocked.length === 0, pK);
+     pK.noneMirrored && pK.onFloor && /tondo\.png$/.test(pK.srcs[0]) && pK.blocked.length === 0, pK);
   ok("the ground is greyed with it (Block 33)",
      await page.evaluate(() => getComputedStyle(document.getElementById("ground-tiles")).filter === "grayscale(1)"));
   const memoryLine = await page.evaluate(() => ({ open: inDialogue, speaker: dialogueSpeaker.textContent, text: dialogueText.textContent }));
@@ -800,8 +808,8 @@ const panels = (page) => page.evaluate(async () => {
     citizenArt: document.querySelector("#npc-mangingisda .sprite").style.backgroundImage,
   }));
   const pS = await panels(page);
-  ok("the street runs through all eight paintings, a tree over each of its seven joins",
-     pS.tiles === 8 && new Set(pS.widths).size >= 1 && pS.loaded &&
+  ok("the street is eight Tondo panels, a tree over each of its seven joins",
+     pS.tiles === 8 && pS.noneMirrored && pS.onFloor && pS.srcs.length === 1 && pS.loaded &&
      pS.treesAt.length === 7 && JSON.stringify(pS.treesAt) === JSON.stringify(pS.joins) && pS.grey === "none", pS);
   ok("no citizen, doorway or checkpoint stands behind a tree", pS.blocked.length === 0, pS.blocked);
   ok("Tumuloy fades to the street, in colour",
@@ -854,10 +862,20 @@ const panels = (page) => page.evaluate(async () => {
     const r = el.getBoundingClientRect();
     const body = g.el.getBoundingClientRect();
     const scale = el.offsetHeight / r.height; // world px per screen px
-    return { top: (body.bottom - r.top) * scale, clip: getComputedStyle(el).clipPath };
+    // His drawn head, from the sprite inside his body: the cone should
+    // leave from its lower half, where his eyes are, not from his waist.
+    const art = g.el.querySelector(".sprite").getBoundingClientRect();
+    const top = (body.bottom - r.top) * scale;
+    const drawn = art.height * scale;
+    const m = getComputedStyle(el).clipPath.match(/polygon\(([^)]+)\)/);
+    const ys = m ? m[1].split(",").map((p) => parseFloat(p.trim().split(/\s+/)[1]) || 0) : [];
+    const eye = top - ((ys[0] + ys[3]) / 200) * el.offsetHeight;
+    return { top, drawn, eye, eyeShare: eye / drawn, ys, clip: getComputedStyle(el).clipPath };
   });
-  ok("each guard's sight is a cone whose top stays under the platforms",
-     /^polygon/.test(cone.clip) && cone.top < 60 && cone.top > 40, cone);
+  ok("each guard's cone leaves from his eyes (Block 46)",
+     /^polygon/.test(cone.clip) && cone.eyeShare > 0.8 && cone.eyeShare < 0.95, cone);
+  ok("and looks straight ahead rather than down at the road (Block 47)",
+     Math.abs((cone.ys[1] + cone.ys[2]) / 2 - 50) < 0.5 && Math.abs((cone.ys[0] + cone.ys[3]) / 2 - 50) < 0.5, cone);
   const gC = await guide(page);
   ok("the guide points at the first citizen, the Mangingisda", gC.label === "Mangingisda", gC);
   await page.keyboard.press("e");

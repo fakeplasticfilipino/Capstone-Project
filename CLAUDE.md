@@ -344,7 +344,10 @@ Scene shape:
       backdrop: { src },                         optional; own picture, drawn once
       panels: ["assets/...jpg", ...],            optional; paintings side by
       panelWidth: 1450,                          side, a shadow tree at each
-                                                 join (Block 43)
+      mirrorPanels: true,                        join (Block 43); flip every
+                                                 second one (Block 45)
+      panelSky: "#72a8d0",                       colour above the pictures
+                                                 (Block 46)
       ground: false,                             optional; hides the dirt strip
       music: "assets/audio/music/x.mp3",         optional; this scene's track
       exits: [{ id, x, width, label, toScene,    optional; doorways
@@ -377,11 +380,12 @@ implicit scene, so content/act2.js through act4.js need no changes. Do not
 A guard whose patrolFrom and patrolTo are within 1px of each other is a
 stationary sentry and keeps its given facing.
 
-Every guard draws his sight on the road (.guard-sight): since Block 42 a
-soft cone from the middle of his body, narrow at his waist and fanning
-down to the dirt, detectRadius long, on the side he faces. Its top stays
-under GUARD_SIGHT_CLEARANCE, so every platform stands above it, which is
-the rule below drawn. A guard does
+Every guard draws his sight (.guard-sight): since Block 47 a soft cone
+from his eyes (about 118 above the road) looking straight ahead,
+widening evenly above and below his eye line, detectRadius long from the
+middle of his body, on the side he faces. It is a picture of where he
+looks and how far, not of the rule below: a student on a platform can
+stand inside the drawn cone and still be out of sight. A guard does
 not see Macario while he stands on a platform GUARD_SIGHT_CLEARANCE (60)
 or more above the floor; in the middle of a jump he is still seen. A
 guard with shoots: true does not catch: when his meter fills he turns
@@ -456,7 +460,13 @@ same x on every phone: at panelWidth, 2 times it, and so on, never at
 the end of the world. Keep NPCs, exits and checkpoints at least 40px
 clear of a join, or the trunk stands in front of them;
 verify_new_scene.js checks every Act I scene for this. greyFilter greys
-the paintings and the trees with them.
+the paintings and the trees with them. mirrorPanels (Block 45) flips
+every second panel, so a single picture repeated along the road meets
+itself at the same column at every join, as Block 26's tiles did; Act I
+does not use it since Block 46. Each picture is drawn whole, its full
+panel width and its own shape, standing on the floor (the panel starts at
+--ground-level), and panelSky fills whatever is above its top edge on a
+tall screen.
 
 An exit is a doorway: a zone on the road, x and width like a hazard,
 reached edge to edge like an NPC. The interact button reads its label
@@ -2923,6 +2933,63 @@ gives (it failed on the broken version).
 ASSET_VERSION to 18; game.js v50, style.css v32, content/act1.js v32,
 content/items.js v9. Every other file's URL changed with its folder, so
 its version number did not need to.
+
+Back to Tondo.png, with the trees (Block 45). Requested after seeing
+Block 43's paintings on the device: the simpler backdrop, Tondo.png,
+repeated along the road with every second copy mirrored as in Block 26,
+and the shadow trees kept at the joins. All three streets (tondo, the
+memory, the lansangan) declare panels: TONDO_PANELS, the one picture,
+and mirrorPanels: true. The panel machinery stayed rather than going
+back to Block 26's tiles because the trees need joins at fixed x
+(1450 apart) to keep NPCs clear of them; the tiles' joins moved with
+the screen's height. Cover crops both edges of every panel alike, so a
+mirrored neighbour still meets it at the same column of the painting,
+and the tree now hides a join that is already continuous. The eight
+street paintings stay in assets/backgrounds/act1, loaded by nothing.
+game.js v51, content/act1.js v33; no asset changed.
+
+No mirror, the picture on the floor, and the cone from the eyes (Block
+46). Three requests after Block 45 on the device. The mirroring read as
+ugly, so the streets are Tondo.png repeated the right way round, and
+the shadow trees go back to hiding a real jump at each join, which is
+what they were made for (mirrorPanels stays in the engine, unused).
+
+The picture was drawn with cover, anchored at the bottom of the screen,
+so its lowest 60 pixels ran down behind the dirt strip: the painting
+looked dug into the ground. A panel now starts at --ground-level and
+draws the picture at its full width and its own shape (1450 by 580),
+bottom edge on the floor. On a screen taller than the picture the space
+above is the scene's panelSky, Tondo.png's own top-row sky colour
+(#72a8d0), so the sky carries on; on a shorter one it is the top of the
+sky that goes past the screen's edge, never the ground. The panel width
+stays fixed for the trees' sake (Block 43), so the whole picture is
+visible only where the screen is at least about 640 world pixels tall;
+a 412px-tall phone at --zoom 0.7 shows all of it but the top 50 or so of
+the sky.
+
+The cone left from the middle of the guard's body at waist height,
+chosen in Block 42 so its top stayed under the platforms. The proponent
+asked for it to leave from the eyes instead. Measured on the Bantay
+still, his eyes are 107 of his 121 native pixels above his feet, 118 at
+display height, so the cone's element now runs from 6 below the road to
+122 above it and its polygon narrows to the eyes (122 to 114) and opens
+to the dirt at the far end, its top edge there at 48. The rule did not
+move: standing on any platform 60 or more up is still out of sight,
+though near a guard the picture now crosses a platform. If that ever
+confuses a tester, the choice is the picture or the rule, not both.
+
+game.js v52, style.css v33, content/act1.js v34.
+
+The cone looks straight ahead (Block 47). Block 46's cone left from the
+eyes but slanted down to the dirt, which the proponent found odd for an
+eye. It now points level: a point at his eyes opening evenly to 90
+pixels tall at the far end, about 10 degrees either side, still
+detectRadius long. Visual only, at the proponent's direction; the range
+and the rule did not change. The cost, stated so nobody rediscovers it:
+the drawn cone now crosses every platform a guard walks near, so the
+picture no longer says "up there he cannot see you". The platforms still
+work; the briefing line ("Ang bantay ay nakatingin sa daan, hindi sa
+itaas") is what tells a student so. style.css v34.
 
 ## Pitfalls
 
