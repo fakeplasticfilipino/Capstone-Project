@@ -4280,6 +4280,76 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nAX. Painted panels and shadow trees (Block 43)");
+  {
+    // The fixture scene given panels at run time, from two pictures that
+    // exist, so the engine is tested apart from whatever Act I ships.
+    const { ctx, page } = await enterTestRoom();
+    const built = await page.evaluate(() => {
+      const scene = SCENES.find((sc) => sc.id === "misyon");
+      scene.panels = ["Assets/Act 1/Background/1.jpg", "Assets/Act 1/Background/2.jpg"];
+      loadScene("misyon");
+      const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
+      const trees = [...document.querySelectorAll(".shadow-tree")];
+      return {
+        world: WORLD_WIDTH,
+        tiles: tiles.map((t) => ({ left: t.style.left, src: t.style.backgroundImage })),
+        trees: trees.map((t) => parseFloat(t.style.left) + SHADOW_TREE_WIDTH / 2),
+        shades: document.querySelectorAll("#skyline .panel-join-shade").length,
+        tondoTiles: document.querySelectorAll("#skyline .skyline-tile:not(.skyline-panel)").length,
+        treeZ: trees.length && +getComputedStyle(trees[0]).zIndex,
+        playerZ: +getComputedStyle(document.getElementById("player")).zIndex,
+        treeBg: trees.length && getComputedStyle(trees[0]).backgroundImage.slice(0, 30),
+      };
+    });
+    ok("panels are laid a fixed width apart and repeat in order past the end of the list",
+       built.tiles.length === 3 && built.tiles[1].left === "1450px" &&
+       /1\.jpg/.test(built.tiles[0].src) && /2\.jpg/.test(built.tiles[1].src) && /1\.jpg/.test(built.tiles[2].src), built);
+    ok("a tree and its shade stand at every join, and none at the end of the world",
+       JSON.stringify(built.trees) === "[1450,2900]" && built.shades === 2 && built.world === 2940, built);
+    ok("no Tondo.png tile is laid under a panelled scene", built.tondoTiles === 0, built);
+    ok("the tree is drawn from its inline picture, in front of Macario",
+       /^url\("data:image\/svg\+xml/.test(built.treeBg) && built.treeZ > built.playerZ, built);
+
+    const pixels = await page.evaluate(async () => {
+      // Macario standing on a join is covered by the trunk: the pixel on
+      // his chest, which is his light camisa when nothing is in front of
+      // him (his trousers are nearly as dark as the tree, so they would
+      // pass either way), is the tree's colour.
+      posX = 1450 - PLAYER_WIDTH / 2; posY = floorHeightAt(posX); velY = 0; facing = 1;
+      await new Promise((r) => setTimeout(r, 200));
+      const r = document.getElementById("player").getBoundingClientRect();
+      return { x: Math.round(r.left + r.width / 2), y: Math.round(r.bottom - r.height * 0.62) };
+    });
+    const shot = await page.screenshot({ clip: { x: pixels.x, y: pixels.y, width: 1, height: 1 } });
+    const { PNG } = (() => { try { return require("pngjs"); } catch (e) { return {}; } })();
+    let rgb = null;
+    if (PNG) { const png = PNG.sync.read(shot); rgb = [...png.data.slice(0, 3)]; }
+    else {
+      // No PNG decoder installed: read the pixel in the page instead.
+      rgb = await page.evaluate(async (b64) => {
+        const img = new Image(); img.src = "data:image/png;base64," + b64;
+        await img.decode();
+        const c = document.createElement("canvas"); c.width = c.height = 1;
+        const g = c.getContext("2d"); g.drawImage(img, 0, 0);
+        return [...g.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+      }, shot.toString("base64"));
+    }
+    ok("standing at a join, Macario is behind the trunk", rgb && rgb.every((v) => v < 40), { at: pixels, rgb });
+
+    const gone = await page.evaluate(() => {
+      const scene = SCENES.find((sc) => sc.id === "misyon");
+      delete scene.panels;
+      loadScene("misyon");
+      return { trees: document.querySelectorAll(".shadow-tree").length,
+               panels: document.querySelectorAll(".skyline-panel").length,
+               tondoTiles: document.querySelectorAll("#skyline .skyline-tile").length };
+    });
+    ok("a scene without panels gets Tondo.png's tiles back and no trees",
+       gone.trees === 0 && gone.panels === 0 && gone.tondoTiles > 0, gone);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

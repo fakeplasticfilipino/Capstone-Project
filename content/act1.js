@@ -411,6 +411,9 @@ window.ACT_1 = {
       // Mananahi stands on, and again in Block 34 to 2900 so the entablado
       // stands at the end of it, clear of her.
       worldWidth: 2900,
+      // Block 43. The road as two paintings side by side, with a shadow
+      // tree over the join at 1450 (game.js, PANEL_WIDTH).
+      panels: ["Assets/Act 1/Background/1.jpg", "Assets/Act 1/Background/2.jpg"],
       // Block 34. The outside of the entablado, as scenery. Its picture has
       // a transparent background, measured the way a sprite is (the
       // drawing's alpha box, feet at the bottom of the stairs), drawn 400px
@@ -660,6 +663,9 @@ window.ACT_1 = {
       // than one.
       id: "kutsero",
       worldWidth: 2150,
+      // Block 43. Two paintings of their own, greyed with the rest of the
+      // memory; one tree at 1450, between the glass and the Tindero.
+      panels: ["Assets/Act 1/Background/3.jpg", "Assets/Act 1/Background/4.jpg"],
       startX: 80,
       greyFilter: true,
       // Block 31. Nanay's voice carries into the memory, opening it the
@@ -990,6 +996,10 @@ window.ACT_1 = {
       // Assets/Act 1/Mamamayan.png.
       id: "lansangan",
       worldWidth: 11000,
+      // Block 43. All eight paintings, one after another, with a shadow
+      // tree over each of the seven joins.
+      panels: ["Assets/Act 1/Background/5.jpg", "Assets/Act 1/Background/6.jpg", "Assets/Act 1/Background/9.jpg", "Assets/Act 1/Background/12.jpg",
+               "Assets/Act 1/Background/1.jpg", "Assets/Act 1/Background/2.jpg", "Assets/Act 1/Background/3.jpg", "Assets/Act 1/Background/4.jpg"],
       startX: 200,
       noRanged: true,
       // Once, on the way in: how many he is looking for, and the one rule.

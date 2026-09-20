@@ -243,7 +243,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 16;
+const ASSET_VERSION = 17;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -557,6 +557,15 @@ function unloadAct() {
 function buildSkylineTiles(layerIds) {
   const backdrop = currentScene && currentScene.backdrop;
 
+  // Block 43. A street drawn as a row of different paintings, each one
+  // panel, with a shadow tree in front of every join. Only the day layer:
+  // there is no night art for the panels, and no shipped scene turns to
+  // night.
+  if (currentScene && Array.isArray(currentScene.panels) && currentScene.panels.length) {
+    if (!layerIds || layerIds.includes("skyline")) buildPanelBackdrop(currentScene);
+    return;
+  }
+
   // Block 34. A scene's own backdrop is one painting of one room, not a
   // street, so it is drawn once rather than tiled: a mirrored second
   // copy of a stage would put a second set of curtains beside the first.
@@ -599,6 +608,106 @@ function buildSkylineTiles(layerIds) {
     }
   });
 }
+
+// =============================================================
+// PANEL BACKDROPS AND SHADOW TREES (Block 43)
+//
+// A scene may declare panels: a list of paintings laid side by side along
+// the road, repeated in order if the road is longer than the list. Unlike
+// Tondo.png's mirrored tiles, these are different pictures, and two
+// different paintings never meet cleanly at an edge: a hut is cut in half,
+// the path jumps. So every join gets a shadow tree, a dark silhouette in
+// the foreground that Macario, the NPCs and the guards all pass behind.
+// It hides the join and reads as the nearest tree on the street rather
+// than as a seam.
+//
+// Each panel is a fixed PANEL_WIDTH of the world, not "one image wide at
+// the layer's height" the way Tondo's tiles are. The layer's height is
+// the screen's height over --zoom, so it differs by phone; a width that
+// followed it would put every join, and so every tree, somewhere
+// different on each phone, and a tree could land on the Mananahi on one
+// device and nowhere near her on another. With a fixed width the trees
+// are at the same x on every screen, which is what lets content keep its
+// people clear of them (verify_new_scene.js checks that). The painting
+// covers its panel (background-size: cover), anchored at the bottom so
+// the road stays under the characters' feet: on a short screen a little
+// sky is cropped, on a wide one a little of each side, and the side is
+// under the tree anyway.
+// =============================================================
+
+const PANEL_WIDTH = 1450;       // world px; about one phone screen and a bit
+const SHADOW_TREE_WIDTH = 380;  // must match .shadow-tree's CSS width
+
+// Where the trees stand: every join between two panels, and never at the
+// very end of the world, where there is nothing to join.
+function panelJoins(scene) {
+  const width = scene.panelWidth || PANEL_WIDTH;
+  const joins = [];
+  for (let x = width; x < (scene.worldWidth || WORLD_WIDTH) - 1; x += width) joins.push(x);
+  return joins;
+}
+
+function buildPanelBackdrop(scene) {
+  const layer = document.getElementById("skyline");
+  if (!layer) return;
+  layer.classList.add("skyline-tiled");
+  const width = scene.panelWidth || PANEL_WIDTH;
+
+  for (let i = 0, x = 0; x < WORLD_WIDTH; i++, x += width) {
+    const tile = document.createElement("div");
+    tile.className = "skyline-tile skyline-panel";
+    tile.style.left = x + "px";
+    // One pixel of overlap, as with Tondo's tiles, so two fractional
+    // edges never leave a hairline of the layer showing through.
+    tile.style.width = width + 1 + "px";
+    tile.style.backgroundImage = `url("${assetUrl(scene.panels[i % scene.panels.length])}")`;
+    layer.appendChild(tile);
+    actElements.push(tile);
+  }
+
+  panelJoins(scene).forEach((x) => {
+    // The tree's shade on the painting, behind everyone: it softens the
+    // two paintings into each other either side of the trunk. In the
+    // backdrop layer, so greyFilter greys it with the paintings.
+    const shade = document.createElement("div");
+    shade.className = "panel-join-shade";
+    shade.style.left = x + "px";
+    layer.appendChild(shade);
+    actElements.push(shade);
+
+    // The tree itself, in front of everyone. Its own element in #world,
+    // above #player (style.css, .shadow-tree).
+    const tree = document.createElement("div");
+    tree.className = "shadow-tree";
+    tree.style.left = x - SHADOW_TREE_WIDTH / 2 + "px";
+    tree.style.backgroundImage = SHADOW_TREE_URL;
+    // Characters stay in colour in a memory, but the tree is scenery,
+    // so it greys with the paintings behind it.
+    if (scene.greyFilter) tree.classList.add("grey-filter");
+    world.appendChild(tree);
+    actElements.push(tree);
+  });
+}
+
+// A broad tree in silhouette, drawn in a tall box (380 by 900) and set as
+// the tree element's background, anchored at the bottom: whatever the
+// screen's height, the trunk stands on the road and the crown runs off the
+// top of the screen. The crown's lowest leaves hang about 300 above the
+// road, clear of every head, so on the road only the trunk hides anyone.
+// Two tones: the mass, and a few slightly lighter leaf clumps, so it reads
+// as a tree in shade rather than a hole in the picture.
+//
+// Generated once (crown lobes, hanging leaf tips, a trunk) and pasted in
+// as a data URL rather than shipped as a file: it costs no download, so a
+// slow connection cannot leave a join bare, and one URL means the browser
+// decodes it once for every tree on the road. The crown's lobes are one
+// path, so where they overlap there is no seam.
+//
+// A const, not a function: loadAct reaches buildPanelBackdrop at parse
+// time (the TDZ pitfall), and that first call is further down this file
+// than this line, so the value already exists when it is read.
+const SHADOW_TREE_URL =
+  'url("data:image/svg+xml,' + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 380 900\"><g fill=\"#0c1a0e\"><path d=\"M166 900 C170 820 176 740 172 680 C168 640 176 610 180 590 L204 590 C208 612 214 640 210 684 C206 744 212 822 222 900 Z\"/><path d=\"M170 900 C160 884 142 890 124 900 Z M218 900 C228 882 246 888 266 900 Z\"/><path d=\"M178 626 C162 606 142 594 122 588 L128 578 C150 584 170 596 184 610 Z\"/><path d=\"M204 620 C220 602 240 590 262 584 L256 574 C234 580 214 592 198 606 Z\"/><path d=\"M240 560 L250 579 L254 560Z M197 574 L200 604 L210 574Z M199 573 L204 601 L218 573Z M88 529 L91 555 L102 529Z M304 491 L313 522 L318 491Z M214 570 L228 606 L233 570Z M106 549 L122 574 L127 549Z M227 564 L237 597 L248 564Z M233 562 L244 586 L252 562Z M299 500 L302 530 L313 500Z M187 575 L197 616 L199 575Z M158 573 L163 613 L178 573Z M273 531 L277 553 L293 531Z M225 567 L233 589 L239 567Z M131 563 L140 602 L147 563Z M269 536 L281 559 L287 536Z M71 506 L74 538 L85 506Z M75 511 L83 542 L87 511Z M177 575 L189 607 L198 575Z M254 550 L267 584 L268 550Z M128 561 L134 593 L144 561Z M267 540 L279 569 L281 540Z\"/><path d=\"M86 522a31 31 0 1 0 62 0a31 31 0 1 0 -62 0M186 553a34 34 0 1 0 68 0a34 34 0 1 0 -68 0M149 445a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M101 402a31 31 0 1 0 62 0a31 31 0 1 0 -62 0M124 380a32 32 0 1 0 64 0a32 32 0 1 0 -64 0M39 479a35 35 0 1 0 70 0a35 35 0 1 0 -70 0M24 303a34 34 0 1 0 68 0a34 34 0 1 0 -68 0M59 411a31 31 0 1 0 62 0a31 31 0 1 0 -62 0M145 211a38 38 0 1 0 76 0a38 38 0 1 0 -76 0M135 117a36 36 0 1 0 72 0a36 36 0 1 0 -72 0M184 401a38 38 0 1 0 76 0a38 38 0 1 0 -76 0M66 250a38 38 0 1 0 76 0a38 38 0 1 0 -76 0M36 385a29 29 0 1 0 58 0a29 29 0 1 0 -58 0M216 241a37 37 0 1 0 74 0a37 37 0 1 0 -74 0M155 565a28 28 0 1 0 56 0a28 28 0 1 0 -56 0M207 291a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M114 115a24 24 0 1 0 48 0a24 24 0 1 0 -48 0M110 182a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M157 259a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M186 89a33 33 0 1 0 66 0a33 33 0 1 0 -66 0M158 100a27 27 0 1 0 54 0a27 27 0 1 0 -54 0M183 460a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M62 460a37 37 0 1 0 74 0a37 37 0 1 0 -74 0M115 561a30 30 0 1 0 60 0a30 30 0 1 0 -60 0M129 461a36 36 0 1 0 72 0a36 36 0 1 0 -72 0M63 512a29 29 0 1 0 58 0a29 29 0 1 0 -58 0M181 542a34 34 0 1 0 68 0a34 34 0 1 0 -68 0M264 390a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M92 325a40 40 0 1 0 80 0a40 40 0 1 0 -80 0M275 315a35 35 0 1 0 70 0a35 35 0 1 0 -70 0M271 355a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M223 434a34 34 0 1 0 68 0a34 34 0 1 0 -68 0M106 268a36 36 0 1 0 72 0a36 36 0 1 0 -72 0M188 400a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M222 487a38 38 0 1 0 76 0a38 38 0 1 0 -76 0M163 299a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M273 207a24 24 0 1 0 48 0a24 24 0 1 0 -48 0M284 334a36 36 0 1 0 72 0a36 36 0 1 0 -72 0M268 491a32 32 0 1 0 64 0a32 32 0 1 0 -64 0M37 465a32 32 0 1 0 64 0a32 32 0 1 0 -64 0M74 342a35 35 0 1 0 70 0a35 35 0 1 0 -70 0M52 208a31 31 0 1 0 62 0a31 31 0 1 0 -62 0M232 535a35 35 0 1 0 70 0a35 35 0 1 0 -70 0M229 123a31 31 0 1 0 62 0a31 31 0 1 0 -62 0M96 521a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M294 363a28 28 0 1 0 56 0a28 28 0 1 0 -56 0M165 361a34 34 0 1 0 68 0a34 34 0 1 0 -68 0M232 314a34 34 0 1 0 68 0a34 34 0 1 0 -68 0M188 368a38 38 0 1 0 76 0a38 38 0 1 0 -76 0M57 376a35 35 0 1 0 70 0a35 35 0 1 0 -70 0M258 516a30 30 0 1 0 60 0a30 30 0 1 0 -60 0M39 308a29 29 0 1 0 58 0a29 29 0 1 0 -58 0M124 448a37 37 0 1 0 74 0a37 37 0 1 0 -74 0M257 266a29 29 0 1 0 58 0a29 29 0 1 0 -58 0M271 230a31 31 0 1 0 62 0a31 31 0 1 0 -62 0M211 177a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M282 455a33 33 0 1 0 66 0a33 33 0 1 0 -66 0M123 512a35 35 0 1 0 70 0a35 35 0 1 0 -70 0M76 131a38 38 0 1 0 76 0a38 38 0 1 0 -76 0M272 387a38 38 0 1 0 76 0a38 38 0 1 0 -76 0M145 581a26 26 0 1 0 52 0a26 26 0 1 0 -52 0M185 156a38 38 0 1 0 76 0a38 38 0 1 0 -76 0M153 459a39 39 0 1 0 78 0a39 39 0 1 0 -78 0M60 165a38 38 0 1 0 76 0a38 38 0 1 0 -76 0M55 270a38 38 0 1 0 76 0a38 38 0 1 0 -76 0\"/></g><g fill=\"#132817\"><ellipse cx=\"189\" cy=\"196\" rx=\"13\" ry=\"7\" transform=\"rotate(15 189 196)\"/><ellipse cx=\"253\" cy=\"266\" rx=\"18\" ry=\"9\" transform=\"rotate(-13 253 266)\"/><ellipse cx=\"133\" cy=\"207\" rx=\"12\" ry=\"6\" transform=\"rotate(9 133 207)\"/><ellipse cx=\"281\" cy=\"464\" rx=\"11\" ry=\"5\" transform=\"rotate(-20 281 464)\"/><ellipse cx=\"290\" cy=\"211\" rx=\"19\" ry=\"9\" transform=\"rotate(12 290 211)\"/><ellipse cx=\"203\" cy=\"136\" rx=\"13\" ry=\"6\" transform=\"rotate(6 203 136)\"/><ellipse cx=\"130\" cy=\"313\" rx=\"19\" ry=\"10\" transform=\"rotate(-4 130 313)\"/><ellipse cx=\"175\" cy=\"364\" rx=\"20\" ry=\"10\" transform=\"rotate(10 175 364)\"/><ellipse cx=\"183\" cy=\"192\" rx=\"11\" ry=\"6\" transform=\"rotate(1 183 192)\"/><ellipse cx=\"221\" cy=\"435\" rx=\"17\" ry=\"8\" transform=\"rotate(8 221 435)\"/><ellipse cx=\"103\" cy=\"236\" rx=\"16\" ry=\"8\" transform=\"rotate(15 103 236)\"/><ellipse cx=\"192\" cy=\"157\" rx=\"11\" ry=\"6\" transform=\"rotate(27 192 157)\"/><ellipse cx=\"110\" cy=\"184\" rx=\"15\" ry=\"8\" transform=\"rotate(29 110 184)\"/><ellipse cx=\"112\" cy=\"216\" rx=\"19\" ry=\"9\" transform=\"rotate(23 112 216)\"/><ellipse cx=\"97\" cy=\"342\" rx=\"13\" ry=\"6\" transform=\"rotate(-24 97 342)\"/><ellipse cx=\"254\" cy=\"190\" rx=\"10\" ry=\"5\" transform=\"rotate(1 254 190)\"/><ellipse cx=\"101\" cy=\"464\" rx=\"17\" ry=\"8\" transform=\"rotate(13 101 464)\"/><ellipse cx=\"149\" cy=\"367\" rx=\"11\" ry=\"5\" transform=\"rotate(4 149 367)\"/><ellipse cx=\"200\" cy=\"185\" rx=\"12\" ry=\"6\" transform=\"rotate(12 200 185)\"/><ellipse cx=\"243\" cy=\"270\" rx=\"18\" ry=\"9\" transform=\"rotate(12 243 270)\"/></g></svg>") + '")';
 
 function buildNpcs(token) {
   NPCS.forEach((npc) => {

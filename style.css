@@ -262,6 +262,53 @@ html, body {
   transform: scaleX(-1);
 }
 
+/* Block 43. A painting in a row of different paintings: it covers its
+   panel, bottom first, so the road stays under the characters' feet and
+   a short screen loses a little sky rather than the ground. game.js sets
+   the picture on the element itself, since each panel has its own. */
+.skyline-panel {
+  background-size: cover;
+  background-position: center bottom;
+}
+
+/* The shade of a shadow tree on the paintings either side of a join,
+   behind every character. Soft and faint: it only has to melt the edge
+   of one painting into the next behind the trunk. Block 18's dark posts
+   were this shade with no tree in front of them, which is why they read
+   as a mistake; here the tree is what it belongs to. */
+.panel-join-shade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 360px;
+  transform: translateX(-50%);
+  background: linear-gradient(to right,
+    rgba(8, 16, 9, 0) 0%, rgba(8, 16, 9, 0.35) 38%,
+    rgba(8, 16, 9, 0.45) 50%, rgba(8, 16, 9, 0.35) 62%, rgba(8, 16, 9, 0) 100%);
+  pointer-events: none;
+}
+
+/* The tree itself, in front of Macario (#player is z-index 1), his shots
+   and the guards' (2), so everyone passes behind it. Below the guide's
+   arrow (4), which must never be hidden. The picture is anchored at the
+   bottom, so the crown runs off the screen and the trunk stands on the
+   road. */
+.shadow-tree {
+  position: absolute;
+  bottom: 0;
+  width: 380px; /* SHADOW_TREE_WIDTH in game.js */
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 380px 900px;
+  background-position: center bottom;
+}
+
+.shadow-tree.grey-filter {
+  filter: grayscale(1);
+}
+
 #skyline-night.visible {
   opacity: 1;
 }
@@ -3098,7 +3145,7 @@ body.text-lg #dialogue-text { font-size: 27px; }
    ============================================================= */
 #guide-marker {
   position: absolute;
-  z-index: 3;
+  z-index: 4; /* above the shadow trees (Block 43) */
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;

@@ -294,6 +294,9 @@ Scene shape:
       dangerous: true,                           optional; shows the hearts
       greyFilter: true,                          optional; greys backdrop + ground
       backdrop: { src },                         optional; own picture, drawn once
+      panels: ["Assets/...jpg", ...],            optional; paintings side by
+      panelWidth: 1450,                          side, a shadow tree at each
+                                                 join (Block 43)
       ground: false,                             optional; hides the dirt strip
       music: "Assets/X.mp3",                     optional; this scene's track
       exits: [{ id, x, width, label, toScene,    optional; doorways
@@ -392,6 +395,20 @@ at the bottom, never tiled or mirrored, because it is one room rather
 than a street. The night layer stays empty under it. ground: false hides
 #ground-tiles for a picture that paints its own floor. Both are cleared
 on every load, so a scene without them gets Tondo and the dirt back.
+
+panels (Block 43) lays a row of different paintings along the road, each
+covering a fixed panelWidth of the world (default PANEL_WIDTH, 1450),
+repeated in order if the road is longer than the list, and stands a
+shadow tree over every join between two of them: a dark silhouette in
+front of everyone (z-index 3, above #player and the shots, below the
+guide's arrow), with a faint shade on the paintings behind it. It
+replaces Tondo.png's mirrored tiles for that scene. Because the width is
+fixed rather than following the screen's height, the joins are at the
+same x on every phone: at panelWidth, 2 times it, and so on, never at
+the end of the world. Keep NPCs, exits and checkpoints at least 40px
+clear of a join, or the trunk stands in front of them;
+verify_new_scene.js checks every Act I scene for this. greyFilter greys
+the paintings and the trees with them.
 
 An exit is a doorway: a zone on the road, x and width like a hazard,
 reached edge to edge like an NPC. The interact button reads its label
@@ -2737,6 +2754,52 @@ the takedown from behind, since the street now has a guard built for it.
 game.js v48, style.css v30, content/act1.js v30. No new file under
 Assets/, so ASSET_VERSION is unchanged at 16.
 
+Painted panels and shadow trees (Block 43). Requested with eight new
+paintings in Assets/Act 1/Background: put them next to each other, with
+a shadow tree that separates them and that Macario walks behind, to hide
+where one picture ends and the next begins. They are separate
+paintings, not one wide one, so no join can be made seamless by
+mirroring the way Tondo.png's was (Block 26); a hut is cut in half at
+every edge. The tree is what hides that, standing in front of the join
+the way a foreground tree does in any side-scroller.
+
+Each panel is a fixed 1450 world px wide, painted with background-size
+cover anchored at the bottom. The alternative, one image wide at the
+layer's height as Tondo's tiles are, would have put every join, and so
+every tree, somewhere different on every phone, since the layer's height
+is the screen's height over --zoom. With a fixed width a join is at the
+same x everywhere and content can keep its people off it. The cost is a
+little cropping, of sky on a short screen and of the painting's own
+sides on a wide one, and the sides are under a tree. 1450 is about one
+phone screen: at 412px tall and --zoom 0.7 a painting's natural width is
+about 1390.
+
+The tree is geometry, not art: a silhouette of overlapping crown lobes,
+hanging leaf tips and a trunk, generated once and pasted into game.js as
+an SVG data URL, set as each tree's background. No file to download
+means a slow connection cannot leave a join bare, and one URL means the
+browser decodes it once for every tree. The crown hangs about 300 above
+the road, over every head, so on the road only the trunk hides anyone,
+for about a body's width. A faint shade either side of the trunk, in the
+backdrop layer, melts the two paintings into each other; it is Block
+18's rejected shadow post, but with the tree in front of it that it
+belongs to.
+
+tondo uses paintings 1 and 2, the memory 3 and 4 (greyed, trees too),
+and the lansangan all eight in the order 5, 6, 9, 12, 1, 2, 3, 4. The
+twelfth was delivered as a 4520px WebP of about 2MB and was converted to
+a 1848px JPEG, 12.jpg, the size of the others; the WebP and "9 (1).jpg",
+a byte-for-byte copy of 9.jpg, are left in the folder and loaded by
+nothing. Every join was checked against every NPC, exit and checkpoint
+in the three scenes; none needed moving. Tondo.png and its mirrored
+tiles remain for any scene without panels, and the harness fixture
+still uses them.
+
+Characters still stand on the Lupa.jpg strip, which covers the
+paintings' flowerbed edge; the paintings' own dirt road reads as the
+road behind them. ASSET_VERSION to 17; game.js v49, style.css v31,
+content/act1.js v31.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -2935,6 +2998,11 @@ guard art is (style.css, .guard-facing-left), including Block 41's
 front-facing Bantay still, whose rifle simply changes hands. That
 assumes directional art faces right, as Macario's does. If a guard sheet arrives drawn facing left, it
 will walk backwards; the fix is in the CSS rule, not the content.
+
+A shadow tree stands at every multiple of a panelled scene's
+panelWidth. Moving an NPC, exit or checkpoint onto one of those x values,
+or changing panelWidth, puts someone behind a trunk; move them or run
+verify_new_scene.js, which fails on it.
 
 The guide's elements (#guide-marker in #world, #guide-edge beside the
 toast) are static in index.html, like #player, and are never pushed to

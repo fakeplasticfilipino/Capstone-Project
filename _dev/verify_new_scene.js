@@ -77,6 +77,40 @@ const guide = (page) => page.evaluate(() => {
   };
 });
 
+// Block 43. The painted backdrop of the scene in hand: its panels, the
+// shadow trees over the joins, whether every painting really loads, and
+// whether anyone the student has to reach stands behind a trunk.
+const panels = (page) => page.evaluate(async () => {
+  const scene = currentScene;
+  const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
+  const trees = [...document.querySelectorAll(".shadow-tree")];
+  const joins = panelJoins(scene);
+  const srcs = [...new Set(scene.panels)];
+  const widths = await Promise.all(srcs.map((src) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img.naturalWidth);
+    img.onerror = () => resolve(0);
+    img.src = assetUrl(src);
+  })));
+  const TRUNK = 40; // half the trunk plus a margin, either side of a join
+  const blocked = [];
+  joins.forEach((x) => {
+    NPCS.forEach((n) => { if (!n.hidden && n.x < x + TRUNK && n.x + NPC_WIDTH > x - TRUNK) blocked.push(n.id + " at " + x); });
+    (scene.exits || []).forEach((e) => { if (e.x < x + TRUNK && e.x + (e.width || 80) > x - TRUNK) blocked.push(e.id + " at " + x); });
+    (scene.checkpoints || []).forEach((c) => { if (Math.abs(c.x + PLAYER_WIDTH / 2 - x) < TRUNK + PLAYER_WIDTH / 2) blocked.push("checkpoint " + c.x); });
+  });
+  return {
+    tiles: tiles.length, expectedTiles: Math.ceil(WORLD_WIDTH / (scene.panelWidth || PANEL_WIDTH)),
+    joins, treesAt: trees.map((t) => parseFloat(t.style.left) + SHADOW_TREE_WIDTH / 2),
+    treeZ: trees.length ? +getComputedStyle(trees[0]).zIndex : null,
+    playerZ: +getComputedStyle(document.getElementById("player")).zIndex,
+    markerZ: +getComputedStyle(document.getElementById("guide-marker")).zIndex,
+    grey: trees.length ? getComputedStyle(trees[0]).filter : null,
+    loaded: widths.every((w) => w > 0), widths, blocked,
+    tondoTiles: document.querySelectorAll("#skyline .skyline-tile:not(.skyline-panel)").length,
+  };
+});
+
 (async () => {
   await new Promise((r) => server.listen(PORT, r));
   const browser = await chromium.launch();
@@ -108,6 +142,14 @@ const guide = (page) => page.evaluate(() => {
 
   // --- Nanay, then the fade into kutsero (covered fully in Block 19's
   // own verification; just enough here to land in the memory). ---
+  const p0 = await panels(page);
+  ok("tondo is drawn from the new paintings, two panels and no Tondo.png tiles",
+     p0.tiles === p0.expectedTiles && p0.tiles === 2 && p0.tondoTiles === 0 && p0.loaded, p0);
+  ok("a shadow tree stands over the join", p0.joins.length === 1 &&
+     JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
+  ok("in front of Macario, and behind the guide's arrow",
+     p0.treeZ > p0.playerZ && p0.markerZ > p0.treeZ, p0);
+  ok("and nobody he has to reach stands behind it", p0.blocked.length === 0, p0.blocked);
   const g0 = await guide(page);
   ok("the guide stands over Nanay from the first frame", g0.label === "Nanay" && g0.marker && g0.text === "Nanay", g0);
   ok("the Mananahi is not on the road before the memory",
@@ -141,6 +183,10 @@ const guide = (page) => page.evaluate(() => {
   await page.waitForTimeout(900);
   const inKutsero = await page.evaluate(() => ({ room: currentRoom, grey: document.getElementById("skyline").classList.contains("grey-filter") }));
   ok("landed in the kutsero scene, greyed out", inKutsero.room === "kutsero" && inKutsero.grey, inKutsero);
+  const pK = await panels(page);
+  ok("the memory has its own two paintings and one tree, greyed with it",
+     pK.tiles === 2 && pK.treesAt.length === 1 && pK.loaded && pK.grey === "grayscale(1)" &&
+     pK.blocked.length === 0, pK);
   ok("the ground is greyed with it (Block 33)",
      await page.evaluate(() => getComputedStyle(document.getElementById("ground-tiles")).filter === "grayscale(1)"));
   const memoryLine = await page.evaluate(() => ({ open: inDialogue, speaker: dialogueSpeaker.textContent, text: dialogueText.textContent }));
@@ -747,7 +793,12 @@ const guide = (page) => page.evaluate(() => {
     guardArt: document.querySelector("#guard-bantay-1 .sprite").style.backgroundImage,
     citizenArt: document.querySelector("#npc-mangingisda .sprite").style.backgroundImage,
   }));
-  ok("Tumuloy fades to the street, on the Tondo backdrop in colour",
+  const pS = await panels(page);
+  ok("the street runs through all eight paintings, a tree over each of its seven joins",
+     pS.tiles === 8 && new Set(pS.widths).size >= 1 && pS.loaded &&
+     pS.treesAt.length === 7 && JSON.stringify(pS.treesAt) === JSON.stringify(pS.joins) && pS.grey === "none", pS);
+  ok("no citizen, doorway or checkpoint stands behind a tree", pS.blocked.length === 0, pS.blocked);
+  ok("Tumuloy fades to the street, in colour",
      street.room === "lansangan" && street.src === "" && !street.grey, street);
   ok("the road is long: 11000px", street.width === 11000, street);
   ok("eight guards, all of whom shoot, drawn from the Bantay.png still, and citizens from Mamamayan.png",

@@ -22,14 +22,16 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 20 Sep 2026, end of session, after Block 42 (the guide,
-the vision cone, a ten-citizen street and a consistency pass). Blocks
-through 41 are pushed (088f5e4). Block 42 was written into the device
-folder this session and is NOT yet pushed: game.js, style.css,
-index.html, content/act1.js, _dev/test.js, _dev/verify_new_scene.js,
-CLAUDE.md and TRACKER.md. Run against those files: test.js 570 passed,
-0 failed; verify_new_scene.js 158 passed, 0 failed. Not yet played on
-the phone.
+Last updated: 20 Sep 2026, end of session, after Block 43 (painted
+panel backdrops with shadow trees), which followed Block 42 (the guide,
+the vision cone, a ten-citizen street and a consistency pass) the same
+day. Blocks through 41 are pushed (088f5e4). Blocks 42 and 43 are in the
+device folder and NOT yet pushed: game.js, style.css, index.html,
+content/act1.js, _dev/test.js, _dev/verify_new_scene.js, CLAUDE.md,
+TRACKER.md, and the new Assets/Act 1/Background/12.jpg (the other
+paintings were already in that folder). Run against those files:
+test.js 576 passed, 0 failed; verify_new_scene.js 165 passed, 0 failed.
+Neither block has been played on the phone.
 
 ## Start here
 
@@ -53,6 +55,11 @@ the target device, and the proponent has ruled it out of scope.
 Act I is four scenes and is the only act with content. Acts II to IV are
 registered stubs. Act I can be completed: the tenth pamphlet finishes it
 and runs the post-test.
+
+The streets are painted panels (Block 43): tondo, the memory and the
+lansangan each run through paintings from Assets/Act 1/Background laid
+side by side, with a dark shadow tree over every join that Macario and
+everyone else walk behind. Tondo.png is no longer shown in Act I.
 
 A guide (Block 42) shows where to go next throughout Act I: a name tab
 and bobbing arrow over the next person or door when it is on screen, and
@@ -140,15 +147,15 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    style.css v30        game.js v48          shell.js v13
+    style.css v31        game.js v49          shell.js v13
     inventory.js v9      acts.js v10          assessment.js v3
-    content/act1.js v30  content/items.js v8  content/act2-4.js v1
-    ASSET_VERSION 16 (in game.js)
+    content/act1.js v31  content/items.js v8  content/act2-4.js v1
+    ASSET_VERSION 17 (in game.js)
     teacher.css v2       teacher.js v2        (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
 and confirmed Block 36's speed fix on the phone. Whether the rest of
-Blocks 14 to 38 has been through a full pass on the phone is not
+Blocks 14 to 42 has been through a full pass on the phone is not
 recorded, so the device checklist under Next action still stands before
 the pilot.
 
@@ -159,9 +166,9 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 42 are built. Blocks 22 to 41 were one build session, 17 to
-18 September 2026, each on direct feedback from the proponent; Block 42
-was 20 September:
+Blocks 1 to 43 are built. Blocks 22 to 41 were one build session, 17 to
+18 September 2026, each on direct feedback from the proponent; Blocks
+42 and 43 were 20 September:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
     23  a throw spawn correction, superseded by 24
@@ -217,10 +224,13 @@ was 20 September:
         guard sight as a low cone; the lansangan at 11000px with ten
         citizens, eight guards, seven platforms, three hearts and four
         checkpoints; a consistency pass on Act I's lines and names
+    43  the new Background paintings side by side in tondo, the memory
+        and the lansangan, with a shadow tree over each join
 
-Everything through Block 41 is pushed (088f5e4). Block 42 is in the
-device folder and waiting to be pushed, with every file's ?v=N bumped
-as listed above. Assets/Act 1/Muslim_Walk.jpg and Muslim_Attack.jpg are the
+Everything through Block 41 is pushed (088f5e4). Blocks 42 and 43 are in
+the device folder and waiting to be pushed, with every file's ?v=N and
+ASSET_VERSION bumped as listed above. Push Assets/Act 1/Background with
+them, or the streets draw nothing behind the characters. Assets/Act 1/Muslim_Walk.jpg and Muslim_Attack.jpg are the
 artist's originals, kept beside the keyed PNGs the game loads, and
 Assets/Act 1/Muslim_Woman.png is a byte-for-byte copy of Muslim_Girl.png;
 nothing loads any of the three.
@@ -235,8 +245,19 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. A device pass on Blocks 14 to 42, on the phone, in landscape, from a
+1. A device pass on Blocks 14 to 43, on the phone, in landscape, from a
 private tab (browsers cache index.html; see Known problems). Check:
+
+    The paintings and trees (Block 43): tondo, the memory and the street
+      show the new paintings, not Tondo.png; a dark tree stands at each
+      join, the join itself cannot be seen, and Macario, the guards and
+      their bullets pass behind the trunk; the crown stays above
+      everyone's head; in the memory the tree is grey like the rest.
+      Judge whether the trees read as trees or as black blots, and
+      whether the road in the paintings sits right behind the dirt
+      strip Macario walks on. Failure looks like a visible straight seam
+      beside a trunk, a tree in front of the Mananahi or a citizen, or a
+      street with no painting at all (the Background folder not pushed).
 
     The guide (Block 42): from the first frame an arrow named Nanay
       stands over her; after each step it names the next person or door
@@ -303,7 +324,7 @@ private tab (browsers cache index.html; see Known problems). Check:
       roughly Macario's height. If he reads too small for a horse,
       that is one number (an NPC display height) to add.
     Stand-in art (Block 41): the Mananahi, Bonifacio, the Katipunero,
-      the three townspeople and the street guards all stand on the road
+      the ten townspeople and the street guards all stand on the road
       at the same height as the real characters, no dashed boxes
       anywhere; the apple and stage-clothes tiles show pictures in the
       shop and inventory.
@@ -365,8 +386,9 @@ against the source material.
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
 header directs. Everything through Block 41 is pushed and passing its
-checks; the proponent handles the push. So the first things a session
-can do are in Next action, in order: a device pass against the
+checks; Blocks 42 and 43 are in the device folder, passing their checks, and wait
+on the proponent's push. So the first things a session can do are in
+Next action, in order: a device pass against the
 checklist there, then checking Block 37's placeholder script against
 the source book with the proponents.
 
@@ -526,7 +548,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 570-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 576-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -608,6 +630,8 @@ submit_assessment).
     42  guide (ACT guide list, updateGuide, section AW); guard sight
         cone; lansangan 11000px, ten citizens (CITIZENS table), eight
         guards; Act I consistency pass
+    43  scene panels and shadow trees (buildPanelBackdrop, section AX);
+        Background paintings in tondo, kutsero and lansangan
 
 ## Blocks remaining
 
@@ -677,8 +701,8 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 
 Missing production art. Assets/ holds real art for Nanay, Kutsero,
 Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack,
-shared by his guards), both entablado pictures, Tondo.png, Lupa.jpg (the
-ground), and Macario's idle, walk, melee and shooting sheets, plus the
+shared by his guards), both entablado pictures, Tondo.png, the eight
+street paintings in Assets/Act 1/Background, Lupa.jpg (the ground), and Macario's idle, walk, melee and shooting sheets, plus the
 two fonts and four sound files.
 
 Stand-ins, not the artist's (Block 41, made by
@@ -704,6 +728,28 @@ Still missing outright, falling back to the dashed placeholder box:
 
 verify_new_scene.js checks that every Act I character draws a picture
 rather than a box. (KNOWN)
+
+Assets/Act 1/Background also holds the twelfth painting's original
+WebP (about 2MB) and "9 (1).jpg", a byte-for-byte copy of 9.jpg. The
+game loads neither; delete them or leave them. (KNOWN, PROPONENT'S CALL)
+
+Characters and the backdrop can be missing on a slow connection. Seen
+by the proponent on slow internet and reproduced headless on 20 Sep 2026
+at 400 kbps: the world opens straight after the title tap while its
+pictures are still downloading, so for the first 30 seconds or more
+Macario, Nanay and the backdrop are simply not drawn (the guide arrow
+over an empty road), and a picture whose download fails outright becomes
+the dashed placeholder box for the rest of the scene, with no retry.
+Nothing waits for the art before play starts, and the scene's first
+images compete with about 4MB of music. Block 43's paintings add to what
+a scene has to download (about 1MB per street, 4MB for the lansangan).
+Chosen fix, not yet built: a loading bar on the title screen that fetches
+the current scene's art first and retries failed files, scene changes
+that wait behind the blackout until the next scene's art is in, and a
+service worker that keeps every file on the phone after the first visit
+(which also answers the stale index.html problem below and lets the
+game open with no connection; saves would still need one). Offline play
+that syncs saves later was discussed and deferred. (KNOWN, FIX CHOSEN)
 
 Browsers cache index.html. It carries no version number of its own, so
 a phone that loaded an old copy keeps requesting the old ?v=N files
@@ -765,12 +811,12 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/test.js
     node _dev/verify_new_scene.js
 
-test.js: 570 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 158
+test.js: 576 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 165
 checks driving the REAL content/act1.js and content/items.js through
 every Act I scene, from Nanay to the tenth pamphlet and the post-test,
 following the guide at every step.
-Both last ran green on 20 Sep 2026 against the Block 42 files written to
+Both last ran green on 20 Sep 2026 against the Block 43 files written to
 the device folder (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
