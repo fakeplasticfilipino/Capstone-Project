@@ -145,15 +145,16 @@ check against it (see Next action).
               wait at the stairs; a twelve-line meeting opens by itself:
               greeting, the password, and the task (step 10 done).
               Tumuloy at the end of the road opens only now.
-    lansangan an 11000px street on Tondo.png. No gun (a hold punches).
-              Eight guards (Bantay.png stand-ins), each with a faint cone
+    lansangan an 11000px street, the four paintings twice over. No gun
+              (a hold punches).
+              Eight guards (bantay.png stand-ins), each with a faint cone
               of sight from his eyes; once one's meter fills he turns
               hostile (a red "!"), chases and shoots until punched down
               twice or Macario runs out of hearts. In the stage clothes,
               standing still fills a meter five times slower, drawn pale
               blue (the cone too). Seven platforms of five heights, all
               out of sight; three hearts, each on a platform. Ten
-              citizens (Mamamayan.png stand-ins), the first before any
+              citizens (mamamayan.png stand-ins), the first before any
               guard and the last three in a quiet square past them all,
               each take a pamphlet through Iabot ang polyeto. Running out
               of hearts restarts after the second, fourth, sixth or
@@ -202,7 +203,7 @@ Its versions are in the list above.
 
 Blocks 1 to 51 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
-42 to 49 were 20 September and Block 50 the 21st:
+42 to 49 were 20 September, and Blocks 50 and 51 the 21st:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
     23  a throw spawn correction, superseded by 24
@@ -287,7 +288,11 @@ the site will load a page whose scripts and pictures are not there. The
 old Assets/ folder, the root scripts and stylesheets, the old db/ and
 _dev/ files, "Claude outputs", the proposal and the validation form
 should all show as deleted or moved; if any still show as present in
-git status, they were not deleted on the computer.
+git status, they were not deleted on the computer. Block 51 does the
+same on a smaller scale: street-01..04.png, tondo.png and
+entablado-inside.png are replaced by .jpg files of the same name, so
+those six PNGs must be deleted on the computer before the push or the
+repository carries 11MB nothing loads.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/scripts/reset_test_accounts.sql
@@ -299,7 +304,7 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. A device pass on Blocks 14 to 48, on the phone, in landscape, from a
+1. A device pass on Blocks 14 to 51, on the phone, in landscape, from a
 private tab (browsers cache index.html; see Known problems). Check:
 
     The quest log (Block 48): only one task shows at a time and it is
@@ -336,6 +341,12 @@ private tab (browsers cache index.html; see Known problems). Check:
       seam beside a trunk, a tree in front of the Mananahi or a citizen,
       a trunk so wide it hides a stretch of road a student needs, or a
       street with no painting at all (the paintings not pushed).
+      The paintings are JPEGs since Block 51: look once at the sky and
+      the church walls, where a JPEG shows banding first if quality 86
+      turns out to be too low on a phone screen. The one thing that
+      would say the conversion went wrong is a backdrop replaced by the
+      dashed box naming a .jpg, which means the file did not reach the
+      push.
 
     The guide (Block 42): from the first frame an arrow named Nanay
       stands over her; after each step it names the next person or door
@@ -444,14 +455,15 @@ Act I is now completable, so this is also what stands between the build
 and a pilot.
 
 3. Real art, chased with the artist, to replace Block 41's stand-ins:
-Mananahi.png, Bonifacio.png, Katipunero.png, Bantay.png (the street's
-guards), Mamamayan.png (the ten citizens, one sprite shared unless
+mananahi.png, bonifacio.png, katipunero.png, bantay.png (the street's
+guards), mamamayan.png (the ten citizens, one sprite shared unless
 the artist draws more), damit-entablado.png and mansanas.png (all
 under assets/, see Known problems). The stand-ins are recoloured frames of the
 commissioned sheets, so they will look like near relations of Tindero,
 Kutsero and Nanay. Replacing one is dropping the new file over the same
 name and updating its STILL entry in content/act1.js (frames, columns,
-and the three measured numbers). Macario's Dead sheet is still missing
+and the three measured numbers). Macario's death sheet
+(macario-dead.png) is still missing
 and has no stand-in; no shipped scene plays it. Each new sheet
 needs measure-sprite.js and all three numbers pasted. Ask for PNG
 exports with transparency: Muslim_Walk and Muslim_Attack came as JPEGs
@@ -770,9 +782,10 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the real art with the artist for Block 41's stand-ins (Mananahi,
-Bonifacio, Katipunero, Bantay, Mamamayan, Damit_Entablado, Mansanas)
-and Macario's Dead sheet (see Known
+Chase the real art with the artist for Block 41's stand-ins (the
+Mananahi, Bonifacio, the Katipunero, the guards, the citizens, the
+stage clothes' tile and the apple tile) and Macario's death sheet
+(see Known
 problems for where each shows). Later, once real items and the entablado
 content are decided, the art they need. (NOT STARTED)
 
@@ -830,12 +843,17 @@ at 400 kbps: the world opens straight after the title tap while its
 pictures are still downloading, so for the first 30 seconds or more
 Macario, Nanay and the backdrop are simply not drawn (the guide arrow
 over an empty road), and a picture whose download fails outright becomes
-the dashed placeholder box for the rest of the scene, with no retry.
+the dashed placeholder box. A scene's own art (NPCs, guards,
+decorations) is asked for again the next time that scene loads, so
+walking out and back can recover it; Macario's own sheets and the
+backdrop are loaded once and recover only on a page reload.
 Nothing waits for the art before play starts, and the scene's first
-images compete with about 4MB of music. Block 51 cut what a scene has to
-download by about six times (the six opaque backdrops are JPEGs now:
-300KB a street, 1.2MB for the lansangan, against 1.9MB and 7.8MB), which
-shortens the window without closing it.
+images compete with calm.mp3 streaming beside them (2MB). Block 51 cut
+what a scene has to download by about six times (the six opaque
+backdrops are JPEGs now: 300KB a street, 1.2MB for the lansangan,
+against 1.9MB and 7.8MB), which shortens the window without closing it.
+The largest single file left is entablado-outside.png at 1.5MB, which
+keeps its alpha and so cannot be a JPEG.
 Chosen fix, not yet built: a loading bar on the title screen that fetches
 the current scene's art first and retries failed files, scene changes
 that wait behind the blackout until the next scene's art is in, and a
@@ -902,7 +920,7 @@ mechanics stay tested whatever Act I ships). verify_new_scene.js: 182
 checks driving the REAL content/act1.js and content/items.js through
 every Act I scene, from Nanay to the tenth pamphlet and the post-test,
 following the guide at every step.
-Both last ran green on 21 Sep 2026 against the Block 50 files written to
+Both last ran green on 21 Sep 2026 against the Block 51 files written to
 the device folder (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
