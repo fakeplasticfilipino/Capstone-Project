@@ -461,8 +461,8 @@ guide's arrow), with a faint shade on the paintings behind it. It
 replaces Tondo.png's mirrored tiles for that scene. Because the width is
 fixed rather than following the screen's height, the joins are at the
 same x on every phone: at panelWidth, 2 times it, and so on, never at
-the end of the world. Keep NPCs, exits and checkpoints at least 120px
-clear of a join (40px before Block 50 widened the trunks), or the
+the end of the world. Keep NPCs, exits and checkpoints at least 90px
+clear of a join (40px before Block 50 thickened the trunks), or the
 trunk stands in front of them;
 verify_new_scene.js checks every Act I scene for this. greyFilter greys
 the paintings and the trees with them. mirrorPanels (Block 45) flips
@@ -3098,18 +3098,20 @@ visible at the top; and four models rather than one, two coconut palms
 and two ordinary trees.
 
 The trunk is the whole point of a shadow tree, so it is now what the
-tree mostly is: about 180 world px wide at the height of a person and
+tree mostly is: about 130 world px wide at the height of a person and
 long enough that a phone screen (about 590 world px tall at --zoom 0.7)
 holds trunk from the road to the top, with the crown's lowest leaves
 coming in at the top edge. The box is 440 by 1200, narrower and taller
-than Block 49's 520 by 1100: a trunk that wide needs no room either
-side of it for a crown that is mostly off screen.
+than Block 49's 520 by 1100: a trunk this thick needs no room either
+side of it for a crown that is mostly off screen. The first draft was
+wider still, about 180, and the proponent judged it too fat on the
+device; 130 is what covers a join without eating the road.
 
 Four models, in _dev/tools/make-shadow-tree.py: two coconut palms
 leaning opposite ways, with drooping fronds, old leaf scars across the
 trunk and a cluster of coconuts, and two broadleaf trees with a wide
 canopy, a pair of limbs under it and vertical bark streaks. The
-lighter tone matters more than it did: a shape 180px wide in one flat
+lighter tone matters more than it did: a shape this wide in one flat
 colour reads as a hole cut in the painting, which is what Block 18's
 shadow post was judged as, so every model carries some grain.
 
@@ -3120,18 +3122,18 @@ visit. Random would have been one line shorter and would have moved
 the trees on a reload.
 
 The cost, and it is the reason the clearance rule in Act data format
-moved from 40px to 120px: a fatter trunk hides more of the road.
+moved from 40px to 90px: a thicker trunk hides more of the road.
 Nothing in Act I had to move (verify_new_scene.js checks every citizen,
 exit and checkpoint against every join and passes), but a character
-placed within about 120px of a multiple of panelWidth now stands behind
+placed within about 90px of a multiple of panelWidth now stands behind
 a trunk where before they would have been beside it.
 
 Section AX measures the trunk rather than trusting the drawing: with
 Macario standing on a join, the row of screen pixels at his chest is
 counted in the tree's own two tones and converted back to world pixels,
-for each of the four models in turn. It reads about 170 and the check
-wants more than 150; with the tree hidden the same row reads about 1,
-and Block 49's palm would have read about 50, so it can tell a fat
+for each of the four models in turn. It reads about 124 and the check
+wants more than 100; with the tree hidden the same row reads about 1,
+and Block 49's palm would have read about 50, so it can tell a thick
 trunk from a thin one. game.js v55, style.css v37; no asset changed, so
 ASSET_VERSION stays at 19.
 
@@ -3335,8 +3337,8 @@ assumes directional art faces right, as Macario's does. If a guard sheet arrives
 will walk backwards; the fix is in the CSS rule, not the content.
 
 A shadow tree stands at every multiple of a panelled scene's
-panelWidth, and since Block 50 its trunk is about 180 world px wide at
-head height. Moving an NPC, exit or checkpoint within about 120px of
+panelWidth, and since Block 50 its trunk is about 130 world px wide at
+head height. Moving an NPC, exit or checkpoint within about 90px of
 one of those x values, or changing panelWidth, puts someone behind a
 trunk; move them or run verify_new_scene.js, which fails on it.
 

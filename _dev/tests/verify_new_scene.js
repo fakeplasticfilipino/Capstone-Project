@@ -103,9 +103,9 @@ const panels = (page) => page.evaluate(async () => {
     img.src = assetUrl(src);
   })));
   // Half the widest trunk at head height plus a margin, either side of a
-  // join. It grew with the trees in Block 50: they are fat now, so the
-  // ground a person must stay off is wider than it was.
-  const TRUNK = 120;
+  // join. It grew with the trees in Block 50: they are thicker now, so
+  // the ground a person must stay off is wider than it was.
+  const TRUNK = 90;
   const blocked = [];
   joins.forEach((x) => {
     NPCS.forEach((n) => { if (!n.hidden && n.x < x + TRUNK && n.x + NPC_WIDTH > x - TRUNK) blocked.push(n.id + " at " + x); });

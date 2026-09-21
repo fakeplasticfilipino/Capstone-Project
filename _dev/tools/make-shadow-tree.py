@@ -7,7 +7,7 @@ coconut palms and two ordinary broadleaf trees, each in a box 440 by
 1200 anchored at the road.
 
 They are mostly trunk on purpose: the trunk is what hides the join, so
-it is fat (about 180 world px at the road) and long, and the crown sits
+it is thick (about 130 world px at head height) and long, and the crown sits
 high enough that a phone shows only the lowest leaves at the top of the
 screen. Every model's trunk base is centred on the join, whatever way
 the tree leans above it, because the road is where a student looks.
@@ -39,7 +39,7 @@ def poly(pts):
 
 
 # --- the trunk, which is most of the tree ---
-def trunk(top, base_half, top_half, lean, flare=30, steps=26):
+def trunk(top, base_half, top_half, lean, flare=22, steps=26):
     """A fat trunk from the road up to top, leaning by lean at the crown."""
     base = (CX, BASE_Y)
     ctrl = (CX - lean * 0.45, BASE_Y - (BASE_Y - top[1]) * 0.55)
@@ -121,9 +121,9 @@ def svg(parts_dark, parts_light, circles_dark=(), circles_light=()):
 def palm(lean, crown_y, specs, nuts):
     top = (CX + lean, crown_y + 46)
     crown = (CX + lean, crown_y)
-    dark = [trunk(top, 90, 46, lean)]
+    dark = [trunk(top, 64, 34, lean)]
     dark += [frond(crown, a, l, d, w) for a, l, d, w in specs]
-    light = trunk_rings(top, 90, 46, lean, 7)
+    light = trunk_rings(top, 64, 34, lean, 7)
     light += [frond(crown, a, l * 0.64, d * 0.5, w * 0.42) for a, l, d, w in specs[1:6:2]]
     circles = [(crown[0] + dx, crown[1] + dy, r) for dx, dy, r in nuts]
     return svg(dark, light, circles)
@@ -169,7 +169,7 @@ def bark(top, base_half, top_half, lean, streaks, steps=26):
 
 def broadleaf(lean, crown_y, lobes, fringe, limbs, streaks):
     top = (CX + lean, crown_y + 40)
-    dark = [trunk(top, 96, 58, lean, flare=34)]
+    dark = [trunk(top, 70, 42, lean, flare=26)]
     # Limbs leaving the trunk into the canopy. They sit high, above what a
     # phone shows, so on screen this is a trunk and the canopy's underside.
     for bx, by, ex, ey, w0, w1 in limbs:
@@ -179,7 +179,7 @@ def broadleaf(lean, crown_y, lobes, fringe, limbs, streaks):
     # Leaves hanging below the canopy's edge, which is what a student
     # actually sees at the top of a phone screen.
     circles += [(CX + lean + dx, crown_y - dy, r) for dx, dy, r in fringe]
-    light = bark(top, 96, 58, lean, streaks)
+    light = bark(top, 70, 42, lean, streaks)
     lightc = [(CX + lean + dx + 14, crown_y - dy - 10, max(12, r - 16))
               for dx, dy, r in lobes[:4]]
     return svg(dark, light, circles, lightc)
@@ -192,8 +192,8 @@ BROAD_A = broadleaf(
      (-70, 160, 58), (74, 156, 56)],
     [(-124, -54, 40), (-46, -70, 44), (36, -72, 42), (116, -50, 38), (-4, -30, 50)],
     [(-38, 520, -112, 690, 32, 16), (32, 560, 104, 720, 30, 15)],
-    [(-0.74, 0.03, 0.58, 9), (-0.42, 0.10, 0.66, 12), (0.04, 0.02, 0.72, 9),
-     (0.46, 0.16, 0.60, 11), (0.78, 0.06, 0.50, 8)])
+    [(-0.74, 0.03, 0.58, 6), (-0.42, 0.10, 0.66, 8), (0.04, 0.02, 0.72, 6),
+     (0.46, 0.16, 0.60, 8), (0.78, 0.06, 0.50, 6)])
 
 BROAD_B = broadleaf(
     -22, 460,
@@ -202,8 +202,8 @@ BROAD_B = broadleaf(
      (64, 152, 56), (-80, 150, 54)],
     [(118, -52, 38), (40, -68, 42), (-42, -70, 40), (-120, -48, 36), (2, -28, 48)],
     [(36, 580, 108, 750, 32, 16), (-30, 620, -100, 780, 30, 15)],
-    [(0.74, 0.03, 0.58, 9), (0.42, 0.10, 0.66, 12), (-0.04, 0.02, 0.72, 9),
-     (-0.46, 0.16, 0.60, 11), (-0.78, 0.06, 0.50, 8)])
+    [(0.74, 0.03, 0.58, 6), (0.42, 0.10, 0.66, 8), (-0.04, 0.02, 0.72, 6),
+     (-0.46, 0.16, 0.60, 8), (-0.78, 0.06, 0.50, 6)])
 
 
 TREES = [("palm-a", PALM_A), ("broad-a", BROAD_A), ("palm-b", PALM_B), ("broad-b", BROAD_B)]

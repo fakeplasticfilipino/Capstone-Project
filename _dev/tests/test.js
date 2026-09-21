@@ -4366,7 +4366,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     // scene's joins, which carry two different models. The tree's own two
     // tones are dark greens (the green channel highest and every channel
     // low), which nothing in the painting behind it is: with the tree
-    // hidden the same row measures about one pixel rather than 170.
+    // hidden the same row measures about one pixel rather than 124.
     const trunkAt = async (p) => {
       const row = await readPixels({ x: p.strip.x, y: p.y, width: p.strip.width, height: 1 });
       let cols = 0;
@@ -4386,8 +4386,8 @@ const visible = (page, sel) => page.evaluate((s) => {
       await page.waitForTimeout(120);
       trunks.push(await trunkAt(pixels));
     }
-    ok("and every model's trunk is fat: about 180 world px of it, centred on the join",
-       trunks.length === 4 && trunks.every((t) => t > 150 && t < pixels.box * 0.7),
+    ok("and every model's trunk is thick: about 130 world px of it, centred on the join",
+       trunks.length === 4 && trunks.every((t) => t > 100 && t < pixels.box * 0.5),
        { trunks, box: pixels.box });
 
     const gone = await page.evaluate(() => {

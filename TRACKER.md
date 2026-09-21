@@ -22,8 +22,8 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 21 Sep 2026, end of session, after Block 50 (four fat
-trees, two palms and two broadleaf, mostly trunk, at the joins), which
+Last updated: 21 Sep 2026, end of session, after Block 50 (four trees,
+two palms and two broadleaf, mostly trunk, at the joins), which
 followed Block 49 (four new
 street paintings and a coconut palm at the joins), which followed Block
 48 (the quest system rebuilt as one chain, the current task with a
@@ -73,10 +73,10 @@ a road is longer than four, standing whole on the floor with their own
 sky colour above them, with a tree in silhouette over every join that
 Macario and everyone else walk behind (Block 43). Since Block 50 there
 are four of those trees, two coconut palms and two broadleaf, taking
-turns along the road: mostly trunk, about 180 world px wide at the
+turns along the road: mostly trunk, about 130 world px wide at the
 height of a person, so a phone shows trunk from the road up and only
 the lowest leaves at the top. Keep anyone a student must reach at
-least 120px clear of a join. tondo.png is in
+least 90px clear of a join. tondo.png is in
 no scene now; it is the backdrop a scene without panels falls back to,
 which is what the harness fixture uses.
 
@@ -272,7 +272,7 @@ Blocks 1 to 50 are built. Blocks 22 to 41 were one build session, 17 to
     49  four new street paintings in order along every road, and the
         shadow tree redrawn as a bigger coconut palm
     50  four tree models, two palms and two broadleaf, mostly trunk and
-        fat enough to hide the join, taking turns along the road
+        thick enough to hide the join, taking turns along the road
 
 Everything through Block 41 is pushed (088f5e4). Blocks 42 to 50 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
