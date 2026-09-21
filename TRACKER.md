@@ -22,7 +22,9 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 21 Sep 2026, end of session, after Block 50 (four trees,
+Last updated: 21 Sep 2026, end of session, after Block 51 (the six
+opaque backdrops re-encoded as JPEGs, 11MB to 1.7MB, before a
+presentation), which followed Block 50 (four trees,
 two palms and two broadleaf, flat silhouettes, mostly trunk, at the
 joins), which
 followed Block 49 (four new
@@ -38,10 +40,10 @@ Blocks 42 (the guide, the vision cone, a ten-citizen street, a
 consistency pass), 43 (painted panels with shadow trees) and 44 (the
 repository reorganised) the same day. Blocks through 41 are pushed
 (088f5e4). Whether Blocks 42 to 44 have been pushed since is not
-recorded here; Blocks 45 to 50 are in the device folder and NOT yet
+recorded here; Blocks 45 to 51 are in the device folder and NOT yet
 pushed. Push everything as one commit (see Right now). test.js 589
 passed, 0 failed; verify_new_scene.js 182 passed, 0 failed. None of
-Blocks 42 to 50 has been played on the phone. Block 48 changes Act I's
+Blocks 42 to 51 has been played on the phone. Block 48 changes Act I's
 objectives from seven to eleven, so db/scripts/reset_test_accounts.sql
 should be run on the test accounts before a full-flow test.
 
@@ -69,7 +71,7 @@ registered stubs. Act I can be completed: the tenth pamphlet finishes it
 and runs the post-test.
 
 The streets are four paintings (Block 49): assets/backgrounds/act1/
-street-01..04.png, laid in order along every road and started again when
+street-01..04.jpg, laid in order along every road and started again when
 a road is longer than four, standing whole on the floor with their own
 sky colour above them, with a tree in silhouette over every join that
 Macario and everyone else walk behind (Block 43). Since Block 50 there
@@ -77,7 +79,7 @@ are four of those trees, two coconut palms and two broadleaf, taking
 turns along the road: flat silhouettes in one tone, mostly trunk, about
 130 world px wide at the height of a person, so a phone shows trunk from
 the road up and only the lowest leaves at the top. Keep anyone a student must reach at
-least 90px clear of a join. tondo.png is in
+least 90px clear of a join. tondo.jpg is in
 no scene now; it is the backdrop a scene without panels falls back to,
 which is what the harness fixture uses.
 
@@ -126,7 +128,7 @@ check against it (see Next action).
               while he stands still. At the end of the road stands the
               entablado (real art); Pasok at its stairs opens only after
               the Mananahi.
-    entablado the inside of the stage (Entablado.png as the whole
+    entablado the inside of the stage (entablado-inside.jpg as the whole
               backdrop, no dirt strip). Walking in, Macario says he must
               talk to Maryam first; nothing starts until he does. Talking
               to her plays her six lines, then a man walks on from the
@@ -179,10 +181,10 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v37    js/game.js v56       js/shell.js v13
+    css/style.css v38    js/game.js v57       js/shell.js v13
     js/inventory.js v9   js/acts.js v10       js/assessment.js v3
-    content/act1.js v36  content/items.js v10  content/act2-4.js v1
-    ASSET_VERSION 19 (in js/game.js)
+    content/act1.js v37  content/items.js v10  content/act2-4.js v1
+    ASSET_VERSION 20 (in js/game.js)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
@@ -198,7 +200,7 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 50 are built. Blocks 22 to 41 were one build session, 17 to
+Blocks 1 to 51 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
 42 to 49 were 20 September and Block 50 the 21st:
 
@@ -275,8 +277,9 @@ Blocks 1 to 50 are built. Blocks 22 to 41 were one build session, 17 to
     50  four tree models, two palms and two broadleaf, flat silhouettes,
         mostly trunk and thick enough to hide the join, taking turns
         along the road
+    51  the six opaque backdrops re-encoded as JPEGs, 11MB to 1.7MB
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 to 50 are in
+Everything through Block 41 is pushed (088f5e4). Blocks 42 to 51 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
 file, so the push is a commit of deletions and additions that git shows
 as renames: stage everything (git add -A) rather than picking files, or
@@ -464,7 +467,7 @@ against the source material.
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
 header directs. Everything through Block 41 is pushed and passing its
-checks; Blocks 42 to 50 are in the device folder, passing their checks, and wait
+checks; Blocks 42 to 51 are in the device folder, passing their checks, and wait
 on the proponent's push. So the first things a session can do are in
 Next action, in order: a device pass against the
 checklist there, then checking Block 37's placeholder script against
@@ -716,9 +719,10 @@ submit_assessment).
     47  level cone, evenly open about the eye line
     48  linearObjectives, countFlags, dialogue sets with requiresFlag,
         Tapos na toggle, no talking mid-fight (section AY)
-    49  street-01..04.png on every road; coconut palm (make-shadow-tree.py)
+    49  street-01..04 on every road; coconut palm (make-shadow-tree.py)
     50  SHADOW_TREE_URLS, four models picked by join number; the trunk
         measured in pixels at chest height (section AX)
+    51  backdrops as .jpg; every reference and ASSET_VERSION with them
 
 ## Blocks remaining
 
@@ -788,7 +792,7 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 
 Missing production art. assets/ holds real art for Nanay, Kutsero,
 Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack,
-shared by his guards), both entablado pictures, tondo.png, the four
+shared by his guards), both entablado pictures, tondo.jpg, the four
 street paintings, the ground, and Macario's idle, walk, melee and
 shooting sheets, plus the two fonts and four sound files.
 
@@ -828,8 +832,10 @@ Macario, Nanay and the backdrop are simply not drawn (the guide arrow
 over an empty road), and a picture whose download fails outright becomes
 the dashed placeholder box for the rest of the scene, with no retry.
 Nothing waits for the art before play starts, and the scene's first
-images compete with about 4MB of music. Block 43's paintings add to what
-a scene has to download (about 1MB per street, 4MB for the lansangan).
+images compete with about 4MB of music. Block 51 cut what a scene has to
+download by about six times (the six opaque backdrops are JPEGs now:
+300KB a street, 1.2MB for the lansangan, against 1.9MB and 7.8MB), which
+shortens the window without closing it.
 Chosen fix, not yet built: a loading bar on the title screen that fetches
 the current scene's art first and retries failed files, scene changes
 that wait behind the blackout until the next scene's art is in, and a

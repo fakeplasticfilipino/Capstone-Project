@@ -190,7 +190,7 @@ html, body {
 :root {
   /* How high off the very bottom of the screen characters' feet sit.
      Tweak this if it doesn't line up with the road drawn in
-     assets/backgrounds/act1/tondo.png. */
+     assets/backgrounds/act1/tondo.jpg. */
   --ground-level: 60px;
 }
 
@@ -206,7 +206,7 @@ html, body {
    a frame, and checkBackgroundImage() still has a background to replace
    with its labelled placeholder if the file is missing. */
 #skyline {
-  --skyline-src: url("../assets/backgrounds/act1/tondo.png");
+  --skyline-src: url("../assets/backgrounds/act1/tondo.jpg");
   position: absolute;
   left: 0;
   bottom: 0;

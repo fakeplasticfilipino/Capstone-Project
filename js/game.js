@@ -243,7 +243,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 19;
+const ASSET_VERSION = 20;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -464,7 +464,7 @@ let HIDE_SPOTS = []; // regions that suppress guard detection
 let HAZARDS = []; // ground regions that cost one health on contact
 let PICKUPS = []; // collectibles; currently only hearts
 
-// Native pixel dimensions of assets/backgrounds/act1/tondo.png. A backdrop tile is
+// Native pixel dimensions of assets/backgrounds/act1/tondo.jpg. A backdrop tile is
 // drawn at the full height of the skyline, so at any rendered height it
 // is exactly this ratio times as wide. buildSkylineTiles() uses it to lay
 // the tiles out without hardcoding a width that would only be right at
@@ -1005,8 +1005,8 @@ function checkBackgroundImage(el, src, label) {
 
 checkBackgroundImage(
   document.getElementById("skyline"),
-  "assets/backgrounds/act1/tondo.png",
-  "assets/backgrounds/act1/tondo.png"
+  "assets/backgrounds/act1/tondo.jpg",
+  "assets/backgrounds/act1/tondo.jpg"
 );
 checkBackgroundImage(
   document.getElementById("skyline-night"),

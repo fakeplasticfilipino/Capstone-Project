@@ -211,7 +211,7 @@ const panels = (page) => page.evaluate(async () => {
   const pK = await panels(page);
   ok("the memory is the same Tondo, one tree, greyed with it",
      pK.tiles === 2 && pK.treesAt.length === 1 && pK.loaded && pK.grey === "grayscale(1)" &&
-     pK.noneMirrored && pK.onFloor && /street-01\.png$/.test(pK.srcs[0]) && pK.blocked.length === 0, pK);
+     pK.noneMirrored && pK.onFloor && /street-01\.jpg$/.test(pK.srcs[0]) && pK.blocked.length === 0, pK);
   ok("the ground is greyed with it (Block 33)",
      await page.evaluate(() => getComputedStyle(document.getElementById("ground-tiles")).filter === "grayscale(1)"));
   const memoryLine = await page.evaluate(() => ({ open: inDialogue, speaker: dialogueSpeaker.textContent, text: dialogueText.textContent }));
@@ -626,8 +626,8 @@ const panels = (page) => page.evaluate(async () => {
     status: Acts.status, entabladoFlag: state.flags.nasaEntablado,
   }));
   ok("going in fades to the entablado scene", stage.room === "entablado", stage);
-  ok("with entablado-inside.png as its backdrop and no dirt strip",
-     /entablado-inside\.png/.test(stage.src) && !/outside/.test(stage.src) && stage.ground === "none", stage);
+  ok("with entablado-inside.jpg as its backdrop and no dirt strip",
+     /entablado-inside\.jpg/.test(stage.src) && !/outside/.test(stage.src) && stage.ground === "none", stage);
   ok("which does not finish Act I", stage.status === "playing" && stage.entabladoFlag !== true, stage);
   // Block 48: walking in no longer starts the play. Macario says who he
   // is looking for, and the student walks to Maryam and talks to her.

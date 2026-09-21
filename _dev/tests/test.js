@@ -4296,7 +4296,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     const { ctx, page } = await enterTestRoom();
     const built = await page.evaluate(() => {
       const scene = SCENES.find((sc) => sc.id === "misyon");
-      scene.panels = ["assets/backgrounds/act1/street-01.png", "assets/backgrounds/act1/street-02.png"];
+      scene.panels = ["assets/backgrounds/act1/street-01.jpg", "assets/backgrounds/act1/street-02.jpg"];
       loadScene("misyon");
       const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
       const trees = [...document.querySelectorAll(".shadow-tree")];
@@ -4316,8 +4316,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("panels are laid a fixed width apart and repeat in order past the end of the list",
        built.tiles.length === 3 && built.tiles[1].left === "1450px" &&
-       /street-01\.png/.test(built.tiles[0].src) && /street-02\.png/.test(built.tiles[1].src) &&
-       /street-01\.png/.test(built.tiles[2].src), built);
+       /street-01\.jpg/.test(built.tiles[0].src) && /street-02\.jpg/.test(built.tiles[1].src) &&
+       /street-01\.jpg/.test(built.tiles[2].src), built);
     ok("a tree and its shade stand at every join, and none at the end of the world",
        JSON.stringify(built.trees) === "[1450,2900]" && built.shades === 2 && built.world === 2940, built);
     ok("no Tondo.png tile is laid under a panelled scene", built.tondoTiles === 0, built);
@@ -4400,7 +4400,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     const flipped = await page.evaluate(() => {
       const scene = SCENES.find((sc) => sc.id === "misyon");
-      scene.panels = ["assets/backgrounds/act1/street-01.png"];
+      scene.panels = ["assets/backgrounds/act1/street-01.jpg"];
       scene.mirrorPanels = true;
       loadScene("misyon");
       const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];

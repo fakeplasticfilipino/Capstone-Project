@@ -93,8 +93,9 @@ off the repository.
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png
       sprites/enemies/         guards and fighters
-      backgrounds/act1/        street-01..04.png, tondo.png, the
-                               entablado inside and out, ground-lupa.jpg
+      backgrounds/act1/        street-01..04.jpg, tondo.jpg, the
+                               entablado inside (.jpg) and out (.png,
+                               it needs its alpha), ground-lupa.jpg
       items/                   inventory and shop tile pictures
       audio/music/, audio/sfx/
       fonts/                   the two woff2 faces and their licences
@@ -438,7 +439,7 @@ needing to be left out of the array, which is how Act I was held open
 through Blocks 19 to 36.
 
 greyFilter reuses whatever backdrop #skyline already has (the scene's
-panels since Block 43, else assets/backgrounds/act1/tondo.png) rather than needing a second background
+panels since Block 43, else assets/backgrounds/act1/tondo.jpg) rather than needing a second background
 asset for a flashback or memory beat. It is read once, in loadScene,
 and toggled rather than only ever added, so a scene without it clears
 whatever the previous scene set. See Decisions on record for the
@@ -3152,6 +3153,34 @@ wants more than 100; with the tree hidden the same row reads about 1,
 and Block 49's palm would have read about 50, so it can tell a thick
 trunk from a thin one. game.js v56, style.css v37; no asset changed, so
 ASSET_VERSION stays at 19.
+
+The backdrops are JPEGs (Block 51). Requested before a presentation,
+after working out where the waiting on a slow connection comes from:
+the six backdrops with no transparency were PNGs of about 1.9MB each,
+11MB in all, which is most of what a scene has to download, and a
+painting is exactly the picture a PNG is the wrong format for. They are
+now quality-86 progressive JPEGs at the same pixel size: 11.0MB to
+1.7MB, about six and a half times less, at 40dB PSNR, which on a
+painted backdrop at phone size is not a difference anyone sees. The
+street a student walks went from 7.8MB of paintings to 1.2MB.
+
+assets/backgrounds/act1/entablado-outside.png stays a PNG, because it
+is a cut-out of the building with an alpha channel and a JPEG has none.
+Quantising it to a palette got it to 247KB but flattened the
+semi-transparent edge (alpha off by up to 46), which would show as a
+jagged edge around a building drawn 400px tall, and halving its size
+would have meant changing the contentTop/contentHeight/footX measured
+from its native pixels. Left alone at 1.5MB, and it is now the largest
+file in the game.
+
+What did NOT change: the world still opens before its pictures have
+arrived, and a picture that fails outright is still the dashed box with
+no retry until that scene is loaded again (Macario's own sheets and the
+backdrop, only on a reload). Block 51 makes the window smaller; the
+loading bar, the retries and the service worker in TRACKER.md's Known
+problems are still the actual fix. ASSET_VERSION to 20; game.js v57,
+style.css v38, content/act1.js v37, all four of which name a picture
+whose extension changed.
 
 ## Pitfalls
 

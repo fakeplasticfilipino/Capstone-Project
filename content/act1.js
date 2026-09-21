@@ -316,10 +316,10 @@ const PAMPHLET_FLAGS = CITIZENS.map((c) => c.flag);
 // buildPanelBackdrop), with a coconut palm over each join. Block 45's
 // single repeated Tondo.png and Block 43's eight paintings are both gone.
 const STREET_PANELS = [
-  "assets/backgrounds/act1/street-01.png",
-  "assets/backgrounds/act1/street-02.png",
-  "assets/backgrounds/act1/street-03.png",
-  "assets/backgrounds/act1/street-04.png",
+  "assets/backgrounds/act1/street-01.jpg",
+  "assets/backgrounds/act1/street-02.jpg",
+  "assets/backgrounds/act1/street-03.jpg",
+  "assets/backgrounds/act1/street-04.jpg",
 ];
 
 // Block 46. A picture stands whole on the floor instead of running down
@@ -918,7 +918,7 @@ window.ACT_1 = {
       id: "entablado",
       worldWidth: 1176,
       startX: 700,
-      backdrop: { src: "assets/backgrounds/act1/entablado-inside.png" },
+      backdrop: { src: "assets/backgrounds/act1/entablado-inside.jpg" },
       ground: false,
       npcs: [
         {
