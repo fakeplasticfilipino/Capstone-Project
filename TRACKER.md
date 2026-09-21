@@ -23,7 +23,8 @@ CLAUDE.md, Decisions on record, and in git history.
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
 Last updated: 21 Sep 2026, end of session, after Block 50 (four trees,
-two palms and two broadleaf, mostly trunk, at the joins), which
+two palms and two broadleaf, flat silhouettes, mostly trunk, at the
+joins), which
 followed Block 49 (four new
 street paintings and a coconut palm at the joins), which followed Block
 48 (the quest system rebuilt as one chain, the current task with a
@@ -73,9 +74,9 @@ a road is longer than four, standing whole on the floor with their own
 sky colour above them, with a tree in silhouette over every join that
 Macario and everyone else walk behind (Block 43). Since Block 50 there
 are four of those trees, two coconut palms and two broadleaf, taking
-turns along the road: mostly trunk, about 130 world px wide at the
-height of a person, so a phone shows trunk from the road up and only
-the lowest leaves at the top. Keep anyone a student must reach at
+turns along the road: flat silhouettes in one tone, mostly trunk, about
+130 world px wide at the height of a person, so a phone shows trunk from
+the road up and only the lowest leaves at the top. Keep anyone a student must reach at
 least 90px clear of a join. tondo.png is in
 no scene now; it is the backdrop a scene without panels falls back to,
 which is what the harness fixture uses.
@@ -178,7 +179,7 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v37    js/game.js v55       js/shell.js v13
+    css/style.css v37    js/game.js v56       js/shell.js v13
     js/inventory.js v9   js/acts.js v10       js/assessment.js v3
     content/act1.js v36  content/items.js v10  content/act2-4.js v1
     ASSET_VERSION 19 (in js/game.js)
@@ -271,8 +272,9 @@ Blocks 1 to 50 are built. Blocks 22 to 41 were one build session, 17 to
         play starts by talking to Maryam, not by walking in
     49  four new street paintings in order along every road, and the
         shadow tree redrawn as a bigger coconut palm
-    50  four tree models, two palms and two broadleaf, mostly trunk and
-        thick enough to hide the join, taking turns along the road
+    50  four tree models, two palms and two broadleaf, flat silhouettes,
+        mostly trunk and thick enough to hide the join, taking turns
+        along the road
 
 Everything through Block 41 is pushed (088f5e4). Blocks 42 to 50 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
@@ -321,10 +323,11 @@ private tab (browsers cache index.html; see Known problems). Check:
       their bullets pass behind the trunk; the crown stays above
       everyone's head; in the memory the tree is grey like the rest.
       Since Block 50 the trees take turns, palm then broadleaf then the
-      other palm then the other broadleaf, and are mostly trunk: check
-      that the trunk covers the join at head height on the phone, that
-      the leaves coming in at the top of the screen read as leaves, and
-      that the trunks read as bark rather than as flat dark slabs.
+      other palm then the other broadleaf, and are mostly trunk, drawn
+      as one flat tone: check that the trunk covers the join at head
+      height on the phone, that the leaves coming in at the top of the
+      screen read as leaves, and that no sliver of sky shows through
+      where a limb or a frond meets the trunk.
       Judge also whether the road in the paintings sits right behind the
       dirt strip Macario walks on. Failure looks like a visible straight
       seam beside a trunk, a tree in front of the Mananahi or a citizen,

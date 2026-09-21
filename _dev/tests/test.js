@@ -4362,11 +4362,11 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("standing at a join, Macario is behind the trunk", rgb.every((v) => v < 40), { at: pixels, rgb });
 
     // Block 50: the trunk is what hides the join, so it is measured, in
-    // world pixels, at the height of a person's chest, on both of this
-    // scene's joins, which carry two different models. The tree's own two
-    // tones are dark greens (the green channel highest and every channel
-    // low), which nothing in the painting behind it is: with the tree
-    // hidden the same row measures about one pixel rather than 124.
+    // world pixels, at the height of a person's chest, for each model in
+    // turn. The tree is one flat near-black green (the green channel
+    // highest and every channel low), which nothing in the painting
+    // behind it is: with the tree hidden the same row measures about one
+    // pixel rather than 124.
     const trunkAt = async (p) => {
       const row = await readPixels({ x: p.strip.x, y: p.y, width: p.strip.width, height: 1 });
       let cols = 0;

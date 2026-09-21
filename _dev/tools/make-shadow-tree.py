@@ -25,7 +25,7 @@ import math, sys, os
 W, H = 440, 1200
 CX = 220
 BASE_Y = H                      # the road
-DARK, LIGHT = "#0c1a0e", "#14301a"
+INK = "#0c1a0e"  # one flat tone: these are silhouettes, not drawings
 
 
 def bez(p0, p1, p2, t):
@@ -39,8 +39,13 @@ def poly(pts):
 
 
 # --- the trunk, which is most of the tree ---
-def trunk(top, base_half, top_half, lean, flare=22, steps=26):
-    """A fat trunk from the road up to top, leaning by lean at the crown."""
+def trunk(top, base_half, top_half, lean, flare=22, wobble=(4.0, 3.1, 0.0), neck=0, steps=40):
+    """A thick trunk from the road up to top, leaning by lean at the crown.
+
+    The width tapers, and a slow wobble is added on top of the taper: in a
+    flat silhouette a perfectly straight edge reads as a cut-out, and this
+    is the whole of what a phone shows, so the outline has to carry it."""
+    amp, freq, phase = wobble
     base = (CX, BASE_Y)
     ctrl = (CX - lean * 0.45, BASE_Y - (BASE_Y - top[1]) * 0.55)
     left, right = [], []
@@ -48,34 +53,21 @@ def trunk(top, base_half, top_half, lean, flare=22, steps=26):
         t = i / steps
         x, y = bez(base, ctrl, top, t)
         half = top_half + (base_half - top_half) * (1 - t) ** 1.25 + flare * (1 - t) ** 7
-        left.append((x - half, y))
-        right.append((x + half, y))
+        half += neck * math.exp(-((t - 0.90) ** 2) / (2 * 0.06 ** 2))
+        left.append((x - half - amp * math.sin(freq * t + phase), y))
+        right.append((x + half + amp * math.sin(freq * t * 1.3 + phase + 1.7), y))
     d = poly(left + right[::-1])
     # Roots flaring into the ground, so the trunk sits in the road rather
-    # than on it. They stay inside the base's own width.
-    for dx in (-1, 1):
+    # than on it: three of them, uneven, none reaching past the base's own
+    # width by more than half again.
+    for side, reach, rise in ((-1, 1.52, 30), (1, 1.34, 24), (1, 1.72, 16)):
         d += " " + poly([
-            (CX + dx * (base_half + 34), BASE_Y),
-            (CX + dx * (base_half + 8), BASE_Y - 30),
-            (CX + dx * (base_half - 20), BASE_Y - 8),
+            (CX + side * base_half * reach, BASE_Y),
+            (CX + side * base_half * (reach * 0.66), BASE_Y - rise),
+            (CX + side * base_half * 0.34, BASE_Y - rise * 0.35),
             (CX, BASE_Y),
         ])
     return d
-
-
-def trunk_rings(top, base_half, top_half, lean, count, steps=26):
-    """Old leaf scars across a palm's trunk: a lighter tone, so a trunk
-    this wide reads as bark rather than as a hole cut in the painting."""
-    base = (CX, BASE_Y)
-    ctrl = (CX - lean * 0.45, BASE_Y - (BASE_Y - top[1]) * 0.55)
-    out = []
-    for i in range(count):
-        t = 0.08 + 0.80 * (i / max(1, count - 1))
-        x, y = bez(base, ctrl, top, t)
-        half = (top_half + (base_half - top_half) * (1 - t) ** 1.25) * 0.86
-        h = 7
-        out.append(poly([(x - half, y), (x + half, y - 5), (x + half, y - 5 + h), (x - half, y + h)]))
-    return out
 
 
 # --- one frond: a drooping spine with leaflets down both sides ---
@@ -103,107 +95,117 @@ def frond(origin, angle, length, droop, leaflet, steps=16):
     return poly(side[0] + side[1])
 
 
-def svg(parts_dark, parts_light, circles_dark=(), circles_light=()):
-    body = '<g fill="%s">' % DARK
-    body += "".join('<path d="%s"/>' % p for p in parts_dark)
-    body += "".join('<circle cx="%d" cy="%d" r="%d"/>' % c for c in circles_dark)
+def svg(paths, circles=()):
+    """One group, one colour. A silhouette is read by its outline, so the
+    shapes below carry the detail (a frond's saw edge, a canopy's lobes,
+    the wobble down a trunk) rather than a second tone inside it."""
+    body = '<g fill="%s">' % INK
+    body += "".join('<path d="%s"/>' % p for p in paths)
+    body += "".join('<circle cx="%d" cy="%d" r="%d"/>' % c for c in circles)
     body += "</g>"
-    if parts_light or circles_light:
-        body += '<g fill="%s">' % LIGHT
-        body += "".join('<path d="%s"/>' % p for p in parts_light)
-        body += "".join('<circle cx="%d" cy="%d" r="%d"/>' % c for c in circles_light)
-        body += "</g>"
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d">' % (W, H)
             + body + "</svg>")
 
 
 # --- model 1 and 2: coconut palms, leaning opposite ways ---
-def palm(lean, crown_y, specs, nuts):
+def palm(lean, crown_y, specs, nuts, wobble):
     top = (CX + lean, crown_y + 46)
     crown = (CX + lean, crown_y)
-    dark = [trunk(top, 64, 34, lean)]
-    dark += [frond(crown, a, l, d, w) for a, l, d, w in specs]
-    light = trunk_rings(top, 64, 34, lean, 7)
-    light += [frond(crown, a, l * 0.64, d * 0.5, w * 0.42) for a, l, d, w in specs[1:6:2]]
-    circles = [(crown[0] + dx, crown[1] + dy, r) for dx, dy, r in nuts]
-    return svg(dark, light, circles)
+    paths = [trunk(top, 64, 34, lean, wobble=wobble, neck=13)]
+    paths += [frond(crown, a, l, d, w) for a, l, d, w in specs]
+    # The fronds all leave one point and the sky showed through between
+    # them; this closes the middle of the crown.
+    circles = [(crown[0], crown[1] + 6, 44), (crown[0], crown[1] - 26, 32),
+               (crown[0], crown[1] - 56, 24), (crown[0], crown[1] - 84, 16)]
+    circles += [(crown[0] + dx, crown[1] + dy, r) for dx, dy, r in nuts]
+    return svg(paths, circles)
 
 
+# Each frond is angle, length, droop and leaflet width. The last two of
+# each list are old fronds hanging down the crownshaft, which is what
+# breaks the fan into a tree rather than a parasol.
 PALM_A = palm(
     26, 500,
-    [(-172, 250, 160, 30), (-150, 268, 178, 34), (-126, 254, 196, 34),
-     (-100, 230, 210, 32), (-74, 236, 206, 32), (-52, 262, 186, 34),
-     (-28, 268, 166, 32), (-8, 244, 150, 28), (-192, 230, 140, 28)],
-    [(-28, 36, 18), (2, 46, 17), (28, 32, 16)])
+    [(-176, 244, 150, 27), (-154, 266, 176, 32), (-130, 252, 198, 33),
+     (-104, 226, 214, 31), (-78, 232, 210, 31), (-56, 260, 188, 33),
+     (-32, 270, 168, 31), (-10, 246, 146, 26), (-196, 226, 136, 25),
+     (-158, 150, 206, 17), (-26, 138, 192, 15)],
+    [(-20, 42, 12), (0, 50, 12), (20, 38, 11)],
+    (4.5, 3.4, 0.6))
 
 PALM_B = palm(
     -30, 560,
-    [(-8, 246, 158, 30), (-30, 264, 176, 34), (-54, 250, 194, 34),
-     (-80, 226, 208, 32), (-106, 232, 204, 32), (-128, 258, 184, 34),
-     (-152, 264, 164, 32), (-172, 240, 148, 28), (12, 226, 138, 28)],
-    [(26, 38, 18), (-4, 46, 17), (-30, 30, 16)])
+    [(-4, 240, 148, 27), (-26, 262, 174, 32), (-50, 250, 196, 33),
+     (-76, 222, 212, 31), (-102, 228, 208, 31), (-124, 256, 186, 33),
+     (-148, 266, 166, 31), (-170, 242, 144, 26), (16, 222, 134, 25),
+     (-22, 146, 202, 17), (-154, 134, 188, 15)],
+    [(18, 44, 12), (-2, 50, 12), (-20, 36, 11)],
+    (3.6, 4.2, 2.3))
 
 
 # --- model 3 and 4: ordinary broadleaf trees ---
-def bark(top, base_half, top_half, lean, streaks, steps=26):
-    """Vertical bark streaks in the lighter tone, the broadleaf answer to
-    the palm's rings: on a phone the trunk is most of what is on screen,
-    so a flat shape that wide reads as a hole in the painting."""
-    base = (CX, BASE_Y)
-    ctrl = (CX - lean * 0.45, BASE_Y - (BASE_Y - top[1]) * 0.55)
+def tuft(cx, cy, angle, length, width):
+    """A spray of leaves off the edge of a canopy. Circles alone make a
+    smooth arc, which reads as a cloud; these are what make it foliage."""
+    a = math.radians(angle)
+    tip = (cx + math.cos(a) * length, cy + math.sin(a) * length)
+    nx, ny = -math.sin(a), math.cos(a)
+    pts = [tip]
+    n = 5
+    for side in (1, -1):
+        for i in range(n, 0, -1) if side == 1 else range(1, n + 1):
+            t = i / (n + 1)
+            w = width * math.sin(math.pi * t) * (0.7 + 0.3 * (i % 2))
+            pts.append((cx + math.cos(a) * length * t + nx * w * side,
+                        cy + math.sin(a) * length * t + ny * w * side))
+    return poly(pts)
+
+
+def canopy_tufts(lobes, count):
     out = []
-    for frac, t0, t1, w in streaks:
-        pts_l, pts_r = [], []
-        n = 10
-        for i in range(n + 1):
-            t = t0 + (t1 - t0) * i / n
-            x, y = bez(base, ctrl, top, t)
-            half = top_half + (base_half - top_half) * (1 - t) ** 1.25
-            cx = x + half * frac
-            taper = math.sin(math.pi * (i / n)) ** 0.5
-            pts_l.append((cx - w * taper, y))
-            pts_r.append((cx + w * taper, y))
-        out.append(poly(pts_l + pts_r[::-1]))
+    for dx, dy, r in lobes[:count]:
+        a = math.degrees(math.atan2(-dy, dx))
+        out.append((dx, dy, a, r * 0.95 + 26, r * 0.30))
     return out
 
 
-def broadleaf(lean, crown_y, lobes, fringe, limbs, streaks):
+def broadleaf(lean, crown_y, lobes, fringe, limbs, wobble):
     top = (CX + lean, crown_y + 40)
-    dark = [trunk(top, 70, 42, lean, flare=26)]
+    paths = [trunk(top, 70, 42, lean, flare=26, wobble=wobble)]
     # Limbs leaving the trunk into the canopy. They sit high, above what a
     # phone shows, so on screen this is a trunk and the canopy's underside.
     for bx, by, ex, ey, w0, w1 in limbs:
-        dark.append(poly([(CX + bx - w0, BASE_Y - by), (CX + ex - w1, BASE_Y - ey),
-                          (CX + ex + w1, BASE_Y - ey), (CX + bx + w0, BASE_Y - by - 30)]))
-    circles = [(CX + lean + dx, crown_y - dy, r) for dx, dy, r in lobes]
+        paths.append(poly([(CX + bx - w0, BASE_Y - by), (CX + ex - w1, BASE_Y - ey),
+                           (CX + ex + w1, BASE_Y - ey), (CX + bx + w0, BASE_Y - by - 30)]))
+    paths += [tuft(CX + lean + dx, crown_y - dy, a, l, w)
+              for dx, dy, a, l, w in canopy_tufts(lobes, 7)]
+    # A lobe sitting on the trunk's top, so no sky shows in the fork
+    # between the trunk, the limbs and the canopy above them.
+    circles = [(CX + lean, crown_y + 74, 92)]
+    circles += [(CX + lean + dx, crown_y - dy, r) for dx, dy, r in lobes]
     # Leaves hanging below the canopy's edge, which is what a student
     # actually sees at the top of a phone screen.
     circles += [(CX + lean + dx, crown_y - dy, r) for dx, dy, r in fringe]
-    light = bark(top, 70, 42, lean, streaks)
-    lightc = [(CX + lean + dx + 14, crown_y - dy - 10, max(12, r - 16))
-              for dx, dy, r in lobes[:4]]
-    return svg(dark, light, circles, lightc)
+    return svg(paths, circles)
 
 
 BROAD_A = broadleaf(
     18, 400,
-    [(-150, 40, 76), (-80, 96, 96), (10, 120, 104), (96, 84, 92), (156, 30, 72),
-     (-40, 10, 78), (46, 6, 74), (-110, -22, 58), (110, -26, 56), (0, 176, 72),
-     (-70, 160, 58), (74, 156, 56)],
-    [(-124, -54, 40), (-46, -70, 44), (36, -72, 42), (116, -50, 38), (-4, -30, 50)],
-    [(-38, 520, -112, 690, 32, 16), (32, 560, 104, 720, 30, 15)],
-    [(-0.74, 0.03, 0.58, 6), (-0.42, 0.10, 0.66, 8), (0.04, 0.02, 0.72, 6),
-     (0.46, 0.16, 0.60, 8), (0.78, 0.06, 0.50, 6)])
+    [(-150, 40, 74), (-80, 96, 96), (10, 122, 104), (96, 84, 90), (156, 30, 70),
+     (-40, 10, 78), (46, 6, 74), (-110, -22, 56), (110, -26, 54), (0, 176, 70),
+     (-70, 158, 56), (74, 154, 54)],
+    [(-124, -54, 38), (-46, -70, 44), (36, -72, 40), (116, -50, 36), (-4, -30, 48)],
+    [(-18, 540, -86, 800, 22, 17), (16, 580, 80, 840, 20, 16)],
+    (5.0, 2.7, 1.2))
 
 BROAD_B = broadleaf(
     -22, 460,
-    [(140, 34, 74), (74, 92, 94), (-16, 118, 102), (-102, 80, 90), (-158, 26, 70),
-     (34, 8, 76), (-52, 4, 72), (104, -24, 56), (-116, -28, 54), (-6, 170, 70),
-     (64, 152, 56), (-80, 150, 54)],
-    [(118, -52, 38), (40, -68, 42), (-42, -70, 40), (-120, -48, 36), (2, -28, 48)],
-    [(36, 580, 108, 750, 32, 16), (-30, 620, -100, 780, 30, 15)],
-    [(0.74, 0.03, 0.58, 6), (0.42, 0.10, 0.66, 8), (-0.04, 0.02, 0.72, 6),
-     (-0.46, 0.16, 0.60, 8), (-0.78, 0.06, 0.50, 6)])
+    [(140, 34, 72), (74, 92, 94), (-16, 120, 102), (-102, 80, 88), (-158, 26, 68),
+     (34, 8, 76), (-52, 4, 72), (104, -24, 54), (-116, -28, 52), (-6, 170, 68),
+     (64, 150, 56), (-80, 148, 52)],
+    [(118, -52, 36), (40, -68, 42), (-42, -70, 38), (-120, -48, 34), (2, -28, 46)],
+    [(16, 600, 84, 860, 22, 17), (-18, 640, -78, 900, 20, 16)],
+    (4.2, 3.6, 0.3))
 
 
 TREES = [("palm-a", PALM_A), ("broad-a", BROAD_A), ("palm-b", PALM_B), ("broad-b", BROAD_B)]

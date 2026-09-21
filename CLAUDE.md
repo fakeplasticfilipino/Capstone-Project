@@ -3091,11 +3091,13 @@ into SHADOW_TREE_URL, so the next change to the tree is a change to the
 script rather than to a wall of path data. ASSET_VERSION to 19; game.js
 v54, style.css v36, content/act1.js v36.
 
-Four fat trees (Block 50). Requested after Block 49 on the device: the
-trees should be mostly trunk, and the trunk fat enough to hide how the
+Four trees (Block 50). Requested after Block 49 on the device: the
+trees should be mostly trunk, and the trunk thick enough to hide how the
 houses fail to line up across a join, with the leaves only partly
 visible at the top; and four models rather than one, two coconut palms
-and two ordinary trees.
+and two ordinary trees. Two corrections came back the same session and
+are folded in below: the first draft was too fat, and the second tone
+inside the shapes was distracting.
 
 The trunk is the whole point of a shadow tree, so it is now what the
 tree mostly is: about 130 world px wide at the height of a person and
@@ -3104,22 +3106,36 @@ holds trunk from the road to the top, with the crown's lowest leaves
 coming in at the top edge. The box is 440 by 1200, narrower and taller
 than Block 49's 520 by 1100: a trunk this thick needs no room either
 side of it for a crown that is mostly off screen. The first draft was
-wider still, about 180, and the proponent judged it too fat on the
-device; 130 is what covers a join without eating the road.
+about 180 wide and read as too fat on the device; 130 covers a join
+without eating the road.
+
+One flat tone, and the outline carries everything. Blocks 43 to 49 drew
+a lighter green inside the silhouette (lit fronds, leaf scars, bark
+streaks) to keep a large dark shape from reading as a hole in the
+painting; on the device that grain read as distracting instead, so it is
+gone. What replaced it is shape: a slow wobble down each trunk's edges
+so no side is a straight cut, three uneven roots at the road, a neck
+that swells into a coconut's crownshaft (drawn as part of the trunk, not
+as a collar on top of it, which left a step), saw-edged fronds with two
+old ones hanging down the side, and on the broadleaves a canopy of lobes
+with a spray of leaves off each outer one.
 
 Four models, in _dev/tools/make-shadow-tree.py: two coconut palms
-leaning opposite ways, with drooping fronds, old leaf scars across the
-trunk and a cluster of coconuts, and two broadleaf trees with a wide
-canopy, a pair of limbs under it and vertical bark streaks. The
-lighter tone matters more than it did: a shape this wide in one flat
-colour reads as a hole cut in the painting, which is what Block 18's
-shadow post was judged as, so every model carries some grain.
-
-Which model stands at a join is the join's own number (game.js,
+leaning opposite ways with a cluster of coconuts under the crown, and
+two broadleaf trees with limbs leaving the trunk into the canopy. Which
+model stands at a join is the join's own number (game.js,
 buildPanelBackdrop), so a road alternates palm, tree, palm, tree, and
 the same tree stands at the same place on every phone and on every
-visit. Random would have been one line shorter and would have moved
-the trees on a reload.
+visit. Random would have been one line shorter and would have moved the
+trees on a reload.
+
+A flat silhouette shows every seam between the shapes it is built from,
+which was the whole of the refinement pass: a limb has to leave the
+trunk from inside it, a lobe has to sit over the fork where the limbs
+and the trunk meet, and the fronds need a blob at the crown they all
+leave from, or a sliver of sky shows through and reads as a tear. None
+of that is visible as a highlight; it is only visible as an outline
+that holds together.
 
 The cost, and it is the reason the clearance rule in Act data format
 moved from 40px to 90px: a thicker trunk hides more of the road.
@@ -3130,11 +3146,11 @@ a trunk where before they would have been beside it.
 
 Section AX measures the trunk rather than trusting the drawing: with
 Macario standing on a join, the row of screen pixels at his chest is
-counted in the tree's own two tones and converted back to world pixels,
+counted in the tree's own colour and converted back to world pixels,
 for each of the four models in turn. It reads about 124 and the check
 wants more than 100; with the tree hidden the same row reads about 1,
 and Block 49's palm would have read about 50, so it can tell a thick
-trunk from a thin one. game.js v55, style.css v37; no asset changed, so
+trunk from a thin one. game.js v56, style.css v37; no asset changed, so
 ASSET_VERSION stays at 19.
 
 ## Pitfalls
