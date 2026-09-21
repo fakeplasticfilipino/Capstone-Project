@@ -93,7 +93,7 @@ off the repository.
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png
       sprites/enemies/         guards and fighters
-      backgrounds/act1/        street-01..08.jpg, tondo.png, the
+      backgrounds/act1/        street-01..04.png, tondo.png, the
                                entablado inside and out, ground-lupa.jpg
       items/                   inventory and shop tile pictures
       audio/music/, audio/sfx/
@@ -101,7 +101,8 @@ off the repository.
     db/                        migrations/, seeds/, scripts/ (Database)
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
-                               make-placeholder-sprites.py, and
+                               make-placeholder-sprites.py,
+                               make-shadow-tree.py, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
                                form and old screenshots, kept on the
@@ -460,8 +461,9 @@ guide's arrow), with a faint shade on the paintings behind it. It
 replaces Tondo.png's mirrored tiles for that scene. Because the width is
 fixed rather than following the screen's height, the joins are at the
 same x on every phone: at panelWidth, 2 times it, and so on, never at
-the end of the world. Keep NPCs, exits and checkpoints at least 40px
-clear of a join, or the trunk stands in front of them;
+the end of the world. Keep NPCs, exits and checkpoints at least 120px
+clear of a join (40px before Block 50 widened the trunks), or the
+trunk stands in front of them;
 verify_new_scene.js checks every Act I scene for this. greyFilter greys
 the paintings and the trees with them. mirrorPanels (Block 45) flips
 every second panel, so a single picture repeated along the road meets
@@ -3060,6 +3062,79 @@ db/scripts/reset_test_accounts.sql rather than trust a mid-act save,
 although the chain rule means one will not get stuck. game.js v53,
 style.css v35, content/act1.js v35, content/items.js v10.
 
+Four new paintings and a coconut palm (Block 49). Four new pictures of
+the street arrived (a colonial town: the church, the stone houses, the
+bay behind them), delivered as "1 1.png", "2 2.png", "3 2.png" and
+"4.png". They are assets/backgrounds/act1/street-01..04.png, named the
+way the layout asks rather than the way they arrived, and every road in
+Act I now lays all four in order and starts again at the first when the
+road is longer (tondo shows one and two, the memory the same two, the
+lansangan all four twice). Block 45's single repeated Tondo.png is gone
+from the scenes; tondo.png stays as the backdrop for any scene without
+panels, which is what the harness fixture uses. Block 43's eight
+paintings were deleted. panelSky is #51a6ea, the average of the four
+tops.
+
+The shadow tree is a coconut palm now, and about a third wider and
+taller (520 by 1100 against 380 by 900): a leaning trunk with flared
+roots, ten drooping fronds with saw-edged leaflets, a cluster of
+coconuts, and a lighter tone on the fronds facing the light. The trunk's
+base is centred on the join it hides and the crown leans off to one
+side, which is what a palm does and also what keeps the join covered at
+the road, where a student looks. The harness checks that in pixels
+(section AX, Macario standing at a join), and it caught the first draft,
+whose trunk leaned off the join at the ground.
+
+The palm is geometry, not art, like the tree before it, and now has a
+generator: _dev/tools/make-shadow-tree.py writes the SVG that is pasted
+into SHADOW_TREE_URL, so the next change to the tree is a change to the
+script rather than to a wall of path data. ASSET_VERSION to 19; game.js
+v54, style.css v36, content/act1.js v36.
+
+Four fat trees (Block 50). Requested after Block 49 on the device: the
+trees should be mostly trunk, and the trunk fat enough to hide how the
+houses fail to line up across a join, with the leaves only partly
+visible at the top; and four models rather than one, two coconut palms
+and two ordinary trees.
+
+The trunk is the whole point of a shadow tree, so it is now what the
+tree mostly is: about 180 world px wide at the height of a person and
+long enough that a phone screen (about 590 world px tall at --zoom 0.7)
+holds trunk from the road to the top, with the crown's lowest leaves
+coming in at the top edge. The box is 440 by 1200, narrower and taller
+than Block 49's 520 by 1100: a trunk that wide needs no room either
+side of it for a crown that is mostly off screen.
+
+Four models, in _dev/tools/make-shadow-tree.py: two coconut palms
+leaning opposite ways, with drooping fronds, old leaf scars across the
+trunk and a cluster of coconuts, and two broadleaf trees with a wide
+canopy, a pair of limbs under it and vertical bark streaks. The
+lighter tone matters more than it did: a shape 180px wide in one flat
+colour reads as a hole cut in the painting, which is what Block 18's
+shadow post was judged as, so every model carries some grain.
+
+Which model stands at a join is the join's own number (game.js,
+buildPanelBackdrop), so a road alternates palm, tree, palm, tree, and
+the same tree stands at the same place on every phone and on every
+visit. Random would have been one line shorter and would have moved
+the trees on a reload.
+
+The cost, and it is the reason the clearance rule in Act data format
+moved from 40px to 120px: a fatter trunk hides more of the road.
+Nothing in Act I had to move (verify_new_scene.js checks every citizen,
+exit and checkpoint against every join and passes), but a character
+placed within about 120px of a multiple of panelWidth now stands behind
+a trunk where before they would have been beside it.
+
+Section AX measures the trunk rather than trusting the drawing: with
+Macario standing on a join, the row of screen pixels at his chest is
+counted in the tree's own two tones and converted back to world pixels,
+for each of the four models in turn. It reads about 170 and the check
+wants more than 150; with the tree hidden the same row reads about 1,
+and Block 49's palm would have read about 50, so it can tell a fat
+trunk from a thin one. game.js v55, style.css v37; no asset changed, so
+ASSET_VERSION stays at 19.
+
 ## Pitfalls
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
@@ -3260,9 +3335,10 @@ assumes directional art faces right, as Macario's does. If a guard sheet arrives
 will walk backwards; the fix is in the CSS rule, not the content.
 
 A shadow tree stands at every multiple of a panelled scene's
-panelWidth. Moving an NPC, exit or checkpoint onto one of those x values,
-or changing panelWidth, puts someone behind a trunk; move them or run
-verify_new_scene.js, which fails on it.
+panelWidth, and since Block 50 its trunk is about 180 world px wide at
+head height. Moving an NPC, exit or checkpoint within about 120px of
+one of those x values, or changing panelWidth, puts someone behind a
+trunk; move them or run verify_new_scene.js, which fails on it.
 
 A url() in css/style.css resolves against css/, so a path to a picture
 there starts ../assets/. A url() that game.js puts into a custom

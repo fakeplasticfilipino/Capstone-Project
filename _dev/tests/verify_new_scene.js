@@ -102,7 +102,10 @@ const panels = (page) => page.evaluate(async () => {
     img.onerror = () => resolve(0);
     img.src = assetUrl(src);
   })));
-  const TRUNK = 40; // half the trunk plus a margin, either side of a join
+  // Half the widest trunk at head height plus a margin, either side of a
+  // join. It grew with the trees in Block 50: they are fat now, so the
+  // ground a person must stay off is wider than it was.
+  const TRUNK = 120;
   const blocked = [];
   joins.forEach((x) => {
     NPCS.forEach((n) => { if (!n.hidden && n.x < x + TRUNK && n.x + NPC_WIDTH > x - TRUNK) blocked.push(n.id + " at " + x); });
@@ -118,7 +121,8 @@ const panels = (page) => page.evaluate(async () => {
     grey: trees.length ? getComputedStyle(trees[0]).filter : null,
     loaded: widths.every((w) => w > 0), widths, blocked,
     tondoTiles: document.querySelectorAll("#skyline .skyline-tile:not(.skyline-panel)").length,
-    srcs, noneMirrored: tiles.every((t) => !t.classList.contains("skyline-tile-mirrored")),
+    srcs, order: tiles.map((t) => (t.style.backgroundImage.match(/street-\d+/) || ["?"])[0]),
+    noneMirrored: tiles.every((t) => !t.classList.contains("skyline-tile-mirrored")),
     // Block 46: the picture stands on the floor, whole, with sky above it.
     onFloor: tiles.every((t) => getComputedStyle(t).bottom === GROUND_LEVEL + "px" &&
       /^100%( auto)?$/.test(getComputedStyle(t).backgroundSize)),
@@ -158,11 +162,11 @@ const panels = (page) => page.evaluate(async () => {
   // --- Nanay, then the fade into kutsero (covered fully in Block 19's
   // own verification; just enough here to land in the memory). ---
   const p0 = await panels(page);
-  ok("tondo is Tondo.png, as two panels, neither mirrored (Block 46)",
+  ok("tondo is the first two of the new paintings, neither mirrored (Block 49)",
      p0.tiles === p0.expectedTiles && p0.tiles === 2 && p0.tondoTiles === 0 && p0.loaded &&
-     p0.srcs.length === 1 && /tondo\.png$/.test(p0.srcs[0]) && p0.noneMirrored, p0);
+     JSON.stringify(p0.order) === '["street-01","street-02"]' && p0.noneMirrored, p0);
   ok("each picture stands whole on the floor, with its own sky colour above",
-     p0.onFloor && p0.sky === "rgb(114, 168, 208)", p0);
+     p0.onFloor && p0.sky === "rgb(81, 166, 234)", p0);
   ok("a shadow tree stands over the join", p0.joins.length === 1 &&
      JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
   ok("in front of Macario, and behind the guide's arrow",
@@ -207,7 +211,7 @@ const panels = (page) => page.evaluate(async () => {
   const pK = await panels(page);
   ok("the memory is the same Tondo, one tree, greyed with it",
      pK.tiles === 2 && pK.treesAt.length === 1 && pK.loaded && pK.grey === "grayscale(1)" &&
-     pK.noneMirrored && pK.onFloor && /tondo\.png$/.test(pK.srcs[0]) && pK.blocked.length === 0, pK);
+     pK.noneMirrored && pK.onFloor && /street-01\.png$/.test(pK.srcs[0]) && pK.blocked.length === 0, pK);
   ok("the ground is greyed with it (Block 33)",
      await page.evaluate(() => getComputedStyle(document.getElementById("ground-tiles")).filter === "grayscale(1)"));
   const memoryLine = await page.evaluate(() => ({ open: inDialogue, speaker: dialogueSpeaker.textContent, text: dialogueText.textContent }));
@@ -882,8 +886,10 @@ const panels = (page) => page.evaluate(async () => {
     citizenArt: document.querySelector("#npc-mangingisda .sprite").style.backgroundImage,
   }));
   const pS = await panels(page);
-  ok("the street is eight Tondo panels, a tree over each of its seven joins",
-     pS.tiles === 8 && pS.noneMirrored && pS.onFloor && pS.srcs.length === 1 && pS.loaded &&
+  ok("the street lays the four paintings in order, twice, a palm over each of its seven joins",
+     pS.tiles === 8 && pS.noneMirrored && pS.onFloor && pS.srcs.length === 4 && pS.loaded &&
+     JSON.stringify(pS.order) === JSON.stringify(["street-01", "street-02", "street-03", "street-04",
+       "street-01", "street-02", "street-03", "street-04"]) &&
      pS.treesAt.length === 7 && JSON.stringify(pS.treesAt) === JSON.stringify(pS.joins) && pS.grey === "none", pS);
   ok("no citizen, doorway or checkpoint stands behind a tree", pS.blocked.length === 0, pS.blocked);
   ok("Tumuloy fades to the street, in colour",

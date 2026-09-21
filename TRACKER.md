@@ -22,9 +22,13 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 20 Sep 2026, end of session, after Block 48 (the quest
-system rebuilt as one chain, the current task with a closed Tapos na
-list, and the play started by talking to Maryam), which followed Block
+Last updated: 21 Sep 2026, end of session, after Block 50 (four fat
+trees, two palms and two broadleaf, mostly trunk, at the joins), which
+followed Block 49 (four new
+street paintings and a coconut palm at the joins), which followed Block
+48 (the quest system rebuilt as one chain, the current task with a
+closed Tapos na list, and the play started by talking to Maryam), which
+followed Block
 47 (the guard's cone looking straight ahead from his eyes), which
 followed Block 46 (no
 mirror, the backdrop standing on the floor, the cone from his eyes),
@@ -33,10 +37,10 @@ Blocks 42 (the guide, the vision cone, a ten-citizen street, a
 consistency pass), 43 (painted panels with shadow trees) and 44 (the
 repository reorganised) the same day. Blocks through 41 are pushed
 (088f5e4). Whether Blocks 42 to 44 have been pushed since is not
-recorded here; Blocks 45 to 48 are in the device folder and NOT yet
-pushed. Push everything as one commit (see Right now). test.js 587
+recorded here; Blocks 45 to 50 are in the device folder and NOT yet
+pushed. Push everything as one commit (see Right now). test.js 589
 passed, 0 failed; verify_new_scene.js 182 passed, 0 failed. None of
-Blocks 42 to 48 has been played on the phone. Block 48 changes Act I's
+Blocks 42 to 50 has been played on the phone. Block 48 changes Act I's
 objectives from seven to eleven, so db/scripts/reset_test_accounts.sql
 should be run on the test accounts before a full-flow test.
 
@@ -63,12 +67,18 @@ Act I is four scenes and is the only act with content. Acts II to IV are
 registered stubs. Act I can be completed: the tenth pamphlet finishes it
 and runs the post-test.
 
-The streets are Tondo.png (Blocks 45 and 46): tondo, the memory and the
-lansangan repeat the one picture along the road, the right way round,
-standing whole on the floor with its own sky colour above it, with a
-dark shadow tree over every join that Macario and
-everyone else walk behind (Block 43). The eight street paintings from
-Block 43 are still in assets/backgrounds/act1 but nothing loads them.
+The streets are four paintings (Block 49): assets/backgrounds/act1/
+street-01..04.png, laid in order along every road and started again when
+a road is longer than four, standing whole on the floor with their own
+sky colour above them, with a tree in silhouette over every join that
+Macario and everyone else walk behind (Block 43). Since Block 50 there
+are four of those trees, two coconut palms and two broadleaf, taking
+turns along the road: mostly trunk, about 180 world px wide at the
+height of a person, so a phone shows trunk from the road up and only
+the lowest leaves at the top. Keep anyone a student must reach at
+least 120px clear of a join. tondo.png is in
+no scene now; it is the backdrop a scene without panels falls back to,
+which is what the harness fixture uses.
 
 A guide (Block 42) shows where to go next throughout Act I: a name tab
 and bobbing arrow over the next person or door when it is on screen, and
@@ -168,10 +178,10 @@ won. Settings has Musika and Mga tunog switches, both on by default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v35    js/game.js v53       js/shell.js v13
+    css/style.css v37    js/game.js v55       js/shell.js v13
     js/inventory.js v9   js/acts.js v10       js/assessment.js v3
-    content/act1.js v35  content/items.js v10  content/act2-4.js v1
-    ASSET_VERSION 18 (in js/game.js)
+    content/act1.js v36  content/items.js v10  content/act2-4.js v1
+    ASSET_VERSION 19 (in js/game.js)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
@@ -187,9 +197,9 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 48 are built. Blocks 22 to 41 were one build session, 17 to
+Blocks 1 to 50 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
-42 to 48 were 20 September:
+42 to 49 were 20 September and Block 50 the 21st:
 
     22  NPC reach measured edge to edge; Mansanas made a consumable
     23  a throw spawn correction, superseded by 24
@@ -259,8 +269,12 @@ Blocks 1 to 48 are built. Blocks 22 to 41 were one build session, 17 to
     48  quests rebuilt: eleven objectives as one gated chain, the log
         showing only the task in hand with a closed Tapos na list; the
         play starts by talking to Maryam, not by walking in
+    49  four new street paintings in order along every road, and the
+        shadow tree redrawn as a bigger coconut palm
+    50  four tree models, two palms and two broadleaf, mostly trunk and
+        fat enough to hide the join, taking turns along the road
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 to 48 are in
+Everything through Block 41 is pushed (088f5e4). Blocks 42 to 50 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
 file, so the push is a commit of deletions and additions that git shows
 as renames: stage everything (git add -A) rather than picking files, or
@@ -299,17 +313,23 @@ private tab (browsers cache index.html; see Known problems). Check:
       dashboard still loads and is styled. Failure looks like a white
       unstyled page or characters as dashed boxes naming assets/ files,
       which means part of the push is missing.
-    The backdrop and trees (Blocks 43, 45, 46): tondo, the memory and
-      the street show Tondo.png the right way round, its bottom edge on
-      the dirt strip rather than behind it; a dark tree stands at each
-      join, the jump between copies cannot be seen, and Macario, the guards and
+    The backdrop and trees (Blocks 43, 46, 49, 50): tondo, the memory and
+      the street show the four new paintings in order, each standing with
+      its bottom edge on the dirt strip rather than behind it; a tree
+      stands at each join, the jump between paintings cannot be
+      seen, and Macario, the guards and
       their bullets pass behind the trunk; the crown stays above
       everyone's head; in the memory the tree is grey like the rest.
-      Judge whether the trees read as trees or as black blots, and
-      whether the road in the paintings sits right behind the dirt
-      strip Macario walks on. Failure looks like a visible straight seam
-      beside a trunk, a tree in front of the Mananahi or a citizen, or a
-      street with no painting at all (the Background folder not pushed).
+      Since Block 50 the trees take turns, palm then broadleaf then the
+      other palm then the other broadleaf, and are mostly trunk: check
+      that the trunk covers the join at head height on the phone, that
+      the leaves coming in at the top of the screen read as leaves, and
+      that the trunks read as bark rather than as flat dark slabs.
+      Judge also whether the road in the paintings sits right behind the
+      dirt strip Macario walks on. Failure looks like a visible straight
+      seam beside a trunk, a tree in front of the Mananahi or a citizen,
+      a trunk so wide it hides a stretch of road a student needs, or a
+      street with no painting at all (the paintings not pushed).
 
     The guide (Block 42): from the first frame an arrow named Nanay
       stands over her; after each step it names the next person or door
@@ -441,7 +461,7 @@ against the source material.
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
 header directs. Everything through Block 41 is pushed and passing its
-checks; Blocks 42 to 48 are in the device folder, passing their checks, and wait
+checks; Blocks 42 to 50 are in the device folder, passing their checks, and wait
 on the proponent's push. So the first things a session can do are in
 Next action, in order: a device pass against the
 checklist there, then checking Block 37's placeholder script against
@@ -693,6 +713,9 @@ submit_assessment).
     47  level cone, evenly open about the eye line
     48  linearObjectives, countFlags, dialogue sets with requiresFlag,
         Tapos na toggle, no talking mid-fight (section AY)
+    49  street-01..04.png on every road; coconut palm (make-shadow-tree.py)
+    50  SHADOW_TREE_URLS, four models picked by join number; the trunk
+        measured in pixels at chest height (section AX)
 
 ## Blocks remaining
 
@@ -762,7 +785,7 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 
 Missing production art. assets/ holds real art for Nanay, Kutsero,
 Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack,
-shared by his guards), both entablado pictures, tondo.png, the eight
+shared by his guards), both entablado pictures, tondo.png, the four
 street paintings, the ground, and Macario's idle, walk, melee and
 shooting sheets, plus the two fonts and four sound files.
 
@@ -865,12 +888,12 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 587 checks against a fixture act and item catalogue (so
+test.js: 589 checks against a fixture act and item catalogue (so
 mechanics stay tested whatever Act I ships). verify_new_scene.js: 182
 checks driving the REAL content/act1.js and content/items.js through
 every Act I scene, from Nanay to the tenth pamphlet and the post-test,
 following the guide at every step.
-Both last ran green on 20 Sep 2026 against the Block 48 files written to
+Both last ran green on 21 Sep 2026 against the Block 50 files written to
 the device folder (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the

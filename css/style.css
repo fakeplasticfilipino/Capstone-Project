@@ -303,12 +303,12 @@ html, body {
 .shadow-tree {
   position: absolute;
   bottom: 0;
-  width: 380px; /* SHADOW_TREE_WIDTH in game.js */
+  width: 440px; /* SHADOW_TREE_WIDTH in game.js */
   height: 100%;
   z-index: 3;
   pointer-events: none;
   background-repeat: no-repeat;
-  background-size: 380px 900px;
+  background-size: 440px 1200px;
   background-position: center bottom;
 }
 

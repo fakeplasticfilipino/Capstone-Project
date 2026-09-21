@@ -4296,7 +4296,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     const { ctx, page } = await enterTestRoom();
     const built = await page.evaluate(() => {
       const scene = SCENES.find((sc) => sc.id === "misyon");
-      scene.panels = ["assets/backgrounds/act1/street-01.jpg", "assets/backgrounds/act1/street-02.jpg"];
+      scene.panels = ["assets/backgrounds/act1/street-01.png", "assets/backgrounds/act1/street-02.png"];
       loadScene("misyon");
       const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
       const trees = [...document.querySelectorAll(".shadow-tree")];
@@ -4309,42 +4309,86 @@ const visible = (page, sel) => page.evaluate((s) => {
         treeZ: trees.length && +getComputedStyle(trees[0]).zIndex,
         playerZ: +getComputedStyle(document.getElementById("player")).zIndex,
         treeBg: trees.length && getComputedStyle(trees[0]).backgroundImage.slice(0, 30),
+        models: SHADOW_TREE_URLS.length,
+        distinct: new Set(SHADOW_TREE_URLS).size,
+        pictures: trees.map((t) => SHADOW_TREE_URLS.indexOf(t.style.backgroundImage)),
       };
     });
     ok("panels are laid a fixed width apart and repeat in order past the end of the list",
        built.tiles.length === 3 && built.tiles[1].left === "1450px" &&
-       /1\.jpg/.test(built.tiles[0].src) && /2\.jpg/.test(built.tiles[1].src) && /1\.jpg/.test(built.tiles[2].src), built);
+       /street-01\.png/.test(built.tiles[0].src) && /street-02\.png/.test(built.tiles[1].src) &&
+       /street-01\.png/.test(built.tiles[2].src), built);
     ok("a tree and its shade stand at every join, and none at the end of the world",
        JSON.stringify(built.trees) === "[1450,2900]" && built.shades === 2 && built.world === 2940, built);
     ok("no Tondo.png tile is laid under a panelled scene", built.tondoTiles === 0, built);
     ok("the tree is drawn from its inline picture, in front of Macario",
        /^url\("data:image\/svg\+xml/.test(built.treeBg) && built.treeZ > built.playerZ, built);
+    ok("there are four models and neighbouring joins get different ones (Block 50)",
+       built.models === 4 && built.distinct === 4 &&
+       JSON.stringify(built.pictures) === "[0,1]", built);
 
-    const pixels = await page.evaluate(async () => {
-      // Macario standing on a join is covered by the trunk: the pixel on
-      // his chest, which is his light camisa when nothing is in front of
-      // him (his trousers are nearly as dark as the tree, so they would
-      // pass either way), is the tree's colour.
-      posX = 1450 - PLAYER_WIDTH / 2; posY = floorHeightAt(posX); velY = 0; facing = 1;
-      await new Promise((r) => setTimeout(r, 200));
+    // Macario standing on a join is covered by the trunk: the pixel on
+    // his chest, which is his light camisa when nothing is in front of
+    // him (his trousers are nearly as dark as the tree, so they would
+    // pass either way), is the tree's colour.
+    const standAt = (join, which) => page.evaluate(async (a) => {
+      posX = a.join - PLAYER_WIDTH / 2; posY = floorHeightAt(posX); velY = 0; facing = 1;
+      await new Promise((r) => setTimeout(r, 250));
       const r = document.getElementById("player").getBoundingClientRect();
-      return { x: Math.round(r.left + r.width / 2), y: Math.round(r.bottom - r.height * 0.62) };
-    });
-    const shot = await page.screenshot({ clip: { x: pixels.x, y: pixels.y, width: 1, height: 1 } });
-    const { PNG } = (() => { try { return require("pngjs"); } catch (e) { return {}; } })();
-    let rgb = null;
-    if (PNG) { const png = PNG.sync.read(shot); rgb = [...png.data.slice(0, 3)]; }
-    else {
-      // No PNG decoder installed: read the pixel in the page instead.
-      rgb = await page.evaluate(async (b64) => {
-        const img = new Image(); img.src = "data:image/png;base64," + b64;
+      const t = document.querySelectorAll(".shadow-tree")[a.which].getBoundingClientRect();
+      return {
+        x: Math.round(r.left + r.width / 2), y: Math.round(r.bottom - r.height * 0.62),
+        // The whole tree's box at that height, and how many screen pixels
+        // a world pixel is, so the trunk can be measured in world px.
+        strip: { x: Math.round(t.left), width: Math.round(t.width) },
+        scale: t.width / SHADOW_TREE_WIDTH, box: SHADOW_TREE_WIDTH,
+      };
+    }, { join, which });
+    const pixels = await standAt(1450, 0);
+    const readPixels = async (clip) => {
+      const shot = await page.screenshot({ clip });
+      const { PNG } = (() => { try { return require("pngjs"); } catch (e) { return {}; } })();
+      if (PNG) { const png = PNG.sync.read(shot); return [...png.data]; }
+      // No PNG decoder installed: read the pixels in the page instead.
+      return await page.evaluate(async (a) => {
+        const img = new Image(); img.src = "data:image/png;base64," + a.b64;
         await img.decode();
-        const c = document.createElement("canvas"); c.width = c.height = 1;
+        const c = document.createElement("canvas"); c.width = a.w; c.height = a.h;
         const g = c.getContext("2d"); g.drawImage(img, 0, 0);
-        return [...g.getImageData(0, 0, 1, 1).data.slice(0, 3)];
-      }, shot.toString("base64"));
+        return [...g.getImageData(0, 0, a.w, a.h).data];
+      }, { b64: shot.toString("base64"), w: clip.width, h: clip.height });
+    };
+    const rgb = (await readPixels({ x: pixels.x, y: pixels.y, width: 1, height: 1 })).slice(0, 3);
+    ok("standing at a join, Macario is behind the trunk", rgb.every((v) => v < 40), { at: pixels, rgb });
+
+    // Block 50: the trunk is what hides the join, so it is measured, in
+    // world pixels, at the height of a person's chest, on both of this
+    // scene's joins, which carry two different models. The tree's own two
+    // tones are dark greens (the green channel highest and every channel
+    // low), which nothing in the painting behind it is: with the tree
+    // hidden the same row measures about one pixel rather than 170.
+    const trunkAt = async (p) => {
+      const row = await readPixels({ x: p.strip.x, y: p.y, width: p.strip.width, height: 1 });
+      let cols = 0;
+      for (let i = 0; i < row.length; i += 4) {
+        if (row[i] < 34 && row[i + 2] < 42 && row[i + 1] > row[i] && row[i + 1] < 62) cols++;
+      }
+      return cols / p.scale;
+    };
+    // Each model in turn on the same tree, rather than walking to the
+    // second join, whose tree runs past the end of this short world and
+    // so is partly off screen.
+    const trunks = [];
+    for (let i = 0; i < built.models; i++) {
+      await page.evaluate((n) => {
+        document.querySelector(".shadow-tree").style.backgroundImage = SHADOW_TREE_URLS[n];
+      }, i);
+      await page.waitForTimeout(120);
+      trunks.push(await trunkAt(pixels));
     }
-    ok("standing at a join, Macario is behind the trunk", rgb && rgb.every((v) => v < 40), { at: pixels, rgb });
+    ok("and every model's trunk is fat: about 180 world px of it, centred on the join",
+       trunks.length === 4 && trunks.every((t) => t > 150 && t < pixels.box * 0.7),
+       { trunks, box: pixels.box });
 
     const gone = await page.evaluate(() => {
       const scene = SCENES.find((sc) => sc.id === "misyon");
@@ -4356,7 +4400,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     const flipped = await page.evaluate(() => {
       const scene = SCENES.find((sc) => sc.id === "misyon");
-      scene.panels = ["assets/backgrounds/act1/tondo.png"];
+      scene.panels = ["assets/backgrounds/act1/street-01.png"];
       scene.mirrorPanels = true;
       loadScene("misyon");
       const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];

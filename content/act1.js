@@ -311,18 +311,22 @@ const CITIZENS = [
 
 const PAMPHLET_FLAGS = CITIZENS.map((c) => c.flag);
 
-// Block 45. Every street in Act I is Tondo.png again, laid as panels so
-// the shadow trees (Block 43) still stand at the joins. Block 46 took the
-// mirroring back out (it read as ugly): each copy is the picture the right
-// way round, and the tree is what hides the jump at each join. The eight
-// street paintings stay in assets/backgrounds/act1 for now, unused.
-const TONDO_PANELS = ["assets/backgrounds/act1/tondo.png"];
+// Block 49. Four new paintings of the Tondo street, laid along every road
+// in order and repeated when a road is longer than four (game.js,
+// buildPanelBackdrop), with a coconut palm over each join. Block 45's
+// single repeated Tondo.png and Block 43's eight paintings are both gone.
+const STREET_PANELS = [
+  "assets/backgrounds/act1/street-01.png",
+  "assets/backgrounds/act1/street-02.png",
+  "assets/backgrounds/act1/street-03.png",
+  "assets/backgrounds/act1/street-04.png",
+];
 
-// Block 46. The picture now stands whole on the floor instead of running
-// down behind the dirt strip, so on a screen taller than the picture the
-// strip of sky above it is this colour: the average of Tondo.png's top
-// row, so the picture's own sky simply carries on upward.
-const TONDO_SKY = "#72a8d0";
+// Block 46. A picture stands whole on the floor instead of running down
+// behind the dirt strip, so on a screen taller than it the strip of sky
+// above is this colour: the average of the four paintings' top rows, so
+// their own sky simply carries on upward.
+const STREET_SKY = "#51a6ea";
 
 // The meeting is done: the pamphlet step becomes the task in hand. The
 // quest log follows the flag (Block 48); nothing here writes to it.
@@ -461,10 +465,10 @@ window.ACT_1 = {
       // Mananahi stands on, and again in Block 34 to 2900 so the entablado
       // stands at the end of it, clear of her.
       worldWidth: 2900,
-      // Block 46. Tondo.png repeated along the road, standing on the floor,
-      // with a shadow tree over each join (game.js, PANEL_WIDTH).
-      panels: TONDO_PANELS,
-      panelSky: TONDO_SKY,
+      // Block 49. The first two paintings, a palm over the join at 1450
+      // (game.js, PANEL_WIDTH).
+      panels: STREET_PANELS,
+      panelSky: STREET_SKY,
       // Block 34. The outside of the entablado, as scenery. Its picture has
       // a transparent background, measured the way a sprite is (the
       // drawing's alpha box, feet at the bottom of the stairs), drawn 400px
@@ -714,10 +718,10 @@ window.ACT_1 = {
       // than one.
       id: "kutsero",
       worldWidth: 2150,
-      // Block 46. The same Tondo street, greyed with the rest of the
-      // memory; one tree at 1450, between the glass and the Tindero.
-      panels: TONDO_PANELS,
-      panelSky: TONDO_SKY,
+      // Block 49. The same street, greyed with the rest of the memory;
+      // one palm at 1450, between the glass and the Tindero.
+      panels: STREET_PANELS,
+      panelSky: STREET_SKY,
       startX: 80,
       greyFilter: true,
       // Block 31. Nanay's voice carries into the memory, opening it the
@@ -1051,10 +1055,10 @@ window.ACT_1 = {
       // assets/sprites/characters/mamamayan.png.
       id: "lansangan",
       worldWidth: 11000,
-      // Block 46. Tondo.png the whole way, with a shadow tree over each of
-      // the seven joins.
-      panels: TONDO_PANELS,
-      panelSky: TONDO_SKY,
+      // Block 49. All four paintings twice over, in order, with a palm
+      // over each of the seven joins.
+      panels: STREET_PANELS,
+      panelSky: STREET_SKY,
       startX: 200,
       noRanged: true,
       // Once, on the way in: how many he is looking for, and the one rule.
