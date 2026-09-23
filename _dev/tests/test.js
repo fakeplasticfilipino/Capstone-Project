@@ -4588,6 +4588,53 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nBA. Ambience: clouds, birds and falling leaves, built and off by default (Block 54)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const amb = await page.evaluate(async () => {
+      const before = document.querySelectorAll("#world .ambient").length;
+      const scene = currentScene;
+      const saved = { ambient: scene.ambient, panels: scene.panels, x: posX };
+      scene.ambient = { clouds: 4, birds: 2, leaves: 2 };
+      scene.panels = ["assets/backgrounds/act1/street-01.jpg", "assets/backgrounds/act1/street-02.jpg"];
+      loadScene(scene.id);
+      posX = 600;
+      const els = [...document.querySelectorAll("#world .ambient")];
+      const pos = () => els.map((e) => e.style.transform + "|" + e.style.opacity);
+      await new Promise((r) => setTimeout(r, 300));
+      const t0 = pos();
+      await new Promise((r) => setTimeout(r, 700));
+      const t1 = pos();
+      setPaused(true);
+      await new Promise((r) => setTimeout(r, 100));
+      const p0 = pos();
+      await new Promise((r) => setTimeout(r, 500));
+      const p1 = pos();
+      setPaused(false);
+      const joins = panelJoins(scene).length;
+      const counts = {
+        clouds: document.querySelectorAll("#world .ambient-cloud").length,
+        birds: document.querySelectorAll("#world .ambient-birds").length,
+        leaves: document.querySelectorAll("#world .ambient-leaf").length,
+      };
+      const inert = els.every((e) => getComputedStyle(e).pointerEvents === "none");
+      const far = ambientAnimations.filter((a) => a.from > WORLD_WIDTH + 500).length;
+      scene.ambient = saved.ambient; scene.panels = saved.panels;
+      loadScene(scene.id);
+      posX = saved.x;
+      const after = document.querySelectorAll("#world .ambient").length;
+      return { before, counts, joins, inert, moved: t0.filter((v, i) => v !== t1[i]).length,
+        frozen: p0.every((v, i) => v === p1[i]), after, far };
+    });
+    ok("a scene without ambient has none", amb.before === 0, amb);
+    ok("a scene that asks gets its clouds, flocks and two leaves per tree",
+       amb.counts.clouds === 4 && amb.counts.birds === 2 && amb.counts.leaves === 2 * amb.joins, amb);
+    ok("the ones near the camera move, and none can take a tap", amb.moved >= 2 && amb.inert, amb);
+    ok("they stand still while the world is paused", amb.frozen, amb);
+    ok("and leave with their scene", amb.after === 0, amb);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

@@ -190,7 +190,7 @@ html, body {
 :root {
   /* How high off the very bottom of the screen characters' feet sit.
      Tweak this if it doesn't line up with the road drawn in
-     assets/backgrounds/act1/tondo.jpg. */
+     the street paintings (assets/backgrounds/act1/street-01..04.jpg). */
   --ground-level: 60px;
 }
 
@@ -206,7 +206,7 @@ html, body {
    a frame, and checkBackgroundImage() still has a background to replace
    with its labelled placeholder if the file is missing. */
 #skyline {
-  --skyline-src: url("../assets/backgrounds/act1/tondo.jpg");
+  --skyline-src: url("../assets/backgrounds/act1/street-01.jpg"); /* Block 54 */
   position: absolute;
   left: 0;
   bottom: 0;
@@ -300,6 +300,58 @@ html, body {
    arrow (4), which must never be hidden. The picture is anchored at the
    bottom, so the crown runs off the screen and the trunk stands on the
    road. */
+/* Block 54. Ambience: clouds, birds and falling leaves. game.js
+   (buildAmbient, updateAmbient) places them and moves them from the game
+   loop, transform and opacity only. Pixel art, drawn tiny and scaled up
+   hard-edged. Off in every Act I scene; see CLAUDE.md, Block 54. */
+.ambient {
+  position: absolute;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+.ambient-cloud,
+.ambient-birds {
+  z-index: 0; /* in the sky, behind everyone */
+}
+
+.ambient-birds,
+.ambient-birds-flip {
+  overflow: hidden;
+}
+
+.ambient-birds-flip {
+  width: 100%;
+  height: 100%;
+}
+
+.ambient-birds-flip.ambient-left {
+  transform: scaleX(-1);
+}
+
+.ambient-birds-strip {
+  width: 200%;
+  height: 100%;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  will-change: transform;
+}
+
+.ambient-leaf {
+  z-index: 4; /* falls in front of the tree it came from */
+}
+
+/* Not shown at all to anyone who has asked their device for less
+   motion. */
+@media (prefers-reduced-motion: reduce) {
+  .ambient { display: none; }
+}
+
 .shadow-tree {
   position: absolute;
   bottom: 0;

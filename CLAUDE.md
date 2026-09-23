@@ -93,9 +93,10 @@ off the repository.
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png
                                (siga-1..3 are Block 52 stand-ins;
-                               nanay-walk.png is Block 53's walk)
+                               nanay-walk.png is Block 54's drawn walk)
+      sprites/ambient/         clouds, birds, a leaf (Block 54)
       sprites/enemies/         guards and fighters
-      backgrounds/act1/        street-01..04.jpg, tondo.jpg, the
+      backgrounds/act1/        street-01..04.jpg, the
                                entablado inside (.jpg) and out (.png,
                                it needs its alpha), ground-lupa.jpg
       items/                   inventory and shop tile pictures
@@ -105,7 +106,9 @@ off the repository.
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-placeholder-sprites.py,
-                               make-walk-cycle.py,
+                               make-walk-cycle.py (front-facing,
+                               superseded), draw-nanay-walk.py,
+                               draw-ambient.py,
                                make-shadow-tree.py, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
@@ -389,6 +392,8 @@ Scene shape:
                  animation }],
       noRanged: true,                            optional; no shot here
       checkpoints: [{ x, flag }],                optional; respawn points
+      ambient: { clouds, birds, leaves },        optional; off in Act I
+                                                 (Block 54)
       scripts: [{ requiresFlag, unlessFlag,      optional; cutscenes that
                   doneFlag, x, facing, run }]    play by themselves (Block 52)
     }
@@ -3319,6 +3324,58 @@ game.js v59, content/act1.js v39. nanay-walk.png is a new file, not a
 replaced one, so ASSET_VERSION stays at 20. verify_new_scene.js checks
 the five panels, the road's length, and Nanay walking on with her walk
 sheet stepping through its frames and standing with her idle sheet.
+
+A side-view walk, four paintings, and ambience built but off (Block 54).
+Three things back from Block 53. Nanay was meant to walk sideways:
+Block 53's walk moved her front-facing pixels, so she stepped toward the
+camera while travelling across it. The proponent deleted tondo.jpg as an
+old file, so "the five backgrounds" are four and the street is four
+panels, 5800px. And a request for sprites of our own, for small moving
+things (clouds, birds, leaves), with the condition that they not be
+added if they cost performance.
+
+The walk is drawn from nothing now: _dev/tools/draw-nanay-walk.py builds
+eight profile frames with Pillow in her sheet's colours (hair down her
+back, cream blouse with a puffed sleeve, blue tapis tied at the front,
+dark skirt whose hem swings with the stride, sandals stepping under it,
+arms swinging opposite), flat-shaded with the one-pixel dark outline the
+cast has, in 160px cells. It is plainly less detailed than the artist's
+painting, so it is a stand-in until the artist draws her walk; she
+still stands with her real idle sheet, and turns front-on when she
+stops. make-walk-cycle.py now writes <name>-walk-front.png, so running
+it can never overwrite a real side view. ASSET_VERSION to 21, because
+nanay-walk.png was replaced under the same name.
+
+With tondo.jpg gone, the fallback backdrop (a scene with no panels and
+no backdrop, which is what the harness fixture uses) is street-01.jpg,
+in style.css's --skyline-src and checkBackgroundImage, and
+SKYLINE_ASPECT is its 1952 by 736.
+
+Ambience. _dev/tools/draw-ambient.py draws two clouds, a flock of three
+birds in two wingbeat frames, and a leaf, each a few hundred bytes,
+scaled up pixelated. A scene declaring ambient: { clouds, birds, leaves }
+gets clouds drifting and fading across the sky, flocks crossing now and
+then, and leaves falling from each shadow tree (leaves is per tree).
+Positions and timing come from each element's index, not Math.random,
+so a street looks the same on every visit. setPaused stops them,
+prefers-reduced-motion hides them, and nothing reads them: a bird
+cannot be hit.
+
+They are off in every Act I scene, because measured they cost. With
+Chrome's own counters over four seconds of standing and walking on the
+street at a sixth of this machine's speed, the frame rate held at 60
+with or without them, but the main thread's busy time rose from about
+0.45 to 0.9 seconds, most of it style and compositing. Three ways of
+moving them were tried and none escaped it: CSS keyframes reading
+custom properties (which cannot leave the main thread), the Web
+Animations API with plain values, and the game loop writing only the
+ones near the camera, which is what shipped because it costs nothing at
+all when a scene declares no ambient. A headless browser composites in
+software, so a phone's GPU may make the real cost smaller; trying that
+is one line in a scene (content/act1.js says which), and the device is
+the judge. Section BA covers the mechanism against the fixture scene.
+
+game.js v60, style.css v39, content/act1.js v40, ASSET_VERSION 21.
 
 ## Pitfalls
 

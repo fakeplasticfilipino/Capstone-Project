@@ -22,14 +22,15 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 23 Sep 2026, after Block 53 (the street shows all five
-backgrounds end to end; Nanay walks with a walk cycle made from her own
-art), which followed Block 52 (Act I rewritten from the start against
-the proponents' new script). Blocks through 41 are pushed (088f5e4);
-Blocks 42 to 53 are in the device folder and NOT yet pushed. Push
-everything as one commit (see Right now). test.js 598 passed, 0 failed;
-verify_new_scene.js 37 passed, 0 failed. None of Blocks 42 to 53 has
-been played on the phone. Block 52
+Last updated: 23 Sep 2026, after Block 54 (Nanay's walk redrawn in
+profile; the street is the four remaining paintings after tondo.jpg was
+deleted; clouds, birds and leaves built but left off because they cost
+the main thread), which followed Blocks 52 and 53 (Act I rewritten
+against the proponents' new script; the street as every painting end
+to end). Blocks through 41 are pushed (088f5e4); Blocks 42 to 54 are in
+the device folder and NOT yet pushed. Push everything as one commit (see
+Right now). test.js 603 passed, 0 failed; verify_new_scene.js 38 passed,
+0 failed. None of Blocks 42 to 54 has been played on the phone. Block 52
 changes Act I's objectives from eleven to two, so
 db/scripts/reset_test_accounts.sql should be run on the test accounts
 before a full-flow test.
@@ -59,11 +60,10 @@ stubs. Act I cannot be completed yet, on purpose: the savings step's
 flag is set by nothing until the next passage (the work that earns the
 barya) is written.
 
-The street is all five backgrounds end to end (Block 53):
-assets/backgrounds/act1/street-01..04.jpg then tondo.jpg, one 1450px
-panel each, 7250px in all, each standing whole on the floor with the
-street's sky colour above, with a tree in silhouette over each of the
-four joins (Blocks 43 and 50, four models, mostly trunk). Keep anyone a
+The street is every background end to end (Blocks 53 and 54):
+assets/backgrounds/act1/street-01..04.jpg, one 1450px panel each, 5800px
+in all, each standing whole on the floor with the street's sky colour
+above, with a tree in silhouette over each of the three joins (Blocks 43 and 50, four models, mostly trunk). Keep anyone a
 student must reach at least 90px clear of a join (multiples of 1450).
 bahay is street-01 alone.
 
@@ -76,12 +76,12 @@ bahay is street-01 alone.
          (n/100)                                     its flag is set by
                                                      nothing yet
 
-    tondo     the street, 7250px, Macario at 900. The opening plays by
+    tondo     the street, 5800px, Macario at 900. The opening plays by
               itself, on a login as well as through a fade (a scene
               script, Block 52): three siga (stand-in stills) walk up
               behind him and taunt him about his father; he turns and
-              answers; Nanay walks in from the right (her own walk
-              cycle, Block 53) and calls him home;
+              answers; Nanay walks in from the right (in profile, a
+              drawn stand-in walk, Block 54) and calls him home;
               the siga laugh; "Tsk". Fade to:
     bahay     at home, on the same paintings (one panel, no tree). Nanay
               tells him the money went on the cedula, there is no rice,
@@ -126,10 +126,10 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v38    js/game.js v59       js/shell.js v13
+    css/style.css v39    js/game.js v60       js/shell.js v13
     js/inventory.js v9   js/acts.js v11       js/assessment.js v3
-    content/act1.js v39  content/items.js v11  content/act2-4.js v1
-    ASSET_VERSION 20 (in js/game.js)
+    content/act1.js v40  content/items.js v11  content/act2-4.js v1
+    ASSET_VERSION 21 (in js/game.js)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
@@ -145,7 +145,7 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 53 are built. Blocks 22 to 41 were one build session, 17 to
+Blocks 1 to 54 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
 42 to 49 were 20 September, and Blocks 50 and 51 the 21st:
 
@@ -227,11 +227,14 @@ Blocks 1 to 53 are built. Blocks 22 to 41 were one build session, 17 to
         the street, the cedula at home, a savings quest counting barya;
         scene scripts, countCurrency, objectiveCurrency and the Bagong
         gawain toast in the engine; items.js emptied; siga stand-ins
-    53  the street as all five backgrounds end to end (7250px); Nanay's
-        walk cycle made from her own art (make-walk-cycle.py) and
-        walkAnimation on decorations
+    53  the street as every background end to end; a front-facing walk
+        for Nanay (replaced by 54) and walkAnimation on decorations
+    54  Nanay's walk drawn in profile (draw-nanay-walk.py); four panels,
+        5800px, after tondo.jpg was deleted; street-01.jpg as the
+        fallback backdrop; clouds, birds and leaves built
+        (draw-ambient.py, buildAmbient) and left off, measured
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 to 53 are in
+Everything through Block 41 is pushed (088f5e4). Blocks 42 to 54 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
 file, so the push is a commit of deletions and additions that git shows
 as renames: stage everything (git add -A) rather than picking files, or
@@ -243,9 +246,13 @@ git status, they were not deleted on the computer. Block 51 does the
 same on a smaller scale: street-01..04.png, tondo.png and
 entablado-inside.png are replaced by .jpg files of the same name, so
 those six PNGs must be deleted on the computer before the push or the
-repository carries 11MB nothing loads. Blocks 52 and 53 add four
-files (assets/sprites/characters/siga-1..3.png and nanay-walk.png) and
-delete none.
+repository carries 11MB nothing loads. Blocks 52 to 54 add
+assets/sprites/characters/siga-1..3.png and nanay-walk.png, the four
+pictures in assets/sprites/ambient/, and the two drawing tools. The
+proponent deleted assets/backgrounds/act1/tondo.jpg on the computer;
+nothing loads it any more. assets/backgrounds/act1/entablado-inside.png
+is still in the folder: it is the PNG Block 51 replaced with a .jpg,
+loaded by nothing, and 1.6MB the push does not need.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/scripts/reset_test_accounts.sql
@@ -293,14 +300,16 @@ Block 52:
       Failure looks like the toast cut off on a narrow screen, or the
       count not at 0 for a fresh student (an old save's barya; run the
       reset).
-    Nanay's walk (Block 53): she steps in from behind the tree rather
-      than sliding, her feet alternate under the skirt, and she stops
-      without a jump in position. Judge whether a front-facing walk
-      reads well enough, or whether a side-view walk should be asked of
-      the artist; the same tool can make one for any other character.
-    The whole street (Block 53): walk to the far end; five different
-      paintings, the river village last, a tree over each join, and the
-      road ends at the edge of the last one.
+    Nanay's walk (Block 54): she walks in profile, facing the way she
+      goes, at Macario's height, and turns front-on to her real idle
+      art when she stops. The drawn walk is simpler than the artist's
+      painting; judge whether it holds up until the artist draws hers.
+    The whole street: walk to the far end; four different paintings, a
+      tree over each join, and the road ends at the edge of the last.
+    Ambience (Block 54), optional: add ambient: { clouds: 5, birds: 2,
+      leaves: 2 } to the tondo scene (content/act1.js says where) and
+      play on the phone. If the game still feels as smooth, it can stay;
+      if not, take the line out. Nothing else changes either way.
     The siga: the stand-ins stand at Macario's height on the road and
       read as three different boys. The bandana on the first sits on
       his head, not above it.
@@ -484,7 +493,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 598-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 603-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -582,8 +591,9 @@ submit_assessment).
     52  Act I rewritten; scene scripts, countCurrency, objectiveCurrency,
         Bagong gawain toast (section AZ); items.js emptied; siga
         stand-ins; verify_new_scene.js rewritten
-    53  five-panel street; walkAnimation; make-walk-cycle.py and
-        nanay-walk.png
+    53  panel street; walkAnimation; make-walk-cycle.py
+    54  profile walk (draw-nanay-walk.py); four panels; street-01.jpg
+        fallback; ambience built and off (draw-ambient.py, section BA)
 
 ## Blocks remaining
 
@@ -647,7 +657,7 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 
 Missing production art. assets/ holds real art for Nanay, Kutsero,
 Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack),
-both entablado pictures, tondo.jpg, the four street paintings, the
+both entablado pictures, the four street paintings, the
 ground, and Macario's idle, walk, jump, melee and shooting sheets, plus
 the two fonts and four sound files. Since Block 52 the shipped Act I
 uses only Nanay, Macario, the street paintings and the ground; the rest
@@ -752,12 +762,12 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 598 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 37
+test.js: 603 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 38
 checks driving the REAL content/act1.js and content/items.js through
-the rewritten Act I (Blocks 52 and 53): the opening, home, the thought and the
+the rewritten Act I (Blocks 52 to 54): the opening, home, the thought and the
 savings quest, reloads mid-beat, an old save, and a guest.
-Both last ran green on 23 Sep 2026 against the Block 53 files written to
+Both last ran green on 23 Sep 2026 against the Block 54 files written to
 the device folder (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium; Playwright 1.62 expects a newer build than the
 sandbox has, so a directory of links under the expected name was

@@ -14,6 +14,12 @@ not a new drawing: every pixel is the artist's, moved. Per frame:
   - the whole body dips a pixel or two as each foot lands, drawn over
     the feet so the ankles never show a gap under the hem.
 
+SUPERSEDED for Nanay by Block 54 (draw-nanay-walk.py): a front-facing
+walk reads as walking toward the camera, not sideways, which is what the
+proponent rejected. Kept for a character who should step in place while
+facing the viewer; it writes <name>-walk-front.png so it can never
+overwrite a real side-view walk.
+
 The art is front-facing, so the result is a front-facing walk that leans
 and steps toward the right. The engine mirrors it for a walk to the left
 (faceMovement), which is why everything here moves toward +x.
@@ -25,7 +31,7 @@ Usage, from the repository root (needs Pillow, dev-time only):
 Each character is one entry in CHARACTERS: which sheet and frame to start
 from, where the feet are, where the skirt or trousers begin, and where
 the body splits between the two feet, all in the cell's own pixels. The
-output is <name>-walk.png beside the source, 8 frames on a 4 by 2 grid
+output is <name>-walk-front.png beside the source, 8 frames on a 4 by 2 grid
 of the same cell size, which measure-sprite.js measures like any sheet.
 """
 import math
@@ -126,7 +132,7 @@ def build(name):
     sheet = Image.new("RGBA", (COLUMNS * CELL, rows * CELL), (0, 0, 0, 0))
     for i, f in enumerate(frames):
         sheet.paste(f, ((i % COLUMNS) * CELL, (i // COLUMNS) * CELL))
-    path = CHARS + name + "-walk.png"
+    path = CHARS + name + "-walk-front.png"
     sheet.save(path, optimize=True)
     print("wrote", path, "(%d frames, %d columns)" % (FRAMES, COLUMNS))
 

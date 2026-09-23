@@ -224,16 +224,21 @@ const QUEST = "Mag-ipon ng pera na mai-bibigay kay Nanay";
   ok("the item catalogue is empty", await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 0));
 
   const p0 = await panels(page);
-  ok("the street shows all five backgrounds end to end, a tree over each join (Block 53)",
-     p0.tiles === 5 && p0.loaded &&
-     JSON.stringify(p0.order) === '["street-01","street-02","street-03","street-04","tondo"]' &&
-     p0.joins.length === 4 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
+  ok("the street shows every background end to end, a tree over each join (Blocks 53, 54)",
+     p0.tiles === 4 && p0.loaded &&
+     JSON.stringify(p0.order) === '["street-01","street-02","street-03","street-04"]' &&
+     p0.joins.length === 3 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
   const road = await page.evaluate(() => ({ w: WORLD_WIDTH,
     shapes: [...document.querySelectorAll("#skyline .skyline-panel")].map((t) =>
       [parseFloat(t.style.left), parseFloat(t.style.width || getComputedStyle(t).width)]) }));
-  ok("the road is exactly five panels long, none repeated or cut at the end",
-     road.w === 7250 && road.shapes.every(([l, w], i) => l === i * 1450 && Math.abs(w - 1450) < 2), road);
+  ok("the road is exactly four panels long, none repeated or cut at the end",
+     road.w === 5800 && road.shapes.every(([l, w], i) => l === i * 1450 && Math.abs(w - 1450) < 2), road);
   ok("nobody stands behind the tree", p0.blocked.length === 0, p0.blocked);
+
+  // Block 54. The ambience is built but off in Act I: it cost the main
+  // thread measurably, and the rule was not to ship it if it did.
+  ok("no clouds, birds or leaves in Act I (built, left off for speed)",
+     await page.evaluate(() => document.querySelectorAll("#world .ambient").length === 0));
 
   const start = await page.evaluate(() => ({ scene: currentSceneId, x: posX, cut: cutscenePlaying,
     sigaHidden: ["siga-1", "siga-2", "siga-3"].every((id) => document.getElementById("dec-" + id).style.display === "none"),

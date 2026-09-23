@@ -35,15 +35,14 @@
 
 // Block 49. The paintings of the street, laid along every road in order
 // (game.js, buildPanelBackdrop), with a shadow tree over each join
-// (Block 50). Block 53 added the fifth, tondo.jpg, the river village
-// that had been only the fallback backdrop, so the street shows all
-// five backgrounds end to end, each whole.
+// (Block 50). Block 53 made the street exactly as long as the paintings,
+// so each is shown whole and none repeats. (Block 53 briefly added
+// tondo.jpg as a fifth; the proponent removed that file as old, Block 54.)
 const STREET_PANELS = [
   "assets/backgrounds/act1/street-01.jpg",
   "assets/backgrounds/act1/street-02.jpg",
   "assets/backgrounds/act1/street-03.jpg",
   "assets/backgrounds/act1/street-04.jpg",
-  "assets/backgrounds/act1/tondo.jpg",
 ];
 
 // One panel's width in the world (game.js, PANEL_WIDTH). The street is
@@ -62,15 +61,14 @@ const NANAY = {
   contentTop: 45, contentHeight: 166, footX: 127,
 };
 
-// Block 53. Her walk: 8 frames made by _dev/tools/make-walk-cycle.py from
-// the first frame of her sheet (the artist's pixels, moved: the feet
-// step in turn, the body leans and dips, the hem kicks), 4 by 2.
-// Measured with measure-sprite.js (45, 166); footX is her idle sheet's
-// 127 rather than the 129 the tool reads, which the walk's lean pulls
-// forward, so she does not shift sideways when she stops.
+// Block 54. Her walk, in profile: 8 frames drawn from nothing by
+// _dev/tools/draw-nanay-walk.py in her sheet's colours (Block 53's walk
+// moved her front-facing pixels and so walked toward the camera). A
+// stand-in until the artist draws her walk. 4 by 2 cells of 160px,
+// measured with measure-sprite.js.
 const NANAY_WALK = {
   src: "assets/sprites/characters/nanay-walk.png", frames: 8, fps: 10, columns: 4,
-  contentTop: 45, contentHeight: 166, footX: 127,
+  contentTop: 25, contentHeight: 128, footX: 79,
 };
 
 // Block 52. The three siga: stand-in stills made by
@@ -213,8 +211,12 @@ window.ACT_1 = {
       // lansangan ids fall back to this first scene too (game.js,
       // loadScene).
       id: "tondo",
-      // Block 53. All five paintings, one panel each: 5 x 1450.
+      // Block 53. Every painting once, one panel each.
       worldWidth: STREET_PANELS.length * PANEL,
+      // Block 54. Clouds, birds and falling leaves are built (game.js,
+      // buildAmbient) but left off: measured, they made the main thread
+      // busier (CLAUDE.md, Decisions on record). To try them on a phone,
+      // add:  ambient: { clouds: 5, birds: 2, leaves: 2 },
       panels: STREET_PANELS,
       panelSky: STREET_SKY,
       startX: STREET_SPOT,
