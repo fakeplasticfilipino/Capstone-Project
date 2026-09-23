@@ -4588,50 +4588,93 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBA. Ambience: clouds, birds and falling leaves, built and off by default (Block 54)");
+  console.log("\nBA. The job mini-game, and an act held open (Block 56)");
   {
     const { ctx, page } = await enterTestRoom();
-    const amb = await page.evaluate(async () => {
-      const before = document.querySelectorAll("#world .ambient").length;
-      const scene = currentScene;
-      const saved = { ambient: scene.ambient, panels: scene.panels, x: posX };
-      scene.ambient = { clouds: 4, birds: 2, leaves: 2 };
-      scene.panels = ["assets/backgrounds/act1/street-01.jpg", "assets/backgrounds/act1/street-02.jpg"];
-      loadScene(scene.id);
-      posX = 600;
-      const els = [...document.querySelectorAll("#world .ambient")];
-      const pos = () => els.map((e) => e.style.transform + "|" + e.style.opacity);
-      await new Promise((r) => setTimeout(r, 300));
-      const t0 = pos();
-      await new Promise((r) => setTimeout(r, 700));
-      const t1 = pos();
-      setPaused(true);
-      await new Promise((r) => setTimeout(r, 100));
-      const p0 = pos();
-      await new Promise((r) => setTimeout(r, 500));
-      const p1 = pos();
-      setPaused(false);
-      const joins = panelJoins(scene).length;
-      const counts = {
-        clouds: document.querySelectorAll("#world .ambient-cloud").length,
-        birds: document.querySelectorAll("#world .ambient-birds").length,
-        leaves: document.querySelectorAll("#world .ambient-leaf").length,
-      };
-      const inert = els.every((e) => getComputedStyle(e).pointerEvents === "none");
-      const far = ambientAnimations.filter((a) => a.from > WORLD_WIDTH + 500).length;
-      scene.ambient = saved.ambient; scene.panels = saved.panels;
-      loadScene(scene.id);
-      posX = saved.x;
-      const after = document.querySelectorAll("#world .ambient").length;
-      return { before, counts, joins, inert, moved: t0.filter((v, i) => v !== t1[i]).length,
-        frozen: p0.every((v, i) => v === p1[i]), after, far };
+
+    const opened = await page.evaluate(() => {
+      window.__job = { paid: 0, done: false };
+      playTimingGame({
+        title: "Trabaho", hint: "Pindutin", actionLabel: "Gawin",
+        canPlay: () => __job.paid < 2, capText: "Sapat na.",
+        onSuccess: () => { __job.paid++; return "Bayad " + __job.paid; },
+      }).then(() => { __job.done = true; });
+      return { shown: !document.getElementById("job-screen").classList.contains("hidden"),
+        blocked: uiBlocked, title: document.getElementById("job-title").textContent,
+        label: document.querySelector("#job-go .lbl").textContent };
     });
-    ok("a scene without ambient has none", amb.before === 0, amb);
-    ok("a scene that asks gets its clouds, flocks and two leaves per tree",
-       amb.counts.clouds === 4 && amb.counts.birds === 2 && amb.counts.leaves === 2 * amb.joins, amb);
-    ok("the ones near the camera move, and none can take a tap", amb.moved >= 2 && amb.inert, amb);
-    ok("they stand still while the world is paused", amb.frozen, amb);
-    ok("and leave with their scene", amb.after === 0, amb);
+    ok("it opens over the world and blocks it", opened.shown && opened.blocked &&
+       opened.title === "Trabaho" && opened.label === "Gawin", opened);
+    const second = await page.evaluate(async () => {
+      let resolvedAtOnce = false;
+      await Promise.race([playTimingGame({}).then(() => { resolvedAtOnce = true; }),
+        new Promise((r) => setTimeout(r, 30))]);
+      return resolvedAtOnce;
+    });
+    ok("a second one while it is up resolves at once and opens nothing", second);
+
+    // Presses the key the moment the marker's middle is inside (or
+    // outside) the green, as drawn.
+    const pressKey = (hit) => page.evaluate(async (wantHit) => {
+      await new Promise((r) => setTimeout(r, 720));
+      for (let i = 0; i < 600; i++) {
+        await new Promise((r) => requestAnimationFrame(r));
+        const z = document.getElementById("job-zone").getBoundingClientRect();
+        const m = document.getElementById("job-marker").getBoundingClientRect();
+        const c = m.left + m.width / 2;
+        const inside = c >= z.left + 2 && c <= z.right - 2;
+        const outside = c < z.left - 6 || c > z.right + 6;
+        if (wantHit ? inside : outside) {
+          document.dispatchEvent(new KeyboardEvent("keydown", { key: "e", bubbles: true }));
+          return true;
+        }
+      }
+      return false;
+    }, hit);
+    const moving = await page.evaluate(async () => {
+      const m = document.getElementById("job-marker");
+      const a = m.style.transform;
+      await new Promise((r) => setTimeout(r, 200));
+      return a !== m.style.transform;
+    });
+    ok("the marker sweeps the bar", moving);
+    await pressKey(false);
+    const r1 = await page.evaluate(() => ({ paid: __job.paid, text: document.getElementById("job-result").textContent,
+      jumped: velY !== 0 }));
+    ok("E outside the green is a miss, and does not reach the world", r1.paid === 0 &&
+       r1.text === "Sablay! Subukan ulit." && !r1.jumped, r1);
+    await pressKey(true);
+    const r2 = await page.evaluate(() => ({ paid: __job.paid, text: document.getElementById("job-result").textContent }));
+    ok("E inside the green is a success, shown with onSuccess's line", r2.paid === 1 && r2.text === "Bayad 1", r2);
+    await pressKey(true);
+    await page.waitForTimeout(800);
+    const r3 = await page.evaluate(() => ({ paid: __job.paid, off: document.getElementById("job-go").disabled,
+      text: document.getElementById("job-result").textContent }));
+    ok("when canPlay says no, Go is switched off and capText shown", r3.paid === 2 && r3.off && r3.text === "Sapat na.", r3);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(150);
+    const r4 = await page.evaluate(() => ({ done: __job.done, hidden: document.getElementById("job-screen").classList.contains("hidden"),
+      blocked: uiBlocked, shell: Shell.state }));
+    ok("Escape closes it, resolves it, unblocks the world, and does not open pause",
+       r4.done && r4.hidden && !r4.blocked && r4.shell === "playing", r4);
+
+    // holdOpen: every objective done, the act still playing.
+    const held = await page.evaluate(async () => {
+      const act = Acts.getAct(Acts.current);
+      const saved = act.objectives;
+      act.objectives = [{ id: "h1", label: "Isa", flag: "t_h1" }];
+      act.holdOpen = true;
+      state.flags.t_h1 = true;
+      Acts._lastDone = -1;
+      await Acts.checkObjectives();
+      const out = { status: Acts.status, done: Acts.countDone(Acts.current), total: Acts.objectivesFor(Acts.current).length };
+      act.objectives = saved;
+      delete act.holdOpen;
+      delete state.flags.t_h1;
+      return out;
+    });
+    ok("an act with holdOpen does not finish when every step is done",
+       held.status === "playing" && held.done === 1 && held.total === 1, held);
     await ctx.close();
   }
 

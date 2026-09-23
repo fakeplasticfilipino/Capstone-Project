@@ -300,58 +300,6 @@ html, body {
    arrow (4), which must never be hidden. The picture is anchored at the
    bottom, so the crown runs off the screen and the trunk stands on the
    road. */
-/* Block 54. Ambience: clouds, birds and falling leaves. game.js
-   (buildAmbient, updateAmbient) places them and moves them from the game
-   loop, transform and opacity only. Pixel art, drawn tiny and scaled up
-   hard-edged. Off in every Act I scene; see CLAUDE.md, Block 54. */
-.ambient {
-  position: absolute;
-  pointer-events: none;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  image-rendering: pixelated;
-  will-change: transform, opacity;
-  opacity: 0;
-}
-
-.ambient-cloud,
-.ambient-birds {
-  z-index: 0; /* in the sky, behind everyone */
-}
-
-.ambient-birds,
-.ambient-birds-flip {
-  overflow: hidden;
-}
-
-.ambient-birds-flip {
-  width: 100%;
-  height: 100%;
-}
-
-.ambient-birds-flip.ambient-left {
-  transform: scaleX(-1);
-}
-
-.ambient-birds-strip {
-  width: 200%;
-  height: 100%;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-  will-change: transform;
-}
-
-.ambient-leaf {
-  z-index: 4; /* falls in front of the tree it came from */
-}
-
-/* Not shown at all to anyone who has asked their device for less
-   motion. */
-@media (prefers-reduced-motion: reduce) {
-  .ambient { display: none; }
-}
-
 .shadow-tree {
   position: absolute;
   bottom: 0;
@@ -3419,4 +3367,85 @@ body.text-lg #guide-edge .guide-label { font-size: 28px; }
     min-width: 63px;
     min-height: 63px;
   }
+}
+
+/* Block 56. The job mini-game (game.js, playTimingGame): a pixel window
+   like the act screen, a bar with a green zone and a sweeping marker,
+   and two buttons that take the shell's own styles (and so its 44px on
+   glass). Above the world, below the auth overlay. */
+#job-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  background: rgba(18, 12, 7, 0.72);
+}
+
+#job-screen.hidden {
+  display: none;
+}
+
+#job-box {
+  width: min(92vw, 520px);
+  background: var(--px-panel);
+  border: 3px solid var(--px-edge);
+  box-shadow: var(--px-frame);
+  padding: 18px 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#job-title {
+  margin: 0 0 6px;
+}
+
+#job-hint,
+#job-result {
+  color: var(--c-cream);
+  margin: 0 0 12px;
+  min-height: 1.25em;
+}
+
+#job-result.job-hit { color: var(--px-green-hi); }
+#job-result.job-miss { color: #ffb4b4; }
+
+#job-bar {
+  position: relative;
+  height: 34px;
+  margin: 0 0 12px;
+  background: #2e2419;
+  border: 3px solid var(--px-ink);
+  overflow: hidden;
+}
+
+#job-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: #4f9a3e;
+  box-shadow: inset 0 0 0 2px #8fd16a;
+}
+
+#job-marker {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: 0;
+  width: 8px;
+  background: #f4c542;
+  border: 2px solid var(--px-ink);
+  will-change: transform;
+}
+
+#job-actions {
+  display: flex;
+  gap: 10px;
+}
+
+#job-actions .shell-btn {
+  flex: 1;
 }

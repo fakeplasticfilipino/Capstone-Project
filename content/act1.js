@@ -9,28 +9,36 @@
 // a reason; the art, sounds and engine features it used are all still
 // there to build the new story from (TRACKER.md, Start here, lists them).
 //
-// The story so far, in three beats:
+// The story so far:
 //
-//   tondo    the street. Macario stands alone; three siga come up behind
-//            him and taunt him about his father. Nanay walks in and calls
-//            him home. (A scene script: it plays by itself, on a login
-//            as well as through a fade; see CLAUDE.md, Act data format,
-//            scripts.)
-//   bahay    at home, the same street backdrop at the proponents'
-//            direction. Nanay tells him the money went on the cedula and
-//            there is nothing left for rice; he says he will work.
-//   tondo    back on the street. He wonders where to find work, and the
-//            savings quest opens: Mag-ipon ng pera na mai-bibigay kay
-//            Nanay (0/100), which counts his barya.
+//   tondo      the street. Macario stands alone; three siga come up
+//              behind him and taunt him about his father. Nanay walks in
+//              and calls him home. (A scene script: it plays by itself,
+//              on a login as well as through a fade; see CLAUDE.md, Act
+//              data format, scripts.)
+//   bahay      at home, the same street backdrop at the proponents'
+//              direction. Nanay tells him the money went on the cedula
+//              and there is nothing left for rice; he says he will work.
+//   tondo      back on the street. He wonders where to find work, and
+//              the savings quest opens (0/100), counting his barya.
+//              (Block 56) The Kutsero and the Mananahi each give him a
+//              job: a timing mini-game (game.js, playTimingGame), 5 to
+//              14 barya a success, at most 50 from each until he has
+//              given Nanay his savings.
+//   bahay      he gives Nanay the 100; the cap is lifted, and the fade
+//              goes straight to
+//   patahian   the tailor's shop. The Mananahi sends him with a costume
+//              to the direktor inside the entablado at the street's end.
+//   entablado  he hands it over and collects the pay, 79 to 110 barya.
 //
-// The savings step's flag is set by nothing yet, on purpose: the work
-// that earns the barya, and handing it to Nanay, are the next passages
-// to write. Until then Act I cannot complete, which is the same
-// deliberate gap Blocks 19 to 36 used (CLAUDE.md, Act data format).
+// Act I is held open after that (holdOpen, acts.js): the story goes on
+// from there and the post-test must not open yet.
 //
 // The lines are the proponents' script as written, apostrophes
-// straightened. The siga are stand-in stills (Block 52, made the way
-// Block 41's were) until the artist draws them.
+// straightened. Lines marked PLACEHOLDER are ours, to be replaced: the
+// direktor's two, and the short ones a job-giver says on a second visit.
+// The siga are stand-in stills (Block 52, made the way Block 41's were)
+// until the artist draws them; the direktor wears the mamamayan still.
 // =============================================================
 
 // Block 49. The paintings of the street, laid along every road in order
@@ -61,8 +69,8 @@ const NANAY = {
   contentTop: 45, contentHeight: 166, footX: 127,
 };
 
-// Block 54. Her walk, in profile: 8 frames drawn from nothing by
-// _dev/tools/draw-nanay-walk.py in her sheet's colours (Block 53's walk
+// Block 54. Her walk, in profile: 8 frames drawn from nothing in code
+// (the tool was deleted with the verdict, Block 55) in her sheet's colours (Block 53's walk
 // moved her front-facing pixels and so walked toward the camera). A
 // stand-in until the artist draws her walk. 4 by 2 cells of 160px,
 // measured with measure-sprite.js.
@@ -171,6 +179,128 @@ async function thinkingAboutWork() {
   setCutscene(false);
 }
 
+// -------------------------------------------------------------
+// Block 56. The people and the jobs.
+// -------------------------------------------------------------
+
+// The Kutsero's real sheet (Block 33: 5 by 3, 12 frames), the
+// Mananahi's still and the mamamayan still the direktor wears, all
+// measured with measure-sprite.js.
+const KUTSERO = {
+  src: "assets/sprites/characters/kutsero.png", frames: 12, fps: 6, columns: 5,
+  contentTop: 74, contentHeight: 117, footX: 128,
+};
+const MANANAHI = {
+  src: "assets/sprites/characters/mananahi.png", frames: 1, fps: 1,
+  contentTop: 45, contentHeight: 166, footX: 128,
+};
+const DIREKTOR = {
+  src: "assets/sprites/characters/mamamayan.png", frames: 1, fps: 1,
+  contentTop: 74, contentHeight: 117, footX: 128,
+};
+// The white horse in the Kutsero's stable: a 22-frame strip of 32px cells.
+const KABAYO = {
+  src: "assets/sprites/characters/kabayo.png", frames: 22, fps: 10, columns: 22,
+  contentTop: 2, contentHeight: 30, footX: 19,
+};
+
+// Where each stands on the street. NPC x is the left edge of an 80px
+// body; all of it is at least 90px from the joins at 1450, 2900, 4350.
+const KUTSERO_X = 1900;
+const KABAYO_X = 2150;
+const MANANAHI_X = 3500;
+
+// The jobs. Each pays JOB_PAY_MIN to JOB_PAY_MAX barya a success, and
+// until the savings are given to Nanay at most JOB_CAP from each job
+// (the last pay is trimmed to land on the cap exactly, so the two jobs
+// together make exactly the 100). What each job has paid is kept in its
+// own flag as a number, so it survives a reload with the rest of the
+// save (state.flags is stored whole).
+const JOB_CAP = 50;
+const JOB_PAY_MIN = 5;
+const JOB_PAY_MAX = 14;
+const SAVINGS_GOAL = 100;
+
+const JOBS = {
+  kutsero: {
+    earnedFlag: "kinitaSaKutsero",
+    cappedFlag: "sapatNaSaKutsero",
+    title: "Kuwadra",
+    hint: "Pindutin kapag nasa berde ang marka para masuklay nang maayos ang puting kabayo.",
+    actionLabel: "Suklayin",
+  },
+  mananahi: {
+    earnedFlag: "kinitaSaMananahi",
+    cappedFlag: "sapatNaSaMananahi",
+    title: "Patahian",
+    hint: "Pindutin kapag nasa berde ang marka para tumama ang tahi.",
+    actionLabel: "Tahiin",
+  },
+};
+
+function randomInt(min, max) {
+  return min + Math.floor(Math.random() * (max - min + 1));
+}
+
+// The cap holds only until the savings are handed over.
+function jobCapped() {
+  return !state.flags.naibigayAngIponKayNanay;
+}
+
+function jobCanPlay(job) {
+  if (!jobCapped()) return true;
+  return (Number(state.flags[job.earnedFlag]) || 0) < JOB_CAP;
+}
+
+// One success: pays, records it, and sets the flags the dialogue and the
+// guide read. Returns the line the mini-game shows.
+function jobPay(job) {
+  const earned = Number(state.flags[job.earnedFlag]) || 0;
+  let pay = randomInt(JOB_PAY_MIN, JOB_PAY_MAX);
+  if (jobCapped()) pay = Math.min(pay, JOB_CAP - earned);
+  if (pay <= 0) return "";
+  state.flags[job.earnedFlag] = earned + pay;
+  if (jobCapped() && earned + pay >= JOB_CAP) state.flags[job.cappedFlag] = true;
+  Game.addCurrency(pay); // marks the save dirty, and redraws the (n/100)
+  if (!state.flags.sapatNaAngIpon && Game.currency() >= SAVINGS_GOAL) {
+    state.flags.sapatNaAngIpon = true;
+    markDirty();
+  }
+  return "Magaling! +" + pay + " barya";
+}
+
+// Opened from a conversation's onComplete, a tick later, so the press
+// that closed the dialogue box is over before the job screen is up.
+function startJob(key) {
+  const job = JOBS[key];
+  setTimeout(() => {
+    playTimingGame({
+      title: job.title,
+      hint: job.hint,
+      actionLabel: job.actionLabel,
+      canPlay: () => jobCanPlay(job),
+      capText: "Sapat na muna ang kinita mo rito. Iuwi mo na kay Nanay.",
+      onSuccess: () => jobPay(job),
+    });
+  }, 0);
+}
+
+// -------------------------------------------------------------
+// The tailor's shop, straight after Nanay (her gift's onComplete fades
+// here). The Mananahi hands him the costume for the direktor; the
+// doneFlag opens the entablado's door and moves the log on.
+// -------------------------------------------------------------
+async function errandAtTheShop() {
+  setCutscene(true);
+  await wait(400);
+  await playDialogue([
+    { speaker: "Mananahi", text: "Oh Macario, padala nga to dun sa direktor, asa dulo siya ng kalye sa loob ng entablado, ingatan mo mahal yang damit na yan" },
+    { speaker: "Macario", text: "Sige 'ho" },
+    { speaker: "Mananahi", text: "Nasa sakaniya na yung bayad, wag mo kalimutan kolektahin" },
+  ]);
+  setCutscene(false);
+}
+
 window.ACT_1 = {
   number: 1,
   title: "Origins",
@@ -180,16 +310,23 @@ window.ACT_1 = {
   // task in hand is the first step whose flag is not set.
   //
   //   1  set when the thought on the street ends (thinkingAboutWork).
-  //   2  counts his barya toward 100 (countCurrency, Block 52). Its flag
-  //      is set by nothing yet: earning the money and giving it to Nanay
-  //      are still to be written, and until then Act I stays open.
+  //   2  counts his barya toward 100 (countCurrency, Block 52); set by
+  //      Nanay's gift, "Ibigay ang ipon" (Block 56).
+  //   3  set by the direktor's gift, which also pays him (Block 56).
   linearObjectives: true,
   objectives: [
     { id: "umuwi_kasama_nanay", label: "Umuwi kasama si Nanay",
       flag: "nagpasyangMagtrabaho" },
     { id: "mag_ipon", label: "Mag-ipon ng pera na mai-bibigay kay Nanay",
-      flag: "naibigayAngIponKayNanay", countCurrency: 100 },
+      flag: "naibigayAngIponKayNanay", countCurrency: SAVINGS_GOAL },
+    { id: "dalhin_ang_damit", label: "Dalhin ang damit sa direktor sa entablado",
+      flag: "nakolektaAngBayad" },
   ],
+
+  // Block 56. Every step above can be done and Act I still does not
+  // finish: the story continues past the entablado and the post-test
+  // must wait for it (acts.js, checkObjectives).
+  holdOpen: true,
 
   // Block 52. The savings step counts barya, so the act's own barya for
   // finishing a step (acts.js, the drip) is switched off: otherwise the
@@ -200,26 +337,48 @@ window.ACT_1 = {
   // The chain is the quest log, so there is nothing to add at the start.
   startingQuests: [],
 
-  // Nobody to walk to yet. The guide (Block 42) is ready for the next
-  // passage: an entry per place the story sends him.
-  guide: [],
+  // Where to go next (Block 42). Later steps first within a scene.
+  guide: [
+    { scene: "tondo", requiresFlag: "natanggapAngPadala", unlessFlag: "nakolektaAngBayad",
+      exit: "entablado", label: "Direktor" },
+    { scene: "tondo", requiresFlag: "sapatNaAngIpon", unlessFlag: "naibigayAngIponKayNanay",
+      exit: "umuwi", label: "Nanay" },
+    { scene: "tondo", requiresFlag: "nagpasyangMagtrabaho", unlessFlag: "nakausapAngKutsero",
+      npc: "kutsero", label: "Kutsero" },
+    { scene: "tondo", requiresFlag: "nagpasyangMagtrabaho", unlessFlag: "nakausapAngMananahi",
+      npc: "mananahi", label: "Mananahi" },
+    { scene: "bahay", requiresFlag: "sapatNaAngIpon", unlessFlag: "naibigayAngIponKayNanay",
+      npc: "nanay", label: "Nanay" },
+    { scene: "bahay", requiresFlag: "nagpasyangMagtrabaho", unlessFlag: "naibigayAngIponKayNanay",
+      exit: "labas", label: "Trabaho" },
+    { scene: "patahian", requiresFlag: "natanggapAngPadala", unlessFlag: "nakolektaAngBayad",
+      exit: "labas", label: "Entablado" },
+    { scene: "entablado", requiresFlag: "natanggapAngPadala", unlessFlag: "nakolektaAngBayad",
+      npc: "direktor", label: "Direktor" },
+  ],
 
   scenes: [
     {
       // The id stays "tondo" so a save made before the rewrite lands on
-      // the street rather than nowhere; the old kutsero, entablado and
-      // lansangan ids fall back to this first scene too (game.js,
-      // loadScene).
+      // the street rather than nowhere; the old kutsero and lansangan
+      // ids fall back to this first scene too (game.js, loadScene).
       id: "tondo",
       // Block 53. Every painting once, one panel each.
       worldWidth: STREET_PANELS.length * PANEL,
-      // Block 54. Clouds, birds and falling leaves are built (game.js,
-      // buildAmbient) but left off: measured, they made the main thread
-      // busier (CLAUDE.md, Decisions on record). To try them on a phone,
-      // add:  ambient: { clouds: 5, birds: 2, leaves: 2 },
       panels: STREET_PANELS,
       panelSky: STREET_SKY,
       startX: STREET_SPOT,
+      exits: [
+        // Home, at the street's start. Shut until the story has sent him
+        // out to work, so the opening cannot be walked out of.
+        { id: "umuwi", x: 230, width: 90, label: "Umuwi",
+          requiresFlag: "nagpasyangMagtrabaho",
+          toScene: "bahay", toX: 300, toFacing: 1 },
+        // The entablado, at the street's end. Opens with the errand.
+        { id: "entablado", x: 5660, width: 100, label: "Pumasok sa entablado",
+          requiresFlag: "natanggapAngPadala",
+          toScene: "entablado", toX: 140, toFacing: 1 },
+      ],
       decorations: [
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1] },
@@ -230,6 +389,8 @@ window.ACT_1 = {
         // (walkAnimation, Block 53), turned the way she walks.
         { id: "nanay", x: 1750, hidden: true, animation: NANAY,
           walkAnimation: NANAY_WALK, faceMovement: true },
+        // The white horse beside the Kutsero.
+        { id: "kabayo", x: KABAYO_X, displayHeight: 120, animation: KABAYO },
       ],
       scripts: [
         { doneFlag: "nakitaAngMgaSiga", x: STREET_SPOT, facing: 1,
@@ -237,23 +398,207 @@ window.ACT_1 = {
         { requiresFlag: "nakausapSiNanaySaBahay", doneFlag: "nagpasyangMagtrabaho",
           x: STREET_SPOT, facing: 1, run: thinkingAboutWork },
       ],
-      npcs: [],
+      npcs: [
+        {
+          id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: KUTSERO,
+          nearSound: "assets/audio/sfx/horse.mp3",
+          dialogueSets: [
+            {
+              skipIfFlag: "nakausapAngKutsero",
+              lines: [
+                { speaker: "Macario", text: "Kutsero, maaari po ba akong magtrabaho dito?" },
+                { speaker: "Kutsero", text: "Macario? Buti naman at naisipan mo magtrabaho" },
+                { speaker: "Macario", text: "Kailangan na 'ho eh, nangangailangan si Nanay" },
+                { speaker: "Kutsero", text: "O sige, magsimula ka na kaagad, alagaan mo yung puting kabayo kuwadra" },
+              ],
+              onComplete() {
+                state.flags.nakausapAngKutsero = true;
+                markDirty();
+                startJob("kutsero");
+              },
+            },
+            {
+              // PLACEHOLDER. At the cap, before the savings are given.
+              requiresFlag: "sapatNaSaKutsero",
+              skipIfFlag: "naibigayAngIponKayNanay",
+              lines: [
+                { speaker: "Kutsero", text: "Sapat na muna ang kinita mo ngayon, Macario. Iuwi mo na 'yan sa Nanay mo." },
+              ],
+            },
+            {
+              // PLACEHOLDER. Every visit after the first.
+              requiresFlag: "nakausapAngKutsero",
+              lines: [
+                { speaker: "Kutsero", text: "O Macario, tuloy ka sa kuwadra." },
+              ],
+              onComplete() { startJob("kutsero"); },
+            },
+          ],
+        },
+        {
+          id: "mananahi", x: MANANAHI_X, label: "Mananahi", animation: MANANAHI,
+          dialogueSets: [
+            {
+              skipIfFlag: "nakausapAngMananahi",
+              lines: [
+                { speaker: "Macario", text: "Mananahi, tumatanggap ba kayo ng trabahador?" },
+                { speaker: "Mananahi", text: "Oo naman Macario, kamusta na ang inay mo?" },
+                { speaker: "Macario", text: "Okay lang 'ho, nangangailangan kami ng pera ngayon" },
+                { speaker: "Mananahi", text: "O sige sige, tara dito" },
+              ],
+              onComplete() {
+                state.flags.nakausapAngMananahi = true;
+                markDirty();
+                startJob("mananahi");
+              },
+            },
+            {
+              // PLACEHOLDER. At the cap, before the savings are given.
+              requiresFlag: "sapatNaSaMananahi",
+              skipIfFlag: "naibigayAngIponKayNanay",
+              lines: [
+                { speaker: "Mananahi", text: "Sapat na muna 'yan, Macario. Iuwi mo na sa inay mo." },
+              ],
+            },
+            {
+              // PLACEHOLDER. Every visit after the first.
+              requiresFlag: "nakausapAngMananahi",
+              lines: [
+                { speaker: "Mananahi", text: "O Macario, tara dito." },
+              ],
+              onComplete() { startJob("mananahi"); },
+            },
+          ],
+        },
+      ],
     },
     {
       // At home. The same street paintings, at the proponents' direction
       // (keep the background), one panel wide, so no tree stands in it.
+      // Block 56: Nanay is a person here now rather than scenery, so the
+      // savings can be given to her.
       id: "bahay",
       worldWidth: 1450,
       panels: STREET_PANELS,
       panelSky: STREET_SKY,
       startX: 560,
-      decorations: [
-        { id: "nanay-bahay", x: 700, animation: NANAY },
+      exits: [
+        { id: "labas", x: 150, width: 90, label: "Lumabas",
+          requiresFlag: "nagpasyangMagtrabaho",
+          toScene: "tondo", toX: 360, toFacing: 1 },
       ],
+      decorations: [],
       scripts: [
         { doneFlag: "nakausapSiNanaySaBahay", x: 560, facing: 1, run: talkAtHome },
       ],
+      npcs: [
+        {
+          id: "nanay", x: 660, label: "Nanay", animation: NANAY,
+          dialogueSets: [
+            {
+              // PLACEHOLDER. Before the savings.
+              skipIfFlag: "naibigayAngIponKayNanay",
+              lines: [
+                { speaker: "Nanay", text: "Mag-ingat ka sa trabaho, anak." },
+              ],
+            },
+            {
+              requiresFlag: "naibigayAngIponKayNanay",
+              lines: [
+                { speaker: "Nanay", text: "Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay" },
+              ],
+            },
+          ],
+          gift: {
+            buttonLabel: "Ibigay ang ipon",
+            requiresFlag: "sapatNaAngIpon",
+            givenFlag: "naibigayAngIponKayNanay",
+            responseLines: [
+              { speaker: "Macario", text: "Nay, nakapag-ipon na ako ng pera para makatulong" },
+              { speaker: "Nanay", text: "Maraming salamat anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?" },
+              { speaker: "Macario", text: "Opo Nay, nagtrabaho ako para sa Kutsero at mananahi" },
+              { speaker: "Nanay", text: "Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay" },
+              { speaker: "Macario", text: "Maraming salamat nay!" },
+            ],
+            // The flag set here is what lifts the jobs' cap (jobCapped).
+            // Then straight to the tailor's shop.
+            onComplete() {
+              Game.spendCurrency(Math.min(SAVINGS_GOAL, Game.currency()));
+              if (window.Acts) Acts.gotoScene("patahian");
+            },
+          },
+        },
+      ],
+    },
+    {
+      // Block 56. Inside the tailor's shop. No painting of it exists, so
+      // it borrows one street panel the way bahay does.
+      id: "patahian",
+      worldWidth: 1450,
+      panels: ["assets/backgrounds/act1/street-03.jpg"],
+      panelSky: STREET_SKY,
+      startX: 560,
+      exits: [
+        { id: "labas", x: 150, width: 90, label: "Lumabas",
+          toScene: "tondo", toX: MANANAHI_X - 120, toFacing: 1 },
+      ],
+      decorations: [
+        { id: "mananahi-patahian", x: 740, animation: MANANAHI },
+      ],
+      scripts: [
+        { doneFlag: "natanggapAngPadala", x: 560, facing: 1, run: errandAtTheShop },
+      ],
       npcs: [],
+    },
+    {
+      // Block 56. Inside the entablado, the painting the old moro-moro
+      // used, one screen wide with its own floor.
+      id: "entablado",
+      worldWidth: 900,
+      backdrop: { src: "assets/backgrounds/act1/entablado-inside.jpg" },
+      ground: false,
+      startX: 140,
+      exits: [
+        { id: "labas", x: 20, width: 90, label: "Lumabas",
+          toScene: "tondo", toX: 5560, toFacing: -1 },
+      ],
+      decorations: [],
+      npcs: [
+        {
+          id: "direktor", x: 520, label: "Direktor", animation: DIREKTOR,
+          dialogueSets: [
+            {
+              // PLACEHOLDER.
+              skipIfFlag: "nakolektaAngBayad",
+              lines: [
+                { speaker: "Direktor", text: "Abala kami sa paghahanda ng palabas, iho." },
+              ],
+            },
+            {
+              requiresFlag: "nakolektaAngBayad",
+              lines: [
+                { speaker: "Direktor", text: "Salamat ulit, iho." },
+              ],
+            },
+          ],
+          gift: {
+            buttonLabel: "Iabot ang damit",
+            requiresFlag: "natanggapAngPadala",
+            givenFlag: "nakolektaAngBayad",
+            // PLACEHOLDER, both lines (Block 56: the proponent asked for
+            // two short ones to stand in).
+            responseLines: [
+              { speaker: "Direktor", text: "Ay, salamat! Ito na ang damit na hinihintay namin para sa palabas." },
+              { speaker: "Direktor", text: "Heto ang bayad, iho. Pakisabi sa Mananahi, maraming salamat." },
+            ],
+            onComplete() {
+              const pay = randomInt(79, 110);
+              Game.addCurrency(pay);
+              showToast("+" + pay + " barya", 2200);
+            },
+          },
+        },
+      ],
     },
   ],
 };

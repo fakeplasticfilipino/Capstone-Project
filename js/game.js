@@ -624,7 +624,6 @@ function loadScene(sceneId) {
   measureViewport();
 
   buildSkylineTiles();
-  buildAmbient(scene);
   buildNpcs(token);
   buildDecorations(token);
   buildStage();
@@ -793,213 +792,6 @@ const SHADOW_TREE_WIDTH = 440;  // must match .shadow-tree's CSS width
 
 // Where the trees stand: every join between two panels, and never at the
 // very end of the world, where there is nothing to join.
-// =============================================================
-// AMBIENCE (Block 54)
-//
-// Clouds drifting across the sky, a flock of birds crossing now and then,
-// and leaves falling from the shadow trees. A scene asks for them:
-//
-//   ambient: { clouds: 5, birds: 2, leaves: 2 }   leaves is per tree
-//
-// The game loop moves them (updateAmbient), and only the ones near the
-// camera, writing an element only when it has moved a whole pixel. Two
-// cheaper-looking versions were measured first and were not cheaper: CSS
-// keyframes reading custom properties, and the Web Animations API with
-// plain values. All three made the main thread measurably busier at a
-// sixth of this machine's speed (the frame rate held at 60 in every
-// case), so no Act I scene declares ambient; see Decisions on record,
-// Block 54. Each element's numbers (where, how fast, how far into its
-// cycle) come from its own index, not from Math.random, so a street looks
-// the same on every visit, as the trees do. The pictures are a few
-// hundred bytes each (_dev/tools/draw-ambient.py), drawn pixelated.
-//
-// Nothing here is read by any rule: a bird cannot be hit, a leaf cannot
-// hurt. prefers-reduced-motion hides them all (style.css).
-// =============================================================
-
-const AMBIENT_ART = {
-  clouds: [
-    { src: "assets/sprites/ambient/cloud-1.png", w: 192, h: 72 },
-    { src: "assets/sprites/ambient/cloud-2.png", w: 132, h: 48 },
-  ],
-  birds: { src: "assets/sprites/ambient/birds.png", w: 90, h: 42 },
-  leaf: { src: "assets/sprites/ambient/leaf.png", w: 15, h: 15 },
-};
-
-// A fixed number in [0, 1) for each index and salt.
-function ambientNoise(i, salt) {
-  const v = Math.sin((i + 1) * 12.9898 + salt * 78.233) * 43758.5453;
-  return v - Math.floor(v);
-}
-
-// Every running ambient animation, so setPaused can stop and start them
-// with the world. Emptied on each scene load; the old ones end with their
-// elements.
-let ambientAnimations = [];
-// Its own flag rather than the world's `paused`, which is declared far
-// below and does not exist yet when loadAct first builds a scene at parse
-// time (CLAUDE.md, Pitfalls, the temporal dead zone).
-let ambientPaused = false;
-
-function ambientEl(className, x, bottom, art) {
-  const el = document.createElement("div");
-  el.className = "ambient " + className;
-  el.style.left = Math.round(x) + "px";
-  el.style.bottom = Math.round(bottom) + "px";
-  el.style.width = art.w + "px";
-  el.style.height = art.h + "px";
-  world.appendChild(el);
-  actElements.push(el);
-  return el;
-}
-
-// Each ambient thing is a loop of keyframes, { at, x, y, r, o }, at in
-// [0, 1] of its cycle; ambientPose interpolates them. The game loop moves
-// only the ones near the camera (updateAmbient), and writes an element
-// only when what it shows has changed by a whole pixel, a degree or a
-// step of opacity (Block 36's rule).
-function ambientRun(el, frames, seconds, into, from, to, opts) {
-  ambientAnimations.push({
-    el, frames, period: seconds * 1000, phase: into, from: Math.min(from, to), to: Math.max(from, to),
-    steps: opts && opts.steps, drawn: "", visible: false,
-  });
-}
-
-function ambientPose(a, t) {
-  const f = a.frames;
-  let k = 0;
-  while (k < f.length - 2 && t >= f[k + 1].at) k++;
-  const p = f[k], q = f[k + 1];
-  if (a.steps) return p;
-  const u = q.at === p.at ? 0 : (t - p.at) / (q.at - p.at);
-  const mix = (key) => (p[key] || 0) + ((q[key] || 0) - (p[key] || 0)) * u;
-  return { x: mix("x"), y: mix("y"), r: mix("r"), o: p.o === undefined ? 1 : mix("o") };
-}
-
-const AMBIENT_MARGIN = 300;
-let ambientClock = 0;
-let ambientLast = 0;
-
-function updateAmbient(cameraX, now) {
-  if (!ambientAnimations.length) return;
-  // The clock stops with the world, so a paused sky stays where it was.
-  if (ambientLast && !ambientPaused) ambientClock += Math.min(now - ambientLast, 100);
-  ambientLast = now;
-  const left = cameraX - AMBIENT_MARGIN;
-  const right = cameraX + viewportWidth + AMBIENT_MARGIN;
-  for (const a of ambientAnimations) {
-    if (a.to < left || a.from > right) continue; // off screen: nothing to draw
-    const t = ((ambientClock / a.period + a.phase) % 1 + 1) % 1;
-    const pose = ambientPose(a, t);
-    const key = a.steps
-      ? String(pose.x)
-      : Math.round(pose.x) + "," + Math.round(pose.y) + "," + Math.round(pose.r) + "," + Math.round(pose.o * 20);
-    if (key === a.drawn) continue;
-    a.drawn = key;
-    a.el.style.transform = a.steps
-      ? `translateX(${pose.x}%)`
-      : `translate(${Math.round(pose.x)}px, ${Math.round(pose.y)}px)` + (pose.r ? ` rotate(${Math.round(pose.r)}deg)` : "");
-    if (!a.steps) a.el.style.opacity = (Math.round(pose.o * 20) / 20).toString();
-  }
-}
-
-function pauseAmbient(on) {
-  ambientPaused = on;
-}
-
-function buildAmbient(scene) {
-  ambientAnimations = [];
-  const amb = scene && scene.ambient;
-  if (!amb) return;
-  const url = (src) => `url("${assetUrl(src)}")`;
-
-  // Clouds: spread along the road, high in the sky, each drifting right
-  // a long way over a minute or two and fading in and out at the ends of
-  // its drift, started part-way through so the sky is never empty.
-  const clouds = amb.clouds || 0;
-  for (let i = 0; i < clouds; i++) {
-    const art = AMBIENT_ART.clouds[i % AMBIENT_ART.clouds.length];
-    const n = (k) => ambientNoise(i, k);
-    const dx = 900 + n(1) * 700;
-    const dur = dx / (7 + n(2) * 6);
-    const x = (i + n(3) * 0.6) * (WORLD_WIDTH / clouds) - 400;
-    const el = ambientEl("ambient-cloud", x, 430 + n(4) * 130, art);
-    el.style.backgroundImage = url(art.src);
-    ambientRun(el, [
-      { at: 0, x: 0, o: 0 },
-      { at: 0.1, x: dx * 0.1, o: 0.92 },
-      { at: 0.9, x: dx * 0.9, o: 0.92 },
-      { at: 1, x: dx, o: 0 },
-    ], dur, n(5), x, x + dx + art.w);
-  }
-
-  // Birds: a flock crosses the sky in the first half of its cycle and is
-  // gone for the second, alternate flocks flying opposite ways.
-  const birds = amb.birds || 0;
-  for (let i = 0; i < birds; i++) {
-    const art = AMBIENT_ART.birds;
-    const n = (k) => ambientNoise(i, 10 + k);
-    const left = i % 2 === 1;
-    const dx = (1500 + n(1) * 500) * (left ? -1 : 1);
-    const dur = 50 + n(2) * 30;
-    const start = (i + 0.5) * (WORLD_WIDTH / birds) + (left ? 700 : -700);
-    const el = ambientEl("ambient-birds", start, 470 + n(3) * 90, art);
-    // Across the sky in the first half, rising and falling a little, then
-    // gone until the next pass.
-    ambientRun(el, [
-      { at: 0, x: 0, y: 0, o: 0 },
-      { at: 0.03, x: dx * 0.06, y: -3, o: 1 },
-      { at: 0.15, x: dx * 0.3, y: -14, o: 1 },
-      { at: 0.3, x: dx * 0.6, y: 6, o: 1 },
-      { at: 0.47, x: dx * 0.94, y: -4, o: 1 },
-      { at: 0.5, x: dx, y: -8, o: 0 },
-      { at: 1, x: dx, y: -8, o: 0 },
-    ], dur, n(4), start, start + dx + art.w);
-    const flip = document.createElement("div");
-    flip.className = "ambient-birds-flip" + (left ? " ambient-left" : "");
-    const strip = document.createElement("div");
-    strip.className = "ambient-birds-strip";
-    strip.style.backgroundImage = url(art.src);
-    flip.appendChild(strip);
-    el.appendChild(flip);
-    // The wingbeat: the two-frame strip jumps half its width and back.
-    ambientRun(strip, [
-      { at: 0, x: 0 },
-      { at: 0.5, x: -50 },
-      { at: 1, x: -50 },
-    ], 0.36, n(5), start, start + dx + art.w, { steps: true });
-  }
-
-  // Leaves: from each shadow tree's lowest leaves, near the top of a
-  // phone's screen, swaying down to the road and starting again.
-  const perTree = amb.leaves || 0;
-  if (perTree && Array.isArray(scene.panels) && scene.panels.length) {
-    panelJoins(scene).forEach((joinX, j) => {
-      for (let k = 0; k < perTree; k++) {
-        const i = j * perTree + k;
-        const n = (s) => ambientNoise(i, 20 + s);
-        const top = 500 + n(1) * 60;
-        const dur = 7 + n(2) * 5;
-        const lx = joinX - 90 + n(3) * 180;
-        const el = ambientEl("ambient-leaf", lx, top, AMBIENT_ART.leaf);
-        el.style.backgroundImage = url(AMBIENT_ART.leaf.src);
-        const dx = 26 + n(4) * 30;
-        const dy = top - GROUND_LEVEL;
-        // Down is +y on screen; the leaf swings side to side as it falls.
-        ambientRun(el, [
-          { at: 0, x: 0, y: 0, r: 0, o: 0 },
-          { at: 0.06, x: dx * 0.24, y: dy * 0.06, r: 24, o: 1 },
-          { at: 0.25, x: dx, y: dy * 0.25, r: 100, o: 1 },
-          { at: 0.5, x: -dx * 0.5, y: dy * 0.5, r: 210, o: 1 },
-          { at: 0.75, x: dx * 0.8, y: dy * 0.75, r: 300, o: 1 },
-          { at: 0.94, x: dx * 0.1, y: dy * 0.94, r: 380, o: 1 },
-          { at: 1, x: 0, y: dy, r: 400, o: 0 },
-        ], dur, n(5), lx - dx, lx + dx + AMBIENT_ART.leaf.w);
-      }
-    });
-  }
-}
-
 function panelJoins(scene) {
   const width = scene.panelWidth || PANEL_WIDTH;
   const joins = [];
@@ -3556,6 +3348,165 @@ const LAND_POSE_MS = 140;
 const AIRBORNE_MIN_HEIGHT = 8;
 let landPoseUntil = 0;
 
+// Block 56. The job mini-game: a marker sweeps back and forth over a bar,
+// and a press while its middle is inside the green zone is a success.
+// Repeatable until the student presses Tapos na, which resolves the
+// promise. The engine knows nothing about pay: onSuccess (content) does
+// the paying and returns the line to show, and canPlay (content) says
+// whether another round is allowed, so a cap is the content's rule.
+//
+//   playTimingGame({ title, hint, actionLabel, speed,
+//                    canPlay() -> bool, capText,
+//                    onSuccess() -> string, missText })
+//
+// Elements are looked up on each call rather than at load, so nothing
+// here is reached while loadAct runs (the TDZ note in CLAUDE.md).
+function playTimingGame(opts) {
+  const o = opts || {};
+  const screen = document.getElementById("job-screen");
+  if (!screen || !screen.classList.contains("hidden")) return Promise.resolve();
+  const titleEl = document.getElementById("job-title");
+  const hintEl = document.getElementById("job-hint");
+  const barEl = document.getElementById("job-bar");
+  const zoneEl = document.getElementById("job-zone");
+  const markerEl = document.getElementById("job-marker");
+  const resultEl = document.getElementById("job-result");
+  const goBtn = document.getElementById("job-go");
+  const stopBtn = document.getElementById("job-stop");
+
+  return new Promise((resolve) => {
+    const canPlay = typeof o.canPlay === "function" ? o.canPlay : () => true;
+    const speed = Number(o.speed) || 0.9; // bar widths per second
+    const openedAt = performance.now();
+    let pos = 0;
+    let dir = 1;
+    let zoneFrom = 0;
+    let zoneTo = 0;
+    let holdUntil = 0;
+    let pendingZone = false;
+    let last = 0;
+    let raf = 0;
+    let closed = false;
+
+    function newZone() {
+      const w = 0.16 + Math.random() * 0.08;
+      zoneFrom = 0.08 + Math.random() * (0.84 - w);
+      zoneTo = zoneFrom + w;
+      zoneEl.style.left = (zoneFrom * 100).toFixed(2) + "%";
+      zoneEl.style.width = (w * 100).toFixed(2) + "%";
+    }
+
+    function setResult(text, cls) {
+      resultEl.textContent = text || "";
+      resultEl.className = "shell-sub" + (cls ? " " + cls : "");
+    }
+
+    // Returns whether another round is allowed, and says so when not.
+    function refreshGo() {
+      const ok = Boolean(canPlay());
+      goBtn.disabled = !ok;
+      if (!ok) setResult(o.capText || "Sapat na muna.", "");
+      return ok;
+    }
+
+    function markerCentre() {
+      const w = barEl.clientWidth;
+      const m = markerEl.offsetWidth;
+      return { px: pos * Math.max(0, w - m) + m / 2, w, m };
+    }
+
+    function draw() {
+      const c = markerCentre();
+      markerEl.style.transform =
+        "translateX(" + Math.round(c.px - c.m / 2) + "px)";
+    }
+
+    function tick(now) {
+      if (closed) return;
+      const dt = last ? Math.min(now - last, 50) : 16;
+      last = now;
+      if (now >= holdUntil && !goBtn.disabled) {
+        if (pendingZone) {
+          pendingZone = false;
+          newZone();
+          setResult("", "");
+        }
+        pos += dir * speed * dt / 1000;
+        if (pos >= 1) { pos = 1; dir = -1; }
+        else if (pos <= 0) { pos = 0; dir = 1; }
+        draw();
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    function attempt() {
+      if (closed || goBtn.disabled) return;
+      const now = performance.now();
+      if (now < holdUntil) return;
+      const c = markerCentre();
+      const hit = c.px >= zoneFrom * c.w && c.px <= zoneTo * c.w;
+      holdUntil = now + 650;
+      pendingZone = true;
+      if (hit) {
+        const msg = typeof o.onSuccess === "function" ? o.onSuccess() : "";
+        setResult(msg || "Tama!", "job-hit");
+        // A success that reached the cap shows its pay first, then the
+        // cap line once the pause is over.
+        if (!canPlay()) setTimeout(() => { if (!closed) refreshGo(); }, 650);
+      } else {
+        setResult(o.missText || "Sablay! Subukan ulit.", "job-miss");
+      }
+    }
+
+    function close() {
+      if (closed) return;
+      closed = true;
+      cancelAnimationFrame(raf);
+      window.removeEventListener("keydown", onKey, true);
+      goBtn.onclick = null;
+      stopBtn.onclick = null;
+      screen.classList.add("hidden");
+      setUiBlocked(false);
+      resolve();
+    }
+
+    // The E that closed the conversation opening this is older than
+    // openedAt, so it is not taken as the first attempt.
+    function onKey(e) {
+      if (e.repeat || e.timeStamp < openedAt) return;
+      const key = (e.key || "").toLowerCase();
+      // Taken here, in the capture phase on window, so neither the
+      // world (a jump, an interact) nor the shell (Escape opens pause)
+      // also acts on it while the job is up.
+      if (key === "e" || key === " " || key === "enter") {
+        e.preventDefault();
+        e.stopPropagation();
+        attempt();
+      } else if (key === "escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+      }
+    }
+
+    titleEl.textContent = o.title || "";
+    hintEl.textContent = o.hint || "";
+    setLabel(goBtn, o.actionLabel || "Pindutin");
+    setResult("", "");
+    goBtn.onclick = attempt;
+    stopBtn.onclick = close;
+    window.addEventListener("keydown", onKey, true);
+
+    setUiBlocked(true);
+    keysPressed["a"] = false;
+    keysPressed["d"] = false;
+    screen.classList.remove("hidden");
+    newZone();
+    if (refreshGo()) draw();
+    raf = requestAnimationFrame(tick);
+  });
+}
+
 // Opens a conversation from a script and resolves when it is closed. It
 // uses the dialogue box exactly as talking to an NPC does, so E and a tap
 // advance it the same way.
@@ -4192,9 +4143,6 @@ function setPaused(value) {
   if (next && cutscenePlaying) return false;
 
   paused = next;
-  // Block 54. The clouds, birds and leaves are browser animations, which
-  // the loop's pause does not reach; they stop and start with the world.
-  pauseAmbient(paused);
 
   if (paused) {
     pausedAt = performance.now();
@@ -4518,7 +4466,6 @@ function gameLoop(now) {
 
   // Block 42. Where to go next, while the student can act on it.
   updateGuide(!inDialogue && !cutscenePlaying && !authGated && !uiBlocked, cameraX);
-  updateAmbient(cameraX, now);
 
   // Interact and gift buttons follow whichever NPC or stage is nearby.
   if (!inDialogue && !cutscenePlaying && !authGated && !uiBlocked) {

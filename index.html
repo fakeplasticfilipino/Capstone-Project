@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="css/style.css?v=39" />
+  <link rel="stylesheet" href="css/style.css?v=41" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -135,6 +135,26 @@
     <!-- Act title card and act transition screen.
          One overlay, two uses: acts.js fills in the slots and shows
          it on entering an act and again on finishing one. -->
+    <!-- Block 56. The job mini-game (game.js, playTimingGame): a marker
+         sweeps the bar, and a tap while it is in the green zone is a
+         success. Labels written by game.js, into the spans. -->
+    <div id="job-screen" class="hidden">
+      <div id="job-box">
+        <h2 id="job-title" class="shell-heading"></h2>
+        <p id="job-hint" class="shell-sub"></p>
+        <div id="job-bar"><div id="job-zone"></div><div id="job-marker"></div></div>
+        <p id="job-result" class="shell-sub"></p>
+        <div id="job-actions">
+          <button id="job-go" class="shell-btn shell-btn-primary" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-check"></use></svg></span><span class="lbl"></span>
+          </button>
+          <button id="job-stop" class="shell-btn shell-btn-ghost" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Tapos na</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="act-screen" class="hidden">
       <div id="act-screen-box">
         <div id="act-screen-eyebrow"></div>
@@ -425,13 +445,13 @@
        back except the one guarded awaitEntry call in game.js. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
-  <script src="content/act1.js?v=40"></script>
+  <script src="content/act1.js?v=42"></script>
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=11"></script>
-  <script src="js/game.js?v=60"></script>
-  <script src="js/acts.js?v=11"></script>
+  <script src="js/game.js?v=62"></script>
+  <script src="js/acts.js?v=12"></script>
   <script src="js/inventory.js?v=9"></script>
   <script src="js/assessment.js?v=3"></script>
   <script src="js/shell.js?v=13"></script>

@@ -548,7 +548,12 @@ const Acts = {
     // Outside the write lock on purpose. finishAct runs the
     // post-test and the transition screen, which involve further
     // writes of their own.
-    if (done >= total && this.status === "playing") {
+    // Block 56. An act may declare holdOpen while its story is still being
+    // written: every objective can be done without the act finishing or
+    // the post-test opening. Honest where the old trick (an objective whose
+    // flag nothing sets) put a task on screen nobody could do.
+    const held = Boolean((this.getAct(n) || {}).holdOpen);
+    if (done >= total && this.status === "playing" && !held) {
       await this.finishAct();
     }
   },

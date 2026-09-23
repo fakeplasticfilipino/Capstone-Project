@@ -22,15 +22,25 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 23 Sep 2026, after Block 54 (Nanay's walk redrawn in
-profile; the street is the four remaining paintings after tondo.jpg was
-deleted; clouds, birds and leaves built but left off because they cost
-the main thread), which followed Blocks 52 and 53 (Act I rewritten
+Last updated: 23 Sep 2026, after Block 56 (the Kutsero's and the
+Mananahi's jobs as a timing-bar mini-game, the savings given to Nanay,
+the tailor's errand to the direktor in the entablado; Act I held open
+at the end), which followed Block 55 (a clean-out: old previews,
+screenshots, unused pictures and the drawing tools deleted by the
+proponent, and the ambience removed from the engine at the proponent's
+direction), which followed Block 54 (Nanay's walk redrawn in profile;
+the street is the four remaining paintings after tondo.jpg was
+deleted), which followed Blocks 52 and 53 (Act I rewritten
 against the proponents' new script; the street as every painting end
-to end). Blocks through 41 are pushed (088f5e4); Blocks 42 to 54 are in
+to end). Blocks through 41 are pushed (088f5e4); Blocks 42 to 56 are in
 the device folder and NOT yet pushed. Push everything as one commit (see
-Right now). test.js 603 passed, 0 failed; verify_new_scene.js 38 passed,
-0 failed. None of Blocks 42 to 54 has been played on the phone. Block 52
+Right now). test.js 606 passed, 0 failed; verify_new_scene.js 68 passed,
+0 failed. None of Blocks 42 to 56 has been played on the phone.
+
+Blocks 52 to 56 are an experimental window: the new Act I is being tried
+out passage by passage, and some of it will not stay. The proponent has
+already judged the drawn Nanay walk (Block 54) not good enough; it is
+still wired in until a decision (Next action, 1). Block 52
 changes Act I's objectives from eleven to two, so
 db/scripts/reset_test_accounts.sql should be run on the test accounts
 before a full-flow test.
@@ -56,9 +66,9 @@ the target device, and the proponent has ruled it out of scope.
 
 Act I was rewritten in Block 52 against the proponents' new script and
 plot, and is the only act with content. Acts II to IV are registered
-stubs. Act I cannot be completed yet, on purpose: the savings step's
-flag is set by nothing until the next passage (the work that earns the
-barya) is written.
+stubs. Act I cannot be completed yet, on purpose: since Block 56 every
+step can be done, and holdOpen keeps the act (and the post-test) open
+until the story past the entablado is written.
 
 The street is every background end to end (Blocks 53 and 54):
 assets/backgrounds/act1/street-01..04.jpg, one 1450px panel each, 5800px
@@ -68,28 +78,46 @@ student must reach at least 90px clear of a join (multiples of 1450).
 bahay is street-01 alone.
 
     The quest log (Block 48) shows one task, the step in hand, with the
-    finished ones under a "Tapos na (n)" button. Act I's two objectives:
+    finished ones under a "Tapos na (n)" button. Act I's three
+    objectives:
 
       1  Umuwi kasama si Nanay                       done when Macario's
                                                      thought ends
       2  Mag-ipon ng pera na mai-bibigay kay Nanay   counts barya to 100;
-         (n/100)                                     its flag is set by
-                                                     nothing yet
+         (n/100)                                     done by Nanay's gift
+      3  Dalhin ang damit sa direktor sa entablado   done by the
+                                                     direktor's gift
 
     tondo     the street, 5800px, Macario at 900. The opening plays by
               itself, on a login as well as through a fade (a scene
               script, Block 52): three siga (stand-in stills) walk up
               behind him and taunt him about his father; he turns and
               answers; Nanay walks in from the right (in profile, a
-              drawn stand-in walk, Block 54) and calls him home;
+              drawn walk the proponent rejected, Block 54; see Next
+              action) and calls him home;
               the siga laugh; "Tsk". Fade to:
     bahay     at home, on the same paintings (one panel, no tree). Nanay
               tells him the money went on the cedula, there is no rice,
               and he says he will work. Fade back to:
     tondo     alone on the street. His thought ("Kailangan ko ng
               pera..."), then the toast "Bagong gawain: Mag-ipon ng pera
-              na mai-bibigay kay Nanay (0/100)". He can walk the street;
-              there is nobody to talk to yet and no guide target.
+              na mai-bibigay kay Nanay (0/100)". The guide points to
+              the Kutsero (x 1900, the white horse beside him) and then
+              the Mananahi (x 3500). Each one's first conversation is
+              the script's lines, then a job: the timing bar
+              (playTimingGame), 5 to 14 barya a hit, at most 50 from
+              each until the savings are handed over (Block 56).
+    bahay     through the door home (Umuwi, x 230). Nanay's gift button,
+              "Ibigay ang ipon", once he has 100: five lines, the 100
+              spent, the cap lifted, and a fade to:
+    patahian  the tailor's shop (street-03). The Mananahi's errand plays
+              by itself; the log moves to step 3. Lumabas returns him
+              beside her on the street.
+    entablado through the door at the street's end (x 5660, open only
+              with the errand), on entablado-inside.jpg. The direktor
+              (mamamayan stand-in) takes the costume, "Iabot ang damit",
+              two placeholder lines, and pays 79 to 110 barya. Act I
+              stays open (holdOpen).
 
 A reload in the middle of any of the three plays that beat again from
 the top. A save from the old Act I lands on the street with nothing
@@ -108,7 +136,7 @@ seller, exits and doorways, arrival dialogues, scene scripts, scripted
 walk-ons, combat with enemies (the moro-moro's walk and sword sheets),
 guards with cones, platforms, hazards, heart pickups, checkpoints, the
 guide, and the art for Kabayo, the Kutsero, the Tindero, Maryam, the
-entablado inside and out, and the Block 41 stand-ins.
+the inside of the entablado, and the Block 41 stand-ins.
 
 Macario's art: idle, walk, jump, melee punch (tap Atake) and shooting
 (hold Atake) are real sheets, measured with _dev/tools/measure-sprite.js. His
@@ -126,9 +154,9 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v39    js/game.js v60       js/shell.js v13
+    css/style.css v40    js/game.js v61       js/shell.js v13
     js/inventory.js v9   js/acts.js v11       js/assessment.js v3
-    content/act1.js v40  content/items.js v11  content/act2-4.js v1
+    content/act1.js v41  content/items.js v11  content/act2-4.js v1
     ASSET_VERSION 21 (in js/game.js)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
@@ -145,7 +173,7 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 54 are built. Blocks 22 to 41 were one build session, 17 to
+Blocks 1 to 56 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
 42 to 49 were 20 September, and Blocks 50 and 51 the 21st:
 
@@ -229,12 +257,17 @@ Blocks 1 to 54 are built. Blocks 22 to 41 were one build session, 17 to
         gawain toast in the engine; items.js emptied; siga stand-ins
     53  the street as every background end to end; a front-facing walk
         for Nanay (replaced by 54) and walkAnimation on decorations
-    54  Nanay's walk drawn in profile (draw-nanay-walk.py); four panels,
-        5800px, after tondo.jpg was deleted; street-01.jpg as the
-        fallback backdrop; clouds, birds and leaves built
-        (draw-ambient.py, buildAmbient) and left off, measured
+    54  Nanay's walk drawn in profile; four panels, 5800px, after
+        tondo.jpg was deleted; street-01.jpg as the fallback backdrop;
+        clouds, birds and leaves built and left off, measured
+    55  clean-out: previews, screenshots, unused pictures and the drawing
+        tools deleted; ambience removed from the engine; "Claude
+        outputs/" in .gitignore
+    56  the Kutsero's and the Mananahi's jobs (a timing-bar mini-game,
+        capped at 50 each until Nanay has the savings), Nanay's gift,
+        the patahian and the direktor in the entablado; holdOpen
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 to 54 are in
+Everything through Block 41 is pushed (088f5e4). Blocks 42 to 56 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
 file, so the push is a commit of deletions and additions that git shows
 as renames: stage everything (git add -A) rather than picking files, or
@@ -246,13 +279,13 @@ git status, they were not deleted on the computer. Block 51 does the
 same on a smaller scale: street-01..04.png, tondo.png and
 entablado-inside.png are replaced by .jpg files of the same name, so
 those six PNGs must be deleted on the computer before the push or the
-repository carries 11MB nothing loads. Blocks 52 to 54 add
-assets/sprites/characters/siga-1..3.png and nanay-walk.png, the four
-pictures in assets/sprites/ambient/, and the two drawing tools. The
-proponent deleted assets/backgrounds/act1/tondo.jpg on the computer;
-nothing loads it any more. assets/backgrounds/act1/entablado-inside.png
-is still in the folder: it is the PNG Block 51 replaced with a .jpg,
-loaded by nothing, and 1.6MB the push does not need.
+repository carries 11MB nothing loads. Blocks 52 to 55 add
+assets/sprites/characters/siga-1..3.png and nanay-walk.png. The
+proponent deleted, on the computer, tondo.jpg, entablado-inside.png,
+entablado-outside.png, the ambience pictures, the drawing tools,
+"Claude outputs" and docs-private/screenshots; git add -A records the
+deletions. Do not delete horse.mp3 or intense.mp3: no Act I scene uses
+them, but the harness does.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/scripts/reset_test_accounts.sql
@@ -264,15 +297,26 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. Write the next passage of Act I with the proponents: where Macario
-finds work, how it pays barya, and what finishing "Mag-ipon ng pera"
-means (giving the 100 to Nanay is the obvious reading). Until its flag
-has a setter, Act I cannot complete and the post-test never runs. The
-pieces are all there (CLAUDE.md, Act data format): NPCs with dialogue
-sets, gifts, Game.addCurrency from an onComplete, scene scripts, the
-guide. A gift can only wait on a flag, not on a balance, so "give Nanay
-the 100" will need either a flag content sets when the balance reaches
-100 or a small engine addition; decide which when the scene is written.
+0. Decide what Nanay does while she walks on, since the drawn profile
+walk (Block 54) was rejected: (a) go back to her sliding on with her
+idle sheet, as before Block 53, which is one line in content/act1.js
+(drop walkAnimation from her decoration); or (b) keep the drawn walk
+until the artist delivers a side-view walk sheet, then drop that sheet
+over assets/sprites/characters/nanay-walk.png and remeasure. Either way,
+the real fix is the artist: ask for a side-view walk for Nanay (and for
+Macario's cast generally) as a PNG with transparency. Lesson recorded
+in CLAUDE.md, Block 54: character art drawn in code does not reach the
+artist's standard, so do not attempt it again unless asked.
+
+1. Write the next passage of Act I with the proponents, after the
+direktor pays (Block 56). Act I is held open (holdOpen) until then; when
+the passage that ends the act is written, remove holdOpen and the
+post-test runs as before. Also from the proponents: the lines marked
+PLACEHOLDER in content/act1.js (the direktor's two, and the short
+second-visit and cap lines), and whether a painting of the tailor's
+shop (patahian is on street-03 for now), a direktor sprite (the
+mamamayan still stands in) and an outside of the entablado (deleted in
+Block 55; its door is only a label) are coming.
 
 2. The assessment item bank no longer matches Act I. The pre-test and
 post-test items (db/seeds/macario_items_v3.sql) and the trivia card were
@@ -300,20 +344,24 @@ Block 52:
       Failure looks like the toast cut off on a narrow screen, or the
       count not at 0 for a fresh student (an old save's barya; run the
       reset).
-    Nanay's walk (Block 54): she walks in profile, facing the way she
-      goes, at Macario's height, and turns front-on to her real idle
-      art when she stops. The drawn walk is simpler than the artist's
-      painting; judge whether it holds up until the artist draws hers.
+    Nanay's walk (Block 54): judged on the headless preview and
+      rejected by the proponent; see Next action, 0. No phone check
+      needed until it is replaced or removed.
     The whole street: walk to the far end; four different paintings, a
       tree over each join, and the road ends at the edge of the last.
-    Ambience (Block 54), optional: add ambient: { clouds: 5, birds: 2,
-      leaves: 2 } to the tondo scene (content/act1.js says where) and
-      play on the phone. If the game still feels as smooth, it can stay;
-      if not, take the line out. Nothing else changes either way.
     The siga: the stand-ins stand at Macario's height on the road and
       read as three different boys. The bandana on the first sits on
       his head, not above it.
     Reload in the middle of each beat: it plays again from the top.
+    The jobs (Block 56): the timing bar fits the screen, the buttons are
+      easy to tap, and a hit in the green feels fair on the phone (the
+      marker crosses the bar in about a second; the zone is 16 to 24
+      percent of it). Too hard or too easy is one number each in
+      playTimingGame (speed) and newZone (width). The white horse beside
+      the Kutsero reads as a horse at 120px.
+    Nanay, the shop and the entablado: the gift buttons appear, the fade
+      to the shop, the entablado's door at the end of the street, the
+      pay toast.
 
 Blocks 42 to 51 were never played on the phone either, but what they
 showed (the guide, cones, the long street, the moro-moro) has left
@@ -335,10 +383,11 @@ against the source material.
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs. Everything through Block 41 is pushed; Blocks 42 to 52
+header directs. Everything through Block 41 is pushed; Blocks 42 to 56
 are in the device folder, passing their checks, and wait on the
-proponent's push. Act I was rewritten in Block 52, so the next work is
-its next passage (Next action, 1), written with the proponents from
+proponent's push. Act I was rewritten in Block 52 and carried through
+the jobs and the errand in Block 56, so the next work is its next
+passage after the direktor (Next action, 1), written with the proponents from
 their script, and the matching question about the item bank (Next
 action, 2).
 
@@ -493,7 +542,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 603-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 598-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -592,8 +641,12 @@ submit_assessment).
         Bagong gawain toast (section AZ); items.js emptied; siga
         stand-ins; verify_new_scene.js rewritten
     53  panel street; walkAnimation; make-walk-cycle.py
-    54  profile walk (draw-nanay-walk.py); four panels; street-01.jpg
-        fallback; ambience built and off (draw-ambient.py, section BA)
+    54  profile walk; four panels; street-01.jpg fallback; ambience
+        built and off
+    55  clean-out; ambience and section BA removed
+    56  playTimingGame (#job-screen), holdOpen; the jobs, Nanay's gift,
+        patahian, entablado and the direktor (section BA, and
+        verify_new_scene.js to 68)
 
 ## Blocks remaining
 
@@ -615,7 +668,7 @@ against the source material. The Damit slot has its first item
 (Block 32). (IN PROGRESS)
 
 Act I's next passage, and the item bank to match it (Next action, 1
-and 2). (NOT STARTED)
+and 2). (IN PROGRESS) The work and the errand are Block 56.
 
 ## Blocked on other people
 
@@ -637,8 +690,9 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the real art with the artist for the siga (Block 52 stand-ins)
-and Macario's death sheet, and later for whoever the next passages of
+Chase the real art with the artist for the siga (Block 52 stand-ins),
+a side-view walk for Nanay (Block 54's drawn one was rejected), and
+Macario's death sheet, and later for whoever the next passages of
 Act I bring on. (NOT STARTED)
 
 Provision student accounts for the session, and pilot with two or
@@ -657,7 +711,7 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 
 Missing production art. assets/ holds real art for Nanay, Kutsero,
 Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack),
-both entablado pictures, the four street paintings, the
+the inside of the entablado, the four street paintings, the
 ground, and Macario's idle, walk, jump, melee and shooting sheets, plus
 the two fonts and four sound files. Since Block 52 the shipped Act I
 uses only Nanay, Macario, the street paintings and the ground; the rest
@@ -699,8 +753,7 @@ images compete with calm.mp3 streaming beside them (2MB). Block 51 cut
 what a scene has to download by about six times (the six opaque
 backdrops are JPEGs now: 300KB a street, 1.2MB for the lansangan,
 against 1.9MB and 7.8MB), which shortens the window without closing it.
-The largest single file left is entablado-outside.png at 1.5MB, which
-keeps its alpha and so cannot be a JPEG.
+The largest remaining files are the two music tracks, about 2MB each.
 Chosen fix, not yet built: a loading bar on the title screen that fetches
 the current scene's art first and retries failed files, scene changes
 that wait behind the blackout until the next scene's art is in, and a
@@ -762,12 +815,14 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 603 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 38
+test.js: 606 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 68
 checks driving the REAL content/act1.js and content/items.js through
-the rewritten Act I (Blocks 52 to 54): the opening, home, the thought and the
-savings quest, reloads mid-beat, an old save, and a guest.
-Both last ran green on 23 Sep 2026 against the Block 54 files written to
+the rewritten Act I (Blocks 52 to 56): the opening, home, the thought and the
+savings quest, both jobs to their caps, Nanay's gift, the tailor's
+errand, the direktor's pay with the act held open, reloads mid-beat,
+an old save, and a guest.
+Both last ran green on 23 Sep 2026 against the Block 56 files written to
 the device folder (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium; Playwright 1.62 expects a newer build than the
 sandbox has, so a directory of links under the expected name was

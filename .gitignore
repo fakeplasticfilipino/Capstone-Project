@@ -18,3 +18,7 @@ secret_key.txt
 # installed packages are not.
 node_modules/
 package-lock.json
+
+# Previews and screenshots produced while working with an AI assistant.
+# Never loaded by the game; the repository is public, so they stay local.
+Claude outputs/

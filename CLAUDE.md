@@ -94,11 +94,9 @@ off the repository.
       sprites/characters/      everyone who talks, <name>.png
                                (siga-1..3 are Block 52 stand-ins;
                                nanay-walk.png is Block 54's drawn walk)
-      sprites/ambient/         clouds, birds, a leaf (Block 54)
       sprites/enemies/         guards and fighters
-      backgrounds/act1/        street-01..04.jpg, the
-                               entablado inside (.jpg) and out (.png,
-                               it needs its alpha), ground-lupa.jpg
+      backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
+                               ground-lupa.jpg
       items/                   inventory and shop tile pictures
       audio/music/, audio/sfx/
       fonts/                   the two woff2 faces and their licences
@@ -106,9 +104,6 @@ off the repository.
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-placeholder-sprites.py,
-                               make-walk-cycle.py (front-facing,
-                               superseded), draw-nanay-walk.py,
-                               draw-ambient.py,
                                make-shadow-tree.py, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
@@ -170,7 +165,10 @@ the street with three siga taunting Macario about his father, Nanay
 calls him home, tells him the money went on the cedula, and he resolves
 to work, which opens a savings quest that counts his barya toward 100.
 Two scenes (tondo, the street; bahay, at home, on the same paintings),
-two objectives, and an empty item catalogue. The backgrounds and every
+two objectives, and an empty item catalogue. Block 56 added the work:
+two jobs on the street, the savings given to Nanay, and an errand to
+the entablado, in four scenes and three objectives, with the act held
+open (holdOpen) at the end until the next passage is written. The backgrounds and every
 asset file were kept; the old scenes, their script and their three
 items are in git history. TRACKER.md, Start here, describes exactly
 what Act I contains today.
@@ -348,6 +346,9 @@ world belongs to the scene.
                                                  the objective chain (Block 48)
       objectiveCurrency: false,                  optional; no barya per step
                                                  (Block 52)
+      holdOpen: true,                            optional; every step done
+                                                 does not finish the act
+                                                 (Block 56)
       startingQuests: [{ id, text }],
       guide: [{ scene, requiresFlag,             optional; where to go
                 unlessFlag, questOpen,           next (Block 42)
@@ -392,8 +393,6 @@ Scene shape:
                  animation }],
       noRanged: true,                            optional; no shot here
       checkpoints: [{ x, flag }],                optional; respawn points
-      ambient: { clouds, birds, leaves },        optional; off in Act I
-                                                 (Block 54)
       scripts: [{ requiresFlag, unlessFlag,      optional; cutscenes that
                   doneFlag, x, facing, run }]    play by themselves (Block 52)
     }
@@ -634,6 +633,8 @@ of them plain globals in game.js, like addQuest:
     setMusic(src | null)         null is the scene's own track, else Calm
     setQuestText(id, text)       rewrites a logged quest's line (Block 37)
     wait(ms)                     resolves after ms; a pause in a script
+    playTimingGame(opts)         the job mini-game (Block 56); resolves
+                                 when the student presses Tapos na
 
 scripts (Block 52) are how a scene plays one of these by itself. The
 first entry whose requiresFlag is set (or that has none) and whose
@@ -3376,6 +3377,96 @@ is one line in a scene (content/act1.js says which), and the device is
 the judge. Section BA covers the mechanism against the fixture scene.
 
 game.js v60, style.css v39, content/act1.js v40, ASSET_VERSION 21.
+
+The proponent's verdict on the drawn walk, the same day: it is not good
+enough. Recorded so it is not tried again: character sprites drawn in
+code (Block 53's moved pixels, Block 54's drawn profile) do not reach
+the artist's painted standard, and a character that walks needs a walk
+sheet from the artist. Small scenery (the ambience pictures, the shadow
+trees) and recoloured stand-ins built from the artist's own frames
+(Blocks 41 and 52) are a different matter and stand. Whether Nanay slides
+on with her idle sheet or keeps the drawn walk until the real one
+arrives is open (TRACKER.md, Next action, 0). Blocks 52 to 54 are an
+experimental window, in the proponent's words: expect parts of them to
+be replaced.
+
+A clean-out (Block 55). The proponent deleted, on the computer: the
+"Claude outputs" previews, docs-private/screenshots, the old
+entablado-inside.png (its .jpg stays), entablado-outside.png, the
+ambience pictures and draw-ambient.py, and the two walk tools
+(make-walk-cycle.py, draw-nanay-walk.py). And said the ambience is not
+wanted, so it is gone from the engine too: buildAmbient, updateAmbient,
+the pause hook, the .ambient styles, the ambient scene field and
+section BA. Block 54's measurements stay recorded above as the reason
+it was never switched on. nanay-walk.png stays because Nanay's
+decoration still names it (TRACKER.md, Next action, 0). horse.mp3 and
+intense.mp3 are in no Act I scene but the harness uses both (sections
+AO and AS), so deleting either would fail the suite. "Claude outputs/"
+is now in .gitignore, since the repository is public and published.
+game.js v61, style.css v40, content/act1.js v41.
+
+Work, the savings, and the errand (Block 56). The proponents' next
+passage: two people on the street give Macario work, the Kutsero at
+x 1900 (his real sheet, Block 33, with the white horse beside him at
+2150, a decoration, and horse.mp3 near him) and the Mananahi at 3500
+(mananahi.png, measured). Their first conversations are the script's
+lines as written; the request spelled them "Kutchero" and
+"Manananahi", normalised to the names used everywhere else. Each
+conversation ends in a job: a timing bar, chosen by the proponent over
+the other offered mini-games, in which a marker sweeps back and forth
+and a press while its middle is in the green zone is a success. A
+success pays 5 to 14 barya, at random. Until the savings are given to
+Nanay each job pays at most 50 in all, the last pay trimmed to land on
+50 exactly, so the two jobs together make exactly the 100 the quest
+counts. What each job has paid is kept in its own flag as a number
+(kinitaSaKutsero, kinitaSaMananahi): state.flags is saved whole, so
+numbers survive a reload with no schema change.
+
+The mini-game is engine, playTimingGame in game.js, and knows nothing
+about barya: content passes canPlay (the cap) and onSuccess (the pay,
+returning the line to show). It is the #job-screen window in
+index.html, styled like the act screen. It blocks the world with
+setUiBlocked, and takes its keys (E, Space, Enter to press, Escape to
+stop) in the capture phase on window and stops them there, because
+otherwise the same Escape also opened pause in shell.js and the same
+Space made Macario jump. The E that closes the conversation opening it
+is older than the window, so its timestamp is compared and it is not
+taken as the first attempt. content opens it a tick after the
+conversation's onComplete for the same reason.
+
+A gift can wait only on a flag, not on a balance (the question left
+open in Block 52). Content sets sapatNaAngIpon when a job's pay takes
+the balance to 100, and Nanay's gift, "Ibigay ang ipon", waits on that;
+no engine change. So Nanay is an NPC in bahay now instead of a
+decoration, and bahay has a door out (Lumabas) and the street a door
+home (Umuwi, at 230), both shut until the story has sent him to work.
+Her gift plays the proponents' five lines, spends the 100, sets
+naibigayAngIponKayNanay (which lifts the cap) and fades straight to
+patahian, a new scene: the tailor's shop, on street-03 since there is
+no painting of one, where a scene script plays the Mananahi's errand
+and sets natanggapAngPadala. That flag opens the entablado's door at
+the street's end (5660) into the entablado scene, on
+entablado-inside.jpg, where the direktor (the mamamayan still, a
+stand-in) takes the costume with a gift, "Iabot ang damit", and pays
+79 to 110 barya at random, shown as a toast. The outside of the
+entablado has no picture since Block 55, so its door is a label on the
+road.
+
+Three objectives: Umuwi kasama si Nanay, Mag-ipon (n/100), and Dalhin
+ang damit sa direktor sa entablado. At the proponent's direction Act I
+does not end when all three are done; the post-test must wait for the
+rest of the story. holdOpen: true on the act (acts.js,
+checkObjectives) says so honestly, where the old way, an objective
+whose flag nothing sets, put a task on screen nobody could do.
+
+Lines of ours, marked PLACEHOLDER in content/act1.js, to be replaced by
+the proponents: the direktor's two (the proponent asked for two short
+stand-ins), and one line each for a second visit to the Kutsero, the
+Mananahi, Nanay and the direktor, and for the Kutsero and the Mananahi
+at the cap. Section BA of the harness is now the mini-game and
+holdOpen (the old ambience section BA left in Block 55).
+verify_new_scene.js plays the whole passage with real presses on the
+bar. game.js v62, acts.js v12, style.css v41, content/act1.js v42.
 
 ## Pitfalls
 
