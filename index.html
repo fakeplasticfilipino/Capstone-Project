@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="css/style.css?v=41" />
+  <link rel="stylesheet" href="css/style.css?v=42" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -64,10 +64,8 @@
     <div id="quest-log">
       <div id="quest-log-title">Gawain</div>
       <ul id="quest-list"></ul>
-      <!-- Block 48. Finished tasks, closed until tapped (game.js,
-           renderQuests). The label is written by setLabel. -->
-      <button id="quest-done-toggle" class="hidden" type="button" aria-expanded="false" aria-controls="quest-done-list"><span class="ico"><svg aria-hidden="true"><use href="#i-check"></use></svg></span><span class="lbl"></span></button>
-      <ul id="quest-done-list" class="hidden"></ul>
+      <!-- Block 57. Finished tasks are listed in Mga Setting
+           (shell.js), not here. -->
     </div>
     <div id="viewport">
       <div id="world">
@@ -135,24 +133,38 @@
     <!-- Act title card and act transition screen.
          One overlay, two uses: acts.js fills in the slots and shows
          it on entering an act and again on finishing one. -->
-    <!-- Block 56. The job mini-game (game.js, playTimingGame): a marker
-         sweeps the bar, and a tap while it is in the green zone is a
-         success. Labels written by game.js, into the spans. -->
-    <div id="job-screen" class="hidden">
-      <div id="job-box">
-        <h2 id="job-title" class="shell-heading"></h2>
-        <p id="job-hint" class="shell-sub"></p>
-        <div id="job-bar"><div id="job-zone"></div><div id="job-marker"></div></div>
-        <p id="job-result" class="shell-sub"></p>
-        <div id="job-actions">
-          <button id="job-go" class="shell-btn shell-btn-primary" type="button">
-            <span class="ico"><svg aria-hidden="true"><use href="#i-check"></use></svg></span><span class="lbl"></span>
+    <!-- Block 57. The apple mini-game (game.js, playCatchGame): apples
+         fall from the tree one at a time into a basket moved left and
+         right. It replaced Block 56's timing bar. Labels written by
+         game.js, into the spans. -->
+    <div id="catch-screen" class="hidden">
+      <div id="catch-box">
+        <h2 id="catch-title" class="shell-heading"></h2>
+        <p id="catch-hint" class="shell-sub"></p>
+        <div id="catch-field">
+          <div id="catch-canopy"></div>
+          <div id="catch-apple" class="hidden"></div>
+          <div id="catch-basket"></div>
+        </div>
+        <p id="catch-result" class="shell-sub"></p>
+        <div id="catch-actions">
+          <button id="catch-left" class="shell-btn" type="button" aria-label="Kaliwa">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-left"></use></svg></span><span class="lbl">Kaliwa</span>
           </button>
-          <button id="job-stop" class="shell-btn shell-btn-ghost" type="button">
-            <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Tapos na</span>
+          <button id="catch-right" class="shell-btn" type="button" aria-label="Kanan">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-right"></use></svg></span><span class="lbl">Kanan</span>
+          </button>
+          <button id="catch-stop" class="shell-btn shell-btn-ghost" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- Block 57. The black card with the place and the year (game.js,
+         playIntertitle). Lines written by game.js. -->
+    <div id="intertitle" class="hidden" aria-live="polite">
+      <div id="intertitle-text"></div>
     </div>
 
     <div id="act-screen" class="hidden">
@@ -266,6 +278,13 @@
               <button class="shell-choice" type="button" data-sfx="on"><span class="ico"><svg aria-hidden="true"><use href="#i-sound"></use></svg></span><span class="lbl">Bukas</span></button>
               <button class="shell-choice" type="button" data-sfx="off"><span class="ico"><svg aria-hidden="true"><use href="#i-mute"></use></svg></span><span class="lbl">Patay</span></button>
             </div>
+          </div>
+
+          <!-- Block 57. The tasks already done, moved here from under the
+               quest log. Filled by shell.js each time settings opens. -->
+          <div class="shell-field">
+            <div class="shell-label">Mga natapos na gawain</div>
+            <ul class="shell-done-quests" id="shell-done-quests"></ul>
           </div>
 
           <div class="shell-field">
@@ -445,15 +464,15 @@
        back except the one guarded awaitEntry call in game.js. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
-  <script src="content/act1.js?v=42"></script>
+  <script src="content/act1.js?v=43"></script>
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=11"></script>
-  <script src="js/game.js?v=62"></script>
+  <script src="js/game.js?v=63"></script>
   <script src="js/acts.js?v=12"></script>
   <script src="js/inventory.js?v=9"></script>
   <script src="js/assessment.js?v=3"></script>
-  <script src="js/shell.js?v=13"></script>
+  <script src="js/shell.js?v=14"></script>
 </body>
 </html>

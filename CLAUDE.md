@@ -93,8 +93,11 @@ off the repository.
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png
                                (siga-1..3 are Block 52 stand-ins;
-                               nanay-walk.png is Block 54's drawn walk)
+                               nanay-walk.png is Block 54's drawn walk,
+                               named by nothing since Block 57)
       sprites/enemies/         guards and fighters
+      sprites/scenery/         things on the street that are used, not
+                               talked to (puno-mansanas.png, Block 57)
       backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
                                ground-lupa.jpg
       items/                   inventory and shop tile pictures
@@ -104,7 +107,8 @@ off the repository.
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-placeholder-sprites.py,
-                               make-shadow-tree.py, and
+                               make-shadow-tree.py, make-apple-tree.py,
+                               and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
                                form and old screenshots, kept on the
@@ -170,8 +174,13 @@ two jobs on the street, the savings given to Nanay, and an errand to
 the entablado, in four scenes and three objectives, with the act held
 open (holdOpen) at the end until the next passage is written. The backgrounds and every
 asset file were kept; the old scenes, their script and their three
-items are in git history. TRACKER.md, Start here, describes exactly
-what Act I contains today.
+items are in git history. Block 57 put all of it on one street, ten
+paintings long, at the proponent's direction: no house and no tailor's
+shop to be carried into, Nanay outside for good, the two jobs as
+errands with fixed pay, black intertitle cards for "Tondo, 1880" and
+"1884", and the entablado reached only with the direktor. Two scenes
+(tondo, entablado), nine objectives. TRACKER.md, Start here, describes
+exactly what Act I contains today.
 
 None of this touched the ENGINE. Every mechanic the fuller version
 exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
@@ -300,6 +309,8 @@ game.js exposes window.Game and nothing else:
     heal(n)              false and no change at full health; Block 25
     setAudio(obj)        { music, sfx } booleans; Block 30
     audio()              { music, sfx }, a copy
+    doneQuests()         the finished tasks' lines, for the settings
+                         panel; Block 57
     setOutfit(sheets)    awaitable; null restores the base sprites
     currency()
     addCurrency(n)
@@ -535,6 +546,12 @@ NPC shape:
       opensShop: true,                           optional; see below
       opensShopAfter: "someFlag",                optional; talks, then sells
       nearSound: "assets/audio/sfx/x.mp3",       optional; loops while near
+      displayHeight: 120,                        optional; drawn this tall
+                                                 (Block 57)
+      onInteract() {},                           optional; E runs this
+      interactLabel: "Pumitas",                  instead of a conversation,
+                                                 and the button reads this
+                                                 (Block 57)
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete(),
                        skipIfFlag, requiresFlag }],  both optional
@@ -566,8 +583,10 @@ during play, the engine shows "Bagong gawain: <line>" as a toast; never
 for the step a login or a reload lands on. Such an act
 declares no startingQuests. An act without linearObjectives keeps
 addQuest, completeQuest and setQuestText. Either way the log draws open
-quests under "Gawain" and done ones in a "Tapos na (n)" list behind a
-button, closed at every scene load.
+quests under "Gawain" only. The done ones were a "Tapos na (n)" list
+behind a button under the log from Block 48; since Block 57 they are
+listed in the settings panel, "Mga natapos na gawain" (shell.js, from
+Game.doneQuests), and nothing under the log shows them.
 
 Talking to an NPC advances through dialogueSets one per conversation,
 holding on the last. An NPC with any set that declares requiresFlag
@@ -633,8 +652,18 @@ of them plain globals in game.js, like addQuest:
     setMusic(src | null)         null is the scene's own track, else Calm
     setQuestText(id, text)       rewrites a logged quest's line (Block 37)
     wait(ms)                     resolves after ms; a pause in a script
-    playTimingGame(opts)         the job mini-game (Block 56); resolves
-                                 when the student presses Tapos na
+    playCatchGame(opts)          the apple mini-game (Block 57, replacing
+                                 Block 56's playTimingGame); resolves with
+                                 how many were caught when it closes
+    playIntertitle(lines, opts)  a black card with lines of text, faded
+                                 in and out (Block 57); opts startBlack,
+                                 whileBlack(), holdMs
+    movePlayer(x, pxPerSecond)   walks Macario there with his walk cycle
+                                 (Block 57); resolves on arrival
+    placePlayer(x, facing)       puts him there at once (Block 57)
+    runSceneScript()             plays the scene's pending script now,
+                                 for a script a gift or a conversation
+                                 unlocks mid-scene (Block 57)
 
 scripts (Block 52) are how a scene plays one of these by itself. The
 first entry whose requiresFlag is set (or that has none) and whose
@@ -3467,6 +3496,100 @@ at the cap. Section BA of the harness is now the mini-game and
 holdOpen (the old ambience section BA left in Block 55).
 verify_new_scene.js plays the whole passage with real presses on the
 bar. game.js v62, acts.js v12, style.css v41, content/act1.js v42.
+
+One street (Block 57). Requested after playing Block 56: the proponent
+disliked being carried from one place to another (the house, the
+tailor's shop, the door into the entablado) and asked for the map to be
+ten paintings long, Nanay outside for good, a black card with the place
+and year, the finished missions in settings, and the timing bar
+replaced, because it "feels very dishonest", with a retrieving game.
+Asked and answered before building: apples caught in a basket, and the
+Kutsero first, 50 barya each.
+
+The street is 14500 px, ten panels: the four paintings in order, twice,
+then the first two again. "Double" and "ten backgrounds" were both in
+the request; ten was taken as the number, since four doubled (8) is not
+ten. Everything happens on it except the inside of the entablado, and
+that is entered only by talking to the direktor, who goes in with
+Macario, at the proponent's direction. bahay and patahian are gone; an
+old save naming either falls back to the street, as any unknown scene
+id always has, and the scene scripts put the student where the story
+is (verify_new_scene.js checks both).
+
+The opening now walks. After "Tsk", Macario and Nanay leave together to
+where she stays (x 2000), and the cedula conversation plays there. That
+needed movePlayer, the player's own moveDecoration: it moves posX from
+its own animation frame, the loop draws the walk cycle while it runs
+(scriptWalking) even though the cutscene holds everything else, and the
+camera follows as it always does. Nanay moves as a decoration and is
+then swapped for an NPC standing in the same place (startsHidden,
+revealedByFlag, revealNpcsByFlag called from content), because a
+decoration can be walked and an NPC can be talked to, and neither can
+do both. She slides on her idle sheet: walkAnimation was dropped, which
+settles Block 54's open question.
+
+The black card is playIntertitle, an engine call like playDialogue, and
+not an extension of #blackout: the fade between scenes has no text and
+must stay exactly as it is, and a card whose lines fade on their own
+needed its own element above the dialogue box. Its options are the two
+places it is used. startBlack is for "Tondo, 1880", which opens the
+game, so the street is never seen before it; whileBlack is for "1884",
+where the years pass and Macario is moved beside the Mananahi under the
+black (placePlayer), which is the whole of how a jump in time is done
+without a scene change. A tap or E skips the reading time once the first
+line has been up for 1.2 seconds, never the fades, so a tap meant for
+the last line of a conversation cannot throw the card away unread.
+"Tondo, 1880" is the first beat of the opening script rather than
+something shown every time the page opens: a returning student in 1884
+would otherwise be told it is 1880. "1884" is its own scene script
+(requires the savings given, done when the errand is received), started
+directly from Nanay's gift through runSceneScript, so a reload before
+the errand plays it again rather than skipping it.
+
+The timing bar is gone from the engine (playTimingGame, #job-screen and
+section BA's checks for it). What was dishonest about it was that the
+thing pressed had nothing to do with the work and the pay was a random
+number. The apples are the work: a basket moved left and right catches
+apples that shake in the leaves for 0.65 s and then fall, one at a
+time, a little faster with each one held. A miss costs nothing but the
+wait for the next. The game counts; content decides what a catch means
+(one flag per apple, so the quest line counts them with countFlags and
+a student who stops at two keeps two). It is in a window rather than in
+the world because a thumb on the movement buttons cannot also be a
+basket, and the window takes its keys in the capture phase for the same
+reason the timing bar did (Space must not jump, Escape must not pause).
+
+The jobs are errands now, and pay a fixed 50 each, once, so the two make
+exactly the 100 without a cap: the Kutsero sends Macario to the apple
+tree, the horse eats them (a gift), the Kutsero pays (a gift, "Kunin ang
+bayad"); the Mananahi sends him to three customers (a gift each,
+counted from their flags so the order does not matter), then pays. Both
+payments are gift buttons because a gift already means "the thing this
+person is waiting on", which is what being paid is. The chain is linear,
+Kutsero first, as answered: nine objectives, one line at a time, the
+guide leading to each. The direktor keeps Block 56's random 79 to 110,
+which was the proponent's own number.
+
+The apple tree is an NPC with onInteract and interactLabel ("Pumitas"),
+because E on it has to open the mini-game and not a conversation, and
+an NPC already has everything else it needs (a body to reach, a guide
+target, a label). Its picture is drawn in code by
+_dev/tools/make-apple-tree.py, 64 by 80 and drawn pixelated at 280 px
+tall: scenery, which Block 54's verdict allows, unlike a character. The
+horse became an NPC too (it is fed), which needed displayHeight on NPCs,
+and took the horse's nearSound from the Kutsero.
+
+The finished tasks moved to the settings panel, "Mga natapos na
+gawain", read from Game.doneQuests each time the panel opens. The
+button and list under the quest log are deleted rather than hidden.
+
+Lines of ours, marked PLACEHOLDER in content/act1.js: what each
+job-giver says the work is, their reminders, pay lines and thanks, the
+horse, the three customers (their names too) and the direktor on the
+street. The proponents' own lines are unchanged, including "manananahi"
+in the 1884 card, spelled as given. game.js v63, shell.js v14,
+style.css v42, content/act1.js v43. puno-mansanas.png is a new file,
+so ASSET_VERSION stays at 21.
 
 ## Pitfalls
 

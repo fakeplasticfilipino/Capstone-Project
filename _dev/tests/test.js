@@ -4422,41 +4422,49 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAY. The quest log: the task in hand, and a closed list of done ones (Block 48)");
+  console.log("\nAY. The quest log: the task in hand; done ones in settings (Blocks 48, 57)");
   {
     const { ctx, page } = await enterTestRoom();
 
     // Old behaviour, for an act without linearObjectives: open quests on
-    // top, done ones under the closed Tapos na button.
+    // the log. Since Block 57 the done ones are not under it at all; they
+    // are listed in the settings panel.
     const plain = await page.evaluate(() => {
       clearQuests();
       addQuest("t_a", "Una");
       addQuest("t_b", "Ikalawa");
       completeQuest("t_a");
       const cur = [...document.querySelectorAll("#quest-list li")].map((li) => li.textContent);
-      const tog = document.getElementById("quest-done-toggle");
-      return { cur, shown: !tog.classList.contains("hidden"), label: tog.querySelector(".lbl").textContent,
-               open: !document.getElementById("quest-done-list").classList.contains("hidden") };
+      return { cur, toggle: !!document.getElementById("quest-done-toggle"),
+               list: !!document.getElementById("quest-done-list"), done: Game.doneQuests() };
     });
-    ok("done quests leave the top list for a closed Tapos na (1)",
-       JSON.stringify(plain.cur) === '["Ikalawa"]' && plain.shown && plain.label === "Tapos na (1)" && !plain.open, plain);
+    ok("done quests leave the log, and nothing under it lists them",
+       JSON.stringify(plain.cur) === '["Ikalawa"]' && !plain.toggle && !plain.list, plain);
+    ok("Game.doneQuests gives the finished lines", JSON.stringify(plain.done) === '["Una"]', plain.done);
 
-    await page.click("#quest-done-toggle");
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(150);
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(120);
+    const inSettings = await page.evaluate(() =>
+      [...document.querySelectorAll("#shell-done-quests li")].map((li) => li.textContent));
+    ok("the settings panel lists them (Block 57)", JSON.stringify(inSettings) === '["Una"]', inSettings);
+    await page.click("#shell-settings-back");
     await page.waitForTimeout(80);
-    const opened = await page.evaluate(() => ({
-      open: !document.getElementById("quest-done-list").classList.contains("hidden"),
-      items: [...document.querySelectorAll("#quest-done-list li")].map((li) => li.textContent),
-      expanded: document.getElementById("quest-done-toggle").getAttribute("aria-expanded"),
-      paused: isPaused() }));
-    ok("a tap opens it, listing what is done, without pausing the game",
-       opened.open && JSON.stringify(opened.items) === '["Una"]' && opened.expanded === "true" && !opened.paused, opened);
-    const target = await page.evaluate(() => {
-      const r = document.getElementById("quest-done-toggle").getBoundingClientRect();
-      return { h: r.height };
-    });
-    ok("the button is at least 44px tall on the screen", target.h >= 44, target);
-    ok("and it closes again whenever a scene loads",
-       await page.evaluate(() => { loadScene(currentSceneId); return document.getElementById("quest-done-list").classList.contains("hidden"); }));
+    await page.click("#shell-resume");
+    await page.waitForTimeout(120);
+    const none = await page.evaluate(() => { clearQuests(); return true; });
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(150);
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(120);
+    const empty = await page.evaluate(() =>
+      [...document.querySelectorAll("#shell-done-quests li")].map((li) => li.textContent));
+    ok("and says Wala pa when nothing is done", none && JSON.stringify(empty) === '["Wala pa."]', empty);
+    await page.click("#shell-settings-back");
+    await page.waitForTimeout(80);
+    await page.click("#shell-resume");
+    await page.waitForTimeout(120);
 
     // A linear chain: the first unset step is the task, a later flag
     // backfills the earlier ones, and a counted step shows its count.
@@ -4471,7 +4479,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       ];
       const read = () => ({
         cur: [...document.querySelectorAll("#quest-list li")].map((li) => li.textContent),
-        label: document.querySelector("#quest-done-toggle .lbl").textContent,
+        done: Game.doneQuests().length,
         ids: quests.map((q) => q.id + (q.done ? "+" : "")),
       });
       renderQuests();
@@ -4490,10 +4498,10 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the task is the first step whose flag is not set",
        JSON.stringify(chain.a.cur) === '["Isa"]' && JSON.stringify(chain.a.ids) === '["c1"]', chain.a);
     ok("a later step's flag marks the earlier ones done and moves the task on",
-       chain.b.backfilled && JSON.stringify(chain.b.cur) === '["Tatlo (0/2)"]' && chain.b.label === "Tapos na (2)", chain.b);
+       chain.b.backfilled && JSON.stringify(chain.b.cur) === '["Tatlo (0/2)"]' && chain.b.done === 2, chain.b);
     ok("a counted step shows its count from the flags", JSON.stringify(chain.c.cur) === '["Tatlo (1/2)"]', chain.c);
-    ok("with every step done, the top says so and all three are under Tapos na",
-       JSON.stringify(chain.d.cur) === '["Wala nang gawain."]' && chain.d.label === "Tapos na (3)", chain.d);
+    ok("with every step done, the top says so and all three are done",
+       JSON.stringify(chain.d.cur) === '["Wala nang gawain."]' && chain.d.done === 3, chain.d);
 
     // A dialogue set may wait on a flag: picked from the flags each time.
     const sets = await page.evaluate(() => {
@@ -4588,75 +4596,198 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBA. The job mini-game, and an act held open (Block 56)");
+  console.log("\nBA. The apple mini-game, the black card, a scripted walk, and an act held open (Blocks 56, 57)");
   {
     const { ctx, page } = await enterTestRoom();
 
+    const catchState = () => page.evaluate(() => {
+      const f = document.getElementById("catch-field").getBoundingClientRect();
+      const a = document.getElementById("catch-apple");
+      const ar = a.getBoundingClientRect();
+      const b = document.getElementById("catch-basket").getBoundingClientRect();
+      return { up: !document.getElementById("catch-screen").classList.contains("hidden"),
+        apple: a.classList.contains("hidden") ? null : ar.left + ar.width / 2,
+        basket: b.left + b.width / 2, bw: b.width, fl: f.left, fw: f.width,
+        result: document.getElementById("catch-result").textContent,
+        stop: document.querySelector("#catch-stop .lbl").textContent };
+    });
+    // Steers the basket with the real keys, under the apple or away from
+    // it, until that apple has been caught or has fallen.
+    const playApple = async (wantCatch) => {
+      let st;
+      for (let i = 0; i < 100; i++) { st = await catchState(); if (st.apple !== null) break; await page.waitForTimeout(40); }
+      let held = null;
+      const hold = async (k) => {
+        if (held === k) return;
+        if (held) await page.keyboard.up(held);
+        if (k) await page.keyboard.down(k);
+        held = k;
+      };
+      for (let i = 0; i < 300; i++) {
+        st = await catchState();
+        if (st.apple === null) break;
+        const target = wantCatch ? st.apple
+          : (st.apple < st.fl + st.fw / 2 ? st.fl + st.fw - st.bw / 2 : st.fl + st.bw / 2);
+        const diff = target - st.basket;
+        await hold(Math.abs(diff) <= 5 ? null : diff > 0 ? "d" : "a");
+        await page.waitForTimeout(25);
+      }
+      await hold(null);
+      await page.waitForTimeout(60);
+      return catchState();
+    };
+
     const opened = await page.evaluate(() => {
-      window.__job = { paid: 0, done: false };
-      playTimingGame({
-        title: "Trabaho", hint: "Pindutin", actionLabel: "Gawin",
-        canPlay: () => __job.paid < 2, capText: "Sapat na.",
-        onSuccess: () => { __job.paid++; return "Bayad " + __job.paid; },
-      }).then(() => { __job.done = true; });
-      return { shown: !document.getElementById("job-screen").classList.contains("hidden"),
-        blocked: uiBlocked, title: document.getElementById("job-title").textContent,
-        label: document.querySelector("#job-go .lbl").textContent };
+      window.__catch = { caught: [], result: null, x: posX };
+      playCatchGame({
+        title: "Puno", hint: "Saluhin", goal: 2,
+        onCatch: (n) => { __catch.caught.push(n); return "Huli " + n; },
+        doneText: "Tapos!",
+      }).then((n) => { __catch.result = n; });
+      return { shown: !document.getElementById("catch-screen").classList.contains("hidden"),
+        blocked: uiBlocked, title: document.getElementById("catch-title").textContent,
+        stop: document.querySelector("#catch-stop .lbl").textContent };
     });
     ok("it opens over the world and blocks it", opened.shown && opened.blocked &&
-       opened.title === "Trabaho" && opened.label === "Gawin", opened);
+       opened.title === "Puno" && opened.stop === "Bumalik", opened);
     const second = await page.evaluate(async () => {
-      let resolvedAtOnce = false;
-      await Promise.race([playTimingGame({}).then(() => { resolvedAtOnce = true; }),
-        new Promise((r) => setTimeout(r, 30))]);
-      return resolvedAtOnce;
+      let got = null;
+      await Promise.race([playCatchGame({}).then((n) => { got = n; }), new Promise((r) => setTimeout(r, 30))]);
+      return got;
     });
-    ok("a second one while it is up resolves at once and opens nothing", second);
+    ok("a second one while it is up resolves at once with nothing", second === 0, second);
 
-    // Presses the key the moment the marker's middle is inside (or
-    // outside) the green, as drawn.
-    const pressKey = (hit) => page.evaluate(async (wantHit) => {
-      await new Promise((r) => setTimeout(r, 720));
-      for (let i = 0; i < 600; i++) {
-        await new Promise((r) => requestAnimationFrame(r));
-        const z = document.getElementById("job-zone").getBoundingClientRect();
-        const m = document.getElementById("job-marker").getBoundingClientRect();
-        const c = m.left + m.width / 2;
-        const inside = c >= z.left + 2 && c <= z.right - 2;
-        const outside = c < z.left - 6 || c > z.right + 6;
-        if (wantHit ? inside : outside) {
-          document.dispatchEvent(new KeyboardEvent("keydown", { key: "e", bubbles: true }));
-          return true;
-        }
+    const hang = await page.evaluate(async () => {
+      for (let i = 0; i < 60; i++) {
+        const a = document.getElementById("catch-apple");
+        if (!a.classList.contains("hidden")) return a.classList.contains("catch-apple-hanging");
+        await new Promise((r) => setTimeout(r, 30));
       }
-      return false;
-    }, hit);
-    const moving = await page.evaluate(async () => {
-      const m = document.getElementById("job-marker");
-      const a = m.style.transform;
-      await new Promise((r) => setTimeout(r, 200));
-      return a !== m.style.transform;
+      return null;
     });
-    ok("the marker sweeps the bar", moving);
-    await pressKey(false);
-    const r1 = await page.evaluate(() => ({ paid: __job.paid, text: document.getElementById("job-result").textContent,
-      jumped: velY !== 0 }));
-    ok("E outside the green is a miss, and does not reach the world", r1.paid === 0 &&
-       r1.text === "Sablay! Subukan ulit." && !r1.jumped, r1);
-    await pressKey(true);
-    const r2 = await page.evaluate(() => ({ paid: __job.paid, text: document.getElementById("job-result").textContent }));
-    ok("E inside the green is a success, shown with onSuccess's line", r2.paid === 1 && r2.text === "Bayad 1", r2);
-    await pressKey(true);
-    await page.waitForTimeout(800);
-    const r3 = await page.evaluate(() => ({ paid: __job.paid, off: document.getElementById("job-go").disabled,
-      text: document.getElementById("job-result").textContent }));
-    ok("when canPlay says no, Go is switched off and capText shown", r3.paid === 2 && r3.off && r3.text === "Sapat na.", r3);
+    ok("an apple shakes in the leaves before it falls", hang === true, hang);
+    const miss = await playApple(false);
+    ok("an apple past the basket falls, says so, and counts nothing",
+       miss.result === "Nahulog sa lupa! May isa pa." && await page.evaluate(() => __catch.caught.length === 0), miss);
+    ok("A and D move the basket, not Macario", await page.evaluate(() => posX === __catch.x && velY === 0));
+    const hit = await playApple(true);
+    ok("an apple in the basket is caught, shown with onCatch's line", hit.result === "Huli 1" &&
+       await page.evaluate(() => JSON.stringify(__catch.caught) === "[1]"), hit);
+    const done = await playApple(true);
+    ok("at the goal it says doneText and Bumalik becomes Tapos na", done.result === "Tapos!" && done.stop === "Tapos na", done);
+    await page.waitForTimeout(700);
+    ok("and drops no more apples", (await catchState()).apple === null);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(120);
+    const closed = await page.evaluate(() => ({ result: __catch.result, blocked: uiBlocked,
+      hidden: document.getElementById("catch-screen").classList.contains("hidden"), shell: Shell.state }));
+    ok("E closes it at the goal and resolves with the count", closed.result === 2 && !closed.blocked && closed.hidden &&
+       closed.shell === "playing", closed);
+
+    const resumed = await page.evaluate(() => {
+      window.__catch2 = null;
+      playCatchGame({ goal: 3, start: 2 }).then((n) => { __catch2 = n; });
+      return document.getElementById("catch-result").textContent;
+    });
+    ok("start carries apples already held", resumed === "Hawak mo: 2/3", resumed);
     await page.keyboard.press("Escape");
     await page.waitForTimeout(150);
-    const r4 = await page.evaluate(() => ({ done: __job.done, hidden: document.getElementById("job-screen").classList.contains("hidden"),
-      blocked: uiBlocked, shell: Shell.state }));
-    ok("Escape closes it, resolves it, unblocks the world, and does not open pause",
-       r4.done && r4.hidden && !r4.blocked && r4.shell === "playing", r4);
+    ok("Escape closes it early, resolving with what is held, and does not open pause",
+       await page.evaluate(() => __catch2 === 2 && !uiBlocked && Shell.state === "playing"));
+    const tap = await page.evaluate(() => {
+      const b = document.getElementById("catch-stop");
+      window.__c3 = null;
+      playCatchGame({ goal: 3 }).then((n) => { __c3 = n; });
+      const r = b.getBoundingClientRect();
+      return { h: r.height };
+    });
+    ok("its buttons are at least 44px tall on the screen", tap.h >= 44, tap);
+    await page.click("#catch-left");
+    await page.click("#catch-stop");
+    await page.waitForTimeout(100);
+    ok("and they take a click", await page.evaluate(() => __c3 === 0));
+
+    // The black card.
+    const card = await page.evaluate(async () => {
+      const seen = { black: false, lines: null, duringBlack: null, afterText: null };
+      const p = playIntertitle(["Una", "Ikalawa"], { holdMs: 150, whileBlack: () => {
+        const el = document.getElementById("intertitle");
+        seen.duringBlack = el.classList.contains("visible");
+        seen.afterText = document.querySelectorAll("#intertitle .intertitle-line.shown").length;
+      } });
+      await new Promise((r) => setTimeout(r, 1400));
+      const el = document.getElementById("intertitle");
+      seen.black = el.classList.contains("visible") && !el.classList.contains("hidden");
+      seen.lines = [...document.querySelectorAll("#intertitle .intertitle-line")].map((x) => x.textContent);
+      seen.first = document.querySelector("#intertitle .intertitle-line").classList.contains("shown");
+      await p;
+      seen.hiddenAfter = el.classList.contains("hidden") && !el.classList.contains("visible");
+      return seen;
+    });
+    ok("an intertitle fades to black and brings its lines up", card.black && card.first &&
+       JSON.stringify(card.lines) === '["Una","Ikalawa"]', card);
+    ok("whileBlack runs once the text has gone and before the black lifts",
+       card.duringBlack === true && card.afterText === 0, card);
+    ok("and it ends hidden", card.hiddenAfter, card);
+    const instant = await page.evaluate(() => {
+      playIntertitle(["X"], { startBlack: true, holdMs: 50 });
+      const el = document.getElementById("intertitle");
+      return { visible: el.classList.contains("visible"), opacity: getComputedStyle(el).opacity };
+    });
+    ok("startBlack is black at once, with no fade in", instant.visible && instant.opacity === "1", instant);
+    await page.waitForTimeout(3500);
+
+    // A scripted walk, and a placement.
+    const walked = await page.evaluate(async () => {
+      setCutscene(true);
+      const x0 = posX;
+      const seen = new Set();
+      let during = false;
+      const p = movePlayer(x0 + 150, 500);
+      for (let i = 0; i < 30 && scriptWalking; i++) {
+        during = true;
+        seen.add(currentAnim);
+        await new Promise((r) => setTimeout(r, 40));
+      }
+      await p;
+      await new Promise((r) => requestAnimationFrame(r));
+      const out = { during, anims: [...seen], moved: posX - x0, facing, after: currentAnim, walking: scriptWalking };
+      placePlayer(x0, -1);
+      out.placed = { x: posX, facing };
+      setCutscene(false);
+      out.back = x0;
+      return out;
+    });
+    ok("movePlayer walks him there with his walk cycle, in a cutscene", walked.during &&
+       JSON.stringify(walked.anims) === '["walk"]' && walked.moved === 150 && walked.facing === 1, walked);
+    ok("and stands him idle when he arrives", walked.after === "idle" && !walked.walking, walked);
+    ok("placePlayer puts him somewhere at once", walked.placed.x === walked.back && walked.placed.facing === -1, walked);
+
+    // An NPC that is used rather than talked to, drawn at its own height.
+    const used = await page.evaluate(async () => {
+      window.__used = 0;
+      const scene = currentScene;
+      scene.npcs = scene.npcs || [];
+      scene.npcs.push({ id: "t_puno", x: 0, label: "Puno", interactLabel: "Pumitas", displayHeight: 220,
+        img: "assets/nothing-here.png", dialogueSets: [], onInteract: () => { __used++; } });
+      const id = currentSceneId;
+      loadScene(id);
+      const npc = NPCS.find((n) => n.id === "t_puno");
+      npc.x = posX + 60;
+      document.getElementById("npc-t_puno").style.left = npc.x + "px";
+      await new Promise((r) => setTimeout(r, 120));
+      return { label: document.querySelector("#btn-interact .lbl").textContent,
+               h: document.getElementById("npc-t_puno").style.height };
+    });
+    ok("an NPC may name its own button and height", used.label === "Pumitas" && used.h === "220px", used);
+    await page.keyboard.press("e");
+    await page.waitForTimeout(100);
+    ok("E runs its onInteract and opens no conversation", await page.evaluate(() =>
+      __used === 1 && dialogueBox.classList.contains("hidden")));
+    await page.evaluate(() => {
+      currentScene.npcs = currentScene.npcs.filter((n) => n.id !== "t_puno");
+      loadScene(currentSceneId);
+    });
 
     // holdOpen: every objective done, the act still playing.
     const held = await page.evaluate(async () => {

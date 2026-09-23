@@ -2777,6 +2777,49 @@ body.text-lg #quest-log-title { font-size: 20px; }
   border-bottom: 2px dotted rgba(141, 110, 99, 0.35);
 }
 
+/* Block 57. The finished tasks, in settings: one line each, ticked,
+   in the controls list's own size so the panel reads as one list. */
+.shell-done-quests {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--c-cream-dim);
+}
+
+.shell-done-quests li {
+  border-bottom: 2px dotted rgba(141, 110, 99, 0.35);
+  padding-left: 1.2em;
+  position: relative;
+}
+
+/* A tick drawn with two borders rather than a glyph, since the pixel
+   face's latin subset may not carry one (Icons, CLAUDE.md). */
+.shell-done-quests li::before {
+  content: "";
+  position: absolute;
+  left: 0.2em;
+  top: 0.35em;
+  width: 0.3em;
+  height: 0.55em;
+  border-right: 3px solid var(--px-green-hi);
+  border-bottom: 3px solid var(--px-green-hi);
+  transform: rotate(40deg);
+}
+
+.shell-done-quests li.shell-done-none {
+  padding-left: 0;
+  color: var(--c-cream-faint);
+}
+
+.shell-done-quests li.shell-done-none::before {
+  content: none;
+}
+
+body.text-sm .shell-done-quests { font-size: 16px; }
+body.text-lg .shell-done-quests { font-size: 21px; }
+
 /* ---- Login ----------------------------------------------------- */
 
 #auth-form input[type="text"],
@@ -3161,82 +3204,7 @@ body.text-lg #dialogue-text { font-size: 27px; }
   color: var(--c-cream-faint);
 }
 
-#quest-done-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  margin-top: 8px;
-  padding: 4px 6px;
-  background: var(--px-cell);
-  border: 2px solid var(--px-edge);
-  box-shadow: 0 0 0 2px var(--px-ink);
-  color: var(--px-green-hi);
-  font-family: var(--px-font);
-  font-size: 18px;
-  text-align: left;
-  cursor: pointer;
-  touch-action: manipulation;
-}
 
-#quest-done-toggle.hidden {
-  display: none;
-}
-
-#quest-done-toggle .ico,
-#quest-done-toggle .lbl {
-  pointer-events: none;
-}
-
-#quest-done-toggle .ico svg {
-  width: 16px;
-  height: 16px;
-  display: block;
-}
-
-/* A small arrow after the label: right while closed, down while open. */
-#quest-done-toggle .lbl::after {
-  content: "";
-  display: inline-block;
-  margin-left: 8px;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-  border-left: 7px solid currentColor;
-  vertical-align: middle;
-}
-
-#quest-done-toggle.open .lbl::after {
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 7px solid currentColor;
-  border-bottom: 0;
-}
-
-#quest-done-list {
-  list-style: none;
-  margin-top: 6px;
-  font-size: 16px;
-  line-height: 1.2;
-}
-
-#quest-done-list li {
-  position: relative;
-  padding-left: 16px;
-  color: var(--c-cream-faint);
-  text-decoration: line-through;
-}
-
-#quest-done-list li::before {
-  content: "\2022";
-  position: absolute;
-  left: 0;
-  text-decoration: none;
-}
-
-body.text-sm #quest-done-toggle,
-body.text-sm #quest-done-list { font-size: 15px; }
-body.text-lg #quest-done-toggle { font-size: 21px; }
-body.text-lg #quest-done-list { font-size: 19px; }
 
 /* =============================================================
    THE GUIDE (Block 42)
@@ -3356,8 +3324,7 @@ body.text-lg #guide-edge .guide-label { font-size: 28px; }
   #quiz-btn,
   #quiz-back,
   #act-screen-btn,
-  #auth-submit,
-  #quest-done-toggle {
+  #auth-submit {
     min-height: 63px;
   }
 
@@ -3369,11 +3336,12 @@ body.text-lg #guide-edge .guide-label { font-size: 28px; }
   }
 }
 
-/* Block 56. The job mini-game (game.js, playTimingGame): a pixel window
-   like the act screen, a bar with a green zone and a sweeping marker,
-   and two buttons that take the shell's own styles (and so its 44px on
-   glass). Above the world, below the auth overlay. */
-#job-screen {
+/* Block 57. The apple mini-game (game.js, playCatchGame): a pixel
+   window like the act screen, over a field with the tree's leaves along
+   the top, one apple and a basket. The buttons take the shell's own
+   styles (and so its 44px on glass). Sizes the engine reads are marked;
+   change them together with their constants in game.js. */
+#catch-screen {
   position: fixed;
   inset: 0;
   z-index: 90;
@@ -3385,67 +3353,181 @@ body.text-lg #guide-edge .guide-label { font-size: 28px; }
   background: rgba(18, 12, 7, 0.72);
 }
 
-#job-screen.hidden {
+#catch-screen.hidden {
   display: none;
 }
 
-#job-box {
-  width: min(92vw, 520px);
+#catch-box {
+  width: min(92vw, 560px);
   background: var(--px-panel);
   border: 3px solid var(--px-edge);
   box-shadow: var(--px-frame);
-  padding: 18px 20px;
+  padding: 14px 18px;
   box-sizing: border-box;
   text-align: center;
 }
 
-#job-title {
-  margin: 0 0 6px;
+#catch-title {
+  margin: 0 0 4px;
 }
 
-#job-hint,
-#job-result {
+#catch-hint,
+#catch-result {
   color: var(--c-cream);
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   min-height: 1.25em;
 }
 
-#job-result.job-hit { color: var(--px-green-hi); }
-#job-result.job-miss { color: #ffb4b4; }
+#catch-result.catch-hit { color: var(--px-green-hi); }
+#catch-result.catch-miss { color: #ffb4b4; }
 
-#job-bar {
+#catch-field {
   position: relative;
-  height: 34px;
-  margin: 0 0 12px;
-  background: #2e2419;
+  height: 190px;
+  margin: 0 0 8px;
+  background: linear-gradient(#8fc7ee, #cfe8f5 70%, #6b8f3a 70%, #58792f);
   border: 3px solid var(--px-ink);
   overflow: hidden;
+  touch-action: none;
+  cursor: pointer;
 }
 
-#job-zone {
+/* The tree's leaves, drawn with gradients: a row of round clumps along
+   the top edge. Height is CATCH_CANOPY_HEIGHT. */
+#catch-canopy {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  background: #4f9a3e;
-  box-shadow: inset 0 0 0 2px #8fd16a;
-}
-
-#job-marker {
-  position: absolute;
-  top: -3px;
-  bottom: -3px;
   left: 0;
-  width: 8px;
-  background: #f4c542;
+  right: 0;
+  top: 0;
+  height: 46px;
+  background-image:
+    radial-gradient(circle at 26px 10px, #4f9a3e 0 24px, #2f5e25 25px 27px, transparent 28px),
+    linear-gradient(#3e7d31, #3e7d31);
+  background-size: 52px 46px, 100% 14px;
+  background-repeat: repeat-x, no-repeat;
+}
+
+/* CATCH_APPLE_SIZE. A red apple with a stalk, in CSS. */
+#catch-apple {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50% 50% 46% 46%;
+  background: radial-gradient(circle at 35% 35%, #ff7a6b 0 4px, #d8342a 5px);
   border: 2px solid var(--px-ink);
+  box-sizing: border-box;
   will-change: transform;
 }
 
-#job-actions {
+#catch-apple::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: -7px;
+  width: 3px;
+  height: 7px;
+  background: #5a3a1c;
+}
+
+#catch-apple.hidden {
+  display: none;
+}
+
+#catch-apple.catch-apple-hanging {
+  animation: catch-shake 0.16s steps(2) infinite;
+}
+
+@keyframes catch-shake {
+  from { margin-left: -2px; }
+  to { margin-left: 2px; }
+}
+
+/* CATCH_BASKET_WIDTH. A woven basket: a brown band with darker weave. */
+#catch-basket {
+  position: absolute;
+  left: 0;
+  bottom: 6px;
+  width: 72px;
+  height: 28px;
+  background: repeating-linear-gradient(90deg, #b07a3c 0 8px, #8a5a28 8px 11px);
+  border: 3px solid var(--px-ink);
+  border-top-width: 5px;
+  box-sizing: border-box;
+  will-change: transform;
+}
+
+#catch-actions {
   display: flex;
   gap: 10px;
 }
 
-#job-actions .shell-btn {
+#catch-actions .shell-btn {
   flex: 1;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  #catch-apple.catch-apple-hanging { animation: none; }
+}
+
+/* Block 57. The black card (game.js, playIntertitle). Above the world,
+   the dialogue box and the HUD, below the shell's screens. The black and
+   each line fade on their own, so the text can go before the black
+   lifts. */
+#intertitle {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #000;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+  pointer-events: none;
+}
+
+#intertitle.hidden {
+  display: none;
+}
+
+#intertitle.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#intertitle.instant {
+  transition: none;
+}
+
+#intertitle-text {
+  text-align: center;
+  max-width: 34em;
+}
+
+.intertitle-line {
+  margin: 0 0 18px;
+  font-family: var(--px-font);
+  font-size: 30px;
+  line-height: 1.3;
+  color: var(--c-cream);
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.intertitle-line.intertitle-head {
+  font-family: var(--px-title);
+  font-size: 26px;
+  color: #fff;
+  margin-bottom: 26px;
+}
+
+.intertitle-line.shown {
+  opacity: 1;
+}
+
+body.text-sm .intertitle-line { font-size: 26px; }
+body.text-lg .intertitle-line { font-size: 36px; }

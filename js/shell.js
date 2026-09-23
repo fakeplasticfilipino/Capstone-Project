@@ -451,10 +451,34 @@ const Shell = {
       this.el.settingsNote.className = "shell-note";
     }
     this._refreshResetOffer();
+    this._renderDoneQuests();
     this.settingsReturn = from;
     this.state = "settings";
     this._showPanel("settings");
     this.el.overlay.classList.remove("hidden");
+  },
+
+  // Block 57. The finished tasks, listed here rather than under the
+  // quest log. Read from the engine each time the panel opens, so it is
+  // never a second copy that can fall behind. Written as text: a quest
+  // line comes from a content file, but nothing here should parse it.
+  _renderDoneQuests() {
+    const list = document.getElementById("shell-done-quests");
+    if (!list) return;
+    const done = window.Game && Game.doneQuests ? Game.doneQuests() : [];
+    list.innerHTML = "";
+    if (!done.length) {
+      const li = document.createElement("li");
+      li.className = "shell-done-none";
+      li.textContent = "Wala pa.";
+      list.appendChild(li);
+      return;
+    }
+    done.forEach((text) => {
+      const li = document.createElement("li");
+      li.textContent = text;
+      list.appendChild(li);
+    });
   },
 
   _closeSettings() {

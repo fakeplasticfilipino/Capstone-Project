@@ -306,13 +306,13 @@ function clearQuests() {
 }
 
 // =============================================================
-// THE QUEST LOG (Block 48)
+// THE QUEST LOG (Block 48; Block 57)
 //
-// Two sections. At the top, "Gawain": what to do now. Below it, a
-// "Tapos na (n)" button over the tasks already done, which starts
-// closed every time a scene loads and opens or closes on a tap; the
-// top section never grows with history, so the one line a student needs
-// is always the one in front of them.
+// The log on screen is "Gawain": what to do now, and nothing else. The
+// tasks already done are not on the world's screen at all since Block
+// 57: they are listed in the settings panel (shell.js, reading
+// Game.doneQuests), at the proponent's direction, so the corner of the
+// screen a student glances at never grows with history.
 //
 // An act that declares linearObjectives drives the log from its
 // objectives instead of from addQuest calls scattered through content.
@@ -332,11 +332,10 @@ function clearQuests() {
 // by content.
 //
 // Acts without linearObjectives keep the old behaviour: addQuest,
-// completeQuest and setQuestText, with open quests at the top and done
-// ones in the closed section.
+// completeQuest and setQuestText, with open quests shown and done ones
+// in the settings list.
 // =============================================================
 
-let questDoneOpen = false;
 let questDrawnKey = null;
 
 // Block 52. "Bagong gawain" is announced when the step in hand changes
@@ -386,7 +385,7 @@ function syncObjectiveChain() {
 function renderQuests() {
   syncObjectiveChain();
   const current = quests.filter((q) => !q.done);
-  const done = quests.filter((q) => q.done);
+  const doneCount = quests.length - current.length;
 
   const act = currentActData;
   if (act && act.linearObjectives) {
@@ -400,9 +399,9 @@ function renderQuests() {
   }
 
   // Written only when something shown changed: markDirty calls this
-  // from the loop's own paths, and rebuilding identical lists would
+  // from the loop's own paths, and rebuilding an identical list would
   // dirty the page for nothing (Block 36).
-  const key = JSON.stringify([current.map((q) => q.text), done.map((q) => q.text), questDoneOpen]);
+  const key = JSON.stringify([current.map((q) => q.text), doneCount > 0]);
   if (key === questDrawnKey) return;
   questDrawnKey = key;
 
@@ -415,48 +414,16 @@ function renderQuests() {
   if (!current.length) {
     const li = document.createElement("li");
     li.className = "quest-none";
-    li.textContent = done.length ? "Wala nang gawain." : "Walang gawain.";
+    li.textContent = doneCount ? "Wala nang gawain." : "Walang gawain.";
     questListEl.appendChild(li);
   }
-
-  const els = questDoneEls();
-  if (!els.toggle || !els.list) return;
-  els.toggle.classList.toggle("hidden", !done.length);
-  els.toggle.setAttribute("aria-expanded", questDoneOpen ? "true" : "false");
-  els.toggle.classList.toggle("open", questDoneOpen);
-  setLabel(els.toggle, "Tapos na (" + done.length + ")");
-  els.list.classList.toggle("hidden", !questDoneOpen || !done.length);
-  els.list.innerHTML = "";
-  done.forEach((q) => {
-    const li = document.createElement("li");
-    li.textContent = q.text;
-    li.className = "completed";
-    els.list.appendChild(li);
-  });
 }
 
-// A cache hung off the function, like the HUD's: renderQuests is reached
-// at parse time through loadAct, before a const further down would exist.
-function questDoneEls() {
-  if (!questDoneEls.cache) {
-    const toggle = document.getElementById("quest-done-toggle");
-    questDoneEls.cache = { toggle, list: document.getElementById("quest-done-list") };
-    if (toggle) {
-      toggle.addEventListener("click", (e) => {
-        e.stopPropagation();
-        questDoneOpen = !questDoneOpen;
-        renderQuests();
-      });
-    }
-  }
-  return questDoneEls.cache;
-}
-
-// Closed again whenever a scene loads, so the log always opens on the
-// task in hand.
-function collapseDoneQuests() {
-  questDoneOpen = false;
-  renderQuests();
+// Block 57. The lines of the tasks already done, in the order they were
+// done, for the settings panel. A copy, like every other facade read.
+function doneQuestTexts() {
+  syncObjectiveChain();
+  return quests.filter((q) => q.done).map((q) => q.text);
 }
 
 // =============================================================
@@ -638,7 +605,7 @@ function loadScene(sceneId) {
   velY = 0;
 
   updateHudVisibility();
-  collapseDoneQuests();
+  renderQuests();
 }
 
 function unloadScene() {
@@ -908,7 +875,11 @@ function buildNpcs(token) {
     const el = document.createElement("div");
     el.className = "entity";
     el.id = "npc-" + npc.id;
-    mountBody(el, npc.x, NPC_WIDTH);
+    // Block 57. An NPC may be drawn at its own height (the horse, the
+    // apple tree), like a decoration's displayHeight. Its body is still
+    // NPC_WIDTH wide; only the picture changes size.
+    const npcHeight = npc.displayHeight || DISPLAY_HEIGHT;
+    mountBody(el, npc.x, NPC_WIDTH, npcHeight);
     if (npc.hidden) el.style.display = "none";
 
     if (npc.animation) {
@@ -917,7 +888,7 @@ function buildNpcs(token) {
       spriteEl.className = "sprite npc-sprite npc-anim-sprite";
       el.appendChild(spriteEl);
       world.appendChild(el);
-      setupNpcAnimation(npc.animation, spriteEl, DISPLAY_HEIGHT, token, NPC_WIDTH);
+      setupNpcAnimation(npc.animation, spriteEl, npcHeight, token, NPC_WIDTH);
     } else {
       // Static image, falling back to a placeholder box showing the
       // expected filename if the file is missing. An <img> cannot
@@ -1685,6 +1656,7 @@ let currentRoom = "road"; // the current scene id, persisted as-is
 let authGated = true; // true until the player is logged in
 let inDialogue = false;
 let cutscenePlaying = false; // locks movement for the whole stage sequence
+let scriptWalking = false; // Block 57: movePlayer is carrying him
 // What was last written to the player element, so an unmoved frame writes
 // nothing (Block 36).
 let lastDrawnX = null;
@@ -1931,6 +1903,11 @@ function handleInteractPress() {
     // ignore E while the performance or blackout sequence runs
   } else if (nearby.type === "npc" && npcOpensShop(nearby.ref)) {
     requestShop(nearby.ref.id);
+  } else if (nearby.type === "npc" && typeof nearby.ref.onInteract === "function") {
+    // Block 57. Something to use rather than someone to talk to (the
+    // apple tree): content decides what pressing E does, the way a
+    // gift's onComplete does. No dialogue box is opened for it here.
+    nearby.ref.onInteract();
   } else if (nearby.type === "npc") {
     startDialogue(nearby.ref);
   } else if (nearby.type === "stage") {
@@ -3348,163 +3325,380 @@ const LAND_POSE_MS = 140;
 const AIRBORNE_MIN_HEIGHT = 8;
 let landPoseUntil = 0;
 
-// Block 56. The job mini-game: a marker sweeps back and forth over a bar,
-// and a press while its middle is inside the green zone is a success.
-// Repeatable until the student presses Tapos na, which resolves the
-// promise. The engine knows nothing about pay: onSuccess (content) does
-// the paying and returns the line to show, and canPlay (content) says
-// whether another round is allowed, so a cap is the content's rule.
+// Block 57. The apple mini-game, replacing Block 56's timing bar, which
+// the proponent found dishonest: a press on a moving marker has nothing
+// to do with the work Macario is paid for, and the pay was a random
+// number. Here the task is the work. Apples hang in the tree and fall
+// one at a time; Macario moves a basket left and right under them, and
+// every apple caught is an apple he has. A miss costs nothing: another
+// apple drops. Nothing here pays: content hears about each catch
+// (onCatch) and decides what it means.
 //
-//   playTimingGame({ title, hint, actionLabel, speed,
-//                    canPlay() -> bool, capText,
-//                    onSuccess() -> string, missText })
+//   playCatchGame({ title, hint, goal, start,
+//                   onCatch(n) -> string, doneText })
 //
-// Elements are looked up on each call rather than at load, so nothing
-// here is reached while loadAct runs (the TDZ note in CLAUDE.md).
-function playTimingGame(opts) {
+// Resolves with how many he holds when the window closes, so a student
+// who stops at two and comes back later starts at two (content passes
+// start). Controls: the two buttons (held), A and D or the arrow keys,
+// or a finger dragged across the field. Elements are looked up on each
+// call rather than at load, so nothing here is reached while loadAct
+// runs (the TDZ note in CLAUDE.md). The field's size is read once, on
+// opening, and never again while it runs (Block 36).
+const CATCH_BASKET_WIDTH = 72;   // must match #catch-basket's CSS width
+const CATCH_APPLE_SIZE = 24;     // must match #catch-apple's CSS size
+const CATCH_CANOPY_HEIGHT = 46;  // must match #catch-canopy's CSS height
+const CATCH_BASKET_SPEED = 330;  // px a second
+const CATCH_FALL_SPEED = 120;    // px a second at the start
+const CATCH_FALL_STEP = 14;      // a little faster with each apple held
+const CATCH_HANG_MS = 650;       // the apple shakes before it lets go
+
+function playCatchGame(opts) {
   const o = opts || {};
-  const screen = document.getElementById("job-screen");
-  if (!screen || !screen.classList.contains("hidden")) return Promise.resolve();
-  const titleEl = document.getElementById("job-title");
-  const hintEl = document.getElementById("job-hint");
-  const barEl = document.getElementById("job-bar");
-  const zoneEl = document.getElementById("job-zone");
-  const markerEl = document.getElementById("job-marker");
-  const resultEl = document.getElementById("job-result");
-  const goBtn = document.getElementById("job-go");
-  const stopBtn = document.getElementById("job-stop");
+  const screen = document.getElementById("catch-screen");
+  if (!screen || !screen.classList.contains("hidden")) return Promise.resolve(0);
+  const titleEl = document.getElementById("catch-title");
+  const hintEl = document.getElementById("catch-hint");
+  const fieldEl = document.getElementById("catch-field");
+  const appleEl = document.getElementById("catch-apple");
+  const basketEl = document.getElementById("catch-basket");
+  const resultEl = document.getElementById("catch-result");
+  const leftBtn = document.getElementById("catch-left");
+  const rightBtn = document.getElementById("catch-right");
+  const stopBtn = document.getElementById("catch-stop");
 
   return new Promise((resolve) => {
-    const canPlay = typeof o.canPlay === "function" ? o.canPlay : () => true;
-    const speed = Number(o.speed) || 0.9; // bar widths per second
+    const goal = Math.max(1, Math.floor(Number(o.goal) || 3));
+    let count = Math.max(0, Math.min(goal, Math.floor(Number(o.start) || 0)));
     const openedAt = performance.now();
-    let pos = 0;
-    let dir = 1;
-    let zoneFrom = 0;
-    let zoneTo = 0;
-    let holdUntil = 0;
-    let pendingZone = false;
+    let fieldW = 0;
+    let fieldH = 0;
+    let basketX = 0;
+    let dragX = null;
+    const held = { left: false, right: false };
+    // The apple: hanging (waiting to drop), falling, or none.
+    let apple = null;
+    let nextAppleAt = 0;
     let last = 0;
     let raf = 0;
     let closed = false;
-
-    function newZone() {
-      const w = 0.16 + Math.random() * 0.08;
-      zoneFrom = 0.08 + Math.random() * (0.84 - w);
-      zoneTo = zoneFrom + w;
-      zoneEl.style.left = (zoneFrom * 100).toFixed(2) + "%";
-      zoneEl.style.width = (w * 100).toFixed(2) + "%";
-    }
 
     function setResult(text, cls) {
       resultEl.textContent = text || "";
       resultEl.className = "shell-sub" + (cls ? " " + cls : "");
     }
 
-    // Returns whether another round is allowed, and says so when not.
-    function refreshGo() {
-      const ok = Boolean(canPlay());
-      goBtn.disabled = !ok;
-      if (!ok) setResult(o.capText || "Sapat na muna.", "");
-      return ok;
+    function drawBasket() {
+      basketEl.style.transform = "translateX(" + Math.round(basketX) + "px)";
     }
 
-    function markerCentre() {
-      const w = barEl.clientWidth;
-      const m = markerEl.offsetWidth;
-      return { px: pos * Math.max(0, w - m) + m / 2, w, m };
+    function drawApple() {
+      if (!apple) { appleEl.classList.add("hidden"); return; }
+      appleEl.classList.remove("hidden");
+      appleEl.classList.toggle("catch-apple-hanging", apple.hanging);
+      appleEl.style.transform =
+        "translate(" + Math.round(apple.x) + "px," + Math.round(apple.y) + "px)";
     }
 
-    function draw() {
-      const c = markerCentre();
-      markerEl.style.transform =
-        "translateX(" + Math.round(c.px - c.m / 2) + "px)";
+    function finished() { return count >= goal; }
+
+    function showDone() {
+      setResult(o.doneText || "Sapat na!", "catch-hit");
+      setLabel(stopBtn, "Tapos na");
+      stopBtn.classList.add("shell-btn-primary");
+      stopBtn.classList.remove("shell-btn-ghost");
+    }
+
+    function spawnApple(now) {
+      const margin = 10;
+      const x = margin + Math.random() * Math.max(0, fieldW - CATCH_APPLE_SIZE - margin * 2);
+      apple = { x, y: CATCH_CANOPY_HEIGHT - CATCH_APPLE_SIZE / 2, hanging: true,
+                dropAt: now + CATCH_HANG_MS };
+      drawApple();
     }
 
     function tick(now) {
       if (closed) return;
-      const dt = last ? Math.min(now - last, 50) : 16;
+      const dt = last ? Math.min(now - last, 50) / 1000 : 0.016;
       last = now;
-      if (now >= holdUntil && !goBtn.disabled) {
-        if (pendingZone) {
-          pendingZone = false;
-          newZone();
-          setResult("", "");
+
+      // The basket: a finger's position wins, then the held buttons.
+      let dir = (held.right ? 1 : 0) - (held.left ? 1 : 0);
+      if (dragX !== null) {
+        const want = dragX - CATCH_BASKET_WIDTH / 2;
+        const gap = want - basketX;
+        dir = Math.abs(gap) < 2 ? 0 : Math.sign(gap);
+        const stepPx = Math.min(Math.abs(gap), CATCH_BASKET_SPEED * 1.6 * dt);
+        basketX += dir * stepPx;
+      } else if (dir) {
+        basketX += dir * CATCH_BASKET_SPEED * dt;
+      }
+      const before = basketX;
+      basketX = Math.max(0, Math.min(basketX, fieldW - CATCH_BASKET_WIDTH));
+      if (dir || before !== basketX) drawBasket();
+
+      if (!finished()) {
+        if (!apple && now >= nextAppleAt) spawnApple(now);
+        if (apple && apple.hanging && now >= apple.dropAt) {
+          apple.hanging = false;
+          drawApple();
         }
-        pos += dir * speed * dt / 1000;
-        if (pos >= 1) { pos = 1; dir = -1; }
-        else if (pos <= 0) { pos = 0; dir = 1; }
-        draw();
+        if (apple && !apple.hanging) {
+          apple.y += (CATCH_FALL_SPEED + CATCH_FALL_STEP * count) * dt;
+          const basketTop = fieldH - 34;
+          const appleBottom = apple.y + CATCH_APPLE_SIZE;
+          const centre = apple.x + CATCH_APPLE_SIZE / 2;
+          const inBasket = centre >= basketX - 6 && centre <= basketX + CATCH_BASKET_WIDTH + 6;
+          if (appleBottom >= basketTop && appleBottom <= basketTop + 16 && inBasket) {
+            count++;
+            apple = null;
+            drawApple();
+            const line = typeof o.onCatch === "function" ? o.onCatch(count) : "";
+            if (finished()) showDone();
+            else setResult(line || "Nasalo mo! (" + count + "/" + goal + ")", "catch-hit");
+            nextAppleAt = now + 500;
+          } else if (apple.y >= fieldH - CATCH_APPLE_SIZE) {
+            apple = null;
+            drawApple();
+            setResult(o.missText || "Nahulog sa lupa! May isa pa.", "catch-miss");
+            nextAppleAt = now + 600;
+          } else {
+            drawApple();
+          }
+        }
       }
       raf = requestAnimationFrame(tick);
-    }
-
-    function attempt() {
-      if (closed || goBtn.disabled) return;
-      const now = performance.now();
-      if (now < holdUntil) return;
-      const c = markerCentre();
-      const hit = c.px >= zoneFrom * c.w && c.px <= zoneTo * c.w;
-      holdUntil = now + 650;
-      pendingZone = true;
-      if (hit) {
-        const msg = typeof o.onSuccess === "function" ? o.onSuccess() : "";
-        setResult(msg || "Tama!", "job-hit");
-        // A success that reached the cap shows its pay first, then the
-        // cap line once the pause is over.
-        if (!canPlay()) setTimeout(() => { if (!closed) refreshGo(); }, 650);
-      } else {
-        setResult(o.missText || "Sablay! Subukan ulit.", "job-miss");
-      }
     }
 
     function close() {
       if (closed) return;
       closed = true;
       cancelAnimationFrame(raf);
-      window.removeEventListener("keydown", onKey, true);
-      goBtn.onclick = null;
+      window.removeEventListener("keydown", onKeyDown, true);
+      window.removeEventListener("keyup", onKeyUp, true);
+      window.removeEventListener("pointerup", onPointerUp);
+      fieldEl.onpointerdown = null;
+      fieldEl.onpointermove = null;
       stopBtn.onclick = null;
+      [leftBtn, rightBtn].forEach((b) => {
+        b.onpointerdown = null; b.onpointerup = null;
+        b.onpointerleave = null; b.onpointercancel = null;
+      });
       screen.classList.add("hidden");
       setUiBlocked(false);
-      resolve();
+      resolve(count);
     }
 
-    // The E that closed the conversation opening this is older than
-    // openedAt, so it is not taken as the first attempt.
-    function onKey(e) {
-      if (e.repeat || e.timeStamp < openedAt) return;
+    function keySide(key) {
+      if (key === "a" || key === "arrowleft") return "left";
+      if (key === "d" || key === "arrowright") return "right";
+      return null;
+    }
+
+    // Taken in the capture phase on window and stopped there, so neither
+    // the world (a jump, a walk) nor the shell (Escape opens pause) also
+    // acts on a key while the window is up. The E that closed the
+    // conversation opening it is older than openedAt and is ignored.
+    function onKeyDown(e) {
       const key = (e.key || "").toLowerCase();
-      // Taken here, in the capture phase on window, so neither the
-      // world (a jump, an interact) nor the shell (Escape opens pause)
-      // also acts on it while the job is up.
-      if (key === "e" || key === " " || key === "enter") {
-        e.preventDefault();
-        e.stopPropagation();
-        attempt();
+      const side = keySide(key);
+      if (side) {
+        e.preventDefault(); e.stopPropagation();
+        held[side] = true;
+        dragX = null;
       } else if (key === "escape") {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         close();
+      } else if (key === "e" || key === " " || key === "enter") {
+        e.preventDefault(); e.stopPropagation();
+        if (!e.repeat && e.timeStamp >= openedAt && finished()) close();
       }
+    }
+
+    function onKeyUp(e) {
+      const side = keySide((e.key || "").toLowerCase());
+      if (side) { e.stopPropagation(); held[side] = false; }
+    }
+
+    function fieldX(e) {
+      const r = fieldEl.getBoundingClientRect();
+      // The field is inside #app-scale, which is scaled by --zoom; its
+      // rendered width over its layout width is that scale.
+      const scale = r.width / (fieldW || r.width || 1);
+      return (e.clientX - r.left) / (scale || 1);
+    }
+
+    function onPointerUp() { dragX = null; }
+
+    function holdButton(btn, side) {
+      btn.onpointerdown = (e) => { e.preventDefault(); held[side] = true; dragX = null; };
+      btn.onpointerup = () => { held[side] = false; };
+      btn.onpointerleave = () => { held[side] = false; };
+      btn.onpointercancel = () => { held[side] = false; };
     }
 
     titleEl.textContent = o.title || "";
     hintEl.textContent = o.hint || "";
-    setLabel(goBtn, o.actionLabel || "Pindutin");
-    setResult("", "");
-    goBtn.onclick = attempt;
+    setResult(count ? "Hawak mo: " + count + "/" + goal : "", "");
+    setLabel(stopBtn, "Bumalik");
+    stopBtn.classList.remove("shell-btn-primary");
+    stopBtn.classList.add("shell-btn-ghost");
     stopBtn.onclick = close;
-    window.addEventListener("keydown", onKey, true);
+    holdButton(leftBtn, "left");
+    holdButton(rightBtn, "right");
+    fieldEl.onpointerdown = (e) => { dragX = fieldX(e); };
+    fieldEl.onpointermove = (e) => { if (dragX !== null || e.buttons) dragX = fieldX(e); };
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("keydown", onKeyDown, true);
+    window.addEventListener("keyup", onKeyUp, true);
 
     setUiBlocked(true);
     keysPressed["a"] = false;
     keysPressed["d"] = false;
     screen.classList.remove("hidden");
-    newZone();
-    if (refreshGo()) draw();
+    fieldW = fieldEl.clientWidth;
+    fieldH = fieldEl.clientHeight;
+    basketX = (fieldW - CATCH_BASKET_WIDTH) / 2;
+    apple = null;
+    nextAppleAt = performance.now() + 500;
+    drawBasket();
+    drawApple();
+    if (finished()) showDone();
     raf = requestAnimationFrame(tick);
   });
+}
+
+// Block 57. A black card with a few lines of text, faded in and out:
+// the place and year before a part of the story ("Tondo, 1880"), or a
+// jump in time. The screen goes black, the lines come up one after the
+// other, hold long enough to read, fade, and the black lifts.
+//
+//   await playIntertitle(lines, { startBlack, whileBlack, holdMs })
+//
+// startBlack puts the black up at once rather than fading it in, for an
+// opening where the world must not be seen first. whileBlack runs after
+// the text has gone and before the black lifts, which is where a jump in
+// time moves Macario (placePlayer) without anyone seeing him move. A tap
+// or E, once the first line has been up a moment, skips the rest of the
+// reading time, never the fades. The script that
+// calls this owns setCutscene, so the world is still behind it.
+const INTERTITLE_FADE_MS = 900;
+const INTERTITLE_LINE_MS = 900;
+const INTERTITLE_TEXT_OUT_MS = 800;
+const INTERTITLE_SKIP_AFTER_MS = 1200;
+
+function playIntertitle(lines, opts) {
+  const o = opts || {};
+  const el = document.getElementById("intertitle");
+  const box = document.getElementById("intertitle-text");
+  if (!el || !box) return Promise.resolve();
+  const list = (Array.isArray(lines) ? lines : [lines]).filter(Boolean).map(String);
+  const words = list.join(" ").split(/\s+/).length;
+  const hold = typeof o.holdMs === "number" ? o.holdMs : 1600 + words * 260;
+
+  // A tap skips the rest of the reading time at once, not one line of
+  // it: the lines still to come appear together and the text fades.
+  let skip = null;
+  let skipped = false;
+  const skippable = (ms) => new Promise((resolve) => {
+    if (skipped) { resolve(); return; }
+    const t = setTimeout(done, ms);
+    function done() { clearTimeout(t); skip = null; resolve(); }
+    skip = () => { skipped = true; done(); };
+  });
+  // Not in the first moments, so a tap meant for whatever came before
+  // (the last line of a conversation) does not throw the card away
+  // unread.
+  let skipFrom = Infinity;
+  const onKey = (e) => {
+    const key = (e.key || "").toLowerCase();
+    if (key !== "e" && key !== " " && key !== "enter") return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (!e.repeat && skip && performance.now() >= skipFrom) skip();
+  };
+  const onTap = () => { if (skip && performance.now() >= skipFrom) skip(); };
+
+  return (async () => {
+    box.innerHTML = "";
+    list.forEach((text, i) => {
+      const p = document.createElement("p");
+      p.className = "intertitle-line" + (i === 0 ? " intertitle-head" : "");
+      p.textContent = text;
+      box.appendChild(p);
+    });
+    el.classList.remove("hidden");
+    if (o.startBlack) {
+      el.classList.add("instant", "visible");
+      void el.offsetWidth; // commit the instant black before transitions return
+      el.classList.remove("instant");
+    } else {
+      void el.offsetWidth;
+      el.classList.add("visible");
+      await wait(INTERTITLE_FADE_MS);
+    }
+    skipFrom = performance.now() + INTERTITLE_SKIP_AFTER_MS;
+    window.addEventListener("keydown", onKey, true);
+    el.addEventListener("pointerdown", onTap);
+    try {
+      for (const p of box.children) {
+        p.classList.add("shown");
+        await skippable(INTERTITLE_LINE_MS);
+      }
+      await skippable(hold);
+    } finally {
+      window.removeEventListener("keydown", onKey, true);
+      el.removeEventListener("pointerdown", onTap);
+      skip = null;
+    }
+    [...box.children].forEach((p) => p.classList.remove("shown"));
+    await wait(INTERTITLE_TEXT_OUT_MS);
+    if (typeof o.whileBlack === "function") await o.whileBlack();
+    el.classList.remove("visible");
+    await wait(INTERTITLE_FADE_MS);
+    el.classList.add("hidden");
+    box.innerHTML = "";
+  })();
+}
+
+// Block 57. Walks Macario to x at pxPerSecond and resolves on arrival:
+// the player's own moveDecoration, for a script in which he leaves with
+// someone rather than being cut away from. He faces the way he walks and
+// shows the walk cycle while he goes (scriptWalking, read by the loop);
+// the camera follows him as it always does. A scene change mid-walk
+// ends the walk where it is.
+function movePlayer(toX, pxPerSecond) {
+  const target = Math.max(0, Math.min(Number(toX) || 0, WORLD_WIDTH - PLAYER_WIDTH));
+  const speed = Math.max(1, pxPerSecond || 170);
+  const token = actLoadToken;
+  if (target !== posX) facing = target < posX ? -1 : 1;
+  scriptWalking = true;
+  applyAnim("walk"); // at once, not on the loop's next frame
+  return new Promise((resolve) => {
+    let last = 0;
+    const done = () => {
+      scriptWalking = false;
+      applyAnim("idle");
+      resolve();
+    };
+    const tick = (now) => {
+      if (token !== actLoadToken) return done();
+      if (paused) { last = now; requestAnimationFrame(tick); return; }
+      const dt = last ? Math.min(now - last, 50) : 16;
+      last = now;
+      const stepPx = (speed * dt) / 1000;
+      posX = Math.abs(target - posX) <= stepPx ? target : posX + Math.sign(target - posX) * stepPx;
+      posY = groundHeightAt(posX);
+      if (posX === target) return done();
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+// Block 57. Puts Macario at x, facing 1 or -1, at once: for a script
+// that has hidden the move (under an intertitle's black).
+function placePlayer(x, dir) {
+  placeForSceneScript({ x, facing: dir });
 }
 
 // Opens a conversation from a script and resolves when it is closed. It
@@ -4222,7 +4416,7 @@ function guideConditionsHold(entry) {
 function guideNpcPoint(npc) {
   return {
     x: npc.x + NPC_WIDTH / 2,
-    bottom: GROUND_LEVEL + DISPLAY_HEIGHT + GUIDE_MARKER_ABOVE,
+    bottom: GROUND_LEVEL + (npc.displayHeight || DISPLAY_HEIGHT) + GUIDE_MARKER_ABOVE,
     label: npc.label,
   };
 }
@@ -4431,7 +4625,11 @@ function gameLoop(now) {
   // same holds while an attack clip owns the pose (aiming, firing or
   // punching) — see updateAttackHoldPose, playShootFire and playMelee.
   if (canAct) updateAttackHoldPose(now);
-  if (!cutscenePlaying && !shooting) {
+  // Block 57. A script walking him (movePlayer) shows the walk even
+  // though the cutscene holds everything else still.
+  if (scriptWalking && !shooting) {
+    applyAnim("walk");
+  } else if (!cutscenePlaying && !shooting) {
     if (airborne) {
       applyAnim(velY > 0 ? "jumpRise" : "jumpFall");
     } else if (!isWalking && now < landPoseUntil) {
@@ -4486,7 +4684,7 @@ function gameLoop(now) {
       setLabel(btnInteract, "Tindahan");
       btnInteract.classList.add("active");
     } else if (nearby.type === "npc") {
-      setLabel(btnInteract, "Usap");
+      setLabel(btnInteract, nearby.ref.interactLabel || "Usap");
       btnInteract.classList.add("active");
     } else if (nearby.type === "stage") {
       setLabel(btnInteract, "Ganap");
@@ -4966,6 +5164,10 @@ window.Game = {
   // the setting and where it is stored; this owns what it silences.
   setAudio,
   audio: () => ({ music: audioPrefs.music, sfx: audioPrefs.sfx }),
+
+  // Block 57. The tasks already done, for the settings panel, which is
+  // where they are listed now rather than under the log. Lines only.
+  doneQuests: doneQuestTexts,
 
   // Swaps the player's sprite sheets for an outfit's. Awaitable, because
   // the sheets have to load before the swap is visible.
