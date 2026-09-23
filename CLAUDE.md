@@ -92,7 +92,8 @@ off the repository.
     assets/
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png
-                               (siga-1..3 are Block 52 stand-ins)
+                               (siga-1..3 are Block 52 stand-ins;
+                               nanay-walk.png is Block 53's walk)
       sprites/enemies/         guards and fighters
       backgrounds/act1/        street-01..04.jpg, tondo.jpg, the
                                entablado inside (.jpg) and out (.png,
@@ -104,6 +105,7 @@ off the repository.
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-placeholder-sprites.py,
+                               make-walk-cycle.py,
                                make-shadow-tree.py, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
@@ -502,7 +504,9 @@ Block 40 added two more for a character with only a walk sheet:
 walkOnly steps the sheet only while moveDecoration is carrying him and
 holds its first frame otherwise, and faceMovement turns the art toward
 where he is walking (art assumed to face right) and leaves it there
-when he stops.
+when he stops. Block 53 added walkAnimation for a character with both:
+animation is shown standing, walkAnimation only while moveDecoration
+carries it, two sprites in one body swapped on the change.
 
 arrivalDialogues are conversations nobody starts: they open the moment a
 fade into the scene (Acts.gotoScene) finishes. The first entry whose
@@ -3272,6 +3276,49 @@ game.js v58, acts.js v11, content/act1.js v38, content/items.js v11.
 The siga pictures are new files rather than replaced ones, so
 ASSET_VERSION stays at 20. test.js gained section AZ, and
 verify_new_scene.js was rewritten for the new act.
+
+Five backgrounds and a walk of our own (Block 53). Requested after
+Block 52: expand the street so it shows the entirety of the five
+backgrounds, and attempt sprites of our own, with animation, starting
+with Nanay walking.
+
+The five are street-01..04.jpg and tondo.jpg, the river village that had
+been only the fallback for a scene without panels. The street is now
+exactly five panels, 7250px, one painting each in that order, so none
+repeats and none is cut off at the road's end; worldWidth is written as
+the panel count times the panel width so the two cannot drift apart.
+Each painting is drawn whole at 1450 wide in its own shape, as Block 46
+set; on a 412px-tall phone the top of the sky still goes past the
+screen's edge, which is the one part of "the entirety" a fixed panel
+width cannot give. tondo.jpg's own sky is a lighter blue than the
+street's panelSky, which shows only on a screen taller than it. bahay
+stays one panel.
+
+The walk is made, not drawn: _dev/tools/make-walk-cycle.py takes one
+still frame of a commissioned sheet and moves the artist's own pixels
+into eight frames. The feet are cut out and stepped in turn (the
+swinging foot lifts 6px and travels 5px either side of rest while the
+planted one slides back), the body leans 2px toward the walk and dips
+2px on each landing, drawn over the feet so no gap opens under the hem,
+and the hem kicks forward as each leg passes. Drawing a new character
+from nothing in the artist's painted style was not attempted: at 256px
+a from-scratch figure would not match, and a walk that reuses her own
+pixels cannot fail to look like her. The art is front-facing, so the
+result is a front-facing walk that steps and leans toward the right,
+mirrored by faceMovement for a walk to the left; a true side view is
+owed to the artist.
+
+footX is her idle sheet's 127, not the 129 measure-sprite.js reads for
+the walk (the lean pulls the stance forward), so she does not slide two
+pixels when she stops. The generator takes a table entry per character
+(which sheet and frame, where the feet start and part, where the skirt
+or trousers begin), so the next character's walk is an entry, not a
+new script.
+
+game.js v59, content/act1.js v39. nanay-walk.png is a new file, not a
+replaced one, so ASSET_VERSION stays at 20. verify_new_scene.js checks
+the five panels, the road's length, and Nanay walking on with her walk
+sheet stepping through its frames and standing with her idle sheet.
 
 ## Pitfalls
 

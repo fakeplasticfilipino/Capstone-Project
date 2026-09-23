@@ -33,16 +33,23 @@
 // Block 41's were) until the artist draws them.
 // =============================================================
 
-// Block 49. Four paintings of the street, laid along every road in order
-// and repeated when a road is longer than four (game.js,
-// buildPanelBackdrop), with a shadow tree over each join (Block 50).
-// Kept as they were: the new Act I keeps the background.
+// Block 49. The paintings of the street, laid along every road in order
+// (game.js, buildPanelBackdrop), with a shadow tree over each join
+// (Block 50). Block 53 added the fifth, tondo.jpg, the river village
+// that had been only the fallback backdrop, so the street shows all
+// five backgrounds end to end, each whole.
 const STREET_PANELS = [
   "assets/backgrounds/act1/street-01.jpg",
   "assets/backgrounds/act1/street-02.jpg",
   "assets/backgrounds/act1/street-03.jpg",
   "assets/backgrounds/act1/street-04.jpg",
+  "assets/backgrounds/act1/tondo.jpg",
 ];
+
+// One panel's width in the world (game.js, PANEL_WIDTH). The street is
+// exactly as many panels as there are paintings, so none repeats and
+// none is cut off at the road's end.
+const PANEL = 1450;
 
 // Block 46. The sky above a painting on a tall screen: the average of
 // the four paintings' top rows.
@@ -52,6 +59,17 @@ const STREET_SKY = "#51a6ea";
 // _dev/tools/measure-sprite.js. One def, shared by every scene she is in.
 const NANAY = {
   src: "assets/sprites/characters/nanay.png", frames: 14, fps: 6, columns: 5,
+  contentTop: 45, contentHeight: 166, footX: 127,
+};
+
+// Block 53. Her walk: 8 frames made by _dev/tools/make-walk-cycle.py from
+// the first frame of her sheet (the artist's pixels, moved: the feet
+// step in turn, the body leans and dips, the hem kicks), 4 by 2.
+// Measured with measure-sprite.js (45, 166); footX is her idle sheet's
+// 127 rather than the 129 the tool reads, which the walk's lean pulls
+// forward, so she does not shift sideways when she stops.
+const NANAY_WALK = {
+  src: "assets/sprites/characters/nanay-walk.png", frames: 8, fps: 10, columns: 4,
   contentTop: 45, contentHeight: 166, footX: 127,
 };
 
@@ -195,7 +213,8 @@ window.ACT_1 = {
       // lansangan ids fall back to this first scene too (game.js,
       // loadScene).
       id: "tondo",
-      worldWidth: 2900,
+      // Block 53. All five paintings, one panel each: 5 x 1450.
+      worldWidth: STREET_PANELS.length * PANEL,
       panels: STREET_PANELS,
       panelSky: STREET_SKY,
       startX: STREET_SPOT,
@@ -205,7 +224,10 @@ window.ACT_1 = {
         { id: "siga-2", x: 180, hidden: true, animation: SIGA[2] },
         { id: "siga-3", x: 100, hidden: true, animation: SIGA[3] },
         // Off to the right, hidden until she comes to call him home.
-        { id: "nanay", x: 1750, hidden: true, animation: NANAY },
+        // She walks on with her walk sheet and stands with her idle one
+        // (walkAnimation, Block 53), turned the way she walks.
+        { id: "nanay", x: 1750, hidden: true, animation: NANAY,
+          walkAnimation: NANAY_WALK, faceMovement: true },
       ],
       scripts: [
         { doneFlag: "nakitaAngMgaSiga", x: STREET_SPOT, facing: 1,

@@ -121,7 +121,7 @@ const panels = (page) => page.evaluate(async () => {
     grey: trees.length ? getComputedStyle(trees[0]).filter : null,
     loaded: widths.every((w) => w > 0), widths, blocked,
     tondoTiles: document.querySelectorAll("#skyline .skyline-tile:not(.skyline-panel)").length,
-    srcs, order: tiles.map((t) => (t.style.backgroundImage.match(/street-\d+/) || ["?"])[0]),
+    srcs, order: tiles.map((t) => (t.style.backgroundImage.match(/street-\d+|tondo/) || ["?"])[0]),
     noneMirrored: tiles.every((t) => !t.classList.contains("skyline-tile-mirrored")),
     // Block 46: the picture stands on the floor, whole, with sky above it.
     onFloor: tiles.every((t) => getComputedStyle(t).bottom === GROUND_LEVEL + "px" &&
@@ -224,9 +224,15 @@ const QUEST = "Mag-ipon ng pera na mai-bibigay kay Nanay";
   ok("the item catalogue is empty", await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 0));
 
   const p0 = await panels(page);
-  ok("the street keeps its background: the first two paintings, a tree over the join",
-     p0.tiles === 2 && p0.loaded && JSON.stringify(p0.order) === '["street-01","street-02"]' &&
-     p0.joins.length === 1 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
+  ok("the street shows all five backgrounds end to end, a tree over each join (Block 53)",
+     p0.tiles === 5 && p0.loaded &&
+     JSON.stringify(p0.order) === '["street-01","street-02","street-03","street-04","tondo"]' &&
+     p0.joins.length === 4 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
+  const road = await page.evaluate(() => ({ w: WORLD_WIDTH,
+    shapes: [...document.querySelectorAll("#skyline .skyline-panel")].map((t) =>
+      [parseFloat(t.style.left), parseFloat(t.style.width || getComputedStyle(t).width)]) }));
+  ok("the road is exactly five panels long, none repeated or cut at the end",
+     road.w === 7250 && road.shapes.every(([l, w], i) => l === i * 1450 && Math.abs(w - 1450) < 2), road);
   ok("nobody stands behind the tree", p0.blocked.length === 0, p0.blocked);
 
   const start = await page.evaluate(() => ({ scene: currentSceneId, x: posX, cut: cutscenePlaying,
@@ -253,6 +259,30 @@ const QUEST = "Mag-ipon ng pera na mai-bibigay kay Nanay";
     return sp && /siga-\d\.png/.test(sp.style.backgroundImage);
   }));
   ok("the siga draw their stand-in pictures, not dashed boxes", sigaArt);
+
+  // Block 53. Nanay walks on with her own walk cycle, then stands with
+  // her idle sheet. Caught mid-walk by polling while she moves.
+  const walkSeen = await page.evaluate(async () => {
+    const dec = currentScene.decorations.find((d) => d.id === "nanay");
+    const seen = { walking: false, walkFrames: new Set(), idleHidden: false, flipped: false };
+    for (let i = 0; i < 80 && !(dec.moving); i++) await new Promise((r) => setTimeout(r, 50));
+    for (let i = 0; i < 40 && dec.moving; i++) {
+      seen.walking = seen.walking || dec.walkSpriteEl.style.display !== "none";
+      seen.idleHidden = seen.idleHidden || dec.spriteEl.style.display === "none";
+      seen.flipped = seen.flipped || dec.walkSpriteEl.style.transform === "scaleX(-1)";
+      seen.walkFrames.add(dec.walkSpriteEl.style.backgroundPosition);
+      await new Promise((r) => setTimeout(r, 60));
+    }
+    for (let i = 0; i < 60 && dec.moving; i++) await new Promise((r) => setTimeout(r, 50));
+    return { walking: seen.walking, idleHidden: seen.idleHidden, flipped: seen.flipped,
+      frames: seen.walkFrames.size, src: dec.walkSpriteEl.style.backgroundImage,
+      after: { walk: dec.walkSpriteEl.style.display, idle: dec.spriteEl.style.display } };
+  });
+  ok("Nanay walks on with her walk sheet, stepping through its frames, turned the way she walks",
+     walkSeen.walking && walkSeen.idleHidden && walkSeen.flipped && walkSeen.frames >= 4 &&
+     /nanay-walk\.png/.test(walkSeen.src), walkSeen);
+  ok("and stands with her idle sheet once she arrives",
+     walkSeen.after.walk === "none" && walkSeen.after.idle === "", walkSeen.after);
 
   const c2 = await readConversation(page, 4);
   ok("Nanay's arrival, as written, and Macario's Tsk", JSON.stringify(c2.lines) === JSON.stringify(NANAY_ARRIVES), c2.lines);

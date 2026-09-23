@@ -980,6 +980,23 @@ function buildDecorations(token) {
       dec.walkOnly ? { playing: () => dec.moving } : undefined
     );
 
+    // Block 53. A decoration with both an idle sheet (animation) and a
+    // walk sheet (walkAnimation) shows the walk only while moveDecoration
+    // is carrying it, the same two-sprites-in-one-body swap an enemy's
+    // attack sheet uses: both are built once, and a walk only changes
+    // which one is displayed.
+    dec.walkSpriteEl = null;
+    if (dec.walkAnimation) {
+      const walkEl = document.createElement("div");
+      walkEl.className = "sprite npc-sprite npc-anim-sprite";
+      walkEl.style.display = "none";
+      if (dec.facing === -1) walkEl.style.transform = "scaleX(-1)";
+      el.appendChild(walkEl);
+      dec.walkSpriteEl = walkEl;
+      setupNpcAnimation(dec.walkAnimation, walkEl, dec.displayHeight || DISPLAY_HEIGHT,
+        token, 0, { playing: () => dec.moving });
+    }
+
     actElements.push(el);
     decorationEls.push(el);
   });
@@ -3382,12 +3399,22 @@ function moveDecoration(id, toX, pxPerSecond) {
   // leaves it that way when he stops. The art is assumed to face right.
   const from0 = typeof dec.currentX === "number" ? dec.currentX : dec.x;
   if (dec.faceMovement && dec.spriteEl && toX !== from0) {
-    dec.spriteEl.style.transform = toX < from0 ? "scaleX(-1)" : "";
+    const flip = toX < from0 ? "scaleX(-1)" : "";
+    dec.spriteEl.style.transform = flip;
+    if (dec.walkSpriteEl) dec.walkSpriteEl.style.transform = flip;
   }
   dec.moving = true;
+  // Block 53. The walk sheet in, the idle sheet out, for the length of
+  // the walk; back again on arrival.
+  const swap = (walking) => {
+    if (!dec.walkSpriteEl) return;
+    dec.walkSpriteEl.style.display = walking ? "" : "none";
+    if (dec.spriteEl) dec.spriteEl.style.display = walking ? "none" : "";
+  };
+  if (toX !== from0) swap(true);
   return new Promise((resolve) => {
     let last = 0;
-    const done = () => { dec.moving = false; resolve(); };
+    const done = () => { dec.moving = false; swap(false); resolve(); };
     const tick = (now) => {
       if (!el.isConnected) return done();
       if (paused) { last = now; requestAnimationFrame(tick); return; }

@@ -22,13 +22,14 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 23 Sep 2026, after Block 52 (Act I rewritten from the
-start against the proponents' new script: the siga on the street, Nanay
-and the cedula at home, and a savings quest that counts barya). Blocks
-through 41 are pushed (088f5e4); Blocks 42 to 52 are in the device
-folder and NOT yet pushed. Push everything as one commit (see Right
-now). test.js 598 passed, 0 failed; verify_new_scene.js 34 passed, 0
-failed. None of Blocks 42 to 52 has been played on the phone. Block 52
+Last updated: 23 Sep 2026, after Block 53 (the street shows all five
+backgrounds end to end; Nanay walks with a walk cycle made from her own
+art), which followed Block 52 (Act I rewritten from the start against
+the proponents' new script). Blocks through 41 are pushed (088f5e4);
+Blocks 42 to 53 are in the device folder and NOT yet pushed. Push
+everything as one commit (see Right now). test.js 598 passed, 0 failed;
+verify_new_scene.js 37 passed, 0 failed. None of Blocks 42 to 53 has
+been played on the phone. Block 52
 changes Act I's objectives from eleven to two, so
 db/scripts/reset_test_accounts.sql should be run on the test accounts
 before a full-flow test.
@@ -58,14 +59,13 @@ stubs. Act I cannot be completed yet, on purpose: the savings step's
 flag is set by nothing until the next passage (the work that earns the
 barya) is written.
 
-The streets are the same four paintings as before (Block 49):
-assets/backgrounds/act1/street-01..04.jpg, laid in order along every
-road, standing whole on the floor with their own sky colour above them,
-with a tree in silhouette over every join (Blocks 43 and 50, four
-models, mostly trunk). Keep anyone a student must reach at least 90px
-clear of a join (multiples of 1450). tondo.jpg is in no scene; it is the
-backdrop a scene without panels falls back to, which is what the
-harness fixture uses.
+The street is all five backgrounds end to end (Block 53):
+assets/backgrounds/act1/street-01..04.jpg then tondo.jpg, one 1450px
+panel each, 7250px in all, each standing whole on the floor with the
+street's sky colour above, with a tree in silhouette over each of the
+four joins (Blocks 43 and 50, four models, mostly trunk). Keep anyone a
+student must reach at least 90px clear of a join (multiples of 1450).
+bahay is street-01 alone.
 
     The quest log (Block 48) shows one task, the step in hand, with the
     finished ones under a "Tapos na (n)" button. Act I's two objectives:
@@ -76,11 +76,12 @@ harness fixture uses.
          (n/100)                                     its flag is set by
                                                      nothing yet
 
-    tondo     the street, 2900px, Macario at 900. The opening plays by
+    tondo     the street, 7250px, Macario at 900. The opening plays by
               itself, on a login as well as through a fade (a scene
               script, Block 52): three siga (stand-in stills) walk up
               behind him and taunt him about his father; he turns and
-              answers; Nanay walks in from the right and calls him home;
+              answers; Nanay walks in from the right (her own walk
+              cycle, Block 53) and calls him home;
               the siga laugh; "Tsk". Fade to:
     bahay     at home, on the same paintings (one panel, no tree). Nanay
               tells him the money went on the cedula, there is no rice,
@@ -125,9 +126,9 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v38    js/game.js v58       js/shell.js v13
+    css/style.css v38    js/game.js v59       js/shell.js v13
     js/inventory.js v9   js/acts.js v11       js/assessment.js v3
-    content/act1.js v38  content/items.js v11  content/act2-4.js v1
+    content/act1.js v39  content/items.js v11  content/act2-4.js v1
     ASSET_VERSION 20 (in js/game.js)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
@@ -144,7 +145,7 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 52 are built. Blocks 22 to 41 were one build session, 17 to
+Blocks 1 to 53 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
 42 to 49 were 20 September, and Blocks 50 and 51 the 21st:
 
@@ -226,8 +227,11 @@ Blocks 1 to 52 are built. Blocks 22 to 41 were one build session, 17 to
         the street, the cedula at home, a savings quest counting barya;
         scene scripts, countCurrency, objectiveCurrency and the Bagong
         gawain toast in the engine; items.js emptied; siga stand-ins
+    53  the street as all five backgrounds end to end (7250px); Nanay's
+        walk cycle made from her own art (make-walk-cycle.py) and
+        walkAnimation on decorations
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 to 52 are in
+Everything through Block 41 is pushed (088f5e4). Blocks 42 to 53 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
 file, so the push is a commit of deletions and additions that git shows
 as renames: stage everything (git add -A) rather than picking files, or
@@ -239,8 +243,9 @@ git status, they were not deleted on the computer. Block 51 does the
 same on a smaller scale: street-01..04.png, tondo.png and
 entablado-inside.png are replaced by .jpg files of the same name, so
 those six PNGs must be deleted on the computer before the push or the
-repository carries 11MB nothing loads. Block 52 adds three files
-(assets/sprites/characters/siga-1..3.png) and deletes none.
+repository carries 11MB nothing loads. Blocks 52 and 53 add four
+files (assets/sprites/characters/siga-1..3.png and nanay-walk.png) and
+delete none.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/scripts/reset_test_accounts.sql
@@ -288,6 +293,14 @@ Block 52:
       Failure looks like the toast cut off on a narrow screen, or the
       count not at 0 for a fresh student (an old save's barya; run the
       reset).
+    Nanay's walk (Block 53): she steps in from behind the tree rather
+      than sliding, her feet alternate under the skirt, and she stops
+      without a jump in position. Judge whether a front-facing walk
+      reads well enough, or whether a side-view walk should be asked of
+      the artist; the same tool can make one for any other character.
+    The whole street (Block 53): walk to the far end; five different
+      paintings, the river village last, a tree over each join, and the
+      road ends at the edge of the last one.
     The siga: the stand-ins stand at Macario's height on the road and
       read as three different boys. The bandana on the first sits on
       his head, not above it.
@@ -569,6 +582,8 @@ submit_assessment).
     52  Act I rewritten; scene scripts, countCurrency, objectiveCurrency,
         Bagong gawain toast (section AZ); items.js emptied; siga
         stand-ins; verify_new_scene.js rewritten
+    53  five-panel street; walkAnimation; make-walk-cycle.py and
+        nanay-walk.png
 
 ## Blocks remaining
 
@@ -738,11 +753,11 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/verify_new_scene.js
 
 test.js: 598 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 34
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 37
 checks driving the REAL content/act1.js and content/items.js through
-the rewritten Act I (Block 52): the opening, home, the thought and the
+the rewritten Act I (Blocks 52 and 53): the opening, home, the thought and the
 savings quest, reloads mid-beat, an old save, and a guest.
-Both last ran green on 23 Sep 2026 against the Block 52 files written to
+Both last ran green on 23 Sep 2026 against the Block 53 files written to
 the device folder (Playwright's headless shell pointed at the sandbox's
 preinstalled Chromium; Playwright 1.62 expects a newer build than the
 sandbox has, so a directory of links under the expected name was
