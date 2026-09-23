@@ -133,6 +133,43 @@ def mananahi():
     return im
 
 
+def siga1():
+    # Block 52. The leader of the street boys who taunt Macario: the
+    # Tindero in a dark green shirt and brown trousers, a red bandana
+    # knotted over his hair.
+    im = frame0("tindero.png")
+    recolor(im, (91, 133), cream, 150, 0.45, 0.62)
+    recolor(im, (100, 133), lambda h, s, v: 30 < h < 60 and s < 0.46 and v > 0.5, 150, 0.45, 0.62)
+    recolor(im, (133, 182), lambda h, s, v: 0.2 < s < 0.55 and v < 0.6, 24, 0.55, 1.05,
+            cols=(113, 146))
+    d = ImageDraw.Draw(im)
+    d.polygon([(119, 70), (138, 70), (140, 76), (117, 76)], fill=OUTLINE)
+    d.polygon([(120, 71), (137, 71), (139, 75), (118, 75)], fill=(186, 40, 38, 255))
+    d.polygon([(139, 73), (146, 78), (143, 81), (138, 76)], fill=OUTLINE)
+    d.polygon([(139, 74), (144, 78), (142, 79), (138, 75)], fill=(186, 40, 38, 255))
+    return im
+
+
+def siga2():
+    # Block 52. The second boy: the Kutsero's build in a mustard shirt and
+    # dark trousers, hat and all.
+    im = frame0("kutsero.png")
+    recolor(im, (98, 144), cream, 44, 0.62, 0.86)
+    recolor(im, (143, 180), lambda h, s, v: v < 0.45 and s < 0.45, 220, 0.2, 0.6)
+    return im
+
+
+def siga3():
+    # Block 52. The third boy: the Tindero in a torn maroon shirt and grey
+    # trousers.
+    im = frame0("tindero.png")
+    recolor(im, (91, 133), cream, 350, 0.5, 0.58)
+    recolor(im, (100, 133), lambda h, s, v: 30 < h < 60 and s < 0.46 and v > 0.5, 350, 0.5, 0.58)
+    recolor(im, (133, 182), lambda h, s, v: 0.2 < s < 0.55 and v < 0.6, 210, 0.08, 1.1,
+            cols=(113, 146))
+    return im
+
+
 def icon(pixels, palette, size=32, scale=2):
     """Draws a small icon from a list of strings, one char per pixel."""
     im = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -199,11 +236,22 @@ SHIRT_PAL = {
 
 
 if __name__ == "__main__":
-    for path, fn in ((CHARS + "bonifacio.png", bonifacio), (CHARS + "katipunero.png", katipunero),
+    import sys
+    # Block 52. Names on the command line build only those files, so adding
+    # a stand-in does not rewrite the ones already shipped:
+    #     python3 _dev/tools/make-placeholder-sprites.py siga-1 siga-2 siga-3
+    only = set(sys.argv[1:])
+    for path, fn in ((CHARS + "siga-1.png", siga1), (CHARS + "siga-2.png", siga2),
+                     (CHARS + "siga-3.png", siga3),
+                     (CHARS + "bonifacio.png", bonifacio), (CHARS + "katipunero.png", katipunero),
                      (CHARS + "mamamayan.png", mamamayan), (ENEMIES + "bantay.png", bantay),
                      (CHARS + "mananahi.png", mananahi)):
+        if only and path.rsplit("/", 1)[1][:-4] not in only:
+            continue
         fn().save(path, optimize=True)
         print("wrote", path)
+    if only:
+        raise SystemExit
     icon(APPLE, APPLE_PAL).save(ITEMS + "mansanas.png", optimize=True)
     icon(SHIRT, SHIRT_PAL).save(ITEMS + "damit-entablado.png", optimize=True)
     print("wrote", ITEMS + "mansanas.png and", ITEMS + "damit-entablado.png")

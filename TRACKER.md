@@ -22,30 +22,16 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 21 Sep 2026, end of session, after Block 51 (the six
-opaque backdrops re-encoded as JPEGs, 11MB to 1.7MB, before a
-presentation), which followed Block 50 (four trees,
-two palms and two broadleaf, flat silhouettes, mostly trunk, at the
-joins), which
-followed Block 49 (four new
-street paintings and a coconut palm at the joins), which followed Block
-48 (the quest system rebuilt as one chain, the current task with a
-closed Tapos na list, and the play started by talking to Maryam), which
-followed Block
-47 (the guard's cone looking straight ahead from his eyes), which
-followed Block 46 (no
-mirror, the backdrop standing on the floor, the cone from his eyes),
-which followed Block 45 (the streets back on Tondo.png), which followed
-Blocks 42 (the guide, the vision cone, a ten-citizen street, a
-consistency pass), 43 (painted panels with shadow trees) and 44 (the
-repository reorganised) the same day. Blocks through 41 are pushed
-(088f5e4). Whether Blocks 42 to 44 have been pushed since is not
-recorded here; Blocks 45 to 51 are in the device folder and NOT yet
-pushed. Push everything as one commit (see Right now). test.js 589
-passed, 0 failed; verify_new_scene.js 182 passed, 0 failed. None of
-Blocks 42 to 51 has been played on the phone. Block 48 changes Act I's
-objectives from seven to eleven, so db/scripts/reset_test_accounts.sql
-should be run on the test accounts before a full-flow test.
+Last updated: 23 Sep 2026, after Block 52 (Act I rewritten from the
+start against the proponents' new script: the siga on the street, Nanay
+and the cedula at home, and a savings quest that counts barya). Blocks
+through 41 are pushed (088f5e4); Blocks 42 to 52 are in the device
+folder and NOT yet pushed. Push everything as one commit (see Right
+now). test.js 598 passed, 0 failed; verify_new_scene.js 34 passed, 0
+failed. None of Blocks 42 to 52 has been played on the phone. Block 52
+changes Act I's objectives from eleven to two, so
+db/scripts/reset_test_accounts.sql should be run on the test accounts
+before a full-flow test.
 
 ## Start here
 
@@ -66,106 +52,62 @@ game runs smoothly on the Android phone afterwards, 18 Sep 2026. On a PC
 the animation looks slightly uneven; that is a development machine, not
 the target device, and the proponent has ruled it out of scope.
 
-Act I is four scenes and is the only act with content. Acts II to IV are
-registered stubs. Act I can be completed: the tenth pamphlet finishes it
-and runs the post-test.
+Act I was rewritten in Block 52 against the proponents' new script and
+plot, and is the only act with content. Acts II to IV are registered
+stubs. Act I cannot be completed yet, on purpose: the savings step's
+flag is set by nothing until the next passage (the work that earns the
+barya) is written.
 
-The streets are four paintings (Block 49): assets/backgrounds/act1/
-street-01..04.jpg, laid in order along every road and started again when
-a road is longer than four, standing whole on the floor with their own
-sky colour above them, with a tree in silhouette over every join that
-Macario and everyone else walk behind (Block 43). Since Block 50 there
-are four of those trees, two coconut palms and two broadleaf, taking
-turns along the road: flat silhouettes in one tone, mostly trunk, about
-130 world px wide at the height of a person, so a phone shows trunk from
-the road up and only the lowest leaves at the top. Keep anyone a student must reach at
-least 90px clear of a join. tondo.jpg is in
-no scene now; it is the backdrop a scene without panels falls back to,
-which is what the harness fixture uses.
-
-A guide (Block 42) shows where to go next throughout Act I: a name tab
-and bobbing arrow over the next person or door when it is on screen, and
-a tab at the screen's edge with the way and the distance in metres when
-it is not. It hides in dialogue, cutscenes, screens and the fight. Everything from the end of the fight on (Block
-37) is a placeholder script, written ahead of the source book and owed a
-check against it (see Next action).
+The streets are the same four paintings as before (Block 49):
+assets/backgrounds/act1/street-01..04.jpg, laid in order along every
+road, standing whole on the floor with their own sky colour above them,
+with a tree in silhouette over every join (Blocks 43 and 50, four
+models, mostly trunk). Keep anyone a student must reach at least 90px
+clear of a join (multiples of 1450). tondo.jpg is in no scene; it is the
+backdrop a scene without panels falls back to, which is what the
+harness fixture uses.
 
     The quest log (Block 48) shows one task, the step in hand, with the
-    finished ones under a "Tapos na (n)" button that starts closed on
-    every scene load. Act I's eleven objectives are one chain in story
-    order, each gated behind the one before:
+    finished ones under a "Tapos na (n)" button. Act I's two objectives:
 
-      1  Kausapin si Nanay                tondo
-      2  Lapitan ang kabayo               kutsero (the memory)
-      3  Humingi ng barya sa Kutsero
-      4  Bumili ng mansanas sa Tindero
-      5  Ibigay ang mansanas sa kabayo
-      6  Kausapin ang Mananahi            tondo, after the memory
-      7  Pumunta sa entablado
-      8  Kausapin si Maryam               entablado
-      9  Tapusin ang dula
-     10  Kausapin si Bonifacio sa labas   tondo, at the stairs
-     11  Ipamahagi ang mga polyeto (n/10) lansangan
+      1  Umuwi kasama si Nanay                       done when Macario's
+                                                     thought ends
+      2  Mag-ipon ng pera na mai-bibigay kay Nanay   counts barya to 100;
+         (n/100)                                     its flag is set by
+                                                     nothing yet
 
-    tondo     Nanay (real art) hands Macario his money (200 barya) and
-              brings up the kutsero, and the memory cuts him off.
-              Talking to her completes step 1 and fades into:
-    kutsero   a greyed-out flashback. The memory opens with Nanay's voice
-              after the fade-in. Kabayo the horse (real art, neighing
-              while Macario is near) is hungry; Kutsero (real art) sends
-              Macario to the horse until he has seen it, then gives 10
-              barya; a glass hazard sits on the road; Tindero (real art,
-              opensShop) sells Mansanas (food, heals one heart) and,
-              only while buying it is the task, "Mansanas para sa
-              kabayo" (quest item). Giving it to Kabayo fades back to
-              tondo.
-    tondo     (after) Macario stands beside Nanay and an eight-line
-              exchange plays by itself, ending on the errand to the
-              Mananahi. Further down the road, which is 2900px, the
-              Mananahi (stand-in still) talks about his stage costume,
-              and her shop opens: Damit para sa Entablado, 100 barya,
-              worn in Damit, makes a guard notice him five times slower
-              while he stands still. At the end of the road stands the
-              entablado (real art); Pasok at its stairs opens only after
-              the Mananahi.
-    entablado the inside of the stage (entablado-inside.jpg as the whole
-              backdrop, no dirt strip). Walking in, Macario says he must
-              talk to Maryam first; nothing starts until he does. Talking
-              to her plays her six lines, then a man walks on from the
-              right (real walk sheet), three more lines, then five guards
-              on the same walk sheet, swinging with the real sword attack
-              sheet, to fight, with Intense.mp3 under it; nobody can be
-              talked to mid-fight. Winning sets nagapiAngMgaGuwardiya;
-              until then talking to Maryam replays the scene. Then Maryam
-              announces the Christian kingdom won, that she will convert
-              and marry Macario, and the audience cheers (dialogue only),
-              which completes step 9. Lumabas at the left edge goes back
-              out to the stairs, and is closed during the fight.
-    tondo     (after the play) Bonifacio and a Katipunero (stand-ins)
-              wait at the stairs; a twelve-line meeting opens by itself:
-              greeting, the password, and the task (step 10 done).
-              Tumuloy at the end of the road opens only now.
-    lansangan an 11000px street, the four paintings twice over. No gun
-              (a hold punches).
-              Eight guards (bantay.png stand-ins), each with a faint cone
-              of sight from his eyes; once one's meter fills he turns
-              hostile (a red "!"), chases and shoots until punched down
-              twice or Macario runs out of hearts. In the stage clothes,
-              standing still fills a meter five times slower, drawn pale
-              blue (the cone too). Seven platforms of five heights, all
-              out of sight; three hearts, each on a platform. Ten
-              citizens (mamamayan.png stand-ins), the first before any
-              guard and the last three in a quiet square past them all,
-              each take a pamphlet through Iabot ang polyeto. Running out
-              of hearts restarts after the second, fourth, sixth or
-              eighth citizen, whichever is furthest. The tenth pamphlet
-              completes step 11 and Act I. Bumalik at the left edge
-              returns to tondo.
+    tondo     the street, 2900px, Macario at 900. The opening plays by
+              itself, on a login as well as through a fade (a scene
+              script, Block 52): three siga (stand-in stills) walk up
+              behind him and taunt him about his father; he turns and
+              answers; Nanay walks in from the right and calls him home;
+              the siga laugh; "Tsk". Fade to:
+    bahay     at home, on the same paintings (one panel, no tree). Nanay
+              tells him the money went on the cedula, there is no rice,
+              and he says he will work. Fade back to:
+    tondo     alone on the street. His thought ("Kailangan ko ng
+              pera..."), then the toast "Bagong gawain: Mag-ipon ng pera
+              na mai-bibigay kay Nanay (0/100)". He can walk the street;
+              there is nobody to talk to yet and no guide target.
 
-content/items.js ships three items: the two apples and the stage
-clothes (Damit). No Sandata or Anting-anting item exists yet. The
-harness fixture carries equipment, outfits, a consumable and a quest
-item, so those paths stay tested.
+A reload in the middle of any of the three plays that beat again from
+the top. A save from the old Act I lands on the street with nothing
+replayed. Act I pays no barya per finished step (objectiveCurrency:
+false), so only the story moves the count; the whole performance award
+is paid on completion.
+
+content/items.js is empty since Block 52. The corner shop button still
+opens Tindahan, which lists nothing. The harness fixture carries
+equipment, outfits, a consumable and a quest item, so those paths stay
+tested.
+
+Everything the old Act I used is still in the engine and still on disk,
+ready for the next passages: NPCs with dialogue sets and gifts, shops per
+seller, exits and doorways, arrival dialogues, scene scripts, scripted
+walk-ons, combat with enemies (the moro-moro's walk and sword sheets),
+guards with cones, platforms, hazards, heart pickups, checkpoints, the
+guide, and the art for Kabayo, the Kutsero, the Tindero, Maryam, the
+entablado inside and out, and the Block 41 stand-ins.
 
 Macario's art: idle, walk, jump, melee punch (tap Atake) and shooting
 (hold Atake) are real sheets, measured with _dev/tools/measure-sprite.js. His
@@ -176,15 +118,16 @@ outlines, Press Start 2P for titles and VT323 for everything read, both
 self-hosted in assets/fonts.
 
 Sound: Calm.mp3 loops as background music from the moment the world is
-entered, Gun_Shot.mp3 plays on every shot, Horse.mp3 loops near Kabayo,
-and Intense.mp3 plays for the fight on the entablado and stops when it is
-won. Settings has Musika and Mga tunog switches, both on by default.
+entered, and Gun_Shot.mp3 plays on every shot. Horse.mp3 (an NPC's
+nearSound) and Intense.mp3 (a fight's track) are on disk and in no scene
+since Block 52. Settings has Musika and Mga tunog switches, both on by
+default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v38    js/game.js v57       js/shell.js v13
-    js/inventory.js v9   js/acts.js v10       js/assessment.js v3
-    content/act1.js v37  content/items.js v10  content/act2-4.js v1
+    css/style.css v38    js/game.js v58       js/shell.js v13
+    js/inventory.js v9   js/acts.js v11       js/assessment.js v3
+    content/act1.js v38  content/items.js v11  content/act2-4.js v1
     ASSET_VERSION 20 (in js/game.js)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
@@ -201,7 +144,7 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 51 are built. Blocks 22 to 41 were one build session, 17 to
+Blocks 1 to 52 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
 42 to 49 were 20 September, and Blocks 50 and 51 the 21st:
 
@@ -279,8 +222,12 @@ Blocks 1 to 51 are built. Blocks 22 to 41 were one build session, 17 to
         mostly trunk and thick enough to hide the join, taking turns
         along the road
     51  the six opaque backdrops re-encoded as JPEGs, 11MB to 1.7MB
+    52  Act I rewritten against the new script: the siga and Nanay on
+        the street, the cedula at home, a savings quest counting barya;
+        scene scripts, countCurrency, objectiveCurrency and the Bagong
+        gawain toast in the engine; items.js emptied; siga stand-ins
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 to 51 are in
+Everything through Block 41 is pushed (088f5e4). Blocks 42 to 52 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
 file, so the push is a commit of deletions and additions that git shows
 as renames: stage everything (git add -A) rather than picking files, or
@@ -292,7 +239,8 @@ git status, they were not deleted on the computer. Block 51 does the
 same on a smaller scale: street-01..04.png, tondo.png and
 entablado-inside.png are replaced by .jpg files of the same name, so
 those six PNGs must be deleted on the computer before the push or the
-repository carries 11MB nothing loads.
+repository carries 11MB nothing loads. Block 52 adds three files
+(assets/sprites/characters/siga-1..3.png) and deletes none.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/scripts/reset_test_accounts.sql
@@ -304,192 +252,77 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-1. A device pass on Blocks 14 to 51, on the phone, in landscape, from a
-private tab (browsers cache index.html; see Known problems). Check:
+1. Write the next passage of Act I with the proponents: where Macario
+finds work, how it pays barya, and what finishing "Mag-ipon ng pera"
+means (giving the 100 to Nanay is the obvious reading). Until its flag
+has a setter, Act I cannot complete and the post-test never runs. The
+pieces are all there (CLAUDE.md, Act data format): NPCs with dialogue
+sets, gifts, Game.addCurrency from an onComplete, scene scripts, the
+guide. A gift can only wait on a flag, not on a balance, so "give Nanay
+the 100" will need either a flag content sets when the balance reaches
+100 or a small engine addition; decide which when the scene is written.
 
-    The quest log (Block 48): only one task shows at a time and it is
-      always what to do next; Tapos na (n) appears once something is
-      done, starts closed, opens and closes on a tap without moving
-      Macario, and is closed again after every scene change; the done
-      list is readable at each text size. The Kutsero talks about the
-      horse until Macario has seen it; the horse's apple is not on the
-      Tindero's shelf before the Kutsero; Pasok stays shut until the
-      Mananahi; the play waits until Maryam is talked to. Failure looks
-      like a task that is already done, two tasks at once, or a step
-      that cannot be reached.
-    After the reorganisation (Block 44), first of all: the live site
-      loads at all, with pictures, music and the pixel fonts; the
-      entablado's inside painting shows when he walks in; the teacher
-      dashboard still loads and is styled. Failure looks like a white
-      unstyled page or characters as dashed boxes naming assets/ files,
-      which means part of the push is missing.
-    The backdrop and trees (Blocks 43, 46, 49, 50): tondo, the memory and
-      the street show the four new paintings in order, each standing with
-      its bottom edge on the dirt strip rather than behind it; a tree
-      stands at each join, the jump between paintings cannot be
-      seen, and Macario, the guards and
-      their bullets pass behind the trunk; the crown stays above
-      everyone's head; in the memory the tree is grey like the rest.
-      Since Block 50 the trees take turns, palm then broadleaf then the
-      other palm then the other broadleaf, and are mostly trunk, drawn
-      as one flat tone: check that the trunk covers the join at head
-      height on the phone, that the leaves coming in at the top of the
-      screen read as leaves, and that no sliver of sky shows through
-      where a limb or a frond meets the trunk.
-      Judge also whether the road in the paintings sits right behind the
-      dirt strip Macario walks on. Failure looks like a visible straight
-      seam beside a trunk, a tree in front of the Mananahi or a citizen,
-      a trunk so wide it hides a stretch of road a student needs, or a
-      street with no painting at all (the paintings not pushed).
-      The paintings are JPEGs since Block 51: look once at the sky and
-      the church walls, where a JPEG shows banding first if quality 86
-      turns out to be too low on a phone screen. The one thing that
-      would say the conversion went wrong is a backdrop replaced by the
-      dashed box naming a .jpg, which means the file did not reach the
-      push.
+2. The assessment item bank no longer matches Act I. The pre-test and
+post-test items (db/seeds/macario_items_v3.sql) and the trivia card were
+written against the old act's facts (Tondo, the tailor-and-barber trade,
+the moro-moro, 1894, the Katipunan). The new act so far teaches none of
+them. Either the new passages carry those facts, or the item bank is
+rewritten to match the new story before the pilot. Data collection
+covers Act I only, so this decides whether the study measures anything.
 
-    The guide (Block 42): from the first frame an arrow named Nanay
-      stands over her; after each step it names the next person or door
-      (Kutsero, Tindero, back to Kabayo, the Mananahi, Entablado, Labas,
-      Lansangan, then each citizen); when the target is off screen a tab
-      at that edge says the name and the metres, and the number falls as
-      he walks; it never covers the quest log, hearts or buttons, and it
-      is gone while anyone is talking and during the fight. Failure looks
-      like an arrow over the wrong person, or one that stays on screen
-      during dialogue.
-    The cones (Blocks 42, 46, 47): each street guard has a faint yellow
-      cone from his eyes, looking straight ahead in front of him, easy to read but not loud; it flips when
-      he turns, goes red when he turns hostile and blue while the stage
-      clothes hold him; standing on any platform, Macario is not seen,
-      even where the drawn cone crosses him (the cone is only a picture
-      of the gaze since Block 47; watch whether testers are confused by
-      that).
-    The longer street: ten citizens reachable, the count reads n/10,
-      the road feels long but not tedious (judge whether 11000px is too
-      much for the class period), and the fourth and eighth guards are
-      passable with the touch controls.
+3. A device pass, on the phone, in landscape, from a private tab. For
+Block 52:
 
-    Title, pause, settings: pixel fonts show (not plain monospace,
-      which would mean assets/fonts did not upload), text readable at
-      Maliit, Katamtaman and Malaki.
-    Guest mode: the button enters Act I with no login.
-    tondo: Nanay's dialogue reads comfortably; the prompt arrow blinks.
-    kutsero: Kutsero stands on the road; no dark post or visible jump
-      where the backdrop repeats; the glass takes a heart only while
-      his feet are on it, from either side.
-    Atake: a tap punches with no flash of the aiming pose; a hold aims,
-      and release fires with the flash and a shot from the pistol, in
-      both facings.
-    Tindahan (from Tindero and the corner button): fits the screen with
-      Bumalik visible; tiles are easy to tap; both apples listed.
-    Imbentaryo: eating a Mansanas after the glass restores a heart; the
-      quest apple cannot be eaten; Kabayo takes it.
-    Sound: music starts after the title tap (not before) and keeps going
-      in pause and the shop; a shot bangs with the flash, with no
-      noticeable delay; Kabayo neighs as Macario reaches him and fades
-      out walking on; Musika and Mga tunog Patay silence each; locking
-      the phone silences the game; the music is not too loud against
-      the gunshot.
-    The memory and the return: the memory's line waits for the fade-in;
-      coming back, Macario is already beside Nanay when the screen
-      clears, not seen jumping there; talking to her again gives
-      "Mag-ingat ka lagi, anak."; the Mananahi is absent before the
-      memory and on the road after it; the dialogue box does not hide
-      whoever is speaking.
-    The tailor: the barya chip shows 200 more after Nanay; the quest
-      appears after the return and ticks when the Mananahi finishes
-      talking; her shop opens by itself and lists only the clothes;
-      buying leaves 100 less; Isuot puts them in Damit; the corner
-      shop button does not sell them.
-    The entablado: the building stands on the road at a sensible size
-      beside Macario; Pasok appears at its stairs; inside, the painting
-      fills the screen with its floor under his feet and no dirt strip;
-      Lumabas at the left edge is findable and returns to the stairs.
-    The moro-moro: the jump pose reads as a jump and his feet land on the
-      ground; walking in does not start the play, talking to Maryam
-      does (Block 48), and each line is readable; the man
-      walking on is visible before he speaks; the fight is winnable with
-      the touch buttons, the warning before a swing is noticeable, and
-      five enemies at once do not drop the frame rate. Judge the pacing
-      numbers here (see CLAUDE.md, Block 35) against a real student.
-    Kabayo: crisp pixels rather than a blur, standing on the road,
-      roughly Macario's height. If he reads too small for a horse,
-      that is one number (an NPC display height) to add.
-    Stand-in art (Block 41): the Mananahi, Bonifacio, the Katipunero,
-      the ten townspeople and the street guards all stand on the road
-      at the same height as the real characters, no dashed boxes
-      anywhere; the apple and stage-clothes tiles show pictures in the
-      shop and inventory.
-    The man and his guards (Block 40): he walks on facing left, stands
-      still while he talks, turns and walks off; the guards walk rather
-      than slide, and each swing shows the sword going back before it
-      lands; no black boxes around any of them; the sword is not cut off
-      oddly at the top.
-    After the play (Block 37): Maryam's ending plays straight after the
-      fight; out the door, Bonifacio's meeting opens by itself; Tumuloy
-      appears at the road's end only after it.
-    The street: the yellow cone on the road reads as which way a guard
-      faces; a guard's bullet is visible in
-      time to jump; the high ledge (with the heart) is reachable but
-      takes a try or two; standing on any platform is safe; with the
-      stage clothes on, freezing as the second guard walks toward you
-      lets him pass, with his meter pale blue and crawling; a guard who
-      does see him turns red with a "!", runs after him and keeps
-      shooting, never goes back to patrolling, and drops after two
-      punches; running away outpaces him; a hold on Atake punches and
-      says there is no gun; running out of hearts restarts at the last
-      checkpoint citizen. The tenth pamphlet runs the post-test.
-    Teacher dashboard (Block 39), as guro@example.com on a laptop and a
-      projector: the class name, six figures and the roster load; the
-      search box and each column's sort work; a student who has not
-      played reads Hindi pa nagsisimula with dashes.
+    The opening: after the title (and the trivia card and pre-test for a
+      new student), the street appears with Macario facing right; three
+      siga walk on from the left, he turns to them, their lines read
+      well; Nanay walks on from the right, he turns to her; the fade
+      home. Failure looks like a character sliding in off the wrong side,
+      Macario facing away from whoever speaks, or a dashed box.
+    At home: Nanay stands beside him, the seven lines play, the fade back
+      out. Judge whether the street painting reads acceptably as "home"
+      or whether a room picture should be commissioned.
+    Back on the street: his thought, then "Bagong gawain" as a toast
+      that stays long enough to read (3.2s), the quest log showing
+      "Mag-ipon ng pera na mai-bibigay kay Nanay (0/100)" and Tapos na (1).
+      Failure looks like the toast cut off on a narrow screen, or the
+      count not at 0 for a fresh student (an old save's barya; run the
+      reset).
+    The siga: the stand-ins stand at Macario's height on the road and
+      read as three different boys. The bandana on the first sits on
+      his head, not above it.
+    Reload in the middle of each beat: it plays again from the top.
 
-2. Check Block 37's placeholder script against the resource person's
-source book (Content authority, under The milestone), line by line:
-Maryam's ending, the meeting at the stairs (above all the password, Anak
-ng Bayan and the dilim and liwanag lines, and whether Bonifacio himself
-met Sakay after a performance), who the second Katipunero is, what the
-pamphlets were and who received them (ten people since Block 42, all
-placeholder). content/act1.js marks the block.
-Act I is now completable, so this is also what stands between the build
-and a pilot.
+Blocks 42 to 51 were never played on the phone either, but what they
+showed (the guide, cones, the long street, the moro-moro) has left
+Act I with the rewrite. What still applies from them: the four
+paintings and the trees at the joins (is the join covered at head
+height, does the crown read as leaves), the JPEG backdrops (banding in
+the sky), and the pixel fonts, sound switches, guest mode and the
+teacher dashboard, which Block 52 did not touch.
 
-3. Real art, chased with the artist, to replace Block 41's stand-ins:
-mananahi.png, bonifacio.png, katipunero.png, bantay.png (the street's
-guards), mamamayan.png (the ten citizens, one sprite shared unless
-the artist draws more), damit-entablado.png and mansanas.png (all
-under assets/, see Known problems). The stand-ins are recoloured frames of the
-commissioned sheets, so they will look like near relations of Tindero,
-Kutsero and Nanay. Replacing one is dropping the new file over the same
-name and updating its STILL entry in content/act1.js (frames, columns,
-and the three measured numbers). Macario's death sheet
-(macario-dead.png) is still missing
-and has no stand-in; no shipped scene plays it. Each new sheet
-needs measure-sprite.js and all three numbers pasted. Ask for PNG
-exports with transparency: Muslim_Walk and Muslim_Attack came as JPEGs
-on black and had to be keyed (_dev/tools/key-black.py), and the attack sheet's
-sword crosses into neighbouring cells, which a re-export with the sword
-inside each cell would fix. An idle sheet for him would also let him
-breathe while he talks rather than hold a walk frame.
+4. Real art for the siga (siga-1..3.png, stand-ins), and later for
+whoever the next passages bring on. Macario's death sheet
+(macario-dead.png) is still missing; no shipped scene plays it. Each new
+sheet needs measure-sprite.js and all three numbers pasted. Ask for PNG
+exports with transparency.
 
-4. Then Block 12's remaining polish, the pilot, and Acts II to IV
+5. Then Block 12's remaining polish, the pilot, and Acts II to IV
 against the source material.
 
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs. Everything through Block 41 is pushed and passing its
-checks; Blocks 42 to 51 are in the device folder, passing their checks, and wait
-on the proponent's push. So the first things a session can do are in
-Next action, in order: a device pass against the
-checklist there, then checking Block 37's placeholder script against
-the source book with the proponents.
+header directs. Everything through Block 41 is pushed; Blocks 42 to 52
+are in the device folder, passing their checks, and wait on the
+proponent's push. Act I was rewritten in Block 52, so the next work is
+its next passage (Next action, 1), written with the proponents from
+their script, and the matching question about the item bank (Next
+action, 2).
 
-Two questions are waiting on the proponents rather than on code, and a
-session should ask rather than assume: whether the man in the moro-moro
-keeps the on-screen name Muslim, and whether his last line keeps the word
-puta. And Block 37's placeholder script waits on the source book (Next
-action, 2). See Known problems and Blocked on other people.
+The old Act I's open questions (the man in the moro-moro's on-screen
+name and the word puta, Block 37's placeholder script against the source
+book) left with its content. They come back only if that content does.
 
 ## The milestone
 
@@ -584,19 +417,17 @@ v4 drops happened, and verifies every migration column.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS)
-The framework is complete. Act I has four scenes, eighteen NPCs and
-eleven objectives, all playable end to end, so the act completes and runs its
-post-test; its last stretch (Block 37) is a placeholder script awaiting
-the source book. Acts II to IV are registered stubs with no content.
+The framework is complete. Act I was rewritten in Block 52 against the
+proponents' new script: two scenes and two objectives so far, playable
+to the savings quest, which cannot finish until the next passage is
+written, so the act does not yet complete or run its post-test. Acts II
+to IV are registered stubs with no content.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health,
 equipment, cosmetic rewards. (IN PROGRESS) All four are built and
-tested. Health, hazards and the shop are exercised by shipped content.
-Equipment is exercised by shipped content: the stage clothes, whose
-effect the lansangan's guards now test (Block 37). Dynamic difficulty is
-built but Act I is its 1.00 multiplier, and outfits need art; both are
-proven against the harness fixture. What remains is content and art,
-not code.
+tested against the harness fixture. Since Block 52 the shipped Act I
+exercises none of them yet: no scene is dangerous, and the item
+catalogue is empty. What remains is content and art, not code.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and
 post-tests, server-side grading, in-game performance scoring,
@@ -611,12 +442,12 @@ work through.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest added for a quick look |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I has four scenes and can be completed, which unlocks Act II; Acts II to IV are stubs |
+| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I, rewritten in Block 52, has two scenes and cannot be completed until its next passage exists; Acts II to IV are stubs |
 | Player Movement | (BUILT) |
 | Combat Mechanics | (BUILT) Melee punch on a tap, takedown from behind, a ranged shot on a hold, each with real animation, plus enemies that fight back (Block 35) with real walk and sword-attack art (Block 40). Act I ships the moro-moro's five guards, and the street's guards turn hostile and can be punched down (Block 38) |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a cone of sight drawn on the road (Block 42), hide spots, platforms out of sight, guards that turn hostile and shoot once they see him (Block 38). Act I's lansangan uses them (eight guards, seven platforms) |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach measured edge to edge, NPCs that open the shop |
-| Narrative Delivery | (PARTIAL) Built. Act I uses it across four scenes and eighteen NPCs, with conversations that open by themselves and a scripted play; Acts II to IV have none |
+| Narrative Delivery | (PARTIAL) Built, including scene scripts that play by themselves on a login (Block 52). Act I uses them across two scenes; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
 | Health System | (BUILT) Health, damage, invulnerability, respawn, hazards, heart pickups, and healing by eating a Mansanas |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, a two-column inventory, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one equipment item, the stage clothes (Damit, slower detection while still), which matters against the lansangan's guards |
@@ -640,7 +471,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 587-check suite |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and a 598-check suite |
 | Data Integrity | (BUILT) Row level security, unique constraints, server-side grading |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -735,6 +566,9 @@ submit_assessment).
     50  SHADOW_TREE_URLS, four models picked by join number; the trunk
         measured in pixels at chest height (section AX)
     51  backdrops as .jpg; every reference and ASSET_VERSION with them
+    52  Act I rewritten; scene scripts, countCurrency, objectiveCurrency,
+        Bagong gawain toast (section AZ); items.js emptied; siga
+        stand-ins; verify_new_scene.js rewritten
 
 ## Blocks remaining
 
@@ -746,8 +580,7 @@ now folded into Next action, item 1: label sizes on the touch buttons,
 whether dialogue and quest text read comfortably at each text size,
 and whether the inventory and shop fit without scrolling to Bumalik.
 
-Act I's Block 37 placeholder script checked against the source book,
-then Acts II to IV written against it. (NOT STARTED)
+Acts II to IV written against the source material. (NOT STARTED)
 
 Seed trivia and assessment items for Acts II to IV. Until then those
 acts skip their tests with a notice, which is deliberate. (NOT STARTED)
@@ -756,11 +589,8 @@ Real items for Sandata and Anting-anting, and outfit art, decided
 against the source material. The Damit slot has its first item
 (Block 32). (IN PROGRESS)
 
-Two decisions in the moro-moro's script belong to the proponents rather
-than to the build. The man is named Muslim on screen, after the file
-name, and his last line calls Maryam a puta. Both ship as written and
-both are easy to change; a Grade 8 classroom with a teacher present is
-the room they will be read in. (KNOWN, PROPONENT'S CALL)
+Act I's next passage, and the item bank to match it (Next action, 1
+and 2). (NOT STARTED)
 
 ## Blocked on other people
 
@@ -782,12 +612,9 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the real art with the artist for Block 41's stand-ins (the
-Mananahi, Bonifacio, the Katipunero, the guards, the citizens, the
-stage clothes' tile and the apple tile) and Macario's death sheet
-(see Known
-problems for where each shows). Later, once real items and the entablado
-content are decided, the art they need. (NOT STARTED)
+Chase the real art with the artist for the siga (Block 52 stand-ins)
+and Macario's death sheet, and later for whoever the next passages of
+Act I bring on. (NOT STARTED)
 
 Provision student accounts for the session, and pilot with two or
 three students who are not part of the study. A pilot run on a study
@@ -804,26 +631,21 @@ trip to the SQL editor. Do not add a study account. (NOT STARTED)
 ## Known problems
 
 Missing production art. assets/ holds real art for Nanay, Kutsero,
-Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack,
-shared by his guards), both entablado pictures, tondo.jpg, the four
-street paintings, the ground, and Macario's idle, walk, melee and
-shooting sheets, plus the two fonts and four sound files.
+Kabayo, Tindero, Maryam, the man in the moro-moro (walk and attack),
+both entablado pictures, tondo.jpg, the four street paintings, the
+ground, and Macario's idle, walk, jump, melee and shooting sheets, plus
+the two fonts and four sound files. Since Block 52 the shipped Act I
+uses only Nanay, Macario, the street paintings and the ground; the rest
+waits on disk for later passages.
 
-Stand-ins, not the artist's (Block 41, made by
-_dev/tools/make-placeholder-sprites.py from the commissioned sheets), owed
-real art:
+Stand-ins, not the artist's, owed real art. In use (Block 52, made by
+_dev/tools/make-placeholder-sprites.py):
 
-    sprites/characters/mananahi.png    the Mananahi, on the tondo road
-    sprites/characters/bonifacio.png   Bonifacio, outside the entablado
-    sprites/characters/katipunero.png  the second Katipunero, beside him
-    sprites/enemies/bantay.png         the eight guards on the lansangan
-                                       (a front-facing still; real art
-                                       should face right, see CLAUDE.md,
-                                       Pitfalls)
-    sprites/characters/mamamayan.png   the ten citizens, one shared still
-    items/damit-entablado.png          the stage clothes' tile
-    items/mansanas.png                 the apple tile in the shop and
-                                       inventory
+    sprites/characters/siga-1..3.png   the three siga on the street
+
+On disk and in no scene since Block 52 (Block 41): mananahi.png,
+bonifacio.png, katipunero.png, mamamayan.png, enemies/bantay.png, and
+the two item tiles.
 
 All under assets/.
 
@@ -915,14 +737,16 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 589 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 182
+test.js: 598 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 34
 checks driving the REAL content/act1.js and content/items.js through
-every Act I scene, from Nanay to the tenth pamphlet and the post-test,
-following the guide at every step.
-Both last ran green on 21 Sep 2026 against the Block 51 files written to
+the rewritten Act I (Block 52): the opening, home, the thought and the
+savings quest, reloads mid-beat, an old save, and a guest.
+Both last ran green on 23 Sep 2026 against the Block 52 files written to
 the device folder (Playwright's headless shell pointed at the sandbox's
-preinstalled Chromium). Anything other than "0 failed"
+preinstalled Chromium; Playwright 1.62 expects a newer build than the
+sandbox has, so a directory of links under the expected name was
+pointed at it through PLAYWRIGHT_BROWSERS_PATH). Anything other than "0 failed"
 is a regression. In a session with no shell on the device, stage the
 repository into the sandbox and run the same commands there; Playwright
 may need its browser path pointed at the preinstalled Chromium. Audio

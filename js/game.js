@@ -339,7 +339,24 @@ function clearQuests() {
 let questDoneOpen = false;
 let questDrawnKey = null;
 
+// Block 52. "Bagong gawain" is announced when the step in hand changes
+// while the student is playing, and never for the step a login or a
+// reload lands on. questAnnounceReady is switched on once the world is
+// handed over (enterWorldScripts), and questAnnouncedId is the step the
+// last render showed, reset on every act load so a new act starts quiet.
+let questAnnounceReady = false;
+let questAnnouncedId = null;
+
 function objectiveLine(o) {
+  // Block 52. A step that is a sum of money rather than a list of people
+  // reads the barya balance, capped at the target so a student who has
+  // more does not read "(140/100)". The line only shows the count: the
+  // step's flag is still set by content, because what finishing it means
+  // (handing it over, say) is the story's to decide, not the engine's.
+  if (typeof o.countCurrency === "number" && o.countCurrency > 0) {
+    const have = Math.min(currency, o.countCurrency);
+    return o.label + " (" + have + "/" + o.countCurrency + ")";
+  }
   if (!Array.isArray(o.countFlags)) return o.label;
   const n = o.countFlags.filter((f) => state.flags[f]).length;
   return o.label + " (" + n + "/" + o.countFlags.length + ")";
@@ -370,6 +387,17 @@ function renderQuests() {
   syncObjectiveChain();
   const current = quests.filter((q) => !q.done);
   const done = quests.filter((q) => q.done);
+
+  const act = currentActData;
+  if (act && act.linearObjectives) {
+    const id = current.length ? current[0].id : null;
+    if (id !== questAnnouncedId) {
+      if (questAnnounceReady && id && questAnnouncedId !== null) {
+        showToast("Bagong gawain: " + current[0].text, 3200);
+      }
+      questAnnouncedId = id;
+    }
+  }
 
   // Written only when something shown changed: markDirty calls this
   // from the loop's own paths, and rebuilding identical lists would
@@ -517,6 +545,7 @@ function loadAct(actData, sceneId) {
 
   currentActData = actData;
   SCENES = scenesFor(actData);
+  questAnnouncedId = null;
 
   // Quests belong to the act, not the scene, so they are added once here
   // rather than being re-added every time the player changes room.
@@ -2128,6 +2157,7 @@ async function fadeToScene(sceneId, placement) {
   // student never sees Macario jump from the scene's startX to where the
   // conversation needs him.
   const arrival = pendingArrival(currentScene);
+  if (!arrival) placeForSceneScript(pendingSceneScript(currentScene));
   if (arrival && typeof arrival.x === "number") {
     posX = Math.max(0, Math.min(arrival.x, WORLD_WIDTH - PLAYER_WIDTH));
     posY = groundHeightAt(posX);
@@ -2148,6 +2178,9 @@ async function fadeToScene(sceneId, placement) {
   // After the fade-in rather than during it, so the first line is read
   // against the scene it belongs to and not against black.
   if (arrival) startArrivalDialogue(arrival);
+  // Block 52. A scene script plays through a fade too, when no arrival
+  // conversation has claimed the moment.
+  else runSceneScript();
 }
 
 // A scene's arrivalDialogues are conversations that open by themselves
@@ -2165,6 +2198,84 @@ function pendingArrival(scene) {
     !(a.unlessFlag && state.flags[a.unlessFlag]) &&
     Array.isArray(a.lines) && a.lines.length
   ) || null;
+}
+
+// =============================================================
+// SCENE SCRIPTS (Block 52)
+//
+// A scene's scripts are cutscenes that play by themselves, written in
+// content as an async function out of the Block 35 calls (playDialogue,
+// setCutscene, moveDecoration and the rest). They differ from
+// arrivalDialogues in one way that matters: they also play on a login or
+// reload into the scene, once the title, trivia and pre-test are out of
+// the way, because an act's opening is a script and a student meeting
+// the act for the first time arrives by logging in, not through a fade.
+//
+//   scripts: [{ requiresFlag, unlessFlag, doneFlag, x, facing, run }]
+//
+// The first entry whose requiresFlag is set (or that has none), whose
+// unlessFlag and doneFlag are not, is the one that plays. doneFlag is set
+// when run() resolves, not when it starts, so a student who reloads in
+// the middle watches it again from the top rather than landing past a
+// scene they never saw. x and facing place Macario before it starts
+// (under the blackout, through a fade). A script that changes scene
+// should call Acts.gotoScene without awaiting it as its last step, or
+// its doneFlag lands only after the next scene has already begun.
+// =============================================================
+
+const sceneScriptsRunning = new Set();
+
+function pendingSceneScript(scene) {
+  const list = (scene && scene.scripts) || [];
+  return list.find((s) =>
+    typeof s.run === "function" &&
+    !sceneScriptsRunning.has(s) &&
+    (!s.requiresFlag || state.flags[s.requiresFlag]) &&
+    !(s.doneFlag && state.flags[s.doneFlag]) &&
+    !(s.unlessFlag && state.flags[s.unlessFlag])
+  ) || null;
+}
+
+function placeForSceneScript(entry) {
+  if (!entry) return;
+  if (typeof entry.x === "number") {
+    posX = Math.max(0, Math.min(entry.x, WORLD_WIDTH - PLAYER_WIDTH));
+    posY = groundHeightAt(posX);
+    velY = 0;
+  }
+  if (entry.facing === 1 || entry.facing === -1) facing = entry.facing;
+}
+
+async function runSceneScript() {
+  const entry = pendingSceneScript(currentScene);
+  if (!entry) return;
+  placeForSceneScript(entry);
+  sceneScriptsRunning.add(entry);
+  // The script owns setCutscene. It is not cleared here on the way out,
+  // because a script that ends by starting a fade has already handed the
+  // flag to fadeToScene, and clearing it would free Macario mid-fade.
+  try {
+    await entry.run();
+    // Set even when the script ended by leaving the scene: the beat
+    // has happened either way.
+    if (entry.doneFlag) {
+      state.flags[entry.doneFlag] = true;
+      markDirty();
+    }
+  } catch (err) {
+    console.error("Scene script failed:", err);
+  } finally {
+    sceneScriptsRunning.delete(entry);
+  }
+}
+
+// Called once from each entry path, after the world has been handed to
+// the student: from here on a change of step is news worth announcing,
+// and the scene the student landed in may have a script waiting.
+function enterWorldScripts() {
+  questAnnounceReady = true;
+  if (currentActData && currentActData.linearObjectives) renderQuests();
+  runSceneScript();
 }
 
 function startArrivalDialogue(arrival) {
@@ -2724,13 +2835,13 @@ function setMaxHealth(next) {
   renderHearts();
 }
 
-function showToast(text) {
+function showToast(text, ms) {
   const toastEl = hudEls().toast;
   if (!toastEl) return;
   toastEl.textContent = text;
   toastEl.classList.remove("hidden");
   clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(() => toastEl.classList.add("hidden"), 1600);
+  showToast._timer = setTimeout(() => toastEl.classList.add("hidden"), ms || 1600);
 }
 
 // respawn says whether surviving the hit also sends the player back to
@@ -4390,6 +4501,11 @@ async function enterGameAsUser(userId) {
 
   if (window.Acts) await Acts.syncStart(actNumber);
 
+  // Block 52. Only while the act is actually being played: a student who
+  // lands on the completed screen, or in a locked act, has no scene to
+  // watch.
+  if (!window.Acts || Acts.status === "playing") enterWorldScripts();
+
   // Safety-net save, in case something set saveDirty without going
   // through markDirty's own debounce.
   if (autosaveTimer === null) {
@@ -4430,6 +4546,7 @@ async function enterGameAsGuest() {
 
   if (window.Shell) await Shell.awaitEntry();
   startMusic();
+  enterWorldScripts();
 }
 
 async function loadProgress(userId) {
@@ -4493,6 +4610,9 @@ function applyLoadedState(row) {
   }
 
   if (typeof row.currency === "number") currency = row.currency;
+  // Block 52. A step that counts barya was drawn before the balance was
+  // restored; draw it again with the real number.
+  renderQuests();
 
   if (typeof saved.posX === "number") {
     posX = saved.posX;

@@ -242,6 +242,12 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.waitForTimeout(400);
     ok("test dismissed", !(await visible(page, "#quiz")));
     ok("act status advanced to playing", (await page.evaluate(() => Acts.status)) === "playing");
+    // Block 52. Act I now opens with a scene script on the street, and the
+    // world is held still while it plays, so the pause button waits too.
+    ok("pause button hidden while Act I's opening plays",
+       (await page.evaluate(() => cutscenePlaying)) && !(await visible(page, "#btn-pause")));
+    await page.evaluate(() => setCutscene(false));
+    await page.waitForTimeout(100);
     ok("pause button visible once playing", await visible(page, "#btn-pause"));
     ok("game_progress row created", (await page.evaluate(() => __DB.game_progress.length)) === 1);
     await ctx.close();
@@ -4505,6 +4511,80 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("a set that waits on a flag is skipped until it is set, however often he is asked",
        JSON.stringify(sets) === '["bago","bago","habang","pagkatapos"]', sets);
+    await ctx.close();
+  }
+
+  console.log("\nAZ. Scene scripts, a step that counts barya, and an act without the drip (Block 52)");
+  {
+    const { ctx, page } = await enterTestRoom();
+
+    // A scene script plays once: placed first, its doneFlag set only when
+    // it ends, never twice at once, and not again once done.
+    const script = await page.evaluate(async () => {
+      const scene = currentScene;
+      const saved = scene.scripts;
+      let runs = 0, flagDuring = null, release;
+      scene.scripts = [
+        { requiresFlag: "t_ready", doneFlag: "t_watched", x: 333, facing: -1,
+          run: () => { runs++; flagDuring = Boolean(state.flags.t_watched);
+                       return new Promise((r) => { release = r; }); } },
+      ];
+      const before = pendingSceneScript(scene);
+      state.flags.t_ready = true;
+      runSceneScript();
+      const placed = { x: posX, facing };
+      runSceneScript(); // a second call while the first is still running
+      release();
+      await new Promise((r) => setTimeout(r, 20));
+      const done = Boolean(state.flags.t_watched);
+      runSceneScript();
+      await new Promise((r) => setTimeout(r, 20));
+      scene.scripts = saved;
+      delete state.flags.t_ready; delete state.flags.t_watched;
+      return { before: before === null, placed, runs, flagDuring, done };
+    });
+    ok("a script waits for its requiresFlag", script.before, script);
+    ok("it places Macario before it starts", script.placed.x === 333 && script.placed.facing === -1, script.placed);
+    ok("its doneFlag is set when it ends, not when it starts", script.flagDuring === false && script.done, script);
+    ok("and it plays once, however often it is asked", script.runs === 1, script);
+
+    // countCurrency, and the Bagong gawain toast when the step moves.
+    const money = await page.evaluate(() => {
+      const act = currentActData;
+      const saved = { objectives: act.objectives, linear: act.linearObjectives, c: Game.currency() };
+      act.linearObjectives = true;
+      act.objectives = [
+        { id: "m1", label: "Isa", flag: "t_m1" },
+        { id: "m2", label: "Mag-ipon", flag: "t_m2", countCurrency: 50 },
+      ];
+      Game.spendCurrency(Game.currency());
+      renderQuests();
+      state.flags.t_m1 = true; markDirty();
+      const toast = document.getElementById("toast").textContent;
+      const cur = () => [...document.querySelectorAll("#quest-list li")].map((li) => li.textContent)[0];
+      const a = cur();
+      Game.addCurrency(20); const b = cur();
+      Game.addCurrency(100); const c = cur();
+      act.objectives = saved.objectives; act.linearObjectives = saved.linear;
+      delete state.flags.t_m1;
+      Game.spendCurrency(Game.currency()); Game.addCurrency(saved.c);
+      clearQuests();
+      return { toast, a, b, c };
+    });
+    ok("a step that counts barya reads the balance", money.a === "Mag-ipon (0/50)" && money.b === "Mag-ipon (20/50)", money);
+    ok("capped at its target", money.c === "Mag-ipon (50/50)", money);
+    ok("a new step in hand is announced", money.toast === "Bagong gawain: Mag-ipon (0/50)", money);
+
+    // objectiveCurrency: false switches the drip off for that act only.
+    const drip = await page.evaluate(() => {
+      const act = Acts.getAct(Acts.current);
+      const on = Acts.perObjective(5);
+      act.objectiveCurrency = false;
+      const off = Acts.perObjective(5);
+      delete act.objectiveCurrency;
+      return { on, off };
+    });
+    ok("an act may switch the per-step barya off", drip.on === 10 && drip.off === 0, drip);
     await ctx.close();
   }
 

@@ -207,8 +207,16 @@ const Acts = {
 
   COMPLETION_POOL: 50, // matches the completion weight in scoreFor
 
+  // Block 52. An act may declare objectiveCurrency: false to switch the
+  // drip off. Act I counts barya as a story goal (Mag-ipon ng pera,
+  // countCurrency), and barya paid for finishing a step would move that
+  // count without the story having paid him anything. Nothing is lost:
+  // complete() pays the whole score at the end, since what was dripped
+  // is then zero.
   perObjective(total) {
     if (!total) return 0;
+    const act = this.getAct(this.current);
+    if (act && act.objectiveCurrency === false) return 0;
     return Math.floor(this.COMPLETION_POOL / total);
   },
 

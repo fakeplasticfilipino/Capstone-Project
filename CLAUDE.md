@@ -92,6 +92,7 @@ off the repository.
     assets/
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png
+                               (siga-1..3 are Block 52 stand-ins)
       sprites/enemies/         guards and fighters
       backgrounds/act1/        street-01..04.jpg, tondo.jpg, the
                                entablado inside (.jpg) and out (.png,
@@ -157,9 +158,17 @@ where Macario carries the Katipunan's pamphlets past guards. Seven
 objectives, and since Block 37 every one has a flag-setter, so Act I can
 be completed and runs its post-test. Block 37's script is a placeholder
 written ahead of the source book (see Decisions on record).
-content/items.js holds three items: two apples and the stage clothes, the
-first equipment. TRACKER.md, Start here, describes exactly what Act I
-contains today.
+
+Block 52 replaced all of that with the proponents' new script and plot,
+a second deliberate reset rather than a regression: Act I now opens on
+the street with three siga taunting Macario about his father, Nanay
+calls him home, tells him the money went on the cedula, and he resolves
+to work, which opens a savings quest that counts his barya toward 100.
+Two scenes (tondo, the street; bahay, at home, on the same paintings),
+two objectives, and an empty item catalogue. The backgrounds and every
+asset file were kept; the old scenes, their script and their three
+items are in git history. TRACKER.md, Start here, describes exactly
+what Act I contains today.
 
 None of this touched the ENGINE. Every mechanic the fuller version
 exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
@@ -328,9 +337,12 @@ world belongs to the scene.
       titleTagalog,                              shown on the title card
       developmentNotice,                         optional; marks a stub
       objectives: [{ id, label, flag,
-                     countFlags }],              countFlags optional (Block 48)
+                     countFlags,                 countFlags optional (Block 48)
+                     countCurrency }],           optional; barya target (Block 52)
       linearObjectives: true,                    optional; the quest log is
                                                  the objective chain (Block 48)
+      objectiveCurrency: false,                  optional; no barya per step
+                                                 (Block 52)
       startingQuests: [{ id, text }],
       guide: [{ scene, requiresFlag,             optional; where to go
                 unlessFlag, questOpen,           next (Block 42)
@@ -374,7 +386,9 @@ Scene shape:
                  shoots, hp,                     optional; Blocks 37, 38
                  animation }],
       noRanged: true,                            optional; no shot here
-      checkpoints: [{ x, flag }]                 optional; respawn points
+      checkpoints: [{ x, flag }],                optional; respawn points
+      scripts: [{ requiresFlag, unlessFlag,      optional; cutscenes that
+                  doneFlag, x, facing, run }]    play by themselves (Block 52)
     }
 
 Acts written before scenes existed declare worldWidth, startX, npcs, stage
@@ -535,7 +549,13 @@ way never leaves the chain behind the student. The quests array is
 rebuilt from the chain on every markDirty, so forQuest and the guide's
 questOpen see the step in hand as the one open quest, and content calls
 no addQuest or completeQuest: setting the step's flag is completing it.
-countFlags adds "(n/N)" to a step's line from those flags. Such an act
+countFlags adds "(n/N)" to a step's line from those flags.
+countCurrency (Block 52) adds "(n/N)" from the barya balance instead,
+capped at N, and redraws whenever barya is earned or spent. It only
+counts: the step's flag is still set by content, so reaching the sum
+does not by itself finish the step. When the step in hand changes
+during play, the engine shows "Bagong gawain: <line>" as a toast; never
+for the step a login or a reload lands on. Such an act
 declares no startingQuests. An act without linearObjectives keeps
 addQuest, completeQuest and setQuestText. Either way the log draws open
 quests under "Gawain" and done ones in a "Tapos na (n)" list behind a
@@ -604,6 +624,25 @@ of them plain globals in game.js, like addQuest:
     spawnEnemies(defs)           resolves when every one of them is down
     setMusic(src | null)         null is the scene's own track, else Calm
     setQuestText(id, text)       rewrites a logged quest's line (Block 37)
+    wait(ms)                     resolves after ms; a pause in a script
+
+scripts (Block 52) are how a scene plays one of these by itself. The
+first entry whose requiresFlag is set (or that has none) and whose
+unlessFlag and doneFlag are not is run: through a fade, after the
+fade-in, when no arrival dialogue has claimed the moment; and, unlike
+arrivalDialogues, on a login or reload into the scene too, once the
+title, the trivia card and the pre-test are done, because an act's
+opening is a script and a new student arrives by logging in. x and
+facing place Macario first. doneFlag is set when run() resolves, so a
+student who reloads in the middle watches it again from the top. The
+script owns setCutscene. A script that ends by changing scene calls
+Acts.gotoScene without awaiting it, as its last step.
+
+objectiveCurrency: false (Block 52) turns off the barya an act pays
+per finished objective (acts.js, perObjective). An act that counts
+barya as a story goal needs it, or finishing a step would move the
+count without the story paying anything. The whole performance award
+is then paid on completion instead.
 
 An enemy def is { id, x, hp, speed, img | animation, attackAnimation }.
 attackAnimation (Block 40) is optional: with it, the walk sheet steps
@@ -3181,6 +3220,58 @@ loading bar, the retries and the service worker in TRACKER.md's Known
 problems are still the actual fix. ASSET_VERSION to 20; game.js v57,
 style.css v38, content/act1.js v37, all four of which name a picture
 whose extension changed.
+
+Act I rewritten (Block 52). Requested with a new script and plot: rewrite
+the entire act, keep the background, remove almost everything else
+without deleting any file, and make sure the features exist so later
+passages can be integrated easily. Asked and answered before building:
+the (0/100) counts barya rather than a new currency; the bullies are
+"Siga" on screen; Macario says "Tsk"; the item catalogue is emptied.
+
+The act is two scenes. tondo is the street, on the same four paintings
+and the same trees; its id is kept so a save from before the rewrite
+lands there, and every old scene id (kutsero, entablado, lansangan)
+falls back to it the way unknown ids always have. bahay is at home, on
+the same paintings, one panel wide, at the proponents' direction to
+keep the background rather than paint a room. Three beats, each a scene
+script: the siga and Nanay on the street, the conversation at home, and
+Macario's thought back on the street, which opens the savings step.
+
+Three engine pieces, each general. Scene scripts, because an act's
+opening has to play on a login and arrivalDialogues deliberately do not;
+the alternative, an NPC placed to be walked up to, would make a
+cutscene something the student has to find. countCurrency, because the
+savings step counts money rather than people, and the balance already
+exists. objectiveCurrency: false, because the drip would otherwise have
+paid 25 barya for watching the opening and put the count at 25/100
+before the story had paid him anything. The "Bagong gawain" toast
+answers the script's "New Quest" line and is general: any linear act
+announces its next step.
+
+The savings step's flag is set by nothing, the deliberate gap used since
+Block 19: earning the barya, and what finishing the step means (handing
+it to Nanay is the obvious reading of its line), are the next passage,
+and the act stays open until then. The siga are stand-in stills made by
+make-placeholder-sprites.py the way Block 41's were (the Tindero twice,
+recoloured, one with a bandana; the Kutsero once), which now builds only
+the files named on its command line so adding one does not rewrite the
+rest. The lines are the proponents' as written, apostrophes
+straightened and the two "…" characters written as "...", since VT323's
+latin subset may not carry the ellipsis.
+
+What was removed from the content and kept on disk: Kabayo, the
+Kutsero, the Tindero, the Mananahi, Maryam and the man in the moro-moro
+and his guards, Bonifacio and the Katipunero, the ten citizens and the
+eight Bantay, the entablado inside and out, the horse and fight sounds,
+and the three items' tile pictures. None of the engine they exercised
+was touched, and the harness fixture still covers all of it. The
+assessment item bank (db/seeds/macario_items_v3.sql) was written
+against the old Act I's facts and has not been changed; see TRACKER.md.
+
+game.js v58, acts.js v11, content/act1.js v38, content/items.js v11.
+The siga pictures are new files rather than replaced ones, so
+ASSET_VERSION stays at 20. test.js gained section AZ, and
+verify_new_scene.js was rewritten for the new act.
 
 ## Pitfalls
 

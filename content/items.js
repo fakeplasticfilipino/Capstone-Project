@@ -24,10 +24,13 @@
 //   (Inventory.consume). Listed in Tindahan only while `forQuest` is
 //   an open quest.
 //
-// One permanent item ships, the stage clothes (Block 32). The items an
-// earlier pass carried were cleared with the Act I reset, because they
-// were content decisions made ahead of the source material (see
-// TRACKER.md). A permanent item takes this shape:
+// Block 52 emptied the catalogue with the Act I rewrite: the two apples
+// and the stage clothes belonged to scenes that are gone (the Tindero's
+// stall, Kabayo, the Mananahi). Their tile pictures stay in
+// assets/items/, and the harness fixture still carries every kind, so
+// the shop, equipment, consumables and quest items stay tested. The ids
+// "mansanas", "mansanas-kabayo" and "damit-entablado" must not be reused
+// for a different item. A permanent item takes this shape:
 //
 //   {
 //     id: "sibat", name: "Sibat", kind: "equipment", slot: "weapon",
@@ -41,62 +44,6 @@
 // =============================================================
 
 window.ITEMS = [
-  // Something to eat. Sold by Tindero in the kutsero scene
-  // (content/act1.js), and the first thing that makes a lost heart
-  // recoverable outside a pickup, which matters in a scene with a
-  // hazard in the road.
-  {
-    id: "mansanas",
-    name: "Mansanas",
-    description: "Sariwang mansanas mula kay Tindero. Kainin para magbalik ng lakas.",
-    kind: "consumable",
-    price: 5,
-    img: "assets/items/mansanas.png",
-    icon: "i-apple", // shown until Mansanas.png exists
-    use: { heal: 1 },
-    maxStack: 5,
-  },
-
-  // The first permanent item (Block 32): the stage clothes the Mananahi
-  // sewed for Macario, worn in the Damit slot. Equipment rather than a
-  // cosmetic, because it does something: while he stands still, a
-  // guard's meter fills at half speed. There is no outfit art, so it has
-  // no sheets and wearing it leaves his look unchanged; the tile shows
-  // the shirt symbol. Sold only by the Mananahi (soldBy), for 100 of the
-  // 200 barya Nanay hands him. The name and description are working
-  // wording for the proponents to replace.
-  {
-    id: "damit-entablado",
-    name: "Damit para sa Entablado",
-    description: "Ang damit na tinahi ng mananahi para sa pagtatanghal ni Macario.",
-    kind: "equipment",
-    slot: "outfit",
-    price: 100,
-    img: "assets/items/damit-entablado.png",
-    icon: "i-shirt", // shown until the picture exists
-    soldBy: "mananahi",
-    // Block 38: 0.2, five times slower, up from 0.5, on the proponent's
-    // report that half speed was visible but not convincing. A guard's
-    // meter that fills in about 1.4s takes about 7s while he stands still
-    // in these, which is long enough for a patrol to walk past him.
-    effect: { stillDetectionMult: 0.2 },
-  },
-
-  // The apple the horse is waiting for. A separate item from the one
-  // above on purpose (Block 25): with a single Mansanas a student could
-  // eat the only apple the quest needed, and "the apple for the horse"
-  // is clearer on the screen than an apple that is sometimes food and
-  // sometimes an errand. Sold only while bilhan_mansanas is open, and
-  // taken by Kabayo's gift, which is gated on buyFlag.
-  {
-    id: "mansanas-kabayo",
-    name: "Mansanas para sa kabayo",
-    description: "Malaking mansanas na ipinabili para sa kabayo ng kutsero.",
-    kind: "quest",
-    price: 5,
-    img: "assets/items/mansanas.png",
-    icon: "i-apple",
-    forQuest: "bumili_mansanas",
-    buyFlag: "binilhAngMansanas",
-  },
+  // Empty until the new Act I's story needs something to buy, wear or
+  // hand over.
 ];
