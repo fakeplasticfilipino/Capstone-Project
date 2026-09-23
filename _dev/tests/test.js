@@ -42,6 +42,7 @@ const MIME = {
   ".html": "text/html", ".js": "text/javascript", ".css": "text/css",
   ".png": "image/png", ".jpg": "image/jpeg", ".woff2": "font/woff2",
   ".mp3": "audio/mpeg",
+  ".wav": "audio/wav",
 };
 
 // A gameplay skeleton equivalent to the misyon scene an earlier pass of
@@ -4806,6 +4807,97 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("an act with holdOpen does not finish when every step is done",
        held.status === "playing" && held.done === 1 && held.total === 1, held);
+    await ctx.close();
+  }
+
+  console.log("\nBB. Sound effects, and people who leave the story (Block 58)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    // Every effect decoded ahead of time, like the gunshot.
+    await page.waitForFunction(() => Object.keys(SFX_SOURCES).every((n) => !!sfxBuffers[n]),
+      null, { timeout: 8000 }).catch(() => {});
+    const loaded = await page.evaluate(() => Object.keys(SFX_SOURCES).filter((n) => !sfxBuffers[n]));
+    ok("every sound effect file loads and decodes", loaded.length === 0, loaded);
+
+    // Which effect the engine asked for, per event, by wrapping playSfx.
+    await page.evaluate(() => {
+      window.__sfx = [];
+      const real = playSfx;
+      window.playSfx = (name) => { __sfx.push(name); return real(name); };
+    });
+    const heard = async (fn) => page.evaluate(async (src) => {
+      __sfx = [];
+      await (0, eval)(src)();
+      await new Promise((r) => setTimeout(r, 60));
+      return __sfx.slice();
+    }, fn.toString());
+    ok("a line of dialogue blips", (await heard(() => { playDialogue([{ speaker: "A", text: "b" }]); })).includes("blip"));
+    await page.keyboard.press("e");
+    await page.waitForTimeout(100);
+    ok("a jump makes a sound", (await heard(() => { handleJumpPress(); })).includes("jump"));
+    await page.waitForTimeout(900);
+    ok("barya earned rings the coin", (await heard(() => { Game.addCurrency(1); })).includes("coin"));
+    ok("barya spent does not", !(await heard(() => { Game.spendCurrency(1); })).includes("coin"));
+    const gift = await heard(() => {
+      const npc = { id: "t_g", x: 0, label: "G", dialogueSets: [],
+        gift: { buttonLabel: "x", requiresFlag: "t_r", givenFlag: "t_given", responseLines: [{ speaker: "G", text: "salamat" }] } };
+      startGift(npc); endDialogue();
+    });
+    ok("a gift handed over plays give", gift.includes("give"), gift);
+    const quest = await heard(() => {
+      const act = currentActData;
+      window.__saved = { o: act.objectives, l: act.linearObjectives };
+      act.linearObjectives = true;
+      act.objectives = [{ id: "q1", label: "Isa", flag: "t_q1" }, { id: "q2", label: "Dalawa", flag: "t_q2" }];
+      renderQuests();
+      state.flags.t_q1 = true; markDirty();
+    });
+    ok("a new task plays the quest chime", quest.includes("quest"), quest);
+    await page.evaluate(() => {
+      currentActData.objectives = __saved.o; currentActData.linearObjectives = __saved.l;
+      delete state.flags.t_q1; clearQuests();
+    });
+    const card = await heard(() => playIntertitle(["X"], { startBlack: true, holdMs: 10 }));
+    ok("a black card rings its bell", card.includes("intertitle"), card);
+    ok("sounds follow the Mga tunog switch", await page.evaluate(() => {
+      Game.setAudio({ music: true, sfx: false });
+      window.__SB = 0;
+      const make = AudioContext.prototype.createBufferSource;
+      AudioContext.prototype.createBufferSource = function () { __SB++; return make.call(this); };
+      playSfx("coin");
+      AudioContext.prototype.createBufferSource = make;
+      Game.setAudio({ music: true, sfx: true });
+      return __SB === 0;
+    }));
+
+    // hiddenByFlag: built hidden once its flag is set, and hidden in place
+    // by refreshNpcVisibility; revealedByFlag still works beside it.
+    const gone = await page.evaluate(async () => {
+      const scene = currentScene;
+      scene.npcs = scene.npcs || [];
+      scene.npcs.push({ id: "t_leaves", x: 600, label: "L", img: "x.png", hiddenByFlag: "t_after",
+        dialogueSets: [{ lines: [{ speaker: "L", text: "a" }] }] });
+      scene.npcs.push({ id: "t_comes", x: 800, label: "C", img: "x.png", startsHidden: true,
+        revealedByFlag: "t_after", dialogueSets: [{ lines: [{ speaker: "C", text: "a" }] }] });
+      loadScene(currentSceneId);
+      const shown = (id) => document.getElementById("npc-" + id).style.display !== "none";
+      const before = { leaves: shown("t_leaves"), comes: shown("t_comes") };
+      state.flags.t_after = true;
+      const unchanged = shown("t_leaves");
+      refreshNpcVisibility();
+      const after = { leaves: shown("t_leaves"), comes: shown("t_comes"),
+        hidden: NPCS.find((n) => n.id === "t_leaves").hidden };
+      loadScene(currentSceneId);
+      const rebuilt = { leaves: shown("t_leaves"), comes: shown("t_comes") };
+      scene.npcs = scene.npcs.filter((n) => !/^t_(leaves|comes)$/.test(n.id));
+      delete state.flags.t_after;
+      loadScene(currentSceneId);
+      return { before, unchanged, after, rebuilt };
+    });
+    ok("an NPC with hiddenByFlag is there until the flag", gone.before.leaves && !gone.before.comes, gone);
+    ok("the flag alone does not move anyone: refreshNpcVisibility does", gone.unchanged, gone);
+    ok("then he is gone and the revealed one is there", !gone.after.leaves && gone.after.hidden && gone.after.comes, gone);
+    ok("and a rebuilt scene keeps it that way", !gone.rebuilt.leaves && gone.rebuilt.comes, gone);
     await ctx.close();
   }
 

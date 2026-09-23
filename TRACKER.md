@@ -22,19 +22,19 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 23 Sep 2026, after Block 57 (Act I on one street, ten
-paintings long: no house and no tailor's shop, Nanay outside for good
-and sliding on rather than walking, "Tondo, 1880" and "1884" as black
-cards, the timing bar replaced by an apple-catching mini-game, the
-Kutsero's and the Mananahi's jobs as errands with fixed pay, the
-direktor on the street taking Macario into the entablado, and the
-finished tasks moved from under the quest log to settings), which
-followed Block 56 (the jobs, the savings, the errand; Act I held open)
-and Blocks 52 to 55 (Act I rewritten against the proponents' new
-script). Blocks through 41 are pushed (088f5e4); Blocks 42 to 57 are in
-the device folder and NOT yet pushed. Push everything as one commit (see
-Right now). test.js 621 passed, 0 failed; verify_new_scene.js 87 passed,
-0 failed. None of Blocks 42 to 57 has been played on the phone.
+Last updated: 23 Sep 2026, after Block 58 (the street cleared after the
+"1884" card, leaving Nanay, the Mananahi and the direktor, the shadow
+trees kept; and nine small sound effects), which followed Block 57 (Act
+I on one street, ten paintings long: no house and no tailor's shop,
+Nanay outside for good and sliding on, "Tondo, 1880" and "1884" as
+black cards, an apple-catching mini-game in place of the timing bar,
+the jobs as errands with fixed pay, the direktor on the street taking
+Macario into the entablado, and the finished tasks in settings). The
+proponent was happy with Block 57. Blocks through 41 are pushed
+(088f5e4); Blocks 42 to 58 are in the device folder and NOT yet pushed.
+Push everything as one commit (see Right now). test.js 634 passed, 0
+failed; verify_new_scene.js 91 passed, 0 failed. None of Blocks 42 to
+58 has been played on the phone.
 
 Blocks 52 to 57 are an experimental window: the new Act I is being tried
 out passage by passage, and some of it will not stay. Block 57 changes
@@ -115,7 +115,11 @@ entablado, which only the direktor takes Macario into.
               ipon" spends the 100; black, "1884 / Nagtrabaho si Macario
               bilang isang tagatulong ng kutsero at manananahi"; the
               black lifts on Macario beside the Mananahi, who gives him
-              the costume for the direktor. The direktor (x 13600, the
+              the costume for the direktor. Under that black the street
+              is cleared (Block 58): the Kutsero, the horse, the apple
+              tree and the customers are gone for good, and only Nanay,
+              the Mananahi and the direktor remain (the shadow trees
+              stay). The direktor (x 13600, the
               far end) takes him inside:
     entablado on entablado-inside.jpg. The direktor takes the costume,
               "Iabot ang damit", two placeholder lines, and pays 79 to
@@ -151,16 +155,20 @@ self-hosted in assets/fonts.
 
 Sound: Calm.mp3 loops as background music from the moment the world is
 entered, and Gun_Shot.mp3 plays on every shot. Horse.mp3 loops near the
-white horse (nearSound). Intense.mp3 (a fight's track) is on disk and in
+white horse (nearSound). Block 58 added nine small effects
+(assets/audio/sfx/*.wav, made by _dev/tools/make-sfx.py): a blip on
+each line of dialogue, jump, coin when barya is earned, give on a gift,
+a chime with Bagong gawain, catch and miss in the apple game, a swoosh
+on every fade, and a low bell with a black card. Intense.mp3 (a fight's track) is on disk and in
 no scene since Block 52. Settings has Musika and Mga tunog switches, both on by
 default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v42    js/game.js v63       js/shell.js v14
+    css/style.css v42    js/game.js v64       js/shell.js v14
     js/inventory.js v9   js/acts.js v12       js/assessment.js v3
-    content/act1.js v43  content/items.js v11  content/act2-4.js v1
-    ASSET_VERSION 21 (in js/game.js)
+    content/act1.js v44  content/items.js v11  content/act2-4.js v1
+    ASSET_VERSION 22 (in js/game.js)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
@@ -176,7 +184,7 @@ Its versions are in the list above.
 
 ## Right now
 
-Blocks 1 to 57 are built. Blocks 22 to 41 were one build session, 17 to
+Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
 18 September 2026, each on direct feedback from the proponent; Blocks
 42 to 49 were 20 September, and Blocks 50 and 51 the 21st:
 
@@ -275,8 +283,11 @@ Blocks 1 to 57 are built. Blocks 22 to 41 were one build session, 17 to
         bar; the jobs as errands (apples and the horse, three
         customers) with fixed pay of 50 each; the direktor on the
         street, taking Macario inside; finished tasks in settings
+    58  the street cleared after 1884 (hiddenByFlag); nine sound
+        effects: dialogue, jump, coin, gift, new task, catch, miss,
+        fade, black card
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 to 57 are in
+Everything through Block 41 is pushed (088f5e4). Blocks 42 to 58 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
 file, so the push is a commit of deletions and additions that git shows
 as renames: stage everything (git add -A) rather than picking files, or
@@ -295,7 +306,8 @@ entablado-outside.png, the ambience pictures, the drawing tools,
 "Claude outputs" and docs-private/screenshots; git add -A records the
 deletions. Do not delete horse.mp3 or intense.mp3: the harness uses
 both. Block 57 adds assets/sprites/scenery/puno-mansanas.png and
-_dev/tools/make-apple-tree.py.
+_dev/tools/make-apple-tree.py; Block 58 adds nine
+assets/audio/sfx/*.wav files and _dev/tools/make-sfx.py.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/scripts/reset_test_accounts.sql
@@ -361,7 +373,16 @@ Block 57:
       guide leading to each in turn along a long road (the longest walk
       is about 45 seconds end to end), and "+50 barya" twice.
     1884: after Nanay's gift, the black card, and the black lifting on
-      Macario beside the Mananahi. Nothing is seen to move.
+      Macario beside the Mananahi. Nothing is seen to move. Walking the
+      street after it, only Nanay, the Mananahi and the direktor are
+      there (Block 58).
+    Sound effects (Block 58), with the phone's volume at a classroom
+      level: the blip on each line should be barely there, the coin
+      and the chime clear but not sharp, the fade swoosh and the black
+      card's bell soft. Too loud or too quiet is one number per sound
+      in _dev/tools/make-sfx.py (the last argument of its write line);
+      rerun it and bump ASSET_VERSION. Failure looks like a sound that
+      is clipped or harsh, or any sound with Mga tunog off.
     The direktor at the far end: talking to him fades into the
       entablado; Lumabas returns beside him.
     Mga Setting from pause: "Mga natapos na gawain" lists what is done,
@@ -659,6 +680,8 @@ submit_assessment).
         onInteract and interactLabel, Game.doneQuests and the settings
         list (sections AY and BA); Act I on one street;
         make-apple-tree.py; verify_new_scene.js rewritten, 87
+    58  hiddenByFlag, refreshNpcVisibility; nine sound effects wired in
+        game.js; make-sfx.py (section BB; verify_new_scene.js to 91)
 
 ## Blocks remaining
 
@@ -827,17 +850,18 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 621 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 87
+test.js: 634 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 91
 checks driving the REAL content/act1.js and content/items.js through
 Act I as of Block 57: the ten-painting street, the "Tondo, 1880" card,
 the opening with the walk off beside Nanay, the talk and the thought,
 both jobs (apples caught with real key presses, a miss, a stop and a
 resume, the horse, three customers, the fixed pay), Nanay's gift, the
 "1884" card and the errand beside the Mananahi, the direktor taking him
-inside and paying with the act held open, the settings list, reloads
+inside and paying with the act held open, the street cleared after
+1884 (Block 58), the settings list, reloads
 mid-beat, saves from Blocks 52 and 56, and a guest.
-Both last ran green on 23 Sep 2026 against the Block 57 files (in a
+Both last ran green on 23 Sep 2026 against the Block 58 files (in a
 sandbox whose preinstalled Chromium matched Playwright 1.56, installed
 there with npm install --no-save playwright@1.56.1; package.json still
 asks for 1.62, which is right for the proponent's computer). Anything other than "0 failed"

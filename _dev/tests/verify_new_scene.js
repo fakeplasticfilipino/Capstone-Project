@@ -25,7 +25,7 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "..", "..");
 const PORT = 8096;
 const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg", ".mp3": "audio/mpeg" };
+const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg", ".mp3": "audio/mpeg", ".wav": "audio/wav" };
 
 const server = http.createServer((req, res) => {
   const rel = decodeURIComponent(req.url.split("?")[0]).replace(/^\/+/, "");
@@ -525,6 +525,8 @@ const doneInSettings = async (page) => {
      JSON.stringify((await intertitle(page)).lines) ===
        '["1884","Nagtrabaho si Macario bilang isang tagatulong ng kutsero at manananahi"]');
   ok("the scene never changes", await page.evaluate(() => currentSceneId === "tondo"));
+  ok("the jobs' people are still there until the black is up", await page.evaluate(() =>
+    !NPCS.find((n) => n.id === "puno").hidden));
   // A tap skips the reading time, not the fades, once the first line
   // has been up a moment (fade 900 + INTERTITLE_SKIP_AFTER_MS 1200).
   await page.waitForTimeout(2600);
@@ -536,6 +538,11 @@ const doneInSettings = async (page) => {
   const at = await page.evaluate(() => ({ x: posX, facing }));
   ok("he is beside the Mananahi, and her errand, as written",
      JSON.stringify(e1.lines) === JSON.stringify(ERRAND) && at.x === 6280 && at.facing === 1, { e1: e1.lines, at });
+  const cleared = await page.evaluate(() => NPCS.filter((n) => !n.hidden).map((n) => n.id));
+  ok("after 1884 the street is cleared: only Nanay, the Mananahi and the direktor (Block 58)",
+     JSON.stringify(cleared) === '["nanay","mananahi","direktor"]', cleared);
+  const trees = await page.evaluate(() => document.querySelectorAll(".shadow-tree").length);
+  ok("the shadow trees over the joins stay", trees === 9, trees);
   await page.waitForTimeout(300);
   ok("the task is the errand, and the guide points at the direktor on the street",
      JSON.stringify((await log(page)).current) === JSON.stringify([STEP.errand]) &&
@@ -620,6 +627,8 @@ const doneInSettings = async (page) => {
   c = await readConversation(r.page, 3);
   ok("the errand, beside the Mananahi", JSON.stringify(c.lines) === JSON.stringify(ERRAND) &&
      await r.page.evaluate(() => posX === 6280));
+  ok("and a save from after the years loads the street already cleared", await r.page.evaluate(() =>
+    JSON.stringify(NPCS.filter((n) => !n.hidden).map((n) => n.id)) === '["nanay","mananahi","direktor"]'));
   await r.ctx.close();
 
   r = await resume("tondo", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true,

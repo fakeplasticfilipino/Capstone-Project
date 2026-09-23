@@ -108,7 +108,7 @@ off the repository.
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-placeholder-sprites.py,
                                make-shadow-tree.py, make-apple-tree.py,
-                               and
+                               make-sfx.py, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
                                form and old screenshots, kept on the
@@ -543,6 +543,8 @@ NPC shape:
       animation: { src, frames, fps },           sprite sheet
       startsHidden: true,                        optional
       revealedByFlag: "someFlag",                optional; unhides when set
+      hiddenByFlag: "someFlag",                  optional; leaves when set
+                                                 (Block 58)
       opensShop: true,                           optional; see below
       opensShopAfter: "someFlag",                optional; talks, then sells
       nearSound: "assets/audio/sfx/x.mp3",       optional; loops while near
@@ -664,6 +666,9 @@ of them plain globals in game.js, like addQuest:
     runSceneScript()             plays the scene's pending script now,
                                  for a script a gift or a conversation
                                  unlocks mid-scene (Block 57)
+    refreshNpcVisibility()       applies startsHidden/revealedByFlag and
+                                 hiddenByFlag to the scene's NPCs now
+                                 (Block 58); revealNpcsByFlag calls it
 
 scripts (Block 52) are how a scene plays one of these by itself. The
 first entry whose requiresFlag is set (or that has none) and whose
@@ -3590,6 +3595,52 @@ street. The proponents' own lines are unchanged, including "manananahi"
 in the 1884 card, spelled as given. game.js v63, shell.js v14,
 style.css v42, content/act1.js v43. puno-mansanas.png is a new file,
 so ASSET_VERSION stays at 21.
+
+The street cleared after 1884, and sound effects (Block 58). Requested
+after Block 57, which the proponent was happy with: clean the map after
+the time-skip, with no more trees and miscellaneous NPCs, and add sound
+effects. Asked and answered before building: of the trees, only the
+apple tree goes (the shadow trees over the joins stay, since without
+them the joins show); and Nanay stays with the Mananahi and the
+direktor.
+
+An NPC may declare hiddenByFlag, the opposite of revealedByFlag: once
+the flag is set, he is gone. The Kutsero, the horse, the apple tree and
+the three customers all name naibigayAngIponKayNanay, the flag Nanay's
+gift sets. buildNpcs reads both rules from the flags (npcShouldHide), so
+a reload rebuilds the street in the right state, but setting the flag
+does not by itself move anyone: content calls refreshNpcVisibility at
+the moment it wants the change seen, which for 1884 is under the black
+card (whileBlack), so the street is full when the card comes up and
+cleared when it lifts. revealNpcsByFlag now calls refreshNpcVisibility,
+so its two old callers (the death sequence, a save restore) apply both
+rules.
+
+Nine small effects, made by _dev/tools/make-sfx.py as retro tones
+(square, triangle and sine waves and a little noise) in 16-bit mono WAV
+at 22050 Hz, 1 to 94 KB each, their loudness baked into the file so the
+engine plays every one at SFX_VOLUME: blip on each line of dialogue
+(very quiet, since it is the one heard most), jump, coin when barya is
+earned (not when spent), give when a gift is handed over, quest with
+the Bagong gawain toast, catch and miss in the apple game, door on
+every fade between scenes, and intertitle, a slow low bell, with a
+black card's first line. All nine are events the engine already had, so
+the calls are in game.js and content names none of them; every act gets
+them. They load and play the way the gunshot does (Block 30): fetched
+and decoded into Web Audio buffers at parse time, an <audio> element as
+the fallback, silent when Mga tunog is off or the tab is hidden. No
+recorded sound was available and none was invented from a real source;
+a recorded or commissioned effect replaces any of these by dropping a
+file over the same name. WAV rather than MP3 because nothing in the
+sandbox encodes MP3 and the files are small enough that it does not
+matter; GitHub Pages serves WAV as audio/wav.
+
+Section BB of the harness checks that every effect decodes, which event
+asks for which effect (by wrapping playSfx), that spending barya is
+silent, that the switch silences them, and hiddenByFlag.
+verify_new_scene.js checks the street before and after 1884, and a save
+from after it. game.js v64, content/act1.js v44, ASSET_VERSION 22 (new
+files under assets/).
 
 ## Pitfalls
 

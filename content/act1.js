@@ -153,6 +153,13 @@ const CUSTOMERS = [
 ];
 const customerFlag = (c) => "naihatidKay_" + c.id.replace(/-/g, "_");
 
+// Block 58. After the years pass (the savings given, "1884"), the street
+// is cleared of the jobs: the Kutsero, his horse, the apple tree and the
+// three customers leave the story, at the proponent's direction. Nanay,
+// the Mananahi and the direktor stay. The shadow trees over the joins
+// are part of the backdrop and stay too.
+const AFTER_THE_YEARS = "naibigayAngIponKayNanay";
+
 // -------------------------------------------------------------
 // The opening, on the street. Black first, with the place and the year.
 // The siga walk up behind him from the left, he turns to them, Nanay
@@ -248,7 +255,10 @@ async function thinkingAboutWork(alreadyHeld) {
 async function yearsOfWork() {
   setCutscene(true);
   await playIntertitle(["1884", "Nagtrabaho si Macario bilang isang tagatulong ng kutsero at manananahi"], {
-    whileBlack: () => placePlayer(MANANAHI_X - BESIDE, 1),
+    whileBlack: () => {
+      refreshNpcVisibility(); // the jobs' people leave (AFTER_THE_YEARS)
+      placePlayer(MANANAHI_X - BESIDE, 1);
+    },
   });
   await wait(300);
   await playDialogue([
@@ -443,6 +453,7 @@ window.ACT_1 = {
         },
         {
           id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: KUTSERO,
+          hiddenByFlag: AFTER_THE_YEARS,
           dialogueSets: [
             {
               skipIfFlag: "nakausapAngKutsero",
@@ -495,7 +506,7 @@ window.ACT_1 = {
         {
           // The white horse, beside the Kutsero, and the one he is fed to.
           id: "kabayo", x: KABAYO_X, label: "Kabayo", animation: KABAYO,
-          displayHeight: 120,
+          displayHeight: 120, hiddenByFlag: AFTER_THE_YEARS,
           nearSound: "assets/audio/sfx/horse.mp3",
           dialogueSets: [
             {
@@ -521,6 +532,7 @@ window.ACT_1 = {
           // E opens the apple mini-game (onInteract).
           id: "puno", x: PUNO_X, label: "Puno ng mansanas", animation: PUNO,
           displayHeight: 280, interactLabel: "Pumitas",
+          hiddenByFlag: AFTER_THE_YEARS,
           dialogueSets: [],
           onInteract: pickApples,
         },
@@ -593,6 +605,7 @@ window.ACT_1 = {
         // The three customers (CUSTOMERS, above).
         ...CUSTOMERS.map((c) => ({
           id: c.id, x: c.x, label: c.label, animation: c.animation,
+          hiddenByFlag: AFTER_THE_YEARS,
           dialogueSets: [
             { skipIfFlag: customerFlag(c),
               lines: [{ speaker: c.label, text: c.waiting }] },

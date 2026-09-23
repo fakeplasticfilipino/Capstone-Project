@@ -243,7 +243,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 21;
+const ASSET_VERSION = 22;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -393,6 +393,7 @@ function renderQuests() {
     if (id !== questAnnouncedId) {
       if (questAnnounceReady && id && questAnnouncedId !== null) {
         showToast("Bagong gawain: " + current[0].text, 3200);
+        playSfx("quest"); // Block 58; never reached at parse time
       }
       questAnnouncedId = id;
     }
@@ -869,8 +870,7 @@ function buildNpcs(token) {
     // Checking the flag here rather than only on reveal means a
     // reloaded save rebuilds the world in the right state without
     // the engine knowing which NPC belongs to which act.
-    npc.hidden =
-      Boolean(npc.startsHidden) && !state.flags[npc.revealedByFlag];
+    npc.hidden = npcShouldHide(npc);
 
     const el = document.createElement("div");
     el.className = "entity";
@@ -1111,14 +1111,27 @@ function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth, opts) {
 // which put Act I content knowledge inside the engine and meant
 // every later act would need its own copy of the same three lines.
 function revealNpcsByFlag() {
-  NPCS.forEach((npc) => {
-    if (!npc.revealedByFlag) return;
-    if (!state.flags[npc.revealedByFlag]) return;
-    if (!npc.hidden) return;
+  refreshNpcVisibility();
+}
 
-    npc.hidden = false;
+// Block 58. Whether an NPC is hidden, from the flags alone: one that
+// startsHidden until its revealedByFlag is set, or one that leaves the
+// story once its hiddenByFlag is set (the people of the jobs, gone after
+// the years pass). Read by buildNpcs, so a reload rebuilds the street in
+// the right state, and by refreshNpcVisibility, which content calls when
+// the change should happen in front of the student (under a black card).
+function npcShouldHide(npc) {
+  if (npc.hiddenByFlag && state.flags[npc.hiddenByFlag]) return true;
+  return Boolean(npc.startsHidden) && !state.flags[npc.revealedByFlag];
+}
+
+function refreshNpcVisibility() {
+  NPCS.forEach((npc) => {
+    const hide = npcShouldHide(npc);
+    if (hide === Boolean(npc.hidden)) return;
+    npc.hidden = hide;
     const el = document.getElementById("npc-" + npc.id);
-    if (el) el.style.display = "";
+    if (el) el.style.display = hide ? "none" : "";
   });
 }
 
@@ -1713,6 +1726,7 @@ function handleJumpPress() {
   if (!onGround) return; // single jump, no double jump by decision
   velY = JUMP_VELOCITY;
   onGround = false;
+  playSfx("jump"); // Block 58
 }
 
 document.addEventListener("keyup", (e) => {
@@ -1987,6 +2001,7 @@ function showDialogueStep() {
   const line = activeSet.lines[dialogueStep];
   dialogueSpeaker.textContent = line.speaker;
   dialogueText.textContent = line.text;
+  playSfx("blip"); // Block 58
 }
 
 function advanceDialogue() {
@@ -2008,6 +2023,7 @@ function endDialogue() {
 
   if (finishedMode === "gift") {
     const gift = finishedNpc.gift;
+    playSfx("give"); // Block 58
     state.flags[gift.givenFlag] = true;
     markDirty();
     if (gift.completesQuest) completeQuest(gift.completesQuest);
@@ -2133,6 +2149,7 @@ async function fadeToScene(sceneId, placement) {
   clearTimeout(shootFireTimer);
 
   blackout.classList.add("visible");
+  playSfx("door"); // Block 58
   await wait(900); // fade to black
 
   loadScene(sceneId); // swap while hidden behind black
@@ -3452,6 +3469,7 @@ function playCatchGame(opts) {
             count++;
             apple = null;
             drawApple();
+            playSfx("catch"); // Block 58
             const line = typeof o.onCatch === "function" ? o.onCatch(count) : "";
             if (finished()) showDone();
             else setResult(line || "Nasalo mo! (" + count + "/" + goal + ")", "catch-hit");
@@ -3459,6 +3477,7 @@ function playCatchGame(opts) {
           } else if (apple.y >= fieldH - CATCH_APPLE_SIZE) {
             apple = null;
             drawApple();
+            playSfx("miss"); // Block 58
             setResult(o.missText || "Nahulog sa lupa! May isa pa.", "catch-miss");
             nextAppleAt = now + 600;
           } else {
@@ -3639,6 +3658,7 @@ function playIntertitle(lines, opts) {
     skipFrom = performance.now() + INTERTITLE_SKIP_AFTER_MS;
     window.addEventListener("keydown", onKey, true);
     el.addEventListener("pointerdown", onTap);
+    playSfx("intertitle"); // Block 58, with the first line
     try {
       for (const p of box.children) {
         p.classList.add("shown");
@@ -4056,7 +4076,23 @@ const MUSIC_SRC = "assets/audio/music/calm.mp3";
 // Block 35. The track now playing. A scene may name its own (music) and a
 // script may change it for a moment (setMusic, the fight). null is Calm.
 let musicSrc = MUSIC_SRC;
-const SFX_SOURCES = { gunShot: "assets/audio/sfx/gunshot.mp3" };
+// Block 58. The small effects, made by _dev/tools/make-sfx.py with their
+// loudness baked into each file, so every one plays at SFX_VOLUME. All
+// are events the engine already knows about (a line of dialogue, a jump,
+// barya earned, a gift, a new task, a catch, a fade, a black card), so
+// content names none of them and every act gets them.
+const SFX_SOURCES = {
+  gunShot: "assets/audio/sfx/gunshot.mp3",
+  blip: "assets/audio/sfx/blip.wav",
+  coin: "assets/audio/sfx/coin.wav",
+  give: "assets/audio/sfx/give.wav",
+  quest: "assets/audio/sfx/quest.wav",
+  catch: "assets/audio/sfx/catch.wav",
+  miss: "assets/audio/sfx/miss.wav",
+  jump: "assets/audio/sfx/jump.wav",
+  door: "assets/audio/sfx/door.wav",
+  intertitle: "assets/audio/sfx/intertitle.wav",
+};
 
 // Music sits under everything else. It is the one sound that never
 // stops, and a classroom of phones all playing it at full volume is
@@ -5183,6 +5219,7 @@ window.Game = {
     if (!n) return currency;
     currency += n;
     markDirty();
+    playSfx("coin"); // Block 58
     return currency;
   },
 
