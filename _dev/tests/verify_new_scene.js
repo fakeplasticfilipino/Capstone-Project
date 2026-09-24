@@ -734,6 +734,124 @@ const storyDrift = () => {
   await r.ctx.close();
 
   // ---------------------------------------------------------------
+  // Block 64. The notebook: ten pages on the street, outside the story.
+  // ---------------------------------------------------------------
+  console.log("\nThe notebook");
+  r = await resume("tondo", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true });
+  await r.page.waitForTimeout(400);
+  const nb0 = await r.page.evaluate(() => {
+    const pages = PICKUPS.filter((p) => p.type === "page");
+    const joins = panelJoins(currentScene);
+    const clash = [];
+    pages.forEach((p) => {
+      joins.forEach((j) => { if (Math.abs(p.x + PICKUP_SIZE / 2 - j) < 90) clash.push(p.id + " by join " + j); });
+      NPCS.forEach((n) => { if (p.x + PICKUP_SIZE > n.x - 60 && p.x < n.x + NPC_WIDTH + 60) clash.push(p.id + " by " + n.id); });
+    });
+    return { book: Game.notebook(), pages: pages.length, drawn: document.querySelectorAll(".pickup-page").length,
+      high: pages.filter((p) => typeof p.y === "number" && p.y - GROUND_LEVEL > PICKUP_REACH).length,
+      first: Math.min(...pages.map((p) => p.x)), clash };
+  });
+  ok("ten pages lie on the street, none found yet, half of them at jump height",
+     nb0.book && nb0.book.total === 10 && nb0.book.found === 0 && nb0.pages === 10 && nb0.drawn === 10 && nb0.high === 5, nb0);
+  ok("each page clear of every join and everyone to talk to", nb0.clash.length === 0, nb0.clash);
+  ok("and none on the opening's walk (it ends at 1880)", nb0.first > 1880 + 200, nb0.first);
+  ok("the notebook hides a page's text until it is found",
+     nb0.book.entries.every((e) => !e.found && e.text === "" && e.title === ""), nb0.book.entries[0]);
+
+  // A page on the ground: walking over it opens its card.
+  const nb1 = await r.page.evaluate(async () => {
+    window.__asked = [];
+    const real = playSfx;
+    window.playSfx = (name) => { __asked.push(name); return real(name); };
+    posX = 2400; posY = floorHeightAt(posX); onGround = true;
+    keysPressed["d"] = true;
+    for (let i = 0; i < 60 && document.getElementById("page-card").classList.contains("hidden"); i++) {
+      await new Promise((res) => setTimeout(res, 50));
+    }
+    keysPressed["d"] = false;
+    return { card: !document.getElementById("page-card").classList.contains("hidden"),
+      eyebrow: document.getElementById("page-card-eyebrow").textContent,
+      title: document.getElementById("page-card-title").textContent,
+      blocked: uiBlocked, flag: state.flags.pahina_tondo === true, asked: __asked.slice(),
+      gone: !document.getElementById("pickup-pahina-tondo") };
+  });
+  ok("walking over a page opens it: which page, its title, and it is saved",
+     nb1.card && nb1.eyebrow === "Pahina ng Kasaysayan 1 / 10" && nb1.title === "Anak ng Tondo" &&
+     nb1.flag && nb1.gone && nb1.asked.includes("page"), nb1);
+  ok("the world stops while it is read", nb1.blocked === true);
+  // A key held as the page is reached does not close it unread: only
+  // one pressed a moment after it opened does.
+  await r.page.waitForTimeout(350);
+  await r.page.keyboard.press(" ");
+  await r.page.waitForTimeout(150);
+  const nb2 = await r.page.evaluate(() => ({ card: !document.getElementById("page-card").classList.contains("hidden"),
+    blocked: uiBlocked, jumped: velY > 0 }));
+  ok("Space closes it, and does not also jump", !nb2.card && !nb2.blocked && !nb2.jumped, nb2);
+
+  // A page at jump height: passed under, it stays; jumped for, it is taken.
+  const nb3 = await r.page.evaluate(async () => {
+    const p = PICKUPS.find((q) => q.id === "pahina-hanapbuhay");
+    posX = p.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2; posY = floorHeightAt(posX); onGround = true; velY = 0;
+    await new Promise((res) => setTimeout(res, 200));
+    const under = state.flags.pahina_hanapbuhay === true;
+    handleJumpPress();
+    for (let i = 0; i < 30 && !state.flags.pahina_hanapbuhay; i++) await new Promise((res) => setTimeout(res, 40));
+    return { under, jumped: state.flags.pahina_hanapbuhay === true,
+      eyebrow: document.getElementById("page-card-eyebrow").textContent };
+  });
+  ok("a page at jump height is not taken by walking under it", nb3.under === false, nb3);
+  ok("and is taken with a jump", nb3.jumped && nb3.eyebrow === "Pahina ng Kasaysayan 2 / 10", nb3);
+  await r.page.click("#page-card-close");
+  await r.page.waitForTimeout(150);
+
+  // The Kuwaderno, from pause.
+  await r.page.keyboard.press("Escape");
+  await r.page.waitForTimeout(200);
+  const nb4 = await r.page.evaluate(() => ({
+    btn: document.querySelector("#shell-notebook .lbl").textContent,
+    shown: !document.getElementById("shell-notebook").classList.contains("hidden") }));
+  ok("the pause screen offers the Kuwaderno with its count", nb4.shown && nb4.btn === "Kuwaderno 2/10", nb4);
+  await r.page.click("#shell-notebook");
+  await r.page.waitForTimeout(200);
+  const nb5 = await r.page.evaluate(() => ({
+    items: [...document.querySelectorAll("#shell-notebook-list li")].map((li) => li.textContent),
+    count: document.getElementById("shell-notebook-count").textContent }));
+  ok("the Kuwaderno lists every page, the found ones in full and the rest as ? ? ?",
+     nb5.items.length === 10 && /^1\. Anak ng Tondo.*Tondo, Maynila/.test(nb5.items[0]) &&
+     /^2\. Mananahi at barbero/.test(nb5.items[1]) && nb5.items[2] === "3. ? ? ?" && nb5.count === "2 / 10", nb5);
+  await r.page.keyboard.press("Escape");
+  await r.page.waitForTimeout(150);
+  ok("Escape goes back to pause", await r.page.evaluate(() => Shell.state === "paused"));
+  await r.page.keyboard.press("Escape");
+  await r.page.waitForTimeout(150);
+
+  // The last page completes it.
+  const nb6 = await r.page.evaluate(async () => {
+    __asked = [];
+    for (const p of PICKUPS.filter((q) => q.type === "page" && !pickupTaken(q))) {
+      posX = p.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2;
+      posY = (typeof p.y === "number" ? p.y : floorHeightAt(posX)); velY = 0; onGround = false;
+      for (let i = 0; i < 20 && !pickupTaken(p); i++) await new Promise((res) => setTimeout(res, 30));
+      document.getElementById("page-card-close").click();
+      await new Promise((res) => setTimeout(res, 30));
+    }
+    return { book: Game.notebook(), last: __asked[__asked.length - 1],
+      note: document.getElementById("page-card-note").textContent };
+  });
+  ok("finding the tenth page fills the Kuwaderno, with a flourish",
+     nb6.book.found === 10 && nb6.last === "fanfare" && /Nabuo mo ang Kuwaderno/.test(nb6.note), nb6);
+  const kept = await r.page.evaluate(() => Object.assign({}, state.flags));
+  await r.ctx.close();
+
+  r = await resume("tondo", kept);
+  await r.page.waitForTimeout(400);
+  const nb7 = await r.page.evaluate(() => ({ found: Game.notebook().found,
+    drawn: document.querySelectorAll(".pickup-page").length }));
+  ok("found pages stay found after a reload, and are not put back on the road",
+     nb7.found === 10 && nb7.drawn === 0, nb7);
+  await r.ctx.close();
+
+  // ---------------------------------------------------------------
   console.log("\nGuest");
   const g = await newPage(browser, { session: null });
   await g.page.click("#shell-guest");

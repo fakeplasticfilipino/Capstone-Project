@@ -77,6 +77,7 @@ const Shell = {
     if (window.Game) Game.setUiBlocked(true);
 
     this._watchOrientation();
+    this._watchAssets();
 
     this._showPanel("title");
     this.el.overlay.classList.remove("hidden");
@@ -95,7 +96,11 @@ const Shell = {
         shop: document.getElementById("shell-shop"),
         logout: document.getElementById("shell-logout-confirm"),
         reset: document.getElementById("shell-reset-confirm"),
+        loading: document.getElementById("shell-loading"),
+        notebook: document.getElementById("shell-notebook-panel"),
       },
+      notebookBtn: document.getElementById("shell-notebook"),
+      notebookBack: document.getElementById("shell-notebook-back"),
       startBtn: document.getElementById("shell-start"),
       guestBtn: document.getElementById("shell-guest"),
       titleNote: document.getElementById("shell-title-note"),
@@ -147,6 +152,10 @@ const Shell = {
     this.el.pauseSettingsBtn.addEventListener("click", () =>
       this._openSettings("pause")
     );
+    if (this.el.notebookBtn) {
+      this.el.notebookBtn.addEventListener("click", () => this._openNotebook());
+      this.el.notebookBack.addEventListener("click", () => this._closeNotebook());
+    }
     this.el.logoutBtn.addEventListener("click", () =>
       this._showPanel("logout")
     );
@@ -245,6 +254,7 @@ const Shell = {
       if (this.state === "playing") this.openPause();
       else if (this.state === "paused") this.closePause();
       else if (this.state === "settings") this._closeSettings();
+      else if (this.state === "notebook") this._closeNotebook();
       else if (this.state === "inventory") this._closeInventory();
       else if (this.state === "shop") this._closeShop();
     });
@@ -338,9 +348,8 @@ const Shell = {
 
     if (this.entered) {
       // The no-session path: the student tapped Magsimula, logged
-      // in, and is already through. Nothing to wait for.
-      this._enterWorld();
-      return Promise.resolve();
+      // in, and is already through. Nothing to wait for but the art.
+      return this._enterWorld();
     }
 
     // Clears any Subukan Ulit offer the load timer put here. A world
@@ -367,11 +376,12 @@ const Shell = {
     this.entered = true;
 
     if (this.ready) {
-      this._enterWorld();
-      if (this.entryResolve) {
-        this.entryResolve();
-        this.entryResolve = null;
-      }
+      this._enterWorld().then(() => {
+        if (this.entryResolve) {
+          this.entryResolve();
+          this.entryResolve = null;
+        }
+      });
       return;
     }
 
@@ -399,11 +409,48 @@ const Shell = {
     }
   },
 
-  _enterWorld() {
+  // Block 62. If the student is through the gate before the scene's
+  // pictures have arrived, the screen says so and waits, up to
+  // ENTRY_ART_WAIT_MS, rather than opening onto an empty road. Returns a
+  // promise, and the entry promise is resolved only after it, because
+  // what game.js does next (the trivia card, the pre-test, the opening
+  // script) must not start behind this screen.
+  ENTRY_ART_WAIT_MS: 20000,
+
+  async _enterWorld() {
+    if (window.Game && Game.assetProgress) {
+      const progress = Game.assetProgress();
+      if (progress.done < progress.total) {
+        this.state = "loading";
+        this._showPanel("loading");
+        this.el.overlay.classList.remove("hidden");
+        await Game.whenAssetsSettled(this.ENTRY_ART_WAIT_MS);
+      }
+    }
     this.state = "playing";
     this.el.overlay.classList.add("hidden");
     if (window.Game) Game.setUiBlocked(false);
     this._applyOrientation();
+  },
+
+  // Block 62. Every loading bar on the shell's screens, drawn from the
+  // engine's count of pictures asked for and arrived. Written only when
+  // the numbers change, which is at most once per picture.
+  _watchAssets() {
+    if (!window.Game || !Game.onAssetProgress) return;
+    const draw = (p) => {
+      const full = p.done >= p.total;
+      const pct = p.total ? Math.round((p.done / p.total) * 100) : 100;
+      document.querySelectorAll(".shell-loadbar").forEach((bar) => {
+        bar.classList.toggle("shell-loadbar-full", full);
+        bar.firstElementChild.style.width = pct + "%";
+      });
+      document.querySelectorAll(".shell-loadbar-note").forEach((note) => {
+        note.textContent = full ? "" : "Inihahanda ang mga larawan... " + pct + "%";
+      });
+    };
+    Game.onAssetProgress(draw);
+    draw(Game.assetProgress());
   },
 
   // -----------------------------------------------------------
@@ -422,6 +469,7 @@ const Shell = {
 
     this.state = "paused";
     Game.setUiBlocked(true);
+    this._refreshNotebookButton();
     this._showPanel("pause");
     this.el.overlay.classList.remove("hidden");
   },
@@ -479,6 +527,57 @@ const Shell = {
       li.textContent = text;
       list.appendChild(li);
     });
+  },
+
+  // -----------------------------------------------------------
+  // The notebook (Block 64)
+  // -----------------------------------------------------------
+
+  // Shown only for an act that has a notebook, with how many pages are
+  // found on the button itself, so the pause screen is where a student
+  // notices there is something to look for.
+  _refreshNotebookButton() {
+    const btn = this.el.notebookBtn;
+    if (!btn) return;
+    const book = window.Game && Game.notebook ? Game.notebook() : null;
+    btn.classList.toggle("hidden", !book);
+    if (book) setLabel(btn, (book.title || "Kuwaderno") + " " + book.found + "/" + book.total);
+  },
+
+  _openNotebook() {
+    if (this.state !== "paused") return;
+    const book = window.Game && Game.notebook ? Game.notebook() : null;
+    if (!book) return;
+    document.getElementById("shell-notebook-title").textContent = book.title || "Kuwaderno";
+    document.getElementById("shell-notebook-count").textContent = book.found + " / " + book.total;
+    document.getElementById("shell-notebook-hint").textContent =
+      book.found === book.total ? "" : book.hint;
+    const list = document.getElementById("shell-notebook-list");
+    list.innerHTML = "";
+    // Written as text, never HTML, like every other line from content.
+    book.entries.forEach((entry) => {
+      const li = document.createElement("li");
+      li.className = "notebook-entry" + (entry.found ? " notebook-found" : "");
+      const head = document.createElement("div");
+      head.className = "notebook-entry-title";
+      head.textContent = entry.n + ". " + (entry.found ? entry.title : "? ? ?");
+      li.appendChild(head);
+      if (entry.found) {
+        const text = document.createElement("div");
+        text.className = "notebook-entry-text";
+        text.textContent = entry.text;
+        li.appendChild(text);
+      }
+      list.appendChild(li);
+    });
+    this.state = "notebook";
+    this._showPanel("notebook");
+  },
+
+  _closeNotebook() {
+    if (this.state !== "notebook") return;
+    this.state = "paused";
+    this._showPanel("pause");
   },
 
   _closeSettings() {
@@ -1235,7 +1334,8 @@ const Shell = {
     // width a phone held sideways actually has; every other panel is a
     // single column of buttons and keeps the narrow box.
     if (this.el.box) {
-      this.el.box.classList.toggle("shell-box-wide", name === "inventory" || name === "shop");
+      this.el.box.classList.toggle("shell-box-wide",
+        name === "inventory" || name === "shop" || name === "notebook");
     }
   },
 

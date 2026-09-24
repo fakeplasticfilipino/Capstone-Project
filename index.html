@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="css/style.css?v=43" />
+  <link rel="stylesheet" href="css/style.css?v=44" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -145,6 +145,9 @@
           <div id="catch-canopy"></div>
           <div id="catch-apple" class="hidden"></div>
           <div id="catch-basket"></div>
+          <!-- Block 65. The "+1" over a catch and the splat of a miss. -->
+          <div id="catch-pop"></div>
+          <div id="catch-splat"></div>
         </div>
         <p id="catch-result" class="shell-sub"></p>
         <div id="catch-actions">
@@ -158,6 +161,21 @@
             <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Block 64. A page of the notebook, opened by picking one up on
+         the road (game.js, showNotebookCard). Text written by game.js
+         from the act's notebook. -->
+    <div id="page-card" class="hidden" role="dialog" aria-live="polite">
+      <div id="page-card-box">
+        <div id="page-card-eyebrow" class="shell-eyebrow"></div>
+        <h2 id="page-card-title" class="shell-heading"></h2>
+        <p id="page-card-text"></p>
+        <p id="page-card-note" class="shell-sub"></p>
+        <button id="page-card-close" class="shell-btn shell-btn-primary" type="button">
+          <span class="ico"><svg aria-hidden="true"><use href="#i-check"></use></svg></span><span class="lbl">Sige</span>
+        </button>
       </div>
     </div>
 
@@ -217,6 +235,10 @@
           <div class="shell-eyebrow">Araling Panlipunan 8</div>
           <h1 class="shell-heading">MACARIO</h1>
           <p class="shell-sub">Ang buhay ni Macario Sakay</p>
+          <!-- Block 62. How much of the world's art has arrived. Drawn
+               by shell.js from Game.assetProgress; hidden once full. -->
+          <div class="shell-loadbar" aria-hidden="true"><div class="shell-loadbar-fill"></div></div>
+          <div class="shell-loadbar-note"></div>
           <button id="shell-start" class="shell-btn shell-btn-primary" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl">Naglo-load...</span>
           </button>
@@ -232,6 +254,17 @@
           <div id="shell-title-note" class="shell-note"></div>
         </div>
 
+        <!-- Block 62. Shown only when the student has tapped in before the
+             scene's pictures have arrived, so they never walk into an
+             empty road. -->
+        <div id="shell-loading" class="shell-panel hidden">
+          <div class="shell-eyebrow">MACARIO</div>
+          <h2 class="shell-heading">Sandali lang...</h2>
+          <p class="shell-sub">Inihahanda ang mga larawan ng laro.</p>
+          <div class="shell-loadbar" aria-hidden="true"><div class="shell-loadbar-fill"></div></div>
+          <div class="shell-loadbar-note"></div>
+        </div>
+
         <div id="shell-pause" class="shell-panel hidden">
           <div class="shell-eyebrow">MACARIO</div>
           <h2 class="shell-heading">Naka-pause</h2>
@@ -239,12 +272,34 @@
           <button id="shell-resume" class="shell-btn shell-btn-primary" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl">Magpatuloy</span>
           </button>
+          <!-- Block 64. Hidden for an act without a notebook; the label's
+               count is written by shell.js. -->
+          <button id="shell-notebook" class="shell-btn shell-btn-ghost hidden" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-scroll"></use></svg></span><span class="lbl">Kuwaderno</span>
+          </button>
           <button id="shell-pause-settings" class="shell-btn shell-btn-ghost" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-gear"></use></svg></span><span class="lbl">Mga Setting</span>
           </button>
           <button id="shell-logout" class="shell-btn shell-btn-danger" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-out"></use></svg></span><span class="lbl">Mag-log Out</span>
           </button>
+        </div>
+
+        <!-- Block 64. The notebook: every page, found or not. Built by
+             shell.js from Game.notebook(). -->
+        <div id="shell-notebook-panel" class="shell-panel shell-panel-wide hidden">
+          <div class="inv-head">
+            <div class="inv-title">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-scroll"></use></svg></span>
+              <h2 class="shell-heading" id="shell-notebook-title">Kuwaderno</h2>
+            </div>
+            <div class="inv-balance" id="shell-notebook-count"></div>
+            <button id="shell-notebook-back" class="shell-btn shell-btn-ghost inv-back" type="button">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
+            </button>
+          </div>
+          <p class="shell-sub" id="shell-notebook-hint"></p>
+          <ol id="shell-notebook-list" class="notebook-list"></ol>
         </div>
 
         <div id="shell-settings" class="shell-panel hidden">
@@ -464,15 +519,15 @@
        back except the one guarded awaitEntry call in game.js. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
-  <script src="content/act1.js?v=45"></script>
+  <script src="content/act1.js?v=46"></script>
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=11"></script>
-  <script src="js/game.js?v=66"></script>
+  <script src="js/game.js?v=67"></script>
   <script src="js/acts.js?v=12"></script>
   <script src="js/inventory.js?v=9"></script>
   <script src="js/assessment.js?v=3"></script>
-  <script src="js/shell.js?v=14"></script>
+  <script src="js/shell.js?v=15"></script>
 </body>
 </html>

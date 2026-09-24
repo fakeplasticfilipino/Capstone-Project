@@ -29,6 +29,10 @@
 // Requires: npm install -D playwright     (dev only, not shipped)
 // =============================================================
 
+// Block 62. Lets a context's routes see the requests a service worker
+// makes, so section BD's worker gets the fake Supabase client like every
+// other page. No other section registers a worker, so nothing else moves.
+process.env.PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS = "1";
 const { chromium } = require("playwright");
 const http = require("http");
 const fs = require("fs");
@@ -36,6 +40,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const PORT = 8099;
+const SPEED_FOR_TEST = 5; // game.js SPEED, the walk
 const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
 
 const MIME = {
@@ -5015,6 +5020,333 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the fight ends a beat after the last one falls, not on the blow",
        end.right === false && end.later === true, end);
     await ctx.close();
+  }
+
+  console.log("\nBE. Takbo, a forgiving jump, and dust (Block 63)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const walk = await page.evaluate(async () => {
+      loadScene("tondo"); // the fixture's tondo has no guard
+      posX = 200; posY = floorHeightAt(posX); velY = 0; onGround = true;
+      const x0 = posX;
+      keysPressed["d"] = true;
+      await new Promise((r) => setTimeout(r, 300));
+      const early = { dx: posX - x0, running: isRunning() };
+      await new Promise((r) => setTimeout(r, 900));
+      const x1 = posX;
+      await new Promise((r) => setTimeout(r, 300));
+      const late = { dx: posX - x1, running: isRunning(), blend: runBlend };
+      keysPressed["d"] = false;
+      await new Promise((r) => setTimeout(r, 60));
+      return { early, late, after: isRunning(),
+        dust: [...document.querySelectorAll(".dust")].map((d) => d.className) };
+    });
+    ok("a short hold is a walk", !walk.early.running && walk.early.dx > 0, walk.early);
+    ok("held longer, he breaks into a run, faster than a walk",
+       walk.late.running && walk.late.blend === 1 && walk.late.dx > 300 / 16.67 * SPEED_FOR_TEST * 1.3, walk.late);
+    ok("letting go drops the run at once", walk.after === false);
+    ok("running raises dust behind him from a small reused pool",
+       walk.dust.length === 6 && walk.dust.some((c) => /dust-(start|stride)/.test(c)), walk.dust);
+
+    const guarded = await page.evaluate(async () => {
+      loadScene("misyon"); // the fixture guard's scene
+      const g = GUARDS[0];
+      posX = Math.max(0, g.patrolFrom - 900); posY = floorHeightAt(posX); onGround = true;
+      keysPressed["a"] = true;
+      await new Promise((r) => setTimeout(r, 900));
+      const running = isRunning();
+      keysPressed["a"] = false;
+      return { running, guards: GUARDS.length };
+    });
+    ok("no run where a guard is watching", guarded.guards > 0 && guarded.running === false, guarded);
+
+    const coyote = await page.evaluate(() => {
+      loadScene("tondo");
+      posX = 200; posY = floorHeightAt(posX) + 5; onGround = false; velY = -1;
+      lastGroundedAt = performance.now() - 60;
+      handleJumpPress();
+      const late = velY;
+      velY = -1; onGround = false; lastGroundedAt = performance.now() - 400; jumpBufferedAt = 0;
+      handleJumpPress();
+      return { late, tooLate: velY, buffered: jumpBufferedAt > 0 };
+    });
+    ok("a jump a moment after leaving the ground still jumps", coyote.late === 14, coyote);
+    ok("a jump well after leaving it does not, but is remembered", coyote.tooLate === -1 && coyote.buffered, coyote);
+
+    const buffer = await page.evaluate(async () => {
+      posX = 200; posY = floorHeightAt(posX) + 40; velY = -6; onGround = false;
+      lastGroundedAt = 0;
+      handleJumpPress(); // in the air: remembered, not a double jump
+      const inAir = velY;
+      await new Promise((r) => setTimeout(r, 120));
+      return { inAir, afterLanding: velY > 5 || posY > floorHeightAt(posX) + 20,
+        land: [...document.querySelectorAll(".dust")].some((d) => /dust-(land|jump)/.test(d.className)) };
+    });
+    ok("a jump pressed just before landing happens on the landing", buffer.inAir <= 0 && buffer.afterLanding, buffer);
+    ok("landing and taking off raise dust", buffer.land, buffer);
+
+    const noDouble = await page.evaluate(async () => {
+      posX = 200; posY = floorHeightAt(posX); velY = 0; onGround = true;
+      handleJumpPress();
+      await new Promise((r) => setTimeout(r, 50));
+      const first = velY;
+      handleJumpPress();
+      return { first, second: velY };
+    });
+    ok("still no double jump", noDouble.second <= noDouble.first, noDouble);
+    await ctx.close();
+  }
+
+  console.log("\nBF. The apple game, with feeling: a timed round, golden apples, streaks (Block 65)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const round = await page.evaluate(async () => {
+      window.__asked = [];
+      const real = playSfx;
+      window.playSfx = (name) => { __asked.push(name); return real(name); };
+      // Every apple drops over the middle, where the basket starts, so
+      // each one is caught without touching the controls.
+      const rnd = Math.random;
+      Math.random = () => 0.5;
+      const seen = { golden: false, pop: false, squash: false, streak: false, clock: "" };
+      let doneWith = null;
+      const p = playCatchGame({ timeLimitMs: 9500, doneText: (n) => { doneWith = n; return "done " + n; } });
+      const t0 = performance.now();
+      while (performance.now() - t0 < 10200) {
+        await new Promise((r) => setTimeout(r, 40));
+        seen.golden = seen.golden || document.getElementById("catch-apple").classList.contains("catch-apple-golden");
+        seen.pop = seen.pop || /catch-anim/.test(document.getElementById("catch-pop").className);
+        seen.squash = seen.squash || /catch-anim/.test(document.getElementById("catch-basket").className);
+        seen.streak = seen.streak || /Sunod-sunod! x3/.test(document.getElementById("catch-result").textContent);
+        if (!seen.clock) seen.clock = document.getElementById("catch-hint").textContent;
+      }
+      Math.random = rnd;
+      const result = document.getElementById("catch-result").textContent;
+      const hint = document.getElementById("catch-hint").textContent;
+      document.getElementById("catch-stop").click();
+      const count = await p;
+      return { seen, result, hint, count, doneWith, asked: __asked.slice() };
+    });
+    ok("a timed round shows its clock and count", /^Oras: \d+  ·  Nasalo: \d+$/.test(round.seen.clock), round.seen);
+    ok("apples keep coming until the time is up, then it says so",
+       round.hint === "Tapos na ang oras!" && round.result === "done " + round.count && round.doneWith === round.count, round);
+    ok("a catch squashes the basket and raises a +1", round.seen.pop && round.seen.squash, round.seen);
+    ok("three in a row is a streak, with its own sound",
+       round.seen.streak && round.asked.includes("streak"), { seen: round.seen, asked: round.asked });
+    ok("every fifth apple of a timed round is golden and counts three",
+       round.seen.golden && round.count >= 7, round);
+
+    const miss = await page.evaluate(async () => {
+      const rnd = Math.random;
+      Math.random = () => 0; // far left, away from the basket
+      const p = playCatchGame({ goal: 3 });
+      let splat = false;
+      const t0 = performance.now();
+      while (performance.now() - t0 < 2600 && !splat) {
+        await new Promise((r) => setTimeout(r, 40));
+        splat = /catch-anim/.test(document.getElementById("catch-splat").className);
+      }
+      Math.random = rnd;
+      const result = document.getElementById("catch-result").textContent;
+      document.getElementById("catch-stop").click();
+      return { splat, result, count: await p };
+    });
+    ok("a missed apple splats where it lands, and costs nothing",
+       miss.splat && miss.count === 0 && /Nahulog/.test(miss.result), miss);
+    await ctx.close();
+  }
+
+  console.log("\nBG. The reward pop (Block 67)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const pop = await page.evaluate(async () => {
+      posX = 300;
+      Game.addCurrency(12);
+      const el = [...document.querySelectorAll(".float-text")].find((e) => e.textContent === "+12");
+      const first = el && { cls: el.className, left: parseFloat(el.style.left) };
+      Game.addCurrency(3);
+      Game.spendCurrency(1);
+      const all = [...document.querySelectorAll(".float-text")].map((e) => e.textContent);
+      await new Promise((r) => setTimeout(r, 1500));
+      return { first, all, faded: getComputedStyle(el).opacity };
+    });
+    ok("being paid raises +N with a coin over Macario's head",
+       pop.first && /float-coin/.test(pop.first.cls) && pop.first.left === 300 + 20, pop);
+    ok("from a pool of two, and spending raises nothing",
+       pop.all.length === 2 && pop.all.includes("+3") && !pop.all.some((t) => t.startsWith("-")), pop.all);
+    ok("and it fades away by itself", pop.faded === "0", pop.faded);
+    await ctx.close();
+  }
+
+  // -------------------------------------------------------------
+  // BD. Block 62. Pictures are asked for through one loader that
+  // retries a failure that is not a 404, counts what has arrived for
+  // the title screen's bar, and holds the world (and every scene change)
+  // closed until the art is in. And the service worker keeps it all.
+  // -------------------------------------------------------------
+  console.log("\nBD. Pictures that wait, retry and stay (Block 62)");
+  {
+    // Its own context, because each check needs its routes in place
+    // before the page's first request, which newPage() does not allow.
+    const rawPage = async (routes, init, useCtxRoutes) => {
+      const ctx = await browser.newContext({ viewport: { width: 823, height: 412 } });
+      const page = await ctx.newPage();
+      page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+      const target = useCtxRoutes ? ctx : page;
+      await target.route("**/supabaseClient.js*", (r) => r.fulfill({ body: STUB, contentType: "text/javascript" }));
+      await target.route("**/cdn.jsdelivr.net/**", (r) => r.fulfill({ body: "", contentType: "text/javascript" }));
+      for (const [pattern, handler] of routes || []) await target.route(pattern, handler);
+      await page.addInitScript((s) => { Object.assign(window, s); }, Object.assign({ __TEST: { session: null } }, init || {}));
+      // Not "load", which waits for every picture: the checks below have
+      // to look at the page while pictures are still arriving.
+      await page.goto("http://localhost:" + PORT + "/index.html", { waitUntil: "domcontentloaded" });
+      return { ctx, page };
+    };
+
+    // A picture that fails once, the way a bad connection drops one.
+    let nanayGets = 0;
+    const retry = await rawPage([["**/nanay.png*", (route) => {
+      if (route.request().method() !== "GET") return route.continue();
+      nanayGets++;
+      return nanayGets === 1 ? route.abort("failed") : route.continue();
+    }]]);
+    await retry.page.waitForTimeout(2500);
+    const r1 = await retry.page.evaluate(() => {
+      const entry = [...assetLoads.entries()].find(([u]) => /nanay\.png/.test(u));
+      return { state: entry && entry[1].state,
+        boxes: [...document.querySelectorAll(".sprite-placeholder")].map((el) => el.textContent)
+          .filter((t) => /nanay\.png/.test(t)).length };
+    });
+    ok("a picture whose first download fails is asked for again and drawn",
+       nanayGets === 2 && r1.state === "ok" && r1.boxes === 0, { nanayGets, r1 });
+
+    const r2 = await retry.page.evaluate(async () => {
+      const t0 = performance.now();
+      const img = await loadImage("assets/sprites/characters/nobody-drew-this.png");
+      return { img, ms: performance.now() - t0 };
+    });
+    ok("a picture that is really missing is given up on at once, not retried",
+       r2.img === null && r2.ms < 1000, r2);
+
+    const r3 = await retry.page.evaluate(async () => {
+      const a = loadImage("assets/backgrounds/act1/street-01.jpg");
+      const b = loadImage("assets/backgrounds/act1/street-01.jpg");
+      return a === b;
+    });
+    ok("the same picture asked for twice is one download", r3);
+    await retry.ctx.close();
+
+    // A slow painting: the title's bar shows it, and a student who taps
+    // in early waits on a screen that says so, not on an empty road.
+    const slow = await rawPage([["**/street-02.jpg*", async (route) => {
+      if (route.request().method() !== "GET") return route.continue();
+      await new Promise((r) => setTimeout(r, 2500));
+      return route.continue();
+    }]]);
+    await slow.page.waitForTimeout(500);
+    const s1 = await slow.page.evaluate(() => ({
+      note: document.querySelector("#shell-title .shell-loadbar-note").textContent,
+      width: document.querySelector("#shell-title .shell-loadbar-fill").style.width,
+      progress: Game.assetProgress(),
+    }));
+    ok("the title screen shows how much of the art has arrived",
+       /Inihahanda ang mga larawan\.\.\. \d+%/.test(s1.note) && s1.progress.done < s1.progress.total &&
+       parseFloat(s1.width) > 0 && parseFloat(s1.width) < 100, s1);
+    await slow.page.click("#shell-guest");
+    await slow.page.waitForTimeout(300);
+    const s2 = await slow.page.evaluate(() => ({
+      loading: !document.getElementById("shell-loading").classList.contains("hidden"),
+      overlay: !document.getElementById("shell").classList.contains("hidden"),
+      state: Shell.state,
+      card: !document.getElementById("intertitle").classList.contains("hidden"),
+    }));
+    ok("tapping in before the art is ready waits on Sandali lang, with nothing started behind it",
+       s2.loading && s2.overlay && s2.state === "loading" && !s2.card, s2);
+    await slow.page.waitForTimeout(3000);
+    const s3 = await slow.page.evaluate(() => ({
+      overlay: !document.getElementById("shell").classList.contains("hidden"),
+      state: Shell.state,
+      card: !document.getElementById("intertitle").classList.contains("hidden"),
+      titleFull: document.querySelector("#shell-title .shell-loadbar").classList.contains("shell-loadbar-full"),
+    }));
+    ok("and goes in by itself once the art is in, straight into the opening",
+       !s3.overlay && s3.state === "playing" && s3.card && s3.titleFull, s3);
+    await slow.ctx.close();
+
+    // A scene change holds the black until the new scene's art is in.
+    let slowInside = true;
+    const fade = await rawPage([["**/entablado-inside.jpg*", async (route) => {
+      if (route.request().method() !== "GET" || !slowInside) return route.continue();
+      slowInside = false;
+      await new Promise((r) => setTimeout(r, 2500));
+      return route.continue();
+    }]]);
+    await fade.page.waitForTimeout(400);
+    // Nothing on the street asks for the inside yet, so the first
+    // request for it is the scene change's own.
+    await fade.page.evaluate(() => { Game.enterAsGuest(); });
+    await fade.page.waitForTimeout(800);
+    await fade.page.evaluate(() => { Acts.gotoScene("entablado"); });
+    await fade.page.waitForTimeout(2600);
+    const f1 = await fade.page.evaluate(() => ({
+      black: document.getElementById("blackout").classList.contains("visible"),
+      scene: currentSceneId,
+    }));
+    await fade.page.waitForTimeout(2200);
+    const f2 = await fade.page.evaluate(() => ({
+      black: document.getElementById("blackout").classList.contains("visible"),
+      scene: currentSceneId,
+    }));
+    ok("a scene change stays black while the new scene's picture is downloading",
+       f1.black && f1.scene === "entablado", f1);
+    ok("and fades in once it has arrived", !f2.black && f2.scene === "entablado", f2);
+    await fade.ctx.close();
+
+    // The service worker, allowed on localhost for this check only.
+    const sw = await rawPage([], { __SW_TEST: true }, true);
+    const reg = await sw.page.evaluate(async () => {
+      const r = await Promise.race([navigator.serviceWorker.ready.then(() => true),
+        new Promise((res) => setTimeout(() => res(false), 5000))]);
+      return r;
+    });
+    ok("the service worker registers", reg);
+    await sw.page.reload();
+    await sw.page.waitForTimeout(1500);
+    const c1 = await sw.page.evaluate(async () => {
+      const keys = (await (await caches.open("macario-v1")).keys()).map((r) => r.url.replace(location.origin, ""));
+      return {
+        controlled: Boolean(navigator.serviceWorker.controller),
+        street: keys.some((k) => /street-01\.jpg\?v=\d+$/.test(k)),
+        game: keys.some((k) => /js\/game\.js\?v=\d+$/.test(k)),
+        page: keys.some((k) => /index\.html$/.test(k)),
+        stub: keys.filter((k) => /cdn\.jsdelivr/.test(k)).length,
+      };
+    });
+    ok("once it controls the page, the versioned files and the page itself are kept",
+       c1.controlled && c1.street && c1.game && c1.page, c1);
+    const c2 = await sw.page.evaluate(async () => {
+      const cache = await caches.open("macario-v1");
+      await cache.put("/assets/backgrounds/act1/street-01.jpg?v=1",
+        new Response("old", { headers: { "Content-Type": "image/jpeg" } }));
+      await cache.delete(new Request(location.origin + "/" + assetUrl("assets/backgrounds/act1/street-01.jpg")));
+      await fetch(assetUrl("assets/backgrounds/act1/street-01.jpg"));
+      await new Promise((r) => setTimeout(r, 300));
+      const keys = (await cache.keys()).map((r) => r.url).filter((u) => /street-01\.jpg/.test(u));
+      return keys.map((u) => u.replace(location.origin, ""));
+    });
+    ok("storing a new version of a file drops the older one",
+       c2.length === 1 && /v=\d\d+$/.test(c2[0]), c2);
+    await sw.ctx.setOffline(true);
+    await sw.page.reload();
+    await sw.page.waitForTimeout(1500);
+    const off = await sw.page.evaluate(async () => ({
+      game: typeof window.Game === "object",
+      title: !document.getElementById("shell-title").classList.contains("hidden"),
+      street: await loadImage("assets/backgrounds/act1/street-02.jpg").then((i) => Boolean(i)),
+    }));
+    ok("with the connection gone, the page, the engine and its pictures still open from the phone",
+       off.game && off.title && off.street, off);
+    await sw.ctx.close();
   }
 
   await browser.close();

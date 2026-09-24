@@ -243,11 +243,133 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 24;
+const ASSET_VERSION = 25;
 
 function assetUrl(path) {
   if (!path) return path;
   return path + (path.includes("?") ? "&" : "?") + "v=" + ASSET_VERSION;
+}
+
+// --- Asset loader (Block 62) ------------------------------------------
+// Every picture the world draws is asked for through loadImage, which
+// does three things a bare new Image() did not.
+//
+// It retries. On a school network or patchy mobile data a picture can
+// fail once and arrive on the second try; before this block one failure
+// was a dashed box until the page was reloaded. A failure is first
+// checked with a HEAD request: a real 404 (art the artist still owes) is
+// given up on at once, so a placeholder box still appears straight away,
+// and only a failure that is not a 404 waits and tries again.
+//
+// It shares. The same URL asked for twice is one download and one
+// promise, so the title screen's bar and the sprite that needs the
+// picture wait on the same thing.
+//
+// It counts. assetProgress() is what the title screen's bar draws and
+// whenAssetsSettled() is what entering the world and every scene change
+// wait on, so a student no longer walks an empty road while Macario and
+// the backdrop are still downloading (TRACKER.md, Known problems).
+//
+// Declared here, near the top, because loadAct reaches it at parse time
+// (the temporal dead zone pitfall in CLAUDE.md).
+const ASSET_RETRY_DELAYS_MS = [800, 2000, 5000];
+const assetLoads = new Map(); // url -> { state, promise }
+const assetProgressListeners = [];
+
+function assetProgress() {
+  let done = 0;
+  let total = 0;
+  assetLoads.forEach((entry) => {
+    total++;
+    if (entry.state !== "pending") done++;
+  });
+  return { done, total };
+}
+
+function notifyAssetProgress() {
+  const progress = assetProgress();
+  assetProgressListeners.forEach((fn) => {
+    try { fn(progress); } catch (err) { console.error(err); }
+  });
+}
+
+// True when the file is really not there, false when the failure was the
+// connection. A probe that itself fails is the connection too.
+function assetIsMissing(url) {
+  if (typeof fetch !== "function") return Promise.resolve(true);
+  return fetch(url, { method: "HEAD", cache: "no-store" })
+    .then((res) => res.status === 404 || res.status === 410)
+    .catch(() => false);
+}
+
+function loadImage(src) {
+  const url = assetUrl(src);
+  const known = assetLoads.get(url);
+  // A picture the connection failed on is asked for again the next time
+  // something needs it (a scene loaded again), as it always was. One the
+  // server said is not there ("missing", a 404) is not: it will not have
+  // appeared since, and asking again is two wasted requests a scene.
+  if (known && known.state !== "failed") return known.promise;
+
+  const entry = { state: "pending", promise: null };
+  entry.promise = new Promise((resolve) => {
+    let attempt = 0;
+    const tryOnce = () => {
+      const img = new Image();
+      img.onload = () => {
+        entry.state = "ok";
+        notifyAssetProgress();
+        resolve(img);
+      };
+      img.onerror = () => {
+        const giveUp = (missing) => {
+          entry.state = missing ? "missing" : "failed";
+          notifyAssetProgress();
+          resolve(null); // resolve, not reject, so Promise.all never hangs
+        };
+        if (attempt >= ASSET_RETRY_DELAYS_MS.length) { giveUp(); return; }
+        assetIsMissing(url).then((missing) => {
+          if (missing) { giveUp(true); return; }
+          setTimeout(tryOnce, ASSET_RETRY_DELAYS_MS[attempt++]);
+        });
+      };
+      img.src = url;
+    };
+    tryOnce();
+  });
+  assetLoads.set(url, entry);
+  notifyAssetProgress();
+  return entry.promise;
+}
+
+// Resolves once nothing is pending, or after timeoutMs, whichever comes
+// first. A timeout is not a failure: the world opens anyway with what
+// has arrived, which is exactly how it behaved before this block.
+function whenAssetsSettled(timeoutMs) {
+  return new Promise((resolve) => {
+    const check = () => {
+      const p = assetProgress();
+      return p.done >= p.total;
+    };
+    if (check()) { resolve(true); return; }
+    let timer = null;
+    const listener = () => {
+      if (!check()) return;
+      finish(true);
+    };
+    const finish = (settled) => {
+      clearTimeout(timer);
+      const i = assetProgressListeners.indexOf(listener);
+      if (i !== -1) assetProgressListeners.splice(i, 1);
+      resolve(settled);
+    };
+    assetProgressListeners.push(listener);
+    if (timeoutMs) timer = setTimeout(() => finish(false), timeoutMs);
+  });
+}
+
+function onAssetProgress(fn) {
+  if (typeof fn === "function") assetProgressListeners.push(fn);
 }
 
 // --- Game state ----------------------------------------------------------
@@ -570,6 +692,7 @@ function loadScene(sceneId) {
   // on every load, like greyFilter, so leaving the scene restores Tondo.
   const skylineEl = document.getElementById("skyline");
   if (scene.backdrop && scene.backdrop.src) {
+    loadImage(scene.backdrop.src); // Block 62, as the panels are
     // Absolute, because a url() inside a custom property is resolved
     // against the stylesheet that reads it (css/style.css, one folder
     // down since Block 44), not against this page.
@@ -785,7 +908,13 @@ function buildPanelBackdrop(scene) {
     // One pixel of overlap, as with Tondo's tiles, so two fractional
     // edges never leave a hairline of the layer showing through.
     tile.style.width = width + 1 + "px";
-    tile.style.backgroundImage = `url("${assetUrl(scene.panels[i % scene.panels.length])}")`;
+    const panelSrc = scene.panels[i % scene.panels.length];
+    // Block 62. Asked for through the loader too, so the painting is
+    // retried on a bad connection and a scene change waits for it. The
+    // background below is the same URL, so it is drawn from that one
+    // download.
+    loadImage(panelSrc);
+    tile.style.backgroundImage = `url("${assetUrl(panelSrc)}")`;
     // Block 46. The whole picture stands on the floor (.skyline-panel):
     // anything above its top edge is panelSky, so the sky carries on up
     // a tall screen instead of ending in the page's own colour.
@@ -1007,8 +1136,9 @@ function buildStage() {
 // loadAct. Each is preloaded only to detect a 404 and substitute a
 // labelled placeholder fill.
 function checkBackgroundImage(el, src, label) {
-  const img = new Image();
-  img.onerror = () => {
+  // Block 62. Through loadImage, so it is retried and counted too.
+  loadImage(src).then((img) => {
+    if (img) return;
     el.style.backgroundImage = "none";
     el.style.backgroundColor = "#333";
     el.style.display = "flex";
@@ -1018,8 +1148,7 @@ function checkBackgroundImage(el, src, label) {
     el.style.fontSize = "14px";
     el.style.border = "2px dashed #ffd54f";
     el.textContent = label;
-  };
-  img.src = assetUrl(src);
+  });
 }
 
 checkBackgroundImage(
@@ -1431,28 +1560,27 @@ function mountBody(el, x, bodyWidth, height) {
 }
 
 function loadSpriteSheet(def) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      def.naturalWidth = img.naturalWidth;
-      def.naturalHeight = img.naturalHeight;
-
-      // Grid geometry. A single-row strip is just the case where
-      // columns equals frames and rows works out to 1, so this stays
-      // backward compatible with every existing sheet.
-      const columns = def.columns || def.frames;
-      def.frameWidth = img.naturalWidth / columns;
-      def.rows = Math.ceil(def.frames / columns);
-      def.frameHeight = img.naturalHeight / def.rows;
-
-      def.failed = false;
-      resolve(def);
-    };
-    img.onerror = () => {
+  // Block 62. Through loadImage, so a sheet is retried on a bad
+  // connection and counted by the title screen's bar. Still resolves,
+  // never rejects, so Promise.all never hangs on a missing sheet.
+  return loadImage(def.src).then((img) => {
+    if (!img) {
       def.failed = true;
-      resolve(def); // resolve, not reject, so Promise.all never hangs
-    };
-    img.src = assetUrl(def.src);
+      return def;
+    }
+    def.naturalWidth = img.naturalWidth;
+    def.naturalHeight = img.naturalHeight;
+
+    // Grid geometry. A single-row strip is just the case where
+    // columns equals frames and rows works out to 1, so this stays
+    // backward compatible with every existing sheet.
+    const columns = def.columns || def.frames;
+    def.frameWidth = img.naturalWidth / columns;
+    def.rows = Math.ceil(def.frames / columns);
+    def.frameHeight = img.naturalHeight / def.rows;
+
+    def.failed = false;
+    return def;
   });
 }
 
@@ -1600,7 +1728,9 @@ function updateAnimFrame(now) {
   // A missing sheet has no frames to step, but the placeholder box
   // should still face the right way, so the flip below is not skipped.
   if (!sheet.failed) {
-    const frameDuration = 1000 / sheet.fps;
+    // Block 63. A run steps the walk cycle faster, in step with the feet.
+    const rate = currentAnim === "walk" ? 1 + (RUN_SPEED / SPEED - 1) * runBlend : 1;
+    const frameDuration = 1000 / (sheet.fps * rate);
 
     if (now - lastFrameTime >= frameDuration) {
       lastFrameTime = now;
@@ -1625,9 +1755,16 @@ function updateAnimFrame(now) {
     }
   }
 
-  // Flip to face the direction of travel
-  playerSpriteEl.style.transform = `scaleX(${facing})`;
+  // Flip to face the direction of travel. Written only when it changes:
+  // an inline style set to the value it already has still marks the
+  // element for a style recalculation, every frame (Block 66).
+  if (facing !== lastDrawnFacing) {
+    playerSpriteEl.style.transform = `scaleX(${facing})`;
+    lastDrawnFacing = facing;
+  }
 }
+
+let lastDrawnFacing = null;
 
 let posX = 0;
 let posY = GROUND_LEVEL; // distance from the bottom of the world, in px
@@ -1732,10 +1869,22 @@ document.addEventListener("keyup", (e) => {
 
 function handleJumpPress() {
   if (authGated || uiBlocked || inDialogue || cutscenePlaying) return;
-  if (!onGround) return; // single jump, no double jump by decision
+  // Single jump, no double jump by decision. Block 63: "on the ground"
+  // includes the moment just after walking off a ledge (coyote time),
+  // and a press in the air is remembered briefly and taken on landing
+  // (the jump buffer). Neither lets a jump start from a jump.
+  const now = performance.now();
+  const coyote = velY <= 0 && lastGroundedAt && now - lastGroundedAt <= COYOTE_MS;
+  if (!onGround && !coyote) {
+    jumpBufferedAt = now;
+    return;
+  }
+  jumpBufferedAt = 0;
+  lastGroundedAt = 0; // spent: the coyote window cannot give a second jump
   velY = JUMP_VELOCITY;
   onGround = false;
   playSfx("jump"); // Block 58
+  spawnDust(posX + PLAYER_WIDTH / 2, posY, facing, "jump"); // Block 63
 }
 
 document.addEventListener("keyup", (e) => {
@@ -2151,6 +2300,8 @@ async function runDeathSequence() {
 // same defensive clear startPerformance and respawnInScene already do
 // is repeated here, since a fade can just as easily start with the
 // attack button held down as either of those can.
+const SCENE_ART_WAIT_MS = 8000;
+
 async function fadeToScene(sceneId, placement) {
   cutscenePlaying = true;
   attackHoldStart = 0;
@@ -2162,6 +2313,13 @@ async function fadeToScene(sceneId, placement) {
   await wait(900); // fade to black
 
   loadScene(sceneId); // swap while hidden behind black
+
+  // Block 62. The black holds until the new scene's pictures are in, so
+  // a student never walks into a room whose backdrop and people are
+  // still downloading. A slow connection gets a longer black, never an
+  // endless one: after SCENE_ART_WAIT_MS the scene opens with what has
+  // arrived, which is what every scene change did before this block.
+  await whenAssetsSettled(SCENE_ART_WAIT_MS);
 
   // Block 34. Where to stand in the new scene when it is not its startX:
   // coming back out of the entablado lands at its door, not at the far
@@ -2447,6 +2605,9 @@ function buildHazards() {
 // dashed placeholder box teaches nothing.
 function buildPickups() {
   PICKUPS.forEach((pickup) => {
+    // Block 64. A page once found stays found, across scenes and saves:
+    // its notebook entry's flag says so. A heart is per visit, as ever.
+    if (pickupTaken(pickup)) return;
     const el = document.createElement("div");
     el.className = "pickup pickup-" + (pickup.type || "heart");
     el.id = "pickup-" + pickup.id;
@@ -2458,6 +2619,7 @@ function buildPickups() {
     world.appendChild(el);
     actElements.push(el);
     pickup.el = el;
+    pickup.moving = undefined; // Block 64: updatePickupMotion decides
   });
 }
 
@@ -3012,12 +3174,18 @@ function updatePickups() {
   const footY = posY;
 
   PICKUPS.forEach((pickup) => {
-    if (collectedPickups.has(pickup.id)) return;
+    if (collectedPickups.has(pickup.id) || pickupTaken(pickup)) return;
 
     const px = pickup.x;
     const py = typeof pickup.y === "number" ? pickup.y : GROUND_LEVEL;
     if (Math.abs(centre - (px + PICKUP_SIZE / 2)) > PICKUP_REACH) return;
     if (Math.abs(footY - py) > PICKUP_REACH) return;
+
+    // Block 64. A page is always taken, whatever his health.
+    if (pickup.type === "page") {
+      collectPage(pickup);
+      return;
+    }
 
     // A pickup is refused at full health rather than consumed. A student
     // who walks over the last heart before the corridor should not lose it
@@ -3031,6 +3199,145 @@ function updatePickups() {
     health = Math.min(maxHealth, health + 1);
     renderHearts();
     showToast("Nakakuha ka ng puso!");
+  });
+}
+
+// =============================================================
+// THE NOTEBOOK (Block 64)
+//
+// Pages to find along the road, each carrying one thing about the man the
+// boy on screen grows up to be. The act declares the notebook (its title
+// and entries, each with its own flag) and places the pages as pickups
+// of type "page" that name an entry; the engine picks a page up, sets the
+// entry's flag, opens a card with what it says, and lists what has been
+// found for the pause screen (Game.notebook). What the entries say is
+// content's, exactly like dialogue: the engine never reads it.
+//
+// A page is optional on purpose. Nothing in the chain waits on one, so
+// a student who walks past every page still finishes the act; one who
+// jumps for them is rewarded with the card, a sound, and a notebook that
+// fills. Kept in state.flags like every other thing a student has done,
+// so it survives a reload and the full reset clears it with the rest.
+// =============================================================
+
+function notebookDef() {
+  return (currentActData && currentActData.notebook) || null;
+}
+
+function notebookEntry(id) {
+  const def = notebookDef();
+  return def ? (def.entries || []).find((e) => e.id === id) || null : null;
+}
+
+function pickupTaken(pickup) {
+  if (pickup.type !== "page") return false;
+  const entry = notebookEntry(pickup.entry);
+  return Boolean(entry && entry.flag && state.flags[entry.flag]);
+}
+
+// What the pause screen lists: every entry in order, found or not. The
+// text of one not yet found is left out, so the list is not a way round
+// the looking.
+function notebookState() {
+  const def = notebookDef();
+  if (!def || !(def.entries || []).length) return null;
+  const entries = def.entries.map((e, i) => {
+    const found = Boolean(e.flag && state.flags[e.flag]);
+    return { n: i + 1, id: e.id, found, title: found ? e.title : "", text: found ? e.text : "" };
+  });
+  return { title: def.title || "", hint: def.hint || "", total: entries.length,
+    found: entries.filter((e) => e.found).length, entries };
+}
+
+// A pickup bobs (CSS, pickup-bob) only while it is near the screen. Ten
+// pages bobbing along a 14500px road were measured costing the browser
+// style work every frame whether or not any was in view, so the ones out
+// of view are held still (.pickup-still), and a class is written only
+// when a pickup crosses the edge.
+const PICKUP_MOTION_MARGIN = 300;
+
+function updatePickupMotion(cameraX) {
+  const from = cameraX - PICKUP_MOTION_MARGIN;
+  const to = cameraX + (viewportWidth || 0) + PICKUP_MOTION_MARGIN;
+  for (let i = 0; i < PICKUPS.length; i++) {
+    const pickup = PICKUPS[i];
+    if (!pickup.el) continue;
+    const near = pickup.x >= from && pickup.x <= to;
+    if (near === pickup.moving) continue;
+    pickup.moving = near;
+    pickup.el.classList.toggle("pickup-still", !near);
+  }
+}
+
+// Removes any page whose entry has been found since the scene was built
+// (a save restored after loadScene, the order enterGameAsUser has to use).
+function refreshPickups() {
+  PICKUPS.forEach((pickup) => {
+    if (pickupTaken(pickup) && pickup.el) {
+      pickup.el.remove();
+      pickup.el = null;
+    }
+  });
+}
+
+function collectPage(pickup) {
+  const entry = notebookEntry(pickup.entry);
+  collectedPickups.add(pickup.id);
+  if (pickup.el) pickup.el.remove();
+  if (!entry) return;
+  if (entry.flag) state.flags[entry.flag] = true;
+  markDirty();
+  const book = notebookState();
+  const done = book && book.found === book.total;
+  playSfx(done ? "fanfare" : "page");
+  const index = notebookDef().entries.indexOf(entry);
+  showNotebookCard(entry, index + 1, book ? book.total : 1, done);
+}
+
+// The card a page opens: which page of how many, its title and text, and
+// one button. Stops the world like the apple game does (uiBlocked) and
+// takes its keys in the capture phase for the same reasons: Space must
+// not also jump, Escape must not also open pause. The key that closes it
+// has to be pressed after it opened, so a student running into a page
+// with a finger on a key does not close it unread.
+function showNotebookCard(entry, n, total, complete) {
+  const screen = document.getElementById("page-card");
+  if (!screen) return Promise.resolve();
+  const def = notebookDef() || {};
+  document.getElementById("page-card-eyebrow").textContent =
+    (def.pageLabel || "Pahina") + " " + n + " / " + total;
+  document.getElementById("page-card-title").textContent = entry.title || "";
+  document.getElementById("page-card-text").textContent = entry.text || "";
+  const note = document.getElementById("page-card-note");
+  note.textContent = complete ? (def.completeText || "") : (def.foundText || "");
+  note.classList.toggle("page-card-complete", Boolean(complete));
+  const btn = document.getElementById("page-card-close");
+
+  return new Promise((resolve) => {
+    const openedAt = performance.now();
+    const close = () => {
+      window.removeEventListener("keydown", onKey, true);
+      btn.onclick = null;
+      screen.classList.add("hidden");
+      setUiBlocked(false);
+      resolve();
+    };
+    const onKey = (e) => {
+      const key = (e.key || "").toLowerCase();
+      if (key === "e" || key === " " || key === "enter" || key === "escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!e.repeat && e.timeStamp >= openedAt + 250) close();
+      } else if (key === "a" || key === "d" || key === "arrowleft" || key === "arrowright") {
+        e.stopPropagation();
+      }
+    };
+    btn.onclick = close;
+    window.addEventListener("keydown", onKey, true);
+    keysPressed["a"] = false;
+    keysPressed["d"] = false;
+    setUiBlocked(true);
+    screen.classList.remove("hidden");
   });
 }
 
@@ -3349,6 +3656,135 @@ dialogueBox.addEventListener("click", () => {
 // Acts.gotoScene. The engine still knows nothing about the play.
 // =============================================================
 
+// =============================================================
+// MOVEMENT FEEL (Block 63)
+//
+// Act I is one road 14500 px long, and walking it end to end at SPEED
+// took about 45 seconds of holding a button past nothing (TRACKER.md,
+// the device pass). Three small things make moving feel like a game:
+//
+//   Takbo. Holding one way for RUN_AFTER_MS breaks into a run at
+//   RUN_SPEED, ramped in over a few frames so it reads as speeding up
+//   rather than a jump in speed, with the walk cycle stepped faster to
+//   match. Letting go or turning drops back to a walk at once. There is
+//   no button for it, on purpose: the control cluster is full, and a
+//   Grade 8 student who is walking somewhere is already holding the one
+//   control that says so. It is off wherever a guard or an enemy is up,
+//   because there being seen or hit is decided by speed and distance,
+//   and those were tuned against SPEED (Blocks 37, 38, 42).
+//
+//   A forgiving jump. A jump pressed up to COYOTE_MS after walking off a
+//   ledge still jumps, and one pressed up to JUMP_BUFFER_MS before
+//   landing jumps on the landing. Both are the standard fixes for a
+//   jump that feels ignored on a touch screen, where a thumb is a few
+//   frames late or early. Neither is a double jump: the first needs the
+//   ground to have been under him a moment ago, the second waits for it.
+//
+//   Dust. A puff where he breaks into a run, on each stride while he
+//   runs, where he takes off and where he lands. A small pool of
+//   elements reused, moved only when a puff starts, and animated in CSS
+//   by transform and opacity alone, so it costs the game loop nothing
+//   between puffs (the lesson of Blocks 36 and 54).
+// =============================================================
+
+const RUN_AFTER_MS = 450;       // held this long, a walk becomes a run
+const RUN_SPEED = 8.5;          // per 60fps frame; SPEED is 5
+const RUN_RAMP_FRAMES = 12;     // from walk to full run
+const RUN_STRIDE_MS = 240;      // one puff of dust per stride
+const COYOTE_MS = 110;
+const JUMP_BUFFER_MS = 130;
+const DUST_POOL_SIZE = 6;
+
+let walkHeldDir = 0;            // -1, 0 or 1: the one way being held
+let walkHeldSince = 0;
+let runBlend = 0;               // 0 walking, 1 running
+let lastStrideDust = 0;
+let lastGroundedAt = 0;
+let jumpBufferedAt = 0;
+let dustPool = null;
+let dustNext = 0;
+
+function runAllowed() {
+  return !GUARDS.length && !enemiesAlive();
+}
+
+// Called every frame by the game loop with the way being held (or 0) and
+// whether the student can act. Returns the speed to move at this frame.
+function updateRun(heldDir, canAct, now, step) {
+  if (!canAct || heldDir === 0 || heldDir !== walkHeldDir) {
+    walkHeldDir = canAct ? heldDir : 0;
+    walkHeldSince = now;
+    runBlend = 0;
+    return SPEED;
+  }
+  if (now - walkHeldSince < RUN_AFTER_MS || !runAllowed()) {
+    runBlend = 0;
+    return SPEED;
+  }
+  if (runBlend === 0 && onGround) spawnDust(posX + PLAYER_WIDTH / 2 - heldDir * 14, posY, heldDir, "start");
+  runBlend = Math.min(1, runBlend + step / RUN_RAMP_FRAMES);
+  if (onGround && runBlend === 1 && now - lastStrideDust >= RUN_STRIDE_MS) {
+    lastStrideDust = now;
+    spawnDust(posX + PLAYER_WIDTH / 2 - heldDir * 16, posY, heldDir, "stride");
+  }
+  return SPEED + (RUN_SPEED - SPEED) * runBlend;
+}
+
+// Block 67. A few words rising from over Macario's head and fading: the
+// barya he has just been paid, with a coin beside it. Two elements
+// reused in turn, placed when one starts and animated in CSS by
+// transform and opacity only, like the dust.
+let floatPool = null;
+let floatNext = 0;
+
+function floatOverPlayer(text, kind) {
+  if (!world) return;
+  if (!floatPool) {
+    floatPool = [0, 1].map(() => {
+      const el = document.createElement("div");
+      world.appendChild(el);
+      return el;
+    });
+  }
+  const el = floatPool[floatNext];
+  floatNext = (floatNext + 1) % floatPool.length;
+  el.textContent = text;
+  el.style.left = Math.round(posX + PLAYER_WIDTH / 2) + "px";
+  el.style.bottom = Math.round(posY + DISPLAY_HEIGHT + 8) + "px";
+  el.dataset.flip = el.dataset.flip === "a" ? "b" : "a";
+  el.className = "float-text float-" + (kind || "plain") + " float-" + el.dataset.flip;
+}
+
+function isRunning() {
+  return runBlend > 0;
+}
+
+// A puff of dust at a point on the ground. kind is start, stride, jump or
+// land, which only chooses its size in CSS; dir is the way he is moving,
+// so the puff trails behind him.
+function spawnDust(x, y, dir, kind) {
+  if (!world) return;
+  if (!dustPool) {
+    dustPool = [];
+    for (let i = 0; i < DUST_POOL_SIZE; i++) {
+      const el = document.createElement("div");
+      el.className = "dust";
+      world.appendChild(el);
+      dustPool.push(el);
+    }
+  }
+  const el = dustPool[dustNext];
+  dustNext = (dustNext + 1) % DUST_POOL_SIZE;
+  el.className = "dust";
+  el.style.left = Math.round(x) + "px";
+  el.style.bottom = Math.round(y) + "px";
+  // Reading offsetWidth here would restart the animation but force a
+  // layout (the pitfall in CLAUDE.md), so the restart is done by
+  // swapping between two identical animations instead.
+  el.dataset.flip = el.dataset.flip === "a" ? "b" : "a";
+  el.className = "dust dust-" + kind + " dust-" + el.dataset.flip + (dir < 0 ? " dust-left" : "");
+}
+
 // A real landing holds the landing frame this long. Short, because it is
 // a pose on a character who can already move again.
 const LAND_POSE_MS = 140;
@@ -3368,6 +3804,21 @@ let landPoseUntil = 0;
 //   playCatchGame({ title, hint, goal, start,
 //                   onCatch(n) -> string, doneText })
 //
+// Block 65 added a timed round for play after the errand, and the
+// small things that make catching feel like catching:
+//
+//   timeLimitMs   a round against the clock instead of a goal: apples
+//                 keep coming, a little faster with each one, until the
+//                 time is up. goal is ignored. doneText may be a
+//                 function of the count, for the line at the end.
+//   golden        every CATCH_GOLDEN_EVERY-th apple of a timed round is
+//                 golden, falls faster, and counts CATCH_GOLDEN_VALUE.
+//
+// In either mode: the basket squashes on a catch and a "+1" rises from
+// it, an apple that is missed splats where it lands, and three or more
+// in a row is a streak with its own sound. All of it is CSS on a few
+// fixed elements, moved only when something happens.
+//
 // Resolves with how many he holds when the window closes, so a student
 // who stops at two and comes back later starts at two (content passes
 // start). Controls: the two buttons (held), A and D or the arrow keys,
@@ -3382,6 +3833,10 @@ const CATCH_BASKET_SPEED = 330;  // px a second
 const CATCH_FALL_SPEED = 120;    // px a second at the start
 const CATCH_FALL_STEP = 14;      // a little faster with each apple held
 const CATCH_HANG_MS = 650;       // the apple shakes before it lets go
+const CATCH_GOLDEN_EVERY = 5;    // Block 65, a timed round only
+const CATCH_GOLDEN_VALUE = 3;
+const CATCH_STREAK = 3;          // this many in a row is a streak
+const CATCH_SPEED_CAP = 16;      // a timed round stops speeding up here
 
 function playCatchGame(opts) {
   const o = opts || {};
@@ -3396,11 +3851,20 @@ function playCatchGame(opts) {
   const leftBtn = document.getElementById("catch-left");
   const rightBtn = document.getElementById("catch-right");
   const stopBtn = document.getElementById("catch-stop");
+  const popEl = document.getElementById("catch-pop");
+  const splatEl = document.getElementById("catch-splat");
 
   return new Promise((resolve) => {
-    const goal = Math.max(1, Math.floor(Number(o.goal) || 3));
-    let count = Math.max(0, Math.min(goal, Math.floor(Number(o.start) || 0)));
+    const timed = Number(o.timeLimitMs) > 0;
+    const goal = timed ? Infinity : Math.max(1, Math.floor(Number(o.goal) || 3));
+    let count = timed ? 0 : Math.max(0, Math.min(goal, Math.floor(Number(o.start) || 0)));
     const openedAt = performance.now();
+    const endsAt = timed ? openedAt + Number(o.timeLimitMs) : 0;
+    let shownSeconds = -1;
+    let dropped = 0;  // apples that have started to fall, for golden ones
+    let caught = 0;   // apples caught this time, for the speed-up
+    let streak = 0;
+    let flip = false; // swaps between two identical animations to restart
     let fieldW = 0;
     let fieldH = 0;
     let basketX = 0;
@@ -3412,6 +3876,7 @@ function playCatchGame(opts) {
     let last = 0;
     let raf = 0;
     let closed = false;
+    let roundOver = false;
 
     function setResult(text, cls) {
       resultEl.textContent = text || "";
@@ -3430,10 +3895,49 @@ function playCatchGame(opts) {
         "translate(" + Math.round(apple.x) + "px," + Math.round(apple.y) + "px)";
     }
 
-    function finished() { return count >= goal; }
+    function finished(now) {
+      if (timed) return (now || performance.now()) >= endsAt;
+      return count >= goal;
+    }
+
+    // Restarts a CSS animation on a reused element by swapping between
+    // two identical ones, rather than reading offsetWidth (a layout).
+    function replay(el, base) {
+      flip = !flip;
+      el.className = base + (flip ? " catch-anim-a" : " catch-anim-b");
+    }
+
+    function pop(text, x, golden) {
+      if (!popEl) return;
+      popEl.textContent = text;
+      popEl.style.transform = "translateX(" + Math.round(x) + "px)";
+      replay(popEl, golden ? "catch-pop-golden" : "");
+    }
+
+    function splat(x) {
+      if (!splatEl) return;
+      splatEl.style.transform = "translateX(" + Math.round(x) + "px)";
+      replay(splatEl, "");
+    }
+
+    function drawClock(now) {
+      if (!timed || roundOver) return;
+      const left = Math.max(0, Math.ceil((endsAt - now) / 1000));
+      if (left === shownSeconds) return;
+      shownSeconds = left;
+      hintEl.textContent = "Oras: " + left + "  ·  Nasalo: " + count;
+      hintEl.classList.toggle("catch-hurry", left <= 5);
+    }
 
     function showDone() {
-      setResult(o.doneText || "Sapat na!", "catch-hit");
+      const text = typeof o.doneText === "function" ? o.doneText(count) : o.doneText;
+      if (timed) {
+        apple = null;
+        drawApple();
+        hintEl.textContent = "Tapos na ang oras!";
+        hintEl.classList.remove("catch-hurry");
+      }
+      setResult(text || "Sapat na!", "catch-hit");
       setLabel(stopBtn, "Tapos na");
       stopBtn.classList.add("shell-btn-primary");
       stopBtn.classList.remove("shell-btn-ghost");
@@ -3442,8 +3946,13 @@ function playCatchGame(opts) {
     function spawnApple(now) {
       const margin = 10;
       const x = margin + Math.random() * Math.max(0, fieldW - CATCH_APPLE_SIZE - margin * 2);
+      dropped++;
+      const golden = timed && o.golden !== false && dropped % CATCH_GOLDEN_EVERY === 0;
+      // A timed round hangs each apple a little less as it goes on.
+      const hang = timed ? Math.max(260, CATCH_HANG_MS - caught * 30) : CATCH_HANG_MS;
       apple = { x, y: CATCH_CANOPY_HEIGHT - CATCH_APPLE_SIZE / 2, hanging: true,
-                dropAt: now + CATCH_HANG_MS };
+                dropAt: now + hang, golden, value: golden ? CATCH_GOLDEN_VALUE : 1 };
+      appleEl.classList.toggle("catch-apple-golden", golden);
       drawApple();
     }
 
@@ -3467,33 +3976,52 @@ function playCatchGame(opts) {
       basketX = Math.max(0, Math.min(basketX, fieldW - CATCH_BASKET_WIDTH));
       if (dir || before !== basketX) drawBasket();
 
-      if (!finished()) {
+      if (timed && !roundOver && finished(now)) {
+        roundOver = true;
+        showDone();
+      }
+      drawClock(now);
+      if (!finished(now)) {
         if (!apple && now >= nextAppleAt) spawnApple(now);
         if (apple && apple.hanging && now >= apple.dropAt) {
           apple.hanging = false;
           drawApple();
         }
         if (apple && !apple.hanging) {
-          apple.y += (CATCH_FALL_SPEED + CATCH_FALL_STEP * count) * dt;
+          // In a timed round every catch speeds the next apple up, to a
+          // cap; with a goal of three it is the old "one per apple held".
+          const steps = timed ? Math.min(caught, CATCH_SPEED_CAP) : count;
+          apple.y += (CATCH_FALL_SPEED + CATCH_FALL_STEP * steps) * (apple.golden ? 1.35 : 1) * dt;
           const basketTop = fieldH - 34;
           const appleBottom = apple.y + CATCH_APPLE_SIZE;
           const centre = apple.x + CATCH_APPLE_SIZE / 2;
           const inBasket = centre >= basketX - 6 && centre <= basketX + CATCH_BASKET_WIDTH + 6;
           if (appleBottom >= basketTop && appleBottom <= basketTop + 16 && inBasket) {
-            count++;
+            const value = apple.value;
+            const golden = apple.golden;
+            count += timed ? value : 1;
+            caught++;
+            streak++;
             apple = null;
             drawApple();
-            playSfx("catch"); // Block 58
-            const line = typeof o.onCatch === "function" ? o.onCatch(count) : "";
-            if (finished()) showDone();
-            else setResult(line || "Nasalo mo! (" + count + "/" + goal + ")", "catch-hit");
-            nextAppleAt = now + 500;
+            playSfx(streak >= CATCH_STREAK ? "streak" : "catch"); // Blocks 58, 65
+            replay(basketEl, "");
+            pop("+" + (timed ? value : 1), basketX + CATCH_BASKET_WIDTH / 2, golden);
+            const line = typeof o.onCatch === "function" ? o.onCatch(count, value) : "";
+            if (!timed && finished()) showDone();
+            else if (streak >= CATCH_STREAK) setResult("Sunod-sunod! x" + streak, "catch-hit catch-streak");
+            else if (golden) setResult("Ginintuang mansanas! +" + value, "catch-hit catch-streak");
+            else setResult(line || (timed ? "Nasalo mo!" : "Nasalo mo! (" + count + "/" + goal + ")"), "catch-hit");
+            shownSeconds = -1; // the clock line carries the count: redraw it
+            nextAppleAt = now + (timed ? 320 : 500);
           } else if (apple.y >= fieldH - CATCH_APPLE_SIZE) {
+            splat(apple.x);
             apple = null;
             drawApple();
             playSfx("miss"); // Block 58
+            streak = 0;
             setResult(o.missText || "Nahulog sa lupa! May isa pa.", "catch-miss");
-            nextAppleAt = now + 600;
+            nextAppleAt = now + (timed ? 420 : 600);
           } else {
             drawApple();
           }
@@ -3571,7 +4099,11 @@ function playCatchGame(opts) {
 
     titleEl.textContent = o.title || "";
     hintEl.textContent = o.hint || "";
-    setResult(count ? "Hawak mo: " + count + "/" + goal : "", "");
+    hintEl.classList.remove("catch-hurry");
+    if (popEl) popEl.className = "";
+    if (splatEl) splatEl.className = "";
+    basketEl.className = "";
+    setResult(timed ? (o.hint || "") : count ? "Hawak mo: " + count + "/" + goal : "", "");
     setLabel(stopBtn, "Bumalik");
     stopBtn.classList.remove("shell-btn-primary");
     stopBtn.classList.add("shell-btn-ghost");
@@ -4227,6 +4759,11 @@ const SFX_SOURCES = {
   punch: "assets/audio/sfx/punch.wav",
   knockout: "assets/audio/sfx/knockout.wav",
   hurt: "assets/audio/sfx/hurt.wav",
+  // Block 64 (_dev/tools/make-fun-sfx.js): a page found, the last page
+  // found, and a streak in the apple game.
+  page: "assets/audio/sfx/page.wav",
+  fanfare: "assets/audio/sfx/fanfare.wav",
+  streak: "assets/audio/sfx/streak.wav",
 };
 
 // Music sits under everything else. It is the one sound that never
@@ -4703,6 +5240,15 @@ function updateGuide(active, cameraX) {
   }
 }
 
+// Block 66. Adds or removes a class only when it is not already so. The
+// game loop sets the HUD's buttons shown or hidden every frame, and a
+// classList.add of a class already there is still an attribute write:
+// measured, six of them a frame were a mutation and a style
+// invalidation sixty times a second while standing still.
+function setClass(el, cls, on) {
+  if (el.classList.contains(cls) !== on) el.classList.toggle(cls, on);
+}
+
 function gameLoop(now) {
   now = now || 0;
 
@@ -4751,14 +5297,20 @@ function gameLoop(now) {
   let isWalking = false;
   const canAct = !inDialogue && !cutscenePlaying && !authGated && !uiBlocked;
 
+  // Block 63. The way being held, and a run once it has been held long
+  // enough; both keys together is no way at all, and stays a walk.
+  const heldDir = keysPressed["d"] && !keysPressed["a"] ? 1 :
+                  keysPressed["a"] && !keysPressed["d"] ? -1 : 0;
+  const moveSpeed = updateRun(heldDir, canAct, now, step);
+
   if (canAct) {
     if (keysPressed["a"]) {
-      posX -= SPEED * step;
+      posX -= moveSpeed * step;
       facing = -1;
       isWalking = true;
     }
     if (keysPressed["d"]) {
-      posX += SPEED * step;
+      posX += moveSpeed * step;
       facing = 1;
       isWalking = true;
     }
@@ -4778,10 +5330,19 @@ function gameLoop(now) {
     // Block 35. Touching down from a real fall holds the landing frame
     // for a moment. Measured by the speed he lands at, so stepping down
     // a ramp does not count as a landing.
-    if (!onGround && velY < -4) landPoseUntil = now + LAND_POSE_MS;
+    if (!onGround && velY < -4) {
+      landPoseUntil = now + LAND_POSE_MS;
+      spawnDust(posX + PLAYER_WIDTH / 2, surface, facing, "land"); // Block 63
+    }
     posY = surface;
     velY = 0;
     onGround = true;
+    lastGroundedAt = now;
+    // Block 63. A jump pressed just before touching down happens now.
+    if (jumpBufferedAt && now - jumpBufferedAt <= JUMP_BUFFER_MS) {
+      jumpBufferedAt = 0;
+      handleJumpPress();
+    }
   } else {
     onGround = false;
   }
@@ -4841,58 +5402,59 @@ function gameLoop(now) {
   let cameraX = posX - (viewportWidth || measureViewport()) / 2 + PLAYER_WIDTH / 2;
   cameraX = Math.max(0, Math.min(cameraX, WORLD_WIDTH - viewportWidth));
   drawCamera(cameraX, now);
+  updatePickupMotion(cameraX); // Block 64
 
   // Block 42. Where to go next, while the student can act on it.
   updateGuide(!inDialogue && !cutscenePlaying && !authGated && !uiBlocked, cameraX);
 
   // Interact and gift buttons follow whichever NPC or stage is nearby.
   if (!inDialogue && !cutscenePlaying && !authGated && !uiBlocked) {
-    mobileControls.classList.remove("hidden");
+    setClass(mobileControls, "hidden", false);
     // The pause button rides along with the movement controls rather
     // than tracking its own condition. The branch this sits in is
     // already the exact definition of "the student is playing", and a
     // second copy of it would be a second thing to keep in step.
-    if (btnPause) btnPause.classList.remove("hidden");
+    if (btnPause) setClass(btnPause, "hidden", false);
     if (btnInventoryMain && window.Inventory) {
-      btnInventoryMain.classList.remove("hidden");
+      setClass(btnInventoryMain, "hidden", false);
     }
     if (btnShopMain && window.Inventory) {
-      btnShopMain.classList.remove("hidden");
+      setClass(btnShopMain, "hidden", false);
     }
     nearby = findNearby();
     if (nearby.type === "npc" && npcOpensShop(nearby.ref)) {
       setLabel(btnInteract, "Tindahan");
-      btnInteract.classList.add("active");
+      setClass(btnInteract, "active", true);
     } else if (nearby.type === "npc") {
       setLabel(btnInteract, nearby.ref.interactLabel || "Usap");
-      btnInteract.classList.add("active");
+      setClass(btnInteract, "active", true);
     } else if (nearby.type === "stage") {
       setLabel(btnInteract, "Ganap");
-      btnInteract.classList.add("active");
+      setClass(btnInteract, "active", true);
     } else if (nearby.type === "exit") {
       setLabel(btnInteract, nearby.ref.label || "Pasok");
-      btnInteract.classList.add("active");
+      setClass(btnInteract, "active", true);
     } else {
       setLabel(btnInteract, "E");
-      btnInteract.classList.remove("active");
+      setClass(btnInteract, "active", false);
     }
 
     if (nearby.type === "npc" && canGiveGift(nearby.ref)) {
       setLabel(giftBtn, nearby.ref.gift.buttonLabel);
-      giftBtn.classList.remove("hidden");
+      setClass(giftBtn, "hidden", false);
     } else {
-      giftBtn.classList.add("hidden");
+      setClass(giftBtn, "hidden", true);
     }
   } else {
     // Dialogue or cutscene is showing. Tapping the dialogue box
     // advances it, so tuck the movement controls away.
-    mobileControls.classList.add("hidden");
-    if (btnPause) btnPause.classList.add("hidden");
-    if (btnInventoryMain) btnInventoryMain.classList.add("hidden");
-    if (btnShopMain) btnShopMain.classList.add("hidden");
-    giftBtn.classList.add("hidden");
+    setClass(mobileControls, "hidden", true);
+    if (btnPause) setClass(btnPause, "hidden", true);
+    if (btnInventoryMain) setClass(btnInventoryMain, "hidden", true);
+    if (btnShopMain) setClass(btnShopMain, "hidden", true);
+    setClass(giftBtn, "hidden", true);
     setLabel(btnInteract, "E");
-    btnInteract.classList.remove("active");
+    setClass(btnInteract, "active", false);
   }
 
   requestAnimationFrame(gameLoop);
@@ -5197,6 +5759,9 @@ function applyLoadedState(row) {
 
   // Any NPC whose reveal flag is already set in the restored save.
   revealNpcsByFlag();
+  // Block 64. The scene was built before these flags arrived, so a page
+  // already found is still lying on the road; take it away again.
+  refreshPickups();
 
   // Health is deliberately not restored. A student who closed the tab on
   // one heart resumes at full, because punishing them for a bus arriving
@@ -5349,6 +5914,17 @@ window.Game = {
   // where they are listed now rather than under the log. Lines only.
   doneQuests: doneQuestTexts,
 
+  // Block 64. The act's notebook as the pause screen lists it, or null
+  // for an act without one. Found entries only carry their text.
+  notebook: notebookState,
+
+  // Block 62. The picture loader, for the title screen's bar and for
+  // holding the world closed until its art is in. Counts only; the
+  // shell draws them.
+  assetProgress,
+  onAssetProgress,
+  whenAssetsSettled,
+
   // Swaps the player's sprite sheets for an outfit's. Awaitable, because
   // the sheets have to load before the swap is visible.
   setOutfit,
@@ -5364,6 +5940,7 @@ window.Game = {
     currency += n;
     markDirty();
     playSfx("coin"); // Block 58
+    floatOverPlayer("+" + n, "coin"); // Block 67
     return currency;
   },
 
@@ -5396,3 +5973,18 @@ window.Game = {
     shopRequestListener = typeof fn === "function" ? fn : null;
   },
 };
+
+// Block 62. The service worker (sw.js, at the root so its scope is the
+// whole game). https only, which is GitHub Pages and never the harness
+// on localhost, where it would sit between the page and the routes that
+// swap in the fake Supabase client; a check that wants it sets
+// window.__SW_TEST first. Registered after load so it never competes
+// with the first scene's pictures for the connection.
+if ("serviceWorker" in navigator &&
+    (window.__SW_TEST || (location.protocol === "https:" && !window.__TEST))) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((err) => {
+      console.warn("Service worker not registered:", err);
+    });
+  });
+}

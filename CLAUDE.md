@@ -87,6 +87,8 @@ off the repository.
 
     index.html, teacher.html   the two pages; they must stay at the root,
                                because the Pages URL serves index.html
+    sw.js                      the service worker (Block 62); at the root
+                               so its scope is the whole site
     CLAUDE.md, TRACKER.md,     the three context files (how it is built,
       STORY.md                 where it is, what the story is), with
                                README.md for the public
@@ -112,7 +114,7 @@ off the repository.
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-shadow-tree.py, make-sfx.py,
-                               make-combat-sfx.js, and
+                               make-combat-sfx.js, make-fun-sfx.js, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
                                form and old screenshots, kept on the
@@ -322,6 +324,11 @@ game.js exposes window.Game and nothing else:
     currency()
     addCurrency(n)
     spendCurrency(n)     false and no change when the student is short
+    assetProgress()      { done, total } pictures asked for; Block 62
+    onAssetProgress(fn)  called with that whenever a picture settles
+    whenAssetsSettled(ms)  resolves when nothing is pending, or after ms
+    notebook()           the act's notebook for the pause screen, or
+                         null; Block 64
 
 Currency lives in game.js because game.js is the only writer of
 game_progress, and currency is save state exactly like quests, flags and
@@ -367,6 +374,10 @@ world belongs to the scene.
       holdOpen: true,                            optional; every step done
                                                  does not finish the act
                                                  (Block 56)
+      notebook: { title, pageLabel, hint,        optional; pages to find
+                  foundText, completeText,       (Block 64)
+                  entries: [{ id, flag,
+                              title, text }] },
       startingQuests: [{ id, text }],
       guide: [{ scene, requiresFlag,             optional; where to go
                 unlessFlag, questOpen,           next (Block 42)
@@ -404,6 +415,8 @@ Scene shape:
       hideSpots: [{ x, width }],                 optional; suppress detection
       hazards: [{ x, width, reason }],           optional; costs one health
       pickups: [{ id, x, y, type: "heart" }],    optional; restores one health
+             | [{ id, x, y, type: "page",        or a notebook page
+                  entry }]                       (Block 64)
       guards: [{ id, x, patrolFrom, patrolTo,    optional
                  speed, facing, detectRadius,
                  alertRate, decayRate,
@@ -441,6 +454,16 @@ noRanged: true takes Macario's shot away in that scene: a long hold on
 Atake punches and says why. checkpoints are where a respawn puts him: the
 furthest x whose flag is set, else startX. Both are read at the moment
 they are needed, not stored.
+
+A page pickup (Block 64) names an entry of the act's notebook. Walking
+into it (or jumping for it, at a y above the floor) sets that entry's
+flag, plays "page" (or "fanfare" for the last), and opens a card with
+the entry's title and text over a stopped world; the pause screen lists
+the notebook through Game.notebook(). A page whose flag is set is never
+built again, so found pages stay found across scenes, reloads and
+saves. It is taken whatever the student's health, unlike a heart, and
+never while a dialogue, cutscene or screen is up (playerIsSafe). A page
+out of view does not animate (updatePickupMotion).
 
 A hazard's reason is the Tagalog toast shown on contact and defaults to
 "Nasugatan ka!". Hazards sit on the base floor and are cleared by jumping;
@@ -663,7 +686,10 @@ of them plain globals in game.js, like addQuest:
     wait(ms)                     resolves after ms; a pause in a script
     playCatchGame(opts)          the apple mini-game (Block 57, replacing
                                  Block 56's playTimingGame); resolves with
-                                 how many were caught when it closes
+                                 how many were caught when it closes.
+                                 Block 65: timeLimitMs for a round
+                                 against the clock (golden apples,
+                                 doneText(n) may be a function)
     playIntertitle(lines, opts)  a black card with lines of text, faded
                                  in and out (Block 57); opts startBlack,
                                  whileBlack(), holdMs
@@ -3853,7 +3879,110 @@ The TRACKER.md walkthrough of Act I's scenes, which had grown into a
 second script in prose, was replaced by a pointer to STORY.md.
 verify_new_scene.js to 101.
 
+Blocks 62 to 67 were one session, requested as "make it fun and
+performance friendly", spending a cloud budget on the project. Each is
+additive; nothing the proponents wrote was changed.
+
+Loading, retries and the service worker (Block 62). The fix TRACKER.md
+had chosen for art missing on a slow connection, built. Every picture
+goes through loadImage (game.js, near the top, because loadAct reaches
+it at parse time): one download and one promise per URL, and a failure
+retried after 0.8, 2 and 5 seconds unless a HEAD request says it is a
+real 404, in which case the placeholder box appears at once as before
+and the URL is not asked for again this session. Sprite sheets, the
+panels, a scene's backdrop and the CSS fallbacks all use it, so it
+counts everything a scene draws. The title screen shows a bar of what
+has arrived; a student who taps in before it is full waits on "Sandali
+lang..." (up to 20 seconds, then the world opens with what has come,
+which is what always happened before) and nothing starts behind that
+screen, because the entry promise resolves after it. A scene change
+holds its black until the new scene's art is in, up to 8 seconds.
+
+sw.js keeps every file on the phone. Two rules: a URL with ?v= is cache
+first, since it never changes under that URL, and storing one deletes
+the same path under any older ?v=; everything else from the site (the
+pages themselves above all) is network first, falling back to the
+cache offline, which also ends the stale index.html problem. Other
+origins (Supabase) are never touched, and range requests (streamed
+music) are left to the browser. Registered on https only, after load,
+so the harness on localhost never meets it unless a check sets
+__SW_TEST; test.js sets PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS so
+a context's routes see the worker's requests. The file's header holds
+the three lines that switch it off on every phone if that is ever
+needed.
+
+The same session found the body font had never been served: VT323.woff2
+was committed only under the old Assets/Fonts casing, so on GitHub
+Pages, which is case sensitive, every student read Courier. It is now
+assets/fonts/vt323.woff2, and section AN passes for the first time.
+
+Takbo, a forgiving jump, and dust (Block 63). Holding one way for 450ms
+breaks into a run (8.5 against SPEED's 5), ramped in over 12 frames,
+with the walk cycle stepped faster in step, and dropped at once on
+release or a turn. No button: the cluster is full and the thumb is
+already on the one control that means "go". Off wherever a guard or an
+enemy is up, because detection, chases and the fight were tuned
+against SPEED. A jump pressed within 110ms of walking off an edge still
+jumps (coyote time) and one pressed within 130ms before landing jumps
+on the landing (a buffer); neither can start a jump from a jump. Dust
+puffs at the start of a run, on each stride, at take-off and landing,
+from a pool of six elements animated by transform and opacity, the
+size set with the separate scale property so the keyframes read no
+custom property (Block 54's lesson).
+
+The notebook (Block 64). TRACKER.md, Next action 2, recorded that the
+rewritten Act I teaches none of what the pre-test and post-test ask. Ten
+pages now lie along the street, every other one at jump height (the
+only use Talon has on a street with no platforms), each saying what one
+of the item bank's ten matched pairs commits to and nothing further,
+the rule every historical fact in content already follows. They are
+outside the story (pages of a history of the man the boy becomes, the
+story being in 1880) and optional, so the chain and the act are
+untouched. All of it is ours and marked PLACEHOLDER; STORY.md has the
+text and the question for the proponents. The engine side is general:
+an act's notebook, a "page" pickup, a card, and Game.notebook() for the
+Kuwaderno on the pause screen. The trivia rule is unaffected: the pages
+are found after the pre-test, never on the card before it.
+
+The apple game, with feeling (Block 65). Once the horse is fed, the tree
+is a game of its own: thirty seconds, apples falling a little faster
+with each catch, every fifth one golden and worth three, and the best
+round kept in a flag as a number. In both modes a catch squashes the
+basket and raises a "+1", a miss splats, and three in a row is a streak
+with its own sound. Three sounds were added by
+_dev/tools/make-fun-sfx.js (page, fanfare, streak), levelled against
+the others by RMS. ASSET_VERSION to 25.
+
+Measured, not guessed (Block 66). With Chrome's counters at a sixth of
+this machine's speed, the ten pages bobbing along the road doubled the
+style work of standing still even when none was on screen. Pages out of
+view now hold still (a class written only when one crosses the edge),
+and a page bobs three times as it comes into view and then stops,
+keeping its glow; standing and walking measure as before Block 62. The
+same pass found the game loop setting six HUD elements' classes every
+frame whether or not they changed, and the player's facing flip written
+every frame; both are now written only on a change (setClass).
+
+The reward pop (Block 67). Being paid raises "+N" and a coin over
+Macario's head (Game.addCurrency, floatOverPlayer), from a pool of two
+elements. Spending raises nothing.
+
 ## Pitfalls
+
+A picture is loaded through loadImage (Block 62), never with a bare new
+Image(). One that is not goes uncounted, so the title bar and the
+scene-change wait do not wait for it, and it is not retried.
+
+sw.js caches every ?v= URL forever. A file changed without its v=N
+bumped is now invisible on every phone that has played before, not just
+on some; the cache-buster rule below matters more than it did. A file
+without a version (index.html, supabaseClient.js) is always fetched
+fresh while online.
+
+A CSS animation on something repeated along the road runs, and costs
+style work, even off screen. Hold what is out of view still, as
+updatePickupMotion does, and measure with the counters before adding
+one.
 
 Clear the Supabase SQL editor before pasting. Leftover text executes
 alongside the new query.
