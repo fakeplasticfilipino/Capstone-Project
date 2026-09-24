@@ -1755,9 +1755,16 @@ function updateAnimFrame(now) {
     }
   }
 
-  // Flip to face the direction of travel
-  playerSpriteEl.style.transform = `scaleX(${facing})`;
+  // Flip to face the direction of travel. Written only when it changes:
+  // an inline style set to the value it already has still marks the
+  // element for a style recalculation, every frame (Block 66).
+  if (facing !== lastDrawnFacing) {
+    playerSpriteEl.style.transform = `scaleX(${facing})`;
+    lastDrawnFacing = facing;
+  }
 }
+
+let lastDrawnFacing = null;
 
 let posX = 0;
 let posY = GROUND_LEVEL; // distance from the bottom of the world, in px
@@ -2612,6 +2619,7 @@ function buildPickups() {
     world.appendChild(el);
     actElements.push(el);
     pickup.el = el;
+    pickup.moving = undefined; // Block 64: updatePickupMotion decides
   });
 }
 
@@ -3239,6 +3247,26 @@ function notebookState() {
   });
   return { title: def.title || "", hint: def.hint || "", total: entries.length,
     found: entries.filter((e) => e.found).length, entries };
+}
+
+// A pickup bobs (CSS, pickup-bob) only while it is near the screen. Ten
+// pages bobbing along a 14500px road were measured costing the browser
+// style work every frame whether or not any was in view, so the ones out
+// of view are held still (.pickup-still), and a class is written only
+// when a pickup crosses the edge.
+const PICKUP_MOTION_MARGIN = 300;
+
+function updatePickupMotion(cameraX) {
+  const from = cameraX - PICKUP_MOTION_MARGIN;
+  const to = cameraX + (viewportWidth || 0) + PICKUP_MOTION_MARGIN;
+  for (let i = 0; i < PICKUPS.length; i++) {
+    const pickup = PICKUPS[i];
+    if (!pickup.el) continue;
+    const near = pickup.x >= from && pickup.x <= to;
+    if (near === pickup.moving) continue;
+    pickup.moving = near;
+    pickup.el.classList.toggle("pickup-still", !near);
+  }
 }
 
 // Removes any page whose entry has been found since the scene was built
@@ -5187,6 +5215,15 @@ function updateGuide(active, cameraX) {
   }
 }
 
+// Block 66. Adds or removes a class only when it is not already so. The
+// game loop sets the HUD's buttons shown or hidden every frame, and a
+// classList.add of a class already there is still an attribute write:
+// measured, six of them a frame were a mutation and a style
+// invalidation sixty times a second while standing still.
+function setClass(el, cls, on) {
+  if (el.classList.contains(cls) !== on) el.classList.toggle(cls, on);
+}
+
 function gameLoop(now) {
   now = now || 0;
 
@@ -5340,58 +5377,59 @@ function gameLoop(now) {
   let cameraX = posX - (viewportWidth || measureViewport()) / 2 + PLAYER_WIDTH / 2;
   cameraX = Math.max(0, Math.min(cameraX, WORLD_WIDTH - viewportWidth));
   drawCamera(cameraX, now);
+  updatePickupMotion(cameraX); // Block 64
 
   // Block 42. Where to go next, while the student can act on it.
   updateGuide(!inDialogue && !cutscenePlaying && !authGated && !uiBlocked, cameraX);
 
   // Interact and gift buttons follow whichever NPC or stage is nearby.
   if (!inDialogue && !cutscenePlaying && !authGated && !uiBlocked) {
-    mobileControls.classList.remove("hidden");
+    setClass(mobileControls, "hidden", false);
     // The pause button rides along with the movement controls rather
     // than tracking its own condition. The branch this sits in is
     // already the exact definition of "the student is playing", and a
     // second copy of it would be a second thing to keep in step.
-    if (btnPause) btnPause.classList.remove("hidden");
+    if (btnPause) setClass(btnPause, "hidden", false);
     if (btnInventoryMain && window.Inventory) {
-      btnInventoryMain.classList.remove("hidden");
+      setClass(btnInventoryMain, "hidden", false);
     }
     if (btnShopMain && window.Inventory) {
-      btnShopMain.classList.remove("hidden");
+      setClass(btnShopMain, "hidden", false);
     }
     nearby = findNearby();
     if (nearby.type === "npc" && npcOpensShop(nearby.ref)) {
       setLabel(btnInteract, "Tindahan");
-      btnInteract.classList.add("active");
+      setClass(btnInteract, "active", true);
     } else if (nearby.type === "npc") {
       setLabel(btnInteract, nearby.ref.interactLabel || "Usap");
-      btnInteract.classList.add("active");
+      setClass(btnInteract, "active", true);
     } else if (nearby.type === "stage") {
       setLabel(btnInteract, "Ganap");
-      btnInteract.classList.add("active");
+      setClass(btnInteract, "active", true);
     } else if (nearby.type === "exit") {
       setLabel(btnInteract, nearby.ref.label || "Pasok");
-      btnInteract.classList.add("active");
+      setClass(btnInteract, "active", true);
     } else {
       setLabel(btnInteract, "E");
-      btnInteract.classList.remove("active");
+      setClass(btnInteract, "active", false);
     }
 
     if (nearby.type === "npc" && canGiveGift(nearby.ref)) {
       setLabel(giftBtn, nearby.ref.gift.buttonLabel);
-      giftBtn.classList.remove("hidden");
+      setClass(giftBtn, "hidden", false);
     } else {
-      giftBtn.classList.add("hidden");
+      setClass(giftBtn, "hidden", true);
     }
   } else {
     // Dialogue or cutscene is showing. Tapping the dialogue box
     // advances it, so tuck the movement controls away.
-    mobileControls.classList.add("hidden");
-    if (btnPause) btnPause.classList.add("hidden");
-    if (btnInventoryMain) btnInventoryMain.classList.add("hidden");
-    if (btnShopMain) btnShopMain.classList.add("hidden");
-    giftBtn.classList.add("hidden");
+    setClass(mobileControls, "hidden", true);
+    if (btnPause) setClass(btnPause, "hidden", true);
+    if (btnInventoryMain) setClass(btnInventoryMain, "hidden", true);
+    if (btnShopMain) setClass(btnShopMain, "hidden", true);
+    setClass(giftBtn, "hidden", true);
     setLabel(btnInteract, "E");
-    btnInteract.classList.remove("active");
+    setClass(btnInteract, "active", false);
   }
 
   requestAnimationFrame(gameLoop);

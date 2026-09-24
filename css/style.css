@@ -3904,3 +3904,20 @@ body.text-lg .notebook-entry-text { font-size: 22px; }
   #catch-basket.catch-anim-a, #catch-basket.catch-anim-b,
   #catch-splat.catch-anim-a, #catch-splat.catch-anim-b { animation: none; }
 }
+
+/* Block 64. A pickup out of view holds still (game.js,
+   updatePickupMotion): an animation running off screen still costs the
+   browser style work every frame. */
+.pickup.pickup-still {
+  animation: none;
+}
+
+/* A page bobs three times as it comes into view and then holds still,
+   with its glow left on. Measured with Chrome's counters at a sixth of
+   this machine's speed, one page bobbing forever in view doubled the
+   style work of standing still (0.13s to 0.26s in four seconds); held
+   still it cost nothing. Three bobs catch the eye, which is what the
+   bob was for. */
+.pickup-page {
+  animation: pickup-bob 1.4s ease-in-out 3;
+}
