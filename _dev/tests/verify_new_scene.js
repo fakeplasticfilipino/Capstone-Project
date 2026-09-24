@@ -315,7 +315,28 @@ const doneInSettings = async (page) => {
   return items;
 };
 
+// STORY.md is the script of content/act1.js, changed with it. Every line
+// of dialogue (text, and a customer's waiting, thanks and after) and
+// every black card in the content must appear there word for word. Read
+// from the source rather than from the running game, so lines no test
+// walks to (a repeat visit, a reload branch) are held to it too.
+const storyDrift = () => {
+  const src = fs.readFileSync(path.join(ROOT, "content", "act1.js"), "utf8");
+  const story = fs.readFileSync(path.join(ROOT, "STORY.md"), "utf8");
+  const lines = [];
+  for (const m of src.matchAll(/\b(?:text|waiting|thanks|after):\s*("(?:[^"\\]|\\.)*")/g)) lines.push(JSON.parse(m[1]));
+  for (const m of src.matchAll(/playIntertitle\(\[([^\]]*)\]/g)) {
+    for (const s of m[1].matchAll(/"(?:[^"\\]|\\.)*"/g)) lines.push(JSON.parse(s[0]));
+  }
+  return { count: lines.length, missing: lines.filter((l) => !story.includes(l)) };
+};
+
 (async () => {
+  console.log("\nSTORY.md");
+  const drift = storyDrift();
+  ok("every line and black card in content/act1.js is in STORY.md (" + drift.count + ")",
+     drift.count > 100 && drift.missing.length === 0, drift.missing);
+
   await new Promise((r) => server.listen(PORT, r));
   const browser = await chromium.launch();
 

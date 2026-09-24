@@ -7,13 +7,16 @@ Current build status is NOT in this file, and neither is the requirement
 scoreboard. Both live in TRACKER.md, which is the only file that describes
 status. Read it before planning any work.
 
-Two files, and they do not overlap. This one is how the thing is built and
-changes rarely. TRACKER.md is where the build is and changes every session.
-Nothing else in the repository describes either.
+Three files, and they do not overlap. This one is how the thing is built
+and changes rarely. TRACKER.md is where the build is and changes every
+session. STORY.md (since Block 61) is what the story is: every scene,
+place, person, beat and line of dialogue, and it changes whenever the
+story does. Nothing else in the repository describes any of the three.
 
-Read in this order at the start of a session: this file, then TRACKER.md.
-Both sit in the repository, so read them directly rather than asking for
-them to be pasted.
+Read in this order at the start of a session: this file, then TRACKER.md,
+then STORY.md before touching any content file or writing a line of
+dialogue. All three sit in the repository, so read them directly rather
+than asking for them to be pasted.
 
 This file is long, because Decisions on record keeps the reasoning behind
 every block. A session does not need all of it to start. Read, in order:
@@ -84,6 +87,9 @@ off the repository.
 
     index.html, teacher.html   the two pages; they must stay at the root,
                                because the Pages URL serves index.html
+    CLAUDE.md, TRACKER.md,     the three context files (how it is built,
+      STORY.md                 where it is, what the story is), with
+                               README.md for the public
     css/                       style.css (the game), teacher.css
     js/                        the engine and its modules, one file each
                                (game, acts, inventory, assessment, shell,
@@ -181,7 +187,7 @@ errands with fixed pay, black intertitle cards for "Tondo, 1880" and
 the direktor is the last of the Mananahi's deliveries, his lead actor
 is missing, and Macario plays the part in a moro-moro inside the
 entablado, with a fight, before he is paid and gives Nanay the savings.
-TRACKER.md, Start here, describes exactly what Act I contains today.
+STORY.md describes exactly what Act I contains today, line by line.
 
 None of this touched the ENGINE. Every mechanic the fuller version
 exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
@@ -1080,11 +1086,22 @@ is built. A spec file per block is a third status document by another name:
 it is accurate for about a day, it goes stale the moment the block ships,
 and it then has to be corrected alongside everything else.
 
-What outlives a block goes in one of two places and nowhere else. Decisions
-and formats that shape future work go in this file, under Decisions on
-record. Status, next action and what has been run go in TRACKER.md. If a
-piece of the plan fits in neither, it was working material and belongs in
-the conversation only.
+What outlives a block goes in one of three places and nowhere else.
+Decisions and formats that shape future work go in this file, under
+Decisions on record. Status, next action and what has been run go in
+TRACKER.md. What happens in the story, and the script, goes in STORY.md.
+If a piece of the plan fits in none of them, it was working material and
+belongs in the conversation only.
+
+STORY.md is the script of the content files and is changed in the same
+change as they are: a line added, reworded or removed in content/act1.js
+is added, reworded or removed there too, with its + marker if it is
+ours, and a beat, a place or a person that moves is moved there.
+verify_new_scene.js fails if a line of dialogue or a black card in
+content/act1.js is missing from it. The check runs one way only (the
+content into the story), so a line deleted from the content must be
+deleted from STORY.md by hand. When Acts II to IV are written, their
+content joins the check and their beats join the file.
 
 Documentation style: plain professional prose. No emoji, no checkboxes, no
 bold, no em dashes, no horizontal rules. Status markers in parentheses:
@@ -1137,8 +1154,10 @@ practice, each one taken from those scenes:
   game ("Kumuha ka ng tatlo..." with nothing around it), and more than
   two lines in a row of pure information.
 
-Every line of ours is marked PLACEHOLDER in the content file until the
-proponents accept or replace it, however good it reads.
+Every line of ours is marked PLACEHOLDER in the content file, and with
+a + in STORY.md, until the proponents accept or replace it, however
+good it reads. Read STORY.md before writing: the voices, the threads
+left open and what each person already knows are all there.
 
 Every change ships with a verifiable checkpoint. State what the user should
 see, and what failure looks like, before they test.
@@ -3799,6 +3818,40 @@ and a hurt ask for, the freeze holding the world still, the shake
 moving the camera and letting it go, the slide and its distance, the
 topple, and the beat before the fight ends. game.js v66, style.css v43,
 ASSET_VERSION 24.
+
+STORY.md (Block 61). Requested: a tracker for the plot itself, the
+dialogue, the interactions, what happens and where, integrated with the
+other two files. It is a third context file beside this one and
+TRACKER.md, with its own lane: what the story is. This file keeps how
+content is built (the data formats, the engine calls) and TRACKER.md
+keeps what is owed; STORY.md says what a student sees and hears, beat
+by beat, with every line, and so is the one document a proponent can
+review the script in without reading JavaScript.
+
+It holds the full script, not a summary, because the dialogue is the
+lesson and is what the proponents review; a summary would leave them
+reading content/act1.js. A script beside the code is a second copy, and
+a second copy drifts, so drift is made a failing check rather than a
+matter of discipline: verify_new_scene.js reads content/act1.js as
+text, pulls out every line of dialogue and every black card, and fails
+if any is not in STORY.md word for word. Reading the source rather than
+the running game is what covers the lines no test walks to (a repeat
+visit, a reload branch). It runs one way only, so a deleted line has to
+be deleted from STORY.md by hand; the other direction would need
+STORY.md in a strict format, which would make it worse to read.
+
+Ours and theirs are told apart by a + in the margin, the one piece of
+markup the file needs, because which lines the proponents wrote is the
+first thing a reviewer asks. The file also keeps the places (where
+everyone stands on the street), the cast (who has real art and who is
+a box), each person's repeat lines by story state, the threads the
+story has left open, and the questions only the proponents can answer.
+Flags and x positions appear only so a reader can find a beat in the
+content; mechanics are described here, not there.
+
+The TRACKER.md walkthrough of Act I's scenes, which had grown into a
+second script in prose, was replaced by a pointer to STORY.md.
+verify_new_scene.js to 101.
 
 ## Pitfalls
 

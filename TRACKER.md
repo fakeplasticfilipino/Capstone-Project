@@ -2,15 +2,18 @@
 
 The single source of truth for status. A session starting work on this
 project reads CLAUDE.md for how things are built, then this file for
-where they are. Start with "Start here"; it is written so a new session
+where they are, then STORY.md for what the story is. Start with "Start here"; it is written so a new session
 can act without reading anything else first.
 
-Two files carry context, and they do not overlap:
+Three files carry context, and they do not overlap:
 
     CLAUDE.md     how the thing is built. Architecture, conventions,
                   data formats, decisions on record. Changes rarely.
     TRACKER.md    where the build is. Status, next action, what has
                   been run, what is blocked. Changes every session.
+    STORY.md      what the story is. Scenes, places, people, beats,
+                  interactions and every line of dialogue. Changes
+                  whenever the story does (Block 61).
 
 Nothing else in this repository describes status. README.md is the
 public face on GitHub and is written for a reader who is not working
@@ -22,14 +25,18 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 24 Sep 2026, after Block 60 (combat with weight: a swing
+Last updated: 24 Sep 2026, after Block 61 (STORY.md, the plot and
+script of the game as a third context file, checked against
+content/act1.js by verify_new_scene.js). test.js 645 passed, 0 failed;
+verify_new_scene.js 101 passed, 0 failed. Blocks 59 to 61 are not
+pushed; 59 and 60 are not played on the phone.
+
+Block 60, the same day (combat with weight: a swing
 on every punch, a thump when it lands, a freeze of a few frames, a
 camera shake, enemies that slide back and topple when dropped, and a
 buzz and a jolt when Macario is hit). The proponent loved Block 59's
 dialogue; how it was written is now a standing convention (CLAUDE.md,
-Conventions, Writing dialogue). test.js 645 passed, 0 failed;
-verify_new_scene.js 100 passed, 0 failed. Blocks 59 and 60 are not
-pushed and not played on the phone.
+Conventions, Writing dialogue).
 
 Block 59, the same day (every stand-in sprite made
 in code or recoloured deleted, placeholder boxes in their place; no
@@ -115,40 +122,11 @@ entablado, which only the direktor takes Macario into.
       8  Kunin ang bayad sa Mananahi             her gift button, 50 barya
       9  Ibigay kay Nanay ang naipon (n/100)     Nanay's gift
 
-    tondo     the street, Macario at 900. The opening plays by itself on
-              a login (a scene script): black, "Tondo, 1880 / Kung saan
-              nagsimula ang buhay ni Macario" fading in and out
-              (playIntertitle); three siga (placeholder boxes) walk up
-              behind him and taunt him; Nanay slides in from the right
-              on her idle sheet and calls him home; "Tsk"; the two of
-              them walk off together to x 2000 (movePlayer); there,
-              outside, she tells him about the cedula and he says he
-              will work; his thought; "Bagong gawain". Nanay stays at
-              x 2000 as an NPC for the rest of the act.
-              The Kutsero (x 3300) sends him to the apple tree (x 4900,
-              "Pumitas"): the catch mini-game (playCatchGame), three
-              apples, then the white horse (x 3560, "Ipakain ang
-              mansanas"), then the Kutsero's "Kunin ang bayad", 50.
-              The Mananahi (x 6400, only after the Kutsero has paid)
-              sends him with three orders: Aling Rosa (7800) and Mang
-              Tomas (9300) first, "Iabot ang damit" each, then the
-              direktor (13600, the far end), who will not take his
-              until the other two are done. Handing over the costumes
-              starts his scene (Block 59): his lead actor, Julian, is
-              sick, the house is full, the costume fits Macario, and he
-              talks him into the part. They go inside:
-    entablado on entablado-inside.jpg, 1180 wide. Backstage, Maryam
-              walks him through the story; "Bumukas ang telon" on
-              black; he forgets his first line, the direktor prompts
-              from the wings, he adds one of his own; the Sultan walks
-              on and calls his soldiers; four of them fight him (hearts
-              show, no gun); the Sultan gives his blessing; "Nagsara
-              ang telon"; in the wings the direktor pays 79 to 110.
-              Lumabas returns to the street beside him.
-    tondo     The Mananahi has heard, and pays 50. Nanay's "Ibigay ang
-              ipon" (the proponents' lines, with him telling her about
-              the play) spends 100. No jump in time; the street keeps
-              everyone. Act I stays open (holdOpen).
+    What happens in each step, where everyone stands, and every line,
+    is in STORY.md, Act I, beat by beat: the opening on the street,
+    the Kutsero's apples and horse, the Mananahi's deliveries, the
+    direktor's missing actor, the play in the entablado, the Mananahi's
+    pay and the savings. Act I stays open (holdOpen) after the last.
 
 A reload in the middle of the opening, the direktor's scene or the play
 plays it again from the top; a reload after the talk with Nanay plays
@@ -318,6 +296,8 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
         Macario plays the part in a moro-moro with a fight
     60  combat with weight: swing, punch, knockout and hurt sounds,
         hit-stop, camera shake, sliding knockback, enemies topple
+    61  STORY.md: the plot, places, cast and full script of Act I, as a
+        third context file kept in step with the content by a check
 
 Everything through Block 41 is pushed (088f5e4). Blocks 42 to 58 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
@@ -362,7 +342,9 @@ artist's standard.
 direktor pays. Act I is held open (holdOpen) until then; when the
 passage that ends the act is written, remove holdOpen and the post-test
 runs as before. Write it to the standard in CLAUDE.md, Conventions,
-Writing dialogue, which is the proponent's own verdict on Block 59.
+Writing dialogue, which is the proponent's own verdict on Block 59,
+and start from STORY.md, Threads left open. The proponents can review
+every line in one place in STORY.md, where ours are marked +.
 Also from the proponents: the lines marked PLACEHOLDER
 in content/act1.js (Block 57 added several: what the Kutsero and the
 Mananahi say the job is, their reminders and thanks, the horse, the
@@ -456,7 +438,7 @@ against the source material.
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs. Everything through Block 41 is pushed; Blocks 42 to 58
+header directs, then STORY.md before writing any story. Everything through Block 41 is pushed; Blocks 42 to 58
 are in the device folder, passing their checks, and wait on the
 proponent's push. Act I was rewritten in Block 52, carried through
 the jobs and the errand in Block 56, rebuilt onto one street in Block
@@ -738,6 +720,8 @@ submit_assessment).
     60  impact(), IMPACTS, hitStop, shakeCamera, drawCamera,
         updateKnockback, FIGHT_END_BEAT_MS; enemy-fall CSS;
         make-combat-sfx.js (section BC, test.js to 645)
+    61  STORY.md; verify_new_scene.js checks every line and black card
+        of content/act1.js appears in it (to 101)
 
 ## Blocks remaining
 
@@ -908,8 +892,9 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/verify_new_scene.js
 
 test.js: 645 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 100
-checks driving the REAL content/act1.js and content/items.js through
+mechanics stay tested whatever Act I ships). verify_new_scene.js: 101
+checks: one that every line of dialogue and black card in
+content/act1.js is in STORY.md (Block 61), then 100 driving the REAL content/act1.js and content/items.js through
 Act I as of Block 59: the ten-painting street, the "Tondo, 1880" card,
 the opening with the walk off beside Nanay, the talk and the thought,
 both jobs (apples caught with real key presses, a miss, a stop and a
