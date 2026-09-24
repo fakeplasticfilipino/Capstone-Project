@@ -91,13 +91,12 @@ off the repository.
     content/                   act data and the item catalogue
     assets/
       sprites/player/          Macario's sheets, macario-<pose>.png
-      sprites/characters/      everyone who talks, <name>.png
-                               (siga-1..3 are Block 52 stand-ins;
-                               nanay-walk.png is Block 54's drawn walk,
-                               named by nothing since Block 57)
+      sprites/characters/      everyone who talks, <name>.png; the
+                               artist's art only (Block 59)
       sprites/enemies/         guards and fighters
       sprites/scenery/         things on the street that are used, not
-                               talked to (puno-mansanas.png, Block 57)
+                               talked to (empty until the artist draws
+                               puno-mansanas.png)
       backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
                                ground-lupa.jpg
       items/                   inventory and shop tile pictures
@@ -106,9 +105,7 @@ off the repository.
     db/                        migrations/, seeds/, scripts/ (Database)
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
-                               make-placeholder-sprites.py,
-                               make-shadow-tree.py, make-apple-tree.py,
-                               make-sfx.py, and
+                               make-shadow-tree.py, make-sfx.py, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
                                form and old screenshots, kept on the
@@ -179,8 +176,11 @@ paintings long, at the proponent's direction: no house and no tailor's
 shop to be carried into, Nanay outside for good, the two jobs as
 errands with fixed pay, black intertitle cards for "Tondo, 1880" and
 "1884", and the entablado reached only with the direktor. Two scenes
-(tondo, entablado), nine objectives. TRACKER.md, Start here, describes
-exactly what Act I contains today.
+(tondo, entablado), nine objectives. Block 59 took out the "1884" jump:
+the direktor is the last of the Mananahi's deliveries, his lead actor
+is missing, and Macario plays the part in a moro-moro inside the
+entablado, with a fight, before he is paid and gives Nanay the savings.
+TRACKER.md, Start here, describes exactly what Act I contains today.
 
 None of this touched the ENGINE. Every mechanic the fuller version
 exercised — dialogue, the stage/death-sequence cutscene, guard patrol and
@@ -3641,6 +3641,62 @@ silent, that the switch silences them, and hiddenByFlag.
 verify_new_scene.js checks the street before and after 1884, and a save
 from after it. game.js v64, content/act1.js v44, ASSET_VERSION 22 (new
 files under assets/).
+
+No stand-in art, and the play instead of 1884 (Block 59). Two requests.
+First, every sprite made in code or recoloured from the artist's frames
+was judged ugly and removed, in favour of the dashed placeholder box:
+siga-1..3, the Mananahi, Bonifacio, the Katipunero, the mamamayan, the
+Bantay, nanay-walk, the apple tree and the two item tiles, with the two
+tools that built them (make-placeholder-sprites.py, make-apple-tree.py).
+This extends Block 54's verdict to the recoloured stand-ins of Blocks
+41 and 52 as well: character and item art comes from the artist or is
+a placeholder box, nothing in between. Content still names the missing
+files (siga-1..3.png, mananahi.png, direktor.png, aling-rosa.png,
+puno-mansanas.png), so each box says what is owed and real art drops
+in under that name. Scenery drawn as geometry (the shadow trees) and
+the sound effects were not part of the request and stay. ASSET_VERSION
+to 23, so a phone does not keep showing the deleted pictures from its
+cache.
+
+Second, no jump to 1884. The Mananahi's third delivery is the direktor,
+last, and the story turns there: his lead actor (Julian) is sick, the
+seats are full, the costume Macario carried fits him, and the direktor
+begs him to take the part. Inside the entablado is a short moro-moro,
+the kind of play Tondo's stages put on and the stage Sakay is known to
+have acted on: Maryam walks him through it backstage, he forgets his
+first line and is prompted from the wings, adds a line of his own,
+fights the Sultan's four soldiers (spawnEnemies with the Block 40
+sheets, noRanged on a stage), and the curtain closes on a standing
+crowd. Every line of it is ours and marked PLACEHOLDER; the direction
+was that the dialogue must sound natural, so it is written as people
+talk, with the small beats (a forgotten line, a whisper, a tease)
+carrying the scene rather than exposition. The play's two kingdoms are
+not named by religion, and it ends in a blessing rather than the
+form's traditional conversion, a choice made for a Grade 8 classroom
+that the proponents may reverse.
+
+Shape. The chain stays nine steps: the delivery step now counts three
+flags (two customers and the direktor), and is completed by the
+direktor's scene script (theMissingActor, doneFlag naihatidAngMgaDamit)
+rather than by the third gift, so Bagong gawain announces the play as
+they go in rather than while he is still pleading. The play is a scene
+script in the entablado (thePlay), so a reload in the middle plays it
+from backstage; the play's flag is set before the direktor's pay, so a
+reload cannot pay twice. The Mananahi's pay and Nanay's gift follow;
+Nanay's gift keeps the proponents' five lines with four of ours after
+the third, telling her about the play. The direktor refuses his
+costumes until the two customers have theirs (naihatidSaDalawangSuki),
+since the Mananahi sends him there last. With nothing to clear, the
+street keeps everyone; hiddenByFlag and refreshNpcVisibility stay in
+the engine, unused by content. The entablado grew from 900 to 1180,
+one sideways phone screen at --zoom 0.7, because 900 left a dark strip
+at the side. The direktor still pays 79 to 110 at random, so after the
+100 goes to Nanay Macario keeps what the play earned.
+
+verify_new_scene.js plays the new passage end to end (100 checks),
+including reloads mid-scene, mid-play and a Block 57 save whose
+deliveries were all done. game.js v65 (ASSET_VERSION only),
+content/act1.js v45.
 
 ## Pitfalls
 

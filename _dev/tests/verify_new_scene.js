@@ -8,13 +8,14 @@
 // slides on, and the two of them walking off together to where she
 // stays; the talk and the thought on the street; the Kutsero's job
 // (apples caught in the mini-game with real key presses, fed to the
-// horse, 50 barya) and the Mananahi's (three customers, 50 barya);
-// Nanay's gift; "1884" on black and the errand beside the Mananahi; the
-// direktor taking him inside the entablado and paying; the act held
-// open; and the finished tasks listed in settings.
+// horse, 50 barya) and the Mananahi's (two customers, then the
+// direktor last). Since Block 59: the direktor's missing actor, the
+// play inside the entablado (backstage, the curtain, the fight, the
+// pay), the Mananahi's pay, Nanay's gift with no jump in time, the act
+// held open, and the finished tasks listed in settings.
 // It also checks that a reload in the middle of a script replays it,
-// that saves from Blocks 52 to 56 (bahay, patahian) land on the street,
-// and that a guest gets the same opening.
+// that saves from Blocks 52 to 57 land somewhere sensible, and that a
+// guest gets the same opening.
 // =============================================================
 // fixture routes) the same way _dev/tests/test.js Section A does.
 const { chromium } = require("playwright");
@@ -216,28 +217,28 @@ const MANANAHI = [
   "Macario: Okay lang 'ho, nangangailangan kami ng pera ngayon",
   "Mananahi: O sige sige, tara dito",
 ];
-const NANAY_THANKS = [
+// The proponents' five lines. Block 59 tells the play between the third
+// and the fourth.
+const NANAY_THANKS_OWN = [
   "Macario: Nay, nakapag-ipon na ako ng pera para makatulong",
   "Nanay: Maraming salamat anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?",
   "Macario: Opo Nay, nagtrabaho ako para sa Kutsero at mananahi",
   "Nanay: Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay",
   "Macario: Maraming salamat nay!",
 ];
-const ERRAND = [
-  "Mananahi: Oh Macario, padala nga to dun sa direktor, asa dulo siya ng kalye sa loob ng entablado, ingatan mo mahal yang damit na yan",
-  "Macario: Sige 'ho",
-  "Mananahi: Nasa sakaniya na yung bayad, wag mo kalimutan kolektahin",
-];
 const STEP = {
   kutsero: "Maghanap ng trabaho: kausapin ang Kutsero",
   apples: "Kumuha ng tatlong mansanas at ipakain sa kabayo",
   payK: "Kunin ang bayad sa Kutsero",
   mananahi: "Kausapin ang Mananahi",
-  clothes: "Ihatid ang mga damit sa mga suki",
+  clothes: "Ihatid ang mga tinahing damit",
+  play: "Gumanap bilang Don Rodrigo sa dula",
   payM: "Kunin ang bayad sa Mananahi",
   nanay: "Ibigay kay Nanay ang naipon",
-  errand: "Dalhin ang damit sa direktor sa entablado",
 };
+const PANIC_FIRST = "Direktor: Teka... nasaan na ba si Julian?";
+const PANIC_YES = "Macario: Sige po. Susubukan ko.";
+const BACKSTAGE_FIRST = "Maryam: Ikaw ba 'yung papalit kay Julian?";
 
 // Block 57. The black card: whether it is up, and its lines.
 const intertitle = (page) => page.evaluate(() => {
@@ -427,7 +428,7 @@ const doneInSettings = async (page) => {
   await page.keyboard.press("e");
   const k1 = await readConversation(page, 5);
   ok("the Kutsero's lines as written, then what the job is",
-     JSON.stringify(k1.lines.slice(0, 4)) === JSON.stringify(KUTSERO) && /tatlong mansanas/.test(k1.lines[4] || ""), k1.lines);
+     JSON.stringify(k1.lines.slice(0, 4)) === JSON.stringify(KUTSERO) && /mansanas/.test(k1.lines[4] || ""), k1.lines);
   await page.waitForTimeout(200);
   ok("the task counts the apples (0/3)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.apples + " (0/3)"]));
   ok("the guide points at the tree", (await guide(page)).label === "Puno ng mansanas");
@@ -435,10 +436,10 @@ const doneInSettings = async (page) => {
 
   await walkTo(page, 4800);
   const treeBtn = await page.evaluate(() => ({ label: document.querySelector("#btn-interact .lbl").textContent,
-    art: /puno-mansanas\.png/.test(document.querySelector("#npc-puno .npc-anim-sprite").style.backgroundImage),
+    box: /puno-mansanas\.png/.test(document.getElementById("npc-puno").textContent),
     h: document.getElementById("npc-puno").style.height }));
-  ok("at the tree the button reads Pumitas, and the tree is drawn tall", treeBtn.label === "Pumitas" && treeBtn.art &&
-     treeBtn.h === "280px", treeBtn);
+  ok("at the tree the button reads Pumitas, and its placeholder is drawn tree-tall (Block 59)",
+     treeBtn.label === "Pumitas" && treeBtn.box && treeBtn.h === "280px", treeBtn);
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
   const cg = await catchState(page);
@@ -481,18 +482,28 @@ const doneInSettings = async (page) => {
   await readConversation(page, 2);
   ok("he is paid exactly 50", (await page.evaluate(() => Game.currency())) === 50);
 
+
   // ---------------------------------------------------------------
-  console.log("\nThe Mananahi's job: three customers, the pay");
+  console.log("\nThe Mananahi's job: two customers, then the direktor");
   ok("the next task is the Mananahi", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.mananahi]) &&
      (await guide(page)).label === "Mananahi");
   await walkTo(page, 6300);
   await page.keyboard.press("e");
-  const m1 = await readConversation(page, 5);
-  ok("the Mananahi's lines as written, then the three customers",
-     JSON.stringify(m1.lines.slice(0, 4)) === JSON.stringify(MANANAHI) && /Aling Rosa/.test(m1.lines[4] || ""), m1.lines);
+  const m1 = await readConversation(page, 8);
+  ok("the Mananahi's lines as written, then the three orders, the direktor's last",
+     JSON.stringify(m1.lines.slice(0, 4)) === JSON.stringify(MANANAHI) && /Aling Rosa/.test(m1.lines[4] || "") &&
+     /direktor/.test(m1.lines[4] || "") && /huling/.test(m1.lines[5] || "") && m1.lines.length === 7, m1.lines);
   await page.waitForTimeout(200);
   ok("the task counts the deliveries (0/3)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.clothes + " (0/3)"]));
-  const customers = [["Aling Rosa", 7700], ["Mang Tomas", 9200], ["Ginoong Reyes", 10700]];
+
+  await walkTo(page, 13480);
+  ok("the direktor will not take his before the other two", (await gift(page)) === null);
+  await page.keyboard.press("e");
+  const early = await readConversation(page, 2);
+  ok("and says so", early.lines.length === 1 && /Ihatid mo muna/.test(early.lines[0]), early.lines);
+  await walkTo(page, 6300);
+
+  const customers = [["Aling Rosa", 7700], ["Mang Tomas", 9200]];
   for (let i = 0; i < customers.length; i++) {
     const [name, x] = customers[i];
     ok("the guide points at " + name, (await guide(page)).label === name);
@@ -503,77 +514,113 @@ const doneInSettings = async (page) => {
     const cur = (await log(page)).current[0];
     ok(name + " thanks him, and the count moves",
        cl.lines.length === 2 && cl.lines[1].startsWith(name + ":") &&
-       (i < 2 ? cur === STEP.clothes + " (" + (i + 1) + "/3)" : cur === STEP.payM), { cl: cl.lines, cur });
+       cur === STEP.clothes + " (" + (i + 1) + "/3)", { cl: cl.lines, cur });
   }
+  ok("then the guide points at the direktor", (await guide(page)).label === "Direktor");
+
+  // ---------------------------------------------------------------
+  console.log("\nThe direktor's missing actor");
+  await walkTo(page, 13480);
+  ok("beside him: Iabot ang damit", (await gift(page)) === "Iabot ang damit");
+  const d0 = await readConversation(page, 2);
+  ok("Macario hands over the costumes", d0.lines.length === 2 && /^Macario:/.test(d0.lines[0]), d0.lines);
+  const panic = await readConversation(page, 30);
+  ok("the direktor finds his lead actor missing and asks Macario to take the part",
+     panic.lines[0] === PANIC_FIRST && panic.lines.includes(PANIC_YES) && panic.lines.length === 18, panic.lines);
+  ok("the delivery step is done only once Macario says yes", await page.evaluate(() =>
+    state.flags.naihatidKay_direktor === true && state.flags.naihatidAngMgaDamit === true));
+  ok("the fade into the entablado", await waitForScene(page, "entablado"));
+  const ent = await page.evaluate(() => ({ x: posX,
+    ids: NPCS.map((n) => n.id).sort().join(","),
+    bg: getComputedStyle(document.getElementById("skyline")).getPropertyValue("--skyline-src") }));
+  ok("inside, on its own painting, with the direktor and Maryam", ent.x === 560 && ent.ids === "direktor,maryam" &&
+     /entablado-inside/.test(ent.bg), ent);
+  ok("the task is the play", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.play]));
+
+  // ---------------------------------------------------------------
+  console.log("\nThe play");
+  const b1 = await readConversation(page, 12);
+  ok("backstage, Maryam walks him through it", b1.lines[0] === BACKSTAGE_FIRST && b1.lines.length === 10 &&
+     /telon/.test(b1.lines[9]), b1.lines);
+  ok("the curtain opens on black", await waitIntertitle(page, true, 3000) &&
+     (await intertitle(page)).lines[0] === "Bumukas ang telon.");
+  await waitIntertitle(page, false, 12000);
+  const s1 = await readConversation(page, 8);
+  ok("the first scene: a forgotten line, a whisper from the wings, a line of his own",
+     s1.lines.length === 8 && s1.lines[1] === "Macario: ..." && /^Direktor \(pabulong\):/.test(s1.lines[2]) &&
+     /mawalay/.test(s1.lines[4]), s1.lines);
+  ok("he is on his mark beside Maryam", await page.evaluate(() => posX === 440));
+  const s2 = await readConversation(page, 4);
+  const sultan = await page.evaluate(() => ({ shown: document.getElementById("dec-sultan").style.display !== "none" }));
+  ok("the Sultan walks on and calls his soldiers", s2.lines.length === 4 && /^Sultan:/.test(s2.lines[0]) &&
+     /Dakpin/.test(s2.lines[2]) && sultan.shown, { s2: s2.lines, sultan });
+
+  let fight;
+  for (let i = 0; i < 40; i++) {
+    fight = await page.evaluate(() => ({ n: ENEMIES.length, alive: ENEMIES.filter((e) => !e.dead).length,
+      hearts: !document.getElementById("hud").classList.contains("hidden"), cut: cutscenePlaying,
+      noRanged: Boolean(currentScene.noRanged) }));
+    if (fight.n) break;
+    await page.waitForTimeout(100);
+  }
+  ok("four soldiers come on, the hearts show, and he is free to fight with no gun",
+     fight.n === 4 && fight.alive === 4 && fight.hearts && !fight.cut && fight.noRanged, fight);
+  await page.evaluate(() => ENEMIES.forEach((e) => hitEnemy(e, 99)));
+  const s3 = await readConversation(page, 5);
+  ok("the Sultan comes back and gives his blessing, and the crowd cheers",
+     s3.lines.length === 5 && /basbas/.test(s3.lines[3]) && /^Mga Manonood:/.test(s3.lines[4]), s3.lines);
+  ok("the curtain closes", await waitIntertitle(page, true, 3000) &&
+     (await intertitle(page)).lines[0] === "Nagsara ang telon.");
+  await waitIntertitle(page, false, 12000);
+  const before = await page.evaluate(() => Game.currency());
+  const s4 = await readConversation(page, 7);
+  await page.waitForTimeout(200);
+  const s5 = await readConversation(page, 2);
+  const afterPay = await page.evaluate(() => Game.currency());
+  ok("in the wings, the direktor is overjoyed and pays him 79 to 110",
+     s4.lines.length === 7 && /Nakatayo/.test(s4.lines[0]) && s5.lines.length === 2 &&
+     afterPay - before >= 79 && afterPay - before <= 110 && before === 50, { s4: s4.lines, s5: s5.lines, before, afterPay });
+  await page.waitForTimeout(400);
+  ok("the play is done, the world is his, and the guide points out", await page.evaluate(() =>
+    state.flags.naitanghalAngDula === true && !cutscenePlaying) && (await guide(page)).label === "Lumabas");
+  await walkTo(page, 1080);
+  await page.keyboard.press("e");
+  ok("Lumabas: back on the street by the direktor", await waitForScene(page, "tondo") && (await settle(page), true) &&
+     await page.evaluate(() => posX === 13480));
+
+  // ---------------------------------------------------------------
+  console.log("\nThe Mananahi's pay, and Nanay");
+  ok("the next task is the Mananahi's pay", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.payM]) &&
+     (await guide(page)).label === "Mananahi");
   await walkTo(page, 6300);
-  ok("back at the Mananahi, Kunin ang bayad", (await gift(page)) === "Kunin ang bayad");
+  await page.keyboard.press("e");
+  const m2 = await readConversation(page, 6);
+  ok("she has heard about the play", m2.lines.length === 5 && /bumida/.test(m2.lines[0]), m2.lines);
+  ok("Kunin ang bayad", (await gift(page)) === "Kunin ang bayad");
   await readConversation(page, 2);
   await page.waitForTimeout(200);
-  ok("paid 50 more: the two jobs make exactly 100", (await page.evaluate(() => Game.currency())) === 100);
+  ok("paid 50 more", (await page.evaluate(() => Game.currency())) === afterPay + 50);
   ok("the task is to give Nanay the savings (100/100)",
      JSON.stringify((await log(page)).current) === JSON.stringify([STEP.nanay + " (100/100)"]) &&
      (await guide(page)).label === "Nanay");
 
-  // ---------------------------------------------------------------
-  console.log("\nNanay, 1884, the errand and the direktor");
   await walkTo(page, 1880);
-  ok("beside Nanay, on the street: Ibigay ang ipon", (await gift(page)) === "Ibigay ang ipon");
-  const n1 = await readConversation(page, 5);
-  ok("Nanay's lines, as written", JSON.stringify(n1.lines) === JSON.stringify(NANAY_THANKS), n1.lines);
-  ok("the savings are spent", (await page.evaluate(() => Game.currency())) === 0);
-  ok("then black: 1884", await waitIntertitle(page, true, 3000) &&
-     JSON.stringify((await intertitle(page)).lines) ===
-       '["1884","Nagtrabaho si Macario bilang isang tagatulong ng kutsero at manananahi"]');
-  ok("the scene never changes", await page.evaluate(() => currentSceneId === "tondo"));
-  ok("the jobs' people are still there until the black is up", await page.evaluate(() =>
-    !NPCS.find((n) => n.id === "puno").hidden));
-  // A tap skips the reading time, not the fades, once the first line
-  // has been up a moment (fade 900 + INTERTITLE_SKIP_AFTER_MS 1200).
-  await page.waitForTimeout(2600);
-  const tapAt = Date.now();
-  await page.mouse.click(300, 200);
-  ok("a tap lifts the card without waiting out the hold", await waitIntertitle(page, false, 6000) &&
-     Date.now() - tapAt < 2600, Date.now() - tapAt);
-  const e1 = await readConversation(page, 3);
-  const at = await page.evaluate(() => ({ x: posX, facing }));
-  ok("he is beside the Mananahi, and her errand, as written",
-     JSON.stringify(e1.lines) === JSON.stringify(ERRAND) && at.x === 6280 && at.facing === 1, { e1: e1.lines, at });
-  const cleared = await page.evaluate(() => NPCS.filter((n) => !n.hidden).map((n) => n.id));
-  ok("after 1884 the street is cleared: only Nanay, the Mananahi and the direktor (Block 58)",
-     JSON.stringify(cleared) === '["nanay","mananahi","direktor"]', cleared);
-  const trees = await page.evaluate(() => document.querySelectorAll(".shadow-tree").length);
-  ok("the shadow trees over the joins stay", trees === 9, trees);
-  await page.waitForTimeout(300);
-  ok("the task is the errand, and the guide points at the direktor on the street",
-     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.errand]) &&
-     (await guide(page)).label === "Direktor");
-
-  await walkTo(page, 13480);
-  await page.keyboard.press("e");
-  const d0 = await readConversation(page, 2);
-  ok("the direktor, on the street, takes him inside", d0.lines.length === 2 && /sa loob/.test(d0.lines[1]), d0.lines);
-  ok("the fade into the entablado", await waitForScene(page, "entablado"));
-  await settle(page);
-  const ent = await page.evaluate(() => ({ x: posX, dir: NPCS.some((n) => n.id === "direktor"),
-    bg: getComputedStyle(document.getElementById("skyline")).getPropertyValue("--skyline-src") }));
-  ok("inside, on its own painting, with the direktor", ent.x === 300 && ent.dir && /entablado-inside/.test(ent.bg), ent);
-  ok("the guide points at him", (await guide(page)).label === "Direktor");
-  await walkTo(page, 380);
-  ok("beside him: Iabot ang damit", (await gift(page)) === "Iabot ang damit");
-  const d1 = await readConversation(page, 2);
-  ok("the direktor's two lines", d1.lines.length === 2 && d1.lines.every((l) => /^Direktor: /.test(l)), d1.lines);
-  const pay = await page.evaluate(() => Game.currency());
-  ok("he is paid 79 to 110 barya", pay >= 79 && pay <= 110, pay);
-  await page.waitForTimeout(1600);
+  ok("beside Nanay: Ibigay ang ipon", (await gift(page)) === "Ibigay ang ipon");
+  const n1 = await readConversation(page, 10);
+  ok("Nanay's lines as written, with the play told in the middle",
+     n1.lines.length === 9 && JSON.stringify([...n1.lines.slice(0, 3), ...n1.lines.slice(7)]) === JSON.stringify(NANAY_THANKS_OWN) &&
+     /entablado/.test(n1.lines[3]), n1.lines);
+  ok("the savings are spent, and he keeps the rest", (await page.evaluate(() => Game.currency())) === afterPay + 50 - 100);
+  await page.waitForTimeout(1500);
+  ok("no jump in time: no black card after Nanay", !(await intertitle(page)).up);
   ok("every step is done and Act I stays open: no post-test (holdOpen)", await page.evaluate(() =>
     Acts.countDone(1) === 9 && Acts.status === "playing" &&
     document.getElementById("act-screen").classList.contains("hidden")));
   const all = await doneInSettings(page);
   ok("settings lists all nine finished tasks", all.length === 9 && all[0] === "Umuwi kasama si Nanay", all);
-  await walkTo(page, 40);
-  await page.keyboard.press("e");
-  ok("Lumabas: back on the street by the direktor", await waitForScene(page, "tondo") && (await settle(page), true) &&
-     await page.evaluate(() => posX === 13480));
+  const street = await page.evaluate(() => NPCS.filter((n) => !n.hidden).map((n) => n.id).join(","));
+  ok("the street keeps everyone (no clearing any more)",
+     street === "nanay,kutsero,kabayo,puno,mananahi,aling-rosa,mang-tomas,direktor", street);
   const p1 = await panels(page);
   ok("nobody stands behind a tree", p1.blocked.length === 0, p1.blocked);
   const moved = await page.evaluate(async () => {
@@ -601,6 +648,10 @@ const doneInSettings = async (page) => {
     await r.page.waitForTimeout(700);
     return r;
   };
+  const upToMananahi = { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true,
+    nakausapAngKutsero: true, napakainAngKabayo: true, nabayaranNgKutsero: true, nakausapAngMananahi: true };
+  const delivered = Object.assign({}, upToMananahi,
+    { naihatidKay_aling_rosa: true, naihatidKay_mang_tomas: true, naihatidSaDalawangSuki: true, naihatidKay_direktor: true });
 
   let r = await resume("tondo", { nakitaAngMgaSiga: true });
   ok("a reload mid-opening starts again from Tondo, 1880", (await intertitle(r.page)).lines[0] === "Tondo, 1880");
@@ -618,17 +669,35 @@ const doneInSettings = async (page) => {
      c.lines[0] === THOUGHT && rb.scene === "tondo" && rb.x === 1880 && rb.nanay, { c: c.lines, rb });
   await r.ctx.close();
 
-  r = await resume("patahian", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true,
-    nakausapAngKutsero: true, nakausapAngMananahi: true, sapatNaAngIpon: true, naibigayAngIponKayNanay: true });
-  const rp = await intertitle(r.page);
-  ok("a Block 56 save in the tailor's shop plays 1884 and the errand on the street",
-     rp.lines[0] === "1884" && await r.page.evaluate(() => currentSceneId === "tondo"), rp);
-  await waitIntertitle(r.page, false, 15000);
-  c = await readConversation(r.page, 3);
-  ok("the errand, beside the Mananahi", JSON.stringify(c.lines) === JSON.stringify(ERRAND) &&
-     await r.page.evaluate(() => posX === 6280));
-  ok("and a save from after the years loads the street already cleared", await r.page.evaluate(() =>
-    JSON.stringify(NPCS.filter((n) => !n.hidden).map((n) => n.id)) === '["nanay","mananahi","direktor"]'));
+  r = await resume("tondo", delivered, 50);
+  const rpX = await r.page.evaluate(() => posX);
+  c = await readConversation(r.page, 30);
+  ok("a reload after handing the direktor his costumes plays his scene again, beside him",
+     c.lines[0] === PANIC_FIRST && c.lines.includes(PANIC_YES) && rpX === 13480, { lines: c.lines, rpX });
+  ok("and takes him inside", await waitForScene(r.page, "entablado"));
+  await r.ctx.close();
+
+  r = await resume("entablado", Object.assign({}, delivered, { naihatidAngMgaDamit: true }), 50);
+  c = await readConversation(r.page, 1);
+  ok("a reload inside before the play is over plays it again from backstage",
+     c.lines[0] === BACKSTAGE_FIRST && await r.page.evaluate(() => currentSceneId === "entablado"), c.lines);
+  await r.ctx.close();
+
+  r = await resume("tondo", Object.assign({}, upToMananahi, { naihatidAngMgaDamit: true }), 50);
+  await r.page.waitForTimeout(300);
+  ok("a Block 57 save with every delivery done is sent to the direktor for the play",
+     JSON.stringify((await log(r.page)).current) === JSON.stringify([STEP.play]) && (await guide(r.page)).label === "Direktor");
+  await walkTo(r.page, 13480);
+  await r.page.keyboard.press("e");
+  c = await readConversation(r.page, 2);
+  ok("who takes him inside", c.lines.length === 1 && /sa loob/.test(c.lines[0]) && await waitForScene(r.page, "entablado"), c.lines);
+  await r.ctx.close();
+
+  r = await resume("patahian", Object.assign({}, upToMananahi,
+    { naihatidAngMgaDamit: true, nabayaranNgMananahi: true, naibigayAngIponKayNanay: true, natanggapAngPadala: true }));
+  await r.page.waitForTimeout(400);
+  ok("a Block 56 or 57 save past the savings lands on the street with every step done, and no 1884",
+     await r.page.evaluate(() => currentSceneId === "tondo" && Acts.countDone(1) === 9) && !(await intertitle(r.page)).up);
   await r.ctx.close();
 
   r = await resume("tondo", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true,

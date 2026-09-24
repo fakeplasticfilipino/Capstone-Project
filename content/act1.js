@@ -2,11 +2,11 @@
 // MACARIO — content/act1.js
 //
 // Act I, rewritten from the start in Block 52 against the proponents'
-// new script and plot, and rebuilt in Block 57 around one street: no
-// room to be carried into, except the entablado, which the direktor
-// takes Macario into himself. What came before is in git history and
-// CLAUDE.md, Decisions on record. None of it should be copied back in
-// without a reason.
+// new script and plot, rebuilt in Block 57 around one street, and given
+// its stage in Block 59: no jump in time, the direktor is the last of
+// the Mananahi's deliveries, and the delivery turns into Macario's first
+// play. What came before is in git history and CLAUDE.md, Decisions on
+// record. None of it should be copied back in without a reason.
 //
 // The story so far, all of it on the street (tondo) unless it says:
 //
@@ -18,24 +18,38 @@
 //
 //   The Kutsero gives him work: three apples from the tree up the road
 //   (a mini-game, game.js, playCatchGame), fed to the white horse, and
-//   50 barya. Then the Mananahi: three finished clothes carried to three
-//   of her customers along the street, and 50 barya. He gives Nanay the
-//   100.
+//   50 barya. Then the Mananahi: three finished orders, to Aling Rosa,
+//   to Mang Tomas, and last to the direktor at the far end of the
+//   street, whose are the costumes for tonight's play.
 //
-//   "1884" on black, and he is beside the Mananahi, who sends him with
-//   a costume for the direktor at the far end of the street. The
-//   direktor takes him inside the entablado (the one scene change),
-//   where he hands it over and is paid.
+//   The direktor's lead actor has not come; he is sick, and the seats
+//   are full. The costume fits Macario, so the direktor begs him to
+//   take the part, promising to whisper every line from the wings. They
+//   go into the entablado (the one scene change): Maryam walks him
+//   through the story backstage, the curtain opens, Macario forgets his
+//   first line and then adds one of his own, the Sultan's soldiers
+//   attack (a real fight, spawnEnemies), the Sultan gives his blessing,
+//   and the curtain closes on a standing crowd. The direktor pays him.
+//
+//   Back on the street the Mananahi pays him and he gives Nanay the 100.
 //
 // Act I is held open after that (holdOpen, acts.js): the story goes on
 // from there and the post-test must not open yet.
 //
 // The lines are the proponents' script as written, apostrophes
 // straightened. Lines marked PLACEHOLDER are ours, to be replaced by
-// the proponents: everything the job-givers, the horse, the customers
-// and the direktor say beyond the lines the script gave. The siga are
-// stand-in stills (Block 52); the customers and the direktor wear other
-// characters' art; the apple tree is drawn in code (Block 57, scenery).
+// the proponents: everything the job-givers, the horse, the customers,
+// the direktor and the play say beyond the lines the script gave.
+//
+// Art. Block 59 deleted every picture made in code or recoloured from
+// the artist's frames (the siga, the Mananahi, the apple tree, the
+// Block 41 stand-ins) at the proponent's request, so anyone without
+// the artist's own sheet names a file that does not exist and is drawn
+// as the dashed placeholder box with that name on it: siga-1..3.png,
+// mananahi.png, direktor.png, aling-rosa.png, puno-mansanas.png. Real
+// art replaces each by being saved under that name and measured
+// (measure-sprite.js); the def below then gains its columns, frames and
+// the three numbers.
 // =============================================================
 
 // Block 49. The paintings of the street, laid along the road in order
@@ -64,51 +78,53 @@ const STREET_WIDTH = STREET_PANEL_COUNT * PANEL; // 14500
 const STREET_SKY = "#51a6ea";
 
 // ---- Art ----------------------------------------------------------
-// Every sheet measured with _dev/tools/measure-sprite.js.
+// Every real sheet measured with _dev/tools/measure-sprite.js. A def
+// with only src, frames 1 and fps 1 names art that does not exist yet
+// and is drawn as the placeholder box (see the header).
 
 // Nanay's real sheet (5 by 3, 14 frames). Block 57: she slides on with
-// it rather than walking with the drawn profile walk (Block 54), at the
-// proponent's direction.
+// it rather than walking, at the proponent's direction.
 const NANAY = {
   src: "assets/sprites/characters/nanay.png", frames: 14, fps: 6, columns: 5,
   contentTop: 45, contentHeight: 166, footX: 127,
 };
 
-// Block 52. The three siga: stand-in stills made by
-// _dev/tools/make-placeholder-sprites.py.
+// The three siga. Placeholders.
 const SIGA = {
-  1: { src: "assets/sprites/characters/siga-1.png", frames: 1, fps: 1,
-       contentTop: 69, contentHeight: 121, footX: 128 },
-  2: { src: "assets/sprites/characters/siga-2.png", frames: 1, fps: 1,
-       contentTop: 74, contentHeight: 117, footX: 128 },
-  3: { src: "assets/sprites/characters/siga-3.png", frames: 1, fps: 1,
-       contentTop: 69, contentHeight: 121, footX: 128 },
+  1: { src: "assets/sprites/characters/siga-1.png", frames: 1, fps: 1 },
+  2: { src: "assets/sprites/characters/siga-2.png", frames: 1, fps: 1 },
+  3: { src: "assets/sprites/characters/siga-3.png", frames: 1, fps: 1 },
 };
 
-// The Kutsero's real sheet (Block 33) and the Mananahi's still (Block 41).
+// The Kutsero's real sheet (Block 33). The Mananahi is a placeholder.
 const KUTSERO = {
   src: "assets/sprites/characters/kutsero.png", frames: 12, fps: 6, columns: 5,
   contentTop: 74, contentHeight: 117, footX: 128,
 };
-const MANANAHI = {
-  src: "assets/sprites/characters/mananahi.png", frames: 1, fps: 1,
-  contentTop: 45, contentHeight: 166, footX: 128,
-};
+const MANANAHI = { src: "assets/sprites/characters/mananahi.png", frames: 1, fps: 1 };
 // The white horse: a 22-frame strip of 32px cells.
 const KABAYO = {
   src: "assets/sprites/characters/kabayo.png", frames: 22, fps: 10, columns: 22,
   contentTop: 2, contentHeight: 30, footX: 19,
 };
-// Block 57. The apple tree, drawn by _dev/tools/make-apple-tree.py.
-const PUNO = {
-  src: "assets/sprites/scenery/puno-mansanas.png", frames: 1, fps: 1,
-  contentTop: 3, contentHeight: 77, footX: 32,
+// The apple tree. A placeholder, drawn as tall as a tree (displayHeight).
+const PUNO = { src: "assets/sprites/scenery/puno-mansanas.png", frames: 1, fps: 1 };
+// The direktor. A placeholder, on the street and inside alike.
+const DIREKTOR = { src: "assets/sprites/characters/direktor.png", frames: 1, fps: 1 };
+
+// The play's cast, all real art. Maryam (5 by 3, 13 frames, drawn
+// facing right). The Sultan and his soldiers share the walk and sword
+// sheets of the old moro-moro (Block 40): delivered as JPEGs on black,
+// keyed to PNGs, and the attack sheet grounded by its standing frames,
+// with headroom for the raised sword.
+const MARYAM = {
+  src: "assets/sprites/characters/maryam.png", frames: 13, fps: 6, columns: 5,
+  contentTop: 73, contentHeight: 117, footX: 128,
 };
-// The direktor wears the mamamayan still (a stand-in).
-const DIREKTOR = {
-  src: "assets/sprites/characters/mamamayan.png", frames: 1, fps: 1,
-  contentTop: 74, contentHeight: 117, footX: 128,
-};
+const MORO_WALK = { src: "assets/sprites/enemies/muslim-walk.png", frames: 12, fps: 10,
+  columns: 4, contentTop: 43, contentHeight: 70, footX: 72 };
+const MORO_ATTACK = { src: "assets/sprites/enemies/muslim-attack.png", frames: 15, fps: 24,
+  columns: 4, contentTop: 30, contentHeight: 97, footX: 88, headroom: 29 };
 
 // ---- Where everyone stands ---------------------------------------
 // An NPC's x is the left edge of an 80px body. Joins at 1450, 2900,
@@ -121,6 +137,17 @@ const PUNO_X = 4900;
 const MANANAHI_X = 6400;
 const DIREKTOR_X = 13600;     // at the far end, by the entablado
 
+// Inside the entablado, one phone screen wide (a sideways phone at
+// --zoom 0.7 shows about 1175; Block 56's 900 left a dark strip at the
+// side): the direktor in the left wing, Maryam on the stage, the Sultan
+// and his soldiers from the right wing, and the way out on the right.
+const STAGE_WIDTH = 1180;
+const STAGE_DIREKTOR_X = 60;
+const STAGE_MARYAM_X = 300;
+const STAGE_ENTER_X = 560;    // where the fade in puts Macario
+const STAGE_PLAY_X = 440;     // his mark once the curtain opens
+const SULTAN_MARK = 760;
+
 // Where Macario stops beside someone he has walked or been sent to.
 const BESIDE = 120;
 
@@ -131,34 +158,29 @@ const JOB_PAY = 50; // each job pays this, once; the two make the savings
 // (countFlags) and a student who stops at two keeps two.
 const APPLE_FLAGS = ["nakuhangMansanas1", "nakuhangMansanas2", "nakuhangMansanas3"];
 
-// Block 57. The Mananahi's three customers, one table from which the
-// people, the gifts, the flags, the quest count and the guide are all
-// derived, so they cannot disagree. Names and lines are PLACEHOLDER.
+// Block 57, cut to two in Block 59. The Mananahi's customers on the
+// way, one table from which the people, the gifts, the flags and the
+// guide are derived. The direktor is the third delivery and the last,
+// and is written out on his own below, because his is where the story
+// turns. Names and lines are PLACEHOLDER. Mang Tomas wears the
+// Tindero's real sheet; Aling Rosa is a placeholder.
 const CUSTOMERS = [
   { id: "aling-rosa", label: "Aling Rosa", x: 7800,
-    animation: { src: "assets/sprites/characters/maryam.png", frames: 13, fps: 6, columns: 5,
-                 contentTop: 73, contentHeight: 117, footX: 128 },
-    waiting: "Ang tagal naman ng baro ko. Ngayong araw daw ang pista!",
-    thanks: "Ay, salamat, iho! Kasyang-kasya ito sa akin." },
+    animation: { src: "assets/sprites/characters/aling-rosa.png", frames: 1, fps: 1 },
+    waiting: "Hay naku, ang tagal naman ng baro ko. Pista pa naman bukas.",
+    thanks: "Ay, salamat, iho! Pakisabi sa Mananahi, ang ganda ng pagkakatahi.",
+    after: "Isusuot ko 'to bukas sa pista. Abangan mo ako, ha!" },
   { id: "mang-tomas", label: "Mang Tomas", x: 9300,
     animation: { src: "assets/sprites/characters/tindero.png", frames: 14, fps: 6, columns: 5,
                  contentTop: 69, contentHeight: 121, footX: 128 },
-    waiting: "Hinihintay ko ang pantalon na ipinatahi ko sa mananahi.",
-    thanks: "Aba, ang ganda ng pagkakatahi. Pakisabi salamat." },
-  { id: "ginoong-reyes", label: "Ginoong Reyes", x: 10800,
-    animation: { src: "assets/sprites/characters/katipunero.png", frames: 1, fps: 1,
-                 contentTop: 74, contentHeight: 117, footX: 128 },
-    waiting: "May pupuntahan ako mamaya. Sana dumating na ang camisa ko.",
-    thanks: "Sakto ang dating mo, bata. Salamat!" },
+    waiting: "Galing ka ba sa Mananahi? Kanina ko pa hinihintay 'yung pantalon ko.",
+    thanks: "Aba, sakto 'to sa akin. Salamat, bata.",
+    after: "Salamat ulit, bata. Ingat ka sa daan." },
 ];
 const customerFlag = (c) => "naihatidKay_" + c.id.replace(/-/g, "_");
-
-// Block 58. After the years pass (the savings given, "1884"), the street
-// is cleared of the jobs: the Kutsero, his horse, the apple tree and the
-// three customers leave the story, at the proponent's direction. Nanay,
-// the Mananahi and the direktor stay. The shadow trees over the joins
-// are part of the backdrop and stay too.
-const AFTER_THE_YEARS = "naibigayAngIponKayNanay";
+const DIREKTOR_FLAG = "naihatidKay_direktor";
+// All three deliveries, in the order the quest line counts them.
+const DELIVERY_FLAGS = [...CUSTOMERS.map(customerFlag), DIREKTOR_FLAG];
 
 // -------------------------------------------------------------
 // The opening, on the street. Black first, with the place and the year.
@@ -247,24 +269,161 @@ async function thinkingAboutWork(alreadyHeld) {
 }
 
 // -------------------------------------------------------------
-// After the savings. "1884" on black, and when it lifts he is beside
-// the Mananahi, who sends him to the direktor. A scene script in tondo
-// (so a reload before it is over plays it again), started straight
-// from Nanay's gift by runSceneScript.
+// Block 59. The last delivery. The costumes are handed over (the
+// direktor's gift button), and a scene script in tondo takes it from
+// there: his lead actor is missing, the house is full, and the costume
+// fits the boy who brought it. Started straight from the gift by
+// runSceneScript; a reload before Macario says yes plays it again from
+// the top. It ends by going inside, without awaiting the fade, and its
+// doneFlag is the delivery step's own flag, so "Bagong gawain" names
+// the play as they go in. PLACEHOLDER, every line.
 // -------------------------------------------------------------
-async function yearsOfWork() {
+async function theMissingActor() {
   setCutscene(true);
-  await playIntertitle(["1884", "Nagtrabaho si Macario bilang isang tagatulong ng kutsero at manananahi"], {
+  await wait(300);
+  await playDialogue([
+    { speaker: "Direktor", text: "Teka... nasaan na ba si Julian?" },
+    { speaker: "Direktor", text: "Julian! JULIAN!" },
+    { speaker: "Macario", text: "Sino po si Julian?" },
+    { speaker: "Direktor", text: "'Yung bida namin. Siya dapat ang gaganap na Don Rodrigo mamaya." },
+    { speaker: "Direktor", text: "Kaninang umaga pa siya hindi nagpapakita. Ang sabi ng kapatid niya, nilalagnat daw." },
+    { speaker: "Direktor", text: "Diyos ko... puno na ang mga upuan sa loob. Hindi ko puwedeng pauwiin ang mga tao." },
+    { speaker: "Macario", text: "Wala po bang ibang puwedeng pumalit sa kanya?" },
+    { speaker: "Direktor", text: "Wala na. May kanya-kanyang papel na ang lahat ng artista ko." },
+    { speaker: "Direktor", text: "..." },
+    { speaker: "Direktor", text: "Iho, tumayo ka nga nang tuwid." },
+    { speaker: "Macario", text: "Po?" },
+    { speaker: "Direktor", text: "Kasing-tangkad mo si Julian. Kasyang-kasya sa'yo 'yang damit na dinala mo." },
+    { speaker: "Macario", text: "Ako po? Naku, hindi po ako marunong umarte." },
+    { speaker: "Direktor", text: "Hindi mo kailangang maging magaling. Kailangan ko lang ng taong kayang tumayo sa entablado nang hindi tumatakbo palabas." },
+    { speaker: "Direktor", text: "Nasa gilid lang ako. Ibubulong ko sa'yo ang bawat linya. At babayaran kita, siyempre." },
+    { speaker: "Macario (sa isip)", text: "Dagdag na pera para kay Nanay..." },
+    { speaker: "Macario", text: "Sige po. Susubukan ko." },
+    { speaker: "Direktor", text: "Salamat, iho! Tara na sa loob, bago ka pa magbago ng isip!" },
+  ]);
+  // The fade takes the cutscene over from here (game.js, runSceneScript).
+  if (window.Acts) Acts.gotoScene("entablado", { x: STAGE_ENTER_X, facing: -1 });
+}
+
+// -------------------------------------------------------------
+// Block 59. The play, inside the entablado: a moro-moro, the kind of
+// play Tondo's stages put on, two kingdoms at war and a love across
+// them. A scene script, run after the fade in; the fight is not saved,
+// so a reload in the middle of it plays the whole thing again, while a
+// reload after the pay does not (the flag is set before the pay).
+// PLACEHOLDER, every line.
+// -------------------------------------------------------------
+const CURTAIN_OPENS = [
+  { speaker: "Maryam", text: "O Don Rodrigo! Bakit ka naparito? Kapag nakita ka ng aking ama, tiyak ang iyong kamatayan!" },
+  { speaker: "Macario", text: "..." },
+  { speaker: "Direktor (pabulong)", text: "\"Hindi ako natatakot sa kamatayan...\"" },
+  { speaker: "Macario", text: "Hindi ako natatakot sa kamatayan!" },
+  { speaker: "Macario", text: "...Ang tanging kinatatakutan ko ay ang mawalay sa iyo." },
+  { speaker: "Direktor (pabulong)", text: "Wala 'yan sa iskrip..." },
+  { speaker: "Maryam", text: "Kay tamis ng iyong mga salita, Don Rodrigo..." },
+  { speaker: "Mga Manonood", text: "Uyyy!" },
+];
+
+async function thePlay() {
+  setCutscene(true);
+  // Fetched while the first scenes are read, so the swap when the
+  // fight starts is instant (Block 36).
+  prepareMusic("assets/audio/music/intense.mp3");
+  await wait(300);
+
+  // Backstage, before the curtain.
+  await playDialogue([
+    { speaker: "Maryam", text: "Ikaw ba 'yung papalit kay Julian?" },
+    { speaker: "Macario", text: "Opo. Macario po." },
+    { speaker: "Maryam", text: "Ako si Maryam. Ako ang prinsesa." },
+    { speaker: "Maryam", text: "Namumutla ka. Kinakabahan ka, 'no?" },
+    { speaker: "Macario", text: "Hindi ko nga po alam ang kuwento." },
+    { speaker: "Maryam", text: "Madali lang. Magkasintahan tayo, pero magkaaway ang mga kaharian natin." },
+    { speaker: "Maryam", text: "Darating ang ama ko, ang Sultan, kasama ang mga kawal niya. Lalabanan mo sila." },
+    { speaker: "Maryam", text: "Kahoy lang ang mga espada. Basta huwag mong lakasan ang palo." },
+    { speaker: "Macario", text: "...Sige po." },
+    { speaker: "Direktor (pabulong)", text: "Pumuwesto na ang lahat! Bubuksan na ang telon!" },
+  ]);
+
+  await playIntertitle(["Bumukas ang telon."], {
+    whileBlack: () => placePlayer(STAGE_PLAY_X, -1),
+  });
+  await wait(300);
+  await playDialogue(CURTAIN_OPENS);
+
+  // The Sultan, from the right wing.
+  turnPlayer(1);
+  showDecoration("sultan", true);
+  await moveDecoration("sultan", SULTAN_MARK, 200);
+  await playDialogue([
+    { speaker: "Sultan", text: "Maryam! Sino ang lapastangang ito na nangangahas lumapit sa aking anak?" },
+    { speaker: "Maryam", text: "Ama, maawa po kayo! Mahal ko siya!" },
+    { speaker: "Sultan", text: "Isang kaaway, sa loob ng aking palasyo? Mga kawal! Dakpin ang kabalyerong iyan!" },
+    { speaker: "Direktor (pabulong)", text: "Ikaw na, Macario! Labanan mo sila!" },
+  ]);
+
+  // He leaves the fighting to his soldiers, who come in from the same
+  // wing, spaced so they arrive one after another.
+  const sultanOff = moveDecoration("sultan", STAGE_WIDTH + 100, 260)
+    .then(() => showDecoration("sultan", false));
+  setCutscene(false);
+  setMusic("assets/audio/music/intense.mp3");
+  showToast("Pindutin ang Atake para lumaban!", 2600);
+  await spawnEnemies([80, 160, 240, 320].map((d) => STAGE_WIDTH + d).map((x, i) => ({
+    id: "kawal-" + (i + 1),
+    x,
+    hp: 2,
+    animation: MORO_WALK,
+    attackAnimation: MORO_ATTACK,
+  })));
+  setMusic(null);
+  setCutscene(true);
+
+  // The Sultan comes back to a stage of fallen soldiers. A quick fight
+  // can end before he is off, and two walks at once would fight over
+  // him, so he finishes leaving first.
+  await sultanOff;
+  showDecoration("sultan", true);
+  turnPlayer(1);
+  await moveDecoration("sultan", SULTAN_MARK, 200);
+  await playDialogue([
+    { speaker: "Sultan", text: "Natalo... ang lahat ng aking kawal?" },
+    { speaker: "Sultan", text: "Kung ganyan katapang ang pag-ibig mo sa aking anak, sino ako para humadlang?" },
+    { speaker: "Maryam", text: "Ama!" },
+    { speaker: "Sultan", text: "Sa inyo na ang aking basbas." },
+    { speaker: "Mga Manonood", text: "Mabuhay! Mabuhay!" },
+  ]);
+
+  // The curtain closes, and he is in the wings with the direktor.
+  await playIntertitle(["Nagsara ang telon.", "Tumayo at pumalakpak ang mga manonood."], {
     whileBlack: () => {
-      refreshNpcVisibility(); // the jobs' people leave (AFTER_THE_YEARS)
-      placePlayer(MANANAHI_X - BESIDE, 1);
+      showDecoration("sultan", false);
+      placePlayer(STAGE_DIREKTOR_X + 140, -1);
     },
   });
   await wait(300);
   await playDialogue([
-    { speaker: "Mananahi", text: "Oh Macario, padala nga to dun sa direktor, asa dulo siya ng kalye sa loob ng entablado, ingatan mo mahal yang damit na yan" },
-    { speaker: "Macario", text: "Sige 'ho" },
-    { speaker: "Mananahi", text: "Nasa sakaniya na yung bayad, wag mo kalimutan kolektahin" },
+    { speaker: "Direktor", text: "Macario! Narinig mo ba 'yon? Nakatayo ang mga tao!" },
+    { speaker: "Macario", text: "Nanginginig pa rin po ang tuhod ko." },
+    { speaker: "Direktor", text: "'Yung linya mo kanina, 'yung \"mawalay sa iyo\"... hindi ko isinulat 'yon." },
+    { speaker: "Macario", text: "Pasensya na po. Bigla na lang pong lumabas sa bibig ko." },
+    { speaker: "Direktor", text: "Pasensya? Isasama ko 'yon sa iskrip!" },
+    { speaker: "Maryam", text: "Hindi ka raw marunong umarte, ha." },
+    { speaker: "Direktor", text: "Heto, iho. Sa'yo 'yan. Pinaghirapan mo." },
+  ]);
+
+  // Set before the pay, so a reload cannot pay twice.
+  state.flags.naitanghalAngDula = true;
+  // Block 56: 79 to 110 at random, the proponent's own numbers for what
+  // the direktor pays.
+  const pay = 79 + Math.floor(Math.random() * 32);
+  Game.addCurrency(pay);
+  showToast("+" + pay + " barya", 2200);
+  markDirty();
+
+  await playDialogue([
+    { speaker: "Macario", text: "Salamat po!" },
+    { speaker: "Direktor", text: "At kung gusto mo, may puwesto ka sa kompanya namin. Pag-isipan mo, ha?" },
   ]);
   setCutscene(false);
 }
@@ -319,10 +478,12 @@ window.ACT_1 = {
   //   3  counts the apples caught; done when the horse is fed.
   //   4  the Kutsero's gift button, which pays 50.
   //   5  the Mananahi's first conversation, once the Kutsero has paid.
-  //   6  counts the customers given their clothes; done at the third.
-  //   7  the Mananahi's gift button, which pays 50.
-  //   8  Nanay's gift, "Ibigay ang ipon"; counts the barya to 100.
-  //   9  the direktor's gift inside the entablado, which pays him.
+  //   6  counts the deliveries; done when Macario agrees to act, at the
+  //      end of the direktor's scene (theMissingActor).
+  //   7  the play, inside the entablado (thePlay), which the direktor
+  //      pays for.
+  //   8  the Mananahi's gift button, which pays 50.
+  //   9  Nanay's gift, "Ibigay ang ipon"; counts the barya to 100.
   linearObjectives: true,
   objectives: [
     { id: "umuwi_kasama_nanay", label: "Umuwi kasama si Nanay",
@@ -335,19 +496,19 @@ window.ACT_1 = {
       flag: "nabayaranNgKutsero" },
     { id: "kausapin_mananahi", label: "Kausapin ang Mananahi",
       flag: "nakausapAngMananahi" },
-    { id: "ihatid_damit", label: "Ihatid ang mga damit sa mga suki",
-      flag: "naihatidAngMgaDamit", countFlags: CUSTOMERS.map(customerFlag) },
+    { id: "ihatid_damit", label: "Ihatid ang mga tinahing damit",
+      flag: "naihatidAngMgaDamit", countFlags: DELIVERY_FLAGS },
+    { id: "gumanap_sa_dula", label: "Gumanap bilang Don Rodrigo sa dula",
+      flag: "naitanghalAngDula" },
     { id: "bayad_mananahi", label: "Kunin ang bayad sa Mananahi",
       flag: "nabayaranNgMananahi" },
     { id: "mag_ipon", label: "Ibigay kay Nanay ang naipon",
       flag: "naibigayAngIponKayNanay", countCurrency: SAVINGS_GOAL },
-    { id: "dalhin_ang_damit", label: "Dalhin ang damit sa direktor sa entablado",
-      flag: "nakolektaAngBayad" },
   ],
 
   // Block 56. Every step above can be done and Act I still does not
-  // finish: the story continues past the entablado and the post-test
-  // must wait for it (acts.js, checkObjectives).
+  // finish: the story continues and the post-test must wait for it
+  // (acts.js, checkObjectives).
   holdOpen: true,
 
   // Block 52. A step counts barya, so the act's own barya for finishing
@@ -361,13 +522,15 @@ window.ACT_1 = {
 
   // Where to go next (Block 42). Later steps first.
   guide: [
-    { scene: "tondo", requiresFlag: "natanggapAngPadala", unlessFlag: "nakolektaAngBayad",
-      npc: "direktor", label: "Direktor" },
     { scene: "tondo", requiresFlag: "nabayaranNgMananahi", unlessFlag: "naibigayAngIponKayNanay",
       npc: "nanay", label: "Nanay" },
-    { scene: "tondo", requiresFlag: "naihatidAngMgaDamit", unlessFlag: "nabayaranNgMananahi",
+    { scene: "tondo", requiresFlag: "naitanghalAngDula", unlessFlag: "nabayaranNgMananahi",
       npc: "mananahi", label: "Mananahi" },
-    { scene: "tondo", requiresFlag: "nakausapAngMananahi", unlessFlag: "naihatidAngMgaDamit",
+    { scene: "tondo", requiresFlag: "naihatidAngMgaDamit", unlessFlag: "naitanghalAngDula",
+      npc: "direktor", label: "Direktor" },
+    { scene: "tondo", requiresFlag: "naihatidSaDalawangSuki", unlessFlag: DIREKTOR_FLAG,
+      npc: "direktor", label: "Direktor" },
+    { scene: "tondo", requiresFlag: "nakausapAngMananahi", unlessFlag: "naihatidSaDalawangSuki",
       npcs: CUSTOMERS.map((c) => c.id) },
     { scene: "tondo", requiresFlag: "nabayaranNgKutsero", unlessFlag: "nakausapAngMananahi",
       npc: "mananahi", label: "Mananahi" },
@@ -379,8 +542,8 @@ window.ACT_1 = {
       npc: "puno", label: "Puno ng mansanas" },
     { scene: "tondo", requiresFlag: "nagpasyangMagtrabaho", unlessFlag: "nakausapAngKutsero",
       npc: "kutsero", label: "Kutsero" },
-    { scene: "entablado", requiresFlag: "natanggapAngPadala", unlessFlag: "nakolektaAngBayad",
-      npc: "direktor", label: "Direktor" },
+    { scene: "entablado", requiresFlag: "naitanghalAngDula", unlessFlag: "nabayaranNgMananahi",
+      exit: "labas", label: "Lumabas" },
   ],
 
   scenes: [
@@ -410,9 +573,10 @@ window.ACT_1 = {
         // A reload after the talk with Nanay and before the thought.
         { requiresFlag: "nakausapSiNanaySaBahay", doneFlag: "nagpasyangMagtrabaho",
           x: NANAY_X - BESIDE, facing: 1, run: () => thinkingAboutWork(false) },
-        // It places Macario itself, under the black.
-        { requiresFlag: "naibigayAngIponKayNanay", doneFlag: "natanggapAngPadala",
-          run: yearsOfWork },
+        // Block 59. The costumes handed over, and the direktor's lead
+        // actor missing.
+        { requiresFlag: DIREKTOR_FLAG, doneFlag: "naihatidAngMgaDamit",
+          x: DIREKTOR_X - BESIDE, facing: 1, run: theMissingActor },
       ],
       npcs: [
         {
@@ -423,7 +587,7 @@ window.ACT_1 = {
               // PLACEHOLDER. Before the savings.
               skipIfFlag: "naibigayAngIponKayNanay",
               lines: [
-                { speaker: "Nanay", text: "Mag-ingat ka sa trabaho, anak." },
+                { speaker: "Nanay", text: "Mag-iingat ka sa trabaho, anak. At umuwi ka bago dumilim." },
               ],
             },
             {
@@ -436,24 +600,26 @@ window.ACT_1 = {
             buttonLabel: "Ibigay ang ipon",
             requiresFlag: "nabayaranNgMananahi",
             givenFlag: "naibigayAngIponKayNanay",
+            // The proponents' lines, with four of ours (PLACEHOLDER) after
+            // the third, for the play Block 59 added.
             responseLines: [
               { speaker: "Macario", text: "Nay, nakapag-ipon na ako ng pera para makatulong" },
               { speaker: "Nanay", text: "Maraming salamat anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?" },
               { speaker: "Macario", text: "Opo Nay, nagtrabaho ako para sa Kutsero at mananahi" },
+              { speaker: "Macario", text: "Tapos, Nay... umarte pa po ako sa entablado." },
+              { speaker: "Nanay", text: "Ikaw? Sa entablado?" },
+              { speaker: "Macario", text: "Nagkasakit po kasi 'yung bida nila. Ako na lang po ang ipinalit ng direktor." },
+              { speaker: "Nanay", text: "Kaya pala hindi mawala-wala 'yang ngiti mo." },
               { speaker: "Nanay", text: "Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay" },
               { speaker: "Macario", text: "Maraming salamat nay!" },
             ],
-            // The years pass (yearsOfWork), started here rather than
-            // waiting for a reload: the gift's flag is what it waits on.
             onComplete() {
               Game.spendCurrency(Math.min(SAVINGS_GOAL, Game.currency()));
-              setTimeout(() => runSceneScript(), 0);
             },
           },
         },
         {
           id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: KUTSERO,
-          hiddenByFlag: AFTER_THE_YEARS,
           dialogueSets: [
             {
               skipIfFlag: "nakausapAngKutsero",
@@ -463,7 +629,7 @@ window.ACT_1 = {
                 { speaker: "Macario", text: "Kailangan na 'ho eh, nangangailangan si Nanay" },
                 { speaker: "Kutsero", text: "O sige, magsimula ka na kaagad, alagaan mo yung puting kabayo kuwadra" },
                 // PLACEHOLDER. What the work is, for the new job.
-                { speaker: "Kutsero", text: "Gutom na siya. Kumuha ka ng tatlong mansanas sa puno sa unahan, at ipakain mo sa kanya." },
+                { speaker: "Kutsero", text: "Gutom na 'yon. May puno ng mansanas diyan sa unahan. Kumuha ka ng tatlo, tapos ipakain mo sa kanya." },
               ],
               onComplete() {
                 state.flags.nakausapAngKutsero = true;
@@ -474,20 +640,20 @@ window.ACT_1 = {
               // PLACEHOLDER. While the apples are the task.
               skipIfFlag: "napakainAngKabayo",
               lines: [
-                { speaker: "Kutsero", text: "Nasa puno sa unahan ang mansanas. Tatlo ang kailangan ng kabayo." },
+                { speaker: "Kutsero", text: "Nasa unahan lang ang puno. Tatlong mansanas, ha." },
               ],
             },
             {
               // PLACEHOLDER. The horse is fed; the pay is his gift button.
               skipIfFlag: "nabayaranNgKutsero",
               lines: [
-                { speaker: "Kutsero", text: "Busog na ang kabayo! Halika, kunin mo ang bayad mo." },
+                { speaker: "Kutsero", text: "Aba, busog na busog na siya! Halika, may bayad ka sa akin." },
               ],
             },
             {
               // PLACEHOLDER. Afterwards.
               lines: [
-                { speaker: "Kutsero", text: "Salamat sa tulong mo, Macario." },
+                { speaker: "Kutsero", text: "Salamat, Macario. Balik ka lang kung kailangan mo pa ng trabaho." },
               ],
             },
           ],
@@ -497,7 +663,7 @@ window.ACT_1 = {
             givenFlag: "nabayaranNgKutsero",
             // PLACEHOLDER.
             responseLines: [
-              { speaker: "Kutsero", text: "Heto ang limampung barya, Macario. Pinaghirapan mo 'yan." },
+              { speaker: "Kutsero", text: "Heto ang limampung barya. Pinaghirapan mo 'yan." },
               { speaker: "Macario", text: "Maraming salamat po!" },
             ],
             onComplete: payForJob,
@@ -506,7 +672,7 @@ window.ACT_1 = {
         {
           // The white horse, beside the Kutsero, and the one he is fed to.
           id: "kabayo", x: KABAYO_X, label: "Kabayo", animation: KABAYO,
-          displayHeight: 120, hiddenByFlag: AFTER_THE_YEARS,
+          displayHeight: 120,
           nearSound: "assets/audio/sfx/horse.mp3",
           dialogueSets: [
             {
@@ -522,7 +688,7 @@ window.ACT_1 = {
             givenFlag: "napakainAngKabayo",
             // PLACEHOLDER.
             responseLines: [
-              { speaker: "Macario", text: "Heto, kabayo. Tatlong mansanas para sa'yo." },
+              { speaker: "Macario", text: "Heto na, kaibigan. Dahan-dahan lang, ha." },
               { speaker: "Kabayo", text: "Hiiiii!" },
             ],
           },
@@ -532,7 +698,6 @@ window.ACT_1 = {
           // E opens the apple mini-game (onInteract).
           id: "puno", x: PUNO_X, label: "Puno ng mansanas", animation: PUNO,
           displayHeight: 280, interactLabel: "Pumitas",
-          hiddenByFlag: AFTER_THE_YEARS,
           dialogueSets: [],
           onInteract: pickApples,
         },
@@ -543,7 +708,7 @@ window.ACT_1 = {
               // PLACEHOLDER. Before the Kutsero's job is done.
               skipIfFlag: "nabayaranNgKutsero",
               lines: [
-                { speaker: "Mananahi", text: "Macario! Balikan mo ako pagkatapos mo sa Kutsero, may maipapagawa ako sa'yo." },
+                { speaker: "Mananahi", text: "O, Macario. Naghahanap ka raw ng trabaho? Unahin mo muna 'yung sa Kutsero, tapos balikan mo ako. Baka may maipagawa ako sa'yo." },
               ],
             },
             {
@@ -555,7 +720,9 @@ window.ACT_1 = {
                 { speaker: "Macario", text: "Okay lang 'ho, nangangailangan kami ng pera ngayon" },
                 { speaker: "Mananahi", text: "O sige sige, tara dito" },
                 // PLACEHOLDER. What the work is.
-                { speaker: "Mananahi", text: "May tatlong damit dito na tapos ko nang tahiin. Ihatid mo sa mga suki ko sa kalye: kay Aling Rosa, kay Mang Tomas at kay Ginoong Reyes." },
+                { speaker: "Mananahi", text: "May tatlong tahi akong tapos na. 'Yung baro ni Aling Rosa, 'yung pantalon ni Mang Tomas, at 'yung mga damit ng direktor para sa palabas mamayang gabi." },
+                { speaker: "Mananahi", text: "Kina Aling Rosa at Mang Tomas ka muna, madadaanan mo naman sila. Nasa dulo pa ng kalye 'yung entablado, kaya sa direktor ka na huling pumunta." },
+                { speaker: "Macario", text: "Sige po, ihahatid ko na ngayon." },
               ],
               onComplete() {
                 state.flags.nakausapAngMananahi = true;
@@ -563,53 +730,64 @@ window.ACT_1 = {
               },
             },
             {
-              // PLACEHOLDER. While the clothes are being delivered.
+              // PLACEHOLDER. While there are clothes still to deliver.
               skipIfFlag: "naihatidAngMgaDamit",
               lines: [
-                { speaker: "Mananahi", text: "Nasa kalye ang tatlong suki. Ihatid mo ang mga damit nila." },
+                { speaker: "Mananahi", text: "O, may bitbit ka pa? Ihatid mo na, baka hinahanap na nila." },
               ],
             },
             {
-              // PLACEHOLDER. Delivered; the pay is her gift button.
+              // PLACEHOLDER. Delivered, and the play not yet done: only an
+              // old save or a reload mid-fade reaches this.
+              skipIfFlag: "naitanghalAngDula",
+              lines: [
+                { speaker: "Mananahi", text: "Hinahanap ka raw ng direktor sa entablado. Bilisan mo!" },
+              ],
+            },
+            {
+              // PLACEHOLDER. After the play; the pay is her gift button.
               skipIfFlag: "nabayaranNgMananahi",
               lines: [
-                { speaker: "Mananahi", text: "Naihatid mo lahat? Ang galing mo! Kunin mo na ang bayad mo." },
+                { speaker: "Mananahi", text: "Macario! Totoo ba 'yung ibinalita sa akin? Ikaw raw ang bumida sa entablado?" },
+                { speaker: "Macario", text: "Nawala po kasi 'yung artista nila. Ako na lang po ang pinagsuot ng damit." },
+                { speaker: "Mananahi", text: "Aba, e 'di ikaw pala ang unang nagsuot ng tinahi ko! Kasya ba?" },
+                { speaker: "Macario", text: "Kasyang-kasya po." },
+                { speaker: "Mananahi", text: "Sabi ko na nga ba. Halika, kunin mo na ang bayad mo." },
               ],
             },
             {
               // PLACEHOLDER. Paid, before the savings are given.
               skipIfFlag: "naibigayAngIponKayNanay",
               lines: [
-                { speaker: "Mananahi", text: "Iuwi mo na 'yang kinita mo sa inay mo." },
+                { speaker: "Mananahi", text: "Iuwi mo na 'yan sa nanay mo. Matutuwa 'yon." },
               ],
             },
             {
               // PLACEHOLDER. Afterwards.
               lines: [
-                { speaker: "Mananahi", text: "Ingatan mo ang damit ha." },
+                { speaker: "Mananahi", text: "Kapag may tahi ulit, ipapatawag kita, ha?" },
               ],
             },
           ],
           gift: {
             buttonLabel: "Kunin ang bayad",
-            requiresFlag: "naihatidAngMgaDamit",
+            requiresFlag: "naitanghalAngDula",
             givenFlag: "nabayaranNgMananahi",
             // PLACEHOLDER.
             responseLines: [
-              { speaker: "Mananahi", text: "Heto ang limampung barya. Salamat sa tulong, Macario." },
+              { speaker: "Mananahi", text: "Heto ang limampung barya. Salamat, Macario, malaking tulong ka." },
               { speaker: "Macario", text: "Salamat din po!" },
             ],
             onComplete: payForJob,
           },
         },
-        // The three customers (CUSTOMERS, above).
+        // The two customers on the way (CUSTOMERS, above).
         ...CUSTOMERS.map((c) => ({
           id: c.id, x: c.x, label: c.label, animation: c.animation,
-          hiddenByFlag: AFTER_THE_YEARS,
           dialogueSets: [
             { skipIfFlag: customerFlag(c),
               lines: [{ speaker: c.label, text: c.waiting }] },
-            { lines: [{ speaker: c.label, text: c.thanks }] },
+            { lines: [{ speaker: c.label, text: c.after }] },
           ],
           gift: {
             buttonLabel: "Iabot ang damit",
@@ -619,97 +797,144 @@ window.ACT_1 = {
               { speaker: "Macario", text: "Magandang araw po! Padala po ng Mananahi." },
               { speaker: c.label, text: c.thanks },
             ],
-            // Counted from the flags, so the order does not matter and a
-            // reload cannot miscount.
+            // Counted from the flags, so the order of the two does not
+            // matter and a reload cannot miscount. Both done is what lets
+            // the direktor take his.
             onComplete() {
               if (CUSTOMERS.every((x) => state.flags[customerFlag(x)])) {
-                state.flags.naihatidAngMgaDamit = true;
+                state.flags.naihatidSaDalawangSuki = true;
               }
               markDirty();
             },
           },
         })),
         {
-          // Block 57. The direktor, on the street by the entablado.
-          // Talking to him with the costume takes them both inside.
+          // The direktor, on the street by the entablado: the last of the
+          // three deliveries (Block 59). PLACEHOLDER, every line.
           id: "direktor", x: DIREKTOR_X, label: "Direktor", animation: DIREKTOR,
+          // With a requiresFlag among them, the set is picked from the
+          // flags each time (CLAUDE.md, Block 48), so the one that takes
+          // him inside comes first: an old save whose deliveries were
+          // all done under Block 57 has none of this block's flags for
+          // the two customers, and must still be taken in.
           dialogueSets: [
             {
-              // PLACEHOLDER. Before the errand.
-              skipIfFlag: "natanggapAngPadala",
+              // Macario said yes, and a reload or an old save left him on
+              // the street: the direktor takes him in.
+              requiresFlag: "naihatidAngMgaDamit",
+              skipIfFlag: "naitanghalAngDula",
               lines: [
-                { speaker: "Direktor", text: "Abala kami sa paghahanda ng palabas, iho." },
-              ],
-            },
-            {
-              // PLACEHOLDER. With the costume.
-              skipIfFlag: "nakolektaAngBayad",
-              lines: [
-                { speaker: "Macario", text: "Magandang araw po. May padala po ang Mananahi para sa inyo." },
-                { speaker: "Direktor", text: "Ah, ang damit! Halika, sa loob tayo ng entablado." },
+                { speaker: "Direktor", text: "O, ano pa'ng hinihintay natin? Tara na sa loob, naghihintay na ang mga tao!" },
               ],
               onComplete() {
-                if (window.Acts) Acts.gotoScene("entablado", { x: 300, facing: 1 });
+                if (window.Acts) Acts.gotoScene("entablado", { x: STAGE_ENTER_X, facing: -1 });
               },
             },
             {
-              // PLACEHOLDER. Afterwards.
+              // Before the Mananahi's errand.
+              skipIfFlag: "nakausapAngMananahi",
               lines: [
-                { speaker: "Direktor", text: "Salamat ulit, iho." },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      // Block 56. Inside the entablado, the painting the old moro-moro
-      // used, one screen wide with its own floor. Since Block 57 the
-      // only way in is with the direktor.
-      id: "entablado",
-      worldWidth: 900,
-      backdrop: { src: "assets/backgrounds/act1/entablado-inside.jpg" },
-      ground: false,
-      startX: 300,
-      exits: [
-        { id: "labas", x: 20, width: 90, label: "Lumabas",
-          toScene: "tondo", toX: DIREKTOR_X - BESIDE, toFacing: 1 },
-      ],
-      decorations: [],
-      npcs: [
-        {
-          id: "direktor", x: 440, label: "Direktor", animation: DIREKTOR,
-          dialogueSets: [
-            {
-              // PLACEHOLDER.
-              skipIfFlag: "nakolektaAngBayad",
-              lines: [
-                { speaker: "Direktor", text: "Dito na natin gagamitin ang damit. Iabot mo na, iho." },
+                { speaker: "Direktor", text: "Pasensya na, iho, abala kami. Mamayang gabi na ang palabas at ang dami pang kulang." },
               ],
             },
             {
+              // The errand, with the other two not yet delivered.
+              skipIfFlag: "naihatidSaDalawangSuki",
               lines: [
-                { speaker: "Direktor", text: "Salamat ulit, iho." },
+                { speaker: "Direktor", text: "Galing ka sa Mananahi? Mamaya ko pa kailangan 'yang mga damit namin, iho. Ihatid mo muna 'yung sa iba, baka sila ang naiinip na." },
+              ],
+            },
+            {
+              // Ready for his; the costumes are his gift button.
+              skipIfFlag: DIREKTOR_FLAG,
+              lines: [
+                { speaker: "Direktor", text: "Ikaw 'yung bata ng Mananahi, 'di ba? Dala mo na ba ang mga damit namin?" },
+              ],
+            },
+            {
+              // Afterwards.
+              lines: [
+                { speaker: "Direktor", text: "Hindi pa rin ako makapaniwala. Iniligtas mo ang palabas namin, iho." },
               ],
             },
           ],
           gift: {
             buttonLabel: "Iabot ang damit",
-            requiresFlag: "natanggapAngPadala",
-            givenFlag: "nakolektaAngBayad",
-            // PLACEHOLDER, both lines (Block 56: the proponent asked for
-            // two short ones to stand in).
+            requiresFlag: "naihatidSaDalawangSuki",
+            givenFlag: DIREKTOR_FLAG,
             responseLines: [
-              { speaker: "Direktor", text: "Ay, salamat! Ito na ang damit na hinihintay namin para sa palabas." },
-              { speaker: "Direktor", text: "Heto ang bayad, iho. Pakisabi sa Mananahi, maraming salamat." },
+              { speaker: "Macario", text: "Magandang hapon po. Padala po ng Mananahi, 'yung mga damit para sa palabas." },
+              { speaker: "Direktor", text: "Salamat sa Diyos, dumating din! Akin na, iho." },
             ],
-            // Block 56: 79 to 110 at random, as the proponent asked.
+            // His scene (theMissingActor) is waiting on this flag.
             onComplete() {
-              const pay = 79 + Math.floor(Math.random() * 32);
-              Game.addCurrency(pay);
-              showToast("+" + pay + " barya", 2200);
+              setTimeout(() => runSceneScript(), 0);
             },
           },
+        },
+      ],
+    },
+    {
+      // Block 56. Inside the entablado, one screen wide with its own
+      // floor. Since Block 57 the only way in is with the direktor, and
+      // since Block 59 it is where the play happens (thePlay). No gun
+      // on a stage: a long hold punches (noRanged).
+      id: "entablado",
+      worldWidth: STAGE_WIDTH,
+      backdrop: { src: "assets/backgrounds/act1/entablado-inside.jpg" },
+      ground: false,
+      noRanged: true,
+      startX: STAGE_ENTER_X,
+      exits: [
+        { id: "labas", x: STAGE_WIDTH - 70, width: 70, label: "Lumabas",
+          toScene: "tondo", toX: DIREKTOR_X - BESIDE, toFacing: 1 },
+      ],
+      scripts: [
+        { requiresFlag: "naihatidAngMgaDamit", doneFlag: "naitanghalAngDula",
+          x: STAGE_ENTER_X, facing: -1, run: thePlay },
+      ],
+      decorations: [
+        // The Sultan: off stage in the right wing until he walks on. He
+        // steps only while he walks and turns the way he goes.
+        { id: "sultan", x: STAGE_WIDTH + 100, hidden: true,
+          walkOnly: true, faceMovement: true, animation: MORO_WALK },
+      ],
+      npcs: [
+        {
+          id: "direktor", x: STAGE_DIREKTOR_X, label: "Direktor", animation: DIREKTOR,
+          dialogueSets: [
+            {
+              // PLACEHOLDER.
+              skipIfFlag: "naitanghalAngDula",
+              lines: [
+                { speaker: "Direktor", text: "Huminga ka nang malalim, iho. Nandito lang ako sa gilid." },
+              ],
+            },
+            {
+              // PLACEHOLDER.
+              lines: [
+                { speaker: "Direktor", text: "Bumalik ka rito kahit kailan mo gusto. May puwesto ka sa amin." },
+              ],
+            },
+          ],
+        },
+        {
+          id: "maryam", x: STAGE_MARYAM_X, label: "Maryam", animation: MARYAM,
+          dialogueSets: [
+            {
+              // PLACEHOLDER.
+              skipIfFlag: "naitanghalAngDula",
+              lines: [
+                { speaker: "Maryam", text: "Kaya mo 'yan. Tumingin ka lang sa akin kapag nalito ka." },
+              ],
+            },
+            {
+              // PLACEHOLDER.
+              lines: [
+                { speaker: "Maryam", text: "Alam mo, mas bagay sa'yo si Don Rodrigo kaysa kay Julian. Huwag mo lang sasabihin sa kanya." },
+              ],
+            },
+          ],
         },
       ],
     },
