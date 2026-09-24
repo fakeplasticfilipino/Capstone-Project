@@ -3098,14 +3098,20 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.waitForFunction(() => !!sfxBuffers.gunShot, null, { timeout: 5000 }).catch(() => {});
     ok("Gun_Shot.mp3 is decoded before the first shot", await page.evaluate(() => !!sfxBuffers.gunShot));
 
+    // Block 60. A punch now swings (swing.wav), so the check is on which
+    // effect is asked for, not on whether any sound plays at all.
     const tap = await page.evaluate(() => {
       destroyProjectile();
-      __SOUND.buffers = 0; __SOUND.plays = [];
+      const asked = [];
+      const real = playSfx;
+      window.playSfx = (name) => { asked.push(name); return real(name); };
       startAttackHold();
       endAttackHold();
-      return { buffers: __SOUND.buffers, plays: __SOUND.plays.length, shooting };
+      window.playSfx = real;
+      return { asked, shooting };
     });
-    ok("a tap (the punch) makes no gunshot", tap.buffers === 0 && tap.plays === 0, tap);
+    ok("a tap (the punch) makes no gunshot, only the swing",
+       !tap.asked.includes("gunShot") && tap.asked.includes("swing"), tap);
     await page.waitForTimeout(700);
 
     const shot = await page.evaluate(() => {
@@ -3687,8 +3693,10 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     const won = await page.evaluate(() => new Promise((resolve) => {
       ENEMIES.forEach((e) => { if (!e.dead) hitEnemy(e, 99); });
+      // Block 60: the fight ends a beat (FIGHT_END_BEAT_MS) after the
+      // last one falls, so he is seen to fall first.
       setTimeout(() => resolve({ won: window.__fightWon, hearts: document.getElementById("hud").classList.contains("hidden"),
-                                 exitAgain: nearby.type }), 400);
+                                 exitAgain: nearby.type }), FIGHT_END_BEAT_MS + 400);
     }));
     ok("beating the last one resolves what the script is waiting on", won.won === true, won);
     ok("the hearts go away with them", won.hearts, won);
@@ -4898,6 +4906,114 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the flag alone does not move anyone: refreshNpcVisibility does", gone.unchanged, gone);
     ok("then he is gone and the revealed one is there", !gone.after.leaves && gone.after.hidden && gone.after.comes, gone);
     ok("and a rebuilt scene keeps it that way", !gone.rebuilt.leaves && gone.rebuilt.comes, gone);
+    await ctx.close();
+  }
+
+  console.log("\nBC. The weight of a blow (Block 60)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => {
+      window.__asked = [];
+      const real = playSfx;
+      window.playSfx = (name) => { __asked.push(name); return real(name); };
+      loadScene("tondo");
+      posX = 300; posY = floorHeightAt(posX); onGround = true; facing = 1;
+      health = maxHealth; invulnUntil = 0;
+      window.__won = false;
+      spawnEnemies([
+        { id: "w1", x: 360, hp: 2, img: "assets/Kaaway.png" },
+        { id: "w2", x: 1400, hp: 2, img: "assets/Kaaway.png" },
+      ]).then(() => { window.__won = true; });
+    });
+
+    const miss = await page.evaluate(() => {
+      __asked = [];
+      facing = -1; // away from both
+      meleeAttack();
+      facing = 1;
+      return { asked: __asked.slice(), stopped: hitStopUntil > performance.now() };
+    });
+    ok("a punch at nothing swings, and nothing more", JSON.stringify(miss.asked) === '["swing"]' && !miss.stopped, miss);
+
+    const hit = await page.evaluate(async () => {
+      __asked = [];
+      const e = ENEMIES[0];
+      e.pos = posX + PLAYER_WIDTH + 10;
+      const start = e.pos;
+      meleeAttack();
+      const at = performance.now();
+      const now = { pos: e.pos, stopped: hitStopUntil - at, shaking: shakeUntil > at, asked: __asked.slice() };
+      // Every frame's transform while the shake runs, since it eases to
+      // nothing; the slide is read inside the stagger (350ms), before he
+      // walks back in.
+      const seen = new Set();
+      while (performance.now() - at < 280) {
+        seen.add(world.style.transform);
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+      const later = e.pos;
+      await new Promise((r) => setTimeout(r, 300));
+      return { start, now, later, shook: [...seen].find((t) => t.startsWith("translate(")) || [...seen].join(" | "),
+               after: world.style.transform, hp: e.hp };
+    });
+    ok("a punch that lands swings and thumps", JSON.stringify(hit.now.asked) === '["swing","punch"]', hit);
+    ok("and freezes the world for a moment, and shakes the camera",
+       hit.now.stopped > 30 && hit.now.stopped <= 60 && hit.now.shaking, hit);
+    ok("the shake moves the camera off its line, then lets it go",
+       /translate\(/.test(hit.shook) && /^translateX\(/.test(hit.after), hit);
+    ok("the enemy is knocked back at once, then slides on",
+       hit.now.pos > hit.start && hit.later > hit.now.pos + 20, hit);
+    ok("coming to rest about as far as the old knockback (45)",
+       Math.abs(hit.later - hit.start - 45) < 8, hit);
+
+    const frozen = await page.evaluate(async () => {
+      const x0 = posX;
+      keysPressed["d"] = true;
+      hitStop(250);
+      await new Promise((r) => setTimeout(r, 180));
+      const during = posX;
+      await new Promise((r) => setTimeout(r, 250));
+      keysPressed["d"] = false;
+      return { x0, during, after: posX };
+    });
+    ok("nothing moves during a hit-stop, and the world carries on after it",
+       frozen.during === frozen.x0 && frozen.after > frozen.x0, frozen);
+
+    const ko = await page.evaluate(async () => {
+      __asked = [];
+      const e = ENEMIES[0];
+      e.pos = posX + PLAYER_WIDTH + 10;
+      invulnUntil = performance.now() + 5000;
+      meleeAttack();
+      const at = performance.now();
+      const now = { pos: e.pos, stopped: hitStopUntil - at, asked: __asked.slice(),
+        cls: e.el.className };
+      await new Promise((r) => setTimeout(r, 700));
+      return { now, later: e.pos, fall: getComputedStyle(e.el).animationName };
+    });
+    ok("the blow that drops him plays the knockout, with a longer freeze",
+       JSON.stringify(ko.now.asked) === '["swing","knockout"]' && ko.now.stopped > 90, ko);
+    ok("and he topples away from it as he slides",
+       /enemy-down/.test(ko.now.cls) && /enemy-fall-right/.test(ko.now.cls) &&
+       ko.fall === "enemy-fall-right" && ko.later > ko.now.pos + 30, ko);
+
+    const hurt = await page.evaluate(() => {
+      __asked = [];
+      invulnUntil = 0;
+      damagePlayer("t", false);
+      return { asked: __asked.slice(), shaking: shakeUntil > performance.now() };
+    });
+    ok("Macario being hit buzzes and shakes the camera", hurt.asked.includes("hurt") && hurt.shaking, hurt);
+
+    const end = await page.evaluate(async () => {
+      invulnUntil = performance.now() + 5000;
+      hitEnemy(ENEMIES[1], 99);
+      const right = window.__won;
+      await new Promise((r) => setTimeout(r, FIGHT_END_BEAT_MS + 300));
+      return { right, later: window.__won };
+    });
+    ok("the fight ends a beat after the last one falls, not on the blow",
+       end.right === false && end.later === true, end);
     await ctx.close();
   }
 

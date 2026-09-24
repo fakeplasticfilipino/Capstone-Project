@@ -22,13 +22,20 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 24 Sep 2026, after Block 59 (every stand-in sprite made
+Last updated: 24 Sep 2026, after Block 60 (combat with weight: a swing
+on every punch, a thump when it lands, a freeze of a few frames, a
+camera shake, enemies that slide back and topple when dropped, and a
+buzz and a jolt when Macario is hit). The proponent loved Block 59's
+dialogue; how it was written is now a standing convention (CLAUDE.md,
+Conventions, Writing dialogue). test.js 645 passed, 0 failed;
+verify_new_scene.js 100 passed, 0 failed. Blocks 59 and 60 are not
+pushed and not played on the phone.
+
+Block 59, the same day (every stand-in sprite made
 in code or recoloured deleted, placeholder boxes in their place; no
 "1884" jump: the direktor is the last delivery, his lead actor is
 missing, and Macario plays him in a moro-moro inside the entablado,
-fight included, then is paid and gives Nanay the savings). test.js 634
-passed, 0 failed; verify_new_scene.js 100 passed, 0 failed. Block 59
-is not pushed and not played on the phone.
+fight included, then is paid and gives Nanay the savings).
 
 Before that: 23 Sep 2026, after Block 58 (the street cleared after the
 "1884" card, leaving Nanay, the Mananahi and the direktor, the shadow
@@ -183,10 +190,10 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v42    js/game.js v65       js/shell.js v14
+    css/style.css v43    js/game.js v66       js/shell.js v14
     js/inventory.js v9   js/acts.js v12       js/assessment.js v3
     content/act1.js v45  content/items.js v11  content/act2-4.js v1
-    ASSET_VERSION 23 (in js/game.js)
+    ASSET_VERSION 24 (in js/game.js)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
@@ -309,6 +316,8 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
     59  every stand-in sprite deleted for placeholder boxes; no 1884:
         the direktor is the last delivery, his actor is missing, and
         Macario plays the part in a moro-moro with a fight
+    60  combat with weight: swing, punch, knockout and hurt sounds,
+        hit-stop, camera shake, sliding knockback, enemies topple
 
 Everything through Block 41 is pushed (088f5e4). Blocks 42 to 58 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
@@ -352,7 +361,9 @@ artist's standard.
 1. Write the next passage of Act I with the proponents, after the
 direktor pays. Act I is held open (holdOpen) until then; when the
 passage that ends the act is written, remove holdOpen and the post-test
-runs as before. Also from the proponents: the lines marked PLACEHOLDER
+runs as before. Write it to the standard in CLAUDE.md, Conventions,
+Writing dialogue, which is the proponent's own verdict on Block 59.
+Also from the proponents: the lines marked PLACEHOLDER
 in content/act1.js (Block 57 added several: what the Kutsero and the
 Mananahi say the job is, their reminders and thanks, the horse, the
 customers and their names; Block 59 added the direktor's missing actor
@@ -403,6 +414,14 @@ Block 57:
       punched (four, 2 hits each, are in thePlay); the hearts show only
       during the fight. Failure looks like a soldier hidden under the
       buttons, or a fight too hard to finish.
+    Combat feel (Block 60), in the play's fight: each punch swooshes,
+      one that lands thumps and the picture holds for an instant with a
+      small jolt; a soldier who is hit slides back rather than jumping;
+      the last blow on each one topples him over backwards before he
+      fades; being hit buzzes and jolts. Failure looks like the fight
+      feeling sticky or stuttering (the freeze too long: IMPACTS in
+      game.js, stopMs), the shake making text hard to read (shake), or
+      any of it with Mga tunog off making sound.
     Sound effects (Block 58), with the phone's volume at a classroom
       level: the blip on each line should be barely there, the coin
       and the chime clear but not sharp, the fade swoosh and the black
@@ -716,6 +735,9 @@ submit_assessment).
     59  stand-in sprites and their two tools deleted; theMissingActor
         and thePlay scene scripts; entablado 1180 wide
         (verify_new_scene.js rewritten from the Mananahi on, 100)
+    60  impact(), IMPACTS, hitStop, shakeCamera, drawCamera,
+        updateKnockback, FIGHT_END_BEAT_MS; enemy-fall CSS;
+        make-combat-sfx.js (section BC, test.js to 645)
 
 ## Blocks remaining
 
@@ -885,7 +907,7 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 634 checks against a fixture act and item catalogue (so
+test.js: 645 checks against a fixture act and item catalogue (so
 mechanics stay tested whatever Act I ships). verify_new_scene.js: 100
 checks driving the REAL content/act1.js and content/items.js through
 Act I as of Block 59: the ten-painting street, the "Tondo, 1880" card,
@@ -896,7 +918,7 @@ direktor's missing actor, the play (backstage, both curtain cards, the
 fight, the pay), the Mananahi's pay, Nanay's gift with no jump in time,
 the act held open, the settings list, reloads mid-beat and mid-play,
 saves from Blocks 52, 56 and 57, and a guest.
-Both ran green on 24 Sep 2026 against the Block 59 files, on the
+Both ran green on 24 Sep 2026 against the Block 60 files, on the
 proponent's computer. Before that, on 23 Sep 2026 against Block 58 (in a
 sandbox whose preinstalled Chromium matched Playwright 1.56, installed
 there with npm install --no-save playwright@1.56.1; package.json still

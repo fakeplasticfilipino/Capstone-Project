@@ -1220,10 +1220,45 @@ html, body {
   filter: brightness(2.2);
 }
 
+/* Block 60. The blow that drops him tips him over away from it, about
+   his feet, while game.js slides him back (updateKnockback); only then
+   does he fade. On the body element, not the sprite, because the
+   sprite's own transform is his facing flip and an animation there
+   would turn him round as he falls. */
 .enemy-down {
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.35s ease 0.45s;
   pointer-events: none;
+  transform-origin: 50% 100%;
+}
+
+.enemy-down .enemy-meter {
+  display: none;
+}
+
+.enemy-fall-right {
+  animation: enemy-fall-right 0.42s cubic-bezier(0.5, 0, 0.9, 0.6) forwards;
+}
+
+.enemy-fall-left {
+  animation: enemy-fall-left 0.42s cubic-bezier(0.5, 0, 0.9, 0.6) forwards;
+}
+
+@keyframes enemy-fall-right {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(82deg); }
+}
+
+@keyframes enemy-fall-left {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-82deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enemy-fall-right,
+  .enemy-fall-left {
+    animation: none;
+  }
 }
 
 .projectile {

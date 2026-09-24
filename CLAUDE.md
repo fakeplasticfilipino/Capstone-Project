@@ -105,7 +105,8 @@ off the repository.
     db/                        migrations/, seeds/, scripts/ (Database)
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
-                               make-shadow-tree.py, make-sfx.py, and
+                               make-shadow-tree.py, make-sfx.py,
+                               make-combat-sfx.js, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
                                form and old screenshots, kept on the
@@ -1090,6 +1091,54 @@ bold, no em dashes, no horizontal rules. Status markers in parentheses:
 (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
 Tagalog for all player-facing text. English for code and comments.
+
+Writing dialogue. The proponent's standard, set by the direktor's scene
+and the play in Block 59 ("organic and fresh"): every line a session
+writes for a character is held to it. The proponents' own lines are
+never rewritten to match; ours around them are. What it means in
+practice, each one taken from those scenes:
+
+  People talk; they do not explain. Information arrives because
+  someone wants something. The missing actor is not announced; the
+  direktor goes looking for him ("Teka... nasaan na ba si Julian?"),
+  shouts his name, and the facts come out of his panic.
+
+  One thought to a line, and short. A long speech is broken by the
+  other person reacting ("Po?"), or by a silence written as its own
+  line ("Direktor: ..."), which is how a decision is shown being made.
+
+  Small human beats carry a scene: a forgotten line, a whisper from
+  the wings, a line nobody wrote, a tease afterwards ("Hindi ka raw
+  marunong umarte, ha."). Look for the one moment in a scene that a
+  person would remember, and build toward it.
+
+  The world remembers. What happened is picked up later by whoever
+  would have heard of it (the Mananahi: "Ikaw raw ang bumida?"; Nanay
+  hears about the play), and a detail set up early pays off (the
+  costume he carried is the one that fits him; the direktor quotes his
+  improvised line back to him).
+
+  Motive is spoken, not assumed. When Macario agrees to something, a
+  thought line gives the reason in his words ("Dagdag na pera para kay
+  Nanay..."), tied to what the act is about.
+
+  Each person has a voice. Macario says po and opo to his elders and
+  is plain and a little unsure; elders call him iho or anak; a peer
+  (Maryam) is casual and teasing ('no, ha). Spoken contractions
+  ('yung, 'di ba, sa'yo, kanina) over textbook Tagalog. Nothing
+  modern in a line of ours: no "okay", no current slang.
+
+  Repeat visits change with the story and stay short, one line, never
+  the whole scene again; a quest-giver's reminder sounds like a person
+  ("Nasa unahan lang ang puno. Tatlong mansanas, ha."), not a quest log.
+
+  What to avoid: characters telling each other what both already know,
+  narrator sentences in someone's mouth, instructions phrased like a
+  game ("Kumuha ka ng tatlo..." with nothing around it), and more than
+  two lines in a row of pure information.
+
+Every line of ours is marked PLACEHOLDER in the content file until the
+proponents accept or replace it, however good it reads.
 
 Every change ships with a verifiable checkpoint. State what the user should
 see, and what failure looks like, before they test.
@@ -3697,6 +3746,59 @@ verify_new_scene.js plays the new passage end to end (100 checks),
 including reloads mid-scene, mid-play and a Block 57 save whose
 deliveries were all done. game.js v65 (ASSET_VERSION only),
 content/act1.js v45.
+
+The weight of a blow (Block 60). Requested after Block 59: combat
+should feel like it has weight, with a punch sound, a camera shake or
+enemies sent back, the choice left open. All three, plus a freeze, each
+small, because weight in a fighting game is several small cues landing
+on the same frame rather than any one big one.
+
+impact(kind) in game.js is the one place a blow is felt, so a punch on
+an enemy and a punch on a guard land alike. It plays a sound, freezes
+the world for a few frames (hitStop) and shakes the camera
+(shakeCamera), from one table, IMPACTS: a punch that lands (55ms
+freeze, 3px shake), a knockout (110ms, 7px), and Macario hurt (no
+freeze, 6px). Every press of Atake also swings, heard whether or not it
+connects, so a miss sounds like a miss. Macario hurt covers every
+damagePlayer, so hazards and guards got the same jolt for free.
+
+The freeze is the game loop skipping its update and its animation step
+while the camera still shakes, so the blow lands on a held picture.
+Timers measured against performance.now() run on through it, which at
+a tenth of a second nobody can see; offsetting them the way pause does
+would have been machinery for nothing.
+
+The shake eases to nothing, in whole pixels so the art stays crisp, from
+two sines rather than random numbers, so a frame costs nothing extra.
+The camera is still written only when it moves (Block 36): drawCamera
+compares the shake as well as the position, so standing still writes
+nothing, and a shake ends on the plain translateX it started from. A
+device that asks for reduced motion gets no shake and no fall.
+
+Knockback slides instead of jumping. A hit sets a velocity that decays
+by ENEMY_KNOCK_DECAY a frame, tuned to come to rest where the old 45px
+jump put him, so every distance tuned against it (reach, spacing, the
+wind-up) still means what it meant. The first frame of the slide is
+applied with the blow so the hit reads through the freeze.
+updateKnockback runs every frame, not only while the student can act,
+so the last soldier finishes falling even as the play's script takes
+the world back. The knockout sends him further, tips him over away
+from the blow about his feet (a CSS animation on the body element,
+since the sprite's own transform is its facing flip), and then fades
+him. The fight's promise resolves FIGHT_END_BEAT_MS (600) after the
+last one falls rather than on the blow, so the scene does not cut in
+on the fall.
+
+The four sounds are made by _dev/tools/make-combat-sfx.js, in Node
+because the proponent's computer has no Python to run make-sfx.py, and
+levelled against the other effects by RMS. Every number here is chosen,
+not measured, like the fight's pacing (Block 35); the freeze and the
+shake are the first to try smaller if the fight feels sluggish on the
+phone. Section BC covers it: which effect a punch, a miss, a knockout
+and a hurt ask for, the freeze holding the world still, the shake
+moving the camera and letting it go, the slide and its distance, the
+topple, and the beat before the fight ends. game.js v66, style.css v43,
+ASSET_VERSION 24.
 
 ## Pitfalls
 

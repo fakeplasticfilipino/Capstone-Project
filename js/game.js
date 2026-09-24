@@ -243,7 +243,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 23;
+const ASSET_VERSION = 24;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -1675,6 +1675,15 @@ let scriptWalking = false; // Block 57: movePlayer is carrying him
 let lastDrawnX = null;
 let lastDrawnY = null;
 let lastCameraX = null;
+// Block 60. A blow shakes the camera for a moment (shakeCamera) and can
+// freeze the world for a few frames first (hitStop). Up here with the
+// camera's own state, since the loop reads both every frame.
+let shakeUntil = 0;
+let shakeMs = 0;
+let shakeMag = 0;
+let lastShakeX = 0;
+let lastShakeY = 0;
+let hitStopUntil = 0;
 
 // Raised while acts.js or assessment.js has a full-screen overlay up.
 // Kept separate from cutscenePlaying so a trivia card or a test does
@@ -2660,6 +2669,7 @@ function hitGuard(guard) {
   guard.nextShotAt = Math.max(guard.nextShotAt, performance.now() + GUARD_HIT_STAGGER_MS);
   guard.el.classList.add("guard-firing");
   setTimeout(() => guard.el && guard.el.classList.remove("guard-firing"), 150);
+  impact("punch"); // Block 60
 }
 
 const GUARD_BULLET_SPEED = 9;       // per 60fps frame; well under a dodge
@@ -2876,6 +2886,7 @@ function damagePlayer(reason, respawn) {
 
   health -= 1;
   renderHearts();
+  impact("hurt"); // Block 60
   player.classList.add("player-hurt");
   setTimeout(() => player.classList.remove("player-hurt"), 400);
 
@@ -3160,6 +3171,8 @@ function flashAttack() {
 
 function meleeAttack() {
   flashAttack();
+  // Block 60. Every punch swings; one that lands also thumps (impact).
+  playSfx("swing");
 
   // Measured centre to centre, the same way detection is.
   const centre = posX + PLAYER_WIDTH / 2;
@@ -3210,6 +3223,7 @@ function disableGuard(guard, message) {
   guard.alert = 0;
   drawGuard(guard);
   if (message) showToast(message);
+  impact("knockout"); // Block 60: a takedown, a second punch or a shot
 }
 
 // The spear leaves from the front of his BODY, plus a gap. Blocks 22 and
@@ -3826,7 +3840,17 @@ const ENEMY_COOLDOWN_MS = 1800; // between swings: a beat to punch back in
 const ENEMY_TELEGRAPH_MS = 350; // the lit-up warning before a swing
 const ENEMY_ATTACK_FOLLOW_MS = 280; // the attack clip's follow-through
 const ENEMY_STAGGER_MS = 350;
-const ENEMY_KNOCKBACK = 45;
+// Block 60. A hit no longer moves an enemy 45px in one frame: he is sent
+// sliding at ENEMY_KNOCK_SPEED, slowing by ENEMY_KNOCK_DECAY a frame,
+// which comes to rest about the same 45px away (10 / (1 - 0.78)), so
+// every distance tuned against the old jump still holds. The blow that
+// drops him sends him further, and he topples as he goes.
+const ENEMY_KNOCK_SPEED = 10;   // per 60fps frame, at the moment of the hit
+const ENEMY_KNOCK_DECAY = 0.78; // what is left of it a frame later
+const ENEMY_KO_KNOCK_SPEED = 16;
+// A beat after the last one falls before the fight is over, so the
+// scene does not cut in on him mid-fall.
+const FIGHT_END_BEAT_MS = 600;
 const ENEMY_HIT_RECOIL = 40;    // how far a hit pushes Macario back
 const ENEMY_PUNCH_DAMAGE = 1;
 const ENEMY_SHOT_DAMAGE = 2;
@@ -3918,7 +3942,89 @@ function finishFight() {
   updateHudVisibility();
   const resolve = enemiesDone;
   enemiesDone = null;
-  if (resolve) resolve();
+  if (resolve) setTimeout(resolve, FIGHT_END_BEAT_MS);
+}
+
+// Block 60. The weight of a blow: a sound, a freeze of a few frames
+// (hitStop) and a shake of the camera (shakeCamera). One place, so a
+// punch on a guard and a punch on an enemy land the same way.
+//
+//   "punch"    a punch that lands
+//   "knockout" the blow that drops someone
+//   "hurt"     Macario hit
+const IMPACTS = {
+  punch:    { sfx: "punch",    stopMs: 55,  shake: 3, shakeMs: 140 },
+  knockout: { sfx: "knockout", stopMs: 110, shake: 7, shakeMs: 280 },
+  hurt:     { sfx: "hurt",     stopMs: 0,   shake: 6, shakeMs: 220 },
+};
+
+function impact(kind) {
+  const def = IMPACTS[kind];
+  if (!def) return;
+  playSfx(def.sfx);
+  if (def.stopMs) hitStop(def.stopMs);
+  shakeCamera(def.shake, def.shakeMs);
+}
+
+// The world holds still for ms: the game loop skips its update and its
+// animation step, so every sprite freezes on the frame of the hit. Timers
+// measured against performance.now() (a swing's wind-up, the grace after
+// a hit) run on through it; at a tenth of a second nobody can tell.
+function hitStop(ms) {
+  hitStopUntil = Math.max(hitStopUntil, performance.now() + ms);
+}
+
+// Magnitude in world pixels, easing to nothing over ms. A stronger shake
+// replaces a weaker one still running, never the other way round. Off for
+// a student whose device asks for reduced motion.
+function shakeCamera(mag, ms) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const now = performance.now();
+  const remaining = now < shakeUntil ? shakeMag * (shakeUntil - now) / shakeMs : 0;
+  if (mag < remaining) return;
+  shakeMag = mag;
+  shakeMs = ms;
+  shakeUntil = now + ms;
+}
+
+// Where the shake has the camera this frame, in whole pixels so the
+// pixel art stays crisp. Two sines at unrelated rates, so it reads as a
+// jolt rather than a sway, and no randomness to make a frame expensive.
+function cameraShake(now) {
+  if (now >= shakeUntil) return { x: 0, y: 0 };
+  const k = (shakeUntil - now) / shakeMs;
+  return {
+    x: Math.round(shakeMag * k * Math.sin(now * 0.09)),
+    y: Math.round(shakeMag * k * 0.5 * Math.sin(now * 0.13 + 1)),
+  };
+}
+
+// Written only when the camera or the shake moved (Block 36).
+function drawCamera(cameraX, now) {
+  const s = cameraShake(now);
+  if (cameraX === lastCameraX && s.x === lastShakeX && s.y === lastShakeY) return;
+  world.style.transform = s.x || s.y
+    ? `translate(${-cameraX + s.x}px, ${s.y}px)`
+    : `translateX(${-cameraX}px)`;
+  lastCameraX = cameraX;
+  lastShakeX = s.x;
+  lastShakeY = s.y;
+}
+
+// The slide after a hit, for the standing and the fallen alike. Called
+// every running frame, not only while the student can act, so a fall
+// that ends the fight finishes even as the scene takes the world back.
+function updateKnockback(step) {
+  ENEMIES.forEach((enemy) => {
+    if (!enemy.knockVel) return;
+    enemy.pos += enemy.knockVel * step;
+    enemy.knockVel *= Math.pow(ENEMY_KNOCK_DECAY, step);
+    if (Math.abs(enemy.knockVel) < 0.3) enemy.knockVel = 0;
+    if (enemy.pos !== enemy.drawnPos) {
+      enemy.el.style.left = enemy.pos + "px";
+      enemy.drawnPos = enemy.pos;
+    }
+  });
 }
 
 function updateEnemies(step, now) {
@@ -4012,15 +4118,36 @@ function hitEnemy(enemy, damage) {
   if (enemy.hp <= 0) {
     enemy.dead = true;
     enemy.el.classList.remove("enemy-windup");
-    enemy.el.classList.add("enemy-down");
+    // Block 60. He topples away from the blow (style.css, enemy-fall)
+    // while he slides, then fades. A swing cut off by it is put away,
+    // or he would fall with his sword still raised.
+    enemy.attacking = false;
+    if (enemy.attackSpriteEl) {
+      enemy.attackSpriteEl.style.display = "none";
+      enemy.spriteEl.style.visibility = "";
+      enemy.drawnAttacking = false;
+    }
+    enemy.el.classList.add("enemy-down", away > 0 ? "enemy-fall-right" : "enemy-fall-left");
+    enemy.knockVel = away * ENEMY_KO_KNOCK_SPEED;
+    enemy.pos += enemy.knockVel;
+    enemy.el.style.left = enemy.pos + "px";
+    enemy.drawnPos = enemy.pos;
+    impact("knockout");
     if (!enemiesAlive()) finishFight();
     return;
   }
 
-  enemy.pos += away * ENEMY_KNOCKBACK;
+  // Block 60. The first frame of the slide lands with the blow, so the
+  // hit reads at once even through the freeze; updateKnockback carries
+  // the rest.
+  enemy.knockVel = away * ENEMY_KNOCK_SPEED;
+  enemy.pos += enemy.knockVel;
+  enemy.knockVel *= ENEMY_KNOCK_DECAY;
   enemy.staggerUntil = now + ENEMY_STAGGER_MS;
   enemy.nextSwingAt = Math.max(enemy.nextSwingAt || 0, now + ENEMY_STAGGER_MS + ENEMY_WINDUP_MS);
   enemy.el.style.left = enemy.pos + "px";
+  enemy.drawnPos = enemy.pos;
+  impact("punch");
 }
 
 function resetEnemies() {
@@ -4028,6 +4155,7 @@ function resetEnemies() {
     if (enemy.dead) return;
     enemy.pos = enemy.x;
     enemy.hp = enemy.maxHp;
+    enemy.knockVel = 0;
     enemy.nextSwingAt = 0;
     enemy.staggerUntil = 0;
     enemy.fillEl.style.width = "100%";
@@ -4092,6 +4220,13 @@ const SFX_SOURCES = {
   jump: "assets/audio/sfx/jump.wav",
   door: "assets/audio/sfx/door.wav",
   intertitle: "assets/audio/sfx/intertitle.wav",
+  // Block 60. Combat (_dev/tools/make-combat-sfx.js): every punch
+  // swings, a punch that lands thumps, the blow that drops someone
+  // thumps harder, and Macario being hit buzzes.
+  swing: "assets/audio/sfx/swing.wav",
+  punch: "assets/audio/sfx/punch.wav",
+  knockout: "assets/audio/sfx/knockout.wav",
+  hurt: "assets/audio/sfx/hurt.wav",
 };
 
 // Music sits under everything else. It is the one sound that never
@@ -4583,6 +4718,17 @@ function gameLoop(now) {
     return;
   }
 
+  // Block 60. A hit-stop: nothing moves and no sprite steps a frame, but
+  // the camera still shakes, so the blow lands on a held picture. The
+  // frame clock is kept current, so the frame after is an ordinary one
+  // rather than one big step.
+  if (now < hitStopUntil) {
+    lastFrameNow = now;
+    if (lastCameraX !== null) drawCamera(lastCameraX, now);
+    requestAnimationFrame(gameLoop);
+    return;
+  }
+
   // Frame delta expressed in 60fps frames, clamped so a tab returning from
   // the background does not integrate one huge step and drop the player
   // through the floor. The target device will not hold 60fps, and a
@@ -4647,6 +4793,7 @@ function gameLoop(now) {
   if (canAct) updateGuards(step);
   if (canAct) updateGuardBullets(step);
   if (canAct) updateEnemies(step, now);
+  updateKnockback(step);
 
   // After the vertical resolution, so the ground test sees where the
   // player actually ended up this frame rather than where they were
@@ -4693,10 +4840,7 @@ function gameLoop(now) {
   // Camera: centre the player, clamped to world bounds.
   let cameraX = posX - (viewportWidth || measureViewport()) / 2 + PLAYER_WIDTH / 2;
   cameraX = Math.max(0, Math.min(cameraX, WORLD_WIDTH - viewportWidth));
-  if (cameraX !== lastCameraX) {
-    world.style.transform = `translateX(${-cameraX}px)`;
-    lastCameraX = cameraX;
-  }
+  drawCamera(cameraX, now);
 
   // Block 42. Where to go next, while the student can act on it.
   updateGuide(!inDialogue && !cutscenePlaying && !authGated && !uiBlocked, cameraX);
