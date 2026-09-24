@@ -250,6 +250,126 @@ function assetUrl(path) {
   return path + (path.includes("?") ? "&" : "?") + "v=" + ASSET_VERSION;
 }
 
+// --- Asset loader (Block 62) ------------------------------------------
+// Every picture the world draws is asked for through loadImage, which
+// does three things a bare new Image() did not.
+//
+// It retries. On a school network or patchy mobile data a picture can
+// fail once and arrive on the second try; before this block one failure
+// was a dashed box until the page was reloaded. A failure is first
+// checked with a HEAD request: a real 404 (art the artist still owes) is
+// given up on at once, so a placeholder box still appears straight away,
+// and only a failure that is not a 404 waits and tries again.
+//
+// It shares. The same URL asked for twice is one download and one
+// promise, so the title screen's bar and the sprite that needs the
+// picture wait on the same thing.
+//
+// It counts. assetProgress() is what the title screen's bar draws and
+// whenAssetsSettled() is what entering the world and every scene change
+// wait on, so a student no longer walks an empty road while Macario and
+// the backdrop are still downloading (TRACKER.md, Known problems).
+//
+// Declared here, near the top, because loadAct reaches it at parse time
+// (the temporal dead zone pitfall in CLAUDE.md).
+const ASSET_RETRY_DELAYS_MS = [800, 2000, 5000];
+const assetLoads = new Map(); // url -> { state, promise }
+const assetProgressListeners = [];
+
+function assetProgress() {
+  let done = 0;
+  let total = 0;
+  assetLoads.forEach((entry) => {
+    total++;
+    if (entry.state !== "pending") done++;
+  });
+  return { done, total };
+}
+
+function notifyAssetProgress() {
+  const progress = assetProgress();
+  assetProgressListeners.forEach((fn) => {
+    try { fn(progress); } catch (err) { console.error(err); }
+  });
+}
+
+// True when the file is really not there, false when the failure was the
+// connection. A probe that itself fails is the connection too.
+function assetIsMissing(url) {
+  if (typeof fetch !== "function") return Promise.resolve(true);
+  return fetch(url, { method: "HEAD", cache: "no-store" })
+    .then((res) => res.status === 404 || res.status === 410)
+    .catch(() => false);
+}
+
+function loadImage(src) {
+  const url = assetUrl(src);
+  const known = assetLoads.get(url);
+  // A picture that failed for good is asked for again the next time
+  // something needs it (a scene loaded again), as it always was.
+  if (known && known.state !== "failed") return known.promise;
+
+  const entry = { state: "pending", promise: null };
+  entry.promise = new Promise((resolve) => {
+    let attempt = 0;
+    const tryOnce = () => {
+      const img = new Image();
+      img.onload = () => {
+        entry.state = "ok";
+        notifyAssetProgress();
+        resolve(img);
+      };
+      img.onerror = () => {
+        const giveUp = () => {
+          entry.state = "failed";
+          notifyAssetProgress();
+          resolve(null); // resolve, not reject, so Promise.all never hangs
+        };
+        if (attempt >= ASSET_RETRY_DELAYS_MS.length) { giveUp(); return; }
+        assetIsMissing(url).then((missing) => {
+          if (missing) { giveUp(); return; }
+          setTimeout(tryOnce, ASSET_RETRY_DELAYS_MS[attempt++]);
+        });
+      };
+      img.src = url;
+    };
+    tryOnce();
+  });
+  assetLoads.set(url, entry);
+  notifyAssetProgress();
+  return entry.promise;
+}
+
+// Resolves once nothing is pending, or after timeoutMs, whichever comes
+// first. A timeout is not a failure: the world opens anyway with what
+// has arrived, which is exactly how it behaved before this block.
+function whenAssetsSettled(timeoutMs) {
+  return new Promise((resolve) => {
+    const check = () => {
+      const p = assetProgress();
+      return p.done >= p.total;
+    };
+    if (check()) { resolve(true); return; }
+    let timer = null;
+    const listener = () => {
+      if (!check()) return;
+      finish(true);
+    };
+    const finish = (settled) => {
+      clearTimeout(timer);
+      const i = assetProgressListeners.indexOf(listener);
+      if (i !== -1) assetProgressListeners.splice(i, 1);
+      resolve(settled);
+    };
+    assetProgressListeners.push(listener);
+    if (timeoutMs) timer = setTimeout(() => finish(false), timeoutMs);
+  });
+}
+
+function onAssetProgress(fn) {
+  if (typeof fn === "function") assetProgressListeners.push(fn);
+}
+
 // --- Game state ----------------------------------------------------------
 const state = {
   flags: {}, // arbitrary story flags, named by whatever content is loaded
@@ -570,6 +690,7 @@ function loadScene(sceneId) {
   // on every load, like greyFilter, so leaving the scene restores Tondo.
   const skylineEl = document.getElementById("skyline");
   if (scene.backdrop && scene.backdrop.src) {
+    loadImage(scene.backdrop.src); // Block 62, as the panels are
     // Absolute, because a url() inside a custom property is resolved
     // against the stylesheet that reads it (css/style.css, one folder
     // down since Block 44), not against this page.
@@ -785,7 +906,13 @@ function buildPanelBackdrop(scene) {
     // One pixel of overlap, as with Tondo's tiles, so two fractional
     // edges never leave a hairline of the layer showing through.
     tile.style.width = width + 1 + "px";
-    tile.style.backgroundImage = `url("${assetUrl(scene.panels[i % scene.panels.length])}")`;
+    const panelSrc = scene.panels[i % scene.panels.length];
+    // Block 62. Asked for through the loader too, so the painting is
+    // retried on a bad connection and a scene change waits for it. The
+    // background below is the same URL, so it is drawn from that one
+    // download.
+    loadImage(panelSrc);
+    tile.style.backgroundImage = `url("${assetUrl(panelSrc)}")`;
     // Block 46. The whole picture stands on the floor (.skyline-panel):
     // anything above its top edge is panelSky, so the sky carries on up
     // a tall screen instead of ending in the page's own colour.
@@ -1007,8 +1134,9 @@ function buildStage() {
 // loadAct. Each is preloaded only to detect a 404 and substitute a
 // labelled placeholder fill.
 function checkBackgroundImage(el, src, label) {
-  const img = new Image();
-  img.onerror = () => {
+  // Block 62. Through loadImage, so it is retried and counted too.
+  loadImage(src).then((img) => {
+    if (img) return;
     el.style.backgroundImage = "none";
     el.style.backgroundColor = "#333";
     el.style.display = "flex";
@@ -1018,8 +1146,7 @@ function checkBackgroundImage(el, src, label) {
     el.style.fontSize = "14px";
     el.style.border = "2px dashed #ffd54f";
     el.textContent = label;
-  };
-  img.src = assetUrl(src);
+  });
 }
 
 checkBackgroundImage(
@@ -1431,28 +1558,27 @@ function mountBody(el, x, bodyWidth, height) {
 }
 
 function loadSpriteSheet(def) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      def.naturalWidth = img.naturalWidth;
-      def.naturalHeight = img.naturalHeight;
-
-      // Grid geometry. A single-row strip is just the case where
-      // columns equals frames and rows works out to 1, so this stays
-      // backward compatible with every existing sheet.
-      const columns = def.columns || def.frames;
-      def.frameWidth = img.naturalWidth / columns;
-      def.rows = Math.ceil(def.frames / columns);
-      def.frameHeight = img.naturalHeight / def.rows;
-
-      def.failed = false;
-      resolve(def);
-    };
-    img.onerror = () => {
+  // Block 62. Through loadImage, so a sheet is retried on a bad
+  // connection and counted by the title screen's bar. Still resolves,
+  // never rejects, so Promise.all never hangs on a missing sheet.
+  return loadImage(def.src).then((img) => {
+    if (!img) {
       def.failed = true;
-      resolve(def); // resolve, not reject, so Promise.all never hangs
-    };
-    img.src = assetUrl(def.src);
+      return def;
+    }
+    def.naturalWidth = img.naturalWidth;
+    def.naturalHeight = img.naturalHeight;
+
+    // Grid geometry. A single-row strip is just the case where
+    // columns equals frames and rows works out to 1, so this stays
+    // backward compatible with every existing sheet.
+    const columns = def.columns || def.frames;
+    def.frameWidth = img.naturalWidth / columns;
+    def.rows = Math.ceil(def.frames / columns);
+    def.frameHeight = img.naturalHeight / def.rows;
+
+    def.failed = false;
+    return def;
   });
 }
 
@@ -2151,6 +2277,8 @@ async function runDeathSequence() {
 // same defensive clear startPerformance and respawnInScene already do
 // is repeated here, since a fade can just as easily start with the
 // attack button held down as either of those can.
+const SCENE_ART_WAIT_MS = 8000;
+
 async function fadeToScene(sceneId, placement) {
   cutscenePlaying = true;
   attackHoldStart = 0;
@@ -2162,6 +2290,13 @@ async function fadeToScene(sceneId, placement) {
   await wait(900); // fade to black
 
   loadScene(sceneId); // swap while hidden behind black
+
+  // Block 62. The black holds until the new scene's pictures are in, so
+  // a student never walks into a room whose backdrop and people are
+  // still downloading. A slow connection gets a longer black, never an
+  // endless one: after SCENE_ART_WAIT_MS the scene opens with what has
+  // arrived, which is what every scene change did before this block.
+  await whenAssetsSettled(SCENE_ART_WAIT_MS);
 
   // Block 34. Where to stand in the new scene when it is not its startX:
   // coming back out of the entablado lands at its door, not at the far
@@ -5349,6 +5484,13 @@ window.Game = {
   // where they are listed now rather than under the log. Lines only.
   doneQuests: doneQuestTexts,
 
+  // Block 62. The picture loader, for the title screen's bar and for
+  // holding the world closed until its art is in. Counts only; the
+  // shell draws them.
+  assetProgress,
+  onAssetProgress,
+  whenAssetsSettled,
+
   // Swaps the player's sprite sheets for an outfit's. Awaitable, because
   // the sheets have to load before the swap is visible.
   setOutfit,
@@ -5396,3 +5538,18 @@ window.Game = {
     shopRequestListener = typeof fn === "function" ? fn : null;
   },
 };
+
+// Block 62. The service worker (sw.js, at the root so its scope is the
+// whole game). https only, which is GitHub Pages and never the harness
+// on localhost, where it would sit between the page and the routes that
+// swap in the fake Supabase client; a check that wants it sets
+// window.__SW_TEST first. Registered after load so it never competes
+// with the first scene's pictures for the connection.
+if ("serviceWorker" in navigator &&
+    (window.__SW_TEST || (location.protocol === "https:" && !window.__TEST))) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((err) => {
+      console.warn("Service worker not registered:", err);
+    });
+  });
+}

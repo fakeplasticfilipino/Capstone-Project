@@ -77,6 +77,7 @@ const Shell = {
     if (window.Game) Game.setUiBlocked(true);
 
     this._watchOrientation();
+    this._watchAssets();
 
     this._showPanel("title");
     this.el.overlay.classList.remove("hidden");
@@ -95,6 +96,7 @@ const Shell = {
         shop: document.getElementById("shell-shop"),
         logout: document.getElementById("shell-logout-confirm"),
         reset: document.getElementById("shell-reset-confirm"),
+        loading: document.getElementById("shell-loading"),
       },
       startBtn: document.getElementById("shell-start"),
       guestBtn: document.getElementById("shell-guest"),
@@ -338,9 +340,8 @@ const Shell = {
 
     if (this.entered) {
       // The no-session path: the student tapped Magsimula, logged
-      // in, and is already through. Nothing to wait for.
-      this._enterWorld();
-      return Promise.resolve();
+      // in, and is already through. Nothing to wait for but the art.
+      return this._enterWorld();
     }
 
     // Clears any Subukan Ulit offer the load timer put here. A world
@@ -367,11 +368,12 @@ const Shell = {
     this.entered = true;
 
     if (this.ready) {
-      this._enterWorld();
-      if (this.entryResolve) {
-        this.entryResolve();
-        this.entryResolve = null;
-      }
+      this._enterWorld().then(() => {
+        if (this.entryResolve) {
+          this.entryResolve();
+          this.entryResolve = null;
+        }
+      });
       return;
     }
 
@@ -399,11 +401,48 @@ const Shell = {
     }
   },
 
-  _enterWorld() {
+  // Block 62. If the student is through the gate before the scene's
+  // pictures have arrived, the screen says so and waits, up to
+  // ENTRY_ART_WAIT_MS, rather than opening onto an empty road. Returns a
+  // promise, and the entry promise is resolved only after it, because
+  // what game.js does next (the trivia card, the pre-test, the opening
+  // script) must not start behind this screen.
+  ENTRY_ART_WAIT_MS: 20000,
+
+  async _enterWorld() {
+    if (window.Game && Game.assetProgress) {
+      const progress = Game.assetProgress();
+      if (progress.done < progress.total) {
+        this.state = "loading";
+        this._showPanel("loading");
+        this.el.overlay.classList.remove("hidden");
+        await Game.whenAssetsSettled(this.ENTRY_ART_WAIT_MS);
+      }
+    }
     this.state = "playing";
     this.el.overlay.classList.add("hidden");
     if (window.Game) Game.setUiBlocked(false);
     this._applyOrientation();
+  },
+
+  // Block 62. Every loading bar on the shell's screens, drawn from the
+  // engine's count of pictures asked for and arrived. Written only when
+  // the numbers change, which is at most once per picture.
+  _watchAssets() {
+    if (!window.Game || !Game.onAssetProgress) return;
+    const draw = (p) => {
+      const full = p.done >= p.total;
+      const pct = p.total ? Math.round((p.done / p.total) * 100) : 100;
+      document.querySelectorAll(".shell-loadbar").forEach((bar) => {
+        bar.classList.toggle("shell-loadbar-full", full);
+        bar.firstElementChild.style.width = pct + "%";
+      });
+      document.querySelectorAll(".shell-loadbar-note").forEach((note) => {
+        note.textContent = full ? "" : "Inihahanda ang mga larawan... " + pct + "%";
+      });
+    };
+    Game.onAssetProgress(draw);
+    draw(Game.assetProgress());
   },
 
   // -----------------------------------------------------------
