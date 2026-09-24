@@ -40,8 +40,8 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 24 Sep 2026, Block 64 (the notebook: ten pages of
-history along the street, outside the story).
+Last updated: 24 Sep 2026, Blocks 64 and 65 (the notebook: ten pages of
+history along the street, outside the story; the apple round).
 
 ## The story in brief
 
@@ -196,6 +196,17 @@ With three, the horse's button reads Ipakain ang mansanas:
   + Kabayo: Hiiiii!
 
 Completes: Kumuha ng tatlong mansanas at ipakain sa kabayo (n/3).
+
+After the horse is fed, the tree is a game of its own (Block 65, ours):
+thirty seconds to catch as many as he can, every fifth apple golden and
+worth three, three in a row a streak. Nothing is paid and nothing waits
+on it; his best is kept.
+
+  + (the window) Ilan ang masasalo mo sa loob ng 30 segundo? Rekord mo: n.
+  + (a streak) Sunod-sunod! xn
+  + (a golden apple) Ginintuang mansanas! +3
+  + (a miss) Sayang!
+  + (the end) Nakasalo ka ng n! / Bagong rekord: n! / Nakasalo ka ng n. Rekord mo: n.
 
 ### 4. The Kutsero pays
 

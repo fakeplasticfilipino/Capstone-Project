@@ -3730,6 +3730,31 @@ function updateRun(heldDir, canAct, now, step) {
   return SPEED + (RUN_SPEED - SPEED) * runBlend;
 }
 
+// Block 67. A few words rising from over Macario's head and fading: the
+// barya he has just been paid, with a coin beside it. Two elements
+// reused in turn, placed when one starts and animated in CSS by
+// transform and opacity only, like the dust.
+let floatPool = null;
+let floatNext = 0;
+
+function floatOverPlayer(text, kind) {
+  if (!world) return;
+  if (!floatPool) {
+    floatPool = [0, 1].map(() => {
+      const el = document.createElement("div");
+      world.appendChild(el);
+      return el;
+    });
+  }
+  const el = floatPool[floatNext];
+  floatNext = (floatNext + 1) % floatPool.length;
+  el.textContent = text;
+  el.style.left = Math.round(posX + PLAYER_WIDTH / 2) + "px";
+  el.style.bottom = Math.round(posY + DISPLAY_HEIGHT + 8) + "px";
+  el.dataset.flip = el.dataset.flip === "a" ? "b" : "a";
+  el.className = "float-text float-" + (kind || "plain") + " float-" + el.dataset.flip;
+}
+
 function isRunning() {
   return runBlend > 0;
 }
@@ -5915,6 +5940,7 @@ window.Game = {
     currency += n;
     markDirty();
     playSfx("coin"); // Block 58
+    floatOverPlayer("+" + n, "coin"); // Block 67
     return currency;
   },
 

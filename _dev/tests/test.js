@@ -5156,6 +5156,28 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nBG. The reward pop (Block 67)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const pop = await page.evaluate(async () => {
+      posX = 300;
+      Game.addCurrency(12);
+      const el = [...document.querySelectorAll(".float-text")].find((e) => e.textContent === "+12");
+      const first = el && { cls: el.className, left: parseFloat(el.style.left) };
+      Game.addCurrency(3);
+      Game.spendCurrency(1);
+      const all = [...document.querySelectorAll(".float-text")].map((e) => e.textContent);
+      await new Promise((r) => setTimeout(r, 1500));
+      return { first, all, faded: getComputedStyle(el).opacity };
+    });
+    ok("being paid raises +N with a coin over Macario's head",
+       pop.first && /float-coin/.test(pop.first.cls) && pop.first.left === 300 + 20, pop);
+    ok("from a pool of two, and spending raises nothing",
+       pop.all.length === 2 && pop.all.includes("+3") && !pop.all.some((t) => t.startsWith("-")), pop.all);
+    ok("and it fades away by itself", pop.faded === "0", pop.faded);
+    await ctx.close();
+  }
+
   // -------------------------------------------------------------
   // BD. Block 62. Pictures are asked for through one loader that
   // retries a failure that is not a 404, counts what has arrived for

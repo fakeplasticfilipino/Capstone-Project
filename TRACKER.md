@@ -25,11 +25,21 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 24 Sep 2026, after Block 61 (STORY.md, the plot and
-script of the game as a third context file, checked against
-content/act1.js by verify_new_scene.js). test.js 645 passed, 0 failed;
-verify_new_scene.js 101 passed, 0 failed. Blocks 59 to 61 are not
-pushed; 59 and 60 are not played on the phone.
+Last updated: 24 Sep 2026, after Blocks 62 to 67, one cloud session
+asked to "make it fun and performance friendly": a picture loader with
+retries, a loading bar and a service worker (62), a run and a forgiving
+jump with dust (63), ten pages of history to find along the street (64),
+the apple game with streaks, golden apples and a timed round (65), a
+measured performance pass (66), and a coin pop when paid (67). It also
+found and fixed the body font, which had never been served on the live
+site. test.js 676 passed, 0 failed; verify_new_scene.js 115 passed,
+0 failed. Blocks 62 to 67 are on the branch claude/quirky-galileo-8gug2y,
+not on main, and not played on the phone.
+
+Before that, Block 61 (STORY.md, the plot and script of the game as a
+third context file, checked against content/act1.js by
+verify_new_scene.js). Blocks 59 to 61 are not pushed; 59 and 60 are not
+played on the phone.
 
 Block 60, the same day (combat with weight: a swing
 on every punch, a thump when it lands, a freeze of a few frames, a
@@ -80,6 +90,19 @@ pre-test and post-test with server-side grading, the weighted performance
 score, feedback, currency, the shop, equipment and outfits,
 play-as-guest, sound, settings and the full reset (which needs schema
 v5), and the teacher dashboard.
+
+Since Blocks 62 to 67: pictures load through one loader that retries a
+dropped download, the title screen shows a loading bar, the world and
+every scene change wait (briefly) for their art, and a service worker
+keeps every file on the phone after the first visit. Holding a
+direction for half a second breaks into a run (not near guards or in a
+fight), jumps forgive a thumb a few frames late or early, and dust
+flies. Ten optional pages of history lie along the street (five on the
+ground, five at jump height), each opening a card and filling the
+Kuwaderno on the pause screen; they carry the item bank's facts, which
+the story does not yet (STORY.md, The notebook). The apple tree, once
+the horse is fed, is a thirty-second game with golden apples and a best
+score. Being paid pops "+N" with a coin.
 
 Speed: the lag reported after Block 35 is fixed. Block 36 cut the game
 loop's per-frame layout and DOM work, and the proponent confirmed the
@@ -168,10 +191,12 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v43    js/game.js v66       js/shell.js v14
+    css/style.css v44    js/game.js v67       js/shell.js v15
     js/inventory.js v9   js/acts.js v12       js/assessment.js v3
-    content/act1.js v45  content/items.js v11  content/act2-4.js v1
-    ASSET_VERSION 24 (in js/game.js)
+    content/act1.js v46  content/items.js v11  content/act2-4.js v1
+    ASSET_VERSION 25 (in js/game.js)
+    sw.js carries no version: the browser checks it itself on every
+    visit (Block 62)
     css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
@@ -298,6 +323,18 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
         hit-stop, camera shake, sliding knockback, enemies topple
     61  STORY.md: the plot, places, cast and full script of Act I, as a
         third context file kept in step with the content by a check
+    62  loadImage with retries and a 404 check; a loading bar on the
+        title and "Sandali lang" before entering; scene changes wait
+        for their art; sw.js; VT323 finally served from assets/fonts
+    63  Takbo (auto-run after 450ms held), coyote time, jump buffer,
+        dust puffs
+    64  the notebook: ten pages of history on the street, a card per
+        page, the Kuwaderno on the pause screen
+    65  the apple game: squash, "+1", splat, streaks; a timed round
+        with golden apples and a best score once the horse is fed
+    66  measured pass: pages still out of view, bob only on arrival;
+        HUD classes and the facing flip written only on change
+    67  "+N" and a coin over Macario when he is paid
 
 Everything through Block 41 is pushed (088f5e4). Blocks 42 to 58 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
@@ -357,7 +394,12 @@ classroom and is the proponents' to reverse. Check the play against
 the source book: that Sakay acted on Tondo's stages is why it is there.
 The "1884" card is gone (Block 59), so its spelling question is moot.
 
-2. The assessment item bank no longer matches Act I. The pre-test and
+2. The assessment item bank no longer matches Act I. Since Block 64 the
+ten optional pages on the street carry exactly what the item bank's ten
+pairs ask, one page per pair (STORY.md, The notebook), so a student who
+explores meets every tested fact; one who walks past them still meets
+none. The proponents decide whether that is enough, whether the facts
+move into the story, or whether the bank is rewritten. The pre-test and
 post-test items (db/seeds/macario_items_v3.sql) and the trivia card were
 written against the old act's facts (Tondo, the tailor-and-barber trade,
 the moro-moro, 1894, the Katipunan). The new act so far teaches none of
@@ -366,7 +408,35 @@ rewritten to match the new story before the pilot. Data collection
 covers Act I only, so this decides whether the study measures anything.
 
 3. A device pass, on the phone, in landscape, from a private tab. For
-Block 57:
+Blocks 62 to 67 first:
+
+    Loading: on a first visit the title shows a green bar filling and
+      "Inihahanda ang mga larawan... n%", and it empties to nothing when
+      full. Tapping in early shows "Sandali lang..." and then the
+      opening, never an empty road. A second visit opens at once (the
+      service worker). Failure looks like the bar stuck below 100 for
+      more than about 20 seconds on a good connection, or the game not
+      opening at all (the switch-off is in sw.js's header).
+    The body font: dialogue and buttons in VT323 (pixel letters), not
+      Courier. It never loaded on the live site before Block 62.
+    Running: hold Kanan for half a second; he speeds up, the walk steps
+      faster, dust puffs behind him. Failure looks like a jerk in speed,
+      or dust that stutters the phone.
+    Jumping: a jump pressed a hair after walking off something, or just
+      before landing, still happens. No double jump.
+    Pages: a parchment page with a glow on the road just past Nanay;
+      walking into it opens "Pahina ng Kasaysayan 1 / 10", Sige closes
+      it. The second is at jump height past the horse. Pause shows
+      "Kuwaderno n/10"; it lists every page. Failure looks like a page
+      under a tree or a person, text too small on the card, or a page
+      found and back again after a reload.
+    The apple game after the horse is fed: thirty seconds, a clock, a
+      golden apple every fifth, "Sunod-sunod!" on three in a row, a
+      splat on a miss, and a best score the next time. Too hard or too
+      easy is CATCH_* in game.js.
+    Being paid: "+50" and a coin rise over his head.
+
+For Block 57:
 
     The opening card: black from the first frame after the title (and
       the trivia card and pre-test for a new student), "Tondo, 1880" and
@@ -830,17 +900,22 @@ what a scene has to download by about six times (the six opaque
 backdrops are JPEGs now: 300KB a street, 1.2MB for the lansangan,
 against 1.9MB and 7.8MB), which shortens the window without closing it.
 The largest remaining files are the two music tracks, about 2MB each.
-Chosen fix, not yet built: a loading bar on the title screen that fetches
-the current scene's art first and retries failed files, scene changes
-that wait behind the blackout until the next scene's art is in, and a
-service worker that keeps every file on the phone after the first visit
-(which also answers the stale index.html problem below and lets the
-game open with no connection; saves would still need one). Offline play
-that syncs saves later was discussed and deferred. (KNOWN, FIX CHOSEN)
+The chosen fix is built (Block 62): a loading bar on the title screen,
+a wait on "Sandali lang..." for a student who taps in early, retries for
+a dropped download, scene changes that hold the black until the next
+scene's art is in, and a service worker that keeps every file on the
+phone after the first visit (which also answers the stale index.html
+problem below and lets the game open with no connection; logging in and
+saves still need one). Offline play that syncs saves later was
+discussed and deferred. Not yet tried on the phone or on a throttled
+connection outside the harness. (FIX BUILT, NOT SEEN ON DEVICE)
 
 Browsers cache index.html. It carries no version number of its own, so
 a phone that loaded an old copy keeps requesting the old ?v=N files
-even after a correct push. On 17 Sep 2026 a report that "none of the
+even after a correct push. Since Block 62 the service worker asks the
+network for index.html first on every visit, which should end this once
+a phone has been served the Block 62 page; a phone still holding an
+older copy needs the private tab or cleared site data one last time. On 17 Sep 2026 a report that "none of the
 changes applied" was exactly this: GitHub and the live site were both
 serving the new files. Test from a private tab, or clear the site's data
 in Chrome, before suspecting the code. Keep every changed file's ?v=N
@@ -891,9 +966,13 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 645 checks against a fixture act and item catalogue (so
-mechanics stay tested whatever Act I ships). verify_new_scene.js: 101
-checks: one that every line of dialogue and black card in
+test.js: 676 checks against a fixture act and item catalogue (so
+mechanics stay tested whatever Act I ships); sections BD to BG are
+Blocks 62 to 67 (the loader, the loading screens, a scene change held
+for its art, and the service worker offline; the run, coyote time, the
+jump buffer and dust; the timed apple round; the reward pop).
+verify_new_scene.js: 115 checks, the last fourteen the notebook against
+the real content (Block 64). 101 of them: one that every line of dialogue and black card in
 content/act1.js is in STORY.md (Block 61), then 100 driving the REAL content/act1.js and content/items.js through
 Act I as of Block 59: the ten-painting street, the "Tondo, 1880" card,
 the opening with the walk off beside Nanay, the talk and the thought,
@@ -903,7 +982,9 @@ direktor's missing actor, the play (backstage, both curtain cards, the
 fight, the pay), the Mananahi's pay, Nanay's gift with no jump in time,
 the act held open, the settings list, reloads mid-beat and mid-play,
 saves from Blocks 52, 56 and 57, and a guest.
-Both ran green on 24 Sep 2026 against the Block 60 files, on the
+Both ran green on 24 Sep 2026 against the Block 67 files, in a cloud
+sandbox with npm install --no-save playwright@1.56.0 (its preinstalled
+Chromium). Before that, green against the Block 60 files, on the
 proponent's computer. Before that, on 23 Sep 2026 against Block 58 (in a
 sandbox whose preinstalled Chromium matched Playwright 1.56, installed
 there with npm install --no-save playwright@1.56.1; package.json still
