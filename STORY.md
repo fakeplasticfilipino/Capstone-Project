@@ -33,13 +33,15 @@ How to read the script:
   + Speaker: line          ours, marked PLACEHOLDER in content/act1.js,
                            until the proponents accept or replace it
     [BLACK] line           a black card (playIntertitle)
+    [PAGE] Title: text     a page of the notebook, found on the road
     (stage direction)      what happens, not what is said
 
 Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 24 Sep 2026, Block 60 (no story change since Block 59).
+Last updated: 24 Sep 2026, Block 64 (the notebook: ten pages of
+history along the street, outside the story).
 
 ## The story in brief
 
@@ -459,6 +461,57 @@ Direktor and Maryam, in the entablado:
   + Maryam: Alam mo, mas bagay sa'yo si Don Rodrigo kaysa kay Julian. Huwag mo lang sasabihin sa kanya.
     (after)
 
+## The notebook
+
+Block 64. Ten pages lie along the street, from just past Nanay to just
+before the direktor, every other one at jump height. They are not part
+of the story and nothing waits on them: they are pages from a history
+of the man the boy on screen grows up to be, and picking one up opens
+it as a card ("Pahina ng Kasaysayan n / 10") and adds it to the
+Kuwaderno, which the pause screen opens. A page not yet found is listed
+as "? ? ?".
+
+Each page says what one of the ten matched pairs in the Act I item bank
+(db/seeds/macario_items_v3.sql) commits to, and nothing further; the
+pair each serves is in brackets. All of it is ours.
+
+    x 2500   ground
+  + [PAGE] Anak ng Tondo: Si Macario Sakay ay lumaki sa Tondo, Maynila. Sa mga kalyeng tulad nito siya nagkaisip.
+             (pair 1, where he came from)
+    x 3950   jump
+  + [PAGE] Mananahi at barbero: Bago ang himagsikan, naghanapbuhay si Sakay bilang mananahi at barbero, isang karaniwang manggagawa.
+             (pair 2, his trade)
+    x 5300   ground
+  + [PAGE] Ang moro-moro: Mahilig sa teatro si Sakay. Madalas siyang umarte sa komedya, o moro-moro, noong kabataan niya.
+             (pair 3, the theatre)
+    x 6050   jump
+  + [PAGE] Ang natutunan sa entablado: Sa entablado nasanay si Sakay na magsalita sa harap ng maraming tao. Nahasa ang kanyang tinig at tapang na humarap sa madla.
+             (pair 4, what the stage taught him)
+    x 7000   ground
+  + [PAGE] 1894: Noong 1894, sumapi si Macario Sakay sa Katipunan, isang lihim na samahan.
+             (pair 5, joining the Katipunan)
+    x 8200   jump
+  + [PAGE] Ang layunin ng Katipunan: Hindi reporma ang hangad ng Katipunan kundi ganap na kalayaan mula sa Espanya, sa pamamagitan ng himagsikan.
+             (pair 6, its aim)
+    x 9800   ground
+  + [PAGE] Bakit lihim: Ipinagbabawal ang Katipunan. Ang mahuhuling kasapi ay parurusahan ng mga awtoridad, kaya lihim ang kanilang pagkakakilanlan at mga pagpupulong.
+             (pair 7, why it was secret)
+    x 10700  jump
+  + [PAGE] Ang mga tagapaghatid: Mahalaga sa lihim na kilusan ang mga tagapaghatid ng mensahe. Dala nila ang balita nang hindi nabubunyag ang samahan. Kapag nahuli ang isa, malalantad ang buong kilusan.
+             (pair 8, the messengers)
+    x 12200  jump
+  + [PAGE] Ang iniwan niya: Iniwan ni Sakay ang kanyang hanapbuhay upang sumapi sa Katipunan. Inuna niya ang kapakanan ng bayan kaysa sa sariling ginhawa.
+             (pair 9, what he gave up)
+    x 12700  ground
+  + [PAGE] Kilusan ng bayan: Karaniwang manggagawa ang marami sa mga Katipunero, gaya ni Sakay. Isa itong kilusang nag-ugat sa karaniwang mamamayan.
+             (pair 10, who the Katipunan were)
+
+What the card and the Kuwaderno say around the pages:
+
+  + Kuwaderno (hint, until every page is found): May mga pahinang nakakalat sa daan. Ang iba, kailangan mong talunin.
+  + Card, under a page: Naidagdag sa iyong Kuwaderno. Buksan ito sa pause.
+  + Card, under the last page: Nabuo mo ang Kuwaderno! Ngayon, kilala mo na kung sino ang batang ito paglaki.
+
 ## Threads left open
 
 What the story has set up and not yet paid off, for whoever writes the
@@ -484,3 +537,7 @@ next passage. None of these is a promise; they are what is there.
       opening card against Sakay's birth year in it.
     What the direktor pays (79 to 110 at random, the proponents' own
       numbers from Block 56).
+    The notebook (Block 64): keep the pages, move their facts into the
+      story as it reaches them, or drop them. They are the only place
+      Act I states anything the pre-test and post-test ask, and they
+      are optional, so a student can finish without reading one.

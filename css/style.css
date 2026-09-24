@@ -3612,3 +3612,295 @@ body.text-lg .intertitle-line { font-size: 36px; }
 #shell-loading .shell-loadbar-full {
   opacity: 1;
 }
+
+/* =============================================================
+   DUST (Block 63)
+
+   A puff where Macario breaks into a run, on each running stride, at
+   take-off and on landing (game.js, spawnDust). A pool of six elements
+   reused, and only transform and opacity animate, so the compositor
+   does the work and the game loop writes nothing between puffs. Two
+   identical animations, dust-a and dust-b, so a reused element restarts
+   by swapping names rather than by forcing a layout.
+
+   Pixel dust: four square clouds drawn with box-shadow off one 12px
+   square, in the road's own dry-earth colours. Behind Macario
+   (z-index 0 against #player's 1).
+   ============================================================= */
+.dust {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: #d9c29a;
+  box-shadow:
+    -14px -2px 0 2px #cdb58b,
+    14px -2px 0 0 #e3d2b0,
+    -2px -14px 0 0 #e8dcc2,
+    6px -10px 0 -2px #cdb58b;
+  will-change: transform, opacity;
+}
+
+.dust.dust-a { animation: dust-a 0.42s steps(6) forwards; }
+.dust.dust-b { animation: dust-b 0.42s steps(6) forwards; }
+
+/* Size by what raised it: a stride is a scuff, a landing a thump. Set
+   with the separate scale property, which composes with the animated
+   transform, so the keyframes themselves read no custom property: a
+   keyframe that reads var() cannot leave the main thread (Block 54). A
+   negative x scale mirrors the drift, so the puff trails behind him
+   whichever way he runs. */
+.dust-stride { scale: 0.8; }
+.dust-start  { scale: 1.3; }
+.dust-jump   { scale: 1.1; }
+.dust-land   { scale: 1.6; }
+.dust-left.dust-stride { scale: -0.8 0.8; }
+.dust-left.dust-start  { scale: -1.3 1.3; }
+.dust-left.dust-jump   { scale: -1.1 1.1; }
+.dust-left.dust-land   { scale: -1.6 1.6; }
+
+@keyframes dust-a {
+  0%   { opacity: 0.9; transform: translate(0, 0) scale(0.5); }
+  100% { opacity: 0;   transform: translate(-10px, -12px) scale(1); }
+}
+
+@keyframes dust-b {
+  0%   { opacity: 0.9; transform: translate(0, 0) scale(0.5); }
+  100% { opacity: 0;   transform: translate(-10px, -12px) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dust { display: none; }
+}
+
+/* =============================================================
+   THE NOTEBOOK (Block 64)
+
+   Pages to find on the road (.pickup-page), the card a page opens
+   (#page-card), and the notebook listed from the pause screen. The page
+   is drawn in CSS like the heart pickup: a small parchment sheet with
+   ink lines and a soft glint, bobbing on the same animation. The card
+   is a sheet of parchment on the game's dark window, so it reads as a
+   thing found rather than another menu.
+   ============================================================= */
+/* Drawn a little larger than PICKUP_SIZE (22), and shifted so its
+   middle stays over the point the engine measures reach from. */
+.pickup-page {
+  width: 28px;
+  height: 34px;
+  margin-left: -3px;
+  background:
+    linear-gradient(#6d5842, #6d5842) 6px 8px / 14px 3px no-repeat,
+    linear-gradient(#6d5842, #6d5842) 6px 15px / 14px 3px no-repeat,
+    linear-gradient(#6d5842, #6d5842) 6px 22px / 9px 3px no-repeat,
+    #f3e6c4;
+  border: 2px solid var(--px-ink);
+  box-sizing: border-box;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35), 0 0 12px 4px rgba(255, 236, 170, 0.55);
+}
+
+#page-card {
+  position: fixed;
+  inset: 0;
+  z-index: 92;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  background: rgba(18, 12, 7, 0.72);
+}
+
+#page-card.hidden {
+  display: none;
+}
+
+#page-card-box {
+  width: min(92vw, 540px);
+  max-height: 100%;
+  overflow-y: auto;
+  background: #f3e6c4;
+  color: #2b1d10;
+  border: 3px solid var(--px-ink);
+  box-shadow: var(--px-frame);
+  padding: 14px 20px 16px;
+  box-sizing: border-box;
+  text-align: center;
+  animation: page-card-in 0.28s steps(4);
+}
+
+@keyframes page-card-in {
+  from { transform: translateY(18px) scale(0.94); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+#page-card-eyebrow {
+  color: #7a5a2c;
+}
+
+#page-card-title {
+  color: #2b1d10;
+  margin: 4px 0 8px;
+}
+
+#page-card-text {
+  font-family: var(--px-font);
+  font-size: 22px;
+  line-height: 1.25;
+  margin: 0 0 8px;
+  text-align: left;
+}
+
+#page-card-note {
+  color: #5a3d26;
+  margin: 0 0 10px;
+  min-height: 0;
+}
+
+#page-card-note.page-card-complete {
+  color: #1b5e20;
+}
+
+body.text-sm #page-card-text { font-size: 19px; }
+body.text-lg #page-card-text { font-size: 27px; }
+
+.notebook-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0 4px 0 0;
+  list-style: none;
+}
+
+.notebook-entry {
+  border: 2px solid var(--c-border-muted);
+  background: rgba(var(--c-wood-light-rgb), 0.08);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  color: var(--c-cream-dim);
+}
+
+.notebook-entry.notebook-found {
+  border-color: var(--c-wood-light);
+  background: rgba(243, 230, 196, 0.08);
+  color: var(--c-cream);
+}
+
+.notebook-entry-title {
+  font-family: var(--px-font);
+  font-size: 20px;
+  color: inherit;
+}
+
+.notebook-found .notebook-entry-title {
+  color: var(--c-green);
+}
+
+.notebook-entry-text {
+  font-family: var(--px-font);
+  font-size: 18px;
+  line-height: 1.25;
+  margin-top: 2px;
+}
+
+body.text-sm .notebook-entry-title { font-size: 17px; }
+body.text-sm .notebook-entry-text { font-size: 16px; }
+body.text-lg .notebook-entry-title { font-size: 24px; }
+body.text-lg .notebook-entry-text { font-size: 22px; }
+
+@media (prefers-reduced-motion: reduce) {
+  #page-card-box { animation: none; }
+}
+
+/* =============================================================
+   THE APPLE GAME, WITH FEELING (Block 65)
+
+   A squash of the basket on a catch, a "+1" rising from it, a splat
+   where a missed apple lands, a golden apple in a timed round, and a
+   red clock for the last five seconds. Each is an animation on one
+   fixed element, restarted by swapping catch-anim-a for catch-anim-b
+   (game.js, replay) and moved by transform only. The basket's squash
+   uses the separate scale property, so it composes with the transform
+   that places the basket.
+   ============================================================= */
+#catch-basket.catch-anim-a { animation: catch-squash-a 0.22s steps(3); }
+#catch-basket.catch-anim-b { animation: catch-squash-b 0.22s steps(3); }
+
+@keyframes catch-squash-a {
+  0%   { scale: 1.18 0.78; }
+  60%  { scale: 0.94 1.08; }
+  100% { scale: 1 1; }
+}
+@keyframes catch-squash-b {
+  0%   { scale: 1.18 0.78; }
+  60%  { scale: 0.94 1.08; }
+  100% { scale: 1 1; }
+}
+
+#catch-pop {
+  position: absolute;
+  left: -16px;
+  bottom: 40px;
+  width: 32px;
+  text-align: center;
+  font-family: var(--px-title);
+  font-size: 12px;
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--px-ink);
+  opacity: 0;
+  pointer-events: none;
+}
+#catch-pop.catch-pop-golden { color: #ffd54f; font-size: 14px; }
+#catch-pop.catch-anim-a { animation: catch-pop-a 0.6s steps(6) forwards; }
+#catch-pop.catch-anim-b { animation: catch-pop-b 0.6s steps(6) forwards; }
+
+@keyframes catch-pop-a {
+  0%   { opacity: 1; translate: 0 0; }
+  100% { opacity: 0; translate: 0 -34px; }
+}
+@keyframes catch-pop-b {
+  0%   { opacity: 1; translate: 0 0; }
+  100% { opacity: 0; translate: 0 -34px; }
+}
+
+#catch-splat {
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  width: 26px;
+  height: 8px;
+  background: #b52a22;
+  box-shadow: -6px 2px 0 -1px #d8342a, 8px 1px 0 -2px #8e1d17;
+  opacity: 0;
+  pointer-events: none;
+}
+#catch-splat.catch-anim-a { animation: catch-splat-a 0.7s steps(5) forwards; }
+#catch-splat.catch-anim-b { animation: catch-splat-b 0.7s steps(5) forwards; }
+
+@keyframes catch-splat-a {
+  0%   { opacity: 1; scale: 0.4 1; }
+  30%  { opacity: 1; scale: 1.2 1; }
+  100% { opacity: 0; scale: 1 1; }
+}
+@keyframes catch-splat-b {
+  0%   { opacity: 1; scale: 0.4 1; }
+  30%  { opacity: 1; scale: 1.2 1; }
+  100% { opacity: 0; scale: 1 1; }
+}
+
+#catch-apple.catch-apple-golden {
+  background: radial-gradient(circle at 35% 35%, #fff3b0 0 4px, #f4c542 5px);
+  box-shadow: 0 0 10px 3px rgba(255, 213, 79, 0.7);
+}
+
+#catch-hint.catch-hurry { color: #ffb4b4; }
+#catch-result.catch-streak { color: #ffd54f; }
+
+@media (prefers-reduced-motion: reduce) {
+  #catch-basket.catch-anim-a, #catch-basket.catch-anim-b,
+  #catch-splat.catch-anim-a, #catch-splat.catch-anim-b { animation: none; }
+}

@@ -40,6 +40,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const PORT = 8099;
+const SPEED_FOR_TEST = 5; // game.js SPEED, the walk
 const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
 
 const MIME = {
@@ -5018,6 +5019,140 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("the fight ends a beat after the last one falls, not on the blow",
        end.right === false && end.later === true, end);
+    await ctx.close();
+  }
+
+  console.log("\nBE. Takbo, a forgiving jump, and dust (Block 63)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const walk = await page.evaluate(async () => {
+      loadScene("tondo"); // the fixture's tondo has no guard
+      posX = 200; posY = floorHeightAt(posX); velY = 0; onGround = true;
+      const x0 = posX;
+      keysPressed["d"] = true;
+      await new Promise((r) => setTimeout(r, 300));
+      const early = { dx: posX - x0, running: isRunning() };
+      await new Promise((r) => setTimeout(r, 900));
+      const x1 = posX;
+      await new Promise((r) => setTimeout(r, 300));
+      const late = { dx: posX - x1, running: isRunning(), blend: runBlend };
+      keysPressed["d"] = false;
+      await new Promise((r) => setTimeout(r, 60));
+      return { early, late, after: isRunning(),
+        dust: [...document.querySelectorAll(".dust")].map((d) => d.className) };
+    });
+    ok("a short hold is a walk", !walk.early.running && walk.early.dx > 0, walk.early);
+    ok("held longer, he breaks into a run, faster than a walk",
+       walk.late.running && walk.late.blend === 1 && walk.late.dx > 300 / 16.67 * SPEED_FOR_TEST * 1.3, walk.late);
+    ok("letting go drops the run at once", walk.after === false);
+    ok("running raises dust behind him from a small reused pool",
+       walk.dust.length === 6 && walk.dust.some((c) => /dust-(start|stride)/.test(c)), walk.dust);
+
+    const guarded = await page.evaluate(async () => {
+      loadScene("misyon"); // the fixture guard's scene
+      const g = GUARDS[0];
+      posX = Math.max(0, g.patrolFrom - 900); posY = floorHeightAt(posX); onGround = true;
+      keysPressed["a"] = true;
+      await new Promise((r) => setTimeout(r, 900));
+      const running = isRunning();
+      keysPressed["a"] = false;
+      return { running, guards: GUARDS.length };
+    });
+    ok("no run where a guard is watching", guarded.guards > 0 && guarded.running === false, guarded);
+
+    const coyote = await page.evaluate(() => {
+      loadScene("tondo");
+      posX = 200; posY = floorHeightAt(posX) + 5; onGround = false; velY = -1;
+      lastGroundedAt = performance.now() - 60;
+      handleJumpPress();
+      const late = velY;
+      velY = -1; onGround = false; lastGroundedAt = performance.now() - 400; jumpBufferedAt = 0;
+      handleJumpPress();
+      return { late, tooLate: velY, buffered: jumpBufferedAt > 0 };
+    });
+    ok("a jump a moment after leaving the ground still jumps", coyote.late === 14, coyote);
+    ok("a jump well after leaving it does not, but is remembered", coyote.tooLate === -1 && coyote.buffered, coyote);
+
+    const buffer = await page.evaluate(async () => {
+      posX = 200; posY = floorHeightAt(posX) + 40; velY = -6; onGround = false;
+      lastGroundedAt = 0;
+      handleJumpPress(); // in the air: remembered, not a double jump
+      const inAir = velY;
+      await new Promise((r) => setTimeout(r, 120));
+      return { inAir, afterLanding: velY > 5 || posY > floorHeightAt(posX) + 20,
+        land: [...document.querySelectorAll(".dust")].some((d) => /dust-(land|jump)/.test(d.className)) };
+    });
+    ok("a jump pressed just before landing happens on the landing", buffer.inAir <= 0 && buffer.afterLanding, buffer);
+    ok("landing and taking off raise dust", buffer.land, buffer);
+
+    const noDouble = await page.evaluate(async () => {
+      posX = 200; posY = floorHeightAt(posX); velY = 0; onGround = true;
+      handleJumpPress();
+      await new Promise((r) => setTimeout(r, 50));
+      const first = velY;
+      handleJumpPress();
+      return { first, second: velY };
+    });
+    ok("still no double jump", noDouble.second <= noDouble.first, noDouble);
+    await ctx.close();
+  }
+
+  console.log("\nBF. The apple game, with feeling: a timed round, golden apples, streaks (Block 65)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const round = await page.evaluate(async () => {
+      window.__asked = [];
+      const real = playSfx;
+      window.playSfx = (name) => { __asked.push(name); return real(name); };
+      // Every apple drops over the middle, where the basket starts, so
+      // each one is caught without touching the controls.
+      const rnd = Math.random;
+      Math.random = () => 0.5;
+      const seen = { golden: false, pop: false, squash: false, streak: false, clock: "" };
+      let doneWith = null;
+      const p = playCatchGame({ timeLimitMs: 9500, doneText: (n) => { doneWith = n; return "done " + n; } });
+      const t0 = performance.now();
+      while (performance.now() - t0 < 10200) {
+        await new Promise((r) => setTimeout(r, 40));
+        seen.golden = seen.golden || document.getElementById("catch-apple").classList.contains("catch-apple-golden");
+        seen.pop = seen.pop || /catch-anim/.test(document.getElementById("catch-pop").className);
+        seen.squash = seen.squash || /catch-anim/.test(document.getElementById("catch-basket").className);
+        seen.streak = seen.streak || /Sunod-sunod! x3/.test(document.getElementById("catch-result").textContent);
+        if (!seen.clock) seen.clock = document.getElementById("catch-hint").textContent;
+      }
+      Math.random = rnd;
+      const result = document.getElementById("catch-result").textContent;
+      const hint = document.getElementById("catch-hint").textContent;
+      document.getElementById("catch-stop").click();
+      const count = await p;
+      return { seen, result, hint, count, doneWith, asked: __asked.slice() };
+    });
+    ok("a timed round shows its clock and count", /^Oras: \d+  ·  Nasalo: \d+$/.test(round.seen.clock), round.seen);
+    ok("apples keep coming until the time is up, then it says so",
+       round.hint === "Tapos na ang oras!" && round.result === "done " + round.count && round.doneWith === round.count, round);
+    ok("a catch squashes the basket and raises a +1", round.seen.pop && round.seen.squash, round.seen);
+    ok("three in a row is a streak, with its own sound",
+       round.seen.streak && round.asked.includes("streak"), { seen: round.seen, asked: round.asked });
+    ok("every fifth apple of a timed round is golden and counts three",
+       round.seen.golden && round.count >= 7, round);
+
+    const miss = await page.evaluate(async () => {
+      const rnd = Math.random;
+      Math.random = () => 0; // far left, away from the basket
+      const p = playCatchGame({ goal: 3 });
+      let splat = false;
+      const t0 = performance.now();
+      while (performance.now() - t0 < 2600 && !splat) {
+        await new Promise((r) => setTimeout(r, 40));
+        splat = /catch-anim/.test(document.getElementById("catch-splat").className);
+      }
+      Math.random = rnd;
+      const result = document.getElementById("catch-result").textContent;
+      document.getElementById("catch-stop").click();
+      return { splat, result, count: await p };
+    });
+    ok("a missed apple splats where it lands, and costs nothing",
+       miss.splat && miss.count === 0 && /Nahulog/.test(miss.result), miss);
     await ctx.close();
   }
 

@@ -97,7 +97,10 @@ const Shell = {
         logout: document.getElementById("shell-logout-confirm"),
         reset: document.getElementById("shell-reset-confirm"),
         loading: document.getElementById("shell-loading"),
+        notebook: document.getElementById("shell-notebook-panel"),
       },
+      notebookBtn: document.getElementById("shell-notebook"),
+      notebookBack: document.getElementById("shell-notebook-back"),
       startBtn: document.getElementById("shell-start"),
       guestBtn: document.getElementById("shell-guest"),
       titleNote: document.getElementById("shell-title-note"),
@@ -149,6 +152,10 @@ const Shell = {
     this.el.pauseSettingsBtn.addEventListener("click", () =>
       this._openSettings("pause")
     );
+    if (this.el.notebookBtn) {
+      this.el.notebookBtn.addEventListener("click", () => this._openNotebook());
+      this.el.notebookBack.addEventListener("click", () => this._closeNotebook());
+    }
     this.el.logoutBtn.addEventListener("click", () =>
       this._showPanel("logout")
     );
@@ -247,6 +254,7 @@ const Shell = {
       if (this.state === "playing") this.openPause();
       else if (this.state === "paused") this.closePause();
       else if (this.state === "settings") this._closeSettings();
+      else if (this.state === "notebook") this._closeNotebook();
       else if (this.state === "inventory") this._closeInventory();
       else if (this.state === "shop") this._closeShop();
     });
@@ -461,6 +469,7 @@ const Shell = {
 
     this.state = "paused";
     Game.setUiBlocked(true);
+    this._refreshNotebookButton();
     this._showPanel("pause");
     this.el.overlay.classList.remove("hidden");
   },
@@ -518,6 +527,57 @@ const Shell = {
       li.textContent = text;
       list.appendChild(li);
     });
+  },
+
+  // -----------------------------------------------------------
+  // The notebook (Block 64)
+  // -----------------------------------------------------------
+
+  // Shown only for an act that has a notebook, with how many pages are
+  // found on the button itself, so the pause screen is where a student
+  // notices there is something to look for.
+  _refreshNotebookButton() {
+    const btn = this.el.notebookBtn;
+    if (!btn) return;
+    const book = window.Game && Game.notebook ? Game.notebook() : null;
+    btn.classList.toggle("hidden", !book);
+    if (book) setLabel(btn, (book.title || "Kuwaderno") + " " + book.found + "/" + book.total);
+  },
+
+  _openNotebook() {
+    if (this.state !== "paused") return;
+    const book = window.Game && Game.notebook ? Game.notebook() : null;
+    if (!book) return;
+    document.getElementById("shell-notebook-title").textContent = book.title || "Kuwaderno";
+    document.getElementById("shell-notebook-count").textContent = book.found + " / " + book.total;
+    document.getElementById("shell-notebook-hint").textContent =
+      book.found === book.total ? "" : book.hint;
+    const list = document.getElementById("shell-notebook-list");
+    list.innerHTML = "";
+    // Written as text, never HTML, like every other line from content.
+    book.entries.forEach((entry) => {
+      const li = document.createElement("li");
+      li.className = "notebook-entry" + (entry.found ? " notebook-found" : "");
+      const head = document.createElement("div");
+      head.className = "notebook-entry-title";
+      head.textContent = entry.n + ". " + (entry.found ? entry.title : "? ? ?");
+      li.appendChild(head);
+      if (entry.found) {
+        const text = document.createElement("div");
+        text.className = "notebook-entry-text";
+        text.textContent = entry.text;
+        li.appendChild(text);
+      }
+      list.appendChild(li);
+    });
+    this.state = "notebook";
+    this._showPanel("notebook");
+  },
+
+  _closeNotebook() {
+    if (this.state !== "notebook") return;
+    this.state = "paused";
+    this._showPanel("pause");
   },
 
   _closeSettings() {
@@ -1274,7 +1334,8 @@ const Shell = {
     // width a phone held sideways actually has; every other panel is a
     // single column of buttons and keeps the narrow box.
     if (this.el.box) {
-      this.el.box.classList.toggle("shell-box-wide", name === "inventory" || name === "shop");
+      this.el.box.classList.toggle("shell-box-wide",
+        name === "inventory" || name === "shop" || name === "notebook");
     }
   },
 

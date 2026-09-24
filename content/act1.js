@@ -436,8 +436,38 @@ function applesHeld() {
   return APPLE_FLAGS.filter((f) => state.flags[f]).length;
 }
 
+// Block 65. PLACEHOLDER. Once the horse is fed the tree is a game of its
+// own: thirty seconds, as many as he can catch, golden apples worth
+// three, and his best kept in a flag as a number (as Block 56 kept pay).
+// Nothing is paid and nothing waits on it.
+const APPLE_ROUND_MS = 30000;
+const APPLE_BEST_FLAG = "rekordSaMansanas";
+
+function appleRound() {
+  const best = Number(state.flags[APPLE_BEST_FLAG]) || 0;
+  playCatchGame({
+    title: "Puno ng mansanas",
+    hint: best ? "Ilan ang masasalo mo sa loob ng 30 segundo? Rekord mo: " + best + "."
+               : "Ilan ang masasalo mo sa loob ng 30 segundo?",
+    timeLimitMs: APPLE_ROUND_MS,
+    missText: "Sayang!",
+    doneText(n) {
+      if (n > best) {
+        state.flags[APPLE_BEST_FLAG] = n;
+        markDirty();
+        return best ? "Bagong rekord: " + n + "!" : "Nakasalo ka ng " + n + "!";
+      }
+      return "Nakasalo ka ng " + n + ". Rekord mo: " + best + ".";
+    },
+  });
+}
+
 function pickApples() {
-  if (!state.flags.nakausapAngKutsero || state.flags.napakainAngKabayo) {
+  if (state.flags.napakainAngKabayo) {
+    appleRound();
+    return;
+  }
+  if (!state.flags.nakausapAngKutsero) {
     playDialogue([{ speaker: "Macario (sa isip)", text: "Ang daming bunga ng punong ito." }]);
     return;
   }
@@ -464,6 +494,55 @@ function payForJob() {
   Game.addCurrency(JOB_PAY);
   showToast("+" + JOB_PAY + " barya", 2200);
 }
+
+// ---- The notebook (Block 64) ----------------------------------------
+// PLACEHOLDER, all of it: ours, to be accepted, rewritten or removed by
+// the proponents. Ten pages lie along the street, one for each of the
+// ten matched pairs in the Act I item bank (db/seeds/macario_items_v3.sql),
+// and each says the thing that pair's correct answer commits to, and
+// nothing further: that is the whole of their authority, the same rule
+// CLAUDE.md sets for every historical fact in this file. The story is
+// in 1880 and says none of it yet (TRACKER.md, Next action, 2); the
+// pages are how a student who explores meets it now, outside the story,
+// as pages from a history of the man the boy on screen becomes.
+//
+// Optional: nothing in the chain waits on a page. Every other one sits
+// at jump height, so Talon has a use on a street with no platforms. Each
+// is at least 90 clear of a join (multiples of PANEL) and of anyone to
+// talk to, and past the opening's walk, so none is found mid-cutscene.
+const PAGE_HIGH = 155; // GROUND_LEVEL + 95: out of reach without a jump
+const NOTEBOOK_PAGES = [
+  { id: "tondo", x: 2500,
+    title: "Anak ng Tondo",
+    text: "Si Macario Sakay ay lumaki sa Tondo, Maynila. Sa mga kalyeng tulad nito siya nagkaisip." },
+  { id: "hanapbuhay", x: 3950, y: PAGE_HIGH,
+    title: "Mananahi at barbero",
+    text: "Bago ang himagsikan, naghanapbuhay si Sakay bilang mananahi at barbero, isang karaniwang manggagawa." },
+  { id: "komedya", x: 5300,
+    title: "Ang moro-moro",
+    text: "Mahilig sa teatro si Sakay. Madalas siyang umarte sa komedya, o moro-moro, noong kabataan niya." },
+  { id: "entablado", x: 6050, y: PAGE_HIGH,
+    title: "Ang natutunan sa entablado",
+    text: "Sa entablado nasanay si Sakay na magsalita sa harap ng maraming tao. Nahasa ang kanyang tinig at tapang na humarap sa madla." },
+  { id: "katipunan", x: 7000,
+    title: "1894",
+    text: "Noong 1894, sumapi si Macario Sakay sa Katipunan, isang lihim na samahan." },
+  { id: "layunin", x: 8200, y: PAGE_HIGH,
+    title: "Ang layunin ng Katipunan",
+    text: "Hindi reporma ang hangad ng Katipunan kundi ganap na kalayaan mula sa Espanya, sa pamamagitan ng himagsikan." },
+  { id: "lihim", x: 9800,
+    title: "Bakit lihim",
+    text: "Ipinagbabawal ang Katipunan. Ang mahuhuling kasapi ay parurusahan ng mga awtoridad, kaya lihim ang kanilang pagkakakilanlan at mga pagpupulong." },
+  { id: "tagapaghatid", x: 10700, y: PAGE_HIGH,
+    title: "Ang mga tagapaghatid",
+    text: "Mahalaga sa lihim na kilusan ang mga tagapaghatid ng mensahe. Dala nila ang balita nang hindi nabubunyag ang samahan. Kapag nahuli ang isa, malalantad ang buong kilusan." },
+  { id: "sakripisyo", x: 12200, y: PAGE_HIGH,
+    title: "Ang iniwan niya",
+    text: "Iniwan ni Sakay ang kanyang hanapbuhay upang sumapi sa Katipunan. Inuna niya ang kapakanan ng bayan kaysa sa sariling ginhawa." },
+  { id: "bayan", x: 12700,
+    title: "Kilusan ng bayan",
+    text: "Karaniwang manggagawa ang marami sa mga Katipunero, gaya ni Sakay. Isa itong kilusang nag-ugat sa karaniwang mamamayan." },
+];
 
 window.ACT_1 = {
   number: 1,
@@ -520,6 +599,17 @@ window.ACT_1 = {
   // The chain is the quest log, so there is nothing to add at the start.
   startingQuests: [],
 
+  // Block 64. The notebook the pages fill (game.js, THE NOTEBOOK).
+  // PLACEHOLDER, like the pages.
+  notebook: {
+    title: "Kuwaderno",
+    pageLabel: "Pahina ng Kasaysayan",
+    hint: "May mga pahinang nakakalat sa daan. Ang iba, kailangan mong talunin.",
+    foundText: "Naidagdag sa iyong Kuwaderno. Buksan ito sa pause.",
+    completeText: "Nabuo mo ang Kuwaderno! Ngayon, kilala mo na kung sino ang batang ito paglaki.",
+    entries: NOTEBOOK_PAGES.map((p) => ({ id: p.id, flag: "pahina_" + p.id, title: p.title, text: p.text })),
+  },
+
   // Where to go next (Block 42). Later steps first.
   guide: [
     { scene: "tondo", requiresFlag: "nabayaranNgMananahi", unlessFlag: "naibigayAngIponKayNanay",
@@ -557,6 +647,10 @@ window.ACT_1 = {
       panels: STREET_PANELS,
       panelSky: STREET_SKY,
       startX: STREET_SPOT,
+      // Block 64. The notebook's pages.
+      pickups: NOTEBOOK_PAGES.map((p) => ({
+        id: "pahina-" + p.id, type: "page", entry: p.id, x: p.x, y: p.y,
+      })),
       decorations: [
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1] },
