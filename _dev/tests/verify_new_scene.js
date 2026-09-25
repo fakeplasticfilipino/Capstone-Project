@@ -133,6 +133,26 @@ const panels = (page) => page.evaluate(async () => {
 });
 
 
+// Block 68. Sits whatever the quiz overlay puts up (the trivia card,
+// then the pre-test's questions), always answering the first choice.
+const sitTests = async (page) => {
+  const seen = { trivia: false, triviaText: "", questions: 0 };
+  for (let i = 0; i < 40; i++) {
+    const st = await page.evaluate(() => ({
+      up: !document.getElementById("quiz").classList.contains("hidden"),
+      eyebrow: document.getElementById("quiz-eyebrow").textContent,
+      body: document.getElementById("quiz-question").textContent,
+      choices: document.querySelectorAll(".quiz-choice").length,
+    }));
+    if (!st.up) { if (i > 2) break; await page.waitForTimeout(200); continue; }
+    if (/Alam mo ba/.test(st.eyebrow)) { seen.trivia = true; seen.triviaText = st.body; }
+    if (st.choices) { seen.questions++; await page.click(".quiz-choice"); }
+    await page.click("#quiz-btn");
+    await page.waitForTimeout(150);
+  }
+  return seen;
+};
+
 const line = (page) => page.evaluate(() =>
   dialogueBox.classList.contains("hidden") ? null : dialogueSpeaker.textContent + ": " + dialogueText.textContent);
 
@@ -351,10 +371,12 @@ const storyDrift = () => {
   await page.fill("#auth-password", "x");
   await page.click("#auth-submit");
   await page.waitForTimeout(600);
-  if (await page.locator("#quiz").isVisible().catch(() => false)) {
-    await page.click("#quiz-btn");
-    await page.waitForTimeout(400);
-  }
+  const sat = await sitTests(page);
+  ok("a new student meets the built-in trivia card and the ten-question pre-test (Block 68)",
+     sat.trivia && /Macario Sakay/.test(sat.triviaText) && sat.questions === 10, sat);
+  const pre = await page.evaluate(() => __DB.assessment_scores.map((r) => ({ t: r.test_type, s: r.score, m: r.max_score })));
+  ok("the game grades the pre-test itself and records the score",
+     pre.length === 1 && pre[0].t === "pre" && pre[0].m === 10, pre);
   ok("act status is playing", (await page.evaluate(() => Acts.status)) === "playing");
   ok("Act I has nine objectives, pays no barya per step, and is held open",
      await page.evaluate(() => Acts.objectivesFor(1).length === 9 && Acts.perObjective(2) === 0 &&
@@ -734,121 +756,117 @@ const storyDrift = () => {
   await r.ctx.close();
 
   // ---------------------------------------------------------------
-  // Block 64. The notebook: ten pages on the street, outside the story.
+  // Block 68. The Talaan: words earned by doing things, and three hints
+  // at random spots. (Block 64's ten fact pages are gone.)
   // ---------------------------------------------------------------
-  console.log("\nThe notebook");
-  r = await resume("tondo", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true });
+  console.log("\nThe Talaan");
+  const afterOpening = { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true };
+  r = await resume("tondo", Object.assign({}, afterOpening));
   await r.page.waitForTimeout(400);
-  const nb0 = await r.page.evaluate(() => {
-    const pages = PICKUPS.filter((p) => p.type === "page");
+  const tl0 = await r.page.evaluate(() => {
+    const hints = PICKUPS.filter((p) => p.type === "hint");
     const joins = panelJoins(currentScene);
     const clash = [];
-    pages.forEach((p) => {
-      joins.forEach((j) => { if (Math.abs(p.x + PICKUP_SIZE / 2 - j) < 90) clash.push(p.id + " by join " + j); });
-      NPCS.forEach((n) => { if (p.x + PICKUP_SIZE > n.x - 60 && p.x < n.x + NPC_WIDTH + 60) clash.push(p.id + " by " + n.id); });
+    currentScene.hintSpots.forEach((spot) => {
+      const x = typeof spot === "number" ? spot : spot.x;
+      joins.forEach((j) => { if (Math.abs(x + PICKUP_SIZE / 2 - j) < 90) clash.push(x + " by join " + j); });
+      NPCS.forEach((n) => { if (x + PICKUP_SIZE > n.x - 60 && x < n.x + NPC_WIDTH + 60) clash.push(x + " by " + n.id); });
     });
-    return { book: Game.notebook(), pages: pages.length, drawn: document.querySelectorAll(".pickup-page").length,
-      high: pages.filter((p) => typeof p.y === "number" && p.y - GROUND_LEVEL > PICKUP_REACH).length,
-      first: Math.min(...pages.map((p) => p.x)), clash };
+    return { book: Game.glossary(), hints: hints.map((h) => ({ x: h.x, hint: h.hint })),
+      drawn: document.querySelectorAll(".pickup-page").length, seed: state.flags.__hintSeed,
+      noPages: !PICKUPS.some((p) => p.type === "page"), clash,
+      first: Math.min(...currentScene.hintSpots.map((s) => typeof s === "number" ? s : s.x)) };
   });
-  ok("ten pages lie on the street, none found yet, half of them at jump height",
-     nb0.book && nb0.book.total === 10 && nb0.book.found === 0 && nb0.pages === 10 && nb0.drawn === 10 && nb0.high === 5, nb0);
-  ok("each page clear of every join and everyone to talk to", nb0.clash.length === 0, nb0.clash);
-  ok("and none on the opening's walk (it ends at 1880)", nb0.first > 1880 + 200, nb0.first);
-  ok("the notebook hides a page's text until it is found",
-     nb0.book.entries.every((e) => !e.found && e.text === "" && e.title === ""), nb0.book.entries[0]);
+  ok("no fact pages any more; three hints lie on the street, from a seed kept in the save",
+     tl0.noPages && tl0.hints.length === 3 && tl0.drawn === 3 && typeof tl0.seed === "number" &&
+     new Set(tl0.hints.map((h) => h.hint)).size === 3, tl0);
+  ok("every spot a hint may lie is clear of the joins and of everyone", tl0.clash.length === 0, tl0.clash);
+  ok("and none on the opening's walk (it ends at 1880)", tl0.first > 1880 + 200, tl0.first);
+  ok("the Talaan has ten words, none earned by a save from before Block 68",
+     tl0.book && tl0.book.total === 10 && tl0.book.found === 0 && tl0.book.hints.total === 3 && tl0.book.hints.found === 0, tl0.book);
 
-  // A page on the ground: walking over it opens its card.
-  const nb1 = await r.page.evaluate(async () => {
+  const seedFlagsTl = await r.page.evaluate(() => Object.assign({}, state.flags));
+  await r.ctx.close();
+  r = await resume("tondo", seedFlagsTl);
+  await r.page.waitForTimeout(400);
+  const tl1 = await r.page.evaluate(() => PICKUPS.filter((p) => p.type === "hint").map((h) => ({ x: h.x, hint: h.hint })));
+  ok("the same student finds the same three hints in the same places after a reload",
+     JSON.stringify(tl1) === JSON.stringify(tl0.hints), { before: tl0.hints, after: tl1 });
+
+  const tl2 = await r.page.evaluate(async () => {
     window.__asked = [];
     const real = playSfx;
     window.playSfx = (name) => { __asked.push(name); return real(name); };
-    posX = 2400; posY = floorHeightAt(posX); onGround = true;
-    keysPressed["d"] = true;
-    for (let i = 0; i < 60 && document.getElementById("page-card").classList.contains("hidden"); i++) {
-      await new Promise((res) => setTimeout(res, 50));
+    const h = PICKUPS.find((p) => p.type === "hint");
+    posX = h.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2;
+    posY = typeof h.y === "number" ? h.y : floorHeightAt(posX); velY = 0; onGround = typeof h.y !== "number";
+    for (let i = 0; i < 40 && document.getElementById("page-card").classList.contains("hidden"); i++) {
+      await new Promise((res) => setTimeout(res, 40));
     }
-    keysPressed["d"] = false;
     return { card: !document.getElementById("page-card").classList.contains("hidden"),
       eyebrow: document.getElementById("page-card-eyebrow").textContent,
       title: document.getElementById("page-card-title").textContent,
-      blocked: uiBlocked, flag: state.flags.pahina_tondo === true, asked: __asked.slice(),
-      gone: !document.getElementById("pickup-pahina-tondo") };
+      text: document.getElementById("page-card-text").textContent,
+      flag: state.flags["pahiwatig_" + h.hint] === true, asked: __asked.slice(),
+      pool: ACT_1.hints.pool[h.hint] };
   });
-  ok("walking over a page opens it: which page, its title, and it is saved",
-     nb1.card && nb1.eyebrow === "Pahina ng Kasaysayan 1 / 10" && nb1.title === "Anak ng Tondo" &&
-     nb1.flag && nb1.gone && nb1.asked.includes("page"), nb1);
-  ok("the world stops while it is read", nb1.blocked === true);
-  // A key held as the page is reached does not close it unread: only
-  // one pressed a moment after it opened does.
+  ok("reaching a hint opens it: Pahiwatig 1 / 3, its title and text, saved",
+     tl2.card && tl2.eyebrow === "Pahiwatig 1 / 3" && tl2.title === tl2.pool.title && tl2.text === tl2.pool.text &&
+     tl2.flag && tl2.asked.includes("page"), tl2);
   await r.page.waitForTimeout(350);
   await r.page.keyboard.press(" ");
   await r.page.waitForTimeout(150);
-  const nb2 = await r.page.evaluate(() => ({ card: !document.getElementById("page-card").classList.contains("hidden"),
-    blocked: uiBlocked, jumped: velY > 0 }));
-  ok("Space closes it, and does not also jump", !nb2.card && !nb2.blocked && !nb2.jumped, nb2);
+  ok("Space closes it, and does not also jump", await r.page.evaluate(() =>
+    document.getElementById("page-card").classList.contains("hidden") && !uiBlocked && velY <= 0));
 
-  // A page at jump height: passed under, it stays; jumped for, it is taken.
-  const nb3 = await r.page.evaluate(async () => {
-    const p = PICKUPS.find((q) => q.id === "pahina-hanapbuhay");
-    posX = p.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2; posY = floorHeightAt(posX); onGround = true; velY = 0;
-    await new Promise((res) => setTimeout(res, 200));
-    const under = state.flags.pahina_hanapbuhay === true;
-    handleJumpPress();
-    for (let i = 0; i < 30 && !state.flags.pahina_hanapbuhay; i++) await new Promise((res) => setTimeout(res, 40));
-    return { under, jumped: state.flags.pahina_hanapbuhay === true,
-      eyebrow: document.getElementById("page-card-eyebrow").textContent };
-  });
-  ok("a page at jump height is not taken by walking under it", nb3.under === false, nb3);
-  ok("and is taken with a jump", nb3.jumped && nb3.eyebrow === "Pahina ng Kasaysayan 2 / 10", nb3);
-  await r.page.click("#page-card-close");
-  await r.page.waitForTimeout(150);
+  // Words, earned by doing things: the Kutsero's first conversation.
+  await walkTo(r.page, 3300 - 100);
+  await r.page.evaluate(() => { window.__asked = []; });
+  await r.page.keyboard.press("e");
+  const kcTl = await readConversation(r.page, 8);
+  await r.page.waitForTimeout(300);
+  const tl3 = await r.page.evaluate(() => ({ flag: state.flags.salita_kutsero === true,
+    toast: document.getElementById("toast").textContent, asked: __asked.slice(), book: Game.glossary() }));
+  ok("talking to the Kutsero earns the word Kutsero, with a sound and a toast",
+     kcTl.lines.length > 0 && tl3.flag && tl3.asked.includes("page") && tl3.book.found === 1, tl3);
 
-  // The Kuwaderno, from pause.
   await r.page.keyboard.press("Escape");
   await r.page.waitForTimeout(200);
-  const nb4 = await r.page.evaluate(() => ({
-    btn: document.querySelector("#shell-notebook .lbl").textContent,
-    shown: !document.getElementById("shell-notebook").classList.contains("hidden") }));
-  ok("the pause screen offers the Kuwaderno with its count", nb4.shown && nb4.btn === "Kuwaderno 2/10", nb4);
+  ok("the pause screen offers the Talaan with its count",
+     (await r.page.evaluate(() => document.querySelector("#shell-notebook .lbl").textContent)) === "Talaan 1/10");
   await r.page.click("#shell-notebook");
   await r.page.waitForTimeout(200);
-  const nb5 = await r.page.evaluate(() => ({
-    items: [...document.querySelectorAll("#shell-notebook-list li")].map((li) => li.textContent),
-    count: document.getElementById("shell-notebook-count").textContent }));
-  ok("the Kuwaderno lists every page, the found ones in full and the rest as ? ? ?",
-     nb5.items.length === 10 && /^1\. Anak ng Tondo.*Tondo, Maynila/.test(nb5.items[0]) &&
-     /^2\. Mananahi at barbero/.test(nb5.items[1]) && nb5.items[2] === "3. ? ? ?" && nb5.count === "2 / 10", nb5);
+  const tl4 = await r.page.evaluate(() => [...document.querySelectorAll("#shell-notebook-list li")].map((li) => li.textContent));
+  ok("the Talaan lists the hint found, the two still hidden, and the words, earned ones in full",
+     /^Pahiwatig 1\/3/.test(tl4[0]) && /^1\. /.test(tl4[1]) && /2 pang nakatagong pahiwatig/.test(tl4[2]) &&
+     /^Mga Salita 1\/10/.test(tl4[3]) && tl4.some((x) => /^Kutsero.*kalesa/.test(x)) &&
+     tl4.filter((x) => x === "? ? ?").length === 9, tl4);
   await r.page.keyboard.press("Escape");
-  await r.page.waitForTimeout(150);
-  ok("Escape goes back to pause", await r.page.evaluate(() => Shell.state === "paused"));
   await r.page.keyboard.press("Escape");
   await r.page.waitForTimeout(150);
 
-  // The last page completes it.
-  const nb6 = await r.page.evaluate(async () => {
+  const tl5 = await r.page.evaluate(async () => {
     __asked = [];
-    for (const p of PICKUPS.filter((q) => q.type === "page" && !pickupTaken(q))) {
-      posX = p.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2;
-      posY = (typeof p.y === "number" ? p.y : floorHeightAt(posX)); velY = 0; onGround = false;
-      for (let i = 0; i < 20 && !pickupTaken(p); i++) await new Promise((res) => setTimeout(res, 30));
+    for (const h of PICKUPS.filter((p) => p.type === "hint" && !pickupTaken(p))) {
+      posX = h.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2;
+      posY = typeof h.y === "number" ? h.y : floorHeightAt(posX); velY = 0; onGround = false;
+      for (let i = 0; i < 20 && !pickupTaken(h); i++) await new Promise((res) => setTimeout(res, 30));
       document.getElementById("page-card-close").click();
       await new Promise((res) => setTimeout(res, 30));
     }
-    return { book: Game.notebook(), last: __asked[__asked.length - 1],
+    return { book: Game.glossary(), last: __asked[__asked.length - 1],
       note: document.getElementById("page-card-note").textContent };
   });
-  ok("finding the tenth page fills the Kuwaderno, with a flourish",
-     nb6.book.found === 10 && nb6.last === "fanfare" && /Nabuo mo ang Kuwaderno/.test(nb6.note), nb6);
-  const kept = await r.page.evaluate(() => Object.assign({}, state.flags));
+  ok("the third hint completes them, with a flourish",
+     tl5.book.hints.found === 3 && tl5.last === "fanfare" && /lahat ng pahiwatig/.test(tl5.note), tl5);
+  const keptTl = await r.page.evaluate(() => Object.assign({}, state.flags));
   await r.ctx.close();
 
-  r = await resume("tondo", kept);
+  r = await resume("tondo", keptTl);
   await r.page.waitForTimeout(400);
-  const nb7 = await r.page.evaluate(() => ({ found: Game.notebook().found,
-    drawn: document.querySelectorAll(".pickup-page").length }));
-  ok("found pages stay found after a reload, and are not put back on the road",
-     nb7.found === 10 && nb7.drawn === 0, nb7);
+  const tl6 = await r.page.evaluate(() => ({ book: Game.glossary(), drawn: document.querySelectorAll(".pickup-page").length }));
+  ok("found hints and earned words stay after a reload, and no hint is put back on the road",
+     tl6.book.hints.found === 3 && tl6.book.found === 1 && tl6.drawn === 0, tl6);
   await r.ctx.close();
 
   // ---------------------------------------------------------------

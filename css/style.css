@@ -3975,3 +3975,43 @@ body.text-lg .notebook-entry-text { font-size: 22px; }
 @media (prefers-reduced-motion: reduce) {
   .float-text.float-a, .float-text.float-b { animation-timing-function: steps(1); }
 }
+
+/* =============================================================
+   THE TALAAN AND THE PASSWORD (Block 68)
+
+   Headings between the Talaan's two lists (hints, then words), and the
+   two password fields in settings, drawn like the login's inputs. The
+   inputs are 63px tall on a phone held sideways, the same 44px on glass
+   every other tappable thing clears.
+   ============================================================= */
+.notebook-heading {
+  font-family: var(--px-font);
+  font-size: 19px;
+  color: var(--c-green);
+  margin: 6px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.shell-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-family: var(--px-font);
+  font-size: 20px;
+  color: var(--c-cream);
+  border-radius: 0;
+  border: 3px solid var(--px-ink);
+  background: #1a110a;
+  box-shadow: inset 3px 3px 0 rgba(0, 0, 0, 0.45);
+}
+
+.shell-input:focus {
+  outline: 3px solid var(--px-green-hi);
+  outline-offset: 0;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .shell-input { min-height: 63px; }
+}

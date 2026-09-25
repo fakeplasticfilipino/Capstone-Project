@@ -12,21 +12,24 @@
 // before calling anything here, so the game runs without it, with
 // the act flow collapsing to playing then completed.
 //
-// SECURITY
-// The answer key never reaches this file. get_assessment_items is a
-// security definer function that returns id, item_order, question
-// and choices, and omits correct_index. Grading happens inside
-// submit_assessment. There is nothing in this file, or in anything
-// it holds in memory, that a student could read from developer
-// tools to find an answer. Do not "optimise" this by fetching the
-// items table directly; RLS blocks it anyway.
+// THE QUESTIONS ARE IN THE GAME (Block 68)
+// At the instructor's direction the answer key is no longer a secret.
+// The questions and their answers are read whole, from the
+// assessment_items table when the teacher has put questions there
+// (teacher.html, Mga Tanong) and from content/questions.js when it has
+// none or cannot be reached, and this file grades the test itself and
+// writes the score. Before Block 68 the key never left the database
+// (get_assessment_items and submit_assessment, schema v2); both
+// functions are still there and unused.
 //
-// ONE ATTEMPT
-// The database enforces one attempt per student per act per test
-// type, through a unique constraint and an explicit check that
-// raises ALREADY_SUBMITTED. That is not an error condition here.
-// A student who reloads the page after submitting should move on,
-// not be shown the test again and not be shown a failure.
+// ATTEMPTS
+// The pre-test is sat once: a student who reloads after it moves on.
+// The post-test has a pass mark (QUESTIONS[n].passing, 75% unless the
+// content says otherwise). A student below it is offered a replay of
+// the act and another try (acts.js, finishAct); every try is its own
+// row in assessment_scores, numbered by attempt, which needs schema
+// 006. Without 006 the first try of each test is still recorded as
+// before and a second is reported, not lost silently.
 // =============================================================
 
 const Assessment = {
@@ -145,6 +148,9 @@ const Assessment = {
       console.error("act_trivia read failed:", err);
     }
 
+    // Block 68. The built-in card when the database has none.
+    if (!fact) fact = this._bank(actNumber).trivia || null;
+
     if (!fact) {
       this._close();
       return;
@@ -161,125 +167,156 @@ const Assessment = {
 
   // -----------------------------------------------------------
   // Pre-test and post-test
+  //
+  // Resolves with { score, max, passed, attempt } for the try that
+  // counts (the one just sat, or an earlier one when there is nothing
+  // to sit), or null when the act has no questions. opts.retake lets a
+  // post-test be sat again after a failed one; acts.js sets it only
+  // after a replay of the act, so a reload cannot buy a free retry.
   // -----------------------------------------------------------
-  async runTest(actNumber, testType) {
+  DEFAULT_PASSING: 0.75,
+
+  _bank(actNumber) {
+    return (window.QUESTIONS && window.QUESTIONS[actNumber]) || {};
+  },
+
+  passingFor(actNumber) {
+    const p = Number(this._bank(actNumber).passing);
+    return p > 0 && p <= 1 ? p : this.DEFAULT_PASSING;
+  },
+
+  _result(actNumber, testType, row) {
+    const score = Number(row.score);
+    const max = Number(row.max_score);
+    return {
+      score, max, attempt: Number(row.attempt) || 1,
+      passed: testType !== "post" || (max > 0 && score / max >= this.passingFor(actNumber)),
+    };
+  },
+
+  async runTest(actNumber, testType, opts) {
     // Every public entry point caches its own elements. runTest used
     // to rely on runTrivia having run first, which held on a fresh
     // act and broke on resume: a student who reloaded during the
     // pre-test skipped the trivia card, so nothing had populated the
     // cache and the first render threw on an undefined element.
     this._cache();
+    opts = opts || {};
 
     const label =
       testType === "pre" ? "Panimulang Pagsusulit" : "Panapos na Pagsusulit";
 
-    // Check for an existing attempt BEFORE showing any questions.
-    //
-    // submit_assessment raises ALREADY_SUBMITTED and that is still
-    // the real guarantee, but discovering it at submit time means the
-    // student has already answered all five questions for nothing.
-    // A stale tab or a status left mid-write is enough to land here,
-    // and re-sitting a test that cannot be recorded is the kind of
-    // thing that gets reported as the app losing their answers.
-    const existing = await this._existingScore(actNumber, testType);
-    if (existing) {
-      await this._message({
-        eyebrow: label,
-        title: "Naipasa na",
-        body:
-          "Naipasa mo na ang pagsusulit na ito. Isang beses lang ito maaaring sagutan.",
-        note: "Iskor mo: " + existing.score + " ng " + existing.max_score + ".",
-        button: "Magpatuloy",
-      });
-      this._close();
-      return;
+    // Earlier tries, checked BEFORE any question is shown, so nobody
+    // answers ten questions that cannot be recorded.
+    const tries = await this._existingScores(actNumber, testType);
+    const last = tries.length ? tries[tries.length - 1] : null;
+
+    if (last) {
+      const earlier = this._result(actNumber, testType, last);
+      // A passed test, or a pre-test at all, is done. A failed
+      // post-test is sat again only when acts.js says the act was
+      // replayed; otherwise it goes back to acts.js to offer the replay.
+      if (earlier.passed || testType === "pre") {
+        await this._message({
+          eyebrow: label,
+          title: "Naipasa na",
+          body: testType === "pre"
+            ? "Nasagutan mo na ang pagsusulit na ito. Isang beses lang ito maaaring sagutan."
+            : "Nasagutan mo na ang pagsusulit na ito.",
+          note: "Iskor mo: " + earlier.score + " ng " + earlier.max + ".",
+          button: "Magpatuloy",
+        });
+        this._close();
+        return earlier;
+      }
+      if (!opts.retake) {
+        this._close();
+        return earlier;
+      }
     }
 
-    const items = await this._fetchItems(actNumber, testType, label);
+    const items = await this._loadItems(actNumber, testType, label);
 
-    // _fetchItems returns null when there is nothing to sit, having
+    // _loadItems returns null when there is nothing to sit, having
     // already told the student why.
     if (!items) {
       this._close();
-      return;
+      return null;
     }
 
     const answers = await this._askAll(items, label);
-    await this._submit(actNumber, testType, answers, label);
+    const result = await this._submit(actNumber, testType, items, answers, label, tries.length + 1);
     this._close();
+    return result;
   },
 
-  // Returns the student's own recorded score for this test, or null.
-  // Students have a select policy on their own rows; this reads no
-  // one else's data and cannot, because RLS scopes it to auth.uid().
+  // The student's own tries at this test, oldest first. Students have
+  // a select policy on their own rows, scoped by RLS to auth.uid().
   //
-  // A failure here is deliberately not surfaced. The worst case is
-  // that the student sits a test that then reports ALREADY_SUBMITTED,
-  // which is the behaviour this exists to improve on, not to replace.
-  async _existingScore(actNumber, testType) {
-    if (!currentUserId) return null;
+  // A failure here is deliberately not surfaced. The worst case is a
+  // try that is then refused when written, which _submit reports.
+  async _existingScores(actNumber, testType) {
+    if (!currentUserId) return [];
 
     try {
       const { data, error } = await sb
         .from("assessment_scores")
-        .select("score, max_score")
+        .select("*")
         .eq("student_id", currentUserId)
         .eq("act_number", actNumber)
-        .eq("test_type", testType)
-        .maybeSingle();
+        .eq("test_type", testType);
       if (error) throw error;
-      return data || null;
+      return (data || []).slice().sort((a, b) => (Number(a.attempt) || 1) - (Number(b.attempt) || 1));
     } catch (err) {
       console.error("assessment_scores read failed:", err);
-      return null;
+      return [];
     }
   },
 
-  async _fetchItems(actNumber, testType, label) {
-    for (;;) {
-      let data = null;
-      let failed = false;
-
-      try {
-        const res = await sb.rpc("get_assessment_items", {
-          p_act_number: actNumber,
-          p_test_type: testType,
-        });
-        if (res.error) throw res.error;
-        data = res.data;
-      } catch (err) {
-        console.error("get_assessment_items failed:", err);
-        failed = true;
-      }
-
-      if (failed) {
-        // Offer a retry rather than stranding the student. Anything
-        // that ends the flow here has to be a deliberate choice.
-        let retry = false;
-        await this._message({
-          eyebrow: label,
-          title: "Walang koneksyon",
-          body: "Hindi makuha ang mga tanong. Suriin ang iyong koneksyon.",
-          button: "Subukan Ulit",
-        }).then(() => (retry = true));
-        if (retry) continue;
-      }
-
-      if (!data || !data.length) {
-        // Acts II to IV have no seeded items yet. Skipping is the
-        // right call: an act should not be unreachable because a
-        // test that does not exist cannot be taken.
-        await this._message({
-          eyebrow: label,
-          title: "Walang pagsusulit",
-          body: "Wala pang tanong na nakahanda para sa yugtong ito.",
-          button: "Magpatuloy",
-        });
-        return null;
-      }
-
-      return data;
+  // The questions, with their answers: the teacher's, from the
+  // database, when there are any; else the built-in bank. A failed
+  // read falls back to the bank too, so a bad connection never stands
+  // between a student and a test (Block 68).
+  async _loadItems(actNumber, testType, label) {
+    let rows = null;
+    try {
+      const res = await sb
+        .from("assessment_items")
+        .select("id, item_order, question, choices, correct_index")
+        .eq("act_number", actNumber)
+        .eq("test_type", testType)
+        .order("item_order");
+      if (res.error) throw res.error;
+      rows = res.data;
+    } catch (err) {
+      console.error("assessment_items read failed, using the built-in questions:", err);
     }
+
+    let items = (rows || [])
+      .filter((r) => r && r.question && Array.isArray(r.choices) && r.choices.length)
+      .sort((a, b) => Number(a.item_order) - Number(b.item_order))
+      .map((r) => ({ id: String(r.id), question: r.question, choices: r.choices,
+                     correct: Number(r.correct_index) }));
+
+    if (!items.length) {
+      items = (this._bank(actNumber)[testType] || []).map((q, i) => ({
+        id: "q" + (i + 1), question: q.question, choices: q.choices, correct: Number(q.correct),
+      }));
+    }
+
+    if (!items.length) {
+      // Acts II to IV have no questions yet. Skipping is the right
+      // call: an act should not be unreachable because a test that
+      // does not exist cannot be taken.
+      await this._message({
+        eyebrow: label,
+        title: "Walang pagsusulit",
+        body: "Wala pang tanong na nakahanda para sa yugtong ito.",
+        button: "Magpatuloy",
+      });
+      return null;
+    }
+    return items;
   },
 
   // One question per screen. The target device is a low-end phone,
@@ -372,58 +409,60 @@ const Assessment = {
     });
   },
 
-  async _submit(actNumber, testType, answers, label) {
+  // Grades the answers against the key the items carry, writes the
+  // try, and shows the score. attempt 1 is written without the column,
+  // so a database that has not run schema 006 records a first try
+  // exactly as before.
+  async _submit(actNumber, testType, items, answers, label, attempt) {
+    const max = items.length;
+    const score = items.filter((it) => answers[it.id] === it.correct).length;
+    const row = {
+      student_id: currentUserId,
+      act_number: actNumber,
+      test_type: testType,
+      score,
+      max_score: max,
+    };
+    if (attempt > 1) row.attempt = attempt;
+    const result = this._result(actNumber, testType, Object.assign({ attempt }, row));
+
     for (;;) {
-      let result = null;
       let message = "";
-
+      let saved = false;
       try {
-        const res = await sb.rpc("submit_assessment", {
-          p_act_number: actNumber,
-          p_test_type: testType,
-          p_answers: answers,
-        });
-        if (res.error) throw res.error;
-        result = res.data;
+        const { error } = await sb.from("assessment_scores").insert(row);
+        if (error) throw error;
+        saved = true;
       } catch (err) {
-        message = (err && err.message) || "";
-        console.error("submit_assessment failed:", err);
+        message = ((err && (err.message || err.code)) || "") + "";
+        console.error("assessment_scores insert failed:", err);
       }
 
-      if (result) {
-        await this._message({
-          eyebrow: label,
-          title: "Tapos na",
-          body: "Iskor mo: " + result.score + " ng " + result.max_score + ".",
-          note:
-            testType === "pre"
-              ? "Simulan na natin ang yugto."
-              : "Ang iskor na ito ay maihahambing sa panimulang pagsusulit.",
-          button: "Magpatuloy",
-        });
-        return;
-      }
+      // A second try refused by a database still holding the old
+      // one-attempt rule (schema 006 not run), or a try already written
+      // from another tab. The score is shown; it is not stored again.
+      const refused = !saved && /duplicate|unique|23505|attempt/i.test(message);
 
-      // Expected, not a fault: the student submitted this test in an
-      // earlier session and then reloaded. Acknowledge and move on.
-      if (/ALREADY_SUBMITTED/i.test(message)) {
+      if (saved || refused) {
+        const pct = this.passingFor(actNumber);
+        let note;
+        if (testType === "pre") {
+          note = "Simulan na natin ang yugto.";
+        } else if (result.passed) {
+          note = "Pumasa ka! Ang iskor na ito ay maihahambing sa panimulang pagsusulit.";
+        } else {
+          note = "Kailangan ng " + Math.ceil(pct * max) + " na tamang sagot para pumasa.";
+        }
+        if (refused) note += " (Hindi na naitala ang subok na ito.)";
         await this._message({
-          eyebrow: label,
-          title: "Naipasa na",
-          body: "Naipasa mo na ang pagsusulit na ito. Isang beses lang ito maaaring sagutan.",
+          eyebrow: label + (attempt > 1 ? " · Subok " + attempt : ""),
+          title: testType === "pre" ? "Tapos na" : result.passed ? "Pumasa!" : "Hindi pumasa",
+          body: "Iskor mo: " + score + " ng " + max + ".",
+          note,
+          noteIsError: testType === "post" && !result.passed,
           button: "Magpatuloy",
         });
-        return;
-      }
-
-      if (/NO_ITEMS_CONFIGURED/i.test(message)) {
-        await this._message({
-          eyebrow: label,
-          title: "Walang pagsusulit",
-          body: "Wala pang tanong na nakahanda para sa yugtong ito.",
-          button: "Magpatuloy",
-        });
-        return;
+        return result;
       }
 
       // Anything else is probably the network. The answers are still
@@ -437,8 +476,32 @@ const Assessment = {
         noteIsError: true,
         button: "Subukan Ulit",
       }).then(() => (retry = true));
-      if (!retry) return;
+      if (!retry) return result;
     }
+  },
+
+  // Block 68. After a failed post-test: replay the act and try again,
+  // or finish with the score as it is. Resolves true for a replay.
+  // Both are offered as equals; finishing is not a punishment.
+  askReplay(actNumber, result) {
+    return new Promise((resolve) => {
+      this._cache();
+      const need = Math.ceil(this.passingFor(actNumber) * result.max);
+      this.el.eyebrow.textContent = "Panapos na Pagsusulit";
+      this.el.title.textContent = "Subukan ulit?";
+      this.el.progress.textContent = "";
+      this.el.question.textContent =
+        "Nakakuha ka ng " + result.score + " ng " + result.max + ". Kailangan ng " + need +
+        " para pumasa. Maaari mong ulitin ang yugto mula sa simula at sagutan muli ang pagsusulit.";
+      this.el.question.className = "centered";
+      this.el.choices.innerHTML = "";
+      this.el.note.textContent = "";
+      this.el.note.className = "";
+      this._onButton("Ulitin ang Yugto", () => { this._close(); resolve(true); }, "i-reset");
+      this._onBack(() => { this._close(); resolve(false); }, "i-check");
+      setLabel(this.el.back, "Tapusin na");
+      this._open();
+    });
   },
 };
 

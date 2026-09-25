@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACARIO — Dashboard ng Guro</title>
-  <link rel="stylesheet" href="css/teacher.css?v=2" />
+  <link rel="stylesheet" href="css/teacher.css?v=3" />
 </head>
 <body>
   <!-- Covers the page until the session and role are confirmed, so a
@@ -154,11 +154,52 @@
         <span class="spinner" aria-hidden="true"></span>
         Kinukuha ang datos...
       </div>
+
+      <!-- Block 68. The questions and answers of each test, and the trivia
+           card, editable by the teacher. Built by js/teacher-questions.js.
+           Saved to assessment_items and act_trivia (schema 006); the game
+           uses them in place of its built-in bank (content/questions.js). -->
+      <section id="qe" class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="section-title">Mga Tanong at Sagot</h2>
+            <p class="muted">Baguhin ang mga tanong ng pagsusulit, ang tamang sagot, at ang trivia bago ang pre-test.</p>
+          </div>
+          <div class="qe-pickers">
+            <label for="qe-act" class="sr-only">Act</label>
+            <select id="qe-act">
+              <option value="1">Act I</option>
+              <option value="2">Act II</option>
+              <option value="3">Act III</option>
+              <option value="4">Act IV</option>
+            </select>
+            <label for="qe-type" class="sr-only">Pagsusulit</label>
+            <select id="qe-type">
+              <option value="pre">Pre-test</option>
+              <option value="post">Post-test</option>
+              <option value="trivia">Trivia card</option>
+            </select>
+          </div>
+        </div>
+        <div class="qe-body">
+          <p id="qe-source" class="muted"></p>
+          <div id="qe-list"></div>
+          <div class="qe-actions">
+            <button id="qe-add" type="button" class="btn-secondary">+ Magdagdag ng tanong</button>
+            <button id="qe-defaults" type="button" class="btn-secondary">Ibalik ang nakahanda</button>
+            <button id="qe-save" type="button" class="btn-primary">I-save</button>
+          </div>
+          <p id="qe-status" class="qe-status"></p>
+          <p class="table-notes">Babala: ang pagbago ng mga tanong habang may mga mag-aaral nang nakasagot ay nakaaapekto sa paghahambing ng pre-test at post-test. Ang pre-test at post-test ay dapat magkapares: parehong paksa at hirap, magkaibang salita.</p>
+        </div>
+      </section>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
-  <script src="js/teacher.js?v=2"></script>
+  <script src="content/questions.js?v=1"></script>
+  <script src="js/teacher.js?v=3"></script>
+  <script src="js/teacher-questions.js?v=1"></script>
 </body>
 </html>

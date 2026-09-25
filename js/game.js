@@ -667,7 +667,7 @@ function loadScene(sceneId) {
   PLATFORMS = scene.platforms || [];
   HIDE_SPOTS = scene.hideSpots || [];
   HAZARDS = scene.hazards || [];
-  PICKUPS = scene.pickups || [];
+  PICKUPS = (scene.pickups || []).slice(); // Block 68: hints are added per student
   collectedPickups = new Set();
 
   // Same Tondo.png backdrop, desaturated. Lets content reuse the one
@@ -722,6 +722,7 @@ function loadScene(sceneId) {
   buildHideSpots();
   buildHazards();
   buildPickups();
+  buildHints(); // Block 68
   buildGuards(token);
 
   posX = typeof scene.startX === "number" ? scene.startX : 0;
@@ -2605,9 +2606,8 @@ function buildHazards() {
 // dashed placeholder box teaches nothing.
 function buildPickups() {
   PICKUPS.forEach((pickup) => {
-    // Block 64. A page once found stays found, across scenes and saves:
-    // its notebook entry's flag says so. A heart is per visit, as ever.
-    if (pickupTaken(pickup)) return;
+    // A heart is per visit. Hints are laid by buildHints (Block 68).
+    if (pickup.type === "hint") return;
     const el = document.createElement("div");
     el.className = "pickup pickup-" + (pickup.type || "heart");
     el.id = "pickup-" + pickup.id;
@@ -3181,8 +3181,8 @@ function updatePickups() {
     if (Math.abs(centre - (px + PICKUP_SIZE / 2)) > PICKUP_REACH) return;
     if (Math.abs(footY - py) > PICKUP_REACH) return;
 
-    // Block 64. A page is always taken, whatever his health.
-    if (pickup.type === "page") {
+    // Block 68. A hint is always taken, whatever his health.
+    if (pickup.type === "hint") {
       collectPage(pickup);
       return;
     }
@@ -3203,50 +3203,158 @@ function updatePickups() {
 }
 
 // =============================================================
-// THE NOTEBOOK (Block 64)
+// THE TALAAN: A GLOSSARY AND THREE HINTS (Block 68)
 //
-// Pages to find along the road, each carrying one thing about the man the
-// boy on screen grows up to be. The act declares the notebook (its title
-// and entries, each with its own flag) and places the pages as pickups
-// of type "page" that name an entry; the engine picks a page up, sets the
-// entry's flag, opens a card with what it says, and lists what has been
-// found for the pause screen (Game.notebook). What the entries say is
-// content's, exactly like dialogue: the engine never reads it.
+// Replaces Block 64's ten pages of facts, which the proponents did not
+// want. Two things a student collects, listed together on the pause
+// screen (Game.glossary, shell.js):
 //
-// A page is optional on purpose. Nothing in the chain waits on one, so
-// a student who walks past every page still finishes the act; one who
-// jumps for them is rewarded with the card, a sound, and a notebook that
-// fills. Kept in state.flags like every other thing a student has done,
-// so it survives a reload and the full reset clears it with the rest.
+//   Words. The act declares glossary.entries ({ id, term, text }), and
+//   content calls unlockGlossary(id) when the student does the thing
+//   the word belongs to (meets the Kutsero, is paid in barya, acts on
+//   the entablado). The entry's flag is "salita_" + id, so it survives
+//   a reload, and a replay of the act keeps it (acts.js, replayAct).
+//
+//   Hints, for the post-test. The act declares hints ({ count, pool }),
+//   and a scene lists the places one may lie (hintSpots, x or { x, y }).
+//   count of the spots, and count of the pool's hints, are picked at
+//   random for each student, from a seed kept in the save
+//   ("__hintSeed"), so they are different from one student to the next
+//   but stay put across reloads. A hint is a scroll on the road
+//   (pickup type "hint"); walking or jumping into it opens its card.
+//   Its flag is "pahiwatig_" + its index in the pool.
+//
+// The engine never reads what an entry or a hint says; content does.
 // =============================================================
 
-function notebookDef() {
-  return (currentActData && currentActData.notebook) || null;
+function glossaryDef() {
+  return (currentActData && currentActData.glossary) || null;
 }
 
-function notebookEntry(id) {
-  const def = notebookDef();
-  return def ? (def.entries || []).find((e) => e.id === id) || null : null;
+function hintsDef() {
+  return (currentActData && currentActData.hints) || null;
+}
+
+// Content calls this when the student has done the thing a word belongs
+// to. Once only; a word already in the Talaan says nothing.
+function unlockGlossary(id) {
+  const def = glossaryDef();
+  const entry = def && (def.entries || []).find((e) => e.id === id);
+  if (!entry || state.flags["salita_" + id]) return false;
+  state.flags["salita_" + id] = true;
+  markDirty();
+  playSfx("page");
+  queueToast((def.toastPrefix || "Bagong salita sa Talaan: ") + entry.term, 2600);
+  return true;
+}
+
+// A toast that waits its turn: a word earned as a conversation ends
+// would otherwise wipe the "Bagong gawain" toast the same moment set.
+function queueToast(text, ms) {
+  let tries = 0;
+  const attempt = () => {
+    const toastEl = hudEls().toast;
+    if (toastEl && !toastEl.classList.contains("hidden") && tries++ < 12) {
+      setTimeout(attempt, 400);
+      return;
+    }
+    showToast(text, ms);
+  };
+  attempt();
+}
+
+// A small seeded generator (mulberry32), so a student's hints are the
+// same on every visit and a different student's are not.
+function seededRandom(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffled(list, rand) {
+  const out = list.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    const t = out[i]; out[i] = out[j]; out[j] = t;
+  }
+  return out;
+}
+
+// Which spots and which hints this student has: [{ n, spot, hint }].
+function hintPlan(scene) {
+  const def = hintsDef();
+  const spots = (scene && scene.hintSpots) || [];
+  if (!def || !(def.pool || []).length || !spots.length) return [];
+  if (typeof state.flags.__hintSeed !== "number") {
+    state.flags.__hintSeed = Math.floor(Math.random() * 2147483647);
+  }
+  const rand = seededRandom(state.flags.__hintSeed);
+  const count = Math.min(def.count || 3, spots.length, def.pool.length);
+  const chosenSpots = shuffled(spots, rand).slice(0, count)
+    .sort((a, b) => (a.x !== undefined ? a.x : a) - (b.x !== undefined ? b.x : b));
+  const chosenHints = shuffled(def.pool.map((_, i) => i), rand).slice(0, count);
+  return chosenSpots.map((spot, i) => ({ n: i + 1, spot, hint: chosenHints[i] }));
+}
+
+// Lays this student's hint scrolls on the road. Called when a scene is
+// built and again when a save is restored, because the seed that says
+// where they lie may arrive with the save.
+function buildHints() {
+  PICKUPS = PICKUPS.filter((p) => {
+    if (p.type !== "hint") return true;
+    if (p.el) p.el.remove();
+    return false;
+  });
+  hintPlan(currentScene).forEach((h) => {
+    const x = typeof h.spot === "number" ? h.spot : h.spot.x;
+    const y = typeof h.spot === "number" ? undefined : h.spot.y;
+    const pickup = { id: "pahiwatig-" + h.n, type: "hint", hint: h.hint, n: h.n, x, y };
+    PICKUPS.push(pickup);
+    if (pickupTaken(pickup)) return;
+    const el = document.createElement("div");
+    el.className = "pickup pickup-page";
+    el.id = "pickup-" + pickup.id;
+    el.style.left = x + "px";
+    el.style.bottom = (typeof y === "number" ? y : GROUND_LEVEL) + "px";
+    world.appendChild(el);
+    actElements.push(el);
+    pickup.el = el;
+  });
 }
 
 function pickupTaken(pickup) {
-  if (pickup.type !== "page") return false;
-  const entry = notebookEntry(pickup.entry);
-  return Boolean(entry && entry.flag && state.flags[entry.flag]);
+  return pickup.type === "hint" && Boolean(state.flags["pahiwatig_" + pickup.hint]);
 }
 
-// What the pause screen lists: every entry in order, found or not. The
-// text of one not yet found is left out, so the list is not a way round
-// the looking.
-function notebookState() {
-  const def = notebookDef();
-  if (!def || !(def.entries || []).length) return null;
-  const entries = def.entries.map((e, i) => {
-    const found = Boolean(e.flag && state.flags[e.flag]);
-    return { n: i + 1, id: e.id, found, title: found ? e.title : "", text: found ? e.text : "" };
+// What the pause screen lists: every word, found or not (a word not yet
+// earned shows no text), and the hints found so far out of how many
+// this student has.
+function glossaryState() {
+  const g = glossaryDef();
+  const h = hintsDef();
+  if (!(g && (g.entries || []).length) && !(h && (h.pool || []).length)) return null;
+  const words = ((g && g.entries) || []).map((e, i) => {
+    const found = Boolean(state.flags["salita_" + e.id]);
+    return { n: i + 1, id: e.id, found, term: found ? e.term : "", text: found ? e.text : "" };
   });
-  return { title: def.title || "", hint: def.hint || "", total: entries.length,
-    found: entries.filter((e) => e.found).length, entries };
+  const pool = (h && h.pool) || [];
+  const hintTotal = h ? Math.min(h.count || 3, pool.length) : 0;
+  const hints = pool.map((hint, i) => ({ i, found: Boolean(state.flags["pahiwatig_" + i]), hint }))
+    .filter((x) => x.found)
+    .map((x, n) => ({ n: n + 1, title: x.hint.title || "", text: x.hint.text || "" }));
+  return {
+    title: (g && g.title) || "Talaan",
+    hint: (g && g.hint) || "",
+    found: words.filter((w) => w.found).length,
+    total: words.length,
+    entries: words,
+    hints: { found: hints.length, total: hintTotal, entries: hints, label: (h && h.label) || "Mga Pahiwatig" },
+  };
 }
 
 // A pickup bobs (CSS, pickup-bob) only while it is near the screen. Ten
@@ -3269,9 +3377,10 @@ function updatePickupMotion(cameraX) {
   }
 }
 
-// Removes any page whose entry has been found since the scene was built
-// (a save restored after loadScene, the order enterGameAsUser has to use).
+// A hint found since the scene was built (a save restored after
+// loadScene, the order enterGameAsUser has to use) is taken away again.
 function refreshPickups() {
+  buildHints();
   PICKUPS.forEach((pickup) => {
     if (pickupTaken(pickup) && pickup.el) {
       pickup.el.remove();
@@ -3281,35 +3390,34 @@ function refreshPickups() {
 }
 
 function collectPage(pickup) {
-  const entry = notebookEntry(pickup.entry);
   collectedPickups.add(pickup.id);
   if (pickup.el) pickup.el.remove();
-  if (!entry) return;
-  if (entry.flag) state.flags[entry.flag] = true;
+  const def = hintsDef();
+  const hint = def && def.pool[pickup.hint];
+  if (!hint) return;
+  state.flags["pahiwatig_" + pickup.hint] = true;
   markDirty();
-  const book = notebookState();
-  const done = book && book.found === book.total;
+  const book = glossaryState();
+  const done = book && book.hints.found >= book.hints.total;
   playSfx(done ? "fanfare" : "page");
-  const index = notebookDef().entries.indexOf(entry);
-  showNotebookCard(entry, index + 1, book ? book.total : 1, done);
+  showPageCard((def.label || "Pahiwatig") + " " + pickup.n + " / " + (book ? book.hints.total : 1),
+    hint.title, hint.text, done ? (def.completeText || "") : (def.foundText || ""), done);
 }
 
-// The card a page opens: which page of how many, its title and text, and
+// The card a hint opens: which hint of how many, its title and text, and
 // one button. Stops the world like the apple game does (uiBlocked) and
 // takes its keys in the capture phase for the same reasons: Space must
 // not also jump, Escape must not also open pause. The key that closes it
 // has to be pressed after it opened, so a student running into a page
 // with a finger on a key does not close it unread.
-function showNotebookCard(entry, n, total, complete) {
+function showPageCard(eyebrow, title, text, noteText, complete) {
   const screen = document.getElementById("page-card");
   if (!screen) return Promise.resolve();
-  const def = notebookDef() || {};
-  document.getElementById("page-card-eyebrow").textContent =
-    (def.pageLabel || "Pahina") + " " + n + " / " + total;
-  document.getElementById("page-card-title").textContent = entry.title || "";
-  document.getElementById("page-card-text").textContent = entry.text || "";
+  document.getElementById("page-card-eyebrow").textContent = eyebrow || "";
+  document.getElementById("page-card-title").textContent = title || "";
+  document.getElementById("page-card-text").textContent = text || "";
   const note = document.getElementById("page-card-note");
-  note.textContent = complete ? (def.completeText || "") : (def.foundText || "");
+  note.textContent = noteText || "";
   note.classList.toggle("page-card-complete", Boolean(complete));
   const btn = document.getElementById("page-card-close");
 
@@ -3688,7 +3796,7 @@ dialogueBox.addEventListener("click", () => {
 // =============================================================
 
 const RUN_AFTER_MS = 450;       // held this long, a walk becomes a run
-const RUN_SPEED = 8.5;          // per 60fps frame; SPEED is 5
+const RUN_SPEED = 6.8;          // per 60fps frame; SPEED is 5 (8.5 was too fast; Block 68)
 const RUN_RAMP_FRAMES = 12;     // from walk to full run
 const RUN_STRIDE_MS = 240;      // one puff of dust per stride
 const COYOTE_MS = 110;
@@ -5759,8 +5867,8 @@ function applyLoadedState(row) {
 
   // Any NPC whose reveal flag is already set in the restored save.
   revealNpcsByFlag();
-  // Block 64. The scene was built before these flags arrived, so a page
-  // already found is still lying on the road; take it away again.
+  // Block 68. The scene was built before these flags arrived: the hints
+  // are laid again from the save's seed, and any already found are gone.
   refreshPickups();
 
   // Health is deliberately not restored. A student who closed the tab on
@@ -5914,9 +6022,9 @@ window.Game = {
   // where they are listed now rather than under the log. Lines only.
   doneQuests: doneQuestTexts,
 
-  // Block 64. The act's notebook as the pause screen lists it, or null
-  // for an act without one. Found entries only carry their text.
-  notebook: notebookState,
+  // Block 68. The Talaan as the pause screen lists it: the glossary's
+  // words and the hints found, or null for an act with neither.
+  glossary: glossaryState,
 
   // Block 62. The picture loader, for the title screen's bar and for
   // holding the world closed until its art is in. Counts only; the

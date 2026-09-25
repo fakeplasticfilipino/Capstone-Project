@@ -33,15 +33,16 @@ How to read the script:
   + Speaker: line          ours, marked PLACEHOLDER in content/act1.js,
                            until the proponents accept or replace it
     [BLACK] line           a black card (playIntertitle)
-    [PAGE] Title: text     a page of the notebook, found on the road
+    [HINT] Title: text     a hint for the post-test, found on the road
     (stage direction)      what happens, not what is said
 
 Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 24 Sep 2026, Blocks 64 and 65 (the notebook: ten pages of
-history along the street, outside the story; the apple round).
+Last updated: 25 Sep 2026, Block 68 (the fact pages replaced by the
+Talaan: words earned by doing things, and three hints for the
+post-test).
 
 ## The story in brief
 
@@ -472,56 +473,59 @@ Direktor and Maryam, in the entablado:
   + Maryam: Alam mo, mas bagay sa'yo si Don Rodrigo kaysa kay Julian. Huwag mo lang sasabihin sa kanya.
     (after)
 
-## The notebook
+## The Talaan
 
-Block 64. Ten pages lie along the street, from just past Nanay to just
-before the direktor, every other one at jump height. They are not part
-of the story and nothing waits on them: they are pages from a history
-of the man the boy on screen grows up to be, and picking one up opens
-it as a card ("Pahina ng Kasaysayan n / 10") and adds it to the
-Kuwaderno, which the pause screen opens. A page not yet found is listed
-as "? ? ?".
+Block 68, replacing Block 64's ten pages of facts, which the proponents
+did not want. The pause screen's Talaan holds two things a student
+collects. All of it is ours.
 
-Each page says what one of the ten matched pairs in the Act I item bank
-(db/seeds/macario_items_v3.sql) commits to, and nothing further; the
-pair each serves is in brackets. All of it is ours.
+Words, each earned the moment the student does the thing it names. A
+toast says so ("Bagong salita sa Talaan: Kutsero"); the word's meaning
+is read in the Talaan. Each is an ordinary meaning, not a claim about
+Sakay.
 
-    x 2500   ground
-  + [PAGE] Anak ng Tondo: Si Macario Sakay ay lumaki sa Tondo, Maynila. Sa mga kalyeng tulad nito siya nagkaisip.
-             (pair 1, where he came from)
-    x 3950   jump
-  + [PAGE] Mananahi at barbero: Bago ang himagsikan, naghanapbuhay si Sakay bilang mananahi at barbero, isang karaniwang manggagawa.
-             (pair 2, his trade)
-    x 5300   ground
-  + [PAGE] Ang moro-moro: Mahilig sa teatro si Sakay. Madalas siyang umarte sa komedya, o moro-moro, noong kabataan niya.
-             (pair 3, the theatre)
-    x 6050   jump
-  + [PAGE] Ang natutunan sa entablado: Sa entablado nasanay si Sakay na magsalita sa harap ng maraming tao. Nahasa ang kanyang tinig at tapang na humarap sa madla.
-             (pair 4, what the stage taught him)
-    x 7000   ground
-  + [PAGE] 1894: Noong 1894, sumapi si Macario Sakay sa Katipunan, isang lihim na samahan.
-             (pair 5, joining the Katipunan)
-    x 8200   jump
-  + [PAGE] Ang layunin ng Katipunan: Hindi reporma ang hangad ng Katipunan kundi ganap na kalayaan mula sa Espanya, sa pamamagitan ng himagsikan.
-             (pair 6, its aim)
-    x 9800   ground
-  + [PAGE] Bakit lihim: Ipinagbabawal ang Katipunan. Ang mahuhuling kasapi ay parurusahan ng mga awtoridad, kaya lihim ang kanilang pagkakakilanlan at mga pagpupulong.
-             (pair 7, why it was secret)
-    x 10700  jump
-  + [PAGE] Ang mga tagapaghatid: Mahalaga sa lihim na kilusan ang mga tagapaghatid ng mensahe. Dala nila ang balita nang hindi nabubunyag ang samahan. Kapag nahuli ang isa, malalantad ang buong kilusan.
-             (pair 8, the messengers)
-    x 12200  jump
-  + [PAGE] Ang iniwan niya: Iniwan ni Sakay ang kanyang hanapbuhay upang sumapi sa Katipunan. Inuna niya ang kapakanan ng bayan kaysa sa sariling ginhawa.
-             (pair 9, what he gave up)
-    x 12700  ground
-  + [PAGE] Kilusan ng bayan: Karaniwang manggagawa ang marami sa mga Katipunero, gaya ni Sakay. Isa itong kilusang nag-ugat sa karaniwang mamamayan.
-             (pair 10, who the Katipunan were)
+  + Tondo: Isang distrito ng Maynila, sa tabi ng look. Dito nagsimula ang kuwento ni Macario.
+        (the opening card)
+  + Siga: Taong mayabang at mahilig manggulo o mang-asar sa kalye.
+        (the siga's taunt)
+  + Cedula: Katibayan ng pagkakakilanlan na kailangang bayaran ng mga nasa hustong gulang noong panahon ng Espanyol. Isa itong uri ng buwis.
+        (the talk with Nanay)
+  + Kutsero: Ang nagpapatakbo ng kalesa o karwaheng hinihila ng kabayo.
+        (the Kutsero's first conversation)
+  + Barya: Maliliit na salaping metal. Ito ang iniipon ni Macario para kay Nanay.
+        (the first pay)
+  + Mananahi: Taong gumagawa at nagtatahi ng damit.
+        (the Mananahi's first conversation)
+  + Direktor: Ang namamahala sa isang dula at sa mga artista nito.
+        (the missing actor)
+  + Entablado: Ang mataas na plataporma kung saan ginaganap ang mga dula at palabas.
+        (backstage)
+  + Sultan: Tawag sa pinuno o hari sa ilang kaharian.
+        (the Sultan walks on)
+  + Moro-moro: Kilala rin bilang komedya. Dulang tungkol sa digmaan ng dalawang magkaaway na kaharian, may labanan at kuwento ng pag-ibig.
+        (the play's blessing)
 
-What the card and the Kuwaderno say around the pages:
+Hints, for the post-test. Three scrolls lie on the street, at three of
+ten spots (2500, 3950 high, 5300, 6050 high, 7000, 8200 high, 9800,
+10700 high, 12200 high, 12700), carrying three of the six hints below,
+both chosen at random for each student and kept in the save so they do
+not move on a reload. Reaching one opens it ("Pahiwatig n / 3").
 
-  + Kuwaderno (hint, until every page is found): May mga pahinang nakakalat sa daan. Ang iba, kailangan mong talunin.
-  + Card, under a page: Naidagdag sa iyong Kuwaderno. Buksan ito sa pause.
-  + Card, under the last page: Nabuo mo ang Kuwaderno! Ngayon, kilala mo na kung sino ang batang ito paglaki.
+  + [HINT] Saan nagsimula?: Tandaan ang lugar na nakasulat sa unang itim na tabing ng laro. Doon lumaki si Macario.
+  + [HINT] Ang hanapbuhay: Ang trabaho ng isa sa mga pinagsilbihan ni Macario dito ay magiging hanapbuhay din niya, kasama ang pagiging barbero.
+  + [HINT] Ang dula: Anong uri ng dula ang ginanap ni Macario sa entablado? Hanapin ang pangalan nito sa Talaan.
+  + [HINT] Sa harap ng madla: Ano ang natutunan ni Macario nang humarap siya sa maraming manonood? Magagamit iyon ng isang magiging pinuno.
+  + [HINT] Isang lihim na samahan: Tandaan ang taong 1894. Noon sumapi si Macario sa isang lihim na samahang naghahangad ng kalayaan.
+  + [HINT] Mga karaniwang tao: Tingnan ang mga tao sa kalyeng ito: kutsero, mananahi, tindero. Ganitong mga manggagawa ang bumuo sa kilusang sasalihan ni Macario.
+
+What the card and the Talaan say around them:
+
+  + Talaan (until everything is found): May bagong salita tuwing may nagawa ka. Hanapin din ang mga pahiwatig sa daan.
+  + Card, under a hint: Naidagdag sa iyong Talaan. Makatutulong ito sa panapos na pagsusulit.
+  + Card, under the third: Nahanap mo ang lahat ng pahiwatig! Balikan sila sa Talaan bago ang pagsusulit.
+
+A replay of the act after a failed post-test keeps every word and hint
+already found.
 
 ## Threads left open
 
@@ -548,7 +552,7 @@ next passage. None of these is a promise; they are what is there.
       opening card against Sakay's birth year in it.
     What the direktor pays (79 to 110 at random, the proponents' own
       numbers from Block 56).
-    The notebook (Block 64): keep the pages, move their facts into the
-      story as it reaches them, or drop them. They are the only place
-      Act I states anything the pre-test and post-test ask, and they
-      are optional, so a student can finish without reading one.
+    The Talaan (Block 68): the ten words and their meanings, and the
+      six hints. The hints point at what the post-test asks; three of
+      them (1894, the trade, the ordinary workers) say it outright,
+      because the story does not reach it yet.

@@ -25,6 +25,19 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
+Last updated: 25 Sep 2026, after Block 68, the instructor's requests:
+the questions and answers in the game (content/questions.js, graded by
+the game), a teacher editor for them on the dashboard, a replay of the
+act after a failed post-test (75% to pass), a password change in
+settings, and the Talaan (glossary words earned by doing things, and
+three random hints for the post-test) in place of Block 64's fact
+pages; the run toned down from 8.5 to 6.8. Cloud sessions now push
+straight to main (CLAUDE.md, Deployment). test.js 699 passed, 0
+failed; verify_new_scene.js 115 passed, 0 failed. Pushed to main. Not
+played on the phone. Schema 006 is NOT RUN: until it is, the teacher's
+edits cannot be saved and a second post-test try is not stored (see
+Next action, 0).
+
 Last updated: 24 Sep 2026, after Blocks 62 to 67, one cloud session
 asked to "make it fun and performance friendly": a picture loader with
 retries, a loading bar and a service worker (62), a run and a forgiving
@@ -191,13 +204,15 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v44    js/game.js v67       js/shell.js v15
-    js/inventory.js v9   js/acts.js v12       js/assessment.js v3
-    content/act1.js v46  content/items.js v11  content/act2-4.js v1
+    css/style.css v45    js/game.js v68       js/shell.js v16
+    js/inventory.js v9   js/acts.js v13       js/assessment.js v4
+    content/act1.js v47  content/items.js v11  content/act2-4.js v1
+    content/questions.js v1 (named in index.html and teacher.html)
     ASSET_VERSION 25 (in js/game.js)
     sw.js carries no version: the browser checks it itself on every
     visit (Block 62)
-    css/teacher.css v2   js/teacher.js v2     (named in teacher.html)
+    css/teacher.css v3   js/teacher.js v3     js/teacher-questions.js v1
+                                              (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
 and confirmed Block 36's speed fix on the phone. Blocks 57 and 58 were
@@ -335,6 +350,11 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
     66  measured pass: pages still out of view, bob only on arrival;
         HUD classes and the facing flip written only on change
     67  "+N" and a coin over Macario when he is paid
+    68  questions in the game (content/questions.js), graded by it;
+        teacher editor for questions, answers and trivia; replay after
+        a failed post-test, attempts; password change; the Talaan
+        (glossary words, three random hints) replacing the fact pages;
+        run 6.8; schema 006 written, not run
 
 Everything through Block 41 is pushed (088f5e4). Blocks 42 to 58 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
@@ -367,6 +387,12 @@ demo; whether it has been run is not recorded.
 ## Next action
 
 In order.
+
+00. Run db/migrations/006_macario_schema_v6.sql in the Supabase SQL
+editor, then record it in the Run log. Without it the game still works
+(it uses the built-in questions and records first tries as before), but
+the teacher's "I-save" is refused and a post-test retake is shown and
+not stored.
 
 0. Nanay's walk is settled (Block 57): she slides on with her idle
 sheet, at the proponent's direction. nanay-walk.png was deleted in
@@ -575,6 +601,14 @@ when. A fresh session should trust this over any memory of a chat.
     db/migrations/003_macario_schema_v3.sql    RUN
     db/migrations/004_macario_schema_v4.sql    RUN, 19 Aug 2026
 
+    db/migrations/006_macario_schema_v6.sql    NOT RUN. Block 68: students
+                                        read assessment_items whole,
+                                        teachers edit items and trivia,
+                                        assessment_scores gains attempt
+                                        (one pre-test row still). Run
+                                        after 005 or on its own; it
+                                        does not depend on 005
+
     db/migrations/005_macario_schema_v5.sql            NOT RUN, per this file's own
                                         bookkeeping. A
                                         prior chat ended with a reset-
@@ -631,9 +665,11 @@ exercises none of them yet: no scene is dangerous, and the item
 catalogue is empty. What remains is content and art, not code.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and
-post-tests, server-side grading, in-game performance scoring,
-optional feedback, and the teacher dashboard are all built. Act I's
-item bank is seeded.
+post-tests (graded in the game since Block 68, with a pass mark and a
+replay for a failed post-test), in-game performance scoring, optional
+feedback, and the teacher dashboard, which can also edit the questions,
+are all built. Act I's item bank is seeded and is also built into the
+game (content/questions.js).
 
 ## Functional requirements
 
@@ -654,7 +690,7 @@ work through.
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, a two-column inventory, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one equipment item, the stage clothes (Damit, slower detection while still), which matters against the lansangan's guards |
 | Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No outfit ships yet; verified against the fixture catalogue |
 | Trivia | (BUILT) Act I seeded; Acts II to IV not seeded |
-| Act Assessment | (BUILT) Act I seeded; Acts II to IV not seeded |
+| Act Assessment | (BUILT) Act I seeded and built in; Acts II to IV not seeded. Teacher-editable, a 75% pass mark, and a replay of the act before another post-test try (Block 68; needs schema 006 for the edits and retries to be stored) |
 | Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded but not scored |
 | Progress Tracking | (BUILT) Completion, scores, damage taken, detections, elapsed time |
 | Teacher Monitoring | (BUILT) Class roster and summary per class, scoped by RLS; since Block 39 searchable and sortable, with Act I status, objectives, scores, gain, performance and play time per student. Basic summaries, no charts, by decision |
@@ -966,13 +1002,18 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 676 checks against a fixture act and item catalogue (so
+test.js: 699 checks (sections BH and BI are Block 68: the built-in
+questions graded by the game, the teacher's questions first, the pass
+mark, the replay and the second attempt, a reload on a failed result,
+the password, and the teacher's editor); before Block 68, 676 checks against a fixture act and item catalogue (so
 mechanics stay tested whatever Act I ships); sections BD to BG are
 Blocks 62 to 67 (the loader, the loading screens, a scene change held
 for its art, and the service worker offline; the run, coyote time, the
 jump buffer and dust; the timed apple round; the reward pop).
-verify_new_scene.js: 115 checks, the last fourteen the notebook against
-the real content (Block 64). 101 of them: one that every line of dialogue and black card in
+verify_new_scene.js: 115 checks; since Block 68 it sits the real
+trivia card and pre-test, and its Talaan section (replacing Block 64's
+notebook) checks the hints, the seed across a reload, a word earned and
+the pause panel. 101 of them: one that every line of dialogue and black card in
 content/act1.js is in STORY.md (Block 61), then 100 driving the REAL content/act1.js and content/items.js through
 Act I as of Block 59: the ten-painting street, the "Tondo, 1880" card,
 the opening with the walk off beside Nanay, the talk and the thought,

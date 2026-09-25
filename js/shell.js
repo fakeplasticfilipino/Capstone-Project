@@ -98,8 +98,15 @@ const Shell = {
         reset: document.getElementById("shell-reset-confirm"),
         loading: document.getElementById("shell-loading"),
         notebook: document.getElementById("shell-notebook-panel"),
+        password: document.getElementById("shell-password-panel"),
       },
       notebookBtn: document.getElementById("shell-notebook"),
+      passwordBtn: document.getElementById("shell-password"),
+      passwordNew: document.getElementById("shell-password-new"),
+      passwordAgain: document.getElementById("shell-password-again"),
+      passwordSave: document.getElementById("shell-password-save"),
+      passwordBack: document.getElementById("shell-password-back"),
+      passwordNote: document.getElementById("shell-password-note"),
       notebookBack: document.getElementById("shell-notebook-back"),
       startBtn: document.getElementById("shell-start"),
       guestBtn: document.getElementById("shell-guest"),
@@ -213,6 +220,11 @@ const Shell = {
     // database call that clears all seven tables, so it neither needs
     // that module nor cares whether it loaded.
     this.el.resetBtn.addEventListener("click", () => this._openReset());
+    if (this.el.passwordBtn) {
+      this.el.passwordBtn.addEventListener("click", () => this._openPassword());
+      this.el.passwordBack.addEventListener("click", () => this._closePassword());
+      this.el.passwordSave.addEventListener("click", () => this._savePassword());
+    }
     this.el.resetCancel.addEventListener("click", () =>
       this._showPanel("settings")
     );
@@ -255,6 +267,7 @@ const Shell = {
       else if (this.state === "paused") this.closePause();
       else if (this.state === "settings") this._closeSettings();
       else if (this.state === "notebook") this._closeNotebook();
+      else if (this.state === "password") this._closePassword();
       else if (this.state === "inventory") this._closeInventory();
       else if (this.state === "shop") this._closeShop();
     });
@@ -500,6 +513,10 @@ const Shell = {
     }
     this._refreshResetOffer();
     this._renderDoneQuests();
+    // Block 68. Only a signed-in student has a password to change.
+    if (this.el.passwordBtn) {
+      this.el.passwordBtn.classList.toggle("hidden", !(window.Game && Game.isSignedIn()));
+    }
     this.settingsReturn = from;
     this.state = "settings";
     this._showPanel("settings");
@@ -530,46 +547,64 @@ const Shell = {
   },
 
   // -----------------------------------------------------------
-  // The notebook (Block 64)
+  // The Talaan (Block 68; Block 64's notebook before it)
   // -----------------------------------------------------------
 
-  // Shown only for an act that has a notebook, with how many pages are
-  // found on the button itself, so the pause screen is where a student
-  // notices there is something to look for.
+  // Shown only for an act that has a glossary or hints, with how many
+  // words are earned on the button itself, so the pause screen is where
+  // a student notices there is something to collect.
   _refreshNotebookButton() {
     const btn = this.el.notebookBtn;
     if (!btn) return;
-    const book = window.Game && Game.notebook ? Game.notebook() : null;
+    const book = window.Game && Game.glossary ? Game.glossary() : null;
     btn.classList.toggle("hidden", !book);
-    if (book) setLabel(btn, (book.title || "Kuwaderno") + " " + book.found + "/" + book.total);
+    if (book) setLabel(btn, (book.title || "Talaan") + " " + book.found + "/" + book.total);
   },
 
   _openNotebook() {
     if (this.state !== "paused") return;
-    const book = window.Game && Game.notebook ? Game.notebook() : null;
+    const book = window.Game && Game.glossary ? Game.glossary() : null;
     if (!book) return;
-    document.getElementById("shell-notebook-title").textContent = book.title || "Kuwaderno";
+    document.getElementById("shell-notebook-title").textContent = book.title || "Talaan";
     document.getElementById("shell-notebook-count").textContent = book.found + " / " + book.total;
     document.getElementById("shell-notebook-hint").textContent =
       book.found === book.total ? "" : book.hint;
     const list = document.getElementById("shell-notebook-list");
     list.innerHTML = "";
     // Written as text, never HTML, like every other line from content.
-    book.entries.forEach((entry) => {
+    const heading = (text) => {
       const li = document.createElement("li");
-      li.className = "notebook-entry" + (entry.found ? " notebook-found" : "");
+      li.className = "notebook-heading";
+      li.textContent = text;
+      list.appendChild(li);
+    };
+    const entry = (title, text, found) => {
+      const li = document.createElement("li");
+      li.className = "notebook-entry" + (found ? " notebook-found" : "");
       const head = document.createElement("div");
       head.className = "notebook-entry-title";
-      head.textContent = entry.n + ". " + (entry.found ? entry.title : "? ? ?");
+      head.textContent = title;
       li.appendChild(head);
-      if (entry.found) {
-        const text = document.createElement("div");
-        text.className = "notebook-entry-text";
-        text.textContent = entry.text;
-        li.appendChild(text);
+      if (text) {
+        const body = document.createElement("div");
+        body.className = "notebook-entry-text";
+        body.textContent = text;
+        li.appendChild(body);
       }
       list.appendChild(li);
-    });
+    };
+    if (book.hints && book.hints.total) {
+      heading(book.hints.label + " " + book.hints.found + "/" + book.hints.total);
+      book.hints.entries.forEach((h) => entry(h.n + ". " + h.title, h.text, true));
+      if (book.hints.found < book.hints.total) {
+        entry("? ? ?", "May " + (book.hints.total - book.hints.found) +
+          " pang nakatagong pahiwatig sa daan.", false);
+      }
+    }
+    if (book.total) {
+      heading("Mga Salita " + book.found + "/" + book.total);
+      book.entries.forEach((w) => entry(w.found ? w.term : "? ? ?", w.found ? w.text : "", w.found));
+    }
     this.state = "notebook";
     this._showPanel("notebook");
   },
@@ -578,6 +613,62 @@ const Shell = {
     if (this.state !== "notebook") return;
     this.state = "paused";
     this._showPanel("pause");
+  },
+
+  // -----------------------------------------------------------
+  // Changing the password (Block 68)
+  //
+  // From settings, for a signed-in student. Supabase changes the
+  // password of the session's own account (auth.updateUser), so there
+  // is nothing a student could aim at anyone else's. Awaited, like the
+  // reset, because it is the one change a student cannot see took.
+  // -----------------------------------------------------------
+  PASSWORD_MIN: 6,
+
+  _openPassword() {
+    if (this.state !== "settings") return;
+    this.el.passwordNew.value = "";
+    this.el.passwordAgain.value = "";
+    this.el.passwordNote.textContent = "";
+    this.el.passwordNote.className = "shell-note";
+    this.el.passwordSave.disabled = false;
+    this.state = "password";
+    this._showPanel("password");
+  },
+
+  _closePassword() {
+    if (this.state !== "password") return;
+    this.state = "settings";
+    this._showPanel("settings");
+  },
+
+  async _savePassword() {
+    const note = this.el.passwordNote;
+    const next = this.el.passwordNew.value;
+    const again = this.el.passwordAgain.value;
+    note.className = "shell-note";
+    if (next.length < this.PASSWORD_MIN) {
+      note.textContent = "Dapat hindi bababa sa " + this.PASSWORD_MIN + " na titik ang password.";
+      return;
+    }
+    if (next !== again) {
+      note.textContent = "Hindi magkapareho ang dalawang password.";
+      return;
+    }
+    this.el.passwordSave.disabled = true;
+    note.textContent = "Sine-save...";
+    try {
+      const { error } = await sb.auth.updateUser({ password: next });
+      if (error) throw error;
+      this.el.passwordNew.value = "";
+      this.el.passwordAgain.value = "";
+      note.textContent = "Napalitan na ang password mo.";
+      note.className = "shell-note ok";
+    } catch (err) {
+      console.error("password change failed:", err);
+      note.textContent = "Hindi napalitan ang password. Suriin ang koneksyon at subukan ulit.";
+    }
+    this.el.passwordSave.disabled = false;
   },
 
   _closeSettings() {

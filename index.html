@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="css/style.css?v=44" />
+  <link rel="stylesheet" href="css/style.css?v=45" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -275,7 +275,7 @@
           <!-- Block 64. Hidden for an act without a notebook; the label's
                count is written by shell.js. -->
           <button id="shell-notebook" class="shell-btn shell-btn-ghost hidden" type="button">
-            <span class="ico"><svg aria-hidden="true"><use href="#i-scroll"></use></svg></span><span class="lbl">Kuwaderno</span>
+            <span class="ico"><svg aria-hidden="true"><use href="#i-scroll"></use></svg></span><span class="lbl">Talaan</span>
           </button>
           <button id="shell-pause-settings" class="shell-btn shell-btn-ghost" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-gear"></use></svg></span><span class="lbl">Mga Setting</span>
@@ -291,7 +291,7 @@
           <div class="inv-head">
             <div class="inv-title">
               <span class="ico"><svg aria-hidden="true"><use href="#i-scroll"></use></svg></span>
-              <h2 class="shell-heading" id="shell-notebook-title">Kuwaderno</h2>
+              <h2 class="shell-heading" id="shell-notebook-title">Talaan</h2>
             </div>
             <div class="inv-balance" id="shell-notebook-count"></div>
             <button id="shell-notebook-back" class="shell-btn shell-btn-ghost inv-back" type="button">
@@ -356,6 +356,11 @@
 
           <div id="shell-settings-note" class="shell-note"></div>
 
+          <!-- Block 68. Shown only to a signed-in student. -->
+          <button id="shell-password" class="shell-btn shell-btn-ghost hidden" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-key"></use></svg></span><span class="lbl">Palitan ang password</span>
+          </button>
+
           <!-- Hidden until can_reset_my_data() says this account may.
                A study account never sees it, and the database refuses
                it even if it somehow did. -->
@@ -364,6 +369,27 @@
           </button>
 
           <button id="shell-settings-back" class="shell-btn shell-btn-primary" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
+          </button>
+        </div>
+
+        <!-- Block 68. Changing the password, from settings. -->
+        <div id="shell-password-panel" class="shell-panel hidden">
+          <div class="shell-eyebrow">Mga Setting</div>
+          <h2 class="shell-heading">Palitan ang password</h2>
+          <div class="shell-field">
+            <label class="shell-label" for="shell-password-new">Bagong password</label>
+            <input id="shell-password-new" class="shell-input" type="password" autocomplete="new-password" maxlength="72" />
+          </div>
+          <div class="shell-field">
+            <label class="shell-label" for="shell-password-again">Ulitin ang bagong password</label>
+            <input id="shell-password-again" class="shell-input" type="password" autocomplete="new-password" maxlength="72" />
+          </div>
+          <div id="shell-password-note" class="shell-note"></div>
+          <button id="shell-password-save" class="shell-btn shell-btn-primary" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-check"></use></svg></span><span class="lbl">I-save</span>
+          </button>
+          <button id="shell-password-back" class="shell-btn shell-btn-ghost" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
           </button>
         </div>
@@ -519,15 +545,16 @@
        back except the one guarded awaitEntry call in game.js. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
-  <script src="content/act1.js?v=46"></script>
+  <script src="content/act1.js?v=47"></script>
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=11"></script>
-  <script src="js/game.js?v=67"></script>
-  <script src="js/acts.js?v=12"></script>
+  <script src="content/questions.js?v=1"></script>
+  <script src="js/game.js?v=68"></script>
+  <script src="js/acts.js?v=13"></script>
   <script src="js/inventory.js?v=9"></script>
-  <script src="js/assessment.js?v=3"></script>
-  <script src="js/shell.js?v=15"></script>
+  <script src="js/assessment.js?v=4"></script>
+  <script src="js/shell.js?v=16"></script>
 </body>
 </html>

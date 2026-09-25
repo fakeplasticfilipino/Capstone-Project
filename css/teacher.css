@@ -637,3 +637,125 @@ input:focus-visible {
   #roster thead th { position: static; }
   #roster th button::after { content: ""; }
 }
+
+/* ---- Question editor (Block 68) ---- */
+
+#qe {
+  margin-top: 24px;
+}
+
+.qe-pickers {
+  display: flex;
+  gap: 8px;
+}
+
+.qe-pickers select {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  padding: 7px 10px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.qe-body {
+  padding: 16px 20px 20px;
+}
+
+.qe-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-alt);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.qe-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.qe-item-head div {
+  display: flex;
+  gap: 6px;
+}
+
+.qe-small {
+  padding: 4px 10px;
+}
+
+.qe-delete {
+  color: var(--red);
+}
+
+.qe-question,
+.qe-choice-text {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 7px 10px;
+}
+
+.qe-question {
+  resize: vertical;
+  margin-bottom: 8px;
+}
+
+.qe-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.qe-letter {
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 14px;
+}
+
+.qe-choice input[type="radio"] {
+  accent-color: var(--green);
+  width: 18px;
+  height: 18px;
+}
+
+.qe-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+  border: 1px solid var(--green);
+  border-radius: 7px;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+}
+
+.qe-status {
+  min-height: 1.2em;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.qe-status.qe-ok { color: var(--green); }
+.qe-status.qe-error { color: var(--red); }
+

@@ -24,6 +24,9 @@
     assessment_scores: T.assessment_scores || [],
     player_inventory: T.player_inventory || [],
     player_equipment: T.player_equipment || [],
+    // Block 68: the questions the teacher edited, and the trivia card.
+    assessment_items: T.assessment_items || [],
+    act_trivia: T.act_trivia || [],
   };
   let session = T.session || null;
   const listeners = [];
@@ -60,9 +63,13 @@
             return Promise.resolve({ data: null, error: { message: "no rows" } });
           }
         } else if (op === "insert") {
-          const row = Object.assign({}, payload);
-          rows.push(row);
-          data = m === "single" ? row : [row];
+          if (T.insertError && T.insertError[table]) {
+            return Promise.resolve({ data: null, error: { message: T.insertError[table] } });
+          }
+          const list = Array.isArray(payload) ? payload : [payload];
+          const added = list.map((p) => Object.assign({}, p));
+          rows.push(...added);
+          data = m === "single" ? added[0] : added;
         } else if (op === "upsert") {
           const list = Array.isArray(payload) ? payload : [payload];
           list.forEach((p) => {
@@ -159,6 +166,12 @@
         return Promise.resolve({ error: null });
       },
       signOut() { session = null; return Promise.resolve({ error: null }); },
+      // Block 68. The password change from settings.
+      updateUser(attrs) {
+        window.__CALLS.push({ auth: "updateUser", attrs });
+        if (T.passwordError) return Promise.resolve({ data: null, error: { message: T.passwordError } });
+        return Promise.resolve({ data: { user: session && session.user }, error: null });
+      },
     },
   };
 })();

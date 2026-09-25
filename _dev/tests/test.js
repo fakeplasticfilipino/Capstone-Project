@@ -186,6 +186,16 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.route("**/cdn.jsdelivr.net/**", (route) =>
       route.fulfill({ body: "", contentType: "text/javascript" }));
 
+    // Block 68. The game now carries its own questions
+    // (content/questions.js). Every section before Block 68 was written
+    // against a bank with nothing in it, where a test is one "Walang
+    // pagsusulit" tap; that stays the default here, and a section that
+    // wants the real questions sets realQuestions in its test state.
+    if (!(testState && testState.realQuestions)) {
+      await page.route("**/content/questions.js*", (route) =>
+        route.fulfill({ body: "window.QUESTIONS = {};", contentType: "text/javascript" }));
+    }
+
     if (block) {
       const specs = Array.isArray(block) ? block : [{ pattern: block, body: "" }];
       for (const spec of specs) {
@@ -5175,6 +5185,279 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("from a pool of two, and spending raises nothing",
        pop.all.length === 2 && pop.all.includes("+3") && !pop.all.some((t) => t.startsWith("-")), pop.all);
     ok("and it fades away by itself", pop.faded === "0", pop.faded);
+    await ctx.close();
+  }
+
+  // -------------------------------------------------------------
+  // BH. Block 68. The questions are in the game: graded here, the
+  // teacher's from the database first, the built-in bank otherwise; a
+  // failed post-test offers a replay; a student can change the password.
+  // -------------------------------------------------------------
+  console.log("\nBH. Questions in the game, a replay after a failed post-test, and the password (Block 68)");
+  {
+    // In the page: sits the test on screen, choosing by answer(question,
+    // index) the choice to tap, and taps through every message after.
+    const DRIVE = `window.__drive = async (pending, answer) => {
+      const seen = { questions: [], screens: [] };
+      let done = false; pending.then(() => { done = true; });
+      for (let i = 0; i < 80 && !done; i++) {
+        await new Promise((r) => setTimeout(r, 40));
+        if (document.getElementById("quiz").classList.contains("hidden")) continue;
+        const q = document.getElementById("quiz-question").textContent;
+        const choices = [...document.querySelectorAll(".quiz-choice")];
+        if (choices.length) {
+          if (seen.questions[seen.questions.length - 1] !== q) seen.questions.push(q);
+          choices[answer(q, seen.questions.length - 1)].click();
+          await new Promise((r) => setTimeout(r, 20));
+        } else {
+          seen.screens.push(document.getElementById("quiz-title").textContent);
+          if (/Subukan ulit/.test(document.getElementById("quiz-title").textContent)) return seen;
+        }
+        document.getElementById("quiz-btn").click();
+      }
+      return seen;
+    };`;
+    const state0 = Object.assign(atTestRoom(), { realQuestions: true });
+    const { ctx, page } = await newPage(state0, fixtureRoutes());
+    await page.waitForTimeout(700);
+    await page.click("#shell-start");
+    await page.waitForTimeout(400);
+    await page.evaluate(DRIVE);
+
+    const pre = await page.evaluate(async () => {
+      const bank = QUESTIONS[1].pre;
+      const key = new Map(bank.map((q) => [q.question, q.correct]));
+      const p = Assessment.runTest(1, "pre");
+      const seen = await __drive(p, (q) => key.get(q));
+      const result = await p;
+      return { seen, result, rows: __DB.assessment_scores.filter((r) => r.test_type === "pre") };
+    });
+    ok("with nothing in the database, the pre-test is the game's own ten questions",
+       pre.seen.questions.length === 10, pre.seen);
+    ok("the game grades it itself: every right answer counted, the score recorded",
+       pre.result.score === 10 && pre.result.max === 10 && pre.rows.length === 1 &&
+       pre.rows[0].score === 10 && pre.rows[0].attempt === undefined, pre);
+    const again = await page.evaluate(async () => {
+      const p = Assessment.runTest(1, "pre");
+      const seen = await __drive(p, () => 0);
+      return { seen, n: __DB.assessment_scores.filter((r) => r.test_type === "pre").length };
+    });
+    ok("the pre-test is still sat once", again.seen.questions.length === 0 &&
+       again.seen.screens[0] === "Naipasa na" && again.n === 1, again);
+
+    const db = await page.evaluate(async () => {
+      __DB.assessment_items.push(
+        { id: "i1", act_number: 1, test_type: "post", item_order: 1, question: "Tanong ng guro 1", choices: ["a", "b", "c"], correct_index: 1 },
+        { id: "i2", act_number: 1, test_type: "post", item_order: 2, question: "Tanong ng guro 2", choices: ["a", "b"], correct_index: 0 });
+      const p = Assessment.runTest(1, "post");
+      const seen = await __drive(p, (q) => q === "Tanong ng guro 1" ? 1 : 1); // one right, one wrong
+      return { seen, result: await p, row: __DB.assessment_scores.find((r) => r.test_type === "post") };
+    });
+    ok("the teacher's questions in the database are used in place of the built-in ones",
+       JSON.stringify(db.seen.questions) === '["Tanong ng guro 1","Tanong ng guro 2"]', db.seen);
+    ok("half right is below the 75% pass mark, and says so",
+       db.result.score === 1 && db.result.passed === false && db.seen.screens.includes("Hindi pumasa") &&
+       db.row && db.row.score === 1 && db.row.max_score === 2, db);
+
+    // The whole end of the act: fail, replay, pass.
+    const replay = await page.evaluate(async () => {
+      Acts.showTransition = function () {};
+      Assessment.runFeedback = async function () {};
+      __DB.assessment_scores = __DB.assessment_scores.filter((r) => r.test_type !== "post");
+      window.__DB.assessment_scores.length; // keep the stub's array reference
+      Object.keys(state.flags).forEach((k) => delete state.flags[k]);
+      Object.assign(state.flags, { nalamanAngPinagmulan: true, salita_tondo: true, pahiwatig_2: true,
+        __startCurrency_1: 5, __hintSeed: 42 });
+      Game.addCurrency(35 - Game.currency() + 0);
+      const before = Game.currency();
+      const p = Acts.finishAct();
+      const seen = await __drive(p, () => 1); // "a","b","c": b right for 1, wrong for 2
+      const offered = document.getElementById("quiz-title").textContent;
+      document.getElementById("quiz-btn").click(); // Ulitin ang Yugto
+      // The act's title card waits for its tap, as on entering an act.
+      for (let i = 0; i < 60 && document.getElementById("act-screen").classList.contains("hidden"); i++) {
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      const titleCard = document.getElementById("act-screen-title").textContent;
+      document.getElementById("act-screen-btn").click();
+      await p;
+      await new Promise((r) => setTimeout(r, 300));
+      const ap = __DB.act_progress.find((r) => r.act_number === 1);
+      return { seen, offered, before, titleCard, status: Acts.status, dbStatus: ap && ap.status,
+        flags: Object.assign({}, state.flags), currency: Game.currency(),
+        posts: __DB.assessment_scores.filter((r) => r.test_type === "post").length };
+    });
+    ok("a failed post-test offers to replay the act", replay.offered === "Subukan ulit?" && replay.posts === 1, replay);
+    ok("replaying shows the act's title card and puts the act back to playing, here and in act_progress",
+       replay.titleCard.length > 0 && replay.status === "playing" && replay.dbStatus === "playing", replay);
+    ok("the story starts again, keeping words, hints and the engine's own flags",
+       !replay.flags.nalamanAngPinagmulan && replay.flags.salita_tondo && replay.flags.pahiwatig_2 &&
+       replay.flags.__hintSeed === 42 && replay.flags.__retakePost_1 === true, replay.flags);
+    ok("and the barya go back to what the act began with", replay.before === 35 && replay.currency === 5, replay);
+
+    const pass = await page.evaluate(async () => {
+      const p = Acts.finishAct();
+      const seen = await __drive(p, (q) => q === "Tanong ng guro 1" ? 1 : 0); // both right
+      await p;
+      const posts = __DB.assessment_scores.filter((r) => r.test_type === "post");
+      return { seen, status: Acts.status, posts, retake: state.flags.__retakePost_1 };
+    });
+    ok("at the end of the replay the post-test is sat again, as attempt 2",
+       pass.seen.questions.length === 2 && pass.posts.length === 2 && pass.posts[1].attempt === 2 &&
+       pass.posts[1].score === 2, pass);
+    ok("passing completes the act and spends the retake", pass.status === "completed" &&
+       pass.seen.screens.includes("Pumasa!") && pass.retake === undefined, pass);
+    await ctx.close();
+  }
+  {
+    // A student who fails and reloads on the result is offered the
+    // choice again, not a free second try.
+    const seedFail = Object.assign(atTestRoom(), { realQuestions: true,
+      act_progress: [{ student_id: "u1", act_number: 1, status: "posttest", objectives_done: 5 }],
+      assessment_scores: [
+        { student_id: "u1", act_number: 1, test_type: "pre", score: 3, max_score: 10 },
+        { student_id: "u1", act_number: 1, test_type: "post", score: 4, max_score: 10 },
+      ] });
+    const { ctx, page } = await newPage(seedFail, fixtureRoutes());
+    await page.waitForTimeout(700);
+    await page.click("#shell-start");
+    await page.waitForTimeout(900);
+    const re = await page.evaluate(() => ({
+      title: document.getElementById("quiz-title").textContent,
+      choices: document.querySelectorAll(".quiz-choice").length,
+      back: document.querySelector("#quiz-back .lbl").textContent,
+    }));
+    ok("a reload after a failed post-test offers the replay again, without a new try",
+       re.title === "Subukan ulit?" && re.choices === 0 && re.back === "Tapusin na", re);
+    await page.evaluate(() => { Acts.showTransition = function () {}; Assessment.runFeedback = async function () {}; });
+    await page.click("#quiz-back");
+    await page.waitForTimeout(400);
+    ok("Tapusin na finishes the act with the score it has",
+       await page.evaluate(() => Acts.status === "completed" &&
+         __DB.assessment_scores.filter((r) => r.test_type === "post").length === 1));
+
+    // The password, from settings.
+    await page.evaluate(() => { document.getElementById("act-screen").classList.add("hidden"); Shell.state = "playing"; });
+    await page.evaluate(() => Shell.openPause());
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(200);
+    ok("a signed-in student is offered Palitan ang password", await visible(page, "#shell-password"));
+    await page.click("#shell-password");
+    await page.fill("#shell-password-new", "abc");
+    await page.fill("#shell-password-again", "abc");
+    await page.click("#shell-password-save");
+    const short = await page.textContent("#shell-password-note");
+    await page.fill("#shell-password-new", "bagongpass");
+    await page.fill("#shell-password-again", "bagongpasS");
+    await page.click("#shell-password-save");
+    const differ = await page.textContent("#shell-password-note");
+    await page.fill("#shell-password-again", "bagongpass");
+    await page.click("#shell-password-save");
+    await page.waitForTimeout(200);
+    const saved = await page.evaluate(() => ({
+      note: document.getElementById("shell-password-note").textContent,
+      call: __CALLS.find((c) => c.auth === "updateUser"),
+    }));
+    ok("a short password and two that differ are refused before anything is sent",
+       /6/.test(short) && /Hindi magkapareho/.test(differ), { short, differ });
+    ok("a good one is sent to Supabase as the new password",
+       saved.call && saved.call.attrs.password === "bagongpass" && /Napalitan na/.test(saved.note), saved);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(150);
+    ok("Escape goes back to settings", await page.evaluate(() => Shell.state === "settings"));
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await newPage({ session: null });
+    await page.waitForTimeout(300);
+    await page.click("#shell-title-settings");
+    await page.waitForTimeout(150);
+    ok("nobody signed in is offered a password change", !(await visible(page, "#shell-password")));
+    await ctx.close();
+  }
+
+  // -------------------------------------------------------------
+  // BI. Block 68. The teacher edits the questions and answers.
+  // -------------------------------------------------------------
+  console.log("\nBI. The teacher's question editor (Block 68)");
+  {
+    const seed = {
+      session: { user: { id: "t1" } },
+      profiles: [
+        { id: "t1", role: "teacher", full_name: "Gng. Cruz" },
+        { id: "s1", role: "student", full_name: "mag-aaral01", class_id: "c1" },
+      ],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+      assessment_scores: [
+        { student_id: "s1", act_number: 1, test_type: "pre", score: 4, max_score: 10 },
+        { student_id: "s1", act_number: 1, test_type: "post", score: 5, max_score: 10 },
+        { student_id: "s1", act_number: 1, test_type: "post", score: 9, max_score: 10, attempt: 2 },
+      ],
+    };
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const page = await ctx.newPage();
+    page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+    await page.route("**/supabaseClient.js*", (route) =>
+      route.fulfill({ body: STUB, contentType: "text/javascript" }));
+    await page.route("**/cdn.jsdelivr.net/**", (route) =>
+      route.fulfill({ body: "", contentType: "text/javascript" }));
+    await page.addInitScript((st) => { window.__TEST = st; }, seed);
+    await page.goto("http://localhost:" + PORT + "/teacher.html");
+    await page.waitForTimeout(600);
+
+    const post = await page.evaluate(() => [...document.querySelectorAll("#roster-body tr")][0].children[5].textContent);
+    ok("the roster shows the latest post-test try and how many there were", /^90%9\/10 · 2 subok$/.test(post), post);
+
+    const start = await page.evaluate(() => ({
+      items: document.querySelectorAll("#qe-list .qe-item").length,
+      source: document.getElementById("qe-source").textContent,
+      first: document.querySelector("#qe-list .qe-question").value,
+      correct: [...document.querySelectorAll("#qe-list .qe-item")][0]
+        .querySelectorAll("input[type=radio]")[0].checked,
+    }));
+    ok("with nothing saved, the editor starts from the game's own pre-test",
+       start.items === 10 && /Wala pang naka-save/.test(start.source) &&
+       /Saan sa Maynila/.test(start.first) && start.correct === true, start);
+
+    const saved = await page.evaluate(async () => {
+      const first = document.querySelector("#qe-list .qe-item");
+      first.querySelector(".qe-question").value = "Binagong tanong?";
+      first.querySelectorAll("input[type=radio]")[2].checked = true;
+      document.querySelectorAll("#qe-list .qe-item")[9].querySelector(".qe-delete").click();
+      document.getElementById("qe-save").click();
+      await new Promise((r) => setTimeout(r, 300));
+      const rows = __DB.assessment_items.filter((r) => r.act_number === 1 && r.test_type === "pre");
+      return { n: rows.length, first: rows[0], orders: rows.map((r) => r.item_order),
+        status: document.getElementById("qe-status").textContent,
+        source: document.getElementById("qe-source").textContent };
+    });
+    ok("saving writes the edited test, in order, with the new right answer",
+       saved.n === 9 && saved.first.question === "Binagong tanong?" && saved.first.correct_index === 2 &&
+       JSON.stringify(saved.orders) === "[1,2,3,4,5,6,7,8,9]" && /Na-save/.test(saved.status) &&
+       /Mula sa database/.test(saved.source), saved);
+
+    const invalid = await page.evaluate(async () => {
+      document.querySelector("#qe-list .qe-question").value = "  ";
+      document.getElementById("qe-save").click();
+      await new Promise((r) => setTimeout(r, 200));
+      return { status: document.getElementById("qe-status").textContent,
+        still: __DB.assessment_items.filter((r) => r.test_type === "pre")[0].question };
+    });
+    ok("a question left empty is refused and nothing is written",
+       /Tanong 1/.test(invalid.status) && invalid.still === "Binagong tanong?", invalid);
+
+    await page.selectOption("#qe-type", "trivia");
+    await page.waitForTimeout(300);
+    const trivia = await page.evaluate(async () => {
+      const box = document.querySelector("#qe-list .qe-trivia");
+      const had = box.value;
+      box.value = "Bagong trivia.";
+      document.getElementById("qe-save").click();
+      await new Promise((r) => setTimeout(r, 300));
+      return { had, row: __DB.act_trivia.find((r) => r.act_number === 1) };
+    });
+    ok("the trivia card is edited the same way",
+       /Macario Sakay/.test(trivia.had) && trivia.row && trivia.row.fact === "Bagong trivia.", trivia);
     await ctx.close();
   }
 

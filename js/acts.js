@@ -469,6 +469,15 @@ const Acts = {
         await Assessment.runTest(n, "pre");
       }
 
+      // Block 68. The barya held as play begins, so a replay can put
+      // the purse back where the act found it. Kept under a "__" flag,
+      // which a replay does not clear.
+      const startKey = "__startCurrency_" + n;
+      if (typeof state.flags[startKey] !== "number" && window.Game) {
+        state.flags[startKey] = Game.currency();
+        markDirty();
+      }
+
       await this.setStatus("playing");
       await this.checkObjectives();
     } finally {
@@ -572,7 +581,23 @@ const Acts = {
 
       if (window.Assessment && this.status !== "completed") {
         await this.setStatus("posttest");
-        await Assessment.runTest(n, "post");
+        // Block 68. A post-test below the pass mark offers a replay.
+        // retake is true only after a replay (its flag survives a
+        // reload), so reloading on the result cannot buy another try.
+        const retakeKey = "__retakePost_" + n;
+        const result = await Assessment.runTest(n, "post", { retake: Boolean(state.flags[retakeKey]) });
+        if (result && result.passed === false && Assessment.askReplay) {
+          const replay = await Assessment.askReplay(n, result);
+          if (replay) {
+            this._flowRunning = false;
+            await this.replayAct(n);
+            return;
+          }
+        }
+        if (state.flags[retakeKey]) {
+          delete state.flags[retakeKey];
+          markDirty();
+        }
       }
 
       await this.complete();
@@ -601,6 +626,62 @@ const Acts = {
     } finally {
       this._flowRunning = false;
     }
+  },
+
+  // Block 68. Plays the act again from the start after a failed
+  // post-test, at the instructor's direction. The story's flags are
+  // cleared, except what was earned to keep: glossary entries
+  // (salita_), hints found (pahiwatig_), the engine's own "__" flags,
+  // and any the act names in keepFlagsOnReplay (a best score). The
+  // barya go back to what they were when the act's play began, the
+  // counters restart, and act_progress goes back to playing: the one
+  // place the client moves that row backwards, and only from a
+  // failed post-test. The pre-test is not sat again; the post-test is,
+  // as a new attempt.
+  async replayAct(n) {
+    const act = this.getAct(n);
+    if (!act) return;
+    const keepNamed = new Set(act.keepFlagsOnReplay || []);
+    const kept = {};
+    Object.keys(state.flags).forEach((k) => {
+      if (/^(salita_|pahiwatig_|__)/.test(k) || keepNamed.has(k)) kept[k] = state.flags[k];
+    });
+    Object.keys(state.flags).forEach((k) => delete state.flags[k]);
+    Object.assign(state.flags, kept);
+    state.flags["__retakePost_" + n] = true;
+
+    if (window.Game) {
+      const start = state.flags["__startCurrency_" + n];
+      const target = typeof start === "number" ? start : 0;
+      const now = Game.currency();
+      if (now > target) Game.spendCurrency(now - target);
+      else if (now < target) Game.addCurrency(target - now);
+      if (Game.resetStats) Game.resetStats();
+    }
+
+    this.current = n;
+    this.status = "playing";
+    this._lastDone = 0;
+    if (this.progress[n]) {
+      this.progress[n].status = "playing";
+      this.progress[n].objectives_done = 0;
+    }
+    if (currentUserId) {
+      const { error } = await sb
+        .from("act_progress")
+        .update({ status: "playing", objectives_done: 0, updated_at: new Date().toISOString() })
+        .eq("student_id", currentUserId)
+        .eq("act_number", n);
+      if (error) console.error("act_progress replay write failed:", error);
+    }
+
+    clearQuests();
+    loadAct(act);
+    markDirty();
+    await saveProgress();
+
+    await this.showActTitle(n);
+    enterWorldScripts();
   },
 
   // The completion write. Only ever moves an act into completed,

@@ -195,6 +195,7 @@ async function openingOnTheStreet() {
   turnPlayer(1);
   await playIntertitle(["Tondo, 1880", "Kung saan nagsimula ang buhay ni Macario"],
     { startBlack: true });
+  unlockGlossary("tondo"); // Block 68
   await wait(500);
 
   // From behind: he faces right, they come from the left.
@@ -212,6 +213,7 @@ async function openingOnTheStreet() {
     { speaker: "Mga Siga", text: "BAHAHAHAHAHAHA!" },
     { speaker: "Macario", text: "Isarado mo 'yang bunganga mo!" },
   ]);
+  unlockGlossary("siga");
 
   // Nanay, from the right. She slides on (Block 57, no walk sheet).
   showDecoration("nanay", true);
@@ -244,6 +246,7 @@ async function openingOnTheStreet() {
     { speaker: "Nanay", text: "Sigurado ka ba diyan 'nak?" },
     { speaker: "Macario", text: "Opo inay, ako na po ang bahala" },
   ]);
+  unlockGlossary("cedula");
 
   // From here she is someone to talk to. The flag is saved now, so a
   // reload after this point replays only the thought below.
@@ -301,6 +304,7 @@ async function theMissingActor() {
     { speaker: "Macario", text: "Sige po. Susubukan ko." },
     { speaker: "Direktor", text: "Salamat, iho! Tara na sa loob, bago ka pa magbago ng isip!" },
   ]);
+  unlockGlossary("direktor");
   // The fade takes the cutscene over from here (game.js, runSceneScript).
   if (window.Acts) Acts.gotoScene("entablado", { x: STAGE_ENTER_X, facing: -1 });
 }
@@ -344,6 +348,7 @@ async function thePlay() {
     { speaker: "Macario", text: "...Sige po." },
     { speaker: "Direktor (pabulong)", text: "Pumuwesto na ang lahat! Bubuksan na ang telon!" },
   ]);
+  unlockGlossary("entablado");
 
   await playIntertitle(["Bumukas ang telon."], {
     whileBlack: () => placePlayer(STAGE_PLAY_X, -1),
@@ -361,6 +366,7 @@ async function thePlay() {
     { speaker: "Sultan", text: "Isang kaaway, sa loob ng aking palasyo? Mga kawal! Dakpin ang kabalyerong iyan!" },
     { speaker: "Direktor (pabulong)", text: "Ikaw na, Macario! Labanan mo sila!" },
   ]);
+  unlockGlossary("sultan");
 
   // He leaves the fighting to his soldiers, who come in from the same
   // wing, spaced so they arrive one after another.
@@ -393,6 +399,7 @@ async function thePlay() {
     { speaker: "Sultan", text: "Sa inyo na ang aking basbas." },
     { speaker: "Mga Manonood", text: "Mabuhay! Mabuhay!" },
   ]);
+  unlockGlossary("moro-moro");
 
   // The curtain closes, and he is in the wings with the direktor.
   await playIntertitle(["Nagsara ang telon.", "Tumayo at pumalakpak ang mga manonood."], {
@@ -493,55 +500,64 @@ function pickApples() {
 function payForJob() {
   Game.addCurrency(JOB_PAY);
   showToast("+" + JOB_PAY + " barya", 2200);
+  unlockGlossary("barya"); // Block 68
 }
 
-// ---- The notebook (Block 64) ----------------------------------------
+// ---- The Talaan (Block 68) -------------------------------------------
 // PLACEHOLDER, all of it: ours, to be accepted, rewritten or removed by
-// the proponents. Ten pages lie along the street, one for each of the
-// ten matched pairs in the Act I item bank (db/seeds/macario_items_v3.sql),
-// and each says the thing that pair's correct answer commits to, and
-// nothing further: that is the whole of their authority, the same rule
-// CLAUDE.md sets for every historical fact in this file. The story is
-// in 1880 and says none of it yet (TRACKER.md, Next action, 2); the
-// pages are how a student who explores meets it now, outside the story,
-// as pages from a history of the man the boy on screen becomes.
+// the proponents. Block 64's ten pages of facts are gone at their
+// request. In their place, two things to collect (game.js, THE TALAAN):
 //
-// Optional: nothing in the chain waits on a page. Every other one sits
-// at jump height, so Talon has a use on a street with no platforms. Each
-// is at least 90 clear of a join (multiples of PANEL) and of anyone to
-// talk to, and past the opening's walk, so none is found mid-cutscene.
-const PAGE_HIGH = 155; // GROUND_LEVEL + 95: out of reach without a jump
-const NOTEBOOK_PAGES = [
-  { id: "tondo", x: 2500,
-    title: "Anak ng Tondo",
-    text: "Si Macario Sakay ay lumaki sa Tondo, Maynila. Sa mga kalyeng tulad nito siya nagkaisip." },
-  { id: "hanapbuhay", x: 3950, y: PAGE_HIGH,
-    title: "Mananahi at barbero",
-    text: "Bago ang himagsikan, naghanapbuhay si Sakay bilang mananahi at barbero, isang karaniwang manggagawa." },
-  { id: "komedya", x: 5300,
-    title: "Ang moro-moro",
-    text: "Mahilig sa teatro si Sakay. Madalas siyang umarte sa komedya, o moro-moro, noong kabataan niya." },
-  { id: "entablado", x: 6050, y: PAGE_HIGH,
-    title: "Ang natutunan sa entablado",
-    text: "Sa entablado nasanay si Sakay na magsalita sa harap ng maraming tao. Nahasa ang kanyang tinig at tapang na humarap sa madla." },
-  { id: "katipunan", x: 7000,
-    title: "1894",
-    text: "Noong 1894, sumapi si Macario Sakay sa Katipunan, isang lihim na samahan." },
-  { id: "layunin", x: 8200, y: PAGE_HIGH,
-    title: "Ang layunin ng Katipunan",
-    text: "Hindi reporma ang hangad ng Katipunan kundi ganap na kalayaan mula sa Espanya, sa pamamagitan ng himagsikan." },
-  { id: "lihim", x: 9800,
-    title: "Bakit lihim",
-    text: "Ipinagbabawal ang Katipunan. Ang mahuhuling kasapi ay parurusahan ng mga awtoridad, kaya lihim ang kanilang pagkakakilanlan at mga pagpupulong." },
-  { id: "tagapaghatid", x: 10700, y: PAGE_HIGH,
-    title: "Ang mga tagapaghatid",
-    text: "Mahalaga sa lihim na kilusan ang mga tagapaghatid ng mensahe. Dala nila ang balita nang hindi nabubunyag ang samahan. Kapag nahuli ang isa, malalantad ang buong kilusan." },
-  { id: "sakripisyo", x: 12200, y: PAGE_HIGH,
-    title: "Ang iniwan niya",
-    text: "Iniwan ni Sakay ang kanyang hanapbuhay upang sumapi sa Katipunan. Inuna niya ang kapakanan ng bayan kaysa sa sariling ginhawa." },
-  { id: "bayan", x: 12700,
-    title: "Kilusan ng bayan",
-    text: "Karaniwang manggagawa ang marami sa mga Katipunero, gaya ni Sakay. Isa itong kilusang nag-ugat sa karaniwang mamamayan." },
+//   Words, earned by doing the thing they name: unlockGlossary(id) is
+//   called where it happens (the opening, the first job, the first pay,
+//   the play). Each is an ordinary meaning, not a claim about Sakay.
+//
+//   Three hints for the post-test, lying at three of the spots below,
+//   chosen at random per student along with three of the six hints.
+//   Every other spot is at jump height. Each is at least 90 clear of a
+//   join and of anyone to talk to, and past the opening's walk.
+const GLOSSARY = [
+  { id: "tondo", term: "Tondo",
+    text: "Isang distrito ng Maynila, sa tabi ng look. Dito nagsimula ang kuwento ni Macario." },
+  { id: "siga", term: "Siga",
+    text: "Taong mayabang at mahilig manggulo o mang-asar sa kalye." },
+  { id: "cedula", term: "Cedula",
+    text: "Katibayan ng pagkakakilanlan na kailangang bayaran ng mga nasa hustong gulang noong panahon ng Espanyol. Isa itong uri ng buwis." },
+  { id: "kutsero", term: "Kutsero",
+    text: "Ang nagpapatakbo ng kalesa o karwaheng hinihila ng kabayo." },
+  { id: "barya", term: "Barya",
+    text: "Maliliit na salaping metal. Ito ang iniipon ni Macario para kay Nanay." },
+  { id: "mananahi", term: "Mananahi",
+    text: "Taong gumagawa at nagtatahi ng damit." },
+  { id: "direktor", term: "Direktor",
+    text: "Ang namamahala sa isang dula at sa mga artista nito." },
+  { id: "entablado", term: "Entablado",
+    text: "Ang mataas na plataporma kung saan ginaganap ang mga dula at palabas." },
+  { id: "sultan", term: "Sultan",
+    text: "Tawag sa pinuno o hari sa ilang kaharian." },
+  { id: "moro-moro", term: "Moro-moro",
+    text: "Kilala rin bilang komedya. Dulang tungkol sa digmaan ng dalawang magkaaway na kaharian, may labanan at kuwento ng pag-ibig." },
+];
+
+const HINT_HIGH = 155; // GROUND_LEVEL + 95: out of reach without a jump
+const HINT_SPOTS = [
+  2500, { x: 3950, y: HINT_HIGH }, 5300, { x: 6050, y: HINT_HIGH }, 7000,
+  { x: 8200, y: HINT_HIGH }, 9800, { x: 10700, y: HINT_HIGH }, { x: 12200, y: HINT_HIGH }, 12700,
+];
+
+const HINTS = [
+  { title: "Saan nagsimula?",
+    text: "Tandaan ang lugar na nakasulat sa unang itim na tabing ng laro. Doon lumaki si Macario." },
+  { title: "Ang hanapbuhay",
+    text: "Ang trabaho ng isa sa mga pinagsilbihan ni Macario dito ay magiging hanapbuhay din niya, kasama ang pagiging barbero." },
+  { title: "Ang dula",
+    text: "Anong uri ng dula ang ginanap ni Macario sa entablado? Hanapin ang pangalan nito sa Talaan." },
+  { title: "Sa harap ng madla",
+    text: "Ano ang natutunan ni Macario nang humarap siya sa maraming manonood? Magagamit iyon ng isang magiging pinuno." },
+  { title: "Isang lihim na samahan",
+    text: "Tandaan ang taong 1894. Noon sumapi si Macario sa isang lihim na samahang naghahangad ng kalayaan." },
+  { title: "Mga karaniwang tao",
+    text: "Tingnan ang mga tao sa kalyeng ito: kutsero, mananahi, tindero. Ganitong mga manggagawa ang bumuo sa kilusang sasalihan ni Macario." },
 ];
 
 window.ACT_1 = {
@@ -599,16 +615,24 @@ window.ACT_1 = {
   // The chain is the quest log, so there is nothing to add at the start.
   startingQuests: [],
 
-  // Block 64. The notebook the pages fill (game.js, THE NOTEBOOK).
-  // PLACEHOLDER, like the pages.
-  notebook: {
-    title: "Kuwaderno",
-    pageLabel: "Pahina ng Kasaysayan",
-    hint: "May mga pahinang nakakalat sa daan. Ang iba, kailangan mong talunin.",
-    foundText: "Naidagdag sa iyong Kuwaderno. Buksan ito sa pause.",
-    completeText: "Nabuo mo ang Kuwaderno! Ngayon, kilala mo na kung sino ang batang ito paglaki.",
-    entries: NOTEBOOK_PAGES.map((p) => ({ id: p.id, flag: "pahina_" + p.id, title: p.title, text: p.text })),
+  // Block 68. The Talaan: words earned by doing things, and three
+  // hints for the post-test (game.js, THE TALAAN). PLACEHOLDER.
+  glossary: {
+    title: "Talaan",
+    hint: "May bagong salita tuwing may nagawa ka. Hanapin din ang mga pahiwatig sa daan.",
+    entries: GLOSSARY,
   },
+  hints: {
+    count: 3,
+    label: "Pahiwatig",
+    foundText: "Naidagdag sa iyong Talaan. Makatutulong ito sa panapos na pagsusulit.",
+    completeText: "Nahanap mo ang lahat ng pahiwatig! Balikan sila sa Talaan bago ang pagsusulit.",
+    pool: HINTS,
+  },
+
+  // Block 68. Kept when the act is replayed after a failed post-test
+  // (acts.js, replayAct): the apple round's best score.
+  keepFlagsOnReplay: ["rekordSaMansanas"],
 
   // Where to go next (Block 42). Later steps first.
   guide: [
@@ -647,10 +671,8 @@ window.ACT_1 = {
       panels: STREET_PANELS,
       panelSky: STREET_SKY,
       startX: STREET_SPOT,
-      // Block 64. The notebook's pages.
-      pickups: NOTEBOOK_PAGES.map((p) => ({
-        id: "pahina-" + p.id, type: "page", entry: p.id, x: p.x, y: p.y,
-      })),
+      // Block 68. Where the three hints may lie.
+      hintSpots: HINT_SPOTS,
       decorations: [
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1] },
@@ -727,6 +749,7 @@ window.ACT_1 = {
               ],
               onComplete() {
                 state.flags.nakausapAngKutsero = true;
+                unlockGlossary("kutsero"); // Block 68
                 markDirty();
               },
             },
@@ -819,6 +842,7 @@ window.ACT_1 = {
                 { speaker: "Macario", text: "Sige po, ihahatid ko na ngayon." },
               ],
               onComplete() {
+                unlockGlossary("mananahi"); // Block 68
                 state.flags.nakausapAngMananahi = true;
                 markDirty();
               },

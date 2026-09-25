@@ -126,6 +126,9 @@ async function initTeacher() {
   gate.classList.add("hidden");
   dash.classList.remove("hidden");
 
+  // Block 68. The question editor does not depend on a class.
+  if (window.TeacherQuestions) TeacherQuestions.init();
+
   await loadClasses(profile.id);
 }
 
@@ -221,7 +224,7 @@ async function loadRoster(classId) {
       .in("student_id", ids),
     sb
       .from("assessment_scores")
-      .select("student_id, act_number, test_type, score, max_score")
+      .select("*")
       .in("student_id", ids),
   ]);
 
@@ -263,10 +266,21 @@ function buildRoster(students, progress, acts, scores) {
     actsBy.get(a.student_id).push(a);
   });
 
-  // Keyed "studentId|actNumber|testType" for direct lookup.
+  // Keyed "studentId|actNumber|testType" for direct lookup. Since
+  // Block 68 a failed post-test can be taken again, so a test may have
+  // several rows; the latest attempt is the one shown, and the count is
+  // kept for the cell. A row from before schema 006 is attempt 1.
   const scoresBy = new Map();
   scores.forEach((s) => {
-    scoresBy.set(`${s.student_id}|${s.act_number}|${s.test_type}`, s);
+    const key = `${s.student_id}|${s.act_number}|${s.test_type}`;
+    const attempt = Number(s.attempt) || 1;
+    const prev = scoresBy.get(key);
+    const tries = prev ? prev.tries + 1 : 1;
+    if (!prev || attempt >= (Number(prev.attempt) || 1)) {
+      scoresBy.set(key, Object.assign({}, s, { tries }));
+    } else {
+      prev.tries = tries;
+    }
   });
 
   return students.map((student) => {
@@ -343,7 +357,8 @@ function renderRoster() {
     tr.appendChild(cell(
       row.pre ? Math.round(row.prePct) + "%" : null, "num", row.pre ? fraction(row.pre) : null));
     tr.appendChild(cell(
-      row.post ? Math.round(row.postPct) + "%" : null, "num", row.post ? fraction(row.post) : null));
+      row.post ? Math.round(row.postPct) + "%" : null, "num",
+      row.post ? fraction(row.post) + (row.post.tries > 1 ? " · " + row.post.tries + " subok" : "") : null));
     tr.appendChild(gainCell(row.gain));
     tr.appendChild(cell(row.performance !== null ? row.performance.toFixed(1) : null, "num"));
     tr.appendChild(cell(formatDuration(row.elapsed), "num"));
