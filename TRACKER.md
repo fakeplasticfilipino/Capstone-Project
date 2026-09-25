@@ -25,7 +25,14 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 25 Sep 2026, after Block 70: the teacher writes the
+Last updated: 25 Sep 2026, after Block 71: the punch lands with the
+fist. The hit, the swing sound, the thump and the enemy's stagger now
+happen on the melee clip's contact frame (frame 6, full extension)
+rather than on release; a tap while the fist is on its way is ignored.
+test.js 711 passed, 0 failed; verify_new_scene.js 105 passed, 0
+failed. Pushed to main.
+
+Before that, 25 Sep 2026, after Block 70: the teacher writes the
 Talaan now, up to three papers per act on the dashboard (Talaan
 Papers), which lie at three places fixed in content (Act I: 2500 on
 the road, 8200 and 12200 at jump height); and the shadow trees' crowns
@@ -224,7 +231,7 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v46    js/game.js v70       js/shell.js v17
+    css/style.css v46    js/game.js v71       js/shell.js v17
     js/inventory.js v9   js/acts.js v14       js/assessment.js v4
     content/act1.js v49  content/items.js v11  content/act2-4.js v1
     content/questions.js v1 (named in index.html and teacher.html)
@@ -381,8 +388,10 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
     70  the teacher's Talaan papers (teacher-talaan.js, talaan_entries,
         schema 007; fixed hints, Game.setHintPool, Acts.loadTalaan);
         the shadow trees' crowns lowered into the screen
+    71  the punch's hit on its contact frame (melee contact: 6,
+        playMelee, updateMeleeContact, meleePending)
 
-Everything through Block 70 is pushed to main and live on GitHub
+Everything through Block 71 is pushed to main and live on GitHub
 Pages. The earlier instructions for a hand push of Blocks 42 to 58 from
 the device folder are history: those blocks reached main with Blocks 62
 to 67 (e7be506), and cloud sessions since push straight to main.
@@ -471,6 +480,12 @@ Blocks 62 to 67 first:
       splat on a miss, and a best score the next time. Too hard or too
       easy is CATCH_* in game.js.
     Being paid: "+50" and a coin rise over his head.
+    The punch (Block 71), in the play's fight: tap Atake beside a
+      soldier. He should stagger, and the thump and the jolt land, at
+      the moment Macario's arm is fully out, not as the button is let
+      go. Failure looks like the soldier reacting before the arm moves,
+      or a tapped punch that never lands. If it feels slow, contact in
+      the melee sheet (game.js) is the frame; 5 is a little earlier.
 
 For Block 57:
 
@@ -545,7 +560,7 @@ against the source material.
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
 header directs, then STORY.md before writing any story. Everything
-through Block 70 is on main (9ef0b56 and after); cloud sessions push
+through Block 71 is on main; cloud sessions push
 straight to main (CLAUDE.md, Deployment). The first thing owed is
 schema 007 in Supabase (Next action, 00), which only the proponent can
 run. Act I was rewritten in Block 52, carried through
@@ -1020,7 +1035,7 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 707 checks (section BK is Block 70: fixed papers against the fixture, Acts.loadTalaan and the dashboard's Talaan Papers editor; section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
+test.js: 711 checks (Block 71 added four to section AI: the punch lands on its contact frame, once, and not when cut off; section BK is Block 70: fixed papers against the fixture, Acts.loadTalaan and the dashboard's Talaan Papers editor; section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
 questions graded by the game, the teacher's questions first, the pass
 mark, the replay and the second attempt, a reload on a failed result,
 the password, and the teacher's editor); before Block 68, 676 checks against a fixture act and item catalogue (so

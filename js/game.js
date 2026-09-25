@@ -1409,9 +1409,14 @@ const BASE_SPRITE_SHEETS = {
   // dips about ten native pixels at full extension (frames 5 to 10), which
   // is the lunge in the art rather than a size error, so one
   // contentTop/contentHeight pair is right for it.
+  //
+  // Block 71. contact is the frame the fist lands on, and the hit is
+  // resolved there rather than on release (updateMeleeContact). Measured
+  // with measure-sprite.js: the drawing's right edge is 116 at frame 3,
+  // then 134, 147, 160 and 161, so frame 6 is the first at full reach.
   melee: {
     src: "assets/sprites/player/macario-melee.png", frames: 12, fps: 24, columns: 4,
-    loop: false,
+    loop: false, contact: 6,
     contentTop: 47, contentHeight: 109, footX: 96,
   },
 
@@ -3534,7 +3539,12 @@ let projectile = null; // at most one in flight
 // every reset path already clears it (respawnInScene, startPerformance,
 // loadScene) and a rename would be churn through all of them.
 let shooting = null; // null | "aim" | "fire" | "melee"
-let shootFireTimer = null; // hands the pose back after fire or melee
+let shootFireTimer = null; // hands the pose back after fire
+
+// Block 71. True from a punch starting until its fist reaches the contact
+// frame, when updateMeleeContact resolves the hit and clears it.
+let meleePending = false;
+let meleeEndAt = 0; // when the clip's last frame has been shown long enough
 
 // How long the button must be down before the aim pose shows (Block 27).
 // Before melee had its own clip, the aim pose appeared the instant the
@@ -3581,7 +3591,6 @@ function endAttackHold() {
     // does something, a punch, so the button never feels dead, and says
     // why it was not a shot.
     showToast("Hindi puwedeng bumaril dito.");
-    meleeAttack();
     playMelee();
   } else if (held >= ATTACK_HOLD_MS) {
     // Fire the instant the throw happens, not before, so the muzzle
@@ -3589,29 +3598,66 @@ function endAttackHold() {
     throwProjectile();
     playShootFire();
   } else {
-    // A short tap was never a throw: drop any aim pose and swing. The hit
-    // lands on release, as it always has, and the punch clip plays over
-    // it; gameplay is not made to wait for the art.
-    meleeAttack();
+    // A short tap was never a throw: drop any aim pose and swing.
     playMelee();
   }
 }
 
-// Plays the punch once, then hands the pose back. Same timer approach as
-// playShootFire, below, and the same timer, so a throw straight after a
-// punch (or the reverse) cancels the earlier hand-back rather than
-// letting it end the new clip early.
+// Plays the punch once. The hit is not resolved here: it lands when the
+// clip reaches the frame where his arm is fully out (the sheet's
+// contact), so the swing, the thump and the enemy's stagger all happen
+// on the picture of the fist arriving. Until Block 71 the hit landed on
+// release and the arm reached out a quarter second after the enemy had
+// already reacted, which is what read as disconnected.
+//
+// A tap while the fist is still on its way is ignored, so the punch
+// already thrown lands rather than being restarted before it can
+// connect; a tap after contact starts the next punch. The pose is handed
+// back from the animation too (updateMeleeContact), not from a timer, so
+// a pause or a hit-stop mid-punch holds the whole punch, contact
+// included. clearTimeout stops a fire clip's pending hand-back from
+// ending this clip early.
 function playMelee() {
+  if (meleePending && shooting === "melee" && currentAnim === "melee") return;
+  const sheet = SPRITE_SHEETS.melee;
+  clearTimeout(shootFireTimer);
   shooting = "melee";
   applyAnim("melee", true);
+  meleePending = true;
+  meleeEndAt = 0;
+  // Without art there is no fist to wait for and no frame will advance:
+  // resolve at once and hand the pose back on a timer, as before.
+  if (!spritesReady || !sheet || sheet.failed || sheet.contact == null) {
+    meleePending = false;
+    meleeAttack();
+    shootFireTimer = setTimeout(() => {
+      if (shooting === "melee") shooting = null;
+    }, sheet ? sheet.frames * (1000 / sheet.fps) : 500);
+  }
+}
 
+// Called every frame from the game loop, after the sprite has stepped.
+// Lands a pending punch on its contact frame, and ends the clip once its
+// last frame has been shown for a frame's length. Anything that took the
+// pose away (a respawn, a cutscene, a throw) has already changed
+// currentAnim or shooting, and then the punch simply never lands.
+function updateMeleeContact(now, canAct) {
+  if (shooting !== "melee" || currentAnim !== "melee") {
+    meleePending = false;
+    return;
+  }
   const sheet = SPRITE_SHEETS.melee;
-  const duration = sheet.frames * (1000 / sheet.fps);
-
-  clearTimeout(shootFireTimer);
-  shootFireTimer = setTimeout(() => {
-    shooting = null;
-  }, duration);
+  if (sheet.failed || sheet.contact == null) return; // playMelee's timer
+  if (meleePending && currentFrame >= (sheet.contact || 0)) {
+    meleePending = false;
+    if (canAct) meleeAttack();
+  }
+  // Not lastFrameTime: the animator keeps resetting it while it holds
+  // a loop: false clip on its last frame.
+  if (!meleePending && currentFrame >= sheet.frames - 1) {
+    if (!meleeEndAt) meleeEndAt = now + 1000 / sheet.fps;
+    else if (now >= meleeEndAt) shooting = null;
+  }
 }
 
 // Plays shootFire's three frames once, then hands the pose back to the
@@ -5377,6 +5423,7 @@ function gameLoop(now) {
     }
   }
   updateAnimFrame(now);
+  updateMeleeContact(now, canAct); // Block 71
   npcAnimators.forEach((animator) => animator.update(now));
 
   // Writing the same pixel back still invalidates the element, so both

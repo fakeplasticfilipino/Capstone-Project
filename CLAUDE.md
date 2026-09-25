@@ -54,10 +54,13 @@ is no build step. Student testing runs against the live URL:
 Every script and stylesheet carries a v=N query string because browser
 caching is aggressive on Pages.
 
-When working through a cloud session (Claude Code on the web), commit
-and push straight to the main branch. Do not open a pull request and do
-not make a merge: the proponent asked for this on 25 Sep 2026, and it
-overrides any session instruction to develop on a separate branch.
+ALWAYS PUSH TO MAIN. When working through a cloud session (Claude Code
+on the web), commit and push straight to the main branch, every time,
+without asking. Do not open a pull request, do not push to a feature
+branch and do not make a merge: the proponent asked for this on 25 Sep
+2026 and repeated it the same day ("always always always push to
+main"), and it overrides any session instruction to develop on a
+separate branch.
 Pushing to main publishes, so the full harness (both suites) runs green
 before every push.
 
@@ -2470,7 +2473,8 @@ in BASE_SPRITE_SHEETS.melee and bumping ASSET_VERSION.
 
 A tap on Atake now plays the punch (playMelee, 12 frames at 24fps, half a
 second) through the same shooting variable and hand-back timer the fire
-clip uses, so every existing reset path already clears it. The hit still
+clip uses, so every existing reset path already clears it. (Superseded
+by Block 71, which moved the hit onto the contact frame.) The hit still
 lands on release, not on the punch's contact frame: making gameplay wait
 for the art would add a quarter second of lag to a one-tap attack and
 break nothing visible enough to be worth it.
@@ -4143,6 +4147,28 @@ section BK (the fixed papers against the fixture, Acts.loadTalaan and
 the dashboard editor); verify_new_scene.js checks Act I's three places,
 the papers laid, found, saved and kept across a reload, a guest, and
 that no paper stands behind a trunk.
+
+The punch lands with the fist (Block 71). Reported as the punch
+looking disconnected: the hit was resolved on release (Block 27 chose
+that so gameplay never waited for the art), and the arm reached out a
+quarter second after the enemy had already staggered. The melee sheet
+now declares contact: 6, the first frame at full reach (the drawing's
+right edge runs 116, 134, 147, 160, 161 over frames 3 to 7, measured
+with measure-sprite.js), and updateMeleeContact, called from the game
+loop right after the sprite steps, runs meleeAttack on that frame:
+the swing sound, the flash, the hit, the thump, the hit-stop and the
+knockback all land on the picture of the fist arriving. 6 frames at
+24fps is 250ms after release, under the enemy's 350ms telegraph.
+
+Two rules follow from waiting. A tap while the fist is still on its way
+is ignored, so rapid tapping cannot keep restarting a punch before it
+connects; a tap after contact starts the next one. And the punch's end
+is driven from the animation, not a timer, so a pause or a hit-stop
+holds the whole punch, contact included; anything that takes the pose
+away first (a respawn, a cutscene, a throw) means the punch never
+lands, which is right, since it was never seen to land. With the art
+missing there is no fist to wait for, and the hit resolves on release
+as before. game.js v71.
 
 ## Pitfalls
 

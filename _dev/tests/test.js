@@ -1700,6 +1700,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       facing = 1;
       return guard.id;
     }).then(() => page.click("#btn-attack"))
+      .then(() => page.waitForTimeout(450)) // Block 71: the hit lands with the fist
       .then(() => page.evaluate(() => GUARDS[0].disabled));
     ok("tapping Atake swings", swung === true, swung);
 
@@ -2476,6 +2477,47 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the punch hands the pose back afterwards",
        punched.shooting === null && (punched.anim === "idle" || punched.anim === "walk"), punched);
 
+    // Block 71. The hit lands on the frame the fist reaches out, not on
+    // release. meleeAttack is wrapped to record the frame it ran on.
+    const contact = await page.evaluate(() => new Promise((resolve) => {
+      const real = meleeAttack;
+      const hits = [];
+      meleeAttack = () => { hits.push({ frame: currentFrame, anim: currentAnim }); real(); };
+      startAttackHold();
+      endAttackHold();
+      const onRelease = hits.length;
+      // A second tap while the fist is still on its way must not restart
+      // the punch or add a second hit.
+      startAttackHold();
+      endAttackHold();
+      const afterSecondTap = { hits: hits.length, frame: currentFrame };
+      setTimeout(() => {
+        meleeAttack = real;
+        resolve({ onRelease, afterSecondTap, hits, contact: SPRITE_SHEETS.melee.contact,
+                  shooting, anim: currentAnim });
+      }, 700);
+    }));
+    ok("releasing a tap does not land the hit before the fist is out",
+       contact.onRelease === 0 && contact.afterSecondTap.hits === 0, contact);
+    ok("the hit lands once, on the punch's contact frame",
+       contact.contact === 6 && contact.hits.length === 1 &&
+       contact.hits[0].frame === 6 && contact.hits[0].anim === "melee", contact);
+    ok("and the pose is handed back after the clip",
+       contact.shooting === null && contact.anim !== "melee", contact);
+
+    // A punch cut off before contact (a respawn, a cutscene) never lands.
+    const cut = await page.evaluate(() => new Promise((resolve) => {
+      const real = meleeAttack;
+      let hits = 0;
+      meleeAttack = () => { hits++; real(); };
+      startAttackHold();
+      endAttackHold();
+      shooting = null; // what respawnInScene and startPerformance do
+      setTimeout(() => { meleeAttack = real; resolve({ hits, pending: meleePending }); }, 500);
+    }));
+    ok("a punch interrupted before its fist lands does not hit",
+       cut.hits === 0 && cut.pending === false, cut);
+
     // A tap that is quick enough never shows the aim pose at all, even
     // for a frame: sampled every animation frame from press to release.
     const flash = await page.evaluate(() => new Promise((resolve) => {
@@ -3115,16 +3157,18 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     // Block 60. A punch now swings (swing.wav), so the check is on which
     // effect is asked for, not on whether any sound plays at all.
-    const tap = await page.evaluate(() => {
+    // Since Block 71 the swing is heard with the fist, on the contact
+    // frame, so the spy stays on until the punch has played out.
+    const tap = await page.evaluate(() => new Promise((resolve) => {
       destroyProjectile();
       const asked = [];
       const real = playSfx;
       window.playSfx = (name) => { asked.push(name); return real(name); };
       startAttackHold();
       endAttackHold();
-      window.playSfx = real;
-      return { asked, shooting };
-    });
+      const shot = shooting;
+      setTimeout(() => { window.playSfx = real; resolve({ asked, shooting: shot }); }, 450);
+    }));
     ok("a tap (the punch) makes no gunshot, only the swing",
        !tap.asked.includes("gunShot") && tap.asked.includes("swing"), tap);
     await page.waitForTimeout(700);
