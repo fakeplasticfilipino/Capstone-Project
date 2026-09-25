@@ -112,7 +112,8 @@ off the repository.
     assets/
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png; the
-                               artist's art only (Block 59)
+                               artist's art (Block 59), and the siga
+                               drawn by draw-siga.js (Block 72)
       sprites/enemies/         guards and fighters
       sprites/scenery/         things on the street that are used, not
                                talked to (empty; the apple tree is a
@@ -125,7 +126,8 @@ off the repository.
     db/                        migrations/, seeds/, scripts/ (Database)
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
-                               make-shadow-tree.py, make-sfx.py,
+                               make-shadow-tree.py, draw-siga.js,
+                               make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
@@ -4169,6 +4171,49 @@ away first (a respawn, a cutscene, a throw) means the punch never
 lands, which is right, since it was never seen to land. With the art
 missing there is no fist to wait for, and the hit resolves on release
 as before. game.js v71.
+
+The siga drawn in code (Block 72). Requested by the proponent: a
+sprite for the siga built from nothing, not a modified existing one,
+with an idle and a walk. This reverses, for the siga only and on the
+proponent's own word, the verdict of Blocks 54 and 59 that characters
+drawn in code do not reach the artist's standard; that verdict was
+about a walk made by moving the artist's pixels and stand-ins
+recoloured from the artist's frames, and this is neither.
+_dev/tools/draw-siga.js (Node, no dependencies, since the proponent's
+computer has no Python) builds each boy as a jointed figure: two legs,
+two arms, a spine and a head, a few angles a frame, wearing clothes
+made of shapes. Every part is painted the way the commissioned sheets
+look: a thin dark outline, a shade on the side away from a light at
+the upper left, a highlight toward it, and cast shadows from what
+hangs over it (the shirt hem on the trousers, the jaw on the neck, the
+near arm on the shirt). It is drawn at four times the size and
+averaged down, which is what makes the edges soft rather than
+stair-stepped. The rig puts the lower sole on the ground every frame,
+so the walk bobs by itself and nothing floats.
+
+Three boys, one table (BOYS): the leader (siga-1, the one who speaks)
+in a red panyo with its tails flying, a faded indigo camisa with the
+sleeves rolled, khaki trousers rolled to the calf and a stalk of grass
+in his teeth; a big one (siga-2) in a buri hat pushed back and an open
+white camisa with a red sash; a small one (siga-3) with a mop of hair
+in an ochre shirt too big for him, patched at the back. All three are
+barefoot, side on, facing right. The idle is 12 frames at 7fps
+(breathing, the weight on the back foot, a hand on the hip, the stalk
+worked in his teeth); the walk is 8 frames at 14fps, a loose swagger,
+leaning back, chin up, which at the opening's 170 px a second puts the
+feet about where the ground moves under them.
+
+Each decoration carries animation (the idle) and walkAnimation (the
+walk), the Block 53 pair, so the walk plays only while the opening
+walks them on. Both sheets share footX 128, the hip, rather than the
+walk's own measured 124, so a boy does not slide when he stops. And
+since spriteFit draws every sheet DISPLAY_HEIGHT tall whatever its
+contentHeight, each boy's displayHeight is 134 times his height over
+127 (Macario's), which is what keeps the big one taller and the small
+one shorter. The numbers are chosen, not measured against anything but
+the other sheets; the colours, the build and the pose of each boy are
+lines in BOYS and idlePose/walkPose, and rerunning the tool rewrites
+all six files. content/act1.js v50, game.js v72, ASSET_VERSION 26.
 
 ## Pitfalls
 

@@ -389,6 +389,21 @@ const storyDrift = () => {
      p0.joins.length === 9 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
   ok("the road is 14500 wide", await page.evaluate(() => WORLD_WIDTH === 14500));
 
+  // Block 72. The siga have art of their own: an idle and a walk each,
+  // loaded rather than boxes, and three sizes.
+  const siga = await page.evaluate(() => ["siga-1", "siga-2", "siga-3"].map((id) => {
+    const d = currentScene.decorations.find((x) => x.id === id);
+    return {
+      idle: !!d.spriteEl && !d.spriteEl.classList.contains("sprite-placeholder") && !d.animation.failed,
+      walk: !!d.walkSpriteEl && !d.walkSpriteEl.classList.contains("sprite-placeholder") && !d.walkAnimation.failed,
+      height: d.displayHeight,
+    };
+  }));
+  ok("the three siga have their own idle and walk sheets, not placeholder boxes",
+     siga.every((g) => g.idle && g.walk), siga);
+  ok("and stand at three heights, the big one tallest",
+     siga[1].height > siga[0].height && siga[0].height > siga[2].height, siga);
+
   const c1 = await readConversation(page, 3);
   ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
   ok("Macario faces the siga, behind him on the left", c1.facings.every((f) => f === -1), c1.facings);

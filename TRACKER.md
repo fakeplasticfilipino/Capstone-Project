@@ -25,7 +25,14 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 25 Sep 2026, after Block 71: the punch lands with the
+Last updated: 25 Sep 2026, after Block 72: the three siga have art of
+their own, drawn from nothing in code at the proponent's request
+(_dev/tools/draw-siga.js), each with a 12-frame idle and an 8-frame
+walk that plays while the opening walks them on; three builds, three
+heights. test.js 711 passed, 0 failed; verify_new_scene.js 107 passed,
+0 failed. Pushed to main.
+
+Before that, 25 Sep 2026, after Block 71: the punch lands with the
 fist. The hit, the swing sound, the thump and the enemy's stagger now
 happen on the melee clip's contact frame (frame 6, full extension)
 rather than on release; a tap while the fist is on its way is ignored.
@@ -231,11 +238,11 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v46    js/game.js v71       js/shell.js v17
+    css/style.css v46    js/game.js v72       js/shell.js v17
     js/inventory.js v9   js/acts.js v14       js/assessment.js v4
-    content/act1.js v49  content/items.js v11  content/act2-4.js v1
+    content/act1.js v50  content/items.js v11  content/act2-4.js v1
     content/questions.js v1 (named in index.html and teacher.html)
-    ASSET_VERSION 25 (in js/game.js)
+    ASSET_VERSION 26 (in js/game.js)
     sw.js carries no version: the browser checks it itself on every
     visit (Block 62)
     css/teacher.css v4   js/teacher.js v5     js/teacher-questions.js v2
@@ -390,8 +397,11 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
         the shadow trees' crowns lowered into the screen
     71  the punch's hit on its contact frame (melee contact: 6,
         playMelee, updateMeleeContact, meleePending)
+    72  the siga drawn in code (draw-siga.js): siga-1..3.png idle and
+        siga-1..3-walk.png, walkAnimation and displayHeight on their
+        decorations (verify_new_scene.js to 107)
 
-Everything through Block 71 is pushed to main and live on GitHub
+Everything through Block 72 is pushed to main and live on GitHub
 Pages. The earlier instructions for a hand push of Blocks 42 to 58 from
 the device folder are history: those blocks reached main with Blocks 62
 to 67 (e7be506), and cloud sessions since push straight to main.
@@ -536,8 +546,14 @@ For Block 57:
       entablado; Lumabas returns beside him.
     Mga Setting from pause: "Mga natapos na gawain" lists what is done,
       and the panel still reaches Bumalik without trouble.
-    The siga: the stand-ins stand at Macario's height on the road and
-      read as three different boys.
+    The siga (Block 72): three different boys walk on from the left
+      with a walk cycle, stop, and stand breathing (the leader with a
+      hand on his hip and a grass stalk working in his teeth); the big
+      one a head taller, the small one shorter; their feet on the road,
+      nobody sliding when they stop. Failure looks like a boy floating
+      or sunk into the road, sliding on stopping, or reading as a box.
+      The proponent judges whether code-drawn characters are acceptable
+      this time (Block 54 and 59 said no to earlier attempts).
 
 Blocks 42 to 51 were never played on the phone either, but what they
 showed (the guide, cones, the long street, the moro-moro) has left
@@ -547,8 +563,11 @@ height, does the crown read as leaves), the JPEG backdrops (banding in
 the sky), and the pixel fonts, sound switches, guest mode and the
 teacher dashboard, which Block 52 did not touch.
 
-4. Real art for the siga (siga-1..3.png, stand-ins), and later for
-whoever the next passages bring on. Macario's death sheet
+4. Real art from the artist for the Mananahi, the direktor and Aling
+Rosa (placeholder boxes), and later for whoever the next passages bring
+on. The siga were drawn in code in Block 72; if the proponent rejects
+them, deleting the six files and the SIGA sheets in content/act1.js puts
+the boxes back. Macario's death sheet
 (macario-dead.png) is still missing; no shipped scene plays it. Each new
 sheet needs measure-sprite.js and all three numbers pasted. Ask for PNG
 exports with transparency.
@@ -905,9 +924,9 @@ rather than shown a document.
 The same rule already applies to the consent waiver, and for the same
 reason: get it in writing and keep the two together. (NOT STARTED)
 
-Chase the real art with the artist for the siga, the Mananahi, the
-direktor, Aling Rosa and the apple tree (placeholder boxes since Block
-59), a side-view walk for Nanay (Block 54's drawn one was rejected), and
+Chase the real art with the artist for the Mananahi, the direktor and
+Aling Rosa (placeholder boxes since Block 59; the siga were drawn in
+code in Block 72), a side-view walk for Nanay (Block 54's drawn one was rejected), and
 Macario's death sheet, and later for whoever the next passages of
 Act I bring on. (NOT STARTED)
 
@@ -934,11 +953,12 @@ uses only Nanay, Macario, the street paintings and the ground; the rest
 waits on disk for later passages.
 
 No stand-ins since Block 59: every picture made in code or recoloured
-from the artist's frames was deleted at the proponent's request.
+from the artist's frames was deleted at the proponent's request. The
+siga are drawn in code again since Block 72, at the proponent's request
+and from nothing rather than from the artist's frames.
 Named by Act I and drawn as the dashed placeholder box with the file's
 name on it, owed by the artist:
 
-    sprites/characters/siga-1..3.png   the three siga on the street
     sprites/characters/mananahi.png    the Mananahi
     sprites/characters/direktor.png    the direktor, street and stage
     sprites/characters/aling-rosa.png  a customer (Mang Tomas wears the
@@ -1043,7 +1063,7 @@ mechanics stay tested whatever Act I ships); sections BD to BG are
 Blocks 62 to 67 (the loader, the loading screens, a scene change held
 for its art, and the service worker offline; the run, coyote time, the
 jump buffer and dust; the timed apple round; the reward pop).
-verify_new_scene.js: 105 checks (Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
+verify_new_scene.js: 107 checks (Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
 trivia card and pre-test, and its Talaan section (replacing Block 64's
 notebook) checks the hints, the seed across a reload, a word earned and
 the pause panel. 101 of them: one that every line of dialogue and black card in

@@ -45,8 +45,10 @@
 // the artist's frames (the siga, the Mananahi, the apple tree, the
 // Block 41 stand-ins) at the proponent's request, so anyone without
 // the artist's own sheet names a file that does not exist and is drawn
-// as the dashed placeholder box with that name on it: siga-1..3.png,
-// mananahi.png, direktor.png, aling-rosa.png. Real
+// as the dashed placeholder box with that name on it: mananahi.png,
+// direktor.png, aling-rosa.png. The siga are the exception since Block
+// 72: drawn from nothing by _dev/tools/draw-siga.js at the proponent's
+// request, not traced or recoloured from anyone's sheet. Real
 // art replaces each by being saved under that name and measured
 // (measure-sprite.js); the def below then gains its columns, frames and
 // the three numbers.
@@ -89,11 +91,25 @@ const NANAY = {
   contentTop: 45, contentHeight: 166, footX: 127,
 };
 
-// The three siga. Placeholders.
+// The three siga (Block 72), each an idle sheet and a walk sheet drawn
+// by _dev/tools/draw-siga.js: the leader in the red panyo, the big one
+// in the buri hat, the small one in the ochre shirt. The walk shows only
+// while the opening walks them on (walkAnimation). footX is the hip, 128,
+// on both sheets, so a boy does not slide when he stops; the walk's own
+// measured stance (124) would move him four pixels. height keeps them
+// three sizes: spriteFit draws every sheet DISPLAY_HEIGHT tall, so a boy
+// taller or shorter than Macario's 127 says so here.
+const sigaSheets = (n, top, height) => ({
+  idle: { src: `assets/sprites/characters/siga-${n}.png`, frames: 12, fps: 7, columns: 4,
+          contentTop: top, contentHeight: height, footX: 128 },
+  walk: { src: `assets/sprites/characters/siga-${n}-walk.png`, frames: 8, fps: 14, columns: 4,
+          contentTop: top, contentHeight: height, footX: 128 },
+  height: Math.round(134 * height / 127),
+});
 const SIGA = {
-  1: { src: "assets/sprites/characters/siga-1.png", frames: 1, fps: 1 },
-  2: { src: "assets/sprites/characters/siga-2.png", frames: 1, fps: 1 },
-  3: { src: "assets/sprites/characters/siga-3.png", frames: 1, fps: 1 },
+  1: sigaSheets(1, 61, 127),
+  2: sigaSheets(2, 51, 137),
+  3: sigaSheets(3, 73, 115),
 };
 
 // The Kutsero's real sheet (Block 33). The Mananahi is a placeholder.
@@ -605,9 +621,12 @@ window.ACT_1 = {
       hintSpots: HINT_SPOTS,
       decorations: [
         // Off to the left, hidden until the opening walks them on.
-        { id: "siga-1", x: 260, hidden: true, animation: SIGA[1] },
-        { id: "siga-2", x: 180, hidden: true, animation: SIGA[2] },
-        { id: "siga-3", x: 100, hidden: true, animation: SIGA[3] },
+        { id: "siga-1", x: 260, hidden: true, animation: SIGA[1].idle,
+          walkAnimation: SIGA[1].walk, displayHeight: SIGA[1].height },
+        { id: "siga-2", x: 180, hidden: true, animation: SIGA[2].idle,
+          walkAnimation: SIGA[2].walk, displayHeight: SIGA[2].height },
+        { id: "siga-3", x: 100, hidden: true, animation: SIGA[3].idle,
+          walkAnimation: SIGA[3].walk, displayHeight: SIGA[3].height },
         // Nanay while the opening moves her: off to the right, hidden
         // until she comes to call him home. The NPC below takes over
         // once she has stopped.

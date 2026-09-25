@@ -97,9 +97,14 @@ the direktor. It is reached only with the direktor, once.
     Macario        the boy, the player. Real art (idle, walk, jump,
                    punch, shooting).
     Nanay          his mother. Real art; slides rather than walks.
-    Mga Siga       three street toughs. Placeholder boxes
-                   (siga-1..3.png). One speaks alone ("Siga"), all
-                   three laugh ("Mga Siga").
+    Mga Siga       three street toughs, drawn in code (Block 72,
+                   draw-siga.js), each with an idle and a walk: the
+                   leader in a red panyo with a stalk of grass in his
+                   teeth (siga-1, the one who speaks), a big one in a
+                   buri hat and an open white camisa (siga-2), and a
+                   small one in an ochre shirt too big for him
+                   (siga-3). One speaks alone ("Siga"), all three laugh
+                   ("Mga Siga").
     Kutsero        a carriage driver, Macario's first employer. Real art.
     Kabayo         the kutsero's white horse. Real art.
     Mananahi       a seamstress, his second employer. Placeholder box
