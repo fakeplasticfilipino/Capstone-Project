@@ -25,13 +25,24 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 25 Sep 2026, after Block 69: the teacher dashboard in
+Last updated: 25 Sep 2026, after Block 70: the teacher writes the
+Talaan now, up to three papers per act on the dashboard (Talaan
+Papers), which lie at three places fixed in content (Act I: 2500 on
+the road, 8200 and 12200 at jump height); and the shadow trees' crowns
+brought down into a phone's screen, so the four models (two palms, two
+broadleaf) look different again. Schema 006 is RUN (the proponent, 25
+Sep 2026). Schema 007 (talaan_entries) is written and NOT RUN: until
+it is, the Talaan Papers card cannot save and no papers lie on the
+road. test.js 707 passed, 0 failed; verify_new_scene.js 105 passed, 0
+failed. Pushed to main.
+
+Before that, 25 Sep 2026, after Block 69: the teacher dashboard in
 English; the Talaan's Block 68 words and hints removed (the engine
 kept, the button hidden until the proponents write their own); the
 apple tree is now the silhouette tree over the join at 5800, with no
 sprite; and the guide removed entirely, so students find their own
 way. test.js 696 passed, 0 failed; verify_new_scene.js 99
-passed, 0 failed. Pushed to main. Schema 006 is still NOT RUN.
+passed, 0 failed. Pushed to main.
 
 Before that, 25 Sep 2026, after Block 68, the instructor's requests:
 the questions and answers in the game (content/questions.js, graded by
@@ -118,10 +129,11 @@ every scene change wait (briefly) for their art, and a service worker
 keeps every file on the phone after the first visit. Holding a
 direction for half a second breaks into a run (not near guards or in a
 fight), jumps forgive a thumb a few frames late or early, and dust
-flies. Ten optional pages of history lie along the street (five on the
-ground, five at jump height), each opening a card and filling the
-Kuwaderno on the pause screen; they carry the item bank's facts, which
-the story does not yet (STORY.md, The notebook). The apple tree, once
+flies. Block 64's ten pages of history were replaced in Block 68 by
+the Talaan, whose content the proponents did not want (Block 69); since
+Block 70 it holds up to three papers the teacher writes on the
+dashboard, lying at three fixed places on the street, each opening a
+card and listed on the pause screen (STORY.md, The Talaan). The apple tree, once
 the horse is fed, is a thirty-second game with golden apples and a best
 score. Being paid pops "+N" with a coin.
 
@@ -366,6 +378,9 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
     69  teacher dashboard in English; Talaan content removed (engine
         kept); the apple tree a silhouette tree (scenery NPC); the guide
         removed from engine, page, styles, act format and content
+    70  the teacher's Talaan papers (teacher-talaan.js, talaan_entries,
+        schema 007; fixed hints, Game.setHintPool, Acts.loadTalaan);
+        the shadow trees' crowns lowered into the screen
 
 Everything through Block 41 is pushed (088f5e4). Blocks 42 to 58 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
@@ -399,11 +414,12 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-00. Run db/migrations/006_macario_schema_v6.sql in the Supabase SQL
-editor, then record it in the Run log. Without it the game still works
-(it uses the built-in questions and records first tries as before), but
-the teacher's "I-save" is refused and a post-test retake is shown and
-not stored.
+00. Run db/migrations/007_macario_schema_v7.sql in the Supabase SQL
+editor, then record it in the Run log. Without it the game still works,
+but the dashboard's Talaan Papers card cannot load or save and no
+papers lie on the road. Then write one paper on the dashboard, open the
+game, and walk right from Nanay: paper 1 should lie on the road at
+about 2500 and open a card that says what was typed.
 
 0. Nanay's walk is settled (Block 57): she slides on with her idle
 sheet, at the proponent's direction. nanay-walk.png was deleted in
@@ -612,13 +628,20 @@ when. A fresh session should trust this over any memory of a chat.
     db/migrations/003_macario_schema_v3.sql    RUN
     db/migrations/004_macario_schema_v4.sql    RUN, 19 Aug 2026
 
-    db/migrations/006_macario_schema_v6.sql    NOT RUN. Block 68: students
+    db/migrations/006_macario_schema_v6.sql    RUN, 25 Sep 2026 (the
+                                        proponent). Block 68: students
                                         read assessment_items whole,
                                         teachers edit items and trivia,
                                         assessment_scores gains attempt
                                         (one pre-test row still). Run
                                         after 005 or on its own; it
                                         does not depend on 005
+
+    db/migrations/007_macario_schema_v7.sql    NOT RUN. Block 70:
+                                        talaan_entries, the teacher's
+                                        Talaan papers; anyone reads,
+                                        teachers write. Depends on
+                                        my_role() (schema 002)
 
     db/migrations/005_macario_schema_v5.sql            NOT RUN, per this file's own
                                         bookkeeping. A
@@ -1012,7 +1035,7 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 696 checks (section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
+test.js: 707 checks (section BK is Block 70: fixed papers against the fixture, Acts.loadTalaan and the dashboard's Talaan Papers editor; section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
 questions graded by the game, the teacher's questions first, the pass
 mark, the replay and the second attempt, a reload on a failed result,
 the password, and the teacher's editor); before Block 68, 676 checks against a fixture act and item catalogue (so
@@ -1020,7 +1043,7 @@ mechanics stay tested whatever Act I ships); sections BD to BG are
 Blocks 62 to 67 (the loader, the loading screens, a scene change held
 for its art, and the service worker offline; the run, coyote time, the
 jump buffer and dust; the timed apple round; the reward pop).
-verify_new_scene.js: 99 checks (since Block 69 without the guide and Talaan-content checks); since Block 68 it sits the real
+verify_new_scene.js: 105 checks (Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
 trivia card and pre-test, and its Talaan section (replacing Block 64's
 notebook) checks the hints, the seed across a reload, a word earned and
 the pause panel. 101 of them: one that every line of dialogue and black card in

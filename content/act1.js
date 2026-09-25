@@ -497,14 +497,25 @@ function payForJob() {
 }
 
 // ---- The Talaan ------------------------------------------------------
-// Block 69. The engine's Talaan (game.js, THE TALAAN) is kept, but Act I
-// declares no words and no hints: the proponents did not want the
-// Block 68 content, and will write their own. To add some, give ACT_1 a
+// Block 69 took out the words and hints the proponents did not want.
+// Block 70: the teacher writes up to three papers from the dashboard
+// (teacher.html, Talaan Papers), and they lie at the three places below,
+// always the same ones, paper 1 at the first. The engine lays them
+// (hints, fixed: true); this file only says where. The dashboard
+// describes these places to the teacher in words (js/teacher-talaan.js,
+// PLACES), so a spot moved here is described again there.
+//
+// The first is on the road between Nanay and the Kutsero, where every
+// student walks. The other two are at jump height (HINT_HIGH), so Talon
+// has a use on a street with no platforms. All three are well clear of
+// every shadow tree and every person.
+const HINT_HIGH = 155; // GROUND_LEVEL + 95: out of reach without a jump
+const HINT_SPOTS = [2500, { x: 8200, y: HINT_HIGH }, { x: 12200, y: HINT_HIGH }];
+
+// Words (a glossary) can still be added the Block 68 way: give ACT_1 a
 // glossary ({ title, hint, entries: [{ id, term, text }] }) and call
-// unlockGlossary(id) where each word is earned, and/or give it hints
-// ({ count, label, foundText, completeText, pool: [{ title, text }] })
-// and the street scene hintSpots (x, or { x, y } for one at jump
-// height). CLAUDE.md, Act data format, has the rest.
+// unlockGlossary(id) where each word is earned. CLAUDE.md, Act data
+// format, has the rest.
 
 window.ACT_1 = {
   number: 1,
@@ -565,6 +576,20 @@ window.ACT_1 = {
   // (acts.js, replayAct): the apple round's best score.
   keepFlagsOnReplay: ["rekordSaMansanas"],
 
+  // Block 70. The teacher's Talaan papers. The pool is empty here and
+  // filled from the database; with no papers written, nothing lies on
+  // the road and the Talaan button stays hidden.
+  hints: {
+    count: 3,
+    fixed: true,
+    label: "Papel",
+    listLabel: "Mga Papel",
+    // PLACEHOLDER: ours, until the proponents word these.
+    foundText: "Naitala ito sa Talaan. Buksan ang Talaan sa pause para basahin ulit.",
+    completeText: "Nahanap mo na ang lahat ng papel!",
+    pool: [],
+  },
+
 
   scenes: [
     {
@@ -577,6 +602,7 @@ window.ACT_1 = {
       panels: STREET_PANELS,
       panelSky: STREET_SKY,
       startX: STREET_SPOT,
+      hintSpots: HINT_SPOTS,
       decorations: [
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1] },

@@ -99,6 +99,8 @@ const panels = (page) => page.evaluate(async () => {
     NPCS.forEach((n) => { if (!n.hidden && !n.scenery && n.x < x + TRUNK && n.x + NPC_WIDTH > x - TRUNK) blocked.push(n.id + " at " + x); });
     (scene.exits || []).forEach((e) => { if (e.x < x + TRUNK && e.x + (e.width || 80) > x - TRUNK) blocked.push(e.id + " at " + x); });
     (scene.checkpoints || []).forEach((c) => { if (Math.abs(c.x + PLAYER_WIDTH / 2 - x) < TRUNK + PLAYER_WIDTH / 2) blocked.push("checkpoint " + c.x); });
+    (scene.hintSpots || []).forEach((h) => { const hx = typeof h === "number" ? h : h.x;
+      if (Math.abs(hx + PICKUP_SIZE / 2 - x) < TRUNK + PICKUP_SIZE / 2) blocked.push("paper " + hx); });
   });
   return {
     tiles: tiles.length, expectedTiles: Math.ceil(WORLD_WIDTH / (scene.panelWidth || PANEL_WIDTH)),
@@ -657,13 +659,13 @@ const storyDrift = () => {
   // Reloads, and saves from before this block.
   // ---------------------------------------------------------------
   console.log("\nReloads and old saves");
-  const resume = async (room, flags, currency) => {
-    const r = await newPage(browser, {
+  const resume = async (room, flags, currency, extra) => {
+    const r = await newPage(browser, Object.assign({
       session: { user: { id: "u1" } },
       game_progress: [{ student_id: "u1", current_act: 1, current_room: room, currency: currency || 0,
         save_state: { quests: [], flags, posX: 300 } }],
       act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 0 }],
-    });
+    }, extra || {}));
     await r.page.click("#shell-start");
     await r.page.waitForTimeout(700);
     return r;
@@ -733,18 +735,65 @@ const storyDrift = () => {
   await r.ctx.close();
 
   // ---------------------------------------------------------------
-  // Block 69. Act I declares no Talaan content (the engine is checked
-  // in test.js, section BJ), and there is no guide.
+  // Block 69. Act I declares no words and there is no guide. Block 70:
+  // the Talaan's papers are the teacher's, three at fixed places; with
+  // none written there is no Talaan at all.
   // ---------------------------------------------------------------
-  console.log("\nNo Talaan content, no guide");
-  r = await resume("tondo", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true });
+  console.log("\nThe teacher's Talaan papers, no guide");
+  const afterThought = { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true };
+  r = await resume("tondo", afterThought);
   await r.page.waitForTimeout(400);
   const bare = await r.page.evaluate(() => ({
     book: Game.glossary(), hints: PICKUPS.filter((p) => p.type === "hint").length,
     button: !document.getElementById("shell-notebook").classList.contains("hidden"),
-    guide: ACT_1.guide, marker: document.getElementById("guide-marker") }));
-  ok("Act I has no words, no hints and no guide", bare.book === null && bare.hints === 0 &&
-     !bare.button && bare.guide === undefined && bare.marker === null, bare);
+    guide: ACT_1.guide, marker: document.getElementById("guide-marker"),
+    spots: JSON.stringify(currentScene.hintSpots), fixed: ACT_1.hints.fixed, count: ACT_1.hints.count }));
+  ok("Act I has three fixed places for papers, no words and no guide",
+     bare.spots === '[2500,{"x":8200,"y":155},{"x":12200,"y":155}]' && bare.fixed === true && bare.count === 3 &&
+     bare.guide === undefined && bare.marker === null, bare);
+  ok("with no papers written, nothing lies on the road and there is no Talaan",
+     bare.book === null && bare.hints === 0 && !bare.button, bare);
+  await r.ctx.close();
+
+  const PAPERS = { talaan_entries: [
+    { act_number: 1, slot: 1, title: "Unang papel", body: "Isinulat ng guro." },
+    { act_number: 1, slot: 3, title: "", body: "Ang ikatlo." },
+  ] };
+  r = await resume("tondo", afterThought, 0, PAPERS);
+  await r.page.waitForTimeout(500);
+  const laid = await r.page.evaluate(() => PICKUPS.filter((p) => p.type === "hint").map((p) => [p.x, p.y === undefined ? null : p.y]));
+  ok("the teacher's papers lie at their slots' places, and an empty slot lays nothing",
+     JSON.stringify(laid) === "[[2500,null],[12200,155]]", laid);
+  const found = await r.page.evaluate(async () => {
+    posX = 2500 + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2; posY = floorHeightAt(posX); velY = 0; onGround = true;
+    for (let i = 0; i < 50 && document.getElementById("page-card").classList.contains("hidden"); i++) {
+      await new Promise((res) => setTimeout(res, 40));
+    }
+    const card = { eyebrow: document.getElementById("page-card-eyebrow").textContent,
+      title: document.getElementById("page-card-title").textContent,
+      note: document.getElementById("page-card-note").textContent };
+    document.getElementById("page-card-close").click();
+    await new Promise((res) => setTimeout(res, 100));
+    posX = 2200;
+    await saveProgress();
+    return { card, saved: __DB.game_progress[0].save_state.flags.pahiwatig_0 };
+  });
+  ok("walking into the first opens it, and it is saved",
+     found.card.eyebrow === "Papel 1 / 2" && found.card.title === "Unang papel" && found.card.note.length > 0 &&
+     found.saved === true, found);
+  await r.page.evaluate(() => Shell.openPause());
+  await r.page.waitForTimeout(150);
+  ok("the pause screen offers the Talaan, counting the papers",
+     await r.page.evaluate(() => document.querySelector("#shell-notebook .lbl").textContent === "Talaan 1/2"));
+  await r.ctx.close();
+
+  r = await resume("tondo", Object.assign({ pahiwatig_0: true }, afterThought), 0, PAPERS);
+  await r.page.waitForTimeout(500);
+  const kept = await r.page.evaluate(() => ({
+    laid: [...document.querySelectorAll(".pickup-page")].map((e) => parseInt(e.style.left, 10)),
+    book: Game.glossary().hints }));
+  ok("a reload keeps a found paper found, and lays only the other",
+     JSON.stringify(kept.laid) === "[12200]" && kept.book.found === 1 && kept.book.total === 2, kept);
   await r.ctx.close();
 
   // ---------------------------------------------------------------
@@ -757,6 +806,14 @@ const storyDrift = () => {
   c = await readConversation(g.page, 3);
   ok("and watches the same opening", JSON.stringify(c.lines) === JSON.stringify(OPENING), c.lines);
   await g.ctx.close();
+
+  const gp = await newPage(browser, Object.assign({ session: null }, PAPERS));
+  await gp.page.click("#shell-guest");
+  await gp.page.waitForTimeout(900);
+  ok("a guest gets the teacher's papers too",
+     await gp.page.evaluate(() => PICKUPS.filter((p) => p.type === "hint").length === 2 &&
+       !__DB.game_progress.length));
+  await gp.ctx.close();
 
   await browser.close();
   server.close();

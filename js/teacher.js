@@ -128,6 +128,8 @@ async function initTeacher() {
 
   // Block 68. The question editor does not depend on a class.
   if (window.TeacherQuestions) TeacherQuestions.init();
+  // Block 70. Nor do the Talaan papers.
+  if (window.TeacherTalaan) TeacherTalaan.init();
 
   await loadClasses(profile.id);
 }

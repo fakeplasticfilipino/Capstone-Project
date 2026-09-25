@@ -558,7 +558,11 @@ const Shell = {
     if (!btn) return;
     const book = window.Game && Game.glossary ? Game.glossary() : null;
     btn.classList.toggle("hidden", !book);
-    if (book) setLabel(btn, (book.title || "Talaan") + " " + book.found + "/" + book.total);
+    if (!book) return;
+    // An act with papers and no words (Act I since Block 70) counts the
+    // papers, so the button never reads 0/0.
+    const counted = book.total ? book : book.hints;
+    setLabel(btn, (book.title || "Talaan") + " " + counted.found + "/" + counted.total);
   },
 
   _openNotebook() {
@@ -566,7 +570,8 @@ const Shell = {
     const book = window.Game && Game.glossary ? Game.glossary() : null;
     if (!book) return;
     document.getElementById("shell-notebook-title").textContent = book.title || "Talaan";
-    document.getElementById("shell-notebook-count").textContent = book.found + " / " + book.total;
+    const counted = book.total ? book : book.hints;
+    document.getElementById("shell-notebook-count").textContent = counted.found + " / " + counted.total;
     document.getElementById("shell-notebook-hint").textContent =
       book.found === book.total ? "" : book.hint;
     const list = document.getElementById("shell-notebook-list");
@@ -598,7 +603,7 @@ const Shell = {
       book.hints.entries.forEach((h) => entry(h.n + ". " + h.title, h.text, true));
       if (book.hints.found < book.hints.total) {
         entry("? ? ?", "May " + (book.hints.total - book.hints.found) +
-          " pang nakatagong pahiwatig sa daan.", false);
+          " pang nakatago sa daan.", false);
       }
     }
     if (book.total) {

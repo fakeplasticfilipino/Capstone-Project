@@ -759,3 +759,18 @@ input:focus-visible {
 .qe-status.qe-ok { color: var(--green); }
 .qe-status.qe-error { color: var(--red); }
 
+
+/* ---- Talaan papers (Block 70); the rest is the question editor's ---- */
+
+#tl {
+  margin-top: 24px;
+}
+
+.tl-where {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.tl-title {
+  margin-bottom: 8px;
+}

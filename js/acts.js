@@ -332,6 +332,26 @@ const Acts = {
   // Lifecycle
   // -----------------------------------------------------------
 
+  // The teacher's Talaan papers for an act (Block 70), handed to the
+  // engine, which lays them at the act's fixed places. Not awaited by
+  // its callers: the papers arrive when they arrive, and the engine lays
+  // them the moment they do. A failed read leaves the act without
+  // papers, which is what an act the teacher has not written for looks
+  // like anyway.
+  async loadTalaan(n) {
+    if (!window.Game || !Game.setHintPool || typeof sb === "undefined") return;
+    try {
+      const { data, error } = await sb
+        .from("talaan_entries")
+        .select("slot, title, body")
+        .eq("act_number", n);
+      if (error) throw error;
+      Game.setHintPool(n, (data || []).map((r) => ({ slot: r.slot, title: r.title, text: r.body })));
+    } catch (err) {
+      console.error("talaan_entries read failed:", err);
+    }
+  },
+
   // Called once after login, after loadProgressMap() and after the
   // save has been restored. Ensures a row exists for the act the
   // student is actually in, then resumes whatever state that row
@@ -340,6 +360,7 @@ const Acts = {
     if (!currentUserId) return;
 
     this.current = this.resolveAct(actNumber);
+    this.loadTalaan(this.current);
     await this._ensureRow(this.current);
 
     const row = this.progress[this.current];
@@ -774,6 +795,7 @@ const Acts = {
     this.current = n;
     this.status = "locked";
     this._lastDone = -1;
+    this.loadTalaan(n);
 
     // The quest log is "Mga Gawain", the tasks in front of you now,
     // not a permanent record. Carrying Act I's completed entries

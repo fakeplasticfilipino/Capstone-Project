@@ -102,7 +102,8 @@ off the repository.
     css/                       style.css (the game), teacher.css
     js/                        the engine and its modules, one file each
                                (game, acts, inventory, assessment, shell,
-                               teacher, teacher-questions, supabaseClient)
+                               teacher, teacher-questions,
+                               teacher-talaan, supabaseClient)
     content/                   act data, the item catalogue, and the
                                built-in test questions (questions.js)
     assets/
@@ -340,6 +341,8 @@ game.js exposes window.Game and nothing else:
     whenAssetsSettled(ms)  resolves when nothing is pending, or after ms
     glossary()           the act's Talaan (words and hints found) for
                          the pause screen, or null; Block 68
+    setHintPool(n, pool) the teacher's papers for act n, from acts.js;
+                         Block 70
 
 Currency lives in game.js because game.js is the only writer of
 game_progress, and currency is save state exactly like quests, flags and
@@ -390,7 +393,11 @@ world belongs to the scene.
                               text }] },         (Block 68)
       hints: { count, label, foundText,          optional; count of them
                completeText,                     laid at random on a
-               pool: [{ title, text }] },        scene's hintSpots
+               pool: [{ title, text }],          scene's hintSpots
+               fixed: true,                      optional; paper n at
+               listLabel },                      hintSpots[n - 1], its
+                                                 words the teacher's
+                                                 (Block 70)
       keepFlagsOnReplay: ["flag"],               optional; kept by a replay
                                                  (Block 68)
       startingQuests: [{ id, text }],
@@ -478,9 +485,23 @@ last) and opens a card over a stopped world. It is taken whatever the
 student's health, never while a dialogue, cutscene or screen is up
 (playerIsSafe), and a found one is never laid again. The pause screen
 lists both through Game.glossary(). A pickup out of view does not
-animate (updatePickupMotion). Since Block 69 Act I declares neither,
-so the Talaan button is hidden until the proponents write its words
-and hints.
+animate (updatePickupMotion). Since Block 69 Act I declares no
+words.
+
+Fixed hints (Block 70) are the teacher's Talaan papers. hints.fixed
+lays paper n at the scene's hintSpots[n - 1], always, and at most
+hints.count (3) of them; the pool comes from talaan_entries (schema
+007), read by Acts.loadTalaan and handed over with Game.setHintPool,
+which replaces the content's own pool for that act only and lays the
+papers again at once if the act is on screen. A pool entry is { slot,
+title, text }; an empty slot lays nothing, and a paper's flag is
+"pahiwatig_" + (slot - 1), so a paper the teacher rewrites stays found.
+listLabel names the list on the pause screen, label the card. Act I
+declares fixed hints with an empty pool and three spots (content/act1.js,
+HINT_SPOTS), so with no papers written nothing lies on the road and the
+Talaan button is hidden; with papers it counts them. The dashboard
+describes the three places in words (js/teacher-talaan.js, PLACES), and
+a spot moved in content is described again there.
 
 A hazard's reason is the Tagalog toast shown on contact and defaults to
 "Nasugatan ka!". Hazards sit on the base floor and are cleared by jumping;
@@ -1048,7 +1069,8 @@ needing separate storage.
 
 Tables: profiles, classes, game_progress, act_progress, assessment_items,
 assessment_scores, act_trivia, player_inventory, player_equipment,
-game_sessions, feedback.
+game_sessions, feedback, talaan_entries (schema 007: the teacher's
+Talaan papers, read by anyone including a guest, written by teachers).
 
 Functions: my_role, my_class_id, is_teacher_of, get_assessment_items,
 submit_assessment.
@@ -1080,6 +1102,7 @@ unsafe entirely on this answer, so it is written down here:
     game_sessions        select, insert, update. No delete
     assessment_scores    select and insert only. No update, no delete
     feedback             select and insert only. No update, no delete
+    talaan_entries       select only. Teachers write it
 
 So the catastrophe a reset button invites is structurally impossible
 from a browser: an assessment score cannot be deleted or altered by the
@@ -4072,6 +4095,54 @@ direction to the tree. game.js v69, style.css v46, content/act1.js v48;
 teacher.js v4, teacher-questions.js v2. test.js section BJ covers the
 Talaan's engine against the fixture and a scenery NPC; section AW
 checks that nothing of the guide remains.
+
+The teacher's Talaan papers, and trees that differ (Block 70). Two
+requests. The teacher writes the Talaan now: up to three papers per
+act, each a title and a text, on the dashboard's Talaan Papers card
+(js/teacher-talaan.js), saved to talaan_entries (schema 007). Where
+they lie is not the teacher's to choose, at the proponent's direction:
+content names three places per act (Act I: 2500 on the road between
+Nanay and the Kutsero, where everyone walks; 8200 and 12200 at jump
+height, so Talon has a use), and paper n always lies at place n. That is
+the fixed mode of the Block 68 hints (Act data format, The Talaan), not
+a second system: the pool the engine lays from is simply the teacher's
+instead of content's. The papers are loaded by acts.js on a login
+(syncStart), on entering an act and for a guest, without being awaited,
+because the engine lays them whenever they arrive; a failed read is an
+act without papers, which is what an act the teacher has not written
+for looks like anyway. Guests read them, since they are the game's
+content and hold nothing private, which is the one read a guest makes
+of the database. Schema 007 lets the anon role select and nothing else.
+
+Saving upserts the filled slots on (act_number, slot) and deletes the
+emptied ones, rather than the delete-and-insert the question editor
+uses, so a slot keeps its row and the flag a student earned for it
+(pahiwatig_ plus the slot less one) still means that paper after the
+teacher rewrites it. A paper needs its text; a title is optional. The
+card and the list say "Papel", ours and marked PLACEHOLDER, as are the
+two lines under a found paper.
+
+The shadow trees. Reported as the four models having become one. They
+had not changed since Block 50, which hung their crowns 640 to 800
+above the road so that a phone showed "trunk and only the lowest
+leaves". A sideways phone at --zoom 0.7 shows about the lowest 590 of
+each tree's 1200, so it showed four near-identical trunks, and the
+diversity the proponent remembered was Block 49's lower crown. The
+crowns now hang about 450 to 600 above the road, each model at its own
+height: inside the screen, over every head (Macario's is 194 up), and
+far enough down that a palm's fronds and a broadleaf's canopy and limbs
+read at a glance. Only the four crown heights and the broadleaf limbs
+moved in make-shadow-tree.py; the trunks are the same width at the road,
+and section AX still reads about 124 world px of trunk at chest height.
+The apple tree at 5800, a broadleaf, now looks like a tree with fruit
+to pick rather than a post.
+
+game.js v70, acts.js v14, shell.js v17, content/act1.js v49;
+teacher.js v5, teacher-talaan.js v1, teacher.css v4. test.js gained
+section BK (the fixed papers against the fixture, Acts.loadTalaan and
+the dashboard editor); verify_new_scene.js checks Act I's three places,
+the papers laid, found, saved and kept across a reload, a guest, and
+that no paper stands behind a trunk.
 
 ## Pitfalls
 

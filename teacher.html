@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACARIO — Teacher Dashboard</title>
-  <link rel="stylesheet" href="css/teacher.css?v=3" />
+  <link rel="stylesheet" href="css/teacher.css?v=4" />
 </head>
 <body>
   <!-- Covers the page until the session and role are confirmed, so a
@@ -193,13 +193,39 @@
           <p class="table-notes">Warning: changing questions after students have answered affects the comparison between pre-test and post-test. Pre-test and post-test items should be matched pairs: the same topic and difficulty, in different words.</p>
         </div>
       </section>
+
+      <!-- Block 70. The Talaan papers: up to three per act, written by the
+           teacher, laid by the game at three places fixed in the act's
+           content. Built by js/teacher-talaan.js; saved to talaan_entries
+           (schema 007). -->
+      <section id="tl" class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="section-title">Talaan Papers</h2>
+            <p class="muted">Up to three papers students find on the road and keep in the Talaan. Where each one lies is fixed by the game; you write what it says.</p>
+          </div>
+          <div class="qe-pickers">
+            <label for="tl-act" class="sr-only">Act</label>
+            <select id="tl-act"></select>
+          </div>
+        </div>
+        <div class="qe-body">
+          <div id="tl-list"></div>
+          <div class="qe-actions">
+            <button id="tl-save" type="button" class="btn-primary">Save</button>
+          </div>
+          <p id="tl-status" class="qe-status"></p>
+          <p class="table-notes">Students see the papers in Tagalog or English, exactly as you type them. A paper that gives away a post-test answer word for word turns the post-test into a reading check.</p>
+        </div>
+      </section>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="content/questions.js?v=1"></script>
-  <script src="js/teacher.js?v=4"></script>
+  <script src="js/teacher.js?v=5"></script>
   <script src="js/teacher-questions.js?v=2"></script>
+  <script src="js/teacher-talaan.js?v=1"></script>
 </body>
 </html>

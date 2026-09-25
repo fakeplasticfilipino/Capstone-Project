@@ -5448,6 +5448,141 @@ const visible = (page, sel) => page.evaluate((s) => {
   }
 
   // -------------------------------------------------------------
+  // BK. Block 70. The teacher's Talaan papers: an act whose hints are
+  // fixed lays paper n at the scene's hintSpots[n - 1], and takes what
+  // the papers say from talaan_entries through Game.setHintPool. Put on
+  // the fixture act at run time, then the dashboard's editor.
+  // -------------------------------------------------------------
+  console.log("\nBK. The teacher's Talaan papers (Block 70)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const k0 = await page.evaluate(() => {
+      loadScene("tondo");
+      currentActData.glossary = undefined;
+      currentActData.hints = { count: 3, fixed: true, label: "Papel", listLabel: "Mga Papel",
+        foundText: "found", completeText: "complete", pool: [] };
+      currentScene.hintSpots = [300, { x: 700, y: 155 }, 1100];
+      buildHints();
+      const none = { laid: PICKUPS.filter((p) => p.type === "hint").length, book: Game.glossary() };
+      Game.setHintPool(currentActData.number, [
+        { slot: 3, title: "Ikatlo", text: "Ang ikatlong papel." },
+        { slot: 1, title: "", text: "Ang unang papel." },
+        { slot: 5, title: "Lampas", text: "Walang lugar ito." },
+        { slot: 2, title: "", text: "" },
+      ]);
+      const laid = PICKUPS.filter((p) => p.type === "hint").map((p) => [p.x, p.hint, p.n]);
+      Game.setHintPool(currentActData.number + 1, [{ slot: 2, title: "Iba", text: "Ibang yugto." }]);
+      const other = PICKUPS.filter((p) => p.type === "hint").length;
+      return { none, laid, other, drawn: document.querySelectorAll(".pickup-page").length,
+        book: Game.glossary() };
+    });
+    ok("with no papers written nothing is laid and there is no Talaan",
+       k0.none.laid === 0 && k0.none.book === null, k0.none);
+    ok("each paper lies at its own slot's place; an empty slot and a slot past three lay nothing",
+       JSON.stringify(k0.laid) === "[[300,0,1],[1100,2,2]]" && k0.drawn === 2, k0.laid);
+    ok("another act's papers are not laid here", k0.other === 2, k0.other);
+    ok("the Talaan counts the papers written", k0.book.hints.total === 2 && k0.book.hints.label === "Mga Papel" &&
+       k0.book.total === 0, k0.book);
+
+    await page.evaluate(() => Shell.openPause());
+    await page.waitForTimeout(150);
+    ok("with papers and no words, the pause button counts the papers",
+       await page.evaluate(() => !document.getElementById("shell-notebook").classList.contains("hidden") &&
+         document.querySelector("#shell-notebook .lbl").textContent === "Talaan 0/2"));
+    await page.evaluate(() => Shell.closePause());
+    await page.waitForTimeout(100);
+
+    const k1 = await page.evaluate(async () => {
+      const h = PICKUPS.find((p) => p.type === "hint" && p.x === 1100);
+      posX = h.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2;
+      posY = floorHeightAt(posX); velY = 0; onGround = true;
+      for (let i = 0; i < 40 && document.getElementById("page-card").classList.contains("hidden"); i++) {
+        await new Promise((r) => setTimeout(r, 40));
+      }
+      const card = { eyebrow: document.getElementById("page-card-eyebrow").textContent,
+        title: document.getElementById("page-card-title").textContent,
+        text: document.getElementById("page-card-text").textContent, flag: state.flags.pahiwatig_2 === true };
+      document.getElementById("page-card-close").click();
+      posX = 1600;
+      return card;
+    });
+    ok("reaching a paper opens it and saves it by its slot",
+       k1.eyebrow === "Papel 2 / 2" && k1.title === "Ikatlo" && k1.text === "Ang ikatlong papel." && k1.flag, k1);
+
+    const k2 = await page.evaluate(() => {
+      Game.setHintPool(currentActData.number, [
+        { slot: 1, title: "", text: "Ang unang papel." },
+        { slot: 3, title: "Ikatlo", text: "Binago ng guro." },
+      ]);
+      return { drawn: [...document.querySelectorAll(".pickup-page")].map((e) => parseInt(e.style.left, 10)),
+        book: Game.glossary() };
+    });
+    ok("a paper the teacher rewrites stays found, and the Talaan shows the new words",
+       JSON.stringify(k2.drawn) === "[300]" && k2.book.hints.found === 1 &&
+       k2.book.hints.entries[0].text === "Binago ng guro.", k2);
+
+    const k3 = await page.evaluate(async () => {
+      __DB.talaan_entries.push({ act_number: currentActData.number, slot: 2, title: "Mula sa guro", body: "Nasa itaas." });
+      await Acts.loadTalaan(currentActData.number);
+      return PICKUPS.filter((p) => p.type === "hint").map((p) => [p.x, p.y, p.hint]);
+    });
+    ok("Acts.loadTalaan reads the papers from talaan_entries and lays them",
+       JSON.stringify(k3) === "[[700,155,1]]", k3);
+    await ctx.close();
+  }
+
+  {
+    const seed = {
+      session: { user: { id: "t1" } },
+      profiles: [{ id: "t1", role: "teacher", full_name: "Gng. Cruz" }],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+      talaan_entries: [{ act_number: 1, slot: 2, title: "Luma", body: "Lumang papel." }],
+    };
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const page = await ctx.newPage();
+    page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+    await page.route("**/supabaseClient.js*", (route) =>
+      route.fulfill({ body: STUB, contentType: "text/javascript" }));
+    await page.route("**/cdn.jsdelivr.net/**", (route) =>
+      route.fulfill({ body: "", contentType: "text/javascript" }));
+    await page.addInitScript((st) => { window.__TEST = st; }, seed);
+    await page.goto("http://localhost:" + PORT + "/teacher.html");
+    await page.waitForTimeout(600);
+
+    const e0 = await page.evaluate(() => ({
+      acts: [...document.querySelectorAll("#tl-act option")].map((o) => o.textContent),
+      papers: [...document.querySelectorAll("#tl-list .tl-paper")].map((c) => ({
+        where: c.querySelector(".tl-where").textContent,
+        title: c.querySelector(".tl-title").value, text: c.querySelector(".tl-text").value })),
+    }));
+    ok("the dashboard offers three papers, says where each lies, and shows what is saved",
+       e0.acts.join() === "Act I" && e0.papers.length === 3 && e0.papers.every((p) => p.where.length > 10) &&
+       e0.papers[1].title === "Luma" && e0.papers[1].text === "Lumang papel." && e0.papers[0].text === "", e0);
+
+    const e1 = await page.evaluate(async () => {
+      const cards = document.querySelectorAll("#tl-list .tl-paper");
+      cards[0].querySelector(".tl-title").value = "Walang laman";
+      document.getElementById("tl-save").click();
+      await new Promise((r) => setTimeout(r, 200));
+      const refused = { status: document.getElementById("tl-status").textContent, rows: __DB.talaan_entries.length };
+      cards[0].querySelector(".tl-text").value = "Ang unang papel ng guro.";
+      cards[1].querySelector(".tl-title").value = "";
+      cards[1].querySelector(".tl-text").value = "";
+      cards[2].querySelector(".tl-text").value = "Ang ikatlo.";
+      document.getElementById("tl-save").click();
+      await new Promise((r) => setTimeout(r, 300));
+      return { refused, rows: __DB.talaan_entries.map((r) => [r.act_number, r.slot, r.title, r.body]).sort(),
+        status: document.getElementById("tl-status").textContent };
+    });
+    ok("a paper with a title and no text is refused and nothing is written",
+       /Paper 1/.test(e1.refused.status) && e1.refused.rows === 1, e1.refused);
+    ok("saving writes the filled slots and deletes the emptied one",
+       JSON.stringify(e1.rows) === JSON.stringify([[1, 1, "Walang laman", "Ang unang papel ng guro."], [1, 3, "", "Ang ikatlo."]]) &&
+       /^Saved\. 2 of 3/.test(e1.status), e1);
+    await ctx.close();
+  }
+
+  // -------------------------------------------------------------
   // BD. Block 62. Pictures are asked for through one loader that
   // retries a failure that is not a 404, counts what has arrived for
   // the title screen's bar, and holds the world (and every scene change)

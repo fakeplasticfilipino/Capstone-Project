@@ -40,9 +40,11 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 25 Sep 2026, Block 69 (the Talaan's words and hints
-removed, the apple tree now the silhouette tree at 5800, and no guide:
-the student finds each person unaided).
+Last updated: 25 Sep 2026, Block 70 (the Talaan's papers are the
+teacher's, at three fixed places on the street). Before that, Block 69
+(the Talaan's words and hints removed, the apple tree now the
+silhouette tree at 5800, and no guide: the student finds each person
+unaided).
 
 ## The story in brief
 
@@ -478,11 +480,25 @@ Direktor and Maryam, in the entablado:
 
 ## The Talaan
 
-Block 69. Empty. The pause screen's Talaan (words earned by doing
-things, and hints for the post-test laid at random on the street) is
-built in the engine, but Act I declares nothing for it: the proponents
-did not want the Block 68 words and hints, and will write their own.
-With nothing declared, the Talaan button does not appear.
+Block 70. The papers are the teacher's. Up to three, written on the
+dashboard (Talaan Papers); what they say is not in this file because
+it is not in the content, and it changes whenever the teacher saves.
+Where they lie is fixed:
+
+    Paper 1   x 2500, on the road between Nanay and the Kutsero; every
+              student walks into it on the way to the first job
+    Paper 2   x 8200, past Aling Rosa, at jump height
+    Paper 3   x 12200, before the direktor, at jump height
+
+An empty slot lays nothing. With no papers written the Talaan button
+does not appear. A found paper opens a card over a stopped world:
+
+  + (card) Papel 1 / 3
+  + (under a paper) Naitala ito sa Talaan. Buksan ang Talaan sa pause para basahin ulit.
+  + (under the last) Nahanap mo na ang lahat ng papel!
+
+and is listed on the pause screen under "Mga Papel". Act I declares no
+words (Block 69).
 
 ## Threads left open
 
@@ -509,6 +525,6 @@ next passage. None of these is a promise; they are what is there.
       opening card against Sakay's birth year in it.
     What the direktor pays (79 to 110 at random, the proponents' own
       numbers from Block 56).
-    The Talaan: which words a student earns in Act I, what each
-      means, and whether there are hints for the post-test, and what
-      they say. Both are empty until the proponents write them.
+    The Talaan: whether Act I should have words a student earns
+      (empty since Block 69), and the wording of the two + lines under
+      a found paper. The papers themselves are the teacher's.

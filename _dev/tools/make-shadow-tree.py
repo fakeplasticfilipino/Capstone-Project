@@ -6,10 +6,11 @@ panels (CLAUDE.md, Blocks 43, 49 and 50). Four models in silhouette, two
 coconut palms and two ordinary broadleaf trees, each in a box 440 by
 1200 anchored at the road.
 
-They are mostly trunk on purpose: the trunk is what hides the join, so
-it is thick (about 130 world px at head height) and long, and the crown sits
-high enough that a phone shows only the lowest leaves at the top of the
-screen. Every model's trunk base is centred on the join, whatever way
+The trunk is what hides the join, so it is thick (about 130 world px at
+head height). The crowns sit low enough to be inside a sideways phone's
+screen, which shows only about the lowest 590 of the 1200 (Block 70;
+Block 50 hung them higher, and on a phone the four looked the same),
+each at its own height, and still well over every head. Every model's trunk base is centred on the join, whatever way
 the tree leans above it, because the road is where a student looks.
 
 The output is pasted into js/game.js as SHADOW_TREE_URLS rather than
@@ -125,7 +126,7 @@ def palm(lean, crown_y, specs, nuts, wobble):
 # each list are old fronds hanging down the crownshaft, which is what
 # breaks the fan into a tree rather than a parasol.
 PALM_A = palm(
-    26, 500,
+    26, 720,
     [(-176, 244, 150, 27), (-154, 266, 176, 32), (-130, 252, 198, 33),
      (-104, 226, 214, 31), (-78, 232, 210, 31), (-56, 260, 188, 33),
      (-32, 270, 168, 31), (-10, 246, 146, 26), (-196, 226, 136, 25),
@@ -134,7 +135,7 @@ PALM_A = palm(
     (4.5, 3.4, 0.6))
 
 PALM_B = palm(
-    -30, 560,
+    -30, 770,
     [(-4, 240, 148, 27), (-26, 262, 174, 32), (-50, 250, 196, 33),
      (-76, 222, 212, 31), (-102, 228, 208, 31), (-124, 256, 186, 33),
      (-148, 266, 166, 31), (-170, 242, 144, 26), (16, 222, 134, 25),
@@ -172,8 +173,8 @@ def canopy_tufts(lobes, count):
 def broadleaf(lean, crown_y, lobes, fringe, limbs, wobble):
     top = (CX + lean, crown_y + 40)
     paths = [trunk(top, 70, 42, lean, flare=26, wobble=wobble)]
-    # Limbs leaving the trunk into the canopy. They sit high, above what a
-    # phone shows, so on screen this is a trunk and the canopy's underside.
+    # Limbs leaving the trunk into the canopy, forking where a phone shows
+    # them, under the canopy's edge.
     for bx, by, ex, ey, w0, w1 in limbs:
         paths.append(poly([(CX + bx - w0, BASE_Y - by), (CX + ex - w1, BASE_Y - ey),
                            (CX + ex + w1, BASE_Y - ey), (CX + bx + w0, BASE_Y - by - 30)]))
@@ -190,21 +191,21 @@ def broadleaf(lean, crown_y, lobes, fringe, limbs, wobble):
 
 
 BROAD_A = broadleaf(
-    18, 400,
+    18, 640,
     [(-150, 40, 74), (-80, 96, 96), (10, 122, 104), (96, 84, 90), (156, 30, 70),
      (-40, 10, 78), (46, 6, 74), (-110, -22, 56), (110, -26, 54), (0, 176, 70),
      (-70, 158, 56), (74, 154, 54)],
     [(-124, -54, 38), (-46, -70, 44), (36, -72, 40), (116, -50, 36), (-4, -30, 48)],
-    [(-18, 540, -86, 800, 22, 17), (16, 580, 80, 840, 20, 16)],
+    [(-18, 380, -96, 560, 22, 17), (16, 420, 90, 590, 20, 16)],
     (5.0, 2.7, 1.2))
 
 BROAD_B = broadleaf(
-    -22, 460,
+    -22, 690,
     [(140, 34, 72), (74, 92, 94), (-16, 120, 102), (-102, 80, 88), (-158, 26, 68),
      (34, 8, 76), (-52, 4, 72), (104, -24, 54), (-116, -28, 52), (-6, 170, 68),
      (64, 150, 56), (-80, 148, 52)],
     [(118, -52, 36), (40, -68, 42), (-42, -70, 38), (-120, -48, 34), (2, -28, 46)],
-    [(16, 600, 84, 860, 22, 17), (-18, 640, -78, 900, 20, 16)],
+    [(16, 330, 94, 520, 22, 17), (-18, 370, -88, 550, 20, 16)],
     (4.2, 3.6, 0.3))
 
 
