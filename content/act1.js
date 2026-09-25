@@ -46,7 +46,7 @@
 // Block 41 stand-ins) at the proponent's request, so anyone without
 // the artist's own sheet names a file that does not exist and is drawn
 // as the dashed placeholder box with that name on it: siga-1..3.png,
-// mananahi.png, direktor.png, aling-rosa.png, puno-mansanas.png. Real
+// mananahi.png, direktor.png, aling-rosa.png. Real
 // art replaces each by being saved under that name and measured
 // (measure-sprite.js); the def below then gains its columns, frames and
 // the three numbers.
@@ -107,8 +107,6 @@ const KABAYO = {
   src: "assets/sprites/characters/kabayo.png", frames: 22, fps: 10, columns: 22,
   contentTop: 2, contentHeight: 30, footX: 19,
 };
-// The apple tree. A placeholder, drawn as tall as a tree (displayHeight).
-const PUNO = { src: "assets/sprites/scenery/puno-mansanas.png", frames: 1, fps: 1 };
 // The direktor. A placeholder, on the street and inside alike.
 const DIREKTOR = { src: "assets/sprites/characters/direktor.png", frames: 1, fps: 1 };
 
@@ -133,7 +131,10 @@ const STREET_SPOT = 900;      // Macario, for the opening
 const NANAY_X = 2000;         // where she and Macario walk to, and stay
 const KUTSERO_X = 3300;
 const KABAYO_X = 3560;
-const PUNO_X = 4900;
+// Block 69. The apple tree is the silhouette tree over the join at 5800
+// (a broadleaf, not a palm), so it needs no picture of its own: its
+// body is centred on the trunk.
+const PUNO_X = 5800 - 40;
 const MANANAHI_X = 6400;
 const DIREKTOR_X = 13600;     // at the far end, by the entablado
 
@@ -159,8 +160,8 @@ const JOB_PAY = 50; // each job pays this, once; the two make the savings
 const APPLE_FLAGS = ["nakuhangMansanas1", "nakuhangMansanas2", "nakuhangMansanas3"];
 
 // Block 57, cut to two in Block 59. The Mananahi's customers on the
-// way, one table from which the people, the gifts, the flags and the
-// guide are derived. The direktor is the third delivery and the last,
+// way, one table from which the people, the gifts and the flags are
+// derived. The direktor is the third delivery and the last,
 // and is written out on his own below, because his is where the story
 // turns. Names and lines are PLACEHOLDER. Mang Tomas wears the
 // Tindero's real sheet; Aling Rosa is a placeholder.
@@ -195,7 +196,6 @@ async function openingOnTheStreet() {
   turnPlayer(1);
   await playIntertitle(["Tondo, 1880", "Kung saan nagsimula ang buhay ni Macario"],
     { startBlack: true });
-  unlockGlossary("tondo"); // Block 68
   await wait(500);
 
   // From behind: he faces right, they come from the left.
@@ -213,7 +213,6 @@ async function openingOnTheStreet() {
     { speaker: "Mga Siga", text: "BAHAHAHAHAHAHA!" },
     { speaker: "Macario", text: "Isarado mo 'yang bunganga mo!" },
   ]);
-  unlockGlossary("siga");
 
   // Nanay, from the right. She slides on (Block 57, no walk sheet).
   showDecoration("nanay", true);
@@ -246,7 +245,6 @@ async function openingOnTheStreet() {
     { speaker: "Nanay", text: "Sigurado ka ba diyan 'nak?" },
     { speaker: "Macario", text: "Opo inay, ako na po ang bahala" },
   ]);
-  unlockGlossary("cedula");
 
   // From here she is someone to talk to. The flag is saved now, so a
   // reload after this point replays only the thought below.
@@ -304,7 +302,6 @@ async function theMissingActor() {
     { speaker: "Macario", text: "Sige po. Susubukan ko." },
     { speaker: "Direktor", text: "Salamat, iho! Tara na sa loob, bago ka pa magbago ng isip!" },
   ]);
-  unlockGlossary("direktor");
   // The fade takes the cutscene over from here (game.js, runSceneScript).
   if (window.Acts) Acts.gotoScene("entablado", { x: STAGE_ENTER_X, facing: -1 });
 }
@@ -348,7 +345,6 @@ async function thePlay() {
     { speaker: "Macario", text: "...Sige po." },
     { speaker: "Direktor (pabulong)", text: "Pumuwesto na ang lahat! Bubuksan na ang telon!" },
   ]);
-  unlockGlossary("entablado");
 
   await playIntertitle(["Bumukas ang telon."], {
     whileBlack: () => placePlayer(STAGE_PLAY_X, -1),
@@ -366,7 +362,6 @@ async function thePlay() {
     { speaker: "Sultan", text: "Isang kaaway, sa loob ng aking palasyo? Mga kawal! Dakpin ang kabalyerong iyan!" },
     { speaker: "Direktor (pabulong)", text: "Ikaw na, Macario! Labanan mo sila!" },
   ]);
-  unlockGlossary("sultan");
 
   // He leaves the fighting to his soldiers, who come in from the same
   // wing, spaced so they arrive one after another.
@@ -399,7 +394,6 @@ async function thePlay() {
     { speaker: "Sultan", text: "Sa inyo na ang aking basbas." },
     { speaker: "Mga Manonood", text: "Mabuhay! Mabuhay!" },
   ]);
-  unlockGlossary("moro-moro");
 
   // The curtain closes, and he is in the wings with the direktor.
   await playIntertitle(["Nagsara ang telon.", "Tumayo at pumalakpak ang mga manonood."], {
@@ -500,65 +494,17 @@ function pickApples() {
 function payForJob() {
   Game.addCurrency(JOB_PAY);
   showToast("+" + JOB_PAY + " barya", 2200);
-  unlockGlossary("barya"); // Block 68
 }
 
-// ---- The Talaan (Block 68) -------------------------------------------
-// PLACEHOLDER, all of it: ours, to be accepted, rewritten or removed by
-// the proponents. Block 64's ten pages of facts are gone at their
-// request. In their place, two things to collect (game.js, THE TALAAN):
-//
-//   Words, earned by doing the thing they name: unlockGlossary(id) is
-//   called where it happens (the opening, the first job, the first pay,
-//   the play). Each is an ordinary meaning, not a claim about Sakay.
-//
-//   Three hints for the post-test, lying at three of the spots below,
-//   chosen at random per student along with three of the six hints.
-//   Every other spot is at jump height. Each is at least 90 clear of a
-//   join and of anyone to talk to, and past the opening's walk.
-const GLOSSARY = [
-  { id: "tondo", term: "Tondo",
-    text: "Isang distrito ng Maynila, sa tabi ng look. Dito nagsimula ang kuwento ni Macario." },
-  { id: "siga", term: "Siga",
-    text: "Taong mayabang at mahilig manggulo o mang-asar sa kalye." },
-  { id: "cedula", term: "Cedula",
-    text: "Katibayan ng pagkakakilanlan na kailangang bayaran ng mga nasa hustong gulang noong panahon ng Espanyol. Isa itong uri ng buwis." },
-  { id: "kutsero", term: "Kutsero",
-    text: "Ang nagpapatakbo ng kalesa o karwaheng hinihila ng kabayo." },
-  { id: "barya", term: "Barya",
-    text: "Maliliit na salaping metal. Ito ang iniipon ni Macario para kay Nanay." },
-  { id: "mananahi", term: "Mananahi",
-    text: "Taong gumagawa at nagtatahi ng damit." },
-  { id: "direktor", term: "Direktor",
-    text: "Ang namamahala sa isang dula at sa mga artista nito." },
-  { id: "entablado", term: "Entablado",
-    text: "Ang mataas na plataporma kung saan ginaganap ang mga dula at palabas." },
-  { id: "sultan", term: "Sultan",
-    text: "Tawag sa pinuno o hari sa ilang kaharian." },
-  { id: "moro-moro", term: "Moro-moro",
-    text: "Kilala rin bilang komedya. Dulang tungkol sa digmaan ng dalawang magkaaway na kaharian, may labanan at kuwento ng pag-ibig." },
-];
-
-const HINT_HIGH = 155; // GROUND_LEVEL + 95: out of reach without a jump
-const HINT_SPOTS = [
-  2500, { x: 3950, y: HINT_HIGH }, 5300, { x: 6050, y: HINT_HIGH }, 7000,
-  { x: 8200, y: HINT_HIGH }, 9800, { x: 10700, y: HINT_HIGH }, { x: 12200, y: HINT_HIGH }, 12700,
-];
-
-const HINTS = [
-  { title: "Saan nagsimula?",
-    text: "Tandaan ang lugar na nakasulat sa unang itim na tabing ng laro. Doon lumaki si Macario." },
-  { title: "Ang hanapbuhay",
-    text: "Ang trabaho ng isa sa mga pinagsilbihan ni Macario dito ay magiging hanapbuhay din niya, kasama ang pagiging barbero." },
-  { title: "Ang dula",
-    text: "Anong uri ng dula ang ginanap ni Macario sa entablado? Hanapin ang pangalan nito sa Talaan." },
-  { title: "Sa harap ng madla",
-    text: "Ano ang natutunan ni Macario nang humarap siya sa maraming manonood? Magagamit iyon ng isang magiging pinuno." },
-  { title: "Isang lihim na samahan",
-    text: "Tandaan ang taong 1894. Noon sumapi si Macario sa isang lihim na samahang naghahangad ng kalayaan." },
-  { title: "Mga karaniwang tao",
-    text: "Tingnan ang mga tao sa kalyeng ito: kutsero, mananahi, tindero. Ganitong mga manggagawa ang bumuo sa kilusang sasalihan ni Macario." },
-];
+// ---- The Talaan ------------------------------------------------------
+// Block 69. The engine's Talaan (game.js, THE TALAAN) is kept, but Act I
+// declares no words and no hints: the proponents did not want the
+// Block 68 content, and will write their own. To add some, give ACT_1 a
+// glossary ({ title, hint, entries: [{ id, term, text }] }) and call
+// unlockGlossary(id) where each word is earned, and/or give it hints
+// ({ count, label, foundText, completeText, pool: [{ title, text }] })
+// and the street scene hintSpots (x, or { x, y } for one at jump
+// height). CLAUDE.md, Act data format, has the rest.
 
 window.ACT_1 = {
   number: 1,
@@ -615,50 +561,10 @@ window.ACT_1 = {
   // The chain is the quest log, so there is nothing to add at the start.
   startingQuests: [],
 
-  // Block 68. The Talaan: words earned by doing things, and three
-  // hints for the post-test (game.js, THE TALAAN). PLACEHOLDER.
-  glossary: {
-    title: "Talaan",
-    hint: "May bagong salita tuwing may nagawa ka. Hanapin din ang mga pahiwatig sa daan.",
-    entries: GLOSSARY,
-  },
-  hints: {
-    count: 3,
-    label: "Pahiwatig",
-    foundText: "Naidagdag sa iyong Talaan. Makatutulong ito sa panapos na pagsusulit.",
-    completeText: "Nahanap mo ang lahat ng pahiwatig! Balikan sila sa Talaan bago ang pagsusulit.",
-    pool: HINTS,
-  },
-
   // Block 68. Kept when the act is replayed after a failed post-test
   // (acts.js, replayAct): the apple round's best score.
   keepFlagsOnReplay: ["rekordSaMansanas"],
 
-  // Where to go next (Block 42). Later steps first.
-  guide: [
-    { scene: "tondo", requiresFlag: "nabayaranNgMananahi", unlessFlag: "naibigayAngIponKayNanay",
-      npc: "nanay", label: "Nanay" },
-    { scene: "tondo", requiresFlag: "naitanghalAngDula", unlessFlag: "nabayaranNgMananahi",
-      npc: "mananahi", label: "Mananahi" },
-    { scene: "tondo", requiresFlag: "naihatidAngMgaDamit", unlessFlag: "naitanghalAngDula",
-      npc: "direktor", label: "Direktor" },
-    { scene: "tondo", requiresFlag: "naihatidSaDalawangSuki", unlessFlag: DIREKTOR_FLAG,
-      npc: "direktor", label: "Direktor" },
-    { scene: "tondo", requiresFlag: "nakausapAngMananahi", unlessFlag: "naihatidSaDalawangSuki",
-      npcs: CUSTOMERS.map((c) => c.id) },
-    { scene: "tondo", requiresFlag: "nabayaranNgKutsero", unlessFlag: "nakausapAngMananahi",
-      npc: "mananahi", label: "Mananahi" },
-    { scene: "tondo", requiresFlag: "napakainAngKabayo", unlessFlag: "nabayaranNgKutsero",
-      npc: "kutsero", label: "Kutsero" },
-    { scene: "tondo", requiresFlag: "nakuhangMansanas3", unlessFlag: "napakainAngKabayo",
-      npc: "kabayo", label: "Kabayo" },
-    { scene: "tondo", requiresFlag: "nakausapAngKutsero", unlessFlag: "nakuhangMansanas3",
-      npc: "puno", label: "Puno ng mansanas" },
-    { scene: "tondo", requiresFlag: "nagpasyangMagtrabaho", unlessFlag: "nakausapAngKutsero",
-      npc: "kutsero", label: "Kutsero" },
-    { scene: "entablado", requiresFlag: "naitanghalAngDula", unlessFlag: "nabayaranNgMananahi",
-      exit: "labas", label: "Lumabas" },
-  ],
 
   scenes: [
     {
@@ -671,8 +577,6 @@ window.ACT_1 = {
       panels: STREET_PANELS,
       panelSky: STREET_SKY,
       startX: STREET_SPOT,
-      // Block 68. Where the three hints may lie.
-      hintSpots: HINT_SPOTS,
       decorations: [
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1] },
@@ -749,7 +653,6 @@ window.ACT_1 = {
               ],
               onComplete() {
                 state.flags.nakausapAngKutsero = true;
-                unlockGlossary("kutsero"); // Block 68
                 markDirty();
               },
             },
@@ -812,9 +715,10 @@ window.ACT_1 = {
         },
         {
           // Block 57. Something to use rather than someone to talk to:
-          // E opens the apple mini-game (onInteract).
-          id: "puno", x: PUNO_X, label: "Puno ng mansanas", animation: PUNO,
-          displayHeight: 280, interactLabel: "Pumitas",
+          // E opens the apple mini-game (onInteract). Block 69: scenery,
+          // with no picture; the shadow tree over the join is the tree.
+          id: "puno", x: PUNO_X, label: "Puno ng mansanas", scenery: true,
+          interactLabel: "Pumitas",
           dialogueSets: [],
           onInteract: pickApples,
         },
@@ -842,7 +746,6 @@ window.ACT_1 = {
                 { speaker: "Macario", text: "Sige po, ihahatid ko na ngayon." },
               ],
               onComplete() {
-                unlockGlossary("mananahi"); // Block 68
                 state.flags.nakausapAngMananahi = true;
                 markDirty();
               },

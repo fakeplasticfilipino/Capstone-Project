@@ -75,20 +75,6 @@ const log = (page) => page.evaluate(() => ({
   toggle: !!document.getElementById("quest-done-toggle"),
 }));
 
-// Block 42. What the guide points at right now: its label, and whether it
-// is drawn over the target or as a tab at the screen's edge.
-const guide = (page) => page.evaluate(() => {
-  const t = guideTarget();
-  const marker = !document.getElementById("guide-marker").classList.contains("hidden");
-  const edge = document.getElementById("guide-edge");
-  return {
-    label: t && t.label, x: t && t.x, marker,
-    edge: !edge.classList.contains("hidden") ? (edge.classList.contains("guide-edge-left") ? "left" : "right") : null,
-    text: marker ? document.querySelector("#guide-marker .guide-label").textContent
-                 : document.querySelector("#guide-edge .guide-label").textContent,
-  };
-});
-
 // Block 43. The painted backdrop of the scene in hand: its panels, the
 // shadow trees over the joins, whether every painting really loads, and
 // whether anyone the student has to reach stands behind a trunk.
@@ -110,7 +96,7 @@ const panels = (page) => page.evaluate(async () => {
   const TRUNK = 90;
   const blocked = [];
   joins.forEach((x) => {
-    NPCS.forEach((n) => { if (!n.hidden && n.x < x + TRUNK && n.x + NPC_WIDTH > x - TRUNK) blocked.push(n.id + " at " + x); });
+    NPCS.forEach((n) => { if (!n.hidden && !n.scenery && n.x < x + TRUNK && n.x + NPC_WIDTH > x - TRUNK) blocked.push(n.id + " at " + x); });
     (scene.exits || []).forEach((e) => { if (e.x < x + TRUNK && e.x + (e.width || 80) > x - TRUNK) blocked.push(e.id + " at " + x); });
     (scene.checkpoints || []).forEach((c) => { if (Math.abs(c.x + PLAYER_WIDTH / 2 - x) < TRUNK + PLAYER_WIDTH / 2) blocked.push("checkpoint " + c.x); });
   });
@@ -119,7 +105,6 @@ const panels = (page) => page.evaluate(async () => {
     joins, treesAt: trees.map((t) => parseFloat(t.style.left) + SHADOW_TREE_WIDTH / 2),
     treeZ: trees.length ? +getComputedStyle(trees[0]).zIndex : null,
     playerZ: +getComputedStyle(document.getElementById("player")).zIndex,
-    markerZ: +getComputedStyle(document.getElementById("guide-marker")).zIndex,
     grey: trees.length ? getComputedStyle(trees[0]).filter : null,
     loaded: widths.every((w) => w > 0), widths, blocked,
     tondoTiles: document.querySelectorAll("#skyline .skyline-tile:not(.skyline-panel)").length,
@@ -466,7 +451,6 @@ const storyDrift = () => {
 
   // ---------------------------------------------------------------
   console.log("\nThe Kutsero's job: apples, the horse, the pay");
-  ok("the guide points at the Kutsero", (await guide(page)).label === "Kutsero");
   await walkTo(page, 3200);
   await page.keyboard.press("e");
   const k1 = await readConversation(page, 5);
@@ -474,15 +458,15 @@ const storyDrift = () => {
      JSON.stringify(k1.lines.slice(0, 4)) === JSON.stringify(KUTSERO) && /mansanas/.test(k1.lines[4] || ""), k1.lines);
   await page.waitForTimeout(200);
   ok("the task counts the apples (0/3)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.apples + " (0/3)"]));
-  ok("the guide points at the tree", (await guide(page)).label === "Puno ng mansanas");
   ok("the horse is too early to feed", await page.evaluate(() => !canGiveGift(NPCS.find((n) => n.id === "kabayo"))));
 
-  await walkTo(page, 4800);
+  await walkTo(page, 5740);
   const treeBtn = await page.evaluate(() => ({ label: document.querySelector("#btn-interact .lbl").textContent,
-    box: /puno-mansanas\.png/.test(document.getElementById("npc-puno").textContent),
-    h: document.getElementById("npc-puno").style.height }));
-  ok("at the tree the button reads Pumitas, and its placeholder is drawn tree-tall (Block 59)",
-     treeBtn.label === "Pumitas" && treeBtn.box && treeBtn.h === "280px", treeBtn);
+    picture: document.getElementById("npc-puno").children.length,
+    join: panelJoins(currentScene).includes(NPCS.find((n) => n.id === "puno").x + NPC_WIDTH / 2),
+    broadleaf: document.querySelectorAll(".shadow-tree")[3].style.backgroundImage === SHADOW_TREE_URLS[3] }));
+  ok("the apple tree is the silhouette tree at 5800, with no picture of its own, and reads Pumitas (Block 69)",
+     treeBtn.label === "Pumitas" && treeBtn.picture === 0 && treeBtn.join && treeBtn.broadleaf, treeBtn);
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
   const cg = await catchState(page);
@@ -510,16 +494,14 @@ const storyDrift = () => {
   await page.keyboard.press("e");
   await page.waitForTimeout(200);
   ok("E closes it once all three are caught", !(await catchState(page)).up);
-  ok("(3/3) and the guide points at the horse", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.apples + " (3/3)"]) &&
-     (await guide(page)).label === "Kabayo");
+  ok("(3/3)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.apples + " (3/3)"]));
 
   await walkTo(page, 3480);
   ok("beside the horse, the button reads Ipakain ang mansanas", (await gift(page)) === "Ipakain ang mansanas");
   const h1 = await readConversation(page, 2);
   ok("Macario feeds him", h1.lines.length === 2 && /^Macario:/.test(h1.lines[0]), h1.lines);
   await page.waitForTimeout(200);
-  ok("the task moves to the Kutsero's pay", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.payK]) &&
-     (await guide(page)).label === "Kutsero");
+  ok("the task moves to the Kutsero's pay", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.payK]));
   await walkTo(page, 3200);
   ok("beside the Kutsero, Kunin ang bayad", (await gift(page)) === "Kunin ang bayad");
   await readConversation(page, 2);
@@ -528,8 +510,7 @@ const storyDrift = () => {
 
   // ---------------------------------------------------------------
   console.log("\nThe Mananahi's job: two customers, then the direktor");
-  ok("the next task is the Mananahi", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.mananahi]) &&
-     (await guide(page)).label === "Mananahi");
+  ok("the next task is the Mananahi", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.mananahi]));
   await walkTo(page, 6300);
   await page.keyboard.press("e");
   const m1 = await readConversation(page, 8);
@@ -549,7 +530,6 @@ const storyDrift = () => {
   const customers = [["Aling Rosa", 7700], ["Mang Tomas", 9200]];
   for (let i = 0; i < customers.length; i++) {
     const [name, x] = customers[i];
-    ok("the guide points at " + name, (await guide(page)).label === name);
     await walkTo(page, x);
     ok(name + ": Iabot ang damit", (await gift(page)) === "Iabot ang damit");
     const cl = await readConversation(page, 2);
@@ -559,7 +539,6 @@ const storyDrift = () => {
        cl.lines.length === 2 && cl.lines[1].startsWith(name + ":") &&
        cur === STEP.clothes + " (" + (i + 1) + "/3)", { cl: cl.lines, cur });
   }
-  ok("then the guide points at the direktor", (await guide(page)).label === "Direktor");
 
   // ---------------------------------------------------------------
   console.log("\nThe direktor's missing actor");
@@ -624,8 +603,8 @@ const storyDrift = () => {
      s4.lines.length === 7 && /Nakatayo/.test(s4.lines[0]) && s5.lines.length === 2 &&
      afterPay - before >= 79 && afterPay - before <= 110 && before === 50, { s4: s4.lines, s5: s5.lines, before, afterPay });
   await page.waitForTimeout(400);
-  ok("the play is done, the world is his, and the guide points out", await page.evaluate(() =>
-    state.flags.naitanghalAngDula === true && !cutscenePlaying) && (await guide(page)).label === "Lumabas");
+  ok("the play is done, and the world is his", await page.evaluate(() =>
+    state.flags.naitanghalAngDula === true && !cutscenePlaying));
   await walkTo(page, 1080);
   await page.keyboard.press("e");
   ok("Lumabas: back on the street by the direktor", await waitForScene(page, "tondo") && (await settle(page), true) &&
@@ -633,8 +612,7 @@ const storyDrift = () => {
 
   // ---------------------------------------------------------------
   console.log("\nThe Mananahi's pay, and Nanay");
-  ok("the next task is the Mananahi's pay", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.payM]) &&
-     (await guide(page)).label === "Mananahi");
+  ok("the next task is the Mananahi's pay", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.payM]));
   await walkTo(page, 6300);
   await page.keyboard.press("e");
   const m2 = await readConversation(page, 6);
@@ -644,8 +622,7 @@ const storyDrift = () => {
   await page.waitForTimeout(200);
   ok("paid 50 more", (await page.evaluate(() => Game.currency())) === afterPay + 50);
   ok("the task is to give Nanay the savings (100/100)",
-     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.nanay + " (100/100)"]) &&
-     (await guide(page)).label === "Nanay");
+     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.nanay + " (100/100)"]));
 
   await walkTo(page, 1880);
   ok("beside Nanay: Ibigay ang ipon", (await gift(page)) === "Ibigay ang ipon");
@@ -728,8 +705,8 @@ const storyDrift = () => {
 
   r = await resume("tondo", Object.assign({}, upToMananahi, { naihatidAngMgaDamit: true }), 50);
   await r.page.waitForTimeout(300);
-  ok("a Block 57 save with every delivery done is sent to the direktor for the play",
-     JSON.stringify((await log(r.page)).current) === JSON.stringify([STEP.play]) && (await guide(r.page)).label === "Direktor");
+  ok("a Block 57 save with every delivery done is on the play step",
+     JSON.stringify((await log(r.page)).current) === JSON.stringify([STEP.play]));
   await walkTo(r.page, 13480);
   await r.page.keyboard.press("e");
   c = await readConversation(r.page, 2);
@@ -756,117 +733,18 @@ const storyDrift = () => {
   await r.ctx.close();
 
   // ---------------------------------------------------------------
-  // Block 68. The Talaan: words earned by doing things, and three hints
-  // at random spots. (Block 64's ten fact pages are gone.)
+  // Block 69. Act I declares no Talaan content (the engine is checked
+  // in test.js, section BJ), and there is no guide.
   // ---------------------------------------------------------------
-  console.log("\nThe Talaan");
-  const afterOpening = { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true };
-  r = await resume("tondo", Object.assign({}, afterOpening));
+  console.log("\nNo Talaan content, no guide");
+  r = await resume("tondo", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true });
   await r.page.waitForTimeout(400);
-  const tl0 = await r.page.evaluate(() => {
-    const hints = PICKUPS.filter((p) => p.type === "hint");
-    const joins = panelJoins(currentScene);
-    const clash = [];
-    currentScene.hintSpots.forEach((spot) => {
-      const x = typeof spot === "number" ? spot : spot.x;
-      joins.forEach((j) => { if (Math.abs(x + PICKUP_SIZE / 2 - j) < 90) clash.push(x + " by join " + j); });
-      NPCS.forEach((n) => { if (x + PICKUP_SIZE > n.x - 60 && x < n.x + NPC_WIDTH + 60) clash.push(x + " by " + n.id); });
-    });
-    return { book: Game.glossary(), hints: hints.map((h) => ({ x: h.x, hint: h.hint })),
-      drawn: document.querySelectorAll(".pickup-page").length, seed: state.flags.__hintSeed,
-      noPages: !PICKUPS.some((p) => p.type === "page"), clash,
-      first: Math.min(...currentScene.hintSpots.map((s) => typeof s === "number" ? s : s.x)) };
-  });
-  ok("no fact pages any more; three hints lie on the street, from a seed kept in the save",
-     tl0.noPages && tl0.hints.length === 3 && tl0.drawn === 3 && typeof tl0.seed === "number" &&
-     new Set(tl0.hints.map((h) => h.hint)).size === 3, tl0);
-  ok("every spot a hint may lie is clear of the joins and of everyone", tl0.clash.length === 0, tl0.clash);
-  ok("and none on the opening's walk (it ends at 1880)", tl0.first > 1880 + 200, tl0.first);
-  ok("the Talaan has ten words, none earned by a save from before Block 68",
-     tl0.book && tl0.book.total === 10 && tl0.book.found === 0 && tl0.book.hints.total === 3 && tl0.book.hints.found === 0, tl0.book);
-
-  const seedFlagsTl = await r.page.evaluate(() => Object.assign({}, state.flags));
-  await r.ctx.close();
-  r = await resume("tondo", seedFlagsTl);
-  await r.page.waitForTimeout(400);
-  const tl1 = await r.page.evaluate(() => PICKUPS.filter((p) => p.type === "hint").map((h) => ({ x: h.x, hint: h.hint })));
-  ok("the same student finds the same three hints in the same places after a reload",
-     JSON.stringify(tl1) === JSON.stringify(tl0.hints), { before: tl0.hints, after: tl1 });
-
-  const tl2 = await r.page.evaluate(async () => {
-    window.__asked = [];
-    const real = playSfx;
-    window.playSfx = (name) => { __asked.push(name); return real(name); };
-    const h = PICKUPS.find((p) => p.type === "hint");
-    posX = h.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2;
-    posY = typeof h.y === "number" ? h.y : floorHeightAt(posX); velY = 0; onGround = typeof h.y !== "number";
-    for (let i = 0; i < 40 && document.getElementById("page-card").classList.contains("hidden"); i++) {
-      await new Promise((res) => setTimeout(res, 40));
-    }
-    return { card: !document.getElementById("page-card").classList.contains("hidden"),
-      eyebrow: document.getElementById("page-card-eyebrow").textContent,
-      title: document.getElementById("page-card-title").textContent,
-      text: document.getElementById("page-card-text").textContent,
-      flag: state.flags["pahiwatig_" + h.hint] === true, asked: __asked.slice(),
-      pool: ACT_1.hints.pool[h.hint] };
-  });
-  ok("reaching a hint opens it: Pahiwatig 1 / 3, its title and text, saved",
-     tl2.card && tl2.eyebrow === "Pahiwatig 1 / 3" && tl2.title === tl2.pool.title && tl2.text === tl2.pool.text &&
-     tl2.flag && tl2.asked.includes("page"), tl2);
-  await r.page.waitForTimeout(350);
-  await r.page.keyboard.press(" ");
-  await r.page.waitForTimeout(150);
-  ok("Space closes it, and does not also jump", await r.page.evaluate(() =>
-    document.getElementById("page-card").classList.contains("hidden") && !uiBlocked && velY <= 0));
-
-  // Words, earned by doing things: the Kutsero's first conversation.
-  await walkTo(r.page, 3300 - 100);
-  await r.page.evaluate(() => { window.__asked = []; });
-  await r.page.keyboard.press("e");
-  const kcTl = await readConversation(r.page, 8);
-  await r.page.waitForTimeout(300);
-  const tl3 = await r.page.evaluate(() => ({ flag: state.flags.salita_kutsero === true,
-    toast: document.getElementById("toast").textContent, asked: __asked.slice(), book: Game.glossary() }));
-  ok("talking to the Kutsero earns the word Kutsero, with a sound and a toast",
-     kcTl.lines.length > 0 && tl3.flag && tl3.asked.includes("page") && tl3.book.found === 1, tl3);
-
-  await r.page.keyboard.press("Escape");
-  await r.page.waitForTimeout(200);
-  ok("the pause screen offers the Talaan with its count",
-     (await r.page.evaluate(() => document.querySelector("#shell-notebook .lbl").textContent)) === "Talaan 1/10");
-  await r.page.click("#shell-notebook");
-  await r.page.waitForTimeout(200);
-  const tl4 = await r.page.evaluate(() => [...document.querySelectorAll("#shell-notebook-list li")].map((li) => li.textContent));
-  ok("the Talaan lists the hint found, the two still hidden, and the words, earned ones in full",
-     /^Pahiwatig 1\/3/.test(tl4[0]) && /^1\. /.test(tl4[1]) && /2 pang nakatagong pahiwatig/.test(tl4[2]) &&
-     /^Mga Salita 1\/10/.test(tl4[3]) && tl4.some((x) => /^Kutsero.*kalesa/.test(x)) &&
-     tl4.filter((x) => x === "? ? ?").length === 9, tl4);
-  await r.page.keyboard.press("Escape");
-  await r.page.keyboard.press("Escape");
-  await r.page.waitForTimeout(150);
-
-  const tl5 = await r.page.evaluate(async () => {
-    __asked = [];
-    for (const h of PICKUPS.filter((p) => p.type === "hint" && !pickupTaken(p))) {
-      posX = h.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2;
-      posY = typeof h.y === "number" ? h.y : floorHeightAt(posX); velY = 0; onGround = false;
-      for (let i = 0; i < 20 && !pickupTaken(h); i++) await new Promise((res) => setTimeout(res, 30));
-      document.getElementById("page-card-close").click();
-      await new Promise((res) => setTimeout(res, 30));
-    }
-    return { book: Game.glossary(), last: __asked[__asked.length - 1],
-      note: document.getElementById("page-card-note").textContent };
-  });
-  ok("the third hint completes them, with a flourish",
-     tl5.book.hints.found === 3 && tl5.last === "fanfare" && /lahat ng pahiwatig/.test(tl5.note), tl5);
-  const keptTl = await r.page.evaluate(() => Object.assign({}, state.flags));
-  await r.ctx.close();
-
-  r = await resume("tondo", keptTl);
-  await r.page.waitForTimeout(400);
-  const tl6 = await r.page.evaluate(() => ({ book: Game.glossary(), drawn: document.querySelectorAll(".pickup-page").length }));
-  ok("found hints and earned words stay after a reload, and no hint is put back on the road",
-     tl6.book.hints.found === 3 && tl6.book.found === 1 && tl6.drawn === 0, tl6);
+  const bare = await r.page.evaluate(() => ({
+    book: Game.glossary(), hints: PICKUPS.filter((p) => p.type === "hint").length,
+    button: !document.getElementById("shell-notebook").classList.contains("hidden"),
+    guide: ACT_1.guide, marker: document.getElementById("guide-marker") }));
+  ok("Act I has no words, no hints and no guide", bare.book === null && bare.hints === 0 &&
+     !bare.button && bare.guide === undefined && bare.marker === null, bare);
   await r.ctx.close();
 
   // ---------------------------------------------------------------

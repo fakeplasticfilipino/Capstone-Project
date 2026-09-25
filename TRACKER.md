@@ -25,7 +25,15 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 25 Sep 2026, after Block 68, the instructor's requests:
+Last updated: 25 Sep 2026, after Block 69: the teacher dashboard in
+English; the Talaan's Block 68 words and hints removed (the engine
+kept, the button hidden until the proponents write their own); the
+apple tree is now the silhouette tree over the join at 5800, with no
+sprite; and the guide removed entirely, so students find their own
+way. test.js 696 passed, 0 failed; verify_new_scene.js 99
+passed, 0 failed. Pushed to main. Schema 006 is still NOT RUN.
+
+Before that, 25 Sep 2026, after Block 68, the instructor's requests:
 the questions and answers in the game (content/questions.js, graded by
 the game), a teacher editor for them on the dashboard, a replay of the
 act after a failed post-test (75% to pass), a password change in
@@ -180,8 +188,8 @@ Everything the old Act I used is still in the engine and still on disk,
 ready for the next passages: NPCs with dialogue sets and gifts, shops per
 seller, exits and doorways, arrival dialogues, scene scripts, scripted
 walk-ons, combat with enemies (the moro-moro's walk and sword sheets),
-guards with cones, platforms, hazards, heart pickups, checkpoints, the
-guide, and the art for Kabayo, the Kutsero, the Tindero, Maryam, the
+guards with cones, platforms, hazards, heart pickups, checkpoints
+(the guide was removed in Block 69), and the art for Kabayo, the Kutsero, the Tindero, Maryam, the
 the inside of the entablado, and the Block 41 stand-ins.
 
 Macario's art: idle, walk, jump, melee punch (tap Atake) and shooting
@@ -204,14 +212,14 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v45    js/game.js v68       js/shell.js v16
+    css/style.css v46    js/game.js v69       js/shell.js v16
     js/inventory.js v9   js/acts.js v13       js/assessment.js v4
-    content/act1.js v47  content/items.js v11  content/act2-4.js v1
+    content/act1.js v48  content/items.js v11  content/act2-4.js v1
     content/questions.js v1 (named in index.html and teacher.html)
     ASSET_VERSION 25 (in js/game.js)
     sw.js carries no version: the browser checks it itself on every
     visit (Block 62)
-    css/teacher.css v3   js/teacher.js v3     js/teacher-questions.js v1
+    css/teacher.css v3   js/teacher.js v4     js/teacher-questions.js v2
                                               (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
@@ -355,6 +363,9 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
         a failed post-test, attempts; password change; the Talaan
         (glossary words, three random hints) replacing the fact pages;
         run 6.8; schema 006 written, not run
+    69  teacher dashboard in English; Talaan content removed (engine
+        kept); the apple tree a silhouette tree (scenery NPC); the guide
+        removed from engine, page, styles, act format and content
 
 Everything through Block 41 is pushed (088f5e4). Blocks 42 to 58 are in
 the device folder and waiting to be pushed. Block 44 moved nearly every
@@ -475,16 +486,16 @@ For Block 57:
       the same place, and the cedula talk plays there. Failure looks
       like Macario sliding on his idle pose or overtaking her.
     Nanay stays at that spot for the rest of the act.
-    The apples: the tree reads as a tree at its size (drawn in code, a
-      stand-in); "Pumitas" opens the mini-game; the basket follows the
+    The apples: the tree is the silhouette tree over the join at 5800
+      (Block 69); walking up to it, "Pumitas" opens the mini-game; the basket follows the
       Kaliwa and Kanan buttons held down and a finger dragged across
       the field; an apple is fair to catch (it shakes for 0.65s, then
       falls about 1.3s). Too hard or too easy is CATCH_FALL_SPEED and
       CATCH_BASKET_SPEED in game.js. The window fits the screen with
       its three buttons tappable.
-    The horse, the Kutsero's pay, the Mananahi, the three customers, the
-      guide leading to each in turn along a long road (the longest walk
-      is about 45 seconds end to end), and "+50 barya" twice.
+    The horse, the Kutsero's pay, the Mananahi, the three customers,
+      found without a guide along a long road (Block 69: watch whether
+      students get lost, and on what), and "+50 barya" twice.
     The play (Block 59): the direktor's scene reads naturally at the
       phone's text size; inside, the stage fills the screen with no dark
       strip; both curtain cards; the Sultan walks on and off; the four
@@ -704,7 +715,7 @@ The paper specifies ten.
 |---|---|
 | Performance | (BUILT) No build step, no framework, plain script tags. Reported laggy after Block 35; Block 36 cut the loop's per-frame layout and DOM writes (none at all while standing, halved while walking and fighting) and the phone was confirmed smooth again on 18 Sep 2026. Not re-measured in frames per second since Block 13 |
 | Reliability | (BUILT) Debounced save, ten second autosave backstop, beforeunload flush, logout flush |
-| Usability | (BUILT) Tagalog throughout. A guide arrow to the next goal (Block 42). Every touch target measured on screen at 44px or more. Icons beside every label. Pixel theme with a legible body face and a three-step text size setting. Portrait shows a rotate notice |
+| Usability | (BUILT) Tagalog throughout the game; the teacher dashboard in English (Block 69). No guide arrow since Block 69, by decision. Every touch target measured on screen at 44px or more. Icons beside every label. Pixel theme with a legible body face and a three-step text size setting. Portrait shows a rotate notice |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 only |
@@ -909,7 +920,6 @@ name on it, owed by the artist:
     sprites/characters/direktor.png    the direktor, street and stage
     sprites/characters/aling-rosa.png  a customer (Mang Tomas wears the
                                        Tindero's real sheet)
-    sprites/scenery/puno-mansanas.png  the apple tree, drawn 280 tall
 
 Also missing, in no shipped scene:
 
@@ -1002,7 +1012,7 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 699 checks (sections BH and BI are Block 68: the built-in
+test.js: 696 checks (section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
 questions graded by the game, the teacher's questions first, the pass
 mark, the replay and the second attempt, a reload on a failed result,
 the password, and the teacher's editor); before Block 68, 676 checks against a fixture act and item catalogue (so
@@ -1010,7 +1020,7 @@ mechanics stay tested whatever Act I ships); sections BD to BG are
 Blocks 62 to 67 (the loader, the loading screens, a scene change held
 for its art, and the service worker offline; the run, coyote time, the
 jump buffer and dust; the timed apple round; the reward pop).
-verify_new_scene.js: 115 checks; since Block 68 it sits the real
+verify_new_scene.js: 99 checks (since Block 69 without the guide and Talaan-content checks); since Block 68 it sits the real
 trivia card and pre-test, and its Talaan section (replacing Block 64's
 notebook) checks the hints, the seed across a reload, a word earned and
 the pause panel. 101 of them: one that every line of dialogue and black card in

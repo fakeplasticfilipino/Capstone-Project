@@ -73,13 +73,13 @@ let sortDir = 1; // 1 ascending, -1 descending
 // act_progress.status, in the order a student moves through it, so
 // sorting by status sorts by how far along each student is.
 const STATUS = {
-  none:      { label: "Hindi pa nagsisimula", pill: "pill-none",    order: 0 },
-  locked:    { label: "Naka-lock",            pill: "pill-locked",  order: 1 },
+  none:      { label: "Not started",          pill: "pill-none",    order: 0 },
+  locked:    { label: "Locked",               pill: "pill-locked",  order: 1 },
   trivia:    { label: "Trivia",               pill: "pill-test",    order: 2 },
   pretest:   { label: "Pre-test",             pill: "pill-test",    order: 3 },
-  playing:   { label: "Naglalaro",            pill: "pill-playing", order: 4 },
+  playing:   { label: "Playing",              pill: "pill-playing", order: 4 },
   posttest:  { label: "Post-test",            pill: "pill-test",    order: 5 },
-  completed: { label: "Tapos",                pill: "pill-done",    order: 6 },
+  completed: { label: "Completed",            pill: "pill-done",    order: 6 },
 };
 
 // =============================================================
@@ -98,7 +98,7 @@ async function initTeacher() {
   } = await sb.auth.getSession();
 
   if (!session) {
-    bounceToGame("Kailangan mag-log in muna.");
+    bounceToGame("Please log in first.");
     return;
   }
 
@@ -110,18 +110,18 @@ async function initTeacher() {
 
   if (error) {
     console.error("Profile fetch failed:", error);
-    gateMsg.textContent = "May error sa pagkuha ng account. Subukan ulit.";
+    gateMsg.textContent = "Could not load the account. Please try again.";
     gateMsg.className = "error";
     return;
   }
 
   if (!profile || profile.role !== "teacher") {
-    bounceToGame("Hindi teacher account ito.");
+    bounceToGame("This is not a teacher account.");
     return;
   }
 
   teacherProfile = profile;
-  teacherNameEl.textContent = profile.full_name || "Guro";
+  teacherNameEl.textContent = profile.full_name || "Teacher";
 
   gate.classList.add("hidden");
   dash.classList.remove("hidden");
@@ -149,7 +149,7 @@ async function loadClasses(teacherId) {
     .order("class_name");
 
   if (error) {
-    showLoadError("Hindi makuha ang listahan ng klase.", error);
+    showLoadError("Could not load the class list.", error);
     return;
   }
 
@@ -199,7 +199,7 @@ async function loadRoster(classId) {
     .order("full_name");
 
   if (studentsError) {
-    showLoadError("Hindi makuha ang mga mag-aaral.", studentsError);
+    showLoadError("Could not load the students.", studentsError);
     return;
   }
 
@@ -231,7 +231,7 @@ async function loadRoster(classId) {
   const failure =
     progressRes.error || actsRes.error || scoresRes.error;
   if (failure) {
-    showLoadError("Hindi makuha ang datos ng progreso.", failure);
+    showLoadError("Could not load progress data.", failure);
     return;
   }
 
@@ -245,7 +245,7 @@ async function loadRoster(classId) {
   currentRows = rows;
   renderRoster();
   renderSummary(rows);
-  updatedAtEl.textContent = "Na-update " + new Date().toLocaleTimeString("en-PH", {
+  updatedAtEl.textContent = "Updated " + new Date().toLocaleTimeString("en-PH", {
     hour: "numeric", minute: "2-digit",
   });
 
@@ -308,7 +308,7 @@ function buildRoster(students, progress, acts, scores) {
     const status = act1 && STATUS[act1.status] ? act1.status : "none";
 
     return {
-      name: student.full_name || "(walang pangalan)",
+      name: student.full_name || "(no name)",
       status,
       objectivesDone: act1 ? act1.objectives_done : null,
       objectivesTotal: act1 ? act1.objectives_total : null,
@@ -350,7 +350,7 @@ function renderRoster() {
     tr.appendChild(cell(
       row.currentAct !== null ? "Act " + row.currentAct : null,
       null,
-      row.hasPlayed ? `${row.actsCompleted} sa ${TOTAL_ACTS} tapos` : null
+      row.hasPlayed ? `${row.actsCompleted} of ${TOTAL_ACTS} done` : null
     ));
     tr.appendChild(cell(
       row.objectivesTotal ? `${row.objectivesDone}/${row.objectivesTotal}` : null, "num"));
@@ -358,7 +358,7 @@ function renderRoster() {
       row.pre ? Math.round(row.prePct) + "%" : null, "num", row.pre ? fraction(row.pre) : null));
     tr.appendChild(cell(
       row.post ? Math.round(row.postPct) + "%" : null, "num",
-      row.post ? fraction(row.post) + (row.post.tries > 1 ? " · " + row.post.tries + " subok" : "") : null));
+      row.post ? fraction(row.post) + (row.post.tries > 1 ? " · " + row.post.tries + " attempts" : "") : null));
     tr.appendChild(gainCell(row.gain));
     tr.appendChild(cell(row.performance !== null ? row.performance.toFixed(1) : null, "num"));
     tr.appendChild(cell(formatDuration(row.elapsed), "num"));
@@ -369,8 +369,8 @@ function renderRoster() {
 
   const total = currentRows.length;
   rosterCountEl.textContent = query
-    ? `${rows.length} sa ${total} mag-aaral ang tumugma`
-    : `${total} mag-aaral`;
+    ? `${rows.length} of ${total} students match`
+    : `${total} students`;
   noMatchEl.classList.toggle("hidden", rows.length > 0);
 
   sortHeaders.forEach((th) => {
@@ -441,9 +441,9 @@ function renderSummary(rows) {
 
   stat("stat-students").textContent = n;
   stat("stat-started").textContent = started.length;
-  stat("stat-started-sub").textContent = percentOf(started.length, n) + " ng klase";
+  stat("stat-started-sub").textContent = percentOf(started.length, n) + " of class";
   stat("stat-done").textContent = done.length;
-  stat("stat-done-sub").textContent = percentOf(done.length, n) + " ng klase";
+  stat("stat-done-sub").textContent = percentOf(done.length, n) + " of class";
 
   stat("stat-pre").textContent = withPre.length
     ? average(withPre.map((r) => r.prePct)).toFixed(0) + "%"
@@ -464,7 +464,7 @@ function renderSummary(rows) {
   } else {
     gainEl.textContent = "—";
   }
-  stat("stat-gain-sub").textContent = `n = ${withGain.length}, may pre at post`;
+  stat("stat-gain-sub").textContent = `n = ${withGain.length}, with pre and post`;
 }
 
 function percentOf(part, whole) {
@@ -588,7 +588,7 @@ function showLoadError(message, error) {
   noStudentsEl.classList.add("hidden");
 
   toolbarEl.classList.add("hidden");
-  loadErrorEl.textContent = message + " Tingnan ang console para sa detalye.";
+  loadErrorEl.textContent = message + " See the browser console for details.";
 
   // Surface the single most likely cause rather than leaving the
   // teacher with a bare failure message.

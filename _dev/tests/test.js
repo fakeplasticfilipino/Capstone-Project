@@ -4105,14 +4105,14 @@ const visible = (page, sel) => page.evaluate((s) => {
        first.students === "4" && first.started === "3" && first.done === "2", first);
     ok("and averages only who has sat each test, with the n shown",
        first.pre === "50%" && first.post === "80%" && first.gain === "+35%" &&
-       /n = 2, may pre at post/.test(first.gainSub), first);
+       /n = 2, with pre and post/.test(first.gainSub), first);
     ok("each row shows status, objectives, scores, gain and play time",
-       first.rows[0][1] === "Tapos" && first.rows[0][3] === "7/7" &&
+       first.rows[0][1] === "Completed" && first.rows[0][3] === "7/7" &&
        first.rows[0][4].startsWith("40%") && first.rows[0][5].startsWith("90%") &&
        first.rows[0][6] === "+50%" && first.rows[0][7] === "82.5" && first.rows[0][8] === "38m" &&
        first.rows[2][8] === "1h 15m", first.rows);
     ok("a student who never played reads as not started, with dashes",
-       first.rows[3][1] === "Hindi pa nagsisimula" && first.rows[3][4] === "—", first.rows[3]);
+       first.rows[3][1] === "Not started" && first.rows[3][4] === "—", first.rows[3]);
 
     await page.fill("#roster-search", "03");
     await page.waitForTimeout(100);
@@ -4121,7 +4121,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       count: document.getElementById("roster-count").textContent,
     }));
     ok("searching narrows the roster and says how many matched",
-       searched.rows.length === 1 && searched.rows[0] === "mag-aaral03" && /1 sa 4/.test(searched.count), searched);
+       searched.rows.length === 1 && searched.rows[0] === "mag-aaral03" && /1 of 4/.test(searched.count), searched);
     await page.fill("#roster-search", "");
 
     await page.click('#roster th[data-sort="gain"] button');
@@ -4138,7 +4138,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.waitForTimeout(300);
     ok("refresh reloads the roster in place",
        await page.evaluate(() => document.querySelectorAll("#roster-body tr").length === 4 &&
-         /Na-update/.test(document.getElementById("updated-at").textContent)));
+         /Updated/.test(document.getElementById("updated-at").textContent)));
     await ctx.close();
 
     // A student who opens the page is sent back to the game.
@@ -4153,129 +4153,24 @@ const visible = (page, sel) => page.evaluate((s) => {
     await spage.goto("http://localhost:" + PORT + "/teacher.html");
     await spage.waitForTimeout(300);
     ok("a student account is refused at the gate",
-       await spage.evaluate(() => document.getElementById("gate-msg").textContent === "Hindi teacher account ito." &&
+       await spage.evaluate(() => document.getElementById("gate-msg").textContent === "This is not a teacher account." &&
          document.getElementById("dash").classList.contains("hidden")));
     await sctx.close();
   }
 
-  console.log("\nAW. The guide and the vision cone (Block 42)");
+  console.log("\nAW. No guide, and the vision cone (Blocks 42, 69)");
   {
-    // Against the fixture act, which declares no guide, so one is put on
-    // it at run time. The guide only reads data (NPCS, the scene's exits,
-    // flags and quests), so a stand-in NPC needs no element.
+    // Block 69. The guide is gone at the proponent's direction: students
+    // find their own way. Nothing of it is left on the page or in the
+    // engine.
     const { ctx, page } = await enterTestRoom();
-
-    const none = await page.evaluate(() => {
-      currentActData.guide = undefined;
-      return { target: guideTarget(),
-               marker: document.getElementById("guide-marker").classList.contains("hidden"),
-               edge: document.getElementById("guide-edge").classList.contains("hidden") };
-    });
-    ok("an act with no guide draws nothing", none.target === null && none.marker && none.edge, none);
-
-    const state0 = (x) => page.evaluate(async (px) => {
-      posX = px; posY = floorHeightAt(px); velY = 0;
-      await new Promise((r) => setTimeout(r, 120));
-      const m = document.getElementById("guide-marker");
-      const e = document.getElementById("guide-edge");
-      return {
-        target: guideTarget(),
-        marker: !m.classList.contains("hidden"), markerLeft: m.style.left,
-        markerText: m.querySelector(".guide-label").textContent,
-        edge: !e.classList.contains("hidden"),
-        side: e.classList.contains("guide-edge-left") ? "left" : e.classList.contains("guide-edge-right") ? "right" : null,
-        edgeText: e.querySelector(".guide-label").textContent,
-      };
-    }, x);
-
-    await page.evaluate(() => {
-      currentActData.guide = [
-        { scene: "misyon", requiresFlag: "test_gabay_c", x: 150, label: "Kanan" },
-        { scene: "misyon", unlessFlag: "test_gabay_a", x: 400, label: "Dito" },
-        { scene: "misyon", requiresFlag: "test_gabay_a", x: 2800, label: "Doon" },
-      ];
-    });
-    const near = await state0(200);
-    ok("a target on screen gets the arrow over it, named",
-       near.marker && !near.edge && near.markerLeft === "400px" && near.markerText === "Dito", near);
-
-    await page.evaluate(() => { state.flags.test_gabay_a = true; });
-    const far = await state0(100);
-    ok("a flag moves the guide to the next goal, and off screen it becomes a tab on that side",
-       !far.marker && far.edge && far.side === "right" && far.target.label === "Doon", far);
-    ok("the tab gives the distance in metres",
-       far.edgeText === "Doon " + Math.round((2800 - (100 + 20)) / 80) + "m", far);
-    const behind = await state0(2850);
-    ok("walking up to it turns the tab back into the arrow over it",
-       behind.marker && !behind.edge && behind.markerText === "Doon", behind);
-    await page.evaluate(() => { currentActData.guide[2].x = 100; });
-    const left = await state0(2700);
-    ok("a target behind him is pointed to on the left", left.edge && left.side === "left", left);
-
-    await page.evaluate(() => { state.flags.test_gabay_c = true; });
-    const first = await state0(2700);
-    ok("the first entry whose conditions hold wins", first.target && first.target.label === "Kanan", first);
-    await page.evaluate(() => { delete state.flags.test_gabay_c; });
-
-    // Several NPCs: the nearest still waiting for a gift.
-    const pick = await page.evaluate(() => {
-      const fake = (id, x, flag) => ({ id, x, label: id, hidden: false,
-        gift: { requiresFlag: "x", givenFlag: flag } });
-      NPCS.push(fake("una", 500, "test_bigay_1"), fake("dalawa", 1500, "test_bigay_2"),
-                fake("tago", 900, "test_bigay_3"));
-      NPCS[NPCS.length - 1].hidden = true;
-      currentActData.guide = [{ scene: "misyon", npcs: ["una", "dalawa", "tago"] }];
-      posX = 1100;
-      const a = guideTarget();
-      state.flags.test_bigay_2 = true;
-      const b = guideTarget();
-      state.flags.test_bigay_1 = true;
-      const c = guideTarget();
-      NPCS.splice(NPCS.length - 3, 3);
-      return { a: a && a.label, b: b && b.label, c };
-    });
-    ok("of several, the guide picks the nearest visible one still waiting, and stops when none is",
-       pick.a === "dalawa" && pick.b === "una" && pick.c === null, pick);
-
-    const quest = await page.evaluate(() => {
-      currentActData.guide = [
-        { scene: "misyon", questOpen: "test_gabay_q", x: 300, label: "Q" },
-        { scene: "misyon", unlessQuest: "test_gabay_q", x: 600, label: "Wala" },
-        { scene: "tondo", x: 300, label: "Ibang eksena" },
-      ];
-      const before = guideTarget();
-      addQuest("test_gabay_q", "Pagsubok");
-      const open = guideTarget();
-      completeQuest("test_gabay_q");
-      const done = guideTarget();
-      return { before: before && before.label, open: open && open.label, done };
-    });
-    ok("entries can wait on a quest being open, or on it not yet being logged, and name a scene",
-       quest.before === "Wala" && quest.open === "Q" && quest.done === null, quest);
-
-    // Hidden while he cannot act on it.
-    await page.evaluate(() => { currentActData.guide = [{ scene: "misyon", x: 400, label: "Dito" }]; });
-    await state0(200);
-    await page.evaluate(() => { playDialogue([{ speaker: "Pagsubok", text: "Isang linya." }]); });
-    await page.waitForTimeout(120);
-    const talking = await page.evaluate(() => ({
-      marker: !document.getElementById("guide-marker").classList.contains("hidden"),
-      edge: !document.getElementById("guide-edge").classList.contains("hidden") }));
-    ok("the guide hides while a conversation is open", !talking.marker && !talking.edge, talking);
-    await page.keyboard.press("e");
-    await page.waitForTimeout(150);
-    ok("and comes back when it closes", (await state0(200)).marker);
-
-    // Nothing written while standing still (Block 36).
-    const writes = await page.evaluate(() => new Promise((resolve) => {
-      let n = 0;
-      const mo = new MutationObserver((list) => { n += list.length; });
-      ["guide-marker", "guide-edge"].forEach((id) =>
-        mo.observe(document.getElementById(id), { attributes: true, childList: true, subtree: true, characterData: true }));
-      setTimeout(() => { mo.disconnect(); resolve(n); }, 500);
+    const gone = await page.evaluate(() => ({
+      marker: document.getElementById("guide-marker"),
+      edge: document.getElementById("guide-edge"),
+      engine: typeof window.updateGuide + typeof window.guideTarget,
     }));
-    ok("standing still, the loop writes nothing to the guide", writes === 0, writes);
-    await page.evaluate(() => { currentActData.guide = undefined; });
+    ok("there is no guide: no arrow, no edge tab, nothing in the engine",
+       gone.marker === null && gone.edge === null && gone.engine === "undefinedundefined", gone);
 
     // The cone. Measured on screen and converted back to world pixels, so
     // it checks what is drawn rather than a style value.
@@ -5406,7 +5301,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.waitForTimeout(600);
 
     const post = await page.evaluate(() => [...document.querySelectorAll("#roster-body tr")][0].children[5].textContent);
-    ok("the roster shows the latest post-test try and how many there were", /^90%9\/10 · 2 subok$/.test(post), post);
+    ok("the roster shows the latest post-test try and how many there were", /^90%9\/10 · 2 attempts$/.test(post), post);
 
     const start = await page.evaluate(() => ({
       items: document.querySelectorAll("#qe-list .qe-item").length,
@@ -5416,7 +5311,7 @@ const visible = (page, sel) => page.evaluate((s) => {
         .querySelectorAll("input[type=radio]")[0].checked,
     }));
     ok("with nothing saved, the editor starts from the game's own pre-test",
-       start.items === 10 && /Wala pang naka-save/.test(start.source) &&
+       start.items === 10 && /Nothing saved in the database yet/.test(start.source) &&
        /Saan sa Maynila/.test(start.first) && start.correct === true, start);
 
     const saved = await page.evaluate(async () => {
@@ -5433,8 +5328,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("saving writes the edited test, in order, with the new right answer",
        saved.n === 9 && saved.first.question === "Binagong tanong?" && saved.first.correct_index === 2 &&
-       JSON.stringify(saved.orders) === "[1,2,3,4,5,6,7,8,9]" && /Na-save/.test(saved.status) &&
-       /Mula sa database/.test(saved.source), saved);
+       JSON.stringify(saved.orders) === "[1,2,3,4,5,6,7,8,9]" && /^Saved/.test(saved.status) &&
+       /From the database/.test(saved.source), saved);
 
     const invalid = await page.evaluate(async () => {
       document.querySelector("#qe-list .qe-question").value = "  ";
@@ -5444,7 +5339,7 @@ const visible = (page, sel) => page.evaluate((s) => {
         still: __DB.assessment_items.filter((r) => r.test_type === "pre")[0].question };
     });
     ok("a question left empty is refused and nothing is written",
-       /Tanong 1/.test(invalid.status) && invalid.still === "Binagong tanong?", invalid);
+       /Question 1/.test(invalid.status) && invalid.still === "Binagong tanong?", invalid);
 
     await page.selectOption("#qe-type", "trivia");
     await page.waitForTimeout(300);
@@ -5458,6 +5353,97 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("the trivia card is edited the same way",
        /Macario Sakay/.test(trivia.had) && trivia.row && trivia.row.fact === "Bagong trivia.", trivia);
+    await ctx.close();
+  }
+
+  // -------------------------------------------------------------
+  // BJ. The Talaan's engine (Blocks 68, 69). Act I declares no words
+  // and no hints since Block 69, so a glossary and hints are put on the
+  // fixture act at run time; and a scenery NPC, the apple tree's kind.
+  // -------------------------------------------------------------
+  console.log("\nBJ. The Talaan's engine, and a scenery NPC (Blocks 68, 69)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const t0 = await page.evaluate(() => {
+      loadScene("tondo");
+      currentActData.glossary = { title: "Talaan", hint: "h",
+        entries: [{ id: "a", term: "Alpha", text: "Ang una." }, { id: "b", term: "Beta", text: "Ang ikalawa." }] };
+      currentActData.hints = { count: 3, label: "Pahiwatig", foundText: "found", completeText: "complete",
+        pool: [1, 2, 3, 4, 5].map((n) => ({ title: "H" + n, text: "Hint " + n })) };
+      currentScene.hintSpots = [300, 700, { x: 1100, y: 155 }, 1500, 1900];
+      state.flags.__hintSeed = 12345;
+      buildHints();
+      const hints = PICKUPS.filter((p) => p.type === "hint");
+      const again = (buildHints(), PICKUPS.filter((p) => p.type === "hint"));
+      return { hints: hints.map((h) => [h.x, h.hint]), again: again.map((h) => [h.x, h.hint]),
+        drawn: document.querySelectorAll(".pickup-page").length, book: Game.glossary() };
+    });
+    ok("three of the scene's spots and three of the pool's hints are laid, from the seed",
+       t0.hints.length === 3 && t0.drawn === 3 && new Set(t0.hints.map((h) => h[1])).size === 3 &&
+       JSON.stringify(t0.again) === JSON.stringify(t0.hints), t0);
+    ok("the Talaan starts empty", t0.book.found === 0 && t0.book.total === 2 && t0.book.hints.total === 3, t0.book);
+
+    const t1 = await page.evaluate(async () => {
+      window.__asked = [];
+      const real = playSfx;
+      window.playSfx = (name) => { __asked.push(name); return real(name); };
+      const first = unlockGlossary("a");
+      const twice = unlockGlossary("a");
+      const unknown = unlockGlossary("zzz");
+      await new Promise((r) => setTimeout(r, 100));
+      return { first, twice, unknown, flag: state.flags.salita_a, asked: __asked.slice(),
+        toast: document.getElementById("toast").textContent };
+    });
+    ok("unlockGlossary earns a word once, with a sound and a toast",
+       t1.first === true && t1.twice === false && t1.unknown === false && t1.flag === true &&
+       t1.asked.join() === "page" && /Alpha/.test(t1.toast), t1);
+
+    const t2 = await page.evaluate(async () => {
+      const h = PICKUPS.find((p) => p.type === "hint");
+      posX = h.x + PICKUP_SIZE / 2 - PLAYER_WIDTH / 2;
+      posY = typeof h.y === "number" ? h.y : floorHeightAt(posX); velY = 0; onGround = typeof h.y !== "number";
+      for (let i = 0; i < 40 && document.getElementById("page-card").classList.contains("hidden"); i++) {
+        await new Promise((r) => setTimeout(r, 40));
+      }
+      const card = { eyebrow: document.getElementById("page-card-eyebrow").textContent,
+        title: document.getElementById("page-card-title").textContent,
+        blocked: uiBlocked, flag: state.flags["pahiwatig_" + h.hint] === true };
+      document.getElementById("page-card-close").click();
+      return { card, book: Game.glossary() };
+    });
+    ok("reaching a hint opens its card over a stopped world, and it is saved",
+       t2.card.eyebrow === "Pahiwatig 1 / 3" && /^H\d$/.test(t2.card.title) && t2.card.blocked && t2.card.flag, t2.card);
+    ok("the Talaan lists what has been found",
+       t2.book.found === 1 && t2.book.entries[0].term === "Alpha" && t2.book.entries[1].term === "" &&
+       t2.book.hints.found === 1 && t2.book.hints.entries[0].text.startsWith("Hint"), t2.book);
+
+    await page.evaluate(() => Shell.openPause());
+    await page.waitForTimeout(150);
+    ok("the pause screen offers the Talaan with its count",
+       await page.evaluate(() => !document.getElementById("shell-notebook").classList.contains("hidden") &&
+         document.querySelector("#shell-notebook .lbl").textContent === "Talaan 1/2"));
+    await page.evaluate(() => Shell.closePause());
+
+    const t3 = await page.evaluate(() => {
+      currentActData.glossary = undefined;
+      currentActData.hints = undefined;
+      return Game.glossary();
+    });
+    ok("an act with neither words nor hints has no Talaan", t3 === null, t3);
+
+    const sc = await page.evaluate(async () => {
+      currentScene.npcs = [{ id: "puno-test", x: 600, label: "Puno", scenery: true, interactLabel: "Pumitas",
+        dialogueSets: [], onInteract() { window.__used = true; } }];
+      loadScene("tondo");
+      const el = document.getElementById("npc-puno-test");
+      posX = 600; posY = floorHeightAt(posX); onGround = true;
+      await new Promise((r) => setTimeout(r, 120));
+      const label = document.querySelector("#btn-interact .lbl").textContent;
+      handleInteractPress();
+      return { children: el.children.length, text: el.textContent, label, used: window.__used === true };
+    });
+    ok("a scenery NPC has a body to reach and no picture or placeholder box, and E uses it",
+       sc.children === 0 && sc.text === "" && sc.label === "Pumitas" && sc.used, sc);
     await ctx.close();
   }
 

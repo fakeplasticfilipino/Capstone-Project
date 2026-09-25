@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MACARIO — Dashboard ng Guro</title>
+  <title>MACARIO — Teacher Dashboard</title>
   <link rel="stylesheet" href="css/teacher.css?v=3" />
 </head>
 <body>
@@ -12,7 +12,7 @@
   <div id="gate">
     <div id="gate-card">
       <div class="brand-mark" aria-hidden="true">M</div>
-      <div id="gate-msg">Sinusuri ang account...</div>
+      <div id="gate-msg">Checking your account...</div>
     </div>
   </div>
 
@@ -23,15 +23,15 @@
           <div class="brand-mark" aria-hidden="true">M</div>
           <div>
             <h1 id="dash-title">MACARIO</h1>
-            <p id="dash-subtitle">Dashboard ng Guro</p>
+            <p id="dash-subtitle">Teacher Dashboard</p>
           </div>
         </div>
         <div id="dash-user">
           <div class="user-meta">
             <span id="dash-teacher-name"></span>
-            <span class="user-role">Guro</span>
+            <span class="user-role">Teacher</span>
           </div>
-          <button id="logout-btn" type="button">Mag-log out</button>
+          <button id="logout-btn" type="button">Log out</button>
         </div>
       </div>
     </header>
@@ -40,24 +40,24 @@
       <!-- The class in view, and the controls that act on it. -->
       <section id="toolbar" class="hidden">
         <div class="toolbar-title">
-          <p class="eyebrow">Klase</p>
+          <p class="eyebrow">Class</p>
           <h2 id="class-name"></h2>
           <!-- Class picker. Hidden when the teacher owns only one class,
                since a dropdown with a single option is just noise. -->
           <div id="class-picker-row" class="hidden">
-            <label for="class-picker" class="sr-only">Pumili ng klase</label>
+            <label for="class-picker" class="sr-only">Choose a class</label>
             <select id="class-picker"></select>
           </div>
         </div>
         <div class="toolbar-actions">
           <span id="updated-at" class="muted"></span>
-          <button id="refresh-btn" type="button" class="btn-secondary">I-refresh</button>
+          <button id="refresh-btn" type="button" class="btn-secondary">Refresh</button>
         </div>
       </section>
 
       <!-- Shown when the teacher owns no classes at all. -->
       <div id="no-class" class="notice hidden">
-        <strong>Walang klaseng nakatalaga sa account na ito.</strong>
+        <strong>No class is assigned to this account.</strong>
         <span class="notice-sub">
           Create a class row in Supabase with teacher_id set to this
           account, then reload.
@@ -67,19 +67,19 @@
       <!-- Class-level summary figures. Each carries its own n, because an
            average over three students and one over forty read the same
            otherwise. -->
-      <section id="summary" class="hidden" aria-label="Buod ng klase">
+      <section id="summary" class="hidden" aria-label="Class summary">
         <div class="stat">
-          <span class="stat-label">Mga mag-aaral</span>
+          <span class="stat-label">Students</span>
           <span class="stat-value" id="stat-students">—</span>
-          <span class="stat-sub" id="stat-students-sub">nakatala sa klase</span>
+          <span class="stat-sub" id="stat-students-sub">enrolled in the class</span>
         </div>
         <div class="stat">
-          <span class="stat-label">Nagsimula na</span>
+          <span class="stat-label">Started</span>
           <span class="stat-value" id="stat-started">—</span>
           <span class="stat-sub" id="stat-started-sub"></span>
         </div>
         <div class="stat">
-          <span class="stat-label">Natapos ang Act I</span>
+          <span class="stat-label">Finished Act I</span>
           <span class="stat-value" id="stat-done">—</span>
           <span class="stat-sub" id="stat-done-sub"></span>
         </div>
@@ -104,44 +104,44 @@
       <section id="roster-section" class="card hidden">
         <div class="card-head">
           <div>
-            <h2 class="section-title">Talaan ng mga Mag-aaral</h2>
+            <h2 class="section-title">Student Roster</h2>
             <p class="muted" id="roster-count"></p>
           </div>
           <div class="search">
-            <label for="roster-search" class="sr-only">Hanapin ang mag-aaral</label>
-            <input id="roster-search" type="search" placeholder="Hanapin ang mag-aaral" autocomplete="off" />
+            <label for="roster-search" class="sr-only">Search students</label>
+            <input id="roster-search" type="search" placeholder="Search students" autocomplete="off" />
           </div>
         </div>
         <div class="table-wrap">
           <table id="roster">
             <thead>
               <tr>
-                <th data-sort="name" aria-sort="ascending"><button type="button">Mag-aaral</button></th>
-                <th data-sort="status"><button type="button">Katayuan (Act I)</button></th>
+                <th data-sort="name" aria-sort="ascending"><button type="button">Student</button></th>
+                <th data-sort="status"><button type="button">Status (Act I)</button></th>
                 <th data-sort="currentAct"><button type="button">Act</button></th>
-                <th data-sort="objectives" class="num"><button type="button">Layunin</button></th>
+                <th data-sort="objectives" class="num"><button type="button">Objectives</button></th>
                 <th data-sort="prePct" class="num"><button type="button">Pre-test</button></th>
                 <th data-sort="postPct" class="num"><button type="button">Post-test</button></th>
                 <th data-sort="gain" class="num"><button type="button">Gain</button></th>
                 <th data-sort="performance" class="num"><button type="button">Performance</button></th>
-                <th data-sort="elapsed" class="num"><button type="button">Oras</button></th>
-                <th data-sort="lastActive"><button type="button">Huling aktibo</button></th>
+                <th data-sort="elapsed" class="num"><button type="button">Time</button></th>
+                <th data-sort="lastActive"><button type="button">Last active</button></th>
               </tr>
             </thead>
             <tbody id="roster-body"></tbody>
           </table>
-          <div id="no-match" class="empty-row hidden">Walang tumugma sa hinanap.</div>
+          <div id="no-match" class="empty-row hidden">No students match the search.</div>
         </div>
         <div class="table-notes">
-          <p><strong>Gain</strong> ay ang post-test bawas ang pre-test, sa porsyento, para sa Act I.</p>
-          <p><strong>Performance</strong> (0 hanggang 100) = 50 × pagkumpleto + 25 × kaligtasan + 25 × pag-iingat sa bantay. Ang oras ay itinatala ngunit hindi binibilang sa marka.</p>
-          <p>Ang gitling (—) ay nangangahulugang wala pang datos.</p>
+          <p><strong>Gain</strong> is the post-test minus the pre-test, in percent, for Act I. Where a student took the post-test more than once, the latest attempt is shown.</p>
+          <p><strong>Performance</strong> (0 to 100) = 50 × completion + 25 × survival + 25 × stealth. Time is recorded but not scored.</p>
+          <p>A dash (—) means no data yet.</p>
         </div>
       </section>
 
       <!-- Class exists but has no enrolled students. -->
       <div id="no-students" class="notice hidden">
-        <strong>Walang mag-aaral na nakatala sa klaseng ito.</strong>
+        <strong>No students are enrolled in this class.</strong>
         <span class="notice-sub">
           Set profiles.class_id for the students who belong to this class.
         </span>
@@ -152,7 +152,7 @@
 
       <div id="loading" class="notice">
         <span class="spinner" aria-hidden="true"></span>
-        Kinukuha ang datos...
+        Loading data...
       </div>
 
       <!-- Block 68. The questions and answers of each test, and the trivia
@@ -162,8 +162,8 @@
       <section id="qe" class="card">
         <div class="card-head">
           <div>
-            <h2 class="section-title">Mga Tanong at Sagot</h2>
-            <p class="muted">Baguhin ang mga tanong ng pagsusulit, ang tamang sagot, at ang trivia bago ang pre-test.</p>
+            <h2 class="section-title">Test Questions and Answers</h2>
+            <p class="muted">Edit each test's questions and correct answers, and the trivia card shown before the pre-test.</p>
           </div>
           <div class="qe-pickers">
             <label for="qe-act" class="sr-only">Act</label>
@@ -173,7 +173,7 @@
               <option value="3">Act III</option>
               <option value="4">Act IV</option>
             </select>
-            <label for="qe-type" class="sr-only">Pagsusulit</label>
+            <label for="qe-type" class="sr-only">Test</label>
             <select id="qe-type">
               <option value="pre">Pre-test</option>
               <option value="post">Post-test</option>
@@ -185,12 +185,12 @@
           <p id="qe-source" class="muted"></p>
           <div id="qe-list"></div>
           <div class="qe-actions">
-            <button id="qe-add" type="button" class="btn-secondary">+ Magdagdag ng tanong</button>
-            <button id="qe-defaults" type="button" class="btn-secondary">Ibalik ang nakahanda</button>
-            <button id="qe-save" type="button" class="btn-primary">I-save</button>
+            <button id="qe-add" type="button" class="btn-secondary">+ Add a question</button>
+            <button id="qe-defaults" type="button" class="btn-secondary">Restore defaults</button>
+            <button id="qe-save" type="button" class="btn-primary">Save</button>
           </div>
           <p id="qe-status" class="qe-status"></p>
-          <p class="table-notes">Babala: ang pagbago ng mga tanong habang may mga mag-aaral nang nakasagot ay nakaaapekto sa paghahambing ng pre-test at post-test. Ang pre-test at post-test ay dapat magkapares: parehong paksa at hirap, magkaibang salita.</p>
+          <p class="table-notes">Warning: changing questions after students have answered affects the comparison between pre-test and post-test. Pre-test and post-test items should be matched pairs: the same topic and difficulty, in different words.</p>
         </div>
       </section>
     </main>
@@ -199,7 +199,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="content/questions.js?v=1"></script>
-  <script src="js/teacher.js?v=3"></script>
-  <script src="js/teacher-questions.js?v=1"></script>
+  <script src="js/teacher.js?v=4"></script>
+  <script src="js/teacher-questions.js?v=2"></script>
 </body>
 </html>

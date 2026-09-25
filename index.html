@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="css/style.css?v=45" />
+  <link rel="stylesheet" href="css/style.css?v=46" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -77,12 +77,6 @@
         <div id="player" class="entity">
           <div class="sprite player-sprite"></div>
         </div>
-        <!-- Block 42. The guide's arrow over whoever or wherever is next.
-             Placed and shown by game.js (updateGuide). -->
-        <div id="guide-marker" class="hidden" aria-hidden="true">
-          <span class="guide-label"></span>
-          <span class="guide-arrow"></span>
-        </div>
       </div>
     </div>
     <button id="gift-btn" class="hidden"><span class="ico"><svg aria-hidden="true"><use href="#i-gift"></use></svg></span><span class="lbl"></span></button>
@@ -110,12 +104,6 @@
     <button id="btn-inventory" class="hidden" type="button" aria-label="Imbentaryo"><span class="ico"><svg aria-hidden="true"><use href="#i-bag"></use></svg></span></button>
     <button id="btn-pause" class="hidden" type="button" aria-label="Pahinga"><span class="ico"><svg aria-hidden="true"><use href="#i-pause"></use></svg></span></button>
     <div id="toast" class="hidden"></div>
-    <!-- Block 42. The guide's tab at the screen edge when the next place
-         is off screen: which way, and how far. -->
-    <div id="guide-edge" class="hidden" aria-hidden="true">
-      <span class="guide-arrow"></span>
-      <span class="guide-label"></span>
-    </div>
 
     <!-- Mobile controls -->
     <div id="mobile-controls">
@@ -545,13 +533,13 @@
        back except the one guarded awaitEntry call in game.js. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
-  <script src="content/act1.js?v=47"></script>
+  <script src="content/act1.js?v=48"></script>
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=11"></script>
   <script src="content/questions.js?v=1"></script>
-  <script src="js/game.js?v=68"></script>
+  <script src="js/game.js?v=69"></script>
   <script src="js/acts.js?v=13"></script>
   <script src="js/inventory.js?v=9"></script>
   <script src="js/assessment.js?v=4"></script>

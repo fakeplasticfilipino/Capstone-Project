@@ -111,8 +111,8 @@ off the repository.
                                artist's art only (Block 59)
       sprites/enemies/         guards and fighters
       sprites/scenery/         things on the street that are used, not
-                               talked to (empty until the artist draws
-                               puno-mansanas.png)
+                               talked to (empty; the apple tree is a
+                               silhouette tree since Block 69)
       backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
                                ground-lupa.jpg
       items/                   inventory and shop tile pictures
@@ -394,10 +394,6 @@ world belongs to the scene.
       keepFlagsOnReplay: ["flag"],               optional; kept by a replay
                                                  (Block 68)
       startingQuests: [{ id, text }],
-      guide: [{ scene, requiresFlag,             optional; where to go
-                unlessFlag, questOpen,           next (Block 42)
-                unlessQuest,
-                npc | npcs | exit | x, label }],
       scenes: [ {...}, {...} ]
     }
 
@@ -482,7 +478,9 @@ last) and opens a card over a stopped world. It is taken whatever the
 student's health, never while a dialogue, cutscene or screen is up
 (playerIsSafe), and a found one is never laid again. The pause screen
 lists both through Game.glossary(). A pickup out of view does not
-animate (updatePickupMotion).
+animate (updatePickupMotion). Since Block 69 Act I declares neither,
+so the Talaan button is hidden until the proponents write its words
+and hints.
 
 A hazard's reason is the Tagalog toast shown on contact and defaults to
 "Nasugatan ka!". Hazards sit on the base floor and are cleared by jumping;
@@ -494,21 +492,10 @@ dangerous, or declares any guard, or declares any hazard. The explicit flag
 still wins. The derivation exists because a scene that adds a hazard and
 forgets the flag would take a heart the student cannot see.
 
-guide (Block 42) is the act's list of where to go next. The first entry
-whose scene matches and whose conditions hold is the target: requiresFlag
-and unlessFlag as everywhere else, questOpen (logged and not done) and
-unlessQuest (not logged at all). It names a place the engine can already
-find: npc, an exit by id (skipped while its requiresFlag is unset), a
-plain x, or npcs, a list from which the nearest visible one whose gift
-has not been given is picked. An entry whose conditions hold but whose
-place is not there (a hidden NPC, every citizen served) ends the search
-rather than falling back to an earlier step. List the later steps of the
-story first within a scene, so a student who does things out of order is
-sent to what is left. label overrides the NPC's or exit's own. On screen,
-the engine draws a name tab and a bobbing arrow over the target
-(#guide-marker, in the world); off screen, a tab at that screen edge with
-the way and the distance in metres (#guide-edge, 80px to the metre). Both
-hide in dialogue, a cutscene, a screen or a fight.
+There is no guide (removed in Block 69, at the proponent's direction):
+nothing on screen says where to go next, and a student finds each
+person from what the story says. Block 42's guide list is gone from
+the act format and the engine.
 
 An act with an empty objectives array can never complete, which is how
 Acts II through IV are kept from reporting progress they have not made.
@@ -603,6 +590,9 @@ NPC shape:
       interactLabel: "Pumitas",                  instead of a conversation,
                                                  and the button reads this
                                                  (Block 57)
+      scenery: true,                             optional; no picture and no
+                                                 placeholder, only a body to
+                                                 reach (Block 69)
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete(),
                        skipIfFlag, requiresFlag }],  both optional
@@ -1161,6 +1151,9 @@ bold, no em dashes, no horizontal rules. Status markers in parentheses:
 (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
 Tagalog for all player-facing text. English for code and comments.
+The teacher dashboard (teacher.html, teacher.js, teacher-questions.js)
+is in English since Block 69: the instructor found it confusing in
+Tagalog, and a teacher is not a player.
 
 Writing dialogue. The proponent's standard, set by the direktor's scene
 and the play in Block 59 ("organic and fresh"): every line a session
@@ -4062,6 +4055,24 @@ The run is slower. Block 63's 8.5 read as far too fast; RUN_SPEED is
 style.css v45, content/act1.js v47, content/questions.js v1;
 teacher.html's teacher.css v3, teacher.js v3, teacher-questions.js v1.
 
+Four changes on the proponent's word (Block 69). The teacher dashboard
+is in English: every label, message, status pill and the question
+editor. The Talaan's Block 68 content (ten words and six hints) is
+removed from content/act1.js and STORY.md, the engine kept, since the
+proponent liked the mechanics and not the content. The apple tree is
+no longer a sprite: it is the silhouette tree over the join at 5800 (a
+broadleaf, not a palm), made usable by an NPC with scenery: true, a
+body to reach and a label and nothing drawn, so the art it owed
+(puno-mansanas.png) is no longer owed. And the guide (Block 42) is gone
+entirely, from the engine, the page, the stylesheet, the act format
+and the content, so that a student works out where to go from what
+the story says; this supersedes Block 42's guide and every later
+mention of it. The Kutsero's "diyan sa unahan" is now the only
+direction to the tree. game.js v69, style.css v46, content/act1.js v48;
+teacher.js v4, teacher-questions.js v2. test.js section BJ covers the
+Talaan's engine against the fixture and a scenery NPC; section AW
+checks that nothing of the guide remains.
+
 ## Pitfalls
 
 A picture is loaded through loadImage (Block 62), never with a bare new
@@ -4289,11 +4300,6 @@ which is also css/, so game.js writes those as absolute URLs (new
 URL(assetUrl(src), document.baseURI)). Setting backgroundImage directly
 on an element, as the sprites and panels do, resolves against the page
 and needs neither.
-
-The guide's elements (#guide-marker in #world, #guide-edge beside the
-toast) are static in index.html, like #player, and are never pushed to
-actElements. A scene load must not remove them; the guide hides and
-repositions them itself.
 
 A new element that a loop-time system creates per scene (Block 37's
 bullets) is declared with the scene lists near the top of game.js, not

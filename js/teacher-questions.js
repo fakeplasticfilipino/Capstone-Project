@@ -11,8 +11,8 @@
 // schema 006 allows a teacher (and nobody else) to do. When the
 // database has no questions for a test, the editor starts from the
 // game's built-in bank, so saving it is how a teacher first takes a
-// test over. "Ibalik ang nakahanda" puts the built-in questions back in
-// the editor; nothing is written until I-save.
+// test over. "Restore defaults" puts the built-in questions back in
+// the editor; nothing is written until Save.
 //
 // Saving a test replaces its rows: the old ones are deleted and the
 // edited list inserted in order, so reordering and removing need no
@@ -52,7 +52,7 @@ const TeacherQuestions = {
     });
     this.el.defaults.addEventListener("click", () => {
       this.useDefaults();
-      this.setStatus("Ibinalik ang nakahandang tanong ng laro. Pindutin ang I-save para gamitin.", "");
+      this.setStatus("Restored the game's built-in questions. Press Save to use them.", "");
     });
     this.el.save.addEventListener("click", () => this.save());
     this.load();
@@ -83,7 +83,7 @@ const TeacherQuestions = {
   },
 
   async load() {
-    this.setStatus("Kinukuha...", "");
+    this.setStatus("Loading...", "");
     this.el.list.innerHTML = "";
     this.loadedFromDb = false;
     try {
@@ -121,7 +121,7 @@ const TeacherQuestions = {
     } catch (err) {
       console.error("question load failed:", err);
       this.useDefaults();
-      this.setStatus("Hindi makuha ang mga tanong mula sa database. Ipinapakita ang nakahanda.", "error");
+      this.setStatus("Could not load questions from the database. Showing the built-in set.", "error");
     }
   },
 
@@ -130,8 +130,8 @@ const TeacherQuestions = {
     list.innerHTML = "";
     this.el.add.classList.toggle("hidden", this.isTrivia());
     this.el.source.textContent = this.loadedFromDb
-      ? "Mula sa database: ito ang ginagamit ng laro ngayon."
-      : "Wala pang naka-save sa database; ito ang nakahandang tanong ng laro. Pindutin ang I-save para mabago.";
+      ? "From the database: this is what the game uses now."
+      : "Nothing saved in the database yet; these are the game's built-in questions. Press Save to take them over.";
 
     if (this.isTrivia()) {
       const box = document.createElement("textarea");
@@ -150,10 +150,10 @@ const TeacherQuestions = {
       const head = document.createElement("div");
       head.className = "qe-item-head";
       const num = document.createElement("strong");
-      num.textContent = "Tanong " + (i + 1);
+      num.textContent = "Question " + (i + 1);
       head.appendChild(num);
       const tools = document.createElement("div");
-      [["↑", -1, "Itaas"], ["↓", 1, "Ibaba"]].forEach(([label, dir, name]) => {
+      [["↑", -1, "Move up"], ["↓", 1, "Move down"]].forEach(([label, dir, name]) => {
         const b = document.createElement("button");
         b.type = "button";
         b.className = "btn-secondary qe-small";
@@ -171,7 +171,7 @@ const TeacherQuestions = {
       const del = document.createElement("button");
       del.type = "button";
       del.className = "btn-secondary qe-small qe-delete";
-      del.textContent = "Tanggalin";
+      del.textContent = "Remove";
       del.addEventListener("click", () => {
         this.collect();
         this.items.splice(i, 1);
@@ -185,7 +185,7 @@ const TeacherQuestions = {
       q.className = "qe-question";
       q.rows = 2;
       q.value = item.question;
-      q.setAttribute("aria-label", "Tanong " + (i + 1));
+      q.setAttribute("aria-label", "Question " + (i + 1));
       card.appendChild(q);
 
       const choices = item.choices.slice();
@@ -197,7 +197,7 @@ const TeacherQuestions = {
         radio.type = "radio";
         radio.name = "qe-correct-" + i;
         radio.checked = item.correct === c;
-        radio.title = "Tamang sagot";
+        radio.title = "Correct answer";
         row.appendChild(radio);
         const letter = document.createElement("span");
         letter.className = "qe-letter";
@@ -207,7 +207,7 @@ const TeacherQuestions = {
         input.type = "text";
         input.className = "qe-choice-text";
         input.value = choice;
-        input.setAttribute("aria-label", "Pagpipilian " + "ABCDEFGH".charAt(c));
+        input.setAttribute("aria-label", "Choice " + "ABCDEFGH".charAt(c));
         row.appendChild(input);
         card.appendChild(row);
       });
@@ -249,12 +249,12 @@ const TeacherQuestions = {
         if (k === it.correct) correct = kept.length;
         kept.push(text);
       });
-      if (!question) return { error: "Walang nakasulat sa Tanong " + (i + 1) + "." };
-      if (kept.length < 2) return { error: "Kailangan ng dalawang pagpipilian man lang sa Tanong " + (i + 1) + "." };
-      if (correct < 0) return { error: "Walang laman ang napiling tamang sagot sa Tanong " + (i + 1) + "." };
+      if (!question) return { error: "Question " + (i + 1) + " is empty." };
+      if (kept.length < 2) return { error: "Question " + (i + 1) + " needs at least two choices." };
+      if (correct < 0) return { error: "The correct answer chosen for question " + (i + 1) + " is empty." };
       rows.push({ question, choices: kept, correct });
     }
-    if (!rows.length) return { error: "Kailangan ng isang tanong man lang." };
+    if (!rows.length) return { error: "A test needs at least one question." };
     return { rows };
   },
 
@@ -265,7 +265,7 @@ const TeacherQuestions = {
     try {
       if (this.isTrivia()) {
         const fact = (this.items[0].trivia || "").trim();
-        if (!fact) { this.setStatus("Walang nakasulat sa trivia card.", "error"); return; }
+        if (!fact) { this.setStatus("The trivia card is empty.", "error"); return; }
         const { error } = await sb.from("act_trivia").upsert({ act_number: act, fact }, { onConflict: "act_number" });
         if (error) throw error;
       } else {
@@ -282,11 +282,11 @@ const TeacherQuestions = {
       }
       this.loadedFromDb = true;
       this.render();
-      this.setStatus("Na-save. Gagamitin na ito ng laro sa susunod na pagsusulit.", "ok");
+      this.setStatus("Saved. The game will use this from the next test on.", "ok");
     } catch (err) {
       console.error("question save failed:", err);
-      this.setStatus("Hindi na-save: " + ((err && err.message) || "may error") +
-        ". Tiyaking napatakbo na ang schema 006 sa Supabase.", "error");
+      this.setStatus("Not saved: " + ((err && err.message) || "error") +
+        ". Make sure schema 006 has been run in Supabase.", "error");
     } finally {
       this.el.save.disabled = false;
     }

@@ -446,7 +446,7 @@ function clearQuests() {
 // never leaves the chain stuck on something already behind the student,
 // and the act can still complete. The quests array is rebuilt from the
 // chain, so everything that reads it (a shop item that waits on a quest
-// with forQuest, the guide's questOpen) sees the current step as the
+// with forQuest) sees the current step as the
 // one open quest.
 //
 // An objective may declare countFlags, and its line then ends with the
@@ -1012,7 +1012,12 @@ function buildNpcs(token) {
     mountBody(el, npc.x, NPC_WIDTH, npcHeight);
     if (npc.hidden) el.style.display = "none";
 
-    if (npc.animation) {
+    if (npc.scenery) {
+      // Block 69. Something in the backdrop that can be used (the apple
+      // tree, which is one of the shadow trees): a body to reach and a
+      // label, and no picture, so no placeholder box either.
+      world.appendChild(el);
+    } else if (npc.animation) {
       // Animated sprite sheet, same system and display size as the player.
       const spriteEl = document.createElement("div");
       spriteEl.className = "sprite npc-sprite npc-anim-sprite";
@@ -5180,174 +5185,6 @@ function setPaused(value) {
 // --- Game loop ---
 let lastFrameNow = 0;
 
-// =============================================================
-// THE GUIDE (Block 42)
-//
-// Students were getting lost: the quest log says what to do, not where,
-// and Act I's roads run to 11000px. The guide answers "where" and only
-// that. An act declares an ordered list of goals (content, `guide`);
-// the first whose conditions hold in the current scene is the target.
-// On screen, a bobbing arrow with the target's name stands over it; off
-// screen, a tab at the edge of the screen points the way with the
-// distance in metres.
-//
-// The engine still knows nothing about what a goal means. An entry names
-// a place the engine can already find (an NPC, an exit, or an x) and the
-// flags or quests that decide when it applies, the same vocabulary
-// arrivalDialogues and exits already use:
-//
-//   { scene, requiresFlag, unlessFlag, questOpen, unlessQuest,
-//     npc: id | npcs: [ids] | exit: id | x, label }
-//
-// npcs picks the nearest of several that is visible and still has a gift
-// to receive, which is what "the next citizen" means on the pamphlet
-// street without the content counting anything.
-//
-// Hidden whenever a student could not act on it (dialogue, cutscene,
-// a screen, a fight) and written only on a change, like everything else
-// the loop touches (Block 36).
-// =============================================================
-
-const GUIDE_ONSCREEN_MARGIN = 40;  // world px inside the viewport edge
-const GUIDE_MARKER_ABOVE = 16;     // above a character's head
-const GUIDE_EXIT_HEIGHT = 170;     // over a doorway, which has no head
-const PX_PER_METRE = 80;           // Macario is 134px, about 1.7m
-
-let guideDrawn = { mode: null, x: null, bottom: null, markerText: null, edgeText: null };
-
-function guideConditionsHold(entry) {
-  if (entry.scene && entry.scene !== currentSceneId) return false;
-  if (entry.requiresFlag && !state.flags[entry.requiresFlag]) return false;
-  if (entry.unlessFlag && state.flags[entry.unlessFlag]) return false;
-  if (entry.questOpen) {
-    const q = quests.find((quest) => quest.id === entry.questOpen);
-    if (!q || q.done) return false;
-  }
-  if (entry.unlessQuest && quests.some((quest) => quest.id === entry.unlessQuest)) {
-    return false;
-  }
-  return true;
-}
-
-function guideNpcPoint(npc) {
-  return {
-    x: npc.x + NPC_WIDTH / 2,
-    bottom: GROUND_LEVEL + (npc.displayHeight || DISPLAY_HEIGHT) + GUIDE_MARKER_ABOVE,
-    label: npc.label,
-  };
-}
-
-// Where an entry points in this scene, or null if the thing it names is
-// not here (a hidden NPC, an exit still shut, every citizen already given
-// a pamphlet), in which case the next entry is tried.
-function guidePoint(entry) {
-  if (entry.npc) {
-    const npc = NPCS.find((n) => n.id === entry.npc);
-    return npc && !npc.hidden ? guideNpcPoint(npc) : null;
-  }
-  if (entry.npcs) {
-    const centre = posX + PLAYER_WIDTH / 2;
-    let best = null;
-    let bestDist = Infinity;
-    entry.npcs.forEach((id) => {
-      const npc = NPCS.find((n) => n.id === id);
-      if (!npc || npc.hidden) return;
-      if (npc.gift && state.flags[npc.gift.givenFlag]) return;
-      const dist = Math.abs(npc.x + NPC_WIDTH / 2 - centre);
-      if (dist < bestDist) { best = npc; bestDist = dist; }
-    });
-    return best ? guideNpcPoint(best) : null;
-  }
-  if (entry.exit) {
-    const exit = ((currentScene && currentScene.exits) || []).find((e) => e.id === entry.exit);
-    if (!exit || (exit.requiresFlag && !state.flags[exit.requiresFlag])) return null;
-    return {
-      x: exit.x + (exit.width || 80) / 2,
-      bottom: GROUND_LEVEL + GUIDE_EXIT_HEIGHT,
-      label: exit.label,
-    };
-  }
-  if (typeof entry.x === "number") {
-    return { x: entry.x, bottom: GROUND_LEVEL + GUIDE_EXIT_HEIGHT, label: "" };
-  }
-  return null;
-}
-
-// The current target, or null. Exposed to the harness by name.
-function guideTarget() {
-  const entries = (currentActData && currentActData.guide) || [];
-  for (const entry of entries) {
-    if (!guideConditionsHold(entry)) continue;
-    const point = guidePoint(entry);
-    if (point) return Object.assign(point, { label: entry.label || point.label || "" });
-    // A goal whose place is not in this scene yet stops the search rather
-    // than falling through to an earlier step of the story.
-    if (entry.stop !== false) return null;
-  }
-  return null;
-}
-
-function guideEls() {
-  if (!guideEls.cache) {
-    guideEls.cache = {
-      marker: document.getElementById("guide-marker"),
-      markerLabel: document.querySelector("#guide-marker .guide-label"),
-      edge: document.getElementById("guide-edge"),
-      edgeLabel: document.querySelector("#guide-edge .guide-label"),
-    };
-  }
-  return guideEls.cache;
-}
-
-function updateGuide(active, cameraX) {
-  const els = guideEls();
-  if (!els.marker || !els.edge) return;
-
-  const target = active && !enemiesAlive() ? guideTarget() : null;
-  let mode = null;
-  let text = null;
-
-  if (target) {
-    const left = cameraX + GUIDE_ONSCREEN_MARGIN;
-    const right = cameraX + viewportWidth - GUIDE_ONSCREEN_MARGIN;
-    if (target.x >= left && target.x <= right) {
-      mode = "marker";
-      text = target.label;
-    } else {
-      mode = target.x < left ? "edge-left" : "edge-right";
-      const metres = Math.max(1, Math.round(Math.abs(target.x - (posX + PLAYER_WIDTH / 2)) / PX_PER_METRE));
-      text = (target.label ? target.label + " " : "") + metres + "m";
-    }
-  }
-
-  if (mode !== guideDrawn.mode) {
-    els.marker.classList.toggle("hidden", mode !== "marker");
-    els.edge.classList.toggle("hidden", !mode || mode === "marker");
-    els.edge.classList.toggle("guide-edge-left", mode === "edge-left");
-    els.edge.classList.toggle("guide-edge-right", mode === "edge-right");
-    guideDrawn.mode = mode;
-  }
-  if (!mode) return;
-
-  if (mode === "marker") {
-    if (target.x !== guideDrawn.x) {
-      els.marker.style.left = target.x + "px";
-      guideDrawn.x = target.x;
-    }
-    if (target.bottom !== guideDrawn.bottom) {
-      els.marker.style.bottom = target.bottom + "px";
-      guideDrawn.bottom = target.bottom;
-    }
-    if (text !== guideDrawn.markerText) {
-      els.markerLabel.textContent = text;
-      guideDrawn.markerText = text;
-    }
-  } else if (text !== guideDrawn.edgeText) {
-    els.edgeLabel.textContent = text;
-    guideDrawn.edgeText = text;
-  }
-}
-
 // Block 66. Adds or removes a class only when it is not already so. The
 // game loop sets the HUD's buttons shown or hidden every frame, and a
 // classList.add of a class already there is still an attribute write:
@@ -5512,8 +5349,6 @@ function gameLoop(now) {
   drawCamera(cameraX, now);
   updatePickupMotion(cameraX); // Block 64
 
-  // Block 42. Where to go next, while the student can act on it.
-  updateGuide(!inDialogue && !cutscenePlaying && !authGated && !uiBlocked, cameraX);
 
   // Interact and gift buttons follow whichever NPC or stage is nearby.
   if (!inDialogue && !cutscenePlaying && !authGated && !uiBlocked) {

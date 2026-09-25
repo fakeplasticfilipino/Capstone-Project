@@ -40,9 +40,9 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 25 Sep 2026, Block 68 (the fact pages replaced by the
-Talaan: words earned by doing things, and three hints for the
-post-test).
+Last updated: 25 Sep 2026, Block 69 (the Talaan's words and hints
+removed, the apple tree now the silhouette tree at 5800, and no guide:
+the student finds each person unaided).
 
 ## The story in brief
 
@@ -73,7 +73,8 @@ Act I lives on it, left to right:
     x 2000     Nanay, where she and Macario walk to in the opening
     x 3300     the Kutsero
     x 3560     his white horse, Kabayo
-    x 4900     the apple tree (Puno ng mansanas)
+    x 5800     the apple tree (Puno ng mansanas): the silhouette tree
+               over that join, with no picture of its own
     x 6400     the Mananahi
     x 7800     Aling Rosa, a customer
     x 9300     Mang Tomas, a customer
@@ -179,8 +180,10 @@ Completes: Maghanap ng trabaho: kausapin ang Kutsero.
 
 ### 3. The apples and the horse
 
-tondo, the apple tree at x 4900 (the button reads Pumitas), then the
-horse at x 3560.
+tondo, the apple tree, which is the silhouette tree over the join at
+x 5800 (walking up to it, the button reads Pumitas), then the horse at
+x 3560. Nothing points the way: the Kutsero's "diyan sa unahan" is the
+whole of the direction.
 
 The tree opens a mini-game, "Puno ng mansanas": apples shake in the
 leaves and fall one at a time, and a basket moved left and right
@@ -475,57 +478,11 @@ Direktor and Maryam, in the entablado:
 
 ## The Talaan
 
-Block 68, replacing Block 64's ten pages of facts, which the proponents
-did not want. The pause screen's Talaan holds two things a student
-collects. All of it is ours.
-
-Words, each earned the moment the student does the thing it names. A
-toast says so ("Bagong salita sa Talaan: Kutsero"); the word's meaning
-is read in the Talaan. Each is an ordinary meaning, not a claim about
-Sakay.
-
-  + Tondo: Isang distrito ng Maynila, sa tabi ng look. Dito nagsimula ang kuwento ni Macario.
-        (the opening card)
-  + Siga: Taong mayabang at mahilig manggulo o mang-asar sa kalye.
-        (the siga's taunt)
-  + Cedula: Katibayan ng pagkakakilanlan na kailangang bayaran ng mga nasa hustong gulang noong panahon ng Espanyol. Isa itong uri ng buwis.
-        (the talk with Nanay)
-  + Kutsero: Ang nagpapatakbo ng kalesa o karwaheng hinihila ng kabayo.
-        (the Kutsero's first conversation)
-  + Barya: Maliliit na salaping metal. Ito ang iniipon ni Macario para kay Nanay.
-        (the first pay)
-  + Mananahi: Taong gumagawa at nagtatahi ng damit.
-        (the Mananahi's first conversation)
-  + Direktor: Ang namamahala sa isang dula at sa mga artista nito.
-        (the missing actor)
-  + Entablado: Ang mataas na plataporma kung saan ginaganap ang mga dula at palabas.
-        (backstage)
-  + Sultan: Tawag sa pinuno o hari sa ilang kaharian.
-        (the Sultan walks on)
-  + Moro-moro: Kilala rin bilang komedya. Dulang tungkol sa digmaan ng dalawang magkaaway na kaharian, may labanan at kuwento ng pag-ibig.
-        (the play's blessing)
-
-Hints, for the post-test. Three scrolls lie on the street, at three of
-ten spots (2500, 3950 high, 5300, 6050 high, 7000, 8200 high, 9800,
-10700 high, 12200 high, 12700), carrying three of the six hints below,
-both chosen at random for each student and kept in the save so they do
-not move on a reload. Reaching one opens it ("Pahiwatig n / 3").
-
-  + [HINT] Saan nagsimula?: Tandaan ang lugar na nakasulat sa unang itim na tabing ng laro. Doon lumaki si Macario.
-  + [HINT] Ang hanapbuhay: Ang trabaho ng isa sa mga pinagsilbihan ni Macario dito ay magiging hanapbuhay din niya, kasama ang pagiging barbero.
-  + [HINT] Ang dula: Anong uri ng dula ang ginanap ni Macario sa entablado? Hanapin ang pangalan nito sa Talaan.
-  + [HINT] Sa harap ng madla: Ano ang natutunan ni Macario nang humarap siya sa maraming manonood? Magagamit iyon ng isang magiging pinuno.
-  + [HINT] Isang lihim na samahan: Tandaan ang taong 1894. Noon sumapi si Macario sa isang lihim na samahang naghahangad ng kalayaan.
-  + [HINT] Mga karaniwang tao: Tingnan ang mga tao sa kalyeng ito: kutsero, mananahi, tindero. Ganitong mga manggagawa ang bumuo sa kilusang sasalihan ni Macario.
-
-What the card and the Talaan say around them:
-
-  + Talaan (until everything is found): May bagong salita tuwing may nagawa ka. Hanapin din ang mga pahiwatig sa daan.
-  + Card, under a hint: Naidagdag sa iyong Talaan. Makatutulong ito sa panapos na pagsusulit.
-  + Card, under the third: Nahanap mo ang lahat ng pahiwatig! Balikan sila sa Talaan bago ang pagsusulit.
-
-A replay of the act after a failed post-test keeps every word and hint
-already found.
+Block 69. Empty. The pause screen's Talaan (words earned by doing
+things, and hints for the post-test laid at random on the street) is
+built in the engine, but Act I declares nothing for it: the proponents
+did not want the Block 68 words and hints, and will write their own.
+With nothing declared, the Talaan button does not appear.
 
 ## Threads left open
 
@@ -552,7 +509,6 @@ next passage. None of these is a promise; they are what is there.
       opening card against Sakay's birth year in it.
     What the direktor pays (79 to 110 at random, the proponents' own
       numbers from Block 56).
-    The Talaan (Block 68): the ten words and their meanings, and the
-      six hints. The hints point at what the post-test asks; three of
-      them (1894, the trade, the ordinary workers) say it outright,
-      because the story does not reach it yet.
+    The Talaan: which words a student earns in Act I, what each
+      means, and whether there are hints for the post-test, and what
+      they say. Both are empty until the proponents write them.
