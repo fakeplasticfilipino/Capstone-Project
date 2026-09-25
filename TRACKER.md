@@ -224,15 +224,15 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v46    js/game.js v69       js/shell.js v16
-    js/inventory.js v9   js/acts.js v13       js/assessment.js v4
-    content/act1.js v48  content/items.js v11  content/act2-4.js v1
+    css/style.css v46    js/game.js v70       js/shell.js v17
+    js/inventory.js v9   js/acts.js v14       js/assessment.js v4
+    content/act1.js v49  content/items.js v11  content/act2-4.js v1
     content/questions.js v1 (named in index.html and teacher.html)
     ASSET_VERSION 25 (in js/game.js)
     sw.js carries no version: the browser checks it itself on every
     visit (Block 62)
-    css/teacher.css v3   js/teacher.js v4     js/teacher-questions.js v2
-                                              (named in teacher.html)
+    css/teacher.css v4   js/teacher.js v5     js/teacher-questions.js v2
+    js/teacher-talaan.js v1                   (named in teacher.html)
 
 The proponent has played Blocks 37 and 38 and reported them functional,
 and confirmed Block 36's speed fix on the phone. Blocks 57 and 58 were
@@ -382,27 +382,10 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
         schema 007; fixed hints, Game.setHintPool, Acts.loadTalaan);
         the shadow trees' crowns lowered into the screen
 
-Everything through Block 41 is pushed (088f5e4). Blocks 42 to 58 are in
-the device folder and waiting to be pushed. Block 44 moved nearly every
-file, so the push is a commit of deletions and additions that git shows
-as renames: stage everything (git add -A) rather than picking files, or
-the site will load a page whose scripts and pictures are not there. The
-old Assets/ folder, the root scripts and stylesheets, the old db/ and
-_dev/ files, "Claude outputs", the proposal and the validation form
-should all show as deleted or moved; if any still show as present in
-git status, they were not deleted on the computer. Block 51 does the
-same on a smaller scale: street-01..04.png, tondo.png and
-entablado-inside.png are replaced by .jpg files of the same name, so
-those six PNGs must be deleted on the computer before the push or the
-repository carries 11MB nothing loads. Blocks 52 to 55 add
-assets/sprites/characters/siga-1..3.png and nanay-walk.png. The
-proponent deleted, on the computer, tondo.jpg, entablado-inside.png,
-entablado-outside.png, the ambience pictures, the drawing tools,
-"Claude outputs" and docs-private/screenshots; git add -A records the
-deletions. Do not delete horse.mp3 or intense.mp3: the harness uses
-both. Block 57 adds assets/sprites/scenery/puno-mansanas.png and
-_dev/tools/make-apple-tree.py; Block 58 adds nine
-assets/audio/sfx/*.wav files and _dev/tools/make-sfx.py.
+Everything through Block 70 is pushed to main and live on GitHub
+Pages. The earlier instructions for a hand push of Blocks 42 to 58 from
+the device folder are history: those blocks reached main with Blocks 62
+to 67 (e7be506), and cloud sessions since push straight to main.
 
 Schema v4 and the Act I item bank are live. Schema v5 (the in-game
 reset) is NOT confirmed run; see Run log. db/scripts/reset_test_accounts.sql
@@ -561,9 +544,11 @@ against the source material.
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs, then STORY.md before writing any story. Everything through Block 41 is pushed; Blocks 42 to 58
-are in the device folder, passing their checks, and wait on the
-proponent's push. Act I was rewritten in Block 52, carried through
+header directs, then STORY.md before writing any story. Everything
+through Block 70 is on main (9ef0b56 and after); cloud sessions push
+straight to main (CLAUDE.md, Deployment). The first thing owed is
+schema 007 in Supabase (Next action, 00), which only the proponent can
+run. Act I was rewritten in Block 52, carried through
 the jobs and the errand in Block 56, rebuilt onto one street in Block
 57 and cleared after 1884, with sound effects, in Block 58; the
 proponent has accepted that shape. Block 59 removed the stand-in art
