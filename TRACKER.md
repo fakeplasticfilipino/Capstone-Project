@@ -184,10 +184,12 @@ score, feedback, currency, the shop, equipment and outfits,
 play-as-guest, sound, settings and the full reset (which needs schema
 v5), and the teacher dashboard.
 
-Since Blocks 62 to 67: pictures load through one loader that retries a
-dropped download, the title screen shows a loading bar, the world and
-every scene change wait (briefly) for their art, and a service worker
-keeps every file on the phone after the first visit. Holding a
+Since Blocks 62 to 67, made strict in Block 78: pictures load through
+one loader that knows which files exist (js/asset-manifest.js), waits
+for every one of them however long it takes, fetches the whole act on
+the title screen, and lets nobody in until it is done (a slow
+connection gets a note and Subukan ulit); a service worker keeps every
+file on the phone after the first visit. Holding a
 direction for half a second breaks into a run (not near guards or in a
 fight), jumps forgive a thumb a few frames late or early, and dust
 flies. Block 64's ten pages of history were replaced in Block 68 by
@@ -197,6 +199,20 @@ dashboard, lying at three fixed places on the street, each opening a
 card and listed on the pause screen (STORY.md, The Talaan). The apple tree, once
 the horse is fed, is a thirty-second game with golden apples and a best
 score. Being paid pops "+N" with a coin.
+
+Since Blocks 73 to 78 (28 Sep 2026): the guard is the bantay, a
+guardia civil from the artist's one still, walking, firing from the
+hip and flinching in sheets made from that still
+(_dev/tools/animate-bantay.js). Three of them are in the Test Room, a
+scene outside the story reached from Mga Setting (pause, then Test
+Room), with a "<WIP>" card on the way in and a door back to the same
+spot. Guards take punches and gunshots the way the play's soldiers do:
+a slide, a flash, a stagger, and a topple and fade when put down.
+Enemies are content now: content/enemies.js describes each kind once
+and scenes place them by type; the engine has one way of taking a blow
+for every kind. ART.md lists the art still owed, checked against the
+disk by the harness. New tools: preview-sheet.js, missing-art.js,
+make-asset-manifest.js, lib/png.js.
 
 Speed: the lag reported after Block 35 is fixed. Block 36 cut the game
 loop's per-frame layout and DOM work, and the proponent confirmed the
@@ -261,9 +277,10 @@ Everything the old Act I used is still in the engine and still on disk,
 ready for the next passages: NPCs with dialogue sets and gifts, shops per
 seller, exits and doorways, arrival dialogues, scene scripts, scripted
 walk-ons, combat with enemies (the moro-moro's walk and sword sheets),
-guards with cones, platforms, hazards, heart pickups, checkpoints
-(the guide was removed in Block 69), and the art for Kabayo, the Kutsero, the Tindero, Maryam, the
-the inside of the entablado, and the Block 41 stand-ins.
+guards with cones (the bantay, in the enemy catalogue), platforms,
+hazards, heart pickups, checkpoints (the guide was removed in Block
+69), and the art for Kabayo, the Kutsero, the Tindero, Maryam and the
+inside of the entablado. What art is still owed is in ART.md.
 
 Macario's art: idle, walk, jump, melee punch (tap Atake) and shooting
 (hold Atake) are real sheets, measured with _dev/tools/measure-sprite.js. His
@@ -279,9 +296,10 @@ white horse (nearSound). Block 58 added nine small effects
 (assets/audio/sfx/*.wav, made by _dev/tools/make-sfx.py): a blip on
 each line of dialogue, jump, coin when barya is earned, give on a gift,
 a chime with Bagong gawain, catch and miss in the apple game, a swoosh
-on every fade, and a low bell with a black card. Intense.mp3 (a fight's track) is on disk and in
-no scene since Block 52. Settings has Musika and Mga tunog switches, both on by
-default.
+on every fade, and a low bell with a black card. Intense.mp3 plays for
+the play's fight and in the Test Room. Block 60 added swing, punch,
+knockout and hurt. Settings has Musika and Mga tunog switches, both on
+by default.
 
 Current versions, which index.html must match on every push:
 
@@ -683,26 +701,28 @@ against the source material.
 ## Where a new session picks up
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
-header directs, then STORY.md before writing any story. Block 73 gave
-the guard (bantay) a walk and a shot and a room of guards; Block 74 made
-that room a Test Room reached from settings, outside the plot (Next
-action, 000). Everything
-through Block 73 is on main; cloud sessions push
-straight to main (CLAUDE.md, Deployment), never to a branch. Block 71
-moved the punch's hit onto the fist's contact frame; Block 72 gave the
-three siga art drawn in code (draw-siga.js), which the proponent has
-still to judge on the phone (Next action, 3). The first thing owed is
-schema 007 in Supabase (Next action, 00), which only the proponent can
-run. Act I was rewritten in Block 52, carried through
-the jobs and the errand in Block 56, rebuilt onto one street in Block
-57 and cleared after 1884, with sound effects, in Block 58; the
-proponent has accepted that shape. Block 59 removed the stand-in art
-and replaced the jump to 1884 with the direktor's missing actor and
-the play. The next work is the device pass
-(Next action, 3), then its next
-passage after the direktor (Next action, 1), written with the proponents from
-their script, and the matching question about the item bank (Next
-action, 2).
+header directs (and ART.md, which it says to check), then STORY.md
+before writing any story. Everything through Block 78 is on main and
+both suites are green (test.js 729, verify_new_scene.js 132); sessions
+push straight to main (CLAUDE.md, Deployment), never to a branch.
+
+The last session (28 Sep 2026, Blocks 73 to 78) was engine and tooling,
+with the plot untouched: the bantay's art and the Test Room (73, 74),
+guards reacting to blows like enemies (75), the enemy catalogue and one
+blow for every body (76), ART.md (77), and a loader that cannot be
+walked past (78). None of it has been seen on the phone yet; the device
+checks are under Next action, 3. The proponent also asked whether to
+port the game to Unity, and was advised not to (CLAUDE.md, Stack); the
+paper's justification is the answer, and drafting it was offered
+(Documentation debt).
+
+What is owed, in order: whether students should see the Test Room
+button (Next action, 000); schema 007 in Supabase, which only the
+proponent can run (Next action, 00); the device pass (Next action, 3);
+then the passage after the direktor, written with the proponents from
+their script (Next action, 1), and the matching question about the item
+bank (Next action, 2). New art goes through ART.md's steps, including
+make-asset-manifest.js.
 
 The old Act I's open questions (the man in the moro-moro's on-screen
 name and the word puta, Block 37's placeholder script against the source
@@ -1261,8 +1281,13 @@ Justify vanilla JavaScript and Supabase over Unity and C#, argued
 from the study's own literature review: a comparable project was
 constrained by 3D performance on low-end devices, and a lightweight
 browser application addresses that gap directly. Frame as responding
-to an identified limitation rather than as reduced scope.
-(NOT STARTED)
+to an identified limitation rather than as reduced scope. On 28 Sep
+2026 the proponent asked whether to port the game to Unity; the advice
+was not to (a Unity web build is heavy on the target phone, a native
+app must be installed on every classroom phone, and the port would
+cost months and the proven harness before a fixed defense), and that
+this paragraph is the answer to a panel that asks. A draft was offered
+and not yet asked for. (NOT STARTED)
 
 Revise the ERD to eleven entities. The paper says fifteen and then
 describes seventeen, so it needs correcting regardless. PlayerAction

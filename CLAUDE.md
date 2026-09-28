@@ -262,6 +262,14 @@ a comparable project was constrained by 3D performance on low-end devices,
 and a lightweight browser application addresses that gap directly. Do not
 reintroduce heavier tooling.
 
+A port to Unity was asked about on 28 Sep 2026 and advised against: a
+Unity web build is large and memory-hungry on exactly the low-end Android
+Chrome this targets, a native build would have to be installed on every
+classroom phone, and a rewrite would cost months and the harness before a
+fixed defense. If a panel or adviser ever makes Unity a formal
+requirement, freeze this build for the study first and port afterwards,
+never both at once.
+
 ## Architecture
 
 Four layers, with a strict dependency direction.
