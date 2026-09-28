@@ -13,6 +13,21 @@ session. STORY.md (since Block 61) is what the story is: every scene,
 place, person, beat and line of dialogue, and it changes whenever the
 story does. Nothing else in the repository describes any of the three.
 
+A fourth, narrow file sits beside them since Block 77: ART.md, the art
+the game still needs (every picture it asks for that is not on disk,
+the stand-ins, and what is drawn without a picture on purpose). It is
+the one exception to status living only in TRACKER.md, at the
+proponent's request, and TRACKER.md points to it rather than keeping a
+second list.
+
+CHECK ART.md FROM TIME TO TIME: at the start of any session that adds
+or changes content or art, whenever a picture arrives from the artist,
+whenever content names a new picture, and before the pilot. Run
+node _dev/tools/missing-art.js to see what is missing and who uses it.
+verify_new_scene.js fails if ART.md's Owed list and the files on disk
+disagree, so a change that names a new picture, or brings one in, is
+not finished until ART.md says so.
+
 Read in this order at the start of a session: this file, then TRACKER.md,
 then STORY.md before touching any content file or writing a line of
 dialogue. All three sit in the repository, so read them directly rather
@@ -102,6 +117,7 @@ off the repository.
     CLAUDE.md, TRACKER.md,     the three context files (how it is built,
       STORY.md                 where it is, what the story is), with
                                README.md for the public
+    ART.md                     the art still owed (Block 77)
     css/                       style.css (the game), teacher.css
     js/                        the engine and its modules, one file each
                                (game, acts, inventory, assessment, shell,
@@ -133,7 +149,8 @@ off the repository.
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-shadow-tree.py, draw-siga.js,
                                animate-bantay.js, preview-sheet.js,
-                               lib/png.js (Block 75), make-sfx.py,
+                               lib/png.js (Block 75), missing-art.js
+                               (Block 77), make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
@@ -1248,6 +1265,7 @@ What outlives a block goes in one of three places and nowhere else.
 Decisions and formats that shape future work go in this file, under
 Decisions on record. Status, next action and what has been run go in
 TRACKER.md. What happens in the story, and the script, goes in STORY.md.
+What art is owed, and what stands in for it, goes in ART.md (Block 77).
 If a piece of the plan fits in none of them, it was working material and
 belongs in the conversation only.
 
@@ -4487,6 +4505,27 @@ art built and hit with no code of its own, and the two kinds told
 apart. verify_new_scene.js to 128: the room's guards and the play's
 soldiers come from the catalogue. game.js v76, content/act1.js v54,
 content/enemies.js v1; no asset changed.
+
+ART.md, the art still owed (Block 77). Requested: a simple file of
+everything that has no sprite yet, to keep track, with an instruction
+that it be checked from time to time. It is a fourth file at the root,
+narrow on purpose: the pictures the game names that are missing (the
+Owed list), the stand-ins that exist but are not the artist's final
+work, and what the game draws with no picture by design. TRACKER.md's
+Known problems kept its own list of missing art until now; it points
+to ART.md instead, so there is one list.
+
+A list kept by memory goes stale, so it is checked by the harness the
+way STORY.md is (Block 61). _dev/tools/missing-art.js finds every
+picture the game asks for, from the content as the page runs it (the
+enemy catalogue, the acts and the items, walked for strings under
+assets/ ending .png or .jpg, with the id or label of whoever uses
+them), from game.js's code lines and from the stylesheet's url()s, and
+says which are not on disk. verify_new_scene.js runs it first and fails
+if a missing picture is not in ART.md's Owed list, or if one listed
+there has arrived. Only the Owed list is checked; the stand-ins and the
+by-design list are written by hand. verify_new_scene.js to 130; no
+shipped file changed.
 
 ## Pitfalls
 

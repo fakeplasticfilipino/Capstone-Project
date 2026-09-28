@@ -5,7 +5,8 @@ is said. A session that is about to write or change story reads this
 file first; a proponent who wants to know what a student sees reads it
 instead of the code.
 
-Three files carry context, and they do not overlap:
+Three files carry context, and they do not overlap (ART.md, since
+Block 77, lists the art still owed for the people and places below):
 
     CLAUDE.md     how the thing is built. Architecture, conventions
                   (including how dialogue is written), data formats,

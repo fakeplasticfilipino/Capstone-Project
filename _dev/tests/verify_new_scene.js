@@ -338,7 +338,27 @@ const storyDrift = () => {
   return { count: lines.length, missing: lines.filter((l) => !story.includes(l)) };
 };
 
+// Block 77. ART.md's Owed list is every picture the game asks for that
+// is not on disk: nothing missing and unlisted, nothing listed and
+// already arrived. The search is _dev/tools/missing-art.js's own.
+const artDrift = () => {
+  const { findArt } = require(path.join(ROOT, "_dev", "tools", "missing-art.js"));
+  const missing = findArt().filter((a) => !a.exists).map((a) => a.file);
+  const md = fs.readFileSync(path.join(ROOT, "ART.md"), "utf8").replace(/\r\n/g, "\n");
+  const owed = (md.split("\n## Owed")[1] || "").split("\n## ")[0];
+  const listed = [...new Set([...owed.matchAll(/assets\/\S+\.(?:png|jpe?g)/gi)].map((m) => m[0]))];
+  return { missing, listed,
+    unlisted: missing.filter((f) => !listed.includes(f)),
+    arrived: listed.filter((f) => !missing.includes(f)) };
+};
+
 (async () => {
+  console.log("\nART.md");
+  const art = artDrift();
+  ok("ART.md lists every picture the game asks for that is missing (" + art.missing.length + ")",
+     art.missing.length > 0 && art.unlisted.length === 0, art.unlisted);
+  ok("and nothing in its Owed list has already arrived", art.arrived.length === 0, art.arrived);
+
   console.log("\nSTORY.md");
   const drift = storyDrift();
   ok("every line and black card in content/act1.js is in STORY.md (" + drift.count + ")",

@@ -15,6 +15,10 @@ Three files carry context, and they do not overlap:
                   interactions and every line of dialogue. Changes
                   whenever the story does (Block 61).
 
+ART.md (Block 77) is the one narrow exception: the art the game still
+needs, checked against the files on disk by verify_new_scene.js. Known
+problems below points to it rather than keeping a second list.
+
 Nothing else in this repository describes status. README.md is the
 public face on GitHub and is written for a reader who is not working
 on the code.
@@ -25,7 +29,13 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 28 Sep 2026, after Block 76: enemies are content now, an
+Last updated: 28 Sep 2026, after Block 77: ART.md, a list of the art
+the game still needs, checked against the files on disk by
+verify_new_scene.js (_dev/tools/missing-art.js finds them). Check it
+from time to time (CLAUDE.md, top). verify_new_scene.js 130 passed, 0
+failed. Pushed to main.
+
+Before that, 28 Sep 2026, after Block 76: enemies are content now, an
 enemy catalogue (content/enemies.js) of types placed by name, and the
 engine has one way of taking a blow for every kind (takeBlow). Nothing
 on screen changed. test.js 725 passed, 0 failed; verify_new_scene.js
@@ -446,8 +456,10 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
         by type, withEnemyType); one blow for every body (takeBlow,
         knockOut, BODY_KINDS) (test.js section BM, to 725;
         verify_new_scene.js to 128)
+    77  ART.md, the art still owed, and missing-art.js; verify_new_scene.js
+        checks the one against the other (to 130)
 
-Everything through Block 76 is pushed to main and live on GitHub
+Everything through Block 77 is pushed to main and live on GitHub
 Pages. The earlier instructions for a hand push of Blocks 42 to 58 from
 the device folder are history: those blocks reached main with Blocks 62
 to 67 (e7be506), and cloud sessions since push straight to main.
@@ -637,9 +649,9 @@ height, does the crown read as leaves), the JPEG backdrops (banding in
 the sky), and the pixel fonts, sound switches, guest mode and the
 teacher dashboard, which Block 52 did not touch.
 
-4. Real art from the artist for the Mananahi, the direktor and Aling
-Rosa (placeholder boxes), and later for whoever the next passages bring
-on. The siga were drawn in code in Block 72; if the proponent rejects
+4. Real art from the artist: everything in ART.md's Owed list (the
+Mananahi, the direktor and Aling Rosa are placeholder boxes on screen),
+and later whoever the next passages bring on. The siga were drawn in code in Block 72; if the proponent rejects
 them, deleting the six files and the SIGA sheets in content/act1.js puts
 the boxes back. Macario's death sheet
 (macario-dead.png) is still missing; no shipped scene plays it. Each new
@@ -1032,26 +1044,10 @@ the two fonts and four sound files. Since Block 52 the shipped Act I
 uses only Nanay, Macario, the street paintings and the ground; the rest
 waits on disk for later passages.
 
-No stand-ins since Block 59: every picture made in code or recoloured
-from the artist's frames was deleted at the proponent's request. The
-siga are drawn in code again since Block 72, at the proponent's request
-and from nothing rather than from the artist's frames.
-Named by Act I and drawn as the dashed placeholder box with the file's
-name on it, owed by the artist:
-
-    sprites/characters/mananahi.png    the Mananahi
-    sprites/characters/direktor.png    the direktor, street and stage
-    sprites/characters/aling-rosa.png  a customer (Mang Tomas wears the
-                                       Tindero's real sheet)
-
-Also missing, in no shipped scene:
-
-    sprites/player/macario-dead.png    Macario's death pose; no shipped
-                                       scene plays it
-    backgrounds/act1/tondo-night.png   night backdrop; no shipped scene
-                                       switches to night, so nothing shows
-
-All under assets/. (KNOWN)
+What is still owed (placeholder boxes today: the Mananahi, the
+direktor, Aling Rosa, Macario's death pose, the night backdrop), and
+what stands in for the artist's work, is in ART.md, since Block 77. Run
+node _dev/tools/missing-art.js for the list as it is on disk. (KNOWN)
 
 Characters and the backdrop can be missing on a slow connection. Seen
 by the proponent on slow internet and reproduced headless on 20 Sep 2026
@@ -1143,7 +1139,7 @@ mechanics stay tested whatever Act I ships); sections BD to BG are
 Blocks 62 to 67 (the loader, the loading screens, a scene change held
 for its art, and the service worker offline; the run, coyote time, the
 jump buffer and dust; the timed apple round; the reward pop).
-verify_new_scene.js: 128 checks (Block 76: the room's guards and the play's soldiers come from the catalogue; Block 75: the bantay reeling in his hit sheet and falling the way the shot went; Block 74: the opening ends on the street with no card, the Test Room offered from pause and not inside the room, the door back to the same spot with the story's flags unchanged; Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
+verify_new_scene.js: 130 checks (Block 77: ART.md's Owed list matches the pictures missing on disk, both ways; Block 76: the room's guards and the play's soldiers come from the catalogue; Block 75: the bantay reeling in his hit sheet and falling the way the shot went; Block 74: the opening ends on the street with no card, the Test Room offered from pause and not inside the room, the door back to the same spot with the story's flags unchanged; Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
 trivia card and pre-test, and its Talaan section (replacing Block 64's
 notebook) checks the hints, the seed across a reload, a word earned and
 the pause panel. 101 of them: one that every line of dialogue and black card in
