@@ -5,12 +5,13 @@ is said. A session that is about to write or change story reads this
 file first; a proponent who wants to know what a student sees reads it
 instead of the code.
 
-Three files carry context, and they do not overlap (ART.md, since
-Block 77, lists the art still owed for the people and places below):
+The context files, and they do not overlap (ART.md, since Block 77,
+lists the art still owed for the people and places below):
 
     CLAUDE.md     how the thing is built. Architecture, conventions
-                  (including how dialogue is written), data formats,
-                  decisions on record. Changes rarely.
+                  (including how dialogue is written), data formats.
+                  Changes rarely. Why it is built that way, block by
+                  block, is DECISIONS.md.
     TRACKER.md    where the build is. Status, next action, what has
                   been run, what is blocked. Changes every session.
     STORY.md      what the story is. Scenes, places, people, beats,

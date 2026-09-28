@@ -14,183 +14,122 @@ Imus National High School
 
 ## What it does
 
-Students log in with credentials issued by their teacher and play through a
-four-act linear narrative covering Sakay's life, from his work as a tailor
-and barber in Tondo through the Katipunan, the Tagalog Republic, and his
-capture. Each act is bracketed by a historical trivia card, a pre-test, and
-a post-test, so learning gain is measured per act rather than only at the
-end.
+Students log in with credentials issued by their teacher and play a
+four-act linear narrative of Sakay's life. Each act is bracketed by a
+historical trivia card, a pre-test and a post-test, so learning gain is
+measured per act; a student below the pass mark may replay the act and
+sit the post-test again.
 
-Gameplay is movement and jump, stealth past patrols with a detection meter,
-a melee punch and a ranged shot, enemies that fight back, and a health
-system with environmental hazards, collectible hearts and food that heals.
-Guard and enemy speed scale with the act number. Items are built: an
-inventory with three equipment slots (Sandata, Anting-anting, Damit),
-stacking consumables and quest items, and a shop reached from its own
-button or from a shopkeeper, with in-game currency awarded per act and
-scaled by performance. Equipment carries an effect, such as stage clothes
-that make a guard slower to notice a student who keeps still.
+Gameplay is movement, a run and a jump; stealth past patrols with a
+detection meter and a visible line of sight; a punch, a takedown and a
+ranged shot; enemies that fight back, with blows that land with weight;
+and health with hazards and collectible hearts. Guard and enemy speed
+scale with the act number. An inventory with three equipment slots, a
+shop and in-game currency awarded by performance are built, ready for
+the items the story will bring.
 
-The interface is a flat pixel-art style to match the sprites, with two
-self-hosted pixel fonts and a three-step text size setting. There is
-background music, a shot has a sound, and a character can carry its own
-looping sound while the player stands near it; music and sound effects
-each have an on and off switch in the settings.
+The interface is flat pixel art to match the sprites, with two
+self-hosted pixel fonts, a three-step text size, music and sound effect
+switches, and a notice asking for landscape on a phone held upright.
 
-Teachers get a separate dashboard showing their class roster, act
-completion, assessment results, gain scores, and class averages.
+Teachers get a separate dashboard: the class roster with each student's
+progress, scores, gain and play time, an editor for the test questions
+and the trivia card, and the Talaan papers, short notes the teacher
+writes that students find on the road.
 
 ## Status
 
-See TRACKER.md, which is the only file in this repository that describes
-status. Anything about progress stated anywhere else, including here, may
-be out of date.
+TRACKER.md is the only file in this repository that describes status;
+anything about progress stated anywhere else, including here, may be out
+of date.
 
-In short: every system is built and live, and the game runs smoothly on
-a real Android phone; the newest content still needs a full pass on
-one. Assessment, performance
-scoring, equipment, currency, cosmetics and the teacher dashboard all work
-end to end as mechanics, none of which depends on what story content
-happens to be loaded, and all of which stays covered by the automated
-suite whatever story content is loaded.
-
-The story is being written one passage at a time against the resource
-person's source material. Act I is complete and playable end to end,
-in four scenes. Macario's mother gives him his money and sends him to
-work; a flashback to his time with a kutsero has him buy an apple for
-the horse; back in the present, a tailor down the road has his stage
-costume waiting, and the stage at the end of that road opens into a
-moro-moro performance that turns into a fight. Afterwards Bonifacio and
-a fellow Katipunero meet him outside and send him down a guarded street
-to hand out pamphlets, and the last pamphlet ends the act and opens its
-post-test. The passage after the fight is a working draft, still to be
-checked against the source material. The shop sells three items. Acts II
-through IV are registered and loadable but empty.
-
-A few characters use stand-in art, made from recoloured frames of the
-commissioned sprites, until the artist's own drawings arrive.
+In short: every system is built and covered by automated tests, and the
+game runs on a real Android phone. Act I is written and playable as far
+as the story goes so far; it is held open, and its post-test waits, until
+the next passage is written against the resource person's source
+material. Acts II to IV are registered and empty. A few characters are
+still placeholder boxes until the artist's drawings arrive (ART.md).
 
 ## Stack
 
-Vanilla HTML, CSS, and JavaScript. No build step and no framework.
-Supabase for authentication, database, and row level security.
-Hosted on GitHub Pages. Visual Studio Code as the editor.
+Vanilla HTML, CSS and JavaScript. No build step and no framework.
+Supabase for authentication, database and row level security. Hosted on
+GitHub Pages. Visual Studio Code as the editor.
 
-The target device is a low-end Android phone running Chrome, which is the
-reason for the deliberately light stack. PC browsers are used for
-development and testing.
-
-The proposal specifies Unity and C#. Neither is used, deliberately; see
-CLAUDE.md.
+The target device is a low-end Android phone running Chrome, held
+sideways, which is the reason for the deliberately light stack. The
+proposal specifies Unity and C#; neither is used, deliberately (see
+CLAUDE.md, Stack).
 
 ## Deployment
 
-Deployed on GitHub Pages from the main branch, which is also where testing
-happens. There is no build step, so pushing to main publishes.
+Deployed on GitHub Pages from the main branch; pushing to main publishes.
 
     https://fakeplasticfilipino.github.io/Capstone-Project/
 
-Changes can take a minute to appear, and browsers cache aggressively. Every
-script and stylesheet is referenced with a v=N query string for that
-reason. Increment it whenever you change the file, or testers keep running
-the old build. Images are versioned separately through ASSET_VERSION in
-game.js.
+Every script and stylesheet carries a v=N query string, and images are
+versioned through ASSET_VERSION in js/game.js, because phones cache
+aggressively. A service worker keeps every file on the phone after the
+first visit, and the game waits on a loading screen until every picture
+has arrived.
 
-For local development, any static file server works:
+For local development, any static file server works (the Supabase client
+needs an http origin, so opening index.html from the filesystem does
+not):
 
     python3 -m http.server 8000
 
-Then open http://localhost:8000
-
-Opening index.html directly from the filesystem will not work, because the
-Supabase client requires an http origin.
-
-Accounts cannot be self-registered. They are created by an administrator,
-either through the Supabase dashboard or with create_accounts.js. Students
-must also be assigned to a class, or the teacher dashboard will show
-nothing.
-
-The title screen also offers Maglaro bilang Bisita, play as a guest:
-Act I with no account and no login, for a quick look at the game without
-provisioning one. Nothing about a guest session is saved or written to
-the database, so it does not appear on the teacher dashboard and cannot
-be used to complete an act for the study.
+Accounts cannot be self-registered. They are created by an
+administrator, through the Supabase dashboard or create_accounts.js, and
+students must be assigned to a class or the dashboard shows nothing. The
+title screen also offers Maglaro bilang Bisita, play as a guest: nothing
+about a guest session is saved.
 
 ## Layout
 
-    index.html            student entry point, the game
-    teacher.html          teacher entry point, the dashboard
+    index.html, teacher.html   the game and the teacher dashboard
+    css/                       game and dashboard styles
+    js/                        the engine (game.js), the act flow
+                               (acts.js), assessment, inventory, the
+                               screens (shell.js), the dashboard, and
+                               the asset manifest
+    content/                   Act I to IV data, the enemy catalogue,
+                               the item catalogue, the built-in questions
+    assets/                    sprites, backgrounds, items, audio, fonts
+    db/                        migrations, seeds and scripts for Supabase
+    _dev/                      the test suites and the tools that make
+                               and check art (_dev/README.md)
+    sw.js                      the service worker
 
-    css/style.css         game styles, including the pixel theme
-    css/teacher.css       dashboard styles
-
-    js/game.js            engine: rendering, physics, dialogue, combat,
-                          stealth, health, save/load
-    js/acts.js            act flow controller, owns act_progress writes
-    js/assessment.js      trivia card, pre-test, post-test, feedback
-    js/shell.js           title screen, pause, settings, inventory and
-                          shop screens, logout
-    js/inventory.js       item ownership, equipment, consumables, the shop
-    js/teacher.js         dashboard: roster, aggregation, rendering
-    js/supabaseClient.js  shared Supabase client
-
-    content/act1.js       Act I as data: four scenes; see TRACKER.md
-    content/act2.js       Acts II to IV, registered but not yet written
-    content/act3.js
-    content/act4.js
-    content/items.js      the item catalogue; three items so far
-
-    assets/sprites/       player/, characters/, enemies/ sprite sheets
-    assets/backgrounds/   per act: street paintings, the entablado, ground
-    assets/items/         inventory and shop tile pictures
-    assets/audio/         music/ and sfx/
-    assets/fonts/         the two self-hosted pixel fonts (OFL)
-
-    db/migrations/        schema, numbered in running order; which have
-                          run is recorded in TRACKER.md's Run log
-    db/seeds/             the Act I item bank, role and class setup
-    db/scripts/           health check, test account reset
-
-    _dev/tests/           headless test suite and Act I walkthrough,
-                          with a fake Supabase client
-    _dev/tools/           sprite measuring, keying and stand-in tools;
-                          create_accounts.js (runs locally, not in git)
-    _dev/README.md        how to run them
-
-    CLAUDE.md             architecture and conventions
-    TRACKER.md            status, next action, and what has been run
-
-Asset files are lowercase and hyphenated, with no spaces, because GitHub
-Pages is case sensitive where Windows is not.
-
-Script order in index.html matters. Act content files must load before
-game.js, acts.js must load after it, then assessment.js, then shell.js
-last.
+    CLAUDE.md       how it is built: architecture, formats, conventions
+    DECISIONS.md    why, block by block
+    TRACKER.md      status, next action, and what has been run
+    STORY.md        the story and every line of dialogue
+    ART.md          the art still owed
 
 ## Assessment integrity
 
-Assessment questions are stored in the database with row level security
-enabled and no student read policy. Questions are served through a security
-definer function that omits the answer key, and grading runs server side
-through a second function. The correct answers never reach the browser, so
-they cannot be read from developer tools.
+Each student sits each pre-test once per act, enforced by a unique
+constraint in the database; a post-test may be retaken only after
+replaying the act, and every attempt is its own row. Row level security
+lets a student insert a score but never change or delete one, so a score
+cannot be altered from a browser.
 
-Each student may take each test once per act, enforced by a unique
-constraint and by the grading function.
+Since a change requested by the instructor, the game grades the tests
+itself, so the teacher can edit the questions from the dashboard. The
+cost, stated plainly: the answer key reaches the browser, and a student
+with developer tools could read it. The session is supervised, and the
+scores measure learning gain rather than rank students.
 
 ## Tests
 
     npm install
     node _dev/tests/test.js
-
-Serves the repository, opens index.html in headless Chromium at phone
-dimensions, and drives the real game against a fake in-memory database. It
-never touches the live Supabase project. See _dev/README.md.
-
     node _dev/tests/verify_new_scene.js
 
-The same rig against the real Act I content rather than the suite's own
-fixture, played from Nanay's first line through to the last pamphlet
-and the post-test.
-
-Neither is a substitute for playing it on a phone.
+The first drives the real game in headless Chromium at phone size
+against its own fixture act and a fake in-memory database, covering
+every engine system. The second plays the real Act I content end to end
+and checks the story, the art list and the asset manifest against the
+repository. Neither touches the live Supabase project, and neither is a
+substitute for playing it on a phone. See _dev/README.md.

@@ -8,8 +8,8 @@
 // of it gets filled varies sheet to sheet, which is exactly what made
 // Macario's idle pose, his walk cycle, and Nanay all render at three
 // different heights and float above the ground by three different
-// amounts before this was fixed (see TRACKER.md, Blocks done, and
-// CLAUDE.md, Decisions on record).
+// amounts before this was fixed (see TRACKER.md, Blocks, and
+// DECISIONS.md).
 //
 // Run:  node _dev/tools/measure-sprite.js <path-to-png> --columns=N --frames=M
 //
