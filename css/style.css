@@ -1080,9 +1080,19 @@ html, body {
   transition: none;
 }
 
+/* Block 75. A guard put down topples away from the blow (guard-fall,
+   below, sharing the enemies' keyframes) while game.js slides him, and
+   then fades where he fell, as a beaten enemy does (enemy-down). Until
+   Block 75 he stood where he was, greyed. */
 .guard-down {
-  opacity: 0.45;
-  filter: grayscale(1);
+  opacity: 0;
+  transition: opacity 0.35s ease 0.45s;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+}
+
+.guard-down .guard-meter {
+  display: none;
 }
 
 /* The meter sits above the guard so it is visible before the catch, not
@@ -1215,7 +1225,8 @@ html, body {
   filter: brightness(1.7) saturate(3);
 }
 
-.enemy-hit .sprite {
+.enemy-hit .sprite,
+.guard-hit .sprite {
   filter: brightness(2.2);
 }
 
@@ -1235,11 +1246,13 @@ html, body {
   display: none;
 }
 
-.enemy-fall-right {
+.enemy-fall-right,
+.guard-fall-right {
   animation: enemy-fall-right 0.42s cubic-bezier(0.5, 0, 0.9, 0.6) forwards;
 }
 
-.enemy-fall-left {
+.enemy-fall-left,
+.guard-fall-left {
   animation: enemy-fall-left 0.42s cubic-bezier(0.5, 0, 0.9, 0.6) forwards;
 }
 
@@ -1255,7 +1268,9 @@ html, body {
 
 @media (prefers-reduced-motion: reduce) {
   .enemy-fall-right,
-  .enemy-fall-left {
+  .enemy-fall-left,
+  .guard-fall-right,
+  .guard-fall-left {
     animation: none;
   }
 }

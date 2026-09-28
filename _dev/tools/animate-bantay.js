@@ -30,17 +30,26 @@
 //
 // Shoot, 7 frames: the rifle comes down through his hand to the hip
 // (0, 1), aims (2), fires (3, a flash at the muzzle), kicks back and up
-// (4, 5) and settles, smoking (6). His other hand, the far one, comes
-// out from behind his coat to hold the barrel from frame 2: it is his
-// near forearm and hand, turned forward and darkened as the far side.
-// The engine holds frame 2 while he aims and plays 3 to 6 once for
-// every shot (game.js, guardShootFrame).
+// (4, 5) and settles, smoking (6). His other arm, the far one, reaches
+// out from behind his coat to hold the barrel from frame 1: a sleeve in
+// the coat's own navy, outline and cuff, darkened as the far side, with
+// his own hand turned under the barrel. The engine holds frame 2 while
+// he aims and plays 3 to 6 once for every shot (game.js,
+// guardShootFrame).
+//
+// Hit, 4 frames (Block 75): the blow rocks him back on his heels. His
+// body tips back about the hip, head, arm and rifle with it, the far
+// foot steps back to catch him, and he comes upright again over the
+// last frames. The engine plays it once while he staggers, and holds
+// its second frame, leaning furthest back, as he topples when he goes
+// down (game.js, guardHitFrame).
 //
 // Run:  node _dev/tools/animate-bantay.js
 //
 // Writes:
 //   assets/sprites/enemies/bantay-walk.png   8 frames, 4 by 2
 //   assets/sprites/enemies/bantay-shoot.png  7 frames, 4 by 2
+//   assets/sprites/enemies/bantay-hit.png    4 frames, 4 by 1
 // and prints the numbers for content/act1.js (BANTAY). Bump
 // ASSET_VERSION in js/game.js after rerunning it.
 //
@@ -52,108 +61,13 @@
 
 const fs = require("fs");
 const path = require("path");
-const zlib = require("zlib");
+const { decodePng, encodePng } = require("./lib/png.js");
 
 const ROOT = path.join(__dirname, "..", "..");
 const SRC = path.join(ROOT, "assets/sprites/enemies/bantay.png");
 const OUT_WALK = path.join(ROOT, "assets/sprites/enemies/bantay-walk.png");
 const OUT_SHOOT = path.join(ROOT, "assets/sprites/enemies/bantay-shoot.png");
-
-// -------------------------------------------------------------
-// PNG in and out (the same plain chunk parsing measure-sprite.js and
-// draw-siga.js use)
-// -------------------------------------------------------------
-
-function decodePng(file) {
-  const buf = fs.readFileSync(file);
-  let off = 8;
-  let width = 0, height = 0, colorType = 0;
-  const idat = [];
-  while (off < buf.length) {
-    const len = buf.readUInt32BE(off);
-    const type = buf.toString("ascii", off + 4, off + 8);
-    const data = buf.subarray(off + 8, off + 8 + len);
-    if (type === "IHDR") {
-      width = data.readUInt32BE(0);
-      height = data.readUInt32BE(4);
-      if (data[8] !== 8 || data[12] !== 0) throw new Error("8-bit, non-interlaced PNGs only");
-      colorType = data[9];
-    } else if (type === "IDAT") idat.push(data);
-    off += 12 + len;
-  }
-  const bpp = { 2: 3, 6: 4 }[colorType];
-  if (!bpp) throw new Error("RGB or RGBA PNGs only");
-  const raw = zlib.inflateSync(Buffer.concat(idat));
-  const stride = width * bpp;
-  const px = Buffer.alloc(stride * height);
-  const paeth = (a, b, c) => {
-    const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);
-    return pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
-  };
-  for (let y = 0, r = 0; y < height; y++) {
-    const f = raw[r++];
-    for (let x = 0; x < stride; x++, r++) {
-      const a = x >= bpp ? px[y * stride + x - bpp] : 0;
-      const b = y > 0 ? px[(y - 1) * stride + x] : 0;
-      const c = y > 0 && x >= bpp ? px[(y - 1) * stride + x - bpp] : 0;
-      const v = raw[r];
-      px[y * stride + x] = (f === 0 ? v : f === 1 ? v + a : f === 2 ? v + b
-        : f === 3 ? v + ((a + b) >> 1) : v + paeth(a, b, c)) & 255;
-    }
-  }
-  const rgba = new Uint8Array(width * height * 4);
-  for (let i = 0; i < width * height; i++) {
-    rgba[i * 4] = px[i * bpp];
-    rgba[i * 4 + 1] = px[i * bpp + 1];
-    rgba[i * 4 + 2] = px[i * bpp + 2];
-    rgba[i * 4 + 3] = bpp === 4 ? px[i * bpp + 3] : 255;
-  }
-  return { width, height, rgba };
-}
-
-const CRC_TABLE = (() => {
-  const t = new Uint32Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-    t[n] = c >>> 0;
-  }
-  return t;
-})();
-
-function crc32(buf) {
-  let c = 0xffffffff;
-  for (const b of buf) c = CRC_TABLE[(c ^ b) & 255] ^ (c >>> 8);
-  return (c ^ 0xffffffff) >>> 0;
-}
-
-function pngChunk(type, data) {
-  const len = Buffer.alloc(4);
-  len.writeUInt32BE(data.length);
-  const body = Buffer.concat([Buffer.from(type), data]);
-  const crc = Buffer.alloc(4);
-  crc.writeUInt32BE(crc32(body));
-  return Buffer.concat([len, body, crc]);
-}
-
-function encodePng(w, h, rgba) {
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(w, 0);
-  ihdr.writeUInt32BE(h, 4);
-  ihdr[8] = 8;
-  ihdr[9] = 6;
-  const raw = Buffer.alloc((w * 4 + 1) * h);
-  for (let y = 0; y < h; y++) {
-    raw[y * (w * 4 + 1)] = 0;
-    Buffer.from(rgba.buffer, rgba.byteOffset + y * w * 4, w * 4).copy(raw, y * (w * 4 + 1) + 1);
-  }
-  return Buffer.concat([
-    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-    pngChunk("IHDR", ihdr),
-    pngChunk("IDAT", zlib.deflateSync(raw, { level: 9 })),
-    pngChunk("IEND", Buffer.alloc(0)),
-  ]);
-}
+const OUT_HIT = path.join(ROOT, "assets/sprites/enemies/bantay-hit.png");
 
 // -------------------------------------------------------------
 // Where things are in the still, in its own pixels. Read off the
@@ -617,6 +531,44 @@ function drawSmoke(cv, [mx, my], age) {
 }
 
 // -------------------------------------------------------------
+// Hit
+// -------------------------------------------------------------
+
+// How far he tips back (degrees, about the hip), how far his far foot
+// has stepped back to catch him and his near one come forward, and how
+// far the blow has pushed him, frame by frame: the blow, the furthest
+// lean, and two frames coming back.
+const HIT = [
+  { lean: 11, far: 12, near: -4, push: -5 },
+  { lean: 18, far: 18, near: -6, push: -8 },
+  { lean: 9, far: 10, near: -3, push: -4 },
+  { lean: 3, far: 3, near: -1, push: -1 },
+];
+
+function hitFrame(parts, step, W, H) {
+  // The legs first: a negative swing is backward (legMaps' forward is
+  // the other way round), with the knee nearly straight.
+  const leg = (back) => {
+    const thigh = turn(HIP[0], HIP[1], back);
+    return { thigh, shin: compose(thigh, turn(KNEE[0], KNEE[1], 3)) };
+  };
+  const near = leg(step.near), far = leg(step.far);
+  const drop = GROUND - Math.max(lowestSole(near), lowestSole(far));
+  const ride = move(step.push, drop);
+  // His body, head, arm and rifle tip back together about the hip.
+  const body = compose(ride, turn(HIP[0], HIP[1], -step.lean));
+  const cv = new Canvas(W, H);
+  cv.draw(parts.shin, compose(ride, far.shin), FAR_SHADE);
+  cv.draw(parts.thigh, compose(ride, far.thigh), FAR_SHADE);
+  cv.draw(parts.shin, compose(ride, near.shin));
+  cv.draw(parts.thigh, compose(ride, near.thigh));
+  cv.draw(parts.torso, body);
+  cv.draw(parts.rifle, compose(body, riflePose(RIFLE_DIR.deg, STILL_GRIP_DIST - 26, HAND_AT)));
+  cv.draw(parts.hand, body);
+  return cv;
+}
+
+// -------------------------------------------------------------
 
 function main() {
   const img = decodePng(SRC);
@@ -648,6 +600,12 @@ function main() {
   const ss = sheet(shots, SHOOT_CELL.w, SHOOT_CELL.h, 4);
   fs.writeFileSync(OUT_SHOOT, encodePng(ss.W, ss.H, ss.out));
 
+  // Hit cells: the walk's, so the numbers are the walk's too.
+  const hits = HIT.map((step) =>
+    hitFrame(parts, step, W, H).crop(WALK_CELL.x, WALK_CELL.y, WALK_CELL.w, WALK_CELL.h));
+  const hs = sheet(hits, WALK_CELL.w, WALK_CELL.h, 4);
+  fs.writeFileSync(OUT_HIT, encodePng(hs.W, hs.H, hs.out));
+
   // The numbers for content/act1.js. The soldier is sized by his own
   // height in the still (contentTop 50, 394 tall), whatever the rifle
   // does, so he is the same size walking, shooting and standing.
@@ -655,6 +613,7 @@ function main() {
   console.log("walk:  frames 8, columns 4, contentTop " + (STILL_TOP - WALK_CELL.y) +
     ", contentHeight " + STILL_HEIGHT + ", footX " + (FOOT_X - WALK_CELL.x) +
     ", headroom " + (STILL_TOP - WALK_CELL.y));
+  console.log("hit:   frames 4, columns 4, the walk's contentTop, contentHeight, footX and headroom");
   console.log("shoot: frames 7, columns 4, contentTop " + (STILL_TOP - SHOOT_CELL.y) +
     ", contentHeight " + STILL_HEIGHT + ", footX " + (FOOT_X - SHOOT_CELL.x) +
     ", headroom " + (STILL_TOP - SHOOT_CELL.y) +

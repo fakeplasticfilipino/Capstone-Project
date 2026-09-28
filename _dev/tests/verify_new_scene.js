@@ -579,6 +579,30 @@ const storyDrift = () => {
   ok("and the bullet leaves from his muzzle",
      Math.abs(s.x - (s.centre + muzzleAhead)) < 1 && Math.abs(s.y - (s.floor + muzzleUp - 5)) < 1, s);
 
+  // Block 75. Punched, the sentry reels in his hit sheet and slides away;
+  // shot, he topples the way the shot went.
+  const blows = await page.evaluate(async () => {
+    const g = GUARDS.find((x) => x.id === "bantay-2");
+    const shown = (el) => el && el.style.display !== "none";
+    posX = g.pos + GUARD_WIDTH + 20; facing = -1; invulnUntil = performance.now() + 5000;
+    const x0 = g.pos;
+    meleeAttack();
+    drawGuard(g);
+    const punched = { hp: g.hp, pose: g.drawnPose, hitShown: shown(g.hitSpriteEl), leftward: g.pos < x0 };
+    await new Promise((r) => setTimeout(r, 600));
+    posX = g.pos + 220; facing = -1; destroyProjectile();
+    throwProjectile();
+    for (let i = 0; i < 60 && !g.disabled; i++) await new Promise((r) => setTimeout(r, 25));
+    return { punched, down: g.disabled, left: g.el.classList.contains("guard-fall-left"),
+      pose: g.drawnPose, frame: guardHitFrame(g, performance.now()),
+      art: !g.hitSpriteEl.classList.contains("sprite-placeholder") && !g.hitAnimation.failed };
+  });
+  ok("punched, a bantay reels in his own hit sheet and slides away (Block 75)",
+     blows.punched.hp === 1 && blows.punched.pose === "hit" && blows.punched.hitShown &&
+     blows.punched.leftward && blows.art, blows);
+  ok("shot, he falls the way the shot went, leaning back as he goes",
+     blows.down && blows.left && blows.pose === "hit" && blows.frame === 1, blows);
+
   ok("settings does not offer the Test Room inside it", await (async () => {
     await page.keyboard.press("Escape");
     await page.waitForTimeout(200);

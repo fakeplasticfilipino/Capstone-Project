@@ -25,7 +25,14 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 28 Sep 2026, after Block 74: the guards' room no longer
+Last updated: 28 Sep 2026, after Block 75: guards take blows the way
+the moro-moro's soldiers do, punches and gunshots alike: a slide, a
+flash, a stagger, and when put down the same topple and fade. The
+bantay reels in a hit sheet of his own. New tools: preview-sheet.js and
+lib/png.js. test.js 718 passed, 0 failed; verify_new_scene.js 126
+passed, 0 failed. Pushed to main.
+
+Before that, 28 Sep 2026, after Block 74: the guards' room no longer
 follows the talk with Nanay; it is reached only from a "Test Room"
 button in Mga Setting (from pause), "<WIP>" card first, and its door
 returns to the exact spot. The main plot is back to exactly what it was
@@ -253,11 +260,11 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v46    js/game.js v74       js/shell.js v18
+    css/style.css v47    js/game.js v75       js/shell.js v18
     js/inventory.js v9   js/acts.js v14       js/assessment.js v4
-    content/act1.js v52  content/items.js v11  content/act2-4.js v1
+    content/act1.js v53  content/items.js v11  content/act2-4.js v1
     content/questions.js v1 (named in index.html and teacher.html)
-    ASSET_VERSION 27 (in js/game.js)
+    ASSET_VERSION 28 (in js/game.js)
     sw.js carries no version: the browser checks it itself on every
     visit (Block 62)
     css/teacher.css v4   js/teacher.js v5     js/teacher-questions.js v2
@@ -424,8 +431,12 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
     74  the room moved out of the plot: testRoom on the act,
         Game.testRoom and enterTestRoom, exits with back: true, the Test
         Room button in settings (verify_new_scene.js to 124)
+    75  guards take blows like enemies (hitGuard with damage and
+        direction, slide, flash, stagger, topple and fade), shots too;
+        bantay-hit.png; preview-sheet.js and lib/png.js (test.js section
+        BL, to 718; verify_new_scene.js to 126)
 
-Everything through Block 74 is pushed to main and live on GitHub
+Everything through Block 75 is pushed to main and live on GitHub
 Pages. The earlier instructions for a hand push of Blocks 42 to 58 from
 the device folder are history: those blocks reached main with Blocks 62
 to 67 (e7be506), and cloud sessions since push straight to main.
@@ -589,7 +600,14 @@ For Block 57:
       floating or sunk into the road, the rifle jumping between poses,
       the bullet leaving from his chest instead of the muzzle, or a jump
       that no longer clears it. Lumabas at the far end returns to the
-      exact spot the button was pressed. Whether a walk made from the still's own parts is good
+      exact spot the button was pressed.
+    Blows on a bantay (Block 75), in the Test Room: punch a guard who
+      has seen you and he flashes, rocks back and slides away, then
+      comes on again; a second punch, or one shot, and he topples away
+      from the blow and fades, the way the play's soldiers do. A guard
+      taken down from behind falls forward. Failure looks like a guard
+      jumping instead of sliding, still shooting while he reels, or
+      falling toward the blow. Whether a walk made from the still's own parts is good
       enough is the proponent's call (Blocks 53, 54 and 72).
     The siga (Block 72): three different boys walk on from the left
       with a walk cycle, stop, and stand breathing (the leader with a
@@ -1106,7 +1124,7 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 711 checks (Block 71 added four to section AI: the punch lands on its contact frame, once, and not when cut off; section BK is Block 70: fixed papers against the fixture, Acts.loadTalaan and the dashboard's Talaan Papers editor; section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
+test.js: 718 checks (Block 75 added section BL: guards sliding, flashing, reeling, falling to a shot and to a takedown; Block 71 added four to section AI: the punch lands on its contact frame, once, and not when cut off; section BK is Block 70: fixed papers against the fixture, Acts.loadTalaan and the dashboard's Talaan Papers editor; section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
 questions graded by the game, the teacher's questions first, the pass
 mark, the replay and the second attempt, a reload on a failed result,
 the password, and the teacher's editor); before Block 68, 676 checks against a fixture act and item catalogue (so
@@ -1114,7 +1132,7 @@ mechanics stay tested whatever Act I ships); sections BD to BG are
 Blocks 62 to 67 (the loader, the loading screens, a scene change held
 for its art, and the service worker offline; the run, coyote time, the
 jump buffer and dust; the timed apple round; the reward pop).
-verify_new_scene.js: 124 checks (Block 74: the opening ends on the street with no card, the Test Room offered from pause and not inside the room, the door back to the same spot with the story's flags unchanged; Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
+verify_new_scene.js: 126 checks (Block 75: the bantay reeling in his hit sheet and falling the way the shot went; Block 74: the opening ends on the street with no card, the Test Room offered from pause and not inside the room, the door back to the same spot with the story's flags unchanged; Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
 trivia card and pre-test, and its Talaan section (replacing Block 64's
 notebook) checks the hints, the seed across a reload, a word earned and
 the pause panel. 101 of them: one that every line of dialogue and black card in

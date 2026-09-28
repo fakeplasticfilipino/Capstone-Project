@@ -160,9 +160,18 @@ const BANTAY_SHOOT = {
   contentTop: 20, contentHeight: 394, footX: 88, headroom: 20,
   aimFrame: 2, fireFrame: 3, muzzle: { x: 367, y: 226 },
 };
+// Block 75. Rocked back by a blow, made the same way and in the walk's
+// cells, so it shares the walk's numbers. Played once while he reels
+// (about the 450ms of his stagger), and knockoutFrame, leaning furthest
+// back, held as he topples.
+const BANTAY_HIT = {
+  src: "assets/sprites/enemies/bantay-hit.png", frames: 4, fps: 9, columns: 4,
+  contentTop: 40, contentHeight: 394, footX: 128, headroom: 40, knockoutFrame: 1,
+};
 const bantay = (def) => Object.assign({
   shoots: true, hp: 2, speed: 1.3, detectRadius: 260,
   animation: BANTAY, walkAnimation: BANTAY_WALK, shootAnimation: BANTAY_SHOOT,
+  hitAnimation: BANTAY_HIT,
 }, def);
 
 // ---- Where everyone stands ---------------------------------------

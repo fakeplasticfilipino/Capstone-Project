@@ -5797,6 +5797,80 @@ const visible = (page, sel) => page.evaluate((s) => {
     await sw.ctx.close();
   }
 
+  console.log("\nBL. Guards take blows the way the enemies do (Block 75)");
+  {
+    // Against the fixture guard (no sheets of his own), with the loop
+    // paused and every step driven by hand.
+    const { ctx, page } = await enterTestRoom();
+    const r = await page.evaluate(() => {
+      setPaused(true);
+      destroyProjectile();
+      const g = GUARDS[0];
+      const stand = () => {
+        g.disabled = false; g.shoots = true; g.hostile = true; g.hp = 2; g.alert = 1;
+        g.knockVel = 0; g.staggerUntil = 0; g.facing = -1; g.patrolFrom = g.patrolTo = g.pos;
+        drawGuard(g);
+      };
+      stand();
+      posX = g.pos - 60; facing = 1; posY = floorHeightAt(posX); onGround = true;
+      health = maxHealth; invulnUntil = 0;
+
+      // A punch: a slide, not a jump; a flash; a stagger.
+      const x0 = g.pos;
+      meleeAttack();
+      const first = g.pos - x0;
+      const flashed = g.el.classList.contains("guard-hit");
+      const staggered = g.staggerUntil > performance.now() && g.hp === 1;
+      const kept = g.knockVel;
+      g.knockVel = 0; g.nextShotAt = 0;
+      const before = { pos: g.pos, bullets: GUARD_BULLETS.length };
+      updateHostileGuard(g, 1, performance.now());
+      const held = g.pos === before.pos && GUARD_BULLETS.length === before.bullets;
+      g.knockVel = kept;
+      for (let i = 0; i < 90; i++) updateKnockback(1);
+      const slid = g.pos - x0;
+
+      // A real shot, travelling right, drops him: he slides and topples
+      // that way, then fades.
+      stand();
+      const x1 = g.pos;
+      posX = g.pos - 220; facing = 1;
+      throwProjectile();
+      for (let i = 0; i < 120 && projectile; i++) updateProjectile(1);
+      const shot = { disabled: g.disabled, down: g.el.classList.contains("guard-down"),
+        right: g.el.classList.contains("guard-fall-right"), left: g.el.classList.contains("guard-fall-left"),
+        forward: g.fellForward };
+      for (let i = 0; i < 90; i++) updateKnockback(1);
+      const koSlide = g.pos - x1;
+      const fades = getComputedStyle(g.el).transitionProperty.includes("opacity");
+
+      // A takedown from behind topples him away from Macario too.
+      stand();
+      g.hostile = false; g.alert = 0; g.facing = 1;
+      posX = g.pos - 40; facing = 1;
+      meleeAttack();
+      const takedown = { disabled: g.disabled, right: g.el.classList.contains("guard-fall-right"), forward: g.fellForward };
+
+      // Stood up again, the fall is gone.
+      stand();
+      const revived = !["guard-down", "guard-fall-right", "guard-fall-left"].some((c) => g.el.classList.contains(c));
+      setPaused(false);
+      return { first, flashed, staggered, held, slid, shot, koSlide, fades, takedown, revived };
+    });
+    ok("a punch sends a hostile guard sliding, not jumping: 10px at the blow",
+       Math.abs(r.first - 10) < 0.01, r);
+    ok("and about the enemies' 45px in all", r.slid > 40 && r.slid < 48, r);
+    ok("he flashes, and reels: neither walking nor firing while he staggers",
+       r.flashed && r.staggered && r.held, r);
+    ok("a shot drops him, toppling the way it travelled",
+       r.shot.disabled && r.shot.down && r.shot.right && !r.shot.left && !r.shot.forward, r.shot);
+    ok("he slides further as he falls, and fades", r.koSlide > 55 && r.fades, r);
+    ok("a takedown from behind topples him forward, away from Macario, as he stood",
+       r.takedown.disabled && r.takedown.right && r.takedown.forward, r.takedown);
+    ok("a guard stood up again loses the fall", r.revived, r);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

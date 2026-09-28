@@ -75,6 +75,23 @@ Only 8-bit, non-interlaced PNGs are supported (every sheet in assets/ is
 one); anything else is refused with what to re-export as, rather than
 silently measured wrong.
 
+## Looking at a sprite sheet
+
+    node _dev/tools/preview-sheet.js <sheet.png> --from=content/act1.js
+
+or with the numbers given by hand (--columns, --frames, --contentTop,
+--contentHeight, --footX, --headroom, --muzzle=x,y). It writes a PNG
+to the system's temporary folder (or --out) with every frame numbered
+and the game's numbers drawn on: red where the feet should stand, blue
+at the top the character is sized by, cyan above which the game cuts
+the picture off, green at footX, and an orange cross at the muzzle. The
+last cell is an onion skin of all the frames: a foot that slides or a
+head that jumps shows as a smear. Measure with measure-sprite.js, then
+look with this before trusting the numbers.
+
+Both tools, and animate-bantay.js, read and write PNGs through
+_dev/tools/lib/png.js: plain Node, no install.
+
 ## Adding checks
 
 Each block builds a page with newPage(seed), where seed becomes

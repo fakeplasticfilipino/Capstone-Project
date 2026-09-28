@@ -116,8 +116,9 @@ off the repository.
                                drawn by draw-siga.js (Block 72)
       sprites/enemies/         guards and fighters; bantay.png is the
                                artist's still (delivered as Guard.png),
-                               bantay-walk and bantay-shoot made from it
-                               by animate-bantay.js (Block 73)
+                               bantay-walk, bantay-shoot and bantay-hit
+                               made from it by animate-bantay.js
+                               (Blocks 73, 75)
       sprites/scenery/         things on the street that are used, not
                                talked to (empty; the apple tree is a
                                silhouette tree since Block 69)
@@ -130,7 +131,8 @@ off the repository.
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-shadow-tree.py, draw-siga.js,
-                               animate-bantay.js, make-sfx.py,
+                               animate-bantay.js, preview-sheet.js,
+                               lib/png.js (Block 75), make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
@@ -456,9 +458,11 @@ Scene shape:
                  animation,
                  walkAnimation,                  optional; shown while he
                                                  moves (Block 73)
-                 shootAnimation }],              optional; aimFrame,
+                 shootAnimation,                 optional; aimFrame,
                                                  fireFrame, muzzle
                                                  (Block 73)
+                 hitAnimation }],                optional; knockoutFrame
+                                                 (Block 75)
       noRanged: true,                            optional; no shot here
       checkpoints: [{ x, flag }],                optional; respawn points
       scripts: [{ requiresFlag, unlessFlag,      optional; cutscenes that
@@ -497,6 +501,12 @@ starts. A guard with a shoot sheet stops to shoot: he levels the rifle
 GUARD_AIM_LEAD_MS before each shot, never fires before it is level, and
 keeps it level while Macario is inside GUARD_HOLD_DISTANCE. Without one
 he moves and fires at once, as before Block 73.
+
+A guard takes a blow the way an enemy does (Block 75): a punch (1) or
+a shot (2) slides him back, flashes him and staggers him, and the blow
+that drops him (or a takedown) slides him further, topples him away
+from it and fades him. hitAnimation, optional, is shown while he reels
+and as he falls; knockoutFrame is the frame held during the fall.
 
 noRanged: true takes Macario's shot away in that scene: a long hold on
 Atake punches and says why. checkpoints are where a respawn puts him: the
@@ -1070,6 +1080,12 @@ contentTop that are still drawn, for a pose that reaches over the head,
 a raised sword. The character is still sized by contentHeight, so he
 stays everyone else's height; the sprite element just grows upward.
 Capped at contentTop.
+
+To check a sheet by eye with the numbers the game will use, run
+_dev/tools/preview-sheet.js on it (Block 75): every frame numbered,
+with the ground, the top, the headroom line, footX and the muzzle drawn
+on, and an onion skin of all the frames at the end. With
+--from=content/act1.js it reads the numbers from the content itself.
 
 A sheet delivered as a JPEG has no alpha channel and would draw inside
 a black rectangle. _dev/tools/key-black.py (Pillow, dev-time only) floods the
@@ -4343,6 +4359,53 @@ they asked, not a line of the story.
 
 verify_new_scene.js to 124. game.js v74, shell.js v18, content/act1.js
 v52; no asset changed.
+
+Guards react to blows like the enemies (Block 75). Requested: the
+physical reaction the moro-moro's soldiers have when hit, their dying
+animation, the same for guns, and better tools. Until now a punch
+jumped a guard 40px in one frame, a gunshot dropped him on the spot
+with nothing, and a guard put down stood where he was, greyed.
+
+Now a blow on a guard is hitGuard(guard, damage, dir, message) for
+punches and shots alike, with the enemies' numbers: a punch does
+ENEMY_PUNCH_DAMAGE (1), a shot ENEMY_SHOT_DAMAGE (2), so a two-hit bantay
+still falls to one shot. He slides (ENEMY_KNOCK_SPEED, decaying by
+ENEMY_KNOCK_DECAY; updateKnockback now carries guards too), flashes
+(guard-hit, the enemy-hit rule), turns to face the blow, and staggers
+for GUARD_STAGGER_MS (450): no walking, no aim, no shot; his next shot
+waits GUARD_HIT_STAGGER_MS (600), as before. The blow that drops him,
+and a takedown, go through disableGuard(guard, message, dir): a longer
+slide (ENEMY_KO_KNOCK_SPEED) and the enemies' own topple and fade
+(guard-fall-right/left and guard-down share enemy-fall's keyframes and
+enemy-down's fade). A guard who survives a shot turns hostile. The
+enemies were already like this for both punches and shots and did not
+change.
+
+The bantay got a hit sheet from animate-bantay.js: he rocks back about
+the hip, head, arm and rifle with him, the far foot stepping back to
+catch him, and comes upright (4 frames, in the walk's cells and with
+its numbers). It plays once while he reels; knockoutFrame (1, leaning
+furthest back) is held while he topples. A guard dropped from behind
+(fellForward) falls forward as he stood instead, since leaning back
+while falling forward read wrong.
+
+The tools. _dev/tools/lib/png.js holds the PNG reading and writing that
+animate-bantay.js had inline; the new preview-sheet.js uses it too
+(measure-sprite.js and draw-siga.js keep their own copies, untouched).
+preview-sheet.js exists because every sheet this session was checked by
+writing a throwaway crop script: it lays a sheet's frames out numbered,
+draws the game's numbers on them (ground, top, headroom, footX, muzzle),
+adds an onion skin of all frames, and with --from reads the numbers
+from the content file itself, so it shows what the game will do rather
+than what the image looks like. Output goes to the system's temporary
+folder unless --out says otherwise.
+
+test.js section BL (718): the slide and its length, the flash, the
+stagger holding him still, a real shot dropping him the way it went,
+the topple and the fade, a takedown falling forward, and a guard stood
+up again losing the fall. verify_new_scene.js to 126: the real bantay
+reeling in his hit sheet and falling the way the shot went. game.js
+v75, style.css v47, content/act1.js v53, ASSET_VERSION 28.
 
 ## Pitfalls
 

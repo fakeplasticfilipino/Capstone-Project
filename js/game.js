@@ -243,7 +243,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 27;
+const ASSET_VERSION = 28;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -2609,6 +2609,10 @@ function buildGuards(token) {
       aimSince: 0,
       shotAt: 0,
       lowerSince: 0,
+      // Block 75. The slide after a blow, and the stagger.
+      knockVel: 0,
+      hitAt: 0,
+      staggerUntil: 0,
       // What was last written to the page, so the loop writes only on a
       // change (Block 36).
       drawnFill: -1,
@@ -2670,6 +2674,10 @@ function buildGuards(token) {
         : null;
       guard.shootSpriteEl = guard.shootAnimation
         ? extra(guard.shootAnimation, { frameAt: (now) => guardShootFrame(guard, now) })
+        : null;
+      // Block 75. His hit sheet, while he reels and as he falls.
+      guard.hitSpriteEl = guard.hitAnimation
+        ? extra(guard.hitAnimation, { frameAt: (now) => guardHitFrame(guard, now) })
         : null;
     } else {
       const sprite = document.createElement("div");
@@ -2862,12 +2870,20 @@ function drawGuard(guard) {
   if (guard.disabled && !guard.drawnDown) {
     guard.el.classList.add("guard-down");
     guard.drawnDown = true;
+  } else if (!guard.disabled && guard.drawnDown) {
+    // Up again (a replayed scene, or the harness): the fall undone.
+    guard.el.classList.remove("guard-down", "guard-fall-right", "guard-fall-left");
+    guard.drawnDown = false;
   }
   // Block 73. Which of his sheets shows: the shot while the rifle is
   // down or coming back up, the walk while he moves, else standing.
+  // Block 75: the hit sheet while he reels from a blow and as he falls.
+  const now = performance.now();
   const lowering = guard.shootSpriteEl && !guard.aiming &&
-    performance.now() < guard.lowerSince + guardRaiseMs(guard);
-  const pose = guard.disabled ? "idle"
+    now < guard.lowerSince + guardRaiseMs(guard);
+  const reeling = guard.disabled ? !guard.fellForward : now < (guard.staggerUntil || 0);
+  const pose = guard.hitSpriteEl && reeling ? "hit"
+    : guard.disabled ? "idle"
     : guard.shootSpriteEl && (guard.aiming || lowering) ? "shoot"
     : guard.walkSpriteEl && guard.moving ? "walk"
     : "idle";
@@ -2875,6 +2891,7 @@ function drawGuard(guard) {
     if (guard.spriteEl) guard.spriteEl.style.display = pose === "idle" ? "" : "none";
     if (guard.walkSpriteEl) guard.walkSpriteEl.style.display = pose === "walk" ? "" : "none";
     if (guard.shootSpriteEl) guard.shootSpriteEl.style.display = pose === "shoot" ? "" : "none";
+    if (guard.hitSpriteEl) guard.hitSpriteEl.style.display = pose === "hit" ? "" : "none";
     guard.drawnPose = pose;
   }
 }
@@ -2905,7 +2922,13 @@ function drawGuard(guard) {
 const GUARD_HOLD_DISTANCE = 170;    // centre to centre; he shoots from here
 const GUARD_FIRE_RANGE_EXTRA = 160; // past detectRadius, he still fires
 const GUARD_AIM_MS = 450;           // from turning hostile to the first shot
-const GUARD_HIT_KNOCKBACK = 40;
+// Block 75. A guard takes a blow the way an enemy does (Block 60): he
+// is sent sliding (ENEMY_KNOCK_SPEED, slowing by ENEMY_KNOCK_DECAY, so
+// about 45px), flashes, and for GUARD_STAGGER_MS neither walks, aims nor
+// fires, showing his hit sheet if he has one; his next shot waits
+// GUARD_HIT_STAGGER_MS. The blow that drops him sends him further and he
+// topples away from it, then fades, as the enemies do.
+const GUARD_STAGGER_MS = 450;
 const GUARD_HIT_STAGGER_MS = 600;
 
 function becomeHostile(guard, now) {
@@ -2918,6 +2941,8 @@ function becomeHostile(guard, now) {
 }
 
 function updateHostileGuard(guard, step, now) {
+  // Block 75. Reeling from a blow: no walking, no aim, no shot.
+  if (now < (guard.staggerUntil || 0)) return;
   const dx = posX + PLAYER_WIDTH / 2 - (guard.pos + GUARD_WIDTH / 2);
   const dist = Math.abs(dx);
   if (dx !== 0) guard.facing = Math.sign(dx);
@@ -2989,21 +3014,54 @@ function guardShootFrame(guard, now) {
   return Math.max(0, aimFrame - 1 - Math.floor((now - guard.lowerSince) / ms));
 }
 
-// A punch on a guard who is already fighting. He takes it rather than
-// dropping at once, the same way the moro-moro's guards do.
-function hitGuard(guard) {
-  guard.hp -= 1;
+// A blow on a guard who is already fighting, a punch (damage 1) or a
+// shot (damage 2, ENEMY_SHOT_DAMAGE): he takes it rather than dropping
+// at once, the same way the moro-moro's soldiers do. dir is the way the
+// blow travels, so he is knocked that way; message is the toast if it
+// drops him.
+function hitGuard(guard, damage, dir, message) {
+  if (!guard || guard.disabled) return;
+  const away = dir || Math.sign(guard.pos + GUARD_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) || 1;
+  guard.hp -= damage || 1;
+  flashGuard(guard);
+  // He turns on whoever hit him, so he reels back from the blow, not
+  // into it. A hostile guard already faces Macario; this is for a shot
+  // in the back.
+  guard.facing = -away;
   if (guard.hp <= 0) {
-    disableGuard(guard, "Napatumba mo ang bantay.");
+    disableGuard(guard, message || "Napatumba mo ang bantay.", away);
     return;
   }
-  const away = Math.sign(guard.pos + GUARD_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) || 1;
-  guard.pos = Math.max(0, Math.min(guard.pos + away * GUARD_HIT_KNOCKBACK, WORLD_WIDTH - GUARD_WIDTH));
-  guard.el.style.left = guard.pos + "px";
-  guard.nextShotAt = Math.max(guard.nextShotAt, performance.now() + GUARD_HIT_STAGGER_MS);
-  guard.el.classList.add("guard-firing");
-  setTimeout(() => guard.el && guard.el.classList.remove("guard-firing"), 150);
+  const now = performance.now();
+  // Block 75. The first frame of the slide lands with the blow, so it
+  // reads through the hit-stop; updateKnockback carries the rest.
+  guard.knockVel = away * ENEMY_KNOCK_SPEED;
+  moveGuardBy(guard, guard.knockVel);
+  guard.knockVel *= ENEMY_KNOCK_DECAY;
+  guard.hitAt = now;
+  guard.staggerUntil = now + GUARD_STAGGER_MS;
+  guard.aiming = false;
+  guard.nextShotAt = Math.max(guard.nextShotAt, now + GUARD_HIT_STAGGER_MS);
   impact("punch"); // Block 60
+}
+
+function flashGuard(guard) {
+  guard.el.classList.add("guard-hit");
+  setTimeout(() => guard.el && guard.el.classList.remove("guard-hit"), 150);
+}
+
+function moveGuardBy(guard, dx) {
+  guard.pos = Math.max(0, Math.min(guard.pos + dx, WORLD_WIDTH - GUARD_WIDTH));
+  guard.el.style.left = guard.pos + "px";
+}
+
+// Block 75. The hit sheet's frame: played once through the stagger from
+// the blow and held on its last; while he topples, held on the frame he
+// leans furthest back (knockoutFrame, else the second).
+function guardHitFrame(guard, now) {
+  const s = guard.hitAnimation;
+  if (guard.disabled) return Math.min(s.frames - 1, s.knockoutFrame != null ? s.knockoutFrame : 1);
+  return Math.min(s.frames - 1, Math.floor((now - (guard.hitAt || 0)) / (1000 / (s.fps || 8))));
 }
 
 const GUARD_BULLET_SPEED = 9;       // per 60fps frame; well under a dodge
@@ -3301,6 +3359,8 @@ function respawnInScene() {
     guard.moving = false;
     guard.shotAt = 0;
     guard.lowerSince = 0;
+    guard.knockVel = 0;
+    guard.staggerUntil = 0;
     guard.hp = guard.maxHp || GUARD_HP;
     if (guard.el) guard.el.style.left = guard.pos + "px";
     drawGuard(guard);
@@ -3899,11 +3959,12 @@ function meleeAttack() {
     // Behind means the guard is facing away from Macario.
     const behind = Math.sign(guardCentre - centre) === guard.facing;
 
+    const away = Math.sign(guardCentre - centre) || facing;
     if (guard.hostile) {
       // Block 38. Already fighting: a punch is a hit, not a mistake.
-      hitGuard(guard);
+      hitGuard(guard, ENEMY_PUNCH_DAMAGE, away);
     } else if (behind && guard.alert < 1) {
-      disableGuard(guard, "Natumba ang bantay.");
+      disableGuard(guard, "Natumba ang bantay.", away);
     } else if (guard.shoots) {
       // From the front he sees it coming, turns on Macario, and it costs
       // a heart, the same price the stealth rule always charged.
@@ -3917,9 +3978,20 @@ function meleeAttack() {
   }
 }
 
-function disableGuard(guard, message) {
+// dir (Block 75), the way the blow travelled: he slides and topples
+// that way, then fades (style.css, guard-down), as a beaten enemy does.
+function disableGuard(guard, message, dir) {
+  const away = dir || Math.sign(guard.pos + GUARD_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) || 1;
   guard.disabled = true;
   guard.alert = 0;
+  guard.aiming = false;
+  guard.hitAt = performance.now();
+  guard.el.classList.add(away > 0 ? "guard-fall-right" : "guard-fall-left");
+  // Dropped from behind (a takedown), he falls forward as he stood;
+  // otherwise backward, leaning back in his hit sheet (drawGuard).
+  guard.fellForward = away === guard.facing;
+  guard.knockVel = away * ENEMY_KO_KNOCK_SPEED;
+  moveGuardBy(guard, guard.knockVel);
   drawGuard(guard);
   if (message) showToast(message);
   impact("knockout"); // Block 60: a takedown, a second punch or a shot
@@ -4012,8 +4084,13 @@ function updateProjectile(step) {
     if (guard.disabled) continue;
     const guardCentre = guard.pos + GUARD_WIDTH / 2;
     if (Math.abs(guardCentre - (projectile.x + PROJECTILE_SIZE / 2)) > 40) continue;
-    disableGuard(guard, "Tinamaan ang bantay.");
+    // Block 75. A shot is a blow like a punch, only harder: the same
+    // damage it does an enemy, the same slide and fall. One who
+    // survives it knows he is being shot at.
+    const dir = projectile.dir;
     destroyProjectile();
+    hitGuard(guard, ENEMY_SHOT_DAMAGE, dir, "Tinamaan ang bantay.");
+    if (!guard.disabled && guard.shoots) becomeHostile(guard, performance.now());
     return;
   }
 
@@ -4950,6 +5027,13 @@ function drawCamera(cameraX, now) {
 // every running frame, not only while the student can act, so a fall
 // that ends the fight finishes even as the scene takes the world back.
 function updateKnockback(step) {
+  // Block 75. Guards slide the same way, standing or fallen.
+  GUARDS.forEach((guard) => {
+    if (!guard.knockVel || !guard.el) return;
+    moveGuardBy(guard, guard.knockVel * step);
+    guard.knockVel *= Math.pow(ENEMY_KNOCK_DECAY, step);
+    if (Math.abs(guard.knockVel) < 0.3) guard.knockVel = 0;
+  });
   ENEMIES.forEach((enemy) => {
     if (!enemy.knockVel) return;
     enemy.pos += enemy.knockVel * step;
