@@ -1,0 +1,63 @@
+// =============================================================
+// MACARIO — js/asset-manifest.js
+//
+// Every file under assets/, written by _dev/tools/make-asset-manifest.js
+// (Block 78). Do not edit by hand: rerun the tool. The picture loader
+// (js/game.js, loadImage) never gives up on a file listed here, and
+// never asks for a picture that is not.
+// =============================================================
+
+window.ASSET_MANIFEST = [
+  "assets/audio/music/calm.mp3",
+  "assets/audio/music/intense.mp3",
+  "assets/audio/sfx/blip.wav",
+  "assets/audio/sfx/catch.wav",
+  "assets/audio/sfx/coin.wav",
+  "assets/audio/sfx/door.wav",
+  "assets/audio/sfx/fanfare.wav",
+  "assets/audio/sfx/give.wav",
+  "assets/audio/sfx/gunshot.mp3",
+  "assets/audio/sfx/horse.mp3",
+  "assets/audio/sfx/hurt.wav",
+  "assets/audio/sfx/intertitle.wav",
+  "assets/audio/sfx/jump.wav",
+  "assets/audio/sfx/knockout.wav",
+  "assets/audio/sfx/miss.wav",
+  "assets/audio/sfx/page.wav",
+  "assets/audio/sfx/punch.wav",
+  "assets/audio/sfx/quest.wav",
+  "assets/audio/sfx/streak.wav",
+  "assets/audio/sfx/swing.wav",
+  "assets/backgrounds/act1/entablado-inside.jpg",
+  "assets/backgrounds/act1/ground-lupa.jpg",
+  "assets/backgrounds/act1/street-01.jpg",
+  "assets/backgrounds/act1/street-02.jpg",
+  "assets/backgrounds/act1/street-03.jpg",
+  "assets/backgrounds/act1/street-04.jpg",
+  "assets/fonts/OFL-press-start-2p.txt",
+  "assets/fonts/OFL-vt323.txt",
+  "assets/fonts/press-start-2p.woff2",
+  "assets/fonts/vt323.woff2",
+  "assets/sprites/characters/kabayo.png",
+  "assets/sprites/characters/kutsero.png",
+  "assets/sprites/characters/maryam.png",
+  "assets/sprites/characters/nanay.png",
+  "assets/sprites/characters/siga-1-walk.png",
+  "assets/sprites/characters/siga-1.png",
+  "assets/sprites/characters/siga-2-walk.png",
+  "assets/sprites/characters/siga-2.png",
+  "assets/sprites/characters/siga-3-walk.png",
+  "assets/sprites/characters/siga-3.png",
+  "assets/sprites/characters/tindero.png",
+  "assets/sprites/enemies/bantay-hit.png",
+  "assets/sprites/enemies/bantay-shoot.png",
+  "assets/sprites/enemies/bantay-walk.png",
+  "assets/sprites/enemies/bantay.png",
+  "assets/sprites/enemies/muslim-attack.png",
+  "assets/sprites/enemies/muslim-walk.png",
+  "assets/sprites/player/macario-idle.png",
+  "assets/sprites/player/macario-jump.png",
+  "assets/sprites/player/macario-melee.png",
+  "assets/sprites/player/macario-shoot.png",
+  "assets/sprites/player/macario-walk.png",
+];

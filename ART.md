@@ -15,7 +15,9 @@ uses it. verify_new_scene.js runs the same search and fails if the
 Owed list below and the files on disk disagree, in either direction: a
 missing picture not listed here, or one listed here that has arrived.
 
-When a picture arrives: save it under the exact name below, measure it
+When a picture arrives: save it under the exact name below, run
+node _dev/tools/make-asset-manifest.js (until it is in the manifest the
+game treats it as owed and never asks for it), measure it
 (node _dev/tools/measure-sprite.js), look at it with the game's numbers
 (node _dev/tools/preview-sheet.js), put the numbers into the content,
 bump ASSET_VERSION in js/game.js, and move its line out of Owed.

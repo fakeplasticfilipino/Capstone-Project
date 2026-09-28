@@ -122,7 +122,9 @@ off the repository.
     js/                        the engine and its modules, one file each
                                (game, acts, inventory, assessment, shell,
                                teacher, teacher-questions,
-                               teacher-talaan, supabaseClient)
+                               teacher-talaan, supabaseClient), and
+                               asset-manifest.js, the list of every file
+                               under assets/, written by a tool (Block 78)
     content/                   act data, the item catalogue, the enemy
                                catalogue (enemies.js, Block 76), and the
                                built-in test questions (questions.js)
@@ -150,7 +152,8 @@ off the repository.
                                make-shadow-tree.py, draw-siga.js,
                                animate-bantay.js, preview-sheet.js,
                                lib/png.js (Block 75), missing-art.js
-                               (Block 77), make-sfx.py,
+                               (Block 77), make-asset-manifest.js
+                               (Block 78), make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
@@ -325,6 +328,8 @@ Load order in index.html, which is load bearing:
     content/act2.js      through act4.js, before acts.js builds its registry
     content/items.js     before inventory.js, which reads window.ITEMS
     content/questions.js before assessment.js, which reads window.QUESTIONS
+    js/asset-manifest.js before game.js, whose picture loader reads it at
+                         parse time (Block 78)
     game.js
     acts.js              after game.js
     inventory.js         after acts.js, which is what calls it
@@ -369,6 +374,8 @@ game.js exposes window.Game and nothing else:
     assetProgress()      { done, total } pictures asked for; Block 62
     onAssetProgress(fn)  called with that whenever a picture settles
     whenAssetsSettled(ms)  resolves when nothing is pending, or after ms
+                         if given (no caller gives one since Block 78)
+    retryAssets()        every waiting picture tried again now; Block 78
     glossary()           the act's Talaan (words and hints found) for
                          the pause screen, or null; Block 68
     testRoom()           whether the act's test room can be entered
@@ -4527,11 +4534,73 @@ there has arrived. Only the Owed list is checked; the stand-ins and the
 by-design list are written by hand. verify_new_scene.js to 130; no
 shipped file changed.
 
+Loading that cannot be walked past (Block 78). Reported: a test student
+got into the game with sprites missing. Block 62's loader had four ways
+through. The entry wait gave up after 20 seconds and opened the world
+with what had arrived. A single 404 made a picture "missing" for the
+rest of the visit, and GitHub Pages answers 404 for a minute or so while
+a push deploys, which this project does often. A picture that kept
+failing was given up on after three retries and then counted as done,
+so the bar reached 100 with it absent. And only the scene in hand was
+asked for, so the entablado and the play's soldiers were fetched when
+first needed, behind an 8-second cap and no cap at all respectively.
+
+The fix rests on knowing which pictures exist. js/asset-manifest.js
+lists every file under assets/, written by
+_dev/tools/make-asset-manifest.js and checked against the disk by
+verify_new_scene.js. A picture not in it is owed art: never asked for,
+the placeholder box at once, as ART.md lists. A picture in it exists, so
+every failure is the connection or the host: it stays pending and is
+tried again after 0.8, 2 and 5 seconds and then every 8, for as long as
+it takes, each retry fetching it afresh (cache: "reload", past a browser
+cache that may hold the failed answer) and showing it from that copy.
+A picture outside assets/ (the harness's fixtures) keeps Block 62's
+rules.
+
+On top of that: loadAct asks for every picture the act's data names and
+every enemy type's (preloadActArt), so the title's bar and the entry
+wait cover the whole act and a scene change finds its art already
+there. Neither wait is capped any more. The loading screen, when nothing
+has arrived for ASSET_STALL_MS (10 s), says the connection is slow and
+offers Subukan ulit, which tries every waiting picture at once
+(Game.retryAssets). A scene change's black shows how much has arrived
+after SCENE_ART_NOTE_MS (2 s). There is no button that goes in without
+the art, on purpose: a dead connection cannot play anyway (logins and
+saves need it), and a broken file cannot hold it, because
+verify_new_scene.js opens every picture the manifest lists.
+
+The service worker needed no change: it already stores only whole,
+successful answers. One limit is left as it was: a push that changes a
+picture under the same name, fetched in the minute the old one is still
+being served, can be kept under the new ?v=; bumping ASSET_VERSION
+again fixes it, as it always has.
+
+test.js section BD reworked: a retry now makes two requests under
+Playwright (its routing turns the browser cache off); the whole act
+asked for before the street opens; owed art never asked for; a scene
+change finding its art there; a listed picture answering 404 holding the
+loading screen, the slow note and Subukan ulit, and entry once it is
+back. verify_new_scene.js to 132: the manifest matches assets/, and
+every picture in it opens. game.js v77, shell.js v19, style.css v48,
+asset-manifest.js v1.
+
 ## Pitfalls
 
 A picture is loaded through loadImage (Block 62), never with a bare new
 Image(). One that is not goes uncounted, so the title bar and the
 scene-change wait do not wait for it, and it is not retried.
+
+Anything added to, renamed in or deleted from assets/ needs
+node _dev/tools/make-asset-manifest.js (Block 78), which rewrites
+js/asset-manifest.js and bumps its ?v= itself. Without it a new picture
+is treated as owed art and never asked for (a placeholder box), and a
+deleted one is waited for forever on the loading screen. The harness
+fails on either, so run it before the suites.
+
+In the harness, never let page.evaluate return Game.enterAsGuest() (or
+anything else that awaits Shell.awaitEntry): it resolves only after the
+title screen is tapped, so a check that awaits it waits forever. Call it
+in braces and wait on something the page shows.
 
 sw.js caches every ?v= URL forever. A file changed without its v=N
 bumped is now invisible on every phone that has played before, not just

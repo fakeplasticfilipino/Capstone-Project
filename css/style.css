@@ -469,6 +469,25 @@ html, body {
   pointer-events: auto;
 }
 
+/* Block 78. What a scene change's black is waiting for, once it has
+   waited a moment (game.js, blackoutProgress). */
+#blackout-note {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 22%;
+  text-align: center;
+  font-family: var(--px-font);
+  font-size: 22px;
+  color: var(--c-cream);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#blackout-note.shown {
+  opacity: 1;
+}
+
 /* Login / signup gate */
 #auth-overlay {
   position: fixed;

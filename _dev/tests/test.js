@@ -5665,8 +5665,11 @@ const visible = (page, sel) => page.evaluate((s) => {
         boxes: [...document.querySelectorAll(".sprite-placeholder")].map((el) => el.textContent)
           .filter((t) => /nanay\.png/.test(t)).length };
     });
+    // Block 78: the retry fetches the file afresh and then shows it, two
+    // requests here, because Playwright's routing turns the browser's
+    // cache off; on a phone the second is served from the cache.
     ok("a picture whose first download fails is asked for again and drawn",
-       nanayGets === 2 && r1.state === "ok" && r1.boxes === 0, { nanayGets, r1 });
+       nanayGets >= 2 && r1.state === "ok" && r1.boxes === 0, { nanayGets, r1 });
 
     const r2 = await retry.page.evaluate(async () => {
       const t0 = performance.now();
@@ -5721,34 +5724,76 @@ const visible = (page, sel) => page.evaluate((s) => {
        !s3.overlay && s3.state === "playing" && s3.card && s3.titleFull, s3);
     await slow.ctx.close();
 
-    // A scene change holds the black until the new scene's art is in.
-    let slowInside = true;
-    const fade = await rawPage([["**/entablado-inside.jpg*", async (route) => {
-      if (route.request().method() !== "GET" || !slowInside) return route.continue();
-      slowInside = false;
-      await new Promise((r) => setTimeout(r, 2500));
-      return route.continue();
+    // Block 78. The whole act is asked for with the act, before anyone
+    // is in: the inside of the entablado, and every enemy type's sheets,
+    // are loading on the title screen, so a scene change and the play's
+    // fight do not wait on a download. Art that is owed is never asked
+    // for at all.
+    let owedAsks = 0;
+    const whole = await rawPage([["**/mananahi.png*", (route) => { owedAsks++; return route.continue(); }]]);
+    await whole.page.waitForTimeout(400);
+    const w1 = await whole.page.evaluate(() => {
+      const state = (re) => { const e = [...assetLoads.entries()].find(([u]) => re.test(u)); return e ? e[1].state : null; };
+      return { inside: state(/entablado-inside\.jpg/), sword: state(/muslim-attack\.png/),
+        shot: state(/bantay-shoot\.png/), owed: state(/mananahi\.png/), manifest: Array.isArray(window.ASSET_MANIFEST) };
+    });
+    ok("the whole act's art is asked for before the street opens: the entablado, the enemies' sheets",
+       w1.manifest && w1.inside !== null && w1.sword !== null && w1.shot !== null, w1);
+    ok("and art that is owed is the placeholder at once, never asked for", w1.owed === "missing" && owedAsks === 0, { w1, owedAsks });
+    // Not awaited: enterAsGuest resolves only after the title's tap.
+    await whole.page.evaluate(() => { Game.enterAsGuest(); });
+    for (let i = 0; i < 100; i++) {
+      const p = await whole.page.evaluate(() => Game.assetProgress());
+      if (p.done === p.total) break;
+      await whole.page.waitForTimeout(100);
+    }
+    await whole.page.waitForTimeout(400);
+    await whole.page.evaluate(() => { Acts.gotoScene("entablado"); });
+    await whole.page.waitForTimeout(2600);
+    const w2 = await whole.page.evaluate(() => ({
+      black: document.getElementById("blackout").classList.contains("visible"), scene: currentSceneId,
+      note: document.getElementById("blackout-note").classList.contains("shown") }));
+    ok("so a scene change finds its art already there, with nothing to wait on",
+       !w2.black && w2.scene === "entablado" && !w2.note, w2);
+    await whole.ctx.close();
+
+    // Block 78. A picture that exists and answers 404 for a while, the
+    // way GitHub Pages does while a push deploys. Before, one 404 made it
+    // a box for the visit and the world opened without it. Now it is
+    // waited for, however long, the loading screen says the connection is
+    // slow, and Subukan ulit lets it through the moment it is back.
+    let deploying = true;
+    let lagAsks = 0;
+    const lag = await rawPage([["**/street-02.jpg*", (route) => {
+      if (route.request().method() !== "GET") return route.continue();
+      lagAsks++;
+      return deploying ? route.fulfill({ status: 404, body: "Not Found" }) : route.continue();
     }]]);
-    await fade.page.waitForTimeout(400);
-    // Nothing on the street asks for the inside yet, so the first
-    // request for it is the scene change's own.
-    await fade.page.evaluate(() => { Game.enterAsGuest(); });
-    await fade.page.waitForTimeout(800);
-    await fade.page.evaluate(() => { Acts.gotoScene("entablado"); });
-    await fade.page.waitForTimeout(2600);
-    const f1 = await fade.page.evaluate(() => ({
-      black: document.getElementById("blackout").classList.contains("visible"),
-      scene: currentSceneId,
-    }));
-    await fade.page.waitForTimeout(2200);
-    const f2 = await fade.page.evaluate(() => ({
-      black: document.getElementById("blackout").classList.contains("visible"),
-      scene: currentSceneId,
-    }));
-    ok("a scene change stays black while the new scene's picture is downloading",
-       f1.black && f1.scene === "entablado", f1);
-    ok("and fades in once it has arrived", !f2.black && f2.scene === "entablado", f2);
-    await fade.ctx.close();
+    await lag.page.waitForTimeout(300);
+    await lag.page.evaluate(() => { Shell.ASSET_STALL_MS = 600; });
+    await lag.page.click("#shell-guest");
+    await lag.page.waitForTimeout(2600);
+    const g1 = await lag.page.evaluate(() => {
+      const e = [...assetLoads.entries()].find(([u]) => /street-02\.jpg/.test(u));
+      return { state: e && e[1].state, shell: Shell.state,
+        slow: !document.getElementById("shell-loading-slow").classList.contains("hidden"),
+        retry: !document.getElementById("shell-loading-retry").classList.contains("hidden"),
+        card: !document.getElementById("intertitle").classList.contains("hidden") };
+    });
+    ok("a picture that exists and answers 404 is waited for, not given up on, and nobody goes in",
+       g1.state === "pending" && g1.shell === "loading" && !g1.card && lagAsks >= 2, { g1, lagAsks });
+    ok("when nothing arrives for a while, the screen says the connection is slow and offers Subukan ulit",
+       g1.slow && g1.retry, g1);
+    deploying = false;
+    await lag.page.click("#shell-loading-retry");
+    for (let i = 0; i < 40 && (await lag.page.evaluate(() => Shell.state)) !== "playing"; i++) await lag.page.waitForTimeout(100);
+    const g2 = await lag.page.evaluate(() => {
+      const e = [...assetLoads.entries()].find(([u]) => /street-02\.jpg/.test(u));
+      return { state: e && e[1].state, shell: Shell.state, pending: Game.assetProgress() };
+    });
+    ok("Subukan ulit tries at once, and once it is back he goes in with every picture there",
+       g2.state === "ok" && g2.shell === "playing" && g2.pending.done === g2.pending.total, g2);
+    await lag.ctx.close();
 
     // The service worker, allowed on localhost for this check only.
     const sw = await rawPage([], { __SW_TEST: true }, true);

@@ -29,7 +29,16 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 28 Sep 2026, after Block 77: ART.md, a list of the art
+Last updated: 28 Sep 2026, after Block 78: loading cannot be walked
+past. A picture that exists is waited for until it arrives (no more
+20-second cap, and a 404 during a deploy no longer makes it a box); the
+whole act is fetched on the title screen; a slow connection gets a note
+and Subukan ulit, never a way in without the art. New:
+js/asset-manifest.js and make-asset-manifest.js. test.js 729 passed,
+0 failed; verify_new_scene.js 132 passed, 0 failed. Pushed
+to main.
+
+Before that, 28 Sep 2026, after Block 77: ART.md, a list of the art
 the game still needs, checked against the files on disk by
 verify_new_scene.js (_dev/tools/missing-art.js finds them). Check it
 from time to time (CLAUDE.md, top). verify_new_scene.js 130 passed, 0
@@ -276,10 +285,10 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v47    js/game.js v76       js/shell.js v18
+    css/style.css v48    js/game.js v77       js/shell.js v19
     js/inventory.js v9   js/acts.js v14       js/assessment.js v4
     content/act1.js v54  content/items.js v11  content/act2-4.js v1
-    content/enemies.js v1
+    content/enemies.js v1   js/asset-manifest.js v1 (bumped by its tool)
     content/questions.js v1 (named in index.html and teacher.html)
     ASSET_VERSION 28 (in js/game.js)
     sw.js carries no version: the browser checks it itself on every
@@ -458,8 +467,12 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
         verify_new_scene.js to 128)
     77  ART.md, the art still owed, and missing-art.js; verify_new_scene.js
         checks the one against the other (to 130)
+    78  loading made strict: js/asset-manifest.js and its tool, retries
+        forever for listed pictures, the whole act preloaded, no caps,
+        a slow note with Subukan ulit, a note on the scene-change black
+        (test.js section BD reworked; verify_new_scene.js to 132)
 
-Everything through Block 77 is pushed to main and live on GitHub
+Everything through Block 78 is pushed to main and live on GitHub
 Pages. The earlier instructions for a hand push of Blocks 42 to 58 from
 the device folder are history: those blocks reached main with Blocks 62
 to 67 (e7be506), and cloud sessions since push straight to main.
@@ -533,9 +546,15 @@ Blocks 62 to 67 first:
       "Inihahanda ang mga larawan... n%", and it empties to nothing when
       full. Tapping in early shows "Sandali lang..." and then the
       opening, never an empty road. A second visit opens at once (the
-      service worker). Failure looks like the bar stuck below 100 for
-      more than about 20 seconds on a good connection, or the game not
-      opening at all (the switch-off is in sw.js's header).
+      service worker). Since Block 78 it never opens early: on a slow
+      or dropped connection, after about 10 seconds with nothing
+      arriving it says "Mabagal ang koneksyon..." with Subukan ulit,
+      and goes in by itself once the art is there. Try it right after
+      a push, and with the phone's data switched off and on again
+      mid-load. Failure looks like any placeholder box on Macario,
+      Nanay, a guard or the street, the bar stuck on a good
+      connection, or the game not opening at all (the switch-off is in
+      sw.js's header).
     The body font: dialogue and buttons in VT323 (pixel letters), not
       Courier. It never loaded on the live site before Block 62.
     Running: hold Kanan for half a second; he speeds up, the walk steps
@@ -1074,6 +1093,12 @@ problem below and lets the game open with no connection; logging in and
 saves still need one). Offline play that syncs saves later was
 discussed and deferred. Not yet tried on the phone or on a throttled
 connection outside the harness. (FIX BUILT, NOT SEEN ON DEVICE)
+Block 78 closed the ways past it that remained (a 20-second cap on
+entry, one 404 during a deploy making a picture a box for the visit,
+retries that gave up, and art fetched only when a scene or a fight
+first needed it): see CLAUDE.md, Decisions on record, Block 78. A
+tester got in with sprites missing before it; not yet seen on the phone
+since.
 
 Browsers cache index.html. It carries no version number of its own, so
 a phone that loaded an old copy keeps requesting the old ?v=N files
@@ -1131,7 +1156,7 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 725 checks (Block 76 added section BM: the enemy catalogue's merge and a new type hit with no code of its own; Block 75 added section BL: guards sliding, flashing, reeling, falling to a shot and to a takedown; Block 71 added four to section AI: the punch lands on its contact frame, once, and not when cut off; section BK is Block 70: fixed papers against the fixture, Acts.loadTalaan and the dashboard's Talaan Papers editor; section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
+test.js: 729 checks (Block 78 reworked section BD: the whole act asked for up front, owed art never asked for, a 404 during a deploy waited out with the slow note and Subukan ulit; Block 76 added section BM: the enemy catalogue's merge and a new type hit with no code of its own; Block 75 added section BL: guards sliding, flashing, reeling, falling to a shot and to a takedown; Block 71 added four to section AI: the punch lands on its contact frame, once, and not when cut off; section BK is Block 70: fixed papers against the fixture, Acts.loadTalaan and the dashboard's Talaan Papers editor; section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
 questions graded by the game, the teacher's questions first, the pass
 mark, the replay and the second attempt, a reload on a failed result,
 the password, and the teacher's editor); before Block 68, 676 checks against a fixture act and item catalogue (so
@@ -1139,7 +1164,7 @@ mechanics stay tested whatever Act I ships); sections BD to BG are
 Blocks 62 to 67 (the loader, the loading screens, a scene change held
 for its art, and the service worker offline; the run, coyote time, the
 jump buffer and dust; the timed apple round; the reward pop).
-verify_new_scene.js: 130 checks (Block 77: ART.md's Owed list matches the pictures missing on disk, both ways; Block 76: the room's guards and the play's soldiers come from the catalogue; Block 75: the bantay reeling in his hit sheet and falling the way the shot went; Block 74: the opening ends on the street with no card, the Test Room offered from pause and not inside the room, the door back to the same spot with the story's flags unchanged; Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
+verify_new_scene.js: 132 checks (Block 78: the manifest matches assets/, and every picture in it opens; Block 77: ART.md's Owed list matches the pictures missing on disk, both ways; Block 76: the room's guards and the play's soldiers come from the catalogue; Block 75: the bantay reeling in his hit sheet and falling the way the shot went; Block 74: the opening ends on the street with no card, the Test Room offered from pause and not inside the room, the door back to the same spot with the story's flags unchanged; Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
 trivia card and pre-test, and its Talaan section (replacing Block 64's
 notebook) checks the hints, the seed across a reload, a word earned and
 the pause panel. 101 of them: one that every line of dialogue and black card in

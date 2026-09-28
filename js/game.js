@@ -254,26 +254,45 @@ function assetUrl(path) {
 // Every picture the world draws is asked for through loadImage, which
 // does three things a bare new Image() did not.
 //
-// It retries. On a school network or patchy mobile data a picture can
-// fail once and arrive on the second try; before this block one failure
-// was a dashed box until the page was reloaded. A failure is first
-// checked with a HEAD request: a real 404 (art the artist still owes) is
-// given up on at once, so a placeholder box still appears straight away,
-// and only a failure that is not a 404 waits and tries again.
+// It retries, and since Block 78 it knows which pictures exist. The list
+// of every file under assets/ is js/asset-manifest.js, written by
+// _dev/tools/make-asset-manifest.js and checked against the disk by the
+// harness, and it splits every picture into two:
+//
+//   Not in the list: art the artist still owes (ART.md). It is not asked
+//   for at all and is the placeholder box at once.
+//
+//   In the list: it exists, so any failure is the connection or the
+//   host, never "not there". GitHub Pages answers 404 for a minute or so
+//   while a push is deploying, and before Block 78 one such answer made a
+//   picture a box for the rest of the visit; a test student walked into
+//   the world with sprites missing that way. Now it is tried again, after
+//   0.8, 2 and 5 seconds and then every 8, for as long as it takes, and
+//   it stays pending (counted as not arrived) until it arrives. A retry
+//   fetches the file afresh past the browser's own cache, which may be
+//   holding the failed answer, and shows the picture from that copy.
+//   retryAssets() tries every waiting picture again at once, for the
+//   loading screen's Subukan ulit.
+//
+// A picture outside assets/, or a page without the manifest, is judged
+// the old way: a failure is checked with a HEAD request, a 404 is given
+// up on at once, and anything else is tried three more times.
 //
 // It shares. The same URL asked for twice is one download and one
 // promise, so the title screen's bar and the sprite that needs the
 // picture wait on the same thing.
 //
-// It counts. assetProgress() is what the title screen's bar draws and
+// It counts. assetProgress() is what the loading bars draw and
 // whenAssetsSettled() is what entering the world and every scene change
-// wait on, so a student no longer walks an empty road while Macario and
-// the backdrop are still downloading (TRACKER.md, Known problems).
+// wait on. Since Block 78 neither is capped: nobody goes in, or through a
+// scene change, with a picture that exists still on its way (TRACKER.md,
+// Known problems).
 //
 // Declared here, near the top, because loadAct reaches it at parse time
 // (the temporal dead zone pitfall in CLAUDE.md).
-const ASSET_RETRY_DELAYS_MS = [800, 2000, 5000];
-const assetLoads = new Map(); // url -> { state, promise }
+const ASSET_RETRY_DELAYS_MS = [800, 2000, 5000, 8000]; // then every 8000
+const ASSET_GUESS_TRIES = 3; // for a picture the manifest does not cover
+const assetLoads = new Map(); // url -> { state, promise, retry }
 const assetProgressListeners = [];
 
 function assetProgress() {
@@ -293,6 +312,18 @@ function notifyAssetProgress() {
   });
 }
 
+// Block 78. true: the file is in js/asset-manifest.js. false: it is under
+// assets/ and not there, so it does not exist. null: the manifest cannot
+// say (no manifest, or a path outside assets/). The set is built once and
+// hung off the function, since this runs at parse time.
+function assetExpected(src) {
+  const list = window.ASSET_MANIFEST;
+  const file = String(src).split("?")[0];
+  if (!Array.isArray(list) || !file.startsWith("assets/")) return null;
+  if (!assetExpected.set) assetExpected.set = new Set(list);
+  return assetExpected.set.has(file);
+}
+
 // True when the file is really not there, false when the failure was the
 // connection. A probe that itself fails is the connection too.
 function assetIsMissing(url) {
@@ -305,46 +336,117 @@ function assetIsMissing(url) {
 function loadImage(src) {
   const url = assetUrl(src);
   const known = assetLoads.get(url);
-  // A picture the connection failed on is asked for again the next time
-  // something needs it (a scene loaded again), as it always was. One the
-  // server said is not there ("missing", a 404) is not: it will not have
-  // appeared since, and asking again is two wasted requests a scene.
+  // A picture the connection failed on (one the manifest does not cover)
+  // is asked for again the next time something needs it. One that does
+  // not exist ("missing") is not, and one that exists never fails: it
+  // stays pending until it arrives.
   if (known && known.state !== "failed") return known.promise;
 
-  const entry = { state: "pending", promise: null };
+  const expected = assetExpected(src);
+  const entry = { state: "pending", promise: null, retry: null };
   entry.promise = new Promise((resolve) => {
+    // Owed art: no request, the box at once.
+    if (expected === false) {
+      entry.state = "missing";
+      resolve(null);
+      return;
+    }
     let attempt = 0;
-    const tryOnce = () => {
+    let timer = null;
+    let busy = false;
+    const arrived = (img) => {
+      busy = false;
+      clearTimeout(timer);
+      entry.state = "ok";
+      entry.retry = null;
+      notifyAssetProgress();
+      resolve(img);
+    };
+    const giveUp = (missing) => {
+      busy = false;
+      entry.state = missing ? "missing" : "failed";
+      entry.retry = null;
+      notifyAssetProgress();
+      resolve(null); // resolve, not reject, so Promise.all never hangs
+    };
+    const show = () => {
+      busy = true;
       const img = new Image();
-      img.onload = () => {
-        entry.state = "ok";
-        notifyAssetProgress();
-        resolve(img);
-      };
-      img.onerror = () => {
-        const giveUp = (missing) => {
-          entry.state = missing ? "missing" : "failed";
-          notifyAssetProgress();
-          resolve(null); // resolve, not reject, so Promise.all never hangs
-        };
-        if (attempt >= ASSET_RETRY_DELAYS_MS.length) { giveUp(); return; }
-        assetIsMissing(url).then((missing) => {
-          if (missing) { giveUp(true); return; }
-          setTimeout(tryOnce, ASSET_RETRY_DELAYS_MS[attempt++]);
-        });
-      };
+      img.onload = () => arrived(img);
+      img.onerror = () => failed(0);
       img.src = url;
     };
-    tryOnce();
+    const later = () => {
+      busy = false;
+      const delay = ASSET_RETRY_DELAYS_MS[Math.min(attempt, ASSET_RETRY_DELAYS_MS.length - 1)];
+      attempt++;
+      clearTimeout(timer);
+      timer = setTimeout(again, delay);
+    };
+    // A try after a failure: the file fetched afresh, past the browser's
+    // cache, then shown from the copy that fetch left behind.
+    const again = () => {
+      if (busy || entry.state !== "pending") return;
+      clearTimeout(timer);
+      if (typeof fetch !== "function") { show(); return; }
+      busy = true;
+      fetch(url, { cache: "reload" })
+        .then((res) => (res.ok ? show() : failed(res.status)))
+        .catch(() => failed(0));
+    };
+    const failed = (status) => {
+      if (expected === true) { later(); return; }
+      // Not covered by the manifest: the Block 62 rules.
+      if (status === 404 || status === 410) { giveUp(true); return; }
+      if (attempt >= ASSET_GUESS_TRIES) { giveUp(false); return; }
+      if (status) { later(); return; }
+      assetIsMissing(url).then((missing) => (missing ? giveUp(true) : later()));
+    };
+    entry.retry = again;
+    show();
   });
   assetLoads.set(url, entry);
   notifyAssetProgress();
   return entry.promise;
 }
 
-// Resolves once nothing is pending, or after timeoutMs, whichever comes
-// first. A timeout is not a failure: the world opens anyway with what
-// has arrived, which is exactly how it behaved before this block.
+// Block 78. Every picture still on its way, tried again now rather than
+// at its next scheduled try: the loading screen's Subukan ulit.
+function retryAssets() {
+  let n = 0;
+  assetLoads.forEach((entry) => {
+    if (entry.state === "pending" && entry.retry) { entry.retry(); n++; }
+  });
+  return n;
+}
+
+// Block 78. Every picture an act names, and every enemy type's, asked for
+// the moment the act is loaded rather than when a scene or a fight first
+// needs it. The title screen's bar and the entry wait then cover the
+// whole act, and a scene change or the play's soldiers never wait on a
+// download. Walks the act's data for strings under assets/ ending .png or
+// .jpg; the scripts are functions and are not walked, which is why the
+// enemy catalogue is walked whole (spawnEnemies names its types there).
+// Skips the page's own elements, which content objects carry once built.
+function preloadActArt(actData) {
+  const seen = new Set();
+  const walk = (v) => {
+    if (typeof v === "string") {
+      if (/^assets\/.+\.(png|jpe?g)$/i.test(v)) loadImage(v);
+      return;
+    }
+    if (!v || typeof v !== "object" || seen.has(v)) return;
+    if (typeof Node !== "undefined" && v instanceof Node) return;
+    seen.add(v);
+    Object.keys(v).forEach((k) => walk(v[k]));
+  };
+  walk(actData);
+  walk(window.ENEMY_TYPES);
+}
+
+// Resolves once nothing is pending, or after timeoutMs if one is given.
+// Since Block 78 neither caller gives one: a picture that exists is
+// waited for until it arrives.
 function whenAssetsSettled(timeoutMs) {
   return new Promise((resolve) => {
     const check = () => {
@@ -637,6 +739,7 @@ function loadAct(actData, sceneId) {
 
   currentActData = actData;
   SCENES = scenesFor(actData);
+  preloadActArt(actData); // Block 78
   questAnnouncedId = null;
 
   // Quests belong to the act, not the scene, so they are added once here
@@ -2369,7 +2472,35 @@ async function runDeathSequence() {
 // same defensive clear startPerformance and respawnInScene already do
 // is repeated here, since a fade can just as easily start with the
 // attack button held down as either of those can.
-const SCENE_ART_WAIT_MS = 8000;
+// Block 78. How long a scene change's black holds before it says what it
+// is waiting for. It no longer gives up (SCENE_ART_WAIT_MS, 8 seconds,
+// until Block 78); with the whole act asked for up front it rarely waits
+// at all.
+const SCENE_ART_NOTE_MS = 2000;
+
+// Block 78. A line on the scene change's black while it waits for art,
+// with how much has arrived, and every waiting picture tried again at
+// once when it first shows.
+function blackoutProgress(on) {
+  const note = document.getElementById("blackout-note");
+  if (!note) return;
+  const draw = (p) => {
+    const pct = p.total ? Math.round((p.done / p.total) * 100) : 100;
+    note.textContent = "Inihahanda ang mga larawan... " + pct + "%";
+  };
+  if (on) {
+    retryAssets();
+    draw(assetProgress());
+    blackoutProgress.listener = draw;
+    assetProgressListeners.push(draw);
+    note.classList.add("shown");
+  } else {
+    const i = assetProgressListeners.indexOf(blackoutProgress.listener);
+    if (i !== -1) assetProgressListeners.splice(i, 1);
+    blackoutProgress.listener = null;
+    note.classList.remove("shown");
+  }
+}
 
 async function fadeToScene(sceneId, placement) {
   cutscenePlaying = true;
@@ -2385,10 +2516,13 @@ async function fadeToScene(sceneId, placement) {
 
   // Block 62. The black holds until the new scene's pictures are in, so
   // a student never walks into a room whose backdrop and people are
-  // still downloading. A slow connection gets a longer black, never an
-  // endless one: after SCENE_ART_WAIT_MS the scene opens with what has
-  // arrived, which is what every scene change did before this block.
-  await whenAssetsSettled(SCENE_ART_WAIT_MS);
+  // still downloading. Since Block 78 it is not capped (it gave up after
+  // 8 seconds before): a picture that exists is waited for, and after
+  // SCENE_ART_NOTE_MS the black says so (blackoutProgress).
+  const noteTimer = setTimeout(() => blackoutProgress(true), SCENE_ART_NOTE_MS);
+  await whenAssetsSettled();
+  clearTimeout(noteTimer);
+  blackoutProgress(false);
 
   // Block 34. Where to stand in the new scene when it is not its startX:
   // coming back out of the entablado lands at its door, not at the far
@@ -6319,6 +6453,7 @@ window.Game = {
   assetProgress,
   onAssetProgress,
   whenAssetsSettled,
+  retryAssets, // Block 78
 
   // Swaps the player's sprite sheets for an outfit's. Awaitable, because
   // the sheets have to load before the swap is visible.

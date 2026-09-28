@@ -432,7 +432,15 @@ const Shell = {
   // promise, and the entry promise is resolved only after it, because
   // what game.js does next (the trivia card, the pre-test, the opening
   // script) must not start behind this screen.
-  ENTRY_ART_WAIT_MS: 20000,
+  //
+  // Block 78. No longer capped: until then the world opened after 20
+  // seconds with whatever had arrived, which is one way a student got in
+  // with sprites missing. It waits for every picture that exists (the
+  // engine keeps trying them), and when nothing has arrived for
+  // ASSET_STALL_MS it says the connection is slow and offers Subukan
+  // ulit, which tries every waiting picture again at once. There is no
+  // way in without them, on purpose.
+  ASSET_STALL_MS: 10000,
 
   async _enterWorld() {
     if (window.Game && Game.assetProgress) {
@@ -441,13 +449,51 @@ const Shell = {
         this.state = "loading";
         this._showPanel("loading");
         this.el.overlay.classList.remove("hidden");
-        await Game.whenAssetsSettled(this.ENTRY_ART_WAIT_MS);
+        this._watchStall(true);
+        await Game.whenAssetsSettled();
+        this._watchStall(false);
       }
     }
     this.state = "playing";
     this.el.overlay.classList.add("hidden");
     if (window.Game) Game.setUiBlocked(false);
     this._applyOrientation();
+  },
+
+  // Block 78. While the loading screen waits: when the count of arrived
+  // pictures has not moved for ASSET_STALL_MS, the slow note and Subukan
+  // ulit appear; they go again as soon as something arrives.
+  _watchStall(on) {
+    const slow = document.getElementById("shell-loading-slow");
+    const retry = document.getElementById("shell-loading-retry");
+    clearInterval(this.stallTimer);
+    this.stallTimer = null;
+    const show = (yes) => {
+      if (slow) slow.classList.toggle("hidden", !yes);
+      if (retry) retry.classList.toggle("hidden", !yes);
+    };
+    show(false);
+    if (!on || !window.Game) return;
+    let last = Game.assetProgress().done;
+    let since = performance.now();
+    if (retry && !retry.dataset.bound) {
+      retry.dataset.bound = "1";
+      retry.addEventListener("click", () => {
+        Game.retryAssets();
+        since = performance.now();
+        show(false);
+      });
+    }
+    this.stallTimer = setInterval(() => {
+      const done = Game.assetProgress().done;
+      if (done !== last) {
+        last = done;
+        since = performance.now();
+        show(false);
+      } else if (performance.now() - since >= this.ASSET_STALL_MS) {
+        show(true);
+      }
+    }, 500);
   },
 
   // Block 62. Every loading bar on the shell's screens, drawn from the

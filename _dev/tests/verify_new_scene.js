@@ -359,6 +359,16 @@ const artDrift = () => {
      art.missing.length > 0 && art.unlisted.length === 0, art.unlisted);
   ok("and nothing in its Owed list has already arrived", art.arrived.length === 0, art.arrived);
 
+  // Block 78. The loader never gives up on a file the manifest lists and
+  // never asks for one it does not, so the manifest must be exactly
+  // what is in assets/ (node _dev/tools/make-asset-manifest.js).
+  console.log("\nThe asset manifest");
+  const { listAssets, readManifest } = require(path.join(ROOT, "_dev", "tools", "make-asset-manifest.js"));
+  const onDisk = listAssets(), listedAssets = readManifest() || [];
+  ok("js/asset-manifest.js lists exactly the files in assets/ (" + onDisk.length + ")",
+     JSON.stringify(onDisk) === JSON.stringify(listedAssets),
+     { notListed: onDisk.filter((x) => !listedAssets.includes(x)), gone: listedAssets.filter((x) => !onDisk.includes(x)) });
+
   console.log("\nSTORY.md");
   const drift = storyDrift();
   ok("every line and black card in content/act1.js is in STORY.md (" + drift.count + ")",
@@ -385,6 +395,15 @@ const artDrift = () => {
   ok("the game grades the pre-test itself and records the score",
      pre.length === 1 && pre[0].t === "pre" && pre[0].m === 10, pre);
   ok("act status is playing", (await page.evaluate(() => Acts.status)) === "playing");
+  // Block 78. Every picture the manifest lists opens in the browser: one
+  // that could not (a broken file) would hold the loading screen forever.
+  const opened = await page.evaluate(async () => {
+    const pics = window.ASSET_MANIFEST.filter((f) => /\.(png|jpe?g)$/i.test(f));
+    const got = await Promise.all(pics.map((f) => loadImage(f).then((img) => ({ f, ok: Boolean(img && img.naturalWidth) }))));
+    return { count: pics.length, bad: got.filter((g) => !g.ok).map((g) => g.f) };
+  });
+  ok("every picture in the manifest opens in the browser (" + opened.count + ")",
+     opened.count > 20 && opened.bad.length === 0, opened.bad);
   ok("Act I has nine objectives, pays no barya per step, and is held open",
      await page.evaluate(() => Acts.objectivesFor(1).length === 9 && Acts.perObjective(2) === 0 &&
        ACT_1.holdOpen === true));
