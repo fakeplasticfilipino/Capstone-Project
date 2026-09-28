@@ -25,7 +25,14 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 28 Sep 2026, after Block 73: the guard's still (Guard.png)
+Last updated: 28 Sep 2026, after Block 74: the guards' room no longer
+follows the talk with Nanay; it is reached only from a "Test Room"
+button in Mga Setting (from pause), "<WIP>" card first, and its door
+returns to the exact spot. The main plot is back to exactly what it was
+before Block 73. test.js 711 passed, 0 failed; verify_new_scene.js 124
+passed, 0 failed. Pushed to main.
+
+Before that, 28 Sep 2026, after Block 73: the guard's still (Guard.png)
 is assets/sprites/enemies/bantay.png, with a walk and a hip-fire shot
 made from its own parts by _dev/tools/animate-bantay.js; and, as work in
 progress and NOT the plot, a "<WIP>" card after the talk with Nanay that
@@ -246,9 +253,9 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v46    js/game.js v73       js/shell.js v17
+    css/style.css v46    js/game.js v74       js/shell.js v18
     js/inventory.js v9   js/acts.js v14       js/assessment.js v4
-    content/act1.js v51  content/items.js v11  content/act2-4.js v1
+    content/act1.js v52  content/items.js v11  content/act2-4.js v1
     content/questions.js v1 (named in index.html and teacher.html)
     ASSET_VERSION 27 (in js/game.js)
     sw.js carries no version: the browser checks it itself on every
@@ -414,8 +421,11 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
         muzzle, playIntertitle keepBlack; WIP (not plot): a "<WIP>" card
         after the opening and the bantayan room (verify_new_scene.js to
         120)
+    74  the room moved out of the plot: testRoom on the act,
+        Game.testRoom and enterTestRoom, exits with back: true, the Test
+        Room button in settings (verify_new_scene.js to 124)
 
-Everything through Block 73 is pushed to main and live on GitHub
+Everything through Block 74 is pushed to main and live on GitHub
 Pages. The earlier instructions for a hand push of Blocks 42 to 58 from
 the device folder are history: those blocks reached main with Blocks 62
 to 67 (e7be506), and cloud sessions since push straight to main.
@@ -430,14 +440,11 @@ demo; whether it has been run is not recorded.
 
 In order.
 
-000. The guards' room is work in progress and not the plot (Block 73,
-at the proponent's request). Every student who finishes the opening is
-sent into it, so before the pilot either the official plot takes its
-place or it comes out: delete the "<WIP>" card and the gotoScene at the
-end of thinkingAboutWork in content/act1.js, the bantayan scene, and
-STORY.md's "Work in progress" section, and put verify_new_scene.js's
-opening back to going straight on to the Kutsero. The bantay's art and
-the engine stay.
+000. The Test Room button (Block 74) is in settings for every student,
+study accounts included, from pause. It is outside the story and
+returns to the same spot, so it harms nothing, but before the pilot
+decide whether students should see it; hiding it is one line in
+shell.js (_openSettings) or removing testRoom from content/act1.js.
 
 00. Run db/migrations/007_macario_schema_v7.sql in the Supabase SQL
 editor, then record it in the Run log. Without it the game still works,
@@ -569,7 +576,8 @@ For Block 57:
       entablado; Lumabas returns beside him.
     Mga Setting from pause: "Mga natapos na gawain" lists what is done,
       and the panel still reaches Bumalik without trouble.
-    The bantay (Block 73), in the room after the "<WIP>" card: the card
+    The Test Room (Block 74): pause, Mga Setting, Test Room. Then the
+      bantay (Block 73), in the room after the "<WIP>" card: the card
       lifts onto black and the room fades in, with no flash of the
       street. A guard on patrol walks with his legs stepping and his
       feet on the road, the rifle carried; the sentry stands. Seen, a
@@ -580,8 +588,8 @@ For Block 57:
       shooting. Failure looks like a guard sliding without stepping,
       floating or sunk into the road, the rifle jumping between poses,
       the bullet leaving from his chest instead of the muzzle, or a jump
-      that no longer clears it. Lumabas at the far end returns beside
-      Nanay. Whether a walk made from the still's own parts is good
+      that no longer clears it. Lumabas at the far end returns to the
+      exact spot the button was pressed. Whether a walk made from the still's own parts is good
       enough is the proponent's call (Blocks 53, 54 and 72).
     The siga (Block 72): three different boys walk on from the left
       with a walk cycle, stop, and stand breathing (the leader with a
@@ -616,8 +624,8 @@ against the source material.
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
 header directs, then STORY.md before writing any story. Block 73 gave
-the guard (bantay) a walk and a shot and put a WIP room of guards after
-the opening, which is not the plot and has to go before the pilot (Next
+the guard (bantay) a walk and a shot and a room of guards; Block 74 made
+that room a Test Room reached from settings, outside the plot (Next
 action, 000). Everything
 through Block 73 is on main; cloud sessions push
 straight to main (CLAUDE.md, Deployment), never to a branch. Block 71
@@ -1106,7 +1114,7 @@ mechanics stay tested whatever Act I ships); sections BD to BG are
 Blocks 62 to 67 (the loader, the loading screens, a scene change held
 for its art, and the service worker offline; the run, coyote time, the
 jump buffer and dust; the timed apple round; the reward pop).
-verify_new_scene.js: 120 checks (Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
+verify_new_scene.js: 124 checks (Block 74: the opening ends on the street with no card, the Test Room offered from pause and not inside the room, the door back to the same spot with the story's flags unchanged; Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
 trivia card and pre-test, and its Talaan section (replacing Block 64's
 notebook) checks the hints, the seed across a reload, a word earned and
 the pause panel. 101 of them: one that every line of dialogue and black card in

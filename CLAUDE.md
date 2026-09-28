@@ -349,6 +349,9 @@ game.js exposes window.Game and nothing else:
     whenAssetsSettled(ms)  resolves when nothing is pending, or after ms
     glossary()           the act's Talaan (words and hints found) for
                          the pause screen, or null; Block 68
+    testRoom()           whether the act's test room can be entered
+                         now; Block 74
+    enterTestRoom()      the card, then the fade into it; Block 74
     setHintPool(n, pool) the teacher's papers for act n, from acts.js;
                          Block 70
 
@@ -408,6 +411,9 @@ world belongs to the scene.
                                                  (Block 70)
       keepFlagsOnReplay: ["flag"],               optional; kept by a replay
                                                  (Block 68)
+      testRoom: { scene, card, x, facing },      optional; a scene outside
+                                                 the story, from settings
+                                                 (Block 74)
       startingQuests: [{ id, text }],
       scenes: [ {...}, {...} ]
     }
@@ -592,7 +598,9 @@ reached edge to edge like an NPC. The interact button reads its label
 toFacing }), the same fade every scene change uses. Without toX the new
 scene's startX applies; an arrival dialogue's own x still wins over
 both. An exit may declare requiresFlag, and stays shut (no prompt) until
-that flag is set. A building to walk into is a decoration for the picture plus an
+that flag is set. An exit with back: true (Block 74) returns to where
+the test room was entered from, and uses its own toScene only when
+that is not known. A building to walk into is a decoration for the picture plus an
 exit at its door; a decoration with a single still image is an animation
 def with frames: 1. A decoration may also declare hidden: true, for a
 character a script brings on later, and facing: -1 to mirror its art.
@@ -4289,7 +4297,8 @@ unchanged.
 The room is scene "bantayan" in content/act1.js, three paintings long:
 a patrol, a sentry with his back turned for a takedown, a second
 patrol, a platform above their sight with a heart, a crate, and
-intense.mp3. It is reached from the end of the opening: after
+intense.mp3. (Superseded by Block 74: it is reached only from the
+Test Room button in settings.) It was reached from the end of the opening: after
 Macario's thought, playIntertitle(["<WIP>"], { keepBlack: true }) and
 Acts.gotoScene. keepBlack is new: it puts the scene fade's own black up
 behind the card at once, so the card lifts onto black and the street is
@@ -4305,6 +4314,35 @@ room, the three guards' sheets, a patrol walking and a sentry
 standing, the sentry levelling before he fires, the flash frame on the
 shot, the bullet from the muzzle, and the door back. game.js v73,
 content/act1.js v51, ASSET_VERSION 27.
+
+The test room from settings (Block 74). Asked the same day: the room
+should not come after the talk with Nanay, since the main plot was not
+to be touched, but from a "Test Room" button in settings, "<WIP>" card
+and all. content/act1.js's opening is back to exactly what it was
+before Block 73 (thinkingAboutWork ends with setCutscene(false)).
+
+An act declares testRoom: { scene, card, x, facing } (Act data format),
+and the engine does the rest: Game.testRoom() says whether it can be
+entered now (the act has one, the world has been handed over, no
+cutscene or conversation is up, and he is not already in it), and
+Game.enterTestRoom() keeps where he is in the save as __returnTo (an
+engine flag: a replay keeps it and no objective reads it), plays the
+card with keepBlack and calls Acts.gotoScene. The room's door declares
+back: true, which returns to that spot, facing the same way, and clears
+it. The room is outside the story: no story flag, objective or scene
+script is set on the way in or out, which verify_new_scene.js checks by
+comparing the flags before and after. A reload inside lands in the room
+(it is the saved scene) and the door still knows the way back.
+
+shell.js shows the button (#shell-testroom, "Test Room", i-blade) only
+in settings opened from pause and only while Game.testRoom() is true;
+pressing it closes the screens and resumes the world the way Bumalik
+does, then calls Game.enterTestRoom, whose card holds the world. The
+label is English on purpose: it is a tool for the proponents, named as
+they asked, not a line of the story.
+
+verify_new_scene.js to 124. game.js v74, shell.js v18, content/act1.js
+v52; no asset changed.
 
 ## Pitfalls
 

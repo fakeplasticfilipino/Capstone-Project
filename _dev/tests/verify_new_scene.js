@@ -453,35 +453,61 @@ const storyDrift = () => {
   const c4 = await readConversation(page, 1);
   ok("his thought, as written", c4.lines[0] === THOUGHT, c4.lines);
 
+  await page.waitForTimeout(300);
+  const after = await page.evaluate(() => ({ toast: document.getElementById("toast").textContent,
+    cut: cutscenePlaying, barya: Game.currency(), scene: currentSceneId,
+    card: !document.getElementById("intertitle").classList.contains("hidden") }));
+  const l1 = await log(page);
+  ok("the next task is the Kutsero, announced as Bagong gawain",
+     JSON.stringify(l1.current) === JSON.stringify([STEP.kutsero]) && after.toast === "Bagong gawain: " + STEP.kutsero, { l1, after });
+  ok("the opening ends on the street, with no card and no test room (Block 74)",
+     after.scene === "tondo" && !after.card, after);
+  ok("no Tapos na button under the log any more (Block 57)", !l1.toggle);
+  ok("the world is his again, no barya yet", !after.cut && after.barya === 0, after);
+  const settingsList = await doneInSettings(page);
+  ok("the finished task is listed in settings", JSON.stringify(settingsList) === '["Umuwi kasama si Nanay"]', settingsList);
+  await page.waitForTimeout(1200);
+  ok("the first step is saved and counted", await page.evaluate(() =>
+    __DB.game_progress[0].save_state.flags.nagpasyangMagtrabaho === true && Acts.countDone(1) === 1));
+
   // ---------------------------------------------------------------
-  // Block 73. Work in progress, not the plot: a "<WIP>" card, the
-  // guards' room, and its door back to Nanay.
+  // Block 74. The test room, outside the story: the Test Room button in
+  // settings, a "<WIP>" card, the guards' room (Block 73), and its door
+  // back to wherever he was.
   // ---------------------------------------------------------------
-  console.log("\nThe <WIP> card and the guards' room (Block 73)");
-  ok("then a black card reads <WIP>", await waitIntertitle(page, true, 4000) &&
-     JSON.stringify((await intertitle(page)).lines) === '["<WIP>"]');
+  console.log("\nThe Test Room, from settings (Blocks 73 and 74)");
+  await walkTo(page, 2600);
+  await page.evaluate(() => { facing = -1; });
+  await page.waitForTimeout(100);
+  const storyBefore = await page.evaluate(() =>
+    JSON.stringify(Object.keys(state.flags).filter((k) => !k.startsWith("__")).sort().map((k) => [k, state.flags[k]])));
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(200);
+  await page.click("#shell-pause-settings");
+  await page.waitForTimeout(150);
+  ok("settings, from pause, offers the Test Room", await visible(page, "#shell-testroom") &&
+     (await page.evaluate(() => document.querySelector("#shell-testroom .lbl").textContent)) === "Test Room");
+  await page.click("#shell-testroom");
+  ok("it closes the screens and a black card reads <WIP>", await waitIntertitle(page, true, 4000) &&
+     JSON.stringify((await intertitle(page)).lines) === '["<WIP>"]' &&
+     await page.evaluate(() => document.getElementById("shell").classList.contains("hidden") && Shell.state === "playing"));
   // Until the room is on screen, whenever the card is not black the
   // scene fade's own black is: the street is never seen between them.
   const between = await page.evaluate(async () => {
     const card = document.getElementById("intertitle");
-    const seen = { gaps: 0, toasts: new Set(), reached: false };
+    const seen = { gaps: 0, reached: false };
     for (let i = 0; i < 300; i++) {
       if (currentSceneId === "bantayan") { seen.reached = true; break; }
       const cardBlack = !card.classList.contains("hidden") && card.classList.contains("visible");
       if (!cardBlack && !blackout.classList.contains("visible")) seen.gaps += 1;
-      seen.toasts.add(document.getElementById("toast").textContent);
       await new Promise((r) => setTimeout(r, 40));
     }
-    for (let i = 0; i < 80; i++) {
-      seen.toasts.add(document.getElementById("toast").textContent);
-      await new Promise((r) => setTimeout(r, 40));
-    }
-    return { gaps: seen.gaps, reached: seen.reached, toasts: [...seen.toasts] };
+    return { gaps: seen.gaps, reached: seen.reached };
   });
   ok("the card lifts onto black and the fade takes him to the guards' room, with no street between",
      between.reached && between.gaps === 0, between);
-  ok("the next task, the Kutsero, is announced as Bagong gawain",
-     between.toasts.includes("Bagong gawain: " + STEP.kutsero), between.toasts);
+  ok("the card lifts onto black and the fade takes him to the guards' room, with no street between",
+     between.reached && between.gaps === 0, between);
   ok("the room is on screen", await waitForScene(page, "bantayan"));
   await settle(page);
   const room = await page.evaluate(() => ({
@@ -553,28 +579,33 @@ const storyDrift = () => {
   ok("and the bullet leaves from his muzzle",
      Math.abs(s.x - (s.centre + muzzleAhead)) < 1 && Math.abs(s.y - (s.floor + muzzleUp - 5)) < 1, s);
 
-  // Out through the door, back to the street beside Nanay. The guards
-  // are put down first so the harness is not shot on the way.
+  ok("settings does not offer the Test Room inside it", await (async () => {
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(200);
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(150);
+    const shown = await visible(page, "#shell-testroom");
+    await page.click("#shell-settings-back");
+    await page.waitForTimeout(100);
+    await page.click("#shell-resume");
+    await page.waitForTimeout(200);
+    return !shown;
+  })());
+
+  // Out through the door, back to where he was. The guards are put down
+  // first so the harness is not shot on the way.
   await page.evaluate(() => { GUARDS.forEach((g) => { g.disabled = true; drawGuard(g); }); clearGuardBullets(); });
   await walkTo(page, 4350 - 100);
   await page.waitForTimeout(300);
   await page.keyboard.press("e");
   ok("Lumabas leads back to the street", await waitForScene(page, "tondo"));
   await settle(page);
-  const back = await page.evaluate(() => ({ x: posX, facing, scene: currentSceneId }));
-  ok("beside Nanay, where he left her", back.x === 1880 && back.facing === 1, back);
-
-  await page.waitForTimeout(300);
-  const after = await page.evaluate(() => ({ cut: cutscenePlaying, barya: Game.currency() }));
-  const l1 = await log(page);
-  ok("the task in hand is the Kutsero", JSON.stringify(l1.current) === JSON.stringify([STEP.kutsero]), l1);
-  ok("no Tapos na button under the log any more (Block 57)", !l1.toggle);
-  ok("the world is his again, no barya yet", !after.cut && after.barya === 0, after);
-  const settingsList = await doneInSettings(page);
-  ok("the finished task is listed in settings", JSON.stringify(settingsList) === '["Umuwi kasama si Nanay"]', settingsList);
-  await page.waitForTimeout(1200);
-  ok("the first step is saved and counted", await page.evaluate(() =>
-    __DB.game_progress[0].save_state.flags.nagpasyangMagtrabaho === true && Acts.countDone(1) === 1));
+  const back = await page.evaluate(() => ({ x: posX, facing, scene: currentSceneId, ret: state.flags.__returnTo,
+    story: JSON.stringify(Object.keys(state.flags).filter((k) => !k.startsWith("__")).sort().map((k) => [k, state.flags[k]])) }));
+  ok("to the very spot he left, facing the same way", back.x === 2600 && back.facing === -1 && back.ret === undefined, back);
+  ok("and the story is untouched: the same flags, the Kutsero still the task, one step counted",
+     back.story === storyBefore && JSON.stringify((await log(page)).current) === JSON.stringify([STEP.kutsero]) &&
+     await page.evaluate(() => Acts.countDone(1) === 1), { before: storyBefore, after: back.story });
 
   // ---------------------------------------------------------------
   console.log("\nThe Kutsero's job: apples, the horse, the pay");

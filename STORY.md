@@ -40,9 +40,9 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 28 Sep 2026, Block 73 (a work-in-progress room of guards
-after the opening, recorded under its own heading; the plot itself is
-unchanged). Before that, 25 Sep 2026, Block 70 (the Talaan's papers are the
+Last updated: 28 Sep 2026, Block 74 (the guards' room is reached only
+from a Test Room button in settings, recorded under its own heading;
+the plot itself is unchanged). Before that, 25 Sep 2026, Block 70 (the Talaan's papers are the
 teacher's, at three fixed places on the street). Before that, Block 69
 (the Talaan's words and hints removed, the apple tree now the
 silhouette tree at 5800, and no guide: the student finds each person
@@ -409,23 +409,22 @@ Macario keeps what the play paid beyond that.
 Completes: Ibigay kay Nanay ang naipon (n/100). Every task is done and
 Act I is held open here: the post-test waits for the rest of the story.
 
-## Work in progress (not the plot)
+## The Test Room (not the plot)
 
-Block 73, at the proponent's request, while the official plot is still
-being written. It changes nothing above and is not part of the story;
-it is here because every black card in content/act1.js must be.
+Blocks 73 and 74, at the proponent's request. Outside the story: it is
+reached only from the Test Room button in Mga Setting (from pause), and
+nothing in the plot above leads to it or changes because of it.
 
-After Macario's thought at the end of beat 1, a black card:
+Pressing it shows a black card:
 
     [BLACK] <WIP>
 
-and he is in the guards' room (bantayan): three paintings of the town,
-4350 wide, with three bantay (guardia civil, real art walking and
+and Macario is in the guards' room (bantayan): three paintings of the
+town, 4350 wide, with three bantay (guardia civil, real art walking and
 shooting) who see, turn hostile, level their rifles and fire, a
 platform above their sight with a heart on it, and a crate to hide
-behind. Nobody speaks. The door at the far end (Lumabas) leads back to
-the street beside Nanay, and beat 2 carries on from there. It plays
-once; the Kutsero is already the task in hand while he is in the room.
+behind. Nobody speaks. The door at the far end (Lumabas) returns him to
+the very spot he left, facing the same way, with the story where it was.
 
 ## Repeat lines
 

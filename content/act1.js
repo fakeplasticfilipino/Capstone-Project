@@ -313,12 +313,7 @@ async function thinkingAboutWork(alreadyHeld) {
   await playDialogue([
     { speaker: "Macario (sa isip)", text: "Kailangan ko ng pera para matulungan si Nanay, saan kaya ako makakahanap ng trabaho?" },
   ]);
-  // Block 73. Work in progress, not the plot: a card, and the guards'
-  // room, whose door leads back here beside Nanay. The card leaves the
-  // screen black and the fade into the room takes the cutscene over
-  // (game.js, playIntertitle's keepBlack).
-  await playIntertitle(["<WIP>"], { keepBlack: true });
-  if (window.Acts) Acts.gotoScene("bantayan", { x: BANTAYAN_START, facing: 1 });
+  setCutscene(false);
 }
 
 // -------------------------------------------------------------
@@ -609,6 +604,11 @@ window.ACT_1 = {
     { id: "mag_ipon", label: "Ibigay kay Nanay ang naipon",
       flag: "naibigayAngIponKayNanay", countCurrency: SAVINGS_GOAL },
   ],
+
+  // Block 74. The guards' room, outside the story, reached only from the
+  // Test Room button in settings: a "<WIP>" card, then the room. Its
+  // door returns to wherever the student was (game.js, enterTestRoom).
+  testRoom: { scene: "bantayan", card: ["<WIP>"], x: BANTAYAN_START, facing: 1 },
 
   // Block 56. Every step above can be done and Act I still does not
   // finish: the story continues and the post-test must wait for it
@@ -1041,15 +1041,16 @@ window.ACT_1 = {
       ],
     },
     {
-      // Block 73. Work in progress, not the plot: the guards' room,
-      // reached after Macario's thought through a "<WIP>" card. Three
+      // Block 73, and since Block 74 reached only from the Test Room
+      // button in settings (testRoom, above), never from the story. Three
       // bantay with every part of the stealth and hostile-guard system
       // (game.js, Blocks 37, 38 and 73): a patrol, a sentry with his back
       // turned for a takedown, and a second patrol; a platform above
       // their sight with a heart on it, and a crate to hide behind. Seen,
       // a guard turns hostile, stops, levels his rifle and fires, and
       // takes two punches or shots to put down. The door at the far end
-      // goes back to the street beside Nanay, so the story carries on.
+      // goes back to wherever the student came from (back: true); beside
+      // Nanay only if that is not known.
       id: "bantayan",
       worldWidth: BANTAYAN_WIDTH,
       panels: [STREET_PAINTINGS[2], STREET_PAINTINGS[3], STREET_PAINTINGS[2]],
@@ -1067,7 +1068,7 @@ window.ACT_1 = {
                  speed: 1.5, detectRadius: 300 }),
       ],
       exits: [
-        { id: "labas", x: BANTAYAN_WIDTH - 120, width: 100, label: "Lumabas",
+        { id: "labas", x: BANTAYAN_WIDTH - 120, width: 100, label: "Lumabas", back: true,
           toScene: "tondo", toX: NANAY_X - BESIDE, toFacing: 1 },
       ],
     },

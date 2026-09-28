@@ -2110,8 +2110,53 @@ function handleInteractPress() {
     startPerformance();
   } else if (nearby.type === "exit" && window.Acts) {
     const exit = nearby.ref;
-    Acts.gotoScene(exit.toScene, { x: exit.toX, facing: exit.toFacing });
+    // Block 74. An exit marked back returns to wherever the student was
+    // when the test room was entered, if that is known; its own toScene
+    // is the fallback.
+    const ret = exit.back && state.flags.__returnTo;
+    if (ret) {
+      delete state.flags.__returnTo;
+      Acts.gotoScene(ret.scene, { x: ret.x, facing: ret.facing });
+    } else {
+      Acts.gotoScene(exit.toScene, { x: exit.toX, facing: exit.toFacing });
+    }
   }
+}
+
+// =============================================================
+// THE TEST ROOM (Block 74)
+//
+// An act may declare testRoom: { scene, card, x, facing }, a scene that
+// is outside its story, reached only from the settings screen (shell.js):
+// a black card (card), then a fade into the scene, at x facing facing.
+// Where the student was is kept in the save (__returnTo, an engine flag,
+// so a replay keeps it and nothing counts it), and an exit in the room
+// marked back: true returns there. No objective, flag or scene script
+// of the story is touched on the way in or out.
+// =============================================================
+
+function testRoomAvailable() {
+  const room = currentActData && currentActData.testRoom;
+  return Boolean(room && room.scene && window.Acts && saveReadyOrGuest() &&
+    !cutscenePlaying && !inDialogue && currentSceneId !== room.scene);
+}
+
+// The world has been handed to the student (signed in or guest), so a
+// scene change now is saved as it should be and not overwritten by the
+// login sequence.
+function saveReadyOrGuest() {
+  return saveReady || isGuest;
+}
+
+async function enterTestRoom() {
+  if (!testRoomAvailable()) return false;
+  const room = currentActData.testRoom;
+  state.flags.__returnTo = { scene: currentSceneId, x: Math.round(posX), facing };
+  markDirty();
+  setCutscene(true);
+  await playIntertitle(room.card || [], { keepBlack: true });
+  Acts.gotoScene(room.scene, { x: room.x, facing: room.facing });
+  return true;
 }
 
 function startDialogue(npc) {
@@ -6110,6 +6155,11 @@ window.Game = {
   // words and the hints found, or null for an act with neither.
   glossary: glossaryState,
   setHintPool,
+
+  // Block 74. The act's test room, for the settings button: whether it
+  // can be entered right now, and entering it.
+  testRoom: testRoomAvailable,
+  enterTestRoom,
 
   // Block 62. The picture loader, for the title screen's bar and for
   // holding the world closed until its art is in. Counts only; the
