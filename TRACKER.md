@@ -579,8 +579,11 @@ against the source material.
 
 Read this file's Start here and Next action, then CLAUDE.md as its own
 header directs, then STORY.md before writing any story. Everything
-through Block 71 is on main; cloud sessions push
-straight to main (CLAUDE.md, Deployment). The first thing owed is
+through Block 72 is on main; cloud sessions push
+straight to main (CLAUDE.md, Deployment), never to a branch. Block 71
+moved the punch's hit onto the fist's contact frame; Block 72 gave the
+three siga art drawn in code (draw-siga.js), which the proponent has
+still to judge on the phone (Next action, 3). The first thing owed is
 schema 007 in Supabase (Next action, 00), which only the proponent can
 run. Act I was rewritten in Block 52, carried through
 the jobs and the errand in Block 56, rebuilt onto one street in Block
