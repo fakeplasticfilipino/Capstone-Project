@@ -368,8 +368,8 @@ const storyDrift = () => {
   ok("Act I has nine objectives, pays no barya per step, and is held open",
      await page.evaluate(() => Acts.objectivesFor(1).length === 9 && Acts.perObjective(2) === 0 &&
        ACT_1.holdOpen === true));
-  ok("one street and the entablado, and no other scene", await page.evaluate(() =>
-    JSON.stringify(SCENES.map((s) => s.id)) === '["tondo","entablado"]' &&
+  ok("one street, the entablado and the guards' room (Block 73), and no other scene", await page.evaluate(() =>
+    JSON.stringify(SCENES.map((s) => s.id)) === '["tondo","entablado","bantayan"]' &&
     !(SCENES[0].exits || []).length));
   ok("the item catalogue is empty", await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 0));
 
@@ -452,12 +452,122 @@ const storyDrift = () => {
 
   const c4 = await readConversation(page, 1);
   ok("his thought, as written", c4.lines[0] === THOUGHT, c4.lines);
+
+  // ---------------------------------------------------------------
+  // Block 73. Work in progress, not the plot: a "<WIP>" card, the
+  // guards' room, and its door back to Nanay.
+  // ---------------------------------------------------------------
+  console.log("\nThe <WIP> card and the guards' room (Block 73)");
+  ok("then a black card reads <WIP>", await waitIntertitle(page, true, 4000) &&
+     JSON.stringify((await intertitle(page)).lines) === '["<WIP>"]');
+  // Until the room is on screen, whenever the card is not black the
+  // scene fade's own black is: the street is never seen between them.
+  const between = await page.evaluate(async () => {
+    const card = document.getElementById("intertitle");
+    const seen = { gaps: 0, toasts: new Set(), reached: false };
+    for (let i = 0; i < 300; i++) {
+      if (currentSceneId === "bantayan") { seen.reached = true; break; }
+      const cardBlack = !card.classList.contains("hidden") && card.classList.contains("visible");
+      if (!cardBlack && !blackout.classList.contains("visible")) seen.gaps += 1;
+      seen.toasts.add(document.getElementById("toast").textContent);
+      await new Promise((r) => setTimeout(r, 40));
+    }
+    for (let i = 0; i < 80; i++) {
+      seen.toasts.add(document.getElementById("toast").textContent);
+      await new Promise((r) => setTimeout(r, 40));
+    }
+    return { gaps: seen.gaps, reached: seen.reached, toasts: [...seen.toasts] };
+  });
+  ok("the card lifts onto black and the fade takes him to the guards' room, with no street between",
+     between.reached && between.gaps === 0, between);
+  ok("the next task, the Kutsero, is announced as Bagong gawain",
+     between.toasts.includes("Bagong gawain: " + STEP.kutsero), between.toasts);
+  ok("the room is on screen", await waitForScene(page, "bantayan"));
+  await settle(page);
+  const room = await page.evaluate(() => ({
+    x: posX, facing, cut: cutscenePlaying, hearts: !document.getElementById("hud").classList.contains("hidden"),
+    guards: GUARDS.map((g) => ({
+      id: g.id, shoots: !!g.shoots,
+      art: [g.spriteEl, g.walkSpriteEl, g.shootSpriteEl].every((el) => el && !el.classList.contains("sprite-placeholder")) &&
+        ![g.animation, g.walkAnimation, g.shootAnimation].some((s) => s.failed),
+    })),
+    door: (currentScene.exits || []).map((e) => e.label + ">" + e.toScene),
+    platforms: PLATFORMS.length, hide: HIDE_SPOTS.length, music: currentScene.music,
+  }));
+  ok("he stands at the room's start, free to move, with his hearts showing",
+     room.x === 150 && room.facing === 1 && !room.cut && room.hearts, room);
+  ok("three guards who shoot, each with his own standing, walking and shooting sheets loaded",
+     room.guards.length === 3 && room.guards.every((g) => g.shoots && g.art), room.guards);
+  ok("a platform, a crate to hide behind, and a door back to the street",
+     room.platforms === 1 && room.hide === 1 && JSON.stringify(room.door) === '["Lumabas>tondo"]', room);
+
+  const poses = await page.evaluate(async () => {
+    await new Promise((r) => setTimeout(r, 300));
+    const byId = (id) => GUARDS.find((g) => g.id === id);
+    const walker = byId("bantay-1"), sentry = byId("bantay-2");
+    const frames = new Set();
+    const bg = () => walker.walkSpriteEl.style.backgroundPosition;
+    for (let i = 0; i < 20; i++) { frames.add(bg()); await new Promise((r) => setTimeout(r, 50)); }
+    return {
+      walker: walker.drawnPose, walkShown: walker.walkSpriteEl.style.display !== "none" &&
+        walker.spriteEl.style.display === "none", walkFrames: frames.size,
+      sentry: sentry.drawnPose, sentryShown: sentry.spriteEl.style.display !== "none",
+    };
+  });
+  ok("a guard on patrol shows his walk, stepping through its frames; the sentry stands",
+     poses.walker === "walk" && poses.walkShown && poses.walkFrames >= 4 &&
+     poses.sentry === "idle" && poses.sentryShown, poses);
+
+  // In front of the sentry, who faces right: he fills his meter, turns
+  // hostile, stops, levels his rifle and fires from its muzzle.
+  const shot = await page.evaluate(async () => {
+    const sentry = GUARDS.find((g) => g.id === "bantay-2");
+    posX = sentry.pos + GUARD_WIDTH + 120;
+    const real = window.guardFire;
+    let fired = null;
+    window.guardFire = (g, now) => {
+      const aimedFor = now - g.aimSince;
+      real(g, now);
+      const b = GUARD_BULLETS[GUARD_BULLETS.length - 1];
+      fired = fired || { id: g.id, aiming: g.aiming, aimedFor, raise: guardRaiseMs(g),
+        frame: guardShootFrame(g, now), x: b.x, y: b.y, centre: g.pos + GUARD_WIDTH / 2,
+        floor: floorHeightAt(g.pos), pose: g.drawnPose };
+    };
+    let hostileAt = null, moved = false;
+    const start = sentry.pos;
+    for (let i = 0; i < 120 && !fired; i++) {
+      if (sentry.hostile && hostileAt === null) hostileAt = i;
+      if (sentry.pos !== start) moved = true;
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    window.guardFire = real;
+    return { hostile: sentry.hostile, hostileAt, moved, fired, x: posX };
+  });
+  const s = shot.fired || {};
+  const scale = 134 / 394;
+  const muzzleAhead = (367 - 88) * scale, muzzleUp = (20 + 394 - 226) * scale;
+  ok("seen, the sentry turns hostile and fires without walking, the rifle levelled first",
+     shot.hostile && shot.hostileAt !== null && !shot.moved && s.aiming && s.aimedFor >= s.raise &&
+     s.pose === "shoot", shot);
+  ok("the flash frame is the frame the bullet leaves on", s.frame === 3, s);
+  ok("and the bullet leaves from his muzzle",
+     Math.abs(s.x - (s.centre + muzzleAhead)) < 1 && Math.abs(s.y - (s.floor + muzzleUp - 5)) < 1, s);
+
+  // Out through the door, back to the street beside Nanay. The guards
+  // are put down first so the harness is not shot on the way.
+  await page.evaluate(() => { GUARDS.forEach((g) => { g.disabled = true; drawGuard(g); }); clearGuardBullets(); });
+  await walkTo(page, 4350 - 100);
   await page.waitForTimeout(300);
-  const after = await page.evaluate(() => ({ toast: document.getElementById("toast").textContent,
-    cut: cutscenePlaying, barya: Game.currency() }));
+  await page.keyboard.press("e");
+  ok("Lumabas leads back to the street", await waitForScene(page, "tondo"));
+  await settle(page);
+  const back = await page.evaluate(() => ({ x: posX, facing, scene: currentSceneId }));
+  ok("beside Nanay, where he left her", back.x === 1880 && back.facing === 1, back);
+
+  await page.waitForTimeout(300);
+  const after = await page.evaluate(() => ({ cut: cutscenePlaying, barya: Game.currency() }));
   const l1 = await log(page);
-  ok("the next task is the Kutsero, announced as Bagong gawain",
-     JSON.stringify(l1.current) === JSON.stringify([STEP.kutsero]) && after.toast === "Bagong gawain: " + STEP.kutsero, { l1, after });
+  ok("the task in hand is the Kutsero", JSON.stringify(l1.current) === JSON.stringify([STEP.kutsero]), l1);
   ok("no Tapos na button under the log any more (Block 57)", !l1.toggle);
   ok("the world is his again, no barya yet", !after.cut && after.barya === 0, after);
   const settingsList = await doneInSettings(page);

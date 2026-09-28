@@ -243,7 +243,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 26;
+const ASSET_VERSION = 27;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -1178,12 +1178,15 @@ checkBackgroundImage(
   "assets/backgrounds/act1/ground-lupa.jpg"
 );
 
-// opts (Block 40), both optional:
+// opts (Block 40), all optional:
 //   playing()  the animation steps only while this returns true, and is
 //              held on its first frame otherwise, restarting from it each
 //              time it turns true again. A walk cycle for someone who is
 //              standing still, or an attack played once per swing.
 //   loop       false holds the last frame instead of wrapping.
+//   frameAt()  (Block 73) the caller picks the frame, given the time,
+//              and the sheet's own clock is not used: a guard's shot,
+//              whose flash has to land on the frame the bullet leaves.
 function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth, opts) {
   displayHeight = displayHeight || DISPLAY_HEIGHT;
   bodyWidth = bodyWidth || 0;
@@ -1216,6 +1219,11 @@ function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth, opts) {
 
     npcAnimators.push({
       update(now) {
+        if (opts.frameAt) {
+          const next = Math.max(0, Math.min(sheet.frames - 1, opts.frameAt(now) | 0));
+          if (next !== frame) { frame = next; draw(); }
+          return;
+        }
         if (opts.playing) {
           const playing = Boolean(opts.playing(now));
           if (!playing) {
@@ -2548,11 +2556,20 @@ function buildGuards(token) {
       hp: def.hp || GUARD_HP,
       maxHp: def.hp || GUARD_HP,
       chaseSpeed: GUARD_CHASE_SPEED * speedScale,
+      // Block 73. Whether he moved this frame, and his aim (see
+      // guardShootFrame): when he began bringing the rifle down, when he
+      // last fired, and when he began raising it again.
+      moving: false,
+      aiming: false,
+      aimSince: 0,
+      shotAt: 0,
+      lowerSince: 0,
       // What was last written to the page, so the loop writes only on a
       // change (Block 36).
       drawnFill: -1,
       drawnFacing: 0,
       drawnAlerted: null,
+      drawnPose: "idle",
     })
   );
 
@@ -2585,8 +2602,30 @@ function buildGuards(token) {
       const sprite = document.createElement("div");
       sprite.className = "sprite npc-sprite npc-anim-sprite";
       el.appendChild(sprite);
+      guard.spriteEl = sprite;
+      // Block 73. A guard may bring a walk sheet, shown while he moves,
+      // and a shoot sheet, shown while he aims and fires, beside his
+      // standing one: three sprites in one body, only one displayed,
+      // the way an enemy carries his attack sheet (Block 40). The shoot
+      // sheet's frame is chosen by the shot itself (guardShootFrame),
+      // not by a clock, so its flash lands on the frame the bullet
+      // leaves.
+      const extra = (sheet, opts) => {
+        const extraEl = document.createElement("div");
+        extraEl.className = "sprite npc-sprite npc-anim-sprite";
+        extraEl.style.display = "none";
+        el.appendChild(extraEl);
+        setupNpcAnimation(sheet, extraEl, DISPLAY_HEIGHT, token, GUARD_WIDTH, opts);
+        return extraEl;
+      };
       world.appendChild(el);
       setupNpcAnimation(guard.animation, sprite, DISPLAY_HEIGHT, token, GUARD_WIDTH);
+      guard.walkSpriteEl = guard.walkAnimation
+        ? extra(guard.walkAnimation, { playing: () => guard.drawnPose === "walk" })
+        : null;
+      guard.shootSpriteEl = guard.shootAnimation
+        ? extra(guard.shootAnimation, { frameAt: (now) => guardShootFrame(guard, now) })
+        : null;
     } else {
       const sprite = document.createElement("div");
       sprite.className = "sprite npc-sprite";
@@ -2673,8 +2712,10 @@ function updateGuards(step) {
   const now = performance.now();
 
   GUARDS.forEach((guard) => {
+    guard.moving = false;
     if (guard.disabled) {
       guard.alert = 0;
+      guard.aiming = false;
       drawGuard(guard);
       return;
     }
@@ -2703,6 +2744,7 @@ function updateGuards(step) {
         guard.facing = -1;
       }
       guard.el.style.left = guard.pos + "px";
+      guard.moving = true;
     }
 
     // Detection.
@@ -2776,6 +2818,20 @@ function drawGuard(guard) {
     guard.el.classList.add("guard-down");
     guard.drawnDown = true;
   }
+  // Block 73. Which of his sheets shows: the shot while the rifle is
+  // down or coming back up, the walk while he moves, else standing.
+  const lowering = guard.shootSpriteEl && !guard.aiming &&
+    performance.now() < guard.lowerSince + guardRaiseMs(guard);
+  const pose = guard.disabled ? "idle"
+    : guard.shootSpriteEl && (guard.aiming || lowering) ? "shoot"
+    : guard.walkSpriteEl && guard.moving ? "walk"
+    : "idle";
+  if (pose !== guard.drawnPose) {
+    if (guard.spriteEl) guard.spriteEl.style.display = pose === "idle" ? "" : "none";
+    if (guard.walkSpriteEl) guard.walkSpriteEl.style.display = pose === "walk" ? "" : "none";
+    if (guard.shootSpriteEl) guard.shootSpriteEl.style.display = pose === "shoot" ? "" : "none";
+    guard.drawnPose = pose;
+  }
 }
 
 // =============================================================
@@ -2820,16 +2876,72 @@ function updateHostileGuard(guard, step, now) {
   const dx = posX + PLAYER_WIDTH / 2 - (guard.pos + GUARD_WIDTH / 2);
   const dist = Math.abs(dx);
   if (dx !== 0) guard.facing = Math.sign(dx);
+  const range = (guard.detectRadius || 240) + GUARD_FIRE_RANGE_EXTRA;
 
-  if (dist > GUARD_HOLD_DISTANCE) {
+  // Block 73. A guard with a shoot sheet stops to shoot: he brings the
+  // rifle down GUARD_AIM_LEAD_MS before each shot, holds it through the
+  // shot's kick, and keeps it levelled for as long as Macario is close
+  // enough that he has no need to walk. He does not walk while the rifle
+  // is down or coming back up, since a rifle levelled at the hip on a
+  // man walking reads as sliding. A guard without one moves and fires
+  // at once, as he always has.
+  if (guard.shootAnimation) {
+    const due = now >= guard.nextShotAt - GUARD_AIM_LEAD_MS;
+    const recoiling = guard.shotAt && now < guard.shotAt + guardFireClipMs(guard);
+    const wantAim = dist <= range && (due || recoiling || dist <= GUARD_HOLD_DISTANCE);
+    if (wantAim && !guard.aiming) {
+      guard.aiming = true;
+      guard.aimSince = now;
+    } else if (!wantAim && guard.aiming) {
+      guard.aiming = false;
+      guard.lowerSince = now;
+    }
+  }
+  const busy = guard.shootAnimation && (guard.aiming || now < guard.lowerSince + guardRaiseMs(guard));
+
+  if (dist > GUARD_HOLD_DISTANCE && !busy) {
     const move = Math.min(guard.chaseSpeed * step, dist - GUARD_HOLD_DISTANCE);
     guard.pos += move * guard.facing;
     guard.pos = Math.max(0, Math.min(guard.pos, WORLD_WIDTH - GUARD_WIDTH));
     guard.el.style.left = guard.pos + "px";
+    guard.moving = move > 0;
   }
 
-  const range = (guard.detectRadius || 240) + GUARD_FIRE_RANGE_EXTRA;
-  if (now >= guard.nextShotAt && dist <= range) guardFire(guard, now);
+  // With the art, never before the rifle is actually levelled.
+  const levelled = !guard.shootAnimation ||
+    (guard.aiming && now - guard.aimSince >= guardRaiseMs(guard));
+  if (now >= guard.nextShotAt && dist <= range && levelled) guardFire(guard, now);
+}
+
+// Block 73. The shoot sheet's timing. aimFrame is the levelled pose; the
+// frames before it bring the rifle down (played backwards to raise it
+// again), and fireFrame to the last are the shot: the flash, the kick
+// and the smoke, played once from the moment the bullet leaves.
+const GUARD_AIM_LEAD_MS = 320;
+
+function guardRaiseMs(guard) {
+  const s = guard.shootAnimation;
+  return s ? ((s.aimFrame || 0) * 1000) / (s.fps || 12) : 0;
+}
+
+function guardFireClipMs(guard) {
+  const s = guard.shootAnimation;
+  return s ? ((s.frames - (s.fireFrame || 0)) * 1000) / (s.fps || 12) : 0;
+}
+
+function guardShootFrame(guard, now) {
+  const s = guard.shootAnimation;
+  const ms = 1000 / (s.fps || 12);
+  const aimFrame = s.aimFrame || 0;
+  const fireFrame = s.fireFrame || aimFrame;
+  if (guard.aiming) {
+    const sinceShot = now - guard.shotAt;
+    if (guard.shotAt && sinceShot >= 0 && sinceShot < guardFireClipMs(guard)) {
+      return Math.min(s.frames - 1, fireFrame + Math.floor(sinceShot / ms));
+    }
+    return Math.min(aimFrame, Math.floor((now - guard.aimSince) / ms));
+  }
+  return Math.max(0, aimFrame - 1 - Math.floor((now - guard.lowerSince) / ms));
 }
 
 // A punch on a guard who is already fighting. He takes it rather than
@@ -2860,6 +2972,7 @@ const PLAYER_HIT_HEIGHT = 110;      // how tall the body is for a bullet
 
 function guardFire(guard, now) {
   guard.nextShotAt = now + GUARD_SHOT_COOLDOWN_MS;
+  guard.shotAt = now;
   playSfx("gunShot");
 
   const el = document.createElement("div");
@@ -2868,10 +2981,28 @@ function guardFire(guard, now) {
   actElements.push(el);
 
   const dir = guard.facing;
-  const x = dir >= 0
+  let x = dir >= 0
     ? guard.pos + GUARD_WIDTH
     : guard.pos - GUARD_BULLET_SIZE;
-  const y = floorHeightAt(guard.pos) + GUARD_BULLET_HEIGHT;
+  let y = floorHeightAt(guard.pos) + GUARD_BULLET_HEIGHT;
+
+  // Block 73. With a shoot sheet that says where its muzzle is (native
+  // pixels, like Macario's own, Block 28), the bullet leaves from there,
+  // where the flash is drawn. Never past Macario, though: a rifle long
+  // enough to reach beyond him is a shot at point-blank, not a miss.
+  const sheet = guard.shootAnimation;
+  if (sheet && sheet.muzzle && sheet.contentHeight && typeof sheet.footX === "number") {
+    const scale = spriteFit(sheet, DISPLAY_HEIGHT).scale;
+    const forward = (sheet.muzzle.x - sheet.footX) * scale;
+    const up = (sheet.contentTop + sheet.contentHeight - sheet.muzzle.y) * scale;
+    const centre = guard.pos + GUARD_WIDTH / 2;
+    x = centre + dir * forward - (dir < 0 ? GUARD_BULLET_SIZE : 0);
+    y = floorHeightAt(guard.pos) + up - GUARD_BULLET_SIZE / 2;
+    const ahead = Math.sign(posX + PLAYER_WIDTH / 2 - centre) === dir;
+    if (ahead) {
+      x = dir > 0 ? Math.min(x, posX) : Math.max(x, posX + PLAYER_WIDTH - GUARD_BULLET_SIZE);
+    }
+  }
   el.style.left = x + "px";
   el.style.bottom = y + "px";
 
@@ -2880,8 +3011,12 @@ function guardFire(guard, now) {
     left: (guard.detectRadius || 240) + GUARD_BULLET_RANGE_EXTRA,
   });
 
-  guard.el.classList.add("guard-firing");
-  setTimeout(() => guard.el && guard.el.classList.remove("guard-firing"), 180);
+  // The flash is in the art when there is art for it; otherwise the
+  // whole guard lights up for a moment, as before.
+  if (!sheet) {
+    guard.el.classList.add("guard-firing");
+    setTimeout(() => guard.el && guard.el.classList.remove("guard-firing"), 180);
+  }
 }
 
 function updateGuardBullets(step) {
@@ -3117,6 +3252,10 @@ function respawnInScene() {
     guard.nextShotAt = 0;
     guard.hostile = false;
     guard.disguised = false;
+    guard.aiming = false;
+    guard.moving = false;
+    guard.shotAt = 0;
+    guard.lowerSince = 0;
     guard.hp = guard.maxHp || GUARD_HP;
     if (guard.el) guard.el.style.left = guard.pos + "px";
     drawGuard(guard);
@@ -4345,7 +4484,7 @@ function playCatchGame(opts) {
 // jump in time. The screen goes black, the lines come up one after the
 // other, hold long enough to read, fade, and the black lifts.
 //
-//   await playIntertitle(lines, { startBlack, whileBlack, holdMs })
+//   await playIntertitle(lines, { startBlack, whileBlack, holdMs, keepBlack })
 //
 // startBlack puts the black up at once rather than fading it in, for an
 // opening where the world must not be seen first. whileBlack runs after
@@ -4427,6 +4566,17 @@ function playIntertitle(lines, opts) {
     [...box.children].forEach((p) => p.classList.remove("shown"));
     await wait(INTERTITLE_TEXT_OUT_MS);
     if (typeof o.whileBlack === "function") await o.whileBlack();
+    // Block 73. A card that leads straight into a scene change leaves
+    // the scene fade's own black up behind it, at once, so the card
+    // lifts onto black and the street is never seen between the two.
+    // The caller then starts the change (Acts.gotoScene), whose fade
+    // finds the screen already black.
+    if (o.keepBlack) {
+      blackout.style.transition = "none";
+      blackout.classList.add("visible");
+      void blackout.offsetWidth;
+      blackout.style.transition = "";
+    }
     el.classList.remove("visible");
     await wait(INTERTITLE_FADE_MS);
     el.classList.add("hidden");

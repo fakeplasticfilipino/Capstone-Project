@@ -114,7 +114,10 @@ off the repository.
       sprites/characters/      everyone who talks, <name>.png; the
                                artist's art (Block 59), and the siga
                                drawn by draw-siga.js (Block 72)
-      sprites/enemies/         guards and fighters
+      sprites/enemies/         guards and fighters; bantay.png is the
+                               artist's still (delivered as Guard.png),
+                               bantay-walk and bantay-shoot made from it
+                               by animate-bantay.js (Block 73)
       sprites/scenery/         things on the street that are used, not
                                talked to (empty; the apple tree is a
                                silhouette tree since Block 69)
@@ -127,7 +130,7 @@ off the repository.
     _dev/tests/                the harness and its fixtures
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-shadow-tree.py, draw-siga.js,
-                               make-sfx.py,
+                               animate-bantay.js, make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js, and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
@@ -444,7 +447,12 @@ Scene shape:
                  speed, facing, detectRadius,
                  alertRate, decayRate,
                  shoots, hp,                     optional; Blocks 37, 38
-                 animation }],
+                 animation,
+                 walkAnimation,                  optional; shown while he
+                                                 moves (Block 73)
+                 shootAnimation }],              optional; aimFrame,
+                                                 fireFrame, muzzle
+                                                 (Block 73)
       noRanged: true,                            optional; no shot here
       checkpoints: [{ x, flag }],                optional; respawn points
       scripts: [{ requiresFlag, unlessFlag,      optional; cutscenes that
@@ -472,6 +480,17 @@ hostile for good (a red "!"), chases and fires until he is punched down
 (hp, default 2) or Macario runs out of hearts; see Decisions on record,
 Blocks 37 and 38. While worn equipment is what slows a meter, it is
 drawn pale blue.
+
+A guard's art (Block 73): animation is his standing sheet, walkAnimation
+shows while he patrols or chases, and shootAnimation while he aims and
+fires. The shoot sheet declares aimFrame (the rifle levelled; the frames
+before it bring it down, played backwards to raise it), fireFrame (the
+flash; it and every frame after play once per shot, from the moment the
+bullet leaves), and muzzle { x, y } in native pixels, where the bullet
+starts. A guard with a shoot sheet stops to shoot: he levels the rifle
+GUARD_AIM_LEAD_MS before each shot, never fires before it is level, and
+keeps it level while Macario is inside GUARD_HOLD_DISTANCE. Without one
+he moves and fires at once, as before Block 73.
 
 noRanged: true takes Macario's shot away in that scene: a long hold on
 Atake punches and says why. checkpoints are where a respawn puts him: the
@@ -727,7 +746,10 @@ of them plain globals in game.js, like addQuest:
                                  doneText(n) may be a function)
     playIntertitle(lines, opts)  a black card with lines of text, faded
                                  in and out (Block 57); opts startBlack,
-                                 whileBlack(), holdMs
+                                 whileBlack(), holdMs, keepBlack (the
+                                 scene fade's black left up behind it,
+                                 for a card that leads into
+                                 Acts.gotoScene; Block 73)
     movePlayer(x, pxPerSecond)   walks Macario there with his walk cycle
                                  (Block 57); resolves on arrival
     placePlayer(x, facing)       puts him there at once (Block 57)
@@ -4214,6 +4236,75 @@ one shorter. The numbers are chosen, not measured against anything but
 the other sheets; the colours, the build and the pose of each boy are
 lines in BOYS and idlePose/walkPose, and rerunning the tool rewrites
 all six files. content/act1.js v50, game.js v72, ASSET_VERSION 26.
+
+The bantay, walking and shooting, and a room of them (Block 73).
+Requested by the proponent with one still from the artist (Guard.png at
+the root: a guardia civil side on, facing right, rifle at order arms),
+said to be not the official plot: name the guard to match everything
+else, animate a walk and a shot, and after the talk with Nanay put a
+"<WIP>" card and a room of guards with the full hostile-guard mechanism.
+
+The file is assets/sprites/enemies/bantay.png, the name the street
+guards of Blocks 37 to 42 had, in the folder for guards and fighters.
+The walk and the shot are made from it by _dev/tools/animate-bantay.js
+(Node, no dependencies), which cuts the still into its parts and moves
+them, the way a paper cut-out is animated: the rifle is found by a band
+along its own bent centre line and by colour (wood and grey metal, then
+only the dark edges that touch them, so his belt stays his), its piece
+behind the hand filled in from the wood either side; the hand is lifted
+over it; the legs are cut at the coat's hem and turned at the hip and
+the knee. Nothing of him is drawn except the far arm in the shot (a
+sleeve in the coat's navy, outline and cuff, with his own hand turned
+under the barrel), the muzzle flash and the smoke. This is neither
+Block 53's verdict (a walk made by moving pixels of a front-facing
+still) nor Block 72's (drawn from nothing): the still is side on, so
+moving its own legs is a side-on walk, and the result was looked at
+before shipping. The proponent judges it on the phone.
+
+The walk is 8 frames: each leg swings 19 degrees either side about the
+hip, the knee folds up to 42 degrees while it swings forward, the far
+leg is the same leg half a cycle later and darkened, and whichever
+sole is lowest is put on the ground, which makes the bob. The rifle is
+carried 26 pixels off the ground and sways with the step. The shot is
+7 frames: the rifle slides down through his hand to the hip (0, 1), is
+level (2), flashes (3), kicks back and up (4, 5) and smokes (6). Fired
+from the hip, not the shoulder, on purpose: the muzzle sits about 64
+above the road, where the old chest-height bullet (70) flew, so a jump
+still clears a bullet; a shoulder shot would have put it at 100 and
+made the jump nearly useless.
+
+The engine: a guard may bring walkAnimation and shootAnimation beside
+animation, three sprites in one body with one shown (drawGuard, written
+on a change), the way an enemy's attack sheet is. The shoot sheet's
+frame is picked by the shot itself (setupNpcAnimation's new frameAt
+option, guardShootFrame), not by the sheet's clock, so the flash is on
+the frame the bullet leaves. He stops to shoot (Act data format, the
+guard's art), because a rifle levelled at the hip on a man sliding
+along the road read as wrong, and the bullet starts at the muzzle
+(guardFire), clamped to Macario's near edge so a shot at point-blank
+is not a miss. A guard without the sheets behaves exactly as before,
+which is what the harness fixture's guard is, so section AU is
+unchanged.
+
+The room is scene "bantayan" in content/act1.js, three paintings long:
+a patrol, a sentry with his back turned for a takedown, a second
+patrol, a platform above their sight with a heart, a crate, and
+intense.mp3. It is reached from the end of the opening: after
+Macario's thought, playIntertitle(["<WIP>"], { keepBlack: true }) and
+Acts.gotoScene. keepBlack is new: it puts the scene fade's own black up
+behind the card at once, so the card lifts onto black and the street is
+never seen between the two. The door at the far end (Lumabas) goes back
+to the street beside Nanay, and the plot carries on untouched; the
+Kutsero is already the task in hand while he is in the room. STORY.md
+records it in its own section, "Work in progress (not the plot)",
+because the drift check needs every black card there and the plot
+itself was not to change.
+
+verify_new_scene.js to 120: the card, no street between it and the
+room, the three guards' sheets, a patrol walking and a sentry
+standing, the sentry levelling before he fires, the flash frame on the
+shot, the bullet from the muzzle, and the door back. game.js v73,
+content/act1.js v51, ASSET_VERSION 27.
 
 ## Pitfalls
 

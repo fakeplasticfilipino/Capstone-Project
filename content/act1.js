@@ -140,6 +140,31 @@ const MORO_WALK = { src: "assets/sprites/enemies/muslim-walk.png", frames: 12, f
 const MORO_ATTACK = { src: "assets/sprites/enemies/muslim-attack.png", frames: 15, fps: 24,
   columns: 4, contentTop: 30, contentHeight: 97, footX: 88, headroom: 29 };
 
+// The bantay, a guardia civil (Block 73). The still is the artist's
+// (delivered as Guard.png); the walk and the shot are made from it by
+// _dev/tools/animate-bantay.js, which moves the still's own parts. All
+// three share his height in the still (394 of it), so he is one size
+// whatever he does; headroom shows the bayonet above his helmet. The
+// shot's aimFrame is the rifle levelled, fireFrame the flash, and its
+// muzzle is where the bullet leaves (game.js, guardFire).
+const BANTAY = {
+  src: "assets/sprites/enemies/bantay.png", frames: 1, fps: 1,
+  contentTop: 50, contentHeight: 394, footX: 238, headroom: 8,
+};
+const BANTAY_WALK = {
+  src: "assets/sprites/enemies/bantay-walk.png", frames: 8, fps: 10, columns: 4,
+  contentTop: 40, contentHeight: 394, footX: 128, headroom: 40,
+};
+const BANTAY_SHOOT = {
+  src: "assets/sprites/enemies/bantay-shoot.png", frames: 7, fps: 14, columns: 4,
+  contentTop: 20, contentHeight: 394, footX: 88, headroom: 20,
+  aimFrame: 2, fireFrame: 3, muzzle: { x: 367, y: 226 },
+};
+const bantay = (def) => Object.assign({
+  shoots: true, hp: 2, speed: 1.3, detectRadius: 260,
+  animation: BANTAY, walkAnimation: BANTAY_WALK, shootAnimation: BANTAY_SHOOT,
+}, def);
+
 // ---- Where everyone stands ---------------------------------------
 // An NPC's x is the left edge of an 80px body. Joins at 1450, 2900,
 // 4350, 5800, 7250, 8700, 10150, 11600 and 13050.
@@ -167,6 +192,12 @@ const SULTAN_MARK = 760;
 
 // Where Macario stops beside someone he has walked or been sent to.
 const BESIDE = 120;
+
+// The guards' room (Block 73, work in progress, not the plot): three
+// paintings of the town, three guards, and a door back to Nanay at the
+// far end. Joins at 1450 and 2900.
+const BANTAYAN_WIDTH = 3 * PANEL; // 4350
+const BANTAYAN_START = 150;
 
 const SAVINGS_GOAL = 100;
 const JOB_PAY = 50; // each job pays this, once; the two make the savings
@@ -282,7 +313,12 @@ async function thinkingAboutWork(alreadyHeld) {
   await playDialogue([
     { speaker: "Macario (sa isip)", text: "Kailangan ko ng pera para matulungan si Nanay, saan kaya ako makakahanap ng trabaho?" },
   ]);
-  setCutscene(false);
+  // Block 73. Work in progress, not the plot: a card, and the guards'
+  // room, whose door leads back here beside Nanay. The card leaves the
+  // screen black and the fade into the room takes the cutscene over
+  // (game.js, playIntertitle's keepBlack).
+  await playIntertitle(["<WIP>"], { keepBlack: true });
+  if (window.Acts) Acts.gotoScene("bantayan", { x: BANTAYAN_START, facing: 1 });
 }
 
 // -------------------------------------------------------------
@@ -1002,6 +1038,37 @@ window.ACT_1 = {
             },
           ],
         },
+      ],
+    },
+    {
+      // Block 73. Work in progress, not the plot: the guards' room,
+      // reached after Macario's thought through a "<WIP>" card. Three
+      // bantay with every part of the stealth and hostile-guard system
+      // (game.js, Blocks 37, 38 and 73): a patrol, a sentry with his back
+      // turned for a takedown, and a second patrol; a platform above
+      // their sight with a heart on it, and a crate to hide behind. Seen,
+      // a guard turns hostile, stops, levels his rifle and fires, and
+      // takes two punches or shots to put down. The door at the far end
+      // goes back to the street beside Nanay, so the story carries on.
+      id: "bantayan",
+      worldWidth: BANTAYAN_WIDTH,
+      panels: [STREET_PAINTINGS[2], STREET_PAINTINGS[3], STREET_PAINTINGS[2]],
+      panelSky: STREET_SKY,
+      startX: BANTAYAN_START,
+      music: "assets/audio/music/intense.mp3",
+      platforms: [{ x: 1150, y: 150, width: 220 }],
+      pickups: [{ id: "bantayan-puso", x: 1240, y: 150, type: "heart" }],
+      hideSpots: [{ x: 2500, width: 110 }],
+      guards: [
+        bantay({ id: "bantay-1", x: 700, patrolFrom: 560, patrolTo: 1000, facing: -1 }),
+        bantay({ id: "bantay-2", x: 1900, patrolFrom: 1900, patrolTo: 1900, facing: 1,
+                 detectRadius: 280 }),
+        bantay({ id: "bantay-3", x: 3300, patrolFrom: 3100, patrolTo: 3700, facing: -1,
+                 speed: 1.5, detectRadius: 300 }),
+      ],
+      exits: [
+        { id: "labas", x: BANTAYAN_WIDTH - 120, width: 100, label: "Lumabas",
+          toScene: "tondo", toX: NANAY_X - BESIDE, toFacing: 1 },
       ],
     },
   ],
