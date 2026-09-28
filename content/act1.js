@@ -127,52 +127,17 @@ const KABAYO = {
 const DIREKTOR = { src: "assets/sprites/characters/direktor.png", frames: 1, fps: 1 };
 
 // The play's cast, all real art. Maryam (5 by 3, 13 frames, drawn
-// facing right). The Sultan and his soldiers share the walk and sword
-// sheets of the old moro-moro (Block 40): delivered as JPEGs on black,
-// keyed to PNGs, and the attack sheet grounded by its standing frames,
-// with headroom for the raised sword.
+// facing right). The Sultan walks on the walk sheet of his soldiers,
+// who are the "kawal" of the enemy catalogue (content/enemies.js,
+// Block 76), where their sheets and numbers are.
 const MARYAM = {
   src: "assets/sprites/characters/maryam.png", frames: 13, fps: 6, columns: 5,
   contentTop: 73, contentHeight: 117, footX: 128,
 };
-const MORO_WALK = { src: "assets/sprites/enemies/muslim-walk.png", frames: 12, fps: 10,
-  columns: 4, contentTop: 43, contentHeight: 70, footX: 72 };
-const MORO_ATTACK = { src: "assets/sprites/enemies/muslim-attack.png", frames: 15, fps: 24,
-  columns: 4, contentTop: 30, contentHeight: 97, footX: 88, headroom: 29 };
+const MORO_WALK = window.ENEMY_TYPES.kawal.animation;
 
-// The bantay, a guardia civil (Block 73). The still is the artist's
-// (delivered as Guard.png); the walk and the shot are made from it by
-// _dev/tools/animate-bantay.js, which moves the still's own parts. All
-// three share his height in the still (394 of it), so he is one size
-// whatever he does; headroom shows the bayonet above his helmet. The
-// shot's aimFrame is the rifle levelled, fireFrame the flash, and its
-// muzzle is where the bullet leaves (game.js, guardFire).
-const BANTAY = {
-  src: "assets/sprites/enemies/bantay.png", frames: 1, fps: 1,
-  contentTop: 50, contentHeight: 394, footX: 238, headroom: 8,
-};
-const BANTAY_WALK = {
-  src: "assets/sprites/enemies/bantay-walk.png", frames: 8, fps: 10, columns: 4,
-  contentTop: 40, contentHeight: 394, footX: 128, headroom: 40,
-};
-const BANTAY_SHOOT = {
-  src: "assets/sprites/enemies/bantay-shoot.png", frames: 7, fps: 14, columns: 4,
-  contentTop: 20, contentHeight: 394, footX: 88, headroom: 20,
-  aimFrame: 2, fireFrame: 3, muzzle: { x: 367, y: 226 },
-};
-// Block 75. Rocked back by a blow, made the same way and in the walk's
-// cells, so it shares the walk's numbers. Played once while he reels
-// (about the 450ms of his stagger), and knockoutFrame, leaning furthest
-// back, held as he topples.
-const BANTAY_HIT = {
-  src: "assets/sprites/enemies/bantay-hit.png", frames: 4, fps: 9, columns: 4,
-  contentTop: 40, contentHeight: 394, footX: 128, headroom: 40, knockoutFrame: 1,
-};
-const bantay = (def) => Object.assign({
-  shoots: true, hp: 2, speed: 1.3, detectRadius: 260,
-  animation: BANTAY, walkAnimation: BANTAY_WALK, shootAnimation: BANTAY_SHOOT,
-  hitAnimation: BANTAY_HIT,
-}, def);
+// The guards of the Test Room are the "bantay" of the enemy catalogue
+// (content/enemies.js, Block 76), where their art and numbers are.
 
 // ---- Where everyone stands ---------------------------------------
 // An NPC's x is the left edge of an 80px body. Joins at 1450, 2900,
@@ -427,11 +392,7 @@ async function thePlay() {
   setMusic("assets/audio/music/intense.mp3");
   showToast("Pindutin ang Atake para lumaban!", 2600);
   await spawnEnemies([80, 160, 240, 320].map((d) => STAGE_WIDTH + d).map((x, i) => ({
-    id: "kawal-" + (i + 1),
-    x,
-    hp: 2,
-    animation: MORO_WALK,
-    attackAnimation: MORO_ATTACK,
+    type: "kawal", id: "kawal-" + (i + 1), x,
   })));
   setMusic(null);
   setCutscene(true);
@@ -1070,11 +1031,11 @@ window.ACT_1 = {
       pickups: [{ id: "bantayan-puso", x: 1240, y: 150, type: "heart" }],
       hideSpots: [{ x: 2500, width: 110 }],
       guards: [
-        bantay({ id: "bantay-1", x: 700, patrolFrom: 560, patrolTo: 1000, facing: -1 }),
-        bantay({ id: "bantay-2", x: 1900, patrolFrom: 1900, patrolTo: 1900, facing: 1,
-                 detectRadius: 280 }),
-        bantay({ id: "bantay-3", x: 3300, patrolFrom: 3100, patrolTo: 3700, facing: -1,
-                 speed: 1.5, detectRadius: 300 }),
+        { type: "bantay", id: "bantay-1", x: 700, patrolFrom: 560, patrolTo: 1000, facing: -1 },
+        { type: "bantay", id: "bantay-2", x: 1900, patrolFrom: 1900, patrolTo: 1900, facing: 1,
+          detectRadius: 280 },
+        { type: "bantay", id: "bantay-3", x: 3300, patrolFrom: 3100, patrolTo: 3700, facing: -1,
+          speed: 1.5, detectRadius: 300 },
       ],
       exits: [
         { id: "labas", x: BANTAYAN_WIDTH - 120, width: 100, label: "Lumabas", back: true,

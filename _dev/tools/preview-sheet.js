@@ -28,7 +28,7 @@
 //         --muzzle=X,Y] [--scale=S] [--out=file.png]
 // or, to use exactly the numbers the content declares for that sheet:
 //   node _dev/tools/preview-sheet.js assets/sprites/enemies/bantay-walk.png
-//        --from=content/act1.js
+//        --from=content/enemies.js
 //
 // --from loads the content file the way the page does (it only sets
 // window.ACT_N) and finds the sheet whose src is the file given.

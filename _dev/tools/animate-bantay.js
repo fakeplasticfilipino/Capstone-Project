@@ -50,7 +50,7 @@
 //   assets/sprites/enemies/bantay-walk.png   8 frames, 4 by 2
 //   assets/sprites/enemies/bantay-shoot.png  7 frames, 4 by 2
 //   assets/sprites/enemies/bantay-hit.png    4 frames, 4 by 1
-// and prints the numbers for content/act1.js (BANTAY). Bump
+// and prints the numbers for content/enemies.js (bantay). Bump
 // ASSET_VERSION in js/game.js after rerunning it.
 //
 // Depends on nothing outside Node, like draw-siga.js, because the
@@ -606,7 +606,7 @@ function main() {
   const hs = sheet(hits, WALK_CELL.w, WALK_CELL.h, 4);
   fs.writeFileSync(OUT_HIT, encodePng(hs.W, hs.H, hs.out));
 
-  // The numbers for content/act1.js. The soldier is sized by his own
+  // The numbers for content/enemies.js. The soldier is sized by his own
   // height in the still (contentTop 50, 394 tall), whatever the rifle
   // does, so he is the same size walking, shooting and standing.
   const STILL_TOP = 50, STILL_HEIGHT = GROUND + 1 - 50, FOOT_X = 238;

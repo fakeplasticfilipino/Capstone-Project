@@ -523,6 +523,10 @@
        all four to build its registry. Loading them in the wrong order
        gives a blank world and a console error.
 
+       content/enemies.js (Block 76), the enemy catalogue, loads before
+       the acts: act1.js reads the Sultan's sheet from it, and game.js
+       merges a placed enemy's type from it when it builds a scene.
+
        assessment.js is optional: with it absent the act flow
        collapses to playing then completed and the game still runs,
        which is how Block 2 was tested before Block 3 existed.
@@ -539,13 +543,14 @@
        back except the one guarded awaitEntry call in game.js. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
-  <script src="content/act1.js?v=53"></script>
+  <script src="content/enemies.js?v=1"></script>
+  <script src="content/act1.js?v=54"></script>
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=11"></script>
   <script src="content/questions.js?v=1"></script>
-  <script src="js/game.js?v=75"></script>
+  <script src="js/game.js?v=76"></script>
   <script src="js/acts.js?v=14"></script>
   <script src="js/inventory.js?v=9"></script>
   <script src="js/assessment.js?v=4"></script>

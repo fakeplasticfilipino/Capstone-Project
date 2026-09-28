@@ -25,7 +25,13 @@ CLAUDE.md, Decisions on record, and in git history.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 28 Sep 2026, after Block 75: guards take blows the way
+Last updated: 28 Sep 2026, after Block 76: enemies are content now, an
+enemy catalogue (content/enemies.js) of types placed by name, and the
+engine has one way of taking a blow for every kind (takeBlow). Nothing
+on screen changed. test.js 725 passed, 0 failed; verify_new_scene.js
+128 passed, 0 failed. Pushed to main.
+
+Before that, 28 Sep 2026, after Block 75: guards take blows the way
 the moro-moro's soldiers do, punches and gunshots alike: a slide, a
 flash, a stagger, and when put down the same topple and fade. The
 bantay reels in a hit sheet of his own. New tools: preview-sheet.js and
@@ -260,9 +266,10 @@ default.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v47    js/game.js v75       js/shell.js v18
+    css/style.css v47    js/game.js v76       js/shell.js v18
     js/inventory.js v9   js/acts.js v14       js/assessment.js v4
-    content/act1.js v53  content/items.js v11  content/act2-4.js v1
+    content/act1.js v54  content/items.js v11  content/act2-4.js v1
+    content/enemies.js v1
     content/questions.js v1 (named in index.html and teacher.html)
     ASSET_VERSION 28 (in js/game.js)
     sw.js carries no version: the browser checks it itself on every
@@ -435,8 +442,12 @@ Blocks 1 to 58 are built. Blocks 22 to 41 were one build session, 17 to
         direction, slide, flash, stagger, topple and fade), shots too;
         bantay-hit.png; preview-sheet.js and lib/png.js (test.js section
         BL, to 718; verify_new_scene.js to 126)
+    76  the enemy catalogue (content/enemies.js, ENEMY_TYPES, placements
+        by type, withEnemyType); one blow for every body (takeBlow,
+        knockOut, BODY_KINDS) (test.js section BM, to 725;
+        verify_new_scene.js to 128)
 
-Everything through Block 75 is pushed to main and live on GitHub
+Everything through Block 76 is pushed to main and live on GitHub
 Pages. The earlier instructions for a hand push of Blocks 42 to 58 from
 the device folder are history: those blocks reached main with Blocks 62
 to 67 (e7be506), and cloud sessions since push straight to main.
@@ -1124,7 +1135,7 @@ The harness lives at _dev/. Run it from the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js: 718 checks (Block 75 added section BL: guards sliding, flashing, reeling, falling to a shot and to a takedown; Block 71 added four to section AI: the punch lands on its contact frame, once, and not when cut off; section BK is Block 70: fixed papers against the fixture, Acts.loadTalaan and the dashboard's Talaan Papers editor; section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
+test.js: 725 checks (Block 76 added section BM: the enemy catalogue's merge and a new type hit with no code of its own; Block 75 added section BL: guards sliding, flashing, reeling, falling to a shot and to a takedown; Block 71 added four to section AI: the punch lands on its contact frame, once, and not when cut off; section BK is Block 70: fixed papers against the fixture, Acts.loadTalaan and the dashboard's Talaan Papers editor; section BJ is Block 69: the Talaan engine and a scenery NPC; AW now checks the guide is gone; sections BH and BI are Block 68: the built-in
 questions graded by the game, the teacher's questions first, the pass
 mark, the replay and the second attempt, a reload on a failed result,
 the password, and the teacher's editor); before Block 68, 676 checks against a fixture act and item catalogue (so
@@ -1132,7 +1143,7 @@ mechanics stay tested whatever Act I ships); sections BD to BG are
 Blocks 62 to 67 (the loader, the loading screens, a scene change held
 for its art, and the service worker offline; the run, coyote time, the
 jump buffer and dust; the timed apple round; the reward pop).
-verify_new_scene.js: 126 checks (Block 75: the bantay reeling in his hit sheet and falling the way the shot went; Block 74: the opening ends on the street with no card, the Test Room offered from pause and not inside the room, the door back to the same spot with the story's flags unchanged; Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
+verify_new_scene.js: 128 checks (Block 76: the room's guards and the play's soldiers come from the catalogue; Block 75: the bantay reeling in his hit sheet and falling the way the shot went; Block 74: the opening ends on the street with no card, the Test Room offered from pause and not inside the room, the door back to the same spot with the story's flags unchanged; Block 73: the "<WIP>" card, no street between it and the room, the bantay's three sheets, a patrol walking, the sentry levelling before he fires, the flash on the shot, the bullet from the muzzle, the door back; Block 72: the siga load their own idle and walk sheets and stand at three heights; Block 70: Act I's three paper places, papers laid, found, saved and kept across a reload, for a guest too, and none behind a trunk; since Block 69 without the guide); since Block 68 it sits the real
 trivia card and pre-test, and its Talaan section (replacing Block 64's
 notebook) checks the hints, the seed across a reload, a word earned and
 the pause panel. 101 of them: one that every line of dialogue and black card in

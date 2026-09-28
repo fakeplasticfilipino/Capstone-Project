@@ -5871,6 +5871,62 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nBM. The enemy catalogue, and one way of taking a blow (Block 76)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const r = await page.evaluate(() => {
+      setPaused(true);
+      const warned = [];
+      const warn = console.warn;
+      console.warn = (m) => warned.push(String(m));
+      window.ENEMY_TYPES = Object.assign({}, window.ENEMY_TYPES, {
+        // Made up here, with no art: a new kind of fighter nobody wrote
+        // any code for, and a guard type.
+        tulisan: { kind: "enemy", hp: 3, speed: 1 },
+        sentinel: { kind: "guard", shoots: true, hp: 2, detectRadius: 222 },
+      });
+      const merged = withEnemyType({ type: "sentinel", id: "s", x: 10, detectRadius: 300 }, "guard");
+      const plain = { id: "p", x: 5 };
+      const untyped = withEnemyType(plain, "guard");
+      const unknown = withEnemyType({ type: "nowhere", id: "u", x: 5 }, "enemy");
+      const wrongKind = withEnemyType({ type: "sentinel", id: "w", x: 5 }, "enemy");
+      console.warn = warn;
+
+      // The made-up fighter, placed by type, takes a blow like any enemy.
+      destroyProjectile();
+      spawnEnemies([{ type: "tulisan", id: "t1", x: posX + 200 }]);
+      const e = ENEMIES.find((x) => x.id === "t1");
+      const built = { kind: e.kind, hp: e.hp, placeholder: e.spriteEl.classList.contains("sprite-placeholder") };
+      const x0 = e.pos;
+      takeBlow(e, 1, 1);
+      const first = e.pos - x0;
+      const flashed = e.el.classList.contains("enemy-hit");
+      for (let i = 0; i < 90; i++) updateKnockback(1);
+      const slid = e.pos - x0;
+      takeBlow(e, 2, 1);
+      const down = { dead: e.dead, cls: e.el.className };
+      const guard = GUARDS[0].kind;
+      setPaused(false);
+      return { merged: { hp: merged.hp, radius: merged.detectRadius, shoots: merged.shoots, id: merged.id },
+        untypedSame: untyped === plain, unknownSame: unknown.type === "nowhere" && !unknown.hp,
+        wrongKindSame: !wrongKind.detectRadius, warned, built, first, flashed, slid, down, guard };
+    });
+    ok("a placed enemy takes its type's fields, its own winning",
+       r.merged.hp === 2 && r.merged.shoots === true && r.merged.radius === 300 && r.merged.id === "s", r.merged);
+    ok("a placement with no type is used as it stands", r.untypedSame);
+    ok("an unknown type, or one of the other kind, is said in the console and not merged",
+       r.unknownSame && r.wrongKindSame && r.warned.length === 2 &&
+       /Unknown enemy type: nowhere/.test(r.warned[0]) && /is a guard, placed as a enemy/.test(r.warned[1]), r);
+    ok("a new type with no art is built as an enemy with its hp, as a placeholder box",
+       r.built.kind === "enemy" && r.built.hp === 3 && r.built.placeholder, r.built);
+    ok("and takes a blow with no code of its own: the flash and the slide",
+       r.flashed && Math.abs(r.first - 10) < 0.01 && r.slid > 40 && r.slid < 48, r);
+    ok("and at no hp topples the way the blow went, and fades",
+       r.down.dead && /enemy-down/.test(r.down.cls) && /enemy-fall-right/.test(r.down.cls), r.down);
+    ok("guards and enemies are told apart by kind", r.guard === "guard");
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

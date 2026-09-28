@@ -2567,6 +2567,28 @@ function buildHideSpots() {
   });
 }
 
+// Block 76. A placed enemy may name a type from the enemy catalogue
+// (window.ENEMY_TYPES, content/enemies.js): the type's fields come
+// first and the placement's own win over them. A placement with no type
+// is used as it stands, which is how every act before Block 76 still
+// works. An unknown type, or a type of the other kind (a fighter put in
+// a guards list), is said in the console and the placement used as it
+// is, a placeholder box if it names no art. A hoisted declaration,
+// because loadAct reaches buildGuards at parse time.
+function withEnemyType(placed, kind) {
+  if (!placed || !placed.type) return placed;
+  const type = (window.ENEMY_TYPES || {})[placed.type];
+  if (!type) {
+    console.warn("Unknown enemy type: " + placed.type);
+    return placed;
+  }
+  if (type.kind && type.kind !== kind) {
+    console.warn("Enemy type " + placed.type + " is a " + type.kind + ", placed as a " + kind);
+    return placed;
+  }
+  return Object.assign({}, type, placed);
+}
+
 // Guards carry their own runtime state, reset on every scene load so a
 // respawn starts them where the level designer put them rather than
 // wherever they happened to be standing.
@@ -2580,8 +2602,12 @@ function buildGuards(token) {
     currentActData && currentActData.number
   );
 
-  GUARDS = ((currentScene && currentScene.guards) || []).map((def) =>
-    Object.assign({}, def, {
+  GUARDS = ((currentScene && currentScene.guards) || []).map((placed) => {
+    // Block 76. A guard placed by type takes the catalogue's fields
+    // under his own (content/enemies.js).
+    const def = withEnemyType(placed, "guard");
+    return Object.assign({}, def, {
+      kind: "guard",
       pos: def.x,
       baseSpeed: def.speed || 1.4,
       speed: (def.speed || 1.4) * speedScale,
@@ -2619,8 +2645,8 @@ function buildGuards(token) {
       drawnFacing: 0,
       drawnAlerted: null,
       drawnPose: "idle",
-    })
-  );
+    });
+  });
 
   GUARDS.forEach((guard) => {
     const el = document.createElement("div");
@@ -3017,42 +3043,10 @@ function guardShootFrame(guard, now) {
 // A blow on a guard who is already fighting, a punch (damage 1) or a
 // shot (damage 2, ENEMY_SHOT_DAMAGE): he takes it rather than dropping
 // at once, the same way the moro-moro's soldiers do. dir is the way the
-// blow travels, so he is knocked that way; message is the toast if it
-// drops him.
+// blow travels; message is the toast if it drops him. Since Block 76 a
+// door into takeBlow (BLOWS, below), which every body shares.
 function hitGuard(guard, damage, dir, message) {
-  if (!guard || guard.disabled) return;
-  const away = dir || Math.sign(guard.pos + GUARD_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) || 1;
-  guard.hp -= damage || 1;
-  flashGuard(guard);
-  // He turns on whoever hit him, so he reels back from the blow, not
-  // into it. A hostile guard already faces Macario; this is for a shot
-  // in the back.
-  guard.facing = -away;
-  if (guard.hp <= 0) {
-    disableGuard(guard, message || "Napatumba mo ang bantay.", away);
-    return;
-  }
-  const now = performance.now();
-  // Block 75. The first frame of the slide lands with the blow, so it
-  // reads through the hit-stop; updateKnockback carries the rest.
-  guard.knockVel = away * ENEMY_KNOCK_SPEED;
-  moveGuardBy(guard, guard.knockVel);
-  guard.knockVel *= ENEMY_KNOCK_DECAY;
-  guard.hitAt = now;
-  guard.staggerUntil = now + GUARD_STAGGER_MS;
-  guard.aiming = false;
-  guard.nextShotAt = Math.max(guard.nextShotAt, now + GUARD_HIT_STAGGER_MS);
-  impact("punch"); // Block 60
-}
-
-function flashGuard(guard) {
-  guard.el.classList.add("guard-hit");
-  setTimeout(() => guard.el && guard.el.classList.remove("guard-hit"), 150);
-}
-
-function moveGuardBy(guard, dx) {
-  guard.pos = Math.max(0, Math.min(guard.pos + dx, WORLD_WIDTH - GUARD_WIDTH));
-  guard.el.style.left = guard.pos + "px";
+  takeBlow(guard, damage, dir, message || "Napatumba mo ang bantay.");
 }
 
 // Block 75. The hit sheet's frame: played once through the stagger from
@@ -3978,23 +3972,12 @@ function meleeAttack() {
   }
 }
 
-// dir (Block 75), the way the blow travelled: he slides and topples
-// that way, then fades (style.css, guard-down), as a beaten enemy does.
+// A guard put down at once, by a takedown (or by takeBlow at no hp):
+// he slides and topples the way the blow travelled (dir), then fades.
+// Since Block 76 a door into knockOut (BLOWS, below).
 function disableGuard(guard, message, dir) {
-  const away = dir || Math.sign(guard.pos + GUARD_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) || 1;
-  guard.disabled = true;
-  guard.alert = 0;
-  guard.aiming = false;
-  guard.hitAt = performance.now();
-  guard.el.classList.add(away > 0 ? "guard-fall-right" : "guard-fall-left");
-  // Dropped from behind (a takedown), he falls forward as he stood;
-  // otherwise backward, leaning back in his hit sheet (drawGuard).
-  guard.fellForward = away === guard.facing;
-  guard.knockVel = away * ENEMY_KO_KNOCK_SPEED;
-  moveGuardBy(guard, guard.knockVel);
-  drawGuard(guard);
-  if (message) showToast(message);
-  impact("knockout"); // Block 60: a takedown, a second punch or a shot
+  if (!guard || guard.disabled) return;
+  knockOut(guard, dir || awayFromPlayer(guard), message);
 }
 
 // The spear leaves from the front of his BODY, plus a gap. Blocks 22 and
@@ -4877,9 +4860,13 @@ function spawnEnemies(defs) {
   const token = actLoadToken;
   const speedScale = difficultyMultiplier(currentActData && currentActData.number);
 
-  const spawned = (defs || []).map((def) => {
+  const spawned = (defs || []).map((placed) => {
+    // Block 76. An enemy placed by type takes the catalogue's fields
+    // under its own (content/enemies.js).
+    const def = withEnemyType(placed, "enemy");
     const hp = Math.max(1, def.hp || 2);
     const enemy = Object.assign({}, def, {
+      kind: "enemy",
       pos: def.x,
       hp,
       maxHp: hp,
@@ -5027,23 +5014,15 @@ function drawCamera(cameraX, now) {
 // every running frame, not only while the student can act, so a fall
 // that ends the fight finishes even as the scene takes the world back.
 function updateKnockback(step) {
-  // Block 75. Guards slide the same way, standing or fallen.
-  GUARDS.forEach((guard) => {
-    if (!guard.knockVel || !guard.el) return;
-    moveGuardBy(guard, guard.knockVel * step);
-    guard.knockVel *= Math.pow(ENEMY_KNOCK_DECAY, step);
-    if (Math.abs(guard.knockVel) < 0.3) guard.knockVel = 0;
-  });
-  ENEMIES.forEach((enemy) => {
-    if (!enemy.knockVel) return;
-    enemy.pos += enemy.knockVel * step;
-    enemy.knockVel *= Math.pow(ENEMY_KNOCK_DECAY, step);
-    if (Math.abs(enemy.knockVel) < 0.3) enemy.knockVel = 0;
-    if (enemy.pos !== enemy.drawnPos) {
-      enemy.el.style.left = enemy.pos + "px";
-      enemy.drawnPos = enemy.pos;
-    }
-  });
+  // Block 76. Guards and enemies alike, standing or fallen.
+  const slide = (body) => {
+    if (!body.knockVel || !body.el) return;
+    moveBody(body, body.knockVel * step);
+    body.knockVel *= Math.pow(ENEMY_KNOCK_DECAY, step);
+    if (Math.abs(body.knockVel) < 0.3) body.knockVel = 0;
+  };
+  GUARDS.forEach(slide);
+  ENEMIES.forEach(slide);
 }
 
 function updateEnemies(step, now) {
@@ -5124,49 +5103,138 @@ function updateEnemies(step, now) {
   });
 }
 
-function hitEnemy(enemy, damage) {
-  if (!enemy || enemy.dead) return;
-  const now = performance.now();
-  const away = Math.sign(enemy.pos + ENEMY_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) || 1;
+// =============================================================
+// BLOWS (Block 76)
+//
+// How every body that can be hurt takes a blow, guard or enemy, from a
+// punch or a shot: the enemies' reaction of Block 60, which Block 75
+// copied onto guards, kept in one place so no kind can drift from the
+// others and a new kind of enemy (content/enemies.js) gets it without
+// being written for.
+//
+//   takeBlow(body, damage, dir, message)   a punch (1) or a shot (2)
+//   knockOut(body, dir, message)           down at once: a takedown, or
+//                                          a blow at no hp
+//
+// A blow flashes him and takes his hp. Standing, he slides back (10px at
+// the blow, about 45 in all), and staggers. At no hp he slides further,
+// topples the way the blow went and fades (style.css, <cls>-down and
+// <cls>-fall-right / -left, the same keyframes for every kind). dir is
+// the way the blow travelled, else away from Macario.
+//
+// What differs by kind is only what BODY_KINDS says: the body's width,
+// the class prefix, how long a stagger is, what a stagger delays (a
+// guard's shot, an enemy's swing), and what "down" means for him.
+// =============================================================
 
-  enemy.hp -= damage;
-  enemy.fillEl.style.width = Math.max(0, (enemy.hp / enemy.maxHp) * 100) + "%";
-  enemy.el.classList.add("enemy-hit");
-  setTimeout(() => enemy.el && enemy.el.classList.remove("enemy-hit"), 150);
+const BODY_KINDS = {
+  guard: {
+    width: GUARD_WIDTH, cls: "guard", staggerMs: GUARD_STAGGER_MS, clamp: true,
+    isDown: (g) => g.disabled,
+    // He turns on whoever hit him, so he reels back from the blow, not
+    // into it: a hostile guard already faces Macario, and this is for a
+    // shot in the back (Block 75).
+    hit(g, away) { g.facing = -away; },
+    staggered(g, now) {
+      g.aiming = false;
+      g.nextShotAt = Math.max(g.nextShotAt, now + GUARD_HIT_STAGGER_MS);
+    },
+    down(g, away) {
+      g.disabled = true;
+      g.alert = 0;
+      g.aiming = false;
+      // Dropped from behind (a takedown), he falls forward as he stood;
+      // otherwise backward, leaning back in his hit sheet (drawGuard).
+      g.fellForward = away === g.facing;
+      drawGuard(g);
+    },
+  },
+  enemy: {
+    width: ENEMY_WIDTH, cls: "enemy", staggerMs: ENEMY_STAGGER_MS, clamp: false,
+    isDown: (e) => e.dead,
+    hit(e) { e.fillEl.style.width = Math.max(0, (e.hp / e.maxHp) * 100) + "%"; },
+    staggered(e, now) {
+      e.nextSwingAt = Math.max(e.nextSwingAt || 0, now + ENEMY_STAGGER_MS + ENEMY_WINDUP_MS);
+    },
+    down(e) {
+      e.dead = true;
+      e.el.classList.remove("enemy-windup");
+      // A swing cut off by the blow is put away, or he would fall with
+      // his sword still raised (Block 60).
+      e.attacking = false;
+      if (e.attackSpriteEl) {
+        e.attackSpriteEl.style.display = "none";
+        e.spriteEl.style.visibility = "";
+        e.drawnAttacking = false;
+      }
+      e.el.classList.add("enemy-down");
+      if (!enemiesAlive()) finishFight();
+    },
+  },
+};
 
-  if (enemy.hp <= 0) {
-    enemy.dead = true;
-    enemy.el.classList.remove("enemy-windup");
-    // Block 60. He topples away from the blow (style.css, enemy-fall)
-    // while he slides, then fades. A swing cut off by it is put away,
-    // or he would fall with his sword still raised.
-    enemy.attacking = false;
-    if (enemy.attackSpriteEl) {
-      enemy.attackSpriteEl.style.display = "none";
-      enemy.spriteEl.style.visibility = "";
-      enemy.drawnAttacking = false;
-    }
-    enemy.el.classList.add("enemy-down", away > 0 ? "enemy-fall-right" : "enemy-fall-left");
-    enemy.knockVel = away * ENEMY_KO_KNOCK_SPEED;
-    enemy.pos += enemy.knockVel;
-    enemy.el.style.left = enemy.pos + "px";
-    enemy.drawnPos = enemy.pos;
-    impact("knockout");
-    if (!enemiesAlive()) finishFight();
+function bodyKindOf(body) {
+  return BODY_KINDS[body.kind] || BODY_KINDS.enemy;
+}
+
+function awayFromPlayer(body) {
+  const centre = body.pos + bodyKindOf(body).width / 2;
+  return Math.sign(centre - (posX + PLAYER_WIDTH / 2)) || 1;
+}
+
+// Moves a body along the road and draws it there. A guard is kept on
+// the road; an enemy is not, since the play's soldiers wait in the wing
+// beyond the stage's edge.
+function moveBody(body, dx) {
+  const kind = bodyKindOf(body);
+  body.pos += dx;
+  if (kind.clamp) body.pos = Math.max(0, Math.min(body.pos, WORLD_WIDTH - kind.width));
+  body.el.style.left = body.pos + "px";
+  body.drawnPos = body.pos;
+}
+
+function takeBlow(body, damage, dir, message) {
+  if (!body || !body.el) return;
+  const kind = bodyKindOf(body);
+  if (kind.isDown(body)) return;
+  const away = dir || awayFromPlayer(body);
+  body.hp -= damage || 1;
+  body.el.classList.add(kind.cls + "-hit");
+  setTimeout(() => body.el && body.el.classList.remove(kind.cls + "-hit"), 150);
+  kind.hit(body, away);
+  if (body.hp <= 0) {
+    knockOut(body, away, message);
     return;
   }
-
-  // Block 60. The first frame of the slide lands with the blow, so the
-  // hit reads at once even through the freeze; updateKnockback carries
-  // the rest.
-  enemy.knockVel = away * ENEMY_KNOCK_SPEED;
-  enemy.pos += enemy.knockVel;
-  enemy.knockVel *= ENEMY_KNOCK_DECAY;
-  enemy.staggerUntil = now + ENEMY_STAGGER_MS;
-  enemy.nextSwingAt = Math.max(enemy.nextSwingAt || 0, now + ENEMY_STAGGER_MS + ENEMY_WINDUP_MS);
-  enemy.el.style.left = enemy.pos + "px";
-  enemy.drawnPos = enemy.pos;
+  // The first frame of the slide lands with the blow, so it reads
+  // through the hit-stop; updateKnockback carries the rest.
+  const now = performance.now();
+  body.knockVel = away * ENEMY_KNOCK_SPEED;
+  moveBody(body, body.knockVel);
+  body.knockVel *= ENEMY_KNOCK_DECAY;
+  body.hitAt = now;
+  body.staggerUntil = now + kind.staggerMs;
+  kind.staggered(body, now);
   impact("punch");
+}
+
+function knockOut(body, dir, message) {
+  const kind = bodyKindOf(body);
+  if (kind.isDown(body)) return;
+  const away = dir || awayFromPlayer(body);
+  body.hitAt = performance.now();
+  body.el.classList.add(kind.cls + (away > 0 ? "-fall-right" : "-fall-left"));
+  kind.down(body, away);
+  body.knockVel = away * ENEMY_KO_KNOCK_SPEED;
+  moveBody(body, body.knockVel);
+  if (message) showToast(message);
+  impact("knockout");
+}
+
+// An enemy takes a punch or a shot (Block 35). Since Block 76 a door
+// into takeBlow, above.
+function hitEnemy(enemy, damage) {
+  takeBlow(enemy, damage);
 }
 
 function resetEnemies() {

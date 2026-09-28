@@ -522,6 +522,11 @@ const storyDrift = () => {
   }));
   ok("he stands at the room's start, free to move, with his hearts showing",
      room.x === 150 && room.facing === 1 && !room.cut && room.hearts, room);
+  const typed = await page.evaluate(() => GUARDS.map((g) => ({ type: g.type, kind: g.kind,
+    radius: g.detectRadius, src: g.animation.src })));
+  ok("the room's guards are the catalogue's bantay, a placement's own numbers winning (Block 76)",
+     typed.every((g) => g.type === "bantay" && g.kind === "guard" && /bantay.png$/.test(g.src)) &&
+     JSON.stringify(typed.map((g) => g.radius)) === "[260,280,300]", typed);
   ok("three guards who shoot, each with his own standing, walking and shooting sheets loaded",
      room.guards.length === 3 && room.guards.every((g) => g.shoots && g.art), room.guards);
   ok("a platform, a crate to hide behind, and a door back to the street",
@@ -769,6 +774,11 @@ const storyDrift = () => {
   }
   ok("four soldiers come on, the hearts show, and he is free to fight with no gun",
      fight.n === 4 && fight.alive === 4 && fight.hearts && !fight.cut && fight.noRanged, fight);
+  const kawal = await page.evaluate(() => ENEMIES.map((e) => ({ type: e.type, kind: e.kind, hp: e.hp,
+    walk: e.animation.src, sword: e.attackAnimation && e.attackAnimation.src })));
+  ok("they are the catalogue's kawal: its sheets and its hp (Block 76)",
+     kawal.every((e) => e.type === "kawal" && e.kind === "enemy" && e.hp === 2 &&
+       /muslim-walk.png$/.test(e.walk) && /muslim-attack.png$/.test(e.sword)), kawal);
   await page.evaluate(() => ENEMIES.forEach((e) => hitEnemy(e, 99)));
   const s3 = await readConversation(page, 5);
   ok("the Sultan comes back and gives his blessing, and the crowd cheers",

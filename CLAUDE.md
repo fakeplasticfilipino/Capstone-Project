@@ -107,7 +107,8 @@ off the repository.
                                (game, acts, inventory, assessment, shell,
                                teacher, teacher-questions,
                                teacher-talaan, supabaseClient)
-    content/                   act data, the item catalogue, and the
+    content/                   act data, the item catalogue, the enemy
+                               catalogue (enemies.js, Block 76), and the
                                built-in test questions (questions.js)
     assets/
       sprites/player/          Macario's sheets, macario-<pose>.png
@@ -301,6 +302,8 @@ Load order in index.html, which is load bearing:
 
     supabase CDN
     supabaseClient.js
+    content/enemies.js   before the acts; act1.js reads from it, and
+                         game.js merges a placed enemy's type from it
     content/act1.js      before game.js, which reads window.ACT_1 on start
     content/act2.js      through act4.js, before acts.js builds its registry
     content/items.js     before inventory.js, which reads window.ITEMS
@@ -451,7 +454,9 @@ Scene shape:
       pickups: [{ id, x, y, type: "heart" }],    optional; restores one health
       hintSpots: [x | { x, y }],                 optional; where the act's
                                                  hints may lie (Block 68)
-      guards: [{ id, x, patrolFrom, patrolTo,    optional
+      guards: [{ type,                           optional; from the enemy
+                                                 catalogue (Block 76)
+                 id, x, patrolFrom, patrolTo,    optional
                  speed, facing, detectRadius,
                  alertRate, decayRate,
                  shoots, hp,                     optional; Blocks 37, 38
@@ -798,7 +803,9 @@ barya as a story goal needs it, or finishing a step would move the
 count without the story paying anything. The whole performance award
 is then paid on completion instead.
 
-An enemy def is { id, x, hp, speed, img | animation, attackAnimation }.
+An enemy def is { type, id, x, hp, speed, img | animation,
+attackAnimation }; type (Block 76) names an entry of the enemy
+catalogue, below, whose fields come first.
 attackAnimation (Block 40) is optional: with it, the walk sheet steps
 only while he walks and the attack sheet replaces it for each swing,
 from the start of the telegraph to ENEMY_ATTACK_FOLLOW_MS after the
@@ -810,6 +817,40 @@ the next swing. Their speed is scaled by act number exactly as guard
 speed is. Running out of health restarts the fight rather than ending it,
 with the beaten ones staying beaten, and no exit is offered while any of
 them is up.
+
+## Enemy data format
+
+Since Block 76 enemies are content like items: every kind described
+once in content/enemies.js as window.ENEMY_TYPES, and placed by naming
+its type, in a scene's guards list or in spawnEnemies.
+
+    window.ENEMY_TYPES = {
+      bantay: {
+        kind: "guard" | "enemy",     where it may be placed: a guards
+                                     list, or spawnEnemies
+        hp, speed,                   and any other field a guard or an
+        shoots, detectRadius, ...    enemy def takes (Act data format)
+        animation, walkAnimation,    the sheets; a guard's are described
+        shootAnimation,              under Act data format, an enemy's
+        hitAnimation,                are animation (its walk) and
+        attackAnimation              attackAnimation
+      },
+    }
+
+A placement's own fields win over its type's, so a sentry can see
+further than the rest of his kind without a second type. A placement
+with no type is used as it stands, which is how anything written before
+Block 76 still works, and how the harness fixture's guard is built. An
+unknown type, or a type placed as the other kind, is said in the
+console (console.warn) and not merged, so it shows as whatever the
+placement alone describes: usually the placeholder box.
+
+What every kind shares is how it takes a blow (Decisions on record,
+Block 76): game.js's takeBlow and knockOut, with BODY_KINDS holding only
+what differs between a guard and an enemy. A new type therefore needs
+no engine code to flash, slide, stagger, topple and fade. What it does
+need is the art, measured (measure-sprite.js) and looked at
+(preview-sheet.js --from=content/enemies.js).
 
 ## Item data format
 
@@ -4406,6 +4447,46 @@ the topple and the fade, a takedown falling forward, and a guard stood
 up again losing the fall. verify_new_scene.js to 126: the real bantay
 reeling in his hit sheet and falling the way the shot went. game.js
 v75, style.css v47, content/act1.js v53, ASSET_VERSION 28.
+
+The enemy catalogue, and one way of taking a blow (Block 76). Asked
+whether enemies could be a template rather than written out per entry.
+Three places were per entry, and two were changed; the third was left
+until it is needed.
+
+The content: content/enemies.js (Enemy data format), loaded before the
+acts. The bantay and the play's kawal moved into it with their sheets
+and numbers; the Test Room's guards and the play's four soldiers are now
+placements that name them. The Sultan, a decoration, reads his walk
+sheet from the kawal. Nothing on screen changed.
+
+The engine: guards and enemies were two systems with two copies of the
+same reaction once Block 75 copied the enemies' onto guards. Now there
+is one, takeBlow(body, damage, dir, message) and knockOut(body, dir,
+message), under BLOWS in game.js, and a BODY_KINDS table per kind with
+only what really differs: the body's width, the class prefix (the CSS
+was already shared), the stagger's length, what a stagger delays (a
+guard's shot, an enemy's swing), whether he is kept on the road, and
+what "down" means (a guard disabled, drawn in his fall; an enemy dead,
+his sword put away and the fight ended if he was the last). hitGuard,
+hitEnemy and disableGuard are kept as one-line doors into it, because
+the melee, the shot and the harness call them. Every body now carries
+kind ("guard" or "enemy"), set by buildGuards and spawnEnemies. The
+existing checks ran unchanged and green against it, which is the proof
+that nothing moved.
+
+Not done: the art tool. animate-bantay.js has the bantay's parts (the
+rifle's line, the hand, the hip, the knee) written in as pixel positions.
+Those could move to a description file per character so the next still
+needs points marked rather than a new tool, but with one character the
+format would be guessed. Do it when a second character arrives as a
+single side-on still; when the artist delivers full sheets it is not
+needed at all.
+
+test.js section BM (725): the merge and its rules, a new type with no
+art built and hit with no code of its own, and the two kinds told
+apart. verify_new_scene.js to 128: the room's guards and the play's
+soldiers come from the catalogue. game.js v76, content/act1.js v54,
+content/enemies.js v1; no asset changed.
 
 ## Pitfalls
 
