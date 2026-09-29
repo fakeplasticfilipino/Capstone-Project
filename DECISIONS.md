@@ -3270,3 +3270,13 @@ in the game, the trivia card or the item bank named 1880. With the 1870
 birth date Sakay is twenty at the opening; that is noted for the
 proponents in STORY.md rather than acted on. game.js v81 (a comment),
 content/act1.js v58.
+
+Silent black screens (Block 84). The proponent asked for the black-out
+sound to go; asked which, they said both. A black card is silent unless
+it names a sound (playIntertitle's sfx), which only the two curtain
+calls do, with applause; the scene fade no longer plays "door". The
+files stay in assets/ and in SFX_SOURCES, unused, so either can come
+back with one line. The card's sound was tried twice (Block 58's bell,
+Block 81's drum) and fitted neither time; silence is the honest third
+answer. test.js's check was rewritten: a card is silent, and a card
+that names applause plays it. game.js v82.

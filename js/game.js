@@ -2520,7 +2520,8 @@ async function fadeToScene(sceneId, placement) {
   clearTimeout(shootFireTimer);
 
   blackout.classList.add("visible");
-  playSfx("door"); // Block 58
+  // Block 84. Silent, at the proponent's direction: the swoosh (Block
+  // 58's "door") did not fit a fade to black. The file stays for now.
   await wait(900); // fade to black
 
   loadScene(sceneId); // swap while hidden behind black
@@ -4843,10 +4844,11 @@ function playIntertitle(lines, opts) {
     skipFrom = performance.now() + INTERTITLE_SKIP_AFTER_MS;
     window.addEventListener("keydown", onKey, true);
     el.addEventListener("pointerdown", onTap);
-    // Block 58, with the first line. Block 81: a card may name its own
-    // effect instead (opts.sfx, one of SFX_SOURCES), for a card that is
-    // a sound as much as words: the crowd on its feet is applause.
-    playSfx(o.sfx && SFX_SOURCES[o.sfx] ? o.sfx : "intertitle");
+    // Block 84. A card is silent unless it names a sound (opts.sfx, one of
+    // SFX_SOURCES; Block 81), which only the curtain calls' applause
+    // does. Its own sound, a bell (Block 58) and then a drum (Block 81),
+    // did not fit either time, at the proponent's direction.
+    if (o.sfx && SFX_SOURCES[o.sfx]) playSfx(o.sfx);
     try {
       for (const p of box.children) {
         p.classList.add("shown");

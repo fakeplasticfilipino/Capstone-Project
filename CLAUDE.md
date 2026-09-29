@@ -743,8 +743,8 @@ of them plain globals in game.js, like addQuest:
                                  scene fade's black left up behind it,
                                  for a card that leads into
                                  Acts.gotoScene; Block 73), sfx (an
-                                 SFX_SOURCES name played instead of
-                                 the card's own drum; Block 81)
+                                 SFX_SOURCES name played with it; a
+                                 card is otherwise silent; Blocks 81, 84)
     movePlayer(x, pxPerSecond)   walks Macario there with his walk cycle
                                  (Block 57); resolves on arrival
     placePlayer(x, facing)       puts him there at once (Block 57)

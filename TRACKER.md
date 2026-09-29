@@ -9,10 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 29 Sep 2026, after Block 83 (the opening in 1890, the cut
-to 1894). Before that, Block 82 (the direktor's stage clothes;
+Last updated: 30 Sep 2026, after Block 84 (black screens silent).
+Before that, Block 83 (the opening in 1890, the cut to 1894). Before that, Block 82 (the direktor's stage clothes;
 the fire leap shown, not told; running allowed away from guards).
-test.js 729 passed, 0 failed; verify_new_scene.js 193 passed,
+test.js 730 passed, 0 failed; verify_new_scene.js 193 passed,
 0 failed.
 
 ## Start here
@@ -108,7 +108,7 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v49    js/game.js v81       js/shell.js v19
+    css/style.css v49    js/game.js v82       js/shell.js v19
     js/inventory.js v10  js/acts.js v14       js/assessment.js v4
     content/act1.js v58  content/items.js v12  content/act2-4.js v1
     content/enemies.js v1   content/questions.js v1
@@ -126,8 +126,7 @@ In order.
 tab, after the push, with the sound on. Give Nanay the savings and play
 to the end. What to look for, and what failure looks like:
 
-    The four years: straight after Nanay's last line, a black card with
-      a low drum and a curtain's swish (not the old bell), "Pagkalipas
+    The four years: straight after Nanay's last line, a silent black card, "Pagkalipas
       ng apat na taon" and "Ngayong gabi sa entablado: Principe
       Baldovino", lifting onto the stage mid-play. Failure: a glimpse of
       the street between the card and the stage.
@@ -342,7 +341,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (729 and 193 checks) |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (730 and 193 checks) |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -445,6 +444,7 @@ machine, the assessment module.
     82  the stage clothes from the direktor (Inventory.grant); jumpPlayer,
         the fire leap shown; running allowed away from guards
     83  the opening in 1890, the cut to 1894
+    84  black screens silent: no sound on a black card or a scene fade
 
 ## Blocks remaining
 
@@ -526,7 +526,7 @@ From the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js (729 checks) drives the shipping index.html with a stubbed
+test.js (730 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
@@ -537,7 +537,7 @@ a guest and the Test Room, and checks that every line of the content is
 in STORY.md, that ART.md's Owed list matches the disk, and that the
 asset manifest matches assets/ and every picture in it opens. Anything
 other than "0 failed" is a regression. Both never touch the live
-project. Both are green as of Block 82.
+project. Both are green as of Block 84.
 
 A check that clicks, or reads pixels, is worth more than one that reads
 a style (the dead Atake button would have passed any style assertion).

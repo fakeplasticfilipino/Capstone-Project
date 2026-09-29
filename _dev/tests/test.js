@@ -4819,8 +4819,12 @@ const visible = (page, sel) => page.evaluate((s) => {
       currentActData.objectives = __saved.o; currentActData.linearObjectives = __saved.l;
       delete state.flags.t_q1; clearQuests();
     });
+    // Block 84. A black card is silent unless it names a sound, and a
+    // scene's fade to black is silent.
     const card = await heard(() => playIntertitle(["X"], { startBlack: true, holdMs: 10 }));
-    ok("a black card rings its bell", card.includes("intertitle"), card);
+    ok("a black card is silent unless it names a sound (Block 84)", !card.includes("intertitle") && !card.includes("door"), card);
+    const named = await heard(() => playIntertitle(["Y"], { startBlack: true, holdMs: 10, sfx: "applause" }));
+    ok("and one that names applause plays it", named.includes("applause"), named);
     ok("sounds follow the Mga tunog switch", await page.evaluate(() => {
       Game.setAudio({ music: true, sfx: false });
       window.__SB = 0;
