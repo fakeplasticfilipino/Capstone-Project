@@ -10,7 +10,7 @@
 //
 // The story so far, all of it on the street (tondo) unless it says:
 //
-//   "Tondo, 1880" on black (playIntertitle). Macario stands alone;
+//   "Tondo, 1890" on black (playIntertitle). Macario stands alone;
 //   three siga come up behind him and taunt him about his father.
 //   Nanay comes to call him home and they walk off together, to where
 //   she stays for the rest of the act. There she tells him the money
@@ -295,7 +295,7 @@ const PAMPHLET_FLAGS = CITIZENS.map(pamphletFlag);
 async function openingOnTheStreet() {
   setCutscene(true);
   turnPlayer(1);
-  await playIntertitle(["Tondo, 1880", "Kung saan nagsimula ang buhay ni Macario"],
+  await playIntertitle(["Tondo, 1890", "Kung saan nagsimula ang buhay ni Macario"],
     { startBlack: true });
   await wait(500);
 
@@ -550,7 +550,9 @@ async function thePlay() {
 async function fourYearsLater() {
   setCutscene(true);
   await wait(600);
-  await playIntertitle(["Pagkalipas ng apat na taon",
+  // Block 83. The year is on the card: the opening is 1890, so four years
+  // on is 1894, the year Sakay joined the Katipunan.
+  await playIntertitle(["Pagkalipas ng apat na taon", "Tondo, 1894",
     "Ngayong gabi sa entablado: Principe Baldovino"], { keepBlack: true });
   if (window.Acts) Acts.gotoScene("entablado", { x: STAGE_PLAY_X, facing: -1 });
 }

@@ -4772,7 +4772,7 @@ function playCatchGame(opts) {
 }
 
 // Block 57. A black card with a few lines of text, faded in and out:
-// the place and year before a part of the story ("Tondo, 1880"), or a
+// the place and year before a part of the story ("Tondo, 1890"), or a
 // jump in time. The screen goes black, the lines come up one after the
 // other, hold long enough to read, fade, and the black lifts.
 //

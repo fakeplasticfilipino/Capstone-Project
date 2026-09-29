@@ -3260,3 +3260,13 @@ game.js v80, inventory.js v10, content/act1.js v57, content/items.js
 v12. verify_new_scene.js to 193: the stage clothes worn with their
 effect, the leap played with no card, running near and far, and the
 meter slowed while he stands still in costume.
+
+The years (Block 83). Asked whether the four-year jump should become
+fourteen, the proponent answered: stick with four years and 1894. So
+the opening card, one of the proponents' own lines, now reads "Tondo,
+1890" instead of "Tondo, 1880", and the cut names its year, "Tondo,
+1894", between "Pagkalipas ng apat na taon" and the play. Nothing else
+in the game, the trivia card or the item bank named 1880. With the 1870
+birth date Sakay is twenty at the opening; that is noted for the
+proponents in STORY.md rather than acted on. game.js v81 (a comment),
+content/act1.js v58.

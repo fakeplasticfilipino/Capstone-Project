@@ -4,7 +4,7 @@
 // Drives the REAL content/act1.js and content/items.js (no fixture
 // routes), the way _dev/tests/test.js Section A does, through the whole
 // of Act I as it stands. Rewritten in Block 57 with the act: one street
-// ten paintings long; "Tondo, 1880" on black; the siga and Nanay, who
+// ten paintings long; "Tondo, 1890" on black; the siga and Nanay, who
 // slides on, and the two of them walking off together to where she
 // stays; the talk and the thought on the street; the Kutsero's job
 // (apples caught in the mini-game with real key presses, fed to the
@@ -254,7 +254,7 @@ const STEP = {
   pamphlets: "Ipamigay ang mga polyeto",
 };
 // Block 80. The end of Act I.
-const FOUR_YEARS = ["Pagkalipas ng apat na taon", "Ngayong gabi sa entablado: Principe Baldovino"];
+const FOUR_YEARS = ["Pagkalipas ng apat na taon", "Tondo, 1894", "Ngayong gabi sa entablado: Principe Baldovino"];
 const BALDOVINO_LINE = "Macario: Walang bayang mananatiling alipin, kung ang mga anak nito ay handang lumaban!";
 const SURE_Q = "Katipunero: Minsan ko lang itatanong. Sigurado ka bang gusto mong sumali?";
 const PAMPHLET_LINE = "Macario: Para po sa inyo. Itago n'yo po, at basahin nang palihim.";
@@ -432,8 +432,8 @@ const artDrift = () => {
        !Inventory.owns("damit-entablado")));
 
   const t0 = await intertitle(page);
-  ok("the game opens on black: Tondo, 1880", t0.up && t0.black &&
-     JSON.stringify(t0.lines) === '["Tondo, 1880","Kung saan nagsimula ang buhay ni Macario"]', t0);
+  ok("the game opens on black: Tondo, 1890", t0.up && t0.black &&
+     JSON.stringify(t0.lines) === '["Tondo, 1890","Kung saan nagsimula ang buhay ni Macario"]', t0);
   ok("the world is held still behind it", await page.evaluate(() => cutscenePlaying && posX === 900));
   await page.waitForTimeout(2200);
   const t1 = await intertitle(page);
@@ -1170,7 +1170,7 @@ const artDrift = () => {
     { naihatidKay_aling_rosa: true, naihatidKay_mang_tomas: true, naihatidSaDalawangSuki: true, naihatidKay_direktor: true });
 
   let r = await resume("tondo", { nakitaAngMgaSiga: true });
-  ok("a reload mid-opening starts again from Tondo, 1880", (await intertitle(r.page)).lines[0] === "Tondo, 1880");
+  ok("a reload mid-opening starts again from Tondo, 1890", (await intertitle(r.page)).lines[0] === "Tondo, 1890");
   await r.page.keyboard.press("e"); await r.page.waitForTimeout(1000); await r.page.keyboard.press("e");
   await waitIntertitle(r.page, false, 8000);
   let c = await readConversation(r.page, 3);
@@ -1356,7 +1356,7 @@ const artDrift = () => {
   const g = await newPage(browser, { session: null });
   await g.page.click("#shell-guest");
   await g.page.waitForTimeout(700);
-  ok("a guest opens on Tondo, 1880 too", (await intertitle(g.page)).lines[0] === "Tondo, 1880");
+  ok("a guest opens on Tondo, 1890 too", (await intertitle(g.page)).lines[0] === "Tondo, 1890");
   await waitIntertitle(g.page, false, 15000);
   c = await readConversation(g.page, 3);
   ok("and watches the same opening", JSON.stringify(c.lines) === JSON.stringify(OPENING), c.lines);

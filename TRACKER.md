@@ -9,7 +9,8 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 29 Sep 2026, after Block 82 (the direktor's stage clothes;
+Last updated: 29 Sep 2026, after Block 83 (the opening in 1890, the cut
+to 1894). Before that, Block 82 (the direktor's stage clothes;
 the fire leap shown, not told; running allowed away from guards).
 test.js 729 passed, 0 failed; verify_new_scene.js 193 passed,
 0 failed.
@@ -107,9 +108,9 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v49    js/game.js v80       js/shell.js v19
+    css/style.css v49    js/game.js v81       js/shell.js v19
     js/inventory.js v10  js/acts.js v14       js/assessment.js v4
-    content/act1.js v57  content/items.js v12  content/act2-4.js v1
+    content/act1.js v58  content/items.js v12  content/act2-4.js v1
     content/enemies.js v1   content/questions.js v1
     js/asset-manifest.js v2 (bumped by make-asset-manifest.js)
     ASSET_VERSION 29 (in js/game.js)
@@ -162,11 +163,11 @@ to the end. What to look for, and what failure looks like:
       are told, and whether the guards are too hard; beats and crates
       are PAMPHLET_GUARDS in content/act1.js.
 
-2. Decide the four years. The opening card says 1880, so four years on
-is 1884, and the Katipunan was founded in 1892; Sakay joined in 1894,
-which the post-test asks. The card names no year for that reason. With
-his 1870 birth, a jump of fourteen years (1880 to 1894) would be exact.
-Change the gap or the opening year (STORY.md, Open questions).
+2. The years are settled (Block 83): the opening reads "Tondo, 1890"
+and the four-year cut "Tondo, 1894", the year Sakay joined. Open only:
+by the 1870 birth date he is twenty at the opening, older than the boy
+the opening shows (STORY.md, Open questions). The trivia card and the
+item bank should use the same years.
 
 3. The proponents' review of Blocks 80 and 81: every line is ours (+ in
 STORY.md, PLACEHOLDER in content/act1.js), and so are the names
@@ -443,6 +444,7 @@ machine, the assessment module.
         applause; a new black-card sound
     82  the stage clothes from the direktor (Inventory.grant); jumpPlayer,
         the fire leap shown; running allowed away from guards
+    83  the opening in 1890, the cut to 1894
 
 ## Blocks remaining
 

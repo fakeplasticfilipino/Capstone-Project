@@ -42,7 +42,9 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 29 Sep 2026, Block 82 (the direktor's stage clothes for
+Last updated: 29 Sep 2026, Block 83 (the opening is Tondo, 1890, at
+the proponent's direction, so the four-year cut names Tondo, 1894).
+Before that, Block 82 (the direktor's stage clothes for
 the walk home; the leap over the fire shown, not told). Before that,
 Block 81 (the play and the rite checked
 against the histories: a komedya battle and an ad-lib, the Mabalasig,
@@ -57,7 +59,7 @@ the teacher's, at three fixed places on the street).
 
 ## The story in brief
 
-Act I, Ang Pinagmulan ni Macario. Tondo, 1880. A boy teased about the
+Act I, Ang Pinagmulan ni Macario. Tondo, 1890. A boy teased about the
 father who never came back learns that his mother spent the last of
 their money on her cedula, and goes out to earn. He tends a kutsero's
 horse, runs a mananahi's deliveries, and on the last delivery walks
@@ -193,7 +195,7 @@ toward 100.
 
 tondo, x 900. Plays by itself the first time a student enters Act I.
 
-    [BLACK] Tondo, 1880
+    [BLACK] Tondo, 1890
     [BLACK] Kung saan nagsimula ang buhay ni Macario
 
     (Macario stands alone, facing right. The three siga walk up
@@ -469,6 +471,7 @@ Plays by itself straight after the savings; a reload before the card
 lifts plays it again.
 
   + [BLACK] Pagkalipas ng apat na taon
+  + [BLACK] Tondo, 1894
   + [BLACK] Ngayong gabi sa entablado: Principe Baldovino
 
     (The card lifts onto the entablado, in the middle of the play.
@@ -860,15 +863,14 @@ next passage. None of these is a promise; they are what is there.
       not named by religion.
     Check the play against the source book, and the year on the
       opening card against Sakay's birth year in it.
-    The four years. The opening says 1880, so four years on is 1884,
-      and the Katipunan was founded in 1892; Sakay is usually said to
-      have joined in 1894, and the post-test asks about 1894. The card
-      therefore names no year ("Pagkalipas ng apat na taon"). Either
-      the gap or the opening year should change so the two agree with
-      the history the tests teach. Sakay's birth is given as 1870 by
-      many sources and 1878 by his death certificate; with 1870, a
-      jump of fourteen years (1880 to 1894) would put him at 24 and
-      in the year he joined.
+    The years (settled in Block 83, by the proponent: four years, and
+      1894). The opening is now "Tondo, 1890" and the cut names "Tondo,
+      1894", the year Sakay joined the Katipunan. With his birth given
+      as 1870 he is twenty at the opening and twenty-four when he
+      joins; with 1878 (his death certificate), twelve and sixteen.
+      The opening's boy and his first job read younger than twenty; if
+      the proponents follow the 1870 date, the siga's taunt and the
+      errands may want a look.
     Checked against the histories in Block 81 (DECISIONS.md lists the
       sources): the password, the three questions, the blindfold, the
       room in black, the warning, the Mabalasig, the ordeals and the
