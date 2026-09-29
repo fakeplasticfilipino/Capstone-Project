@@ -10,6 +10,7 @@
 window.ASSET_MANIFEST = [
   "assets/audio/music/calm.mp3",
   "assets/audio/music/intense.mp3",
+  "assets/audio/sfx/applause.wav",
   "assets/audio/sfx/blip.wav",
   "assets/audio/sfx/catch.wav",
   "assets/audio/sfx/coin.wav",

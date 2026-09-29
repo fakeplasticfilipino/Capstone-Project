@@ -119,7 +119,6 @@ n = np.convolve(n, np.ones(24) / 24, mode="same")
 swoosh = n * np.sin(np.linspace(0, np.pi, len(n))) ** 1.5
 write("door", swoosh, 1.3)
 
-# The black card (intertitle): a slow, low bell that dies away.
-bell = (sine(196, 2.2) + 0.5 * sine(294, 2.2) + 0.25 * sine(392.5, 2.2))
-bell *= env(len(bell), attack=0.01, curve=3.0)
-write("intertitle", bell, 0.32)
+# The black card (intertitle) is no longer made here: its bell read as a
+# phone's message chime, and Block 81 replaced it with a low drum and a
+# curtain's swish, made by _dev/tools/make-scene-sfx.js.

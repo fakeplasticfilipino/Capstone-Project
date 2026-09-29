@@ -143,7 +143,8 @@ off the repository.
                                lib/png.js (Block 75), missing-art.js
                                (Block 77), make-asset-manifest.js
                                (Block 78), make-sfx.py,
-                               make-combat-sfx.js, make-fun-sfx.js, and
+                               make-combat-sfx.js, make-fun-sfx.js,
+                               make-scene-sfx.js (Block 81), and
                                create_accounts.js (gitignored)
     docs-private/              gitignored; the proposal, the validation
                                form and old screenshots, kept on the
@@ -413,7 +414,9 @@ Scene shape:
       stage: {...} | omitted,
       decorations: [...],
       platforms: [{ x, y, width }],              optional; one-way
-      hideSpots: [{ x, width }],                 optional; suppress detection
+      hideSpots: [{ x, width,                    optional; suppress detection
+                    requiresFlag, unlessFlag }], flags optional, as a
+                                                 guard's (Block 81)
       hazards: [{ x, width, reason }],           optional; costs one health
       pickups: [{ id, x, y, type: "heart" }],    optional; restores one health
       hintSpots: [x | { x, y }],                 optional; where the act's
@@ -430,8 +433,11 @@ Scene shape:
                  shootAnimation,                 optional; aimFrame,
                                                  fireFrame, muzzle
                                                  (Block 73)
-                 hitAnimation }],                optional; knockoutFrame
+                 hitAnimation,                   optional; knockoutFrame
                                                  (Block 75)
+                 requiresFlag, unlessFlag }],    optional; on duty only
+                                                 then, read when the scene
+                                                 is built (Block 81)
       noRanged: true,                            optional; no shot here
       checkpoints: [{ x, flag }],                optional; respawn points
       scripts: [{ requiresFlag, unlessFlag,      optional; cutscenes that
@@ -736,7 +742,9 @@ of them plain globals in game.js, like addQuest:
                                  whileBlack(), holdMs, keepBlack (the
                                  scene fade's black left up behind it,
                                  for a card that leads into
-                                 Acts.gotoScene; Block 73)
+                                 Acts.gotoScene; Block 73), sfx (an
+                                 SFX_SOURCES name played instead of
+                                 the card's own drum; Block 81)
     movePlayer(x, pxPerSecond)   walks Macario there with his walk cycle
                                  (Block 57); resolves on arrival
     placePlayer(x, facing)       puts him there at once (Block 57)
@@ -1651,7 +1659,7 @@ look, by system:
     inventory, shop, items, equipment     Blocks 20, 22, 25, 32
     melee, shooting, combat               Blocks 17, 27, 28, 35, 40, 60,
                                           71, 75, 76
-    audio and sound effects               Blocks 30, 58, 60, 65
+    audio and sound effects               Blocks 30, 58, 60, 65, 81
     scenes, exits, scripts, cutscenes     Blocks 19, 31, 34, 35, 52, 57
     guards, stealth and sight             Blocks 37, 38, 42, 46, 47, 73,
                                           75
@@ -1660,7 +1668,9 @@ look, by system:
     repository layout                     Block 44
     quests and objectives                 Blocks 48, 52, 56, 57
     Act I's story passages                Blocks 19 to 21, 31 to 37,
-                                          52 to 59, 80 (the ending)
+                                          52 to 59, 80 (the ending),
+                                          81 (checked against the
+                                          histories; the guarded run)
     STORY.md and ART.md                   Blocks 61, 77
     loading, retries, service worker      Blocks 62, 78
     run, jump, dust, apple game, rewards  Blocks 57, 63, 65, 67

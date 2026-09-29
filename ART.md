@@ -28,7 +28,8 @@ Macario's sheets (256px cells).
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 29 Sep 2026, Block 80 (the end of Act I: the Katipunan's
+Last updated: 29 Sep 2026, Block 81 (the Pangulo became the
+Mabalasig). Before that, Block 80 (the end of Act I: the Katipunan's
 three people, the three who take the pamphlets, and the pulungan).
 
 ## Owed
@@ -61,10 +62,13 @@ Named by the game and missing. Each is a placeholder box today.
         pulungan. Walks on and off the stage, then talks; an idle sheet
         and a walk sheet. (NOT STARTED)
 
-    assets/sprites/characters/pangulo.png
-        The Pangulo, who swears Macario into the Katipunan in the
-        pulungan and gives him the pamphlets. Talks; an idle sheet is
-        enough. (NOT STARTED)
+    assets/sprites/characters/mabalasig.png
+        The Mabalasig ("terrible brother"), who conducts Macario's rite
+        in the pulungan and gives him the pamphlets (Block 81, replacing
+        Block 80's Pangulo). Talks; an idle sheet is enough. The
+        histories describe members at a rite in hoods; the Katipon's was
+        black with a white triangle, which the proponents may want for
+        him or for the Katipunero and the Kasama too. (NOT STARTED)
 
     assets/sprites/characters/karpintero.png
     assets/sprites/characters/tabakera.png
@@ -76,7 +80,8 @@ Named by the game and missing. Each is a placeholder box today.
 
     assets/backgrounds/act1/pulungan.jpg
         The Katipunan's secret room, where the oath is taken (Block 80).
-        One painting of a room at night, drawn once and not tiled, one
+        The histories describe a dim room hung with black curtains, a
+        warning written on the wall. One painting of a room at night, drawn once and not tiled, one
         phone screen wide like the entablado's (entablado-inside.jpg is
         the model for its shape); a floor of its own if the painting has
         one, and the content then sets ground: false. Until it arrives

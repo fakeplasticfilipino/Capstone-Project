@@ -243,7 +243,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 28;
+const ASSET_VERSION = 29;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -768,7 +768,8 @@ function loadScene(sceneId) {
   STAGE = scene.stage || null;
   WORLD_WIDTH = scene.worldWidth || 4400;
   PLATFORMS = scene.platforms || [];
-  HIDE_SPOTS = scene.hideSpots || [];
+  // Block 81. A crate, like a guard, may be there for one stretch only.
+  HIDE_SPOTS = (scene.hideSpots || []).filter(guardOnDuty);
   HAZARDS = scene.hazards || [];
   PICKUPS = (scene.pickups || []).slice(); // Block 68: hints are added per student
   collectedPickups = new Set();
@@ -2736,6 +2737,33 @@ function withEnemyType(placed, kind) {
 // Guards carry their own runtime state, reset on every scene load so a
 // respawn starts them where the level designer put them rather than
 // wherever they happened to be standing.
+// Also read for hide spots, which the same stretch of story brings.
+function guardOnDuty(placed) {
+  return (!placed.requiresFlag || Boolean(state.flags[placed.requiresFlag])) &&
+    !(placed.unlessFlag && state.flags[placed.unlessFlag]);
+}
+
+// Block 81. The scene is built before a login's save arrives, so guards
+// and crates placed for one stretch of the story are built again from
+// the restored flags when the set on duty has changed (applyLoadedState).
+// A scene change needs none of this: loadScene reads the flags as they
+// are.
+function refreshOnDuty() {
+  const scene = currentScene;
+  if (!scene) return;
+  const want = (scene.guards || []).filter(guardOnDuty);
+  if (want.map((g) => g.id).join(",") !== GUARDS.map((g) => g.id).join(",")) {
+    GUARDS.forEach((g) => { if (g.el) g.el.remove(); });
+    buildGuards(actLoadToken);
+  }
+  const spots = (scene.hideSpots || []).filter(guardOnDuty);
+  if (spots.length !== HIDE_SPOTS.length) {
+    document.querySelectorAll("#world .hide-spot").forEach((el) => el.remove());
+    HIDE_SPOTS = spots;
+    buildHideSpots();
+  }
+}
+
 function buildGuards(token) {
   // The act number comes from the act data in hand, NOT from window.Acts.
   // loadAct runs at parse time to draw the backdrop behind the login box,
@@ -2746,7 +2774,11 @@ function buildGuards(token) {
     currentActData && currentActData.number
   );
 
-  GUARDS = ((currentScene && currentScene.guards) || []).map((placed) => {
+  // Block 81. A guard may be placed for one stretch of the story only
+  // (requiresFlag, unlessFlag), read when the scene is built, as an
+  // exit's requiresFlag is read when it is reached: the pamphlet run
+  // puts guardia civil on a street that has none the rest of the act.
+  GUARDS = ((currentScene && currentScene.guards) || []).filter(guardOnDuty).map((placed) => {
     // Block 76. A guard placed by type takes the catalogue's fields
     // under his own (content/enemies.js).
     const def = withEnemyType(placed, "guard");
@@ -3348,7 +3380,9 @@ function updateHudVisibility() {
   const dangerous = Boolean(
     currentScene &&
       (currentScene.dangerous ||
-        (currentScene.guards && currentScene.guards.length) ||
+        // Block 81. The guards on duty, not every one the scene names:
+        // a guard placed for a later beat is no reason for hearts now.
+        GUARDS.length ||
         (currentScene.hazards && currentScene.hazards.length) ||
         ENEMIES.some((e) => !e.dead))
   );
@@ -4800,7 +4834,10 @@ function playIntertitle(lines, opts) {
     skipFrom = performance.now() + INTERTITLE_SKIP_AFTER_MS;
     window.addEventListener("keydown", onKey, true);
     el.addEventListener("pointerdown", onTap);
-    playSfx("intertitle"); // Block 58, with the first line
+    // Block 58, with the first line. Block 81: a card may name its own
+    // effect instead (opts.sfx, one of SFX_SOURCES), for a card that is
+    // a sound as much as words: the crowd on its feet is applause.
+    playSfx(o.sfx && SFX_SOURCES[o.sfx] ? o.sfx : "intertitle");
     try {
       for (const p of box.children) {
         p.classList.add("shown");
@@ -5463,6 +5500,10 @@ const SFX_SOURCES = {
   page: "assets/audio/sfx/page.wav",
   fanfare: "assets/audio/sfx/fanfare.wav",
   streak: "assets/audio/sfx/streak.wav",
+  // Block 81 (_dev/tools/make-scene-sfx.js, which also remade
+  // intertitle): a crowd clapping, for the black card a content file
+  // names it on (playIntertitle's sfx).
+  applause: "assets/audio/sfx/applause.wav",
 };
 
 // Music sits under everything else. It is the one sound that never
@@ -6292,6 +6333,8 @@ function applyLoadedState(row) {
 
   // Any NPC whose reveal flag is already set in the restored save.
   revealNpcsByFlag();
+  // Block 81. And any guard or crate the restored story puts on duty.
+  refreshOnDuty();
   // Block 68. The scene was built before these flags arrived: the hints
   // are laid again from the save's seed, and any already found are gone.
   refreshPickups();

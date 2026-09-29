@@ -3110,3 +3110,104 @@ list, which the harness checks against the disk. No file was added, so
 ASSET_VERSION is unchanged. game.js v78, style.css v49, content/act1.js
 v55. verify_new_scene.js to 175: the whole ending walked with real key
 presses to the post-test opening, and a reload at each beat.
+
+The ending checked against the histories, guards on the pamphlet run,
+and two sounds (Block 81). Requested after Block 80: verify the
+recruitment and the Principe Baldovino line, add guards while the
+pamphlets are handed out, a sound of the crowd clapping, and a new sound
+for the black card, whose bell "sounds like a messenger sound".
+
+What was checked, and where. The English Wikipedia articles
+"Katipunan" and "Macario Sakay" (the latter citing Antonio K. Abad,
+General Macario L. Sakay, 1955), and secondary summaries of the Tagalog
+komedya, read on 29 Sep 2026. They agree on these, which the game now
+follows:
+
+    Sakay acted in Principe Baldovino (and Doce Pares de Francia and
+      Amante de la Corona), and joined the Katipunan in 1894. His birth
+      is given as 1 March 1870, or 1878 from his death certificate.
+    Principe Baldovino is a komedya attributed to Jose de la Cruz,
+      Huseng Sisiw. The genre's prince fights the enemy's armies and
+      wins, usually for a princess. No text of the play was found.
+    From December 1892 the triangle method of recruiting was dropped
+      for an initiation rite: the recruit, who had to know the Kartilya
+      by heart, was blindfolded and led into a dim room hung with black
+      curtains; the blindfold came off before a warning on the wall
+      (strength and valour may go on, mere curiosity should leave); the
+      Mabalasig, the "terrible brother", challenged him to withdraw if
+      he lacked courage; three questions asked the country's condition
+      when the Spaniards came, now, and its hope for the future; ordeals
+      followed (a revolver said to be loaded, fired at a man, or a leap
+      over a fire said to be burning); and he signed the oath in blood
+      from his arm, to defend the Katipunan, keep its secrets and help
+      its members in every danger.
+    "Anak ng Bayan" was the password of the first grade, the Katipon.
+    Kalayaan, the Katipunan's newspaper, first came out in 1896.
+
+What changed because of it. Block 80's play was a prince refusing a
+foreign king, which is not what a komedya is; it is now a rescue and a
+battle (two kawal, fought), and the patriotic line is Macario's own
+ad-lib, as his first night's line was, so the game does not put words
+of resistance into a real play's mouth. The Katipunan's man in the
+wings now quotes that ad-lib ("Wala 'yon sa komedya"). The "Pangulo"
+was a guess at an office; the rite's conductor was the Mabalasig, so he
+is that, and his art is mabalasig.png. The rite gained the blindfold
+(on the card into the room and again for the ordeal), the warning, the
+challenge to turn back, one ordeal, the oath's content and the blood
+from the arm, and the Mabalasig explains that "Anak ng Bayan" is the
+Katipon's word, which the recruit was given early. Of the two ordeals
+the fire is used: a blindfolded boy firing at a man, even with no
+bullet, is a heavier thing to put in front of a Grade 8 class, and the
+proponents may prefer the other. The warning is paraphrased. The
+pamphlets stay unnamed, since Kalayaan is two years after 1894. Not
+used: the symbolic name every member took, because Sakay's is not in
+these sources.
+
+The four years stay as asked, and the problem stays on the list: 1880
+plus four is eight years before the Katipunan existed. With the 1870
+birth, fourteen years (1880 to 1894) would be exact.
+
+Guards. A guard may declare requiresFlag and unlessFlag, read in
+buildGuards (guardOnDuty), so Act I's street has three bantay only while
+the pamphlets are the task. The hearts are derived from the guards on
+duty (GUARDS), not from every guard the scene names, or the hearts
+would show for the whole act. They do not shoot: a gunfight on the
+street where Nanay lives is not the errand, and a catch (a heart, a
+detection, a respawn) is exactly the stealth term the performance score
+has never been able to measure in the shipped Act I. Each has a crate
+in the middle of his beat, and the beats end short of the next hand-
+over, since sight is 260 from the middle of his body. The street is
+noRanged now for the same reason.
+
+The respawn takes the furthest checkpoint reached (respawnX, Block 37),
+which assumes the student travels right. Block 80's run went left from
+the Kasama, so a catch near the last pamphlet would have sent him back
+across most of the street. Rather than change a rule the harness holds,
+the pulungan's way out is now the back way, onto the street at 4100,
+and the three are met left to right (the mangingisda, the tabakera, the
+karpintero), each with a checkpoint on its pamphlet flag.
+
+Sounds. applause.wav and a new intertitle.wav are made by
+_dev/tools/make-scene-sfx.js, no recording used: the applause is three
+dozen people clapping at their own rates, each clap a burst of noise
+filtered to the band a clap lives in, with a small room and a swell in
+and out; the card is a low soft drum under a curtain's swish, a stage
+sound where the old bell was a phone's. make-sfx.py no longer writes
+the card's sound. A card may name its own effect (playIntertitle's
+sfx), which is how both curtain calls get applause without game.js
+knowing what a play is. A freely licensed recording dropped over either
+file replaces it; none was downloaded, because a download needs the
+proponent's say-so and a synthesized file carries no licence question.
+
+game.js v79, content/act1.js v56, asset-manifest.js v2, ASSET_VERSION
+29. verify_new_scene.js to 188: the battle, the ad-lib, the applause
+asked for, each step of the rite, the back door, the guards on duty
+only on the run (after a reload too), a catch, and the checkpoint moving.
+
+A reload onto the street mid-run first showed the crates and no guards:
+the scene is built before a login's save arrives, and guards were only
+ever built with it. refreshOnDuty, called from applyLoadedState beside
+revealNpcsByFlag, builds the guards and crates again when the restored
+flags change which are on duty. Found by a screenshot, not the harness,
+which reached the street only through a scene change; it now reloads
+onto the street on both sides of the oath.

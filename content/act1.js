@@ -148,12 +148,13 @@ const MORO_WALK = window.ENEMY_TYPES.kawal.animation;
 
 // Block 80. The Katipunan's people and the three who take the pamphlets,
 // all owed (ART.md): the Katipunero who speaks in the wings, the Kasama
-// beside him who then waits on the street and leads the way in, and the
-// Pangulo who swears Macario in.
+// beside him who then waits on the street and leads the way in, and
+// (Block 81, after the histories) the Mabalasig, the "terrible brother"
+// who conducted a recruit's rite.
 const owed = (name) => ({ src: `assets/sprites/characters/${name}.png`, frames: 1, fps: 1 });
 const KATIPUNERO = owed("katipunero");
 const KASAMA = owed("kasama");
-const PANGULO = owed("pangulo");
+const MABALASIG = owed("mabalasig");
 
 // The guards of the Test Room are the "bantay" of the enemy catalogue
 // (content/enemies.js, Block 76), where their art and numbers are.
@@ -196,13 +197,32 @@ const BESIDE = 120;
 const KASAMA_X = 12500;
 
 // Block 80. The secret room, one screen wide like the entablado: the way
-// out on the left, where he came in, the Kasama by it, the Pangulo and
+// out on the left, where he came in, the Kasama by it, the Mabalasig and
 // the Katipunero at the far end. Its picture is owed (ART.md).
 const PULUNGAN_WIDTH = 1180;
 const PULUNGAN_ENTER_X = 120;
 const PULUNGAN_KASAMA_X = 300;
-const PANGULO_X = 760;
+const MABALASIG_X = 760;
 const PULUNGAN_KATIPUNERO_X = 920;
+
+// Block 81. The pamphlet run. He leaves the pulungan by the back, onto
+// the street short of the mangingisda, so the three are met left to
+// right and a checkpoint at each is always the furthest one reached
+// (game.js, respawnX takes the furthest). Three guardia civil walk the
+// street on this run only (requiresFlag, unlessFlag), one before each
+// of the three, each with a crate to hide behind in the middle of his
+// beat: follow him while his back is turned, duck in when he turns, go
+// on when he has passed. None shoots; one that sees Macario catches him,
+// a heart and back to the last checkpoint. Every x here is clear of the
+// joins (4350, 5800, 7250, 10150).
+const BACK_DOOR_X = 4100;
+const PAMPHLET_GUARDS = [
+  { beat: [5000, 5600], hide: 5250 },   // between the mangingisda and the tree
+  { beat: [7400, 8000], hide: 7650 },   // past the tabakera, before Aling Rosa
+  { beat: [9700, 10150], hide: 9880 },  // past Mang Tomas, before the karpintero
+];
+// A guard's sight is 260 from the middle of his body, so each beat's
+// right end stops short of the next person's hand-over spot (x - 120).
 
 // The guards' room (Block 73, work in progress, not the plot): three
 // paintings of the town, three guards, and a door back to Nanay at the
@@ -242,24 +262,24 @@ const DIREKTOR_FLAG = "naihatidKay_direktor";
 const DELIVERY_FLAGS = [...CUSTOMERS.map(customerFlag), DIREKTOR_FLAG];
 
 // Block 80. The three who take the Katipunan's pamphlets, on the street
-// once Macario has been sworn in, in the order the Pangulo names them
-// walking back from the Kasama: the karpintero near him, the tabakera by
-// the Mananahi, the mangingisda before the apple tree. All clear of the
-// joins by 270px or more. Names and lines are PLACEHOLDER; their art is
-// owed.
+// once Macario has been sworn in, in the order the Kasama names them and
+// (Block 81) the order he meets them from the back door: the mangingisda
+// before the apple tree, the tabakera past the Mananahi, the karpintero
+// past Mang Tomas. All clear of the joins by 270px or more. Names and
+// lines are PLACEHOLDER; their art is owed.
 const CITIZENS = [
-  { id: "karpintero", label: "Karpintero", x: 10600, animation: owed("karpintero"),
-    waiting: "Gabi na, iho. Sarado na ang talyer.",
-    thanks: "Katipunan? ...Itatago ko 'to. Ipapabasa ko sa mga kasama ko sa talyer.",
-    after: "Wala akong nakita, wala akong narinig. Ingat ka, iho." },
-  { id: "tabakera", label: "Tabakera", x: 6900, animation: owed("tabakera"),
-    waiting: "Pagod na ako, iho. Maghapon akong nagbalot ng tabako.",
-    thanks: "Isisingit ko 'to sa mga tabako. Maraming babae sa pagawaan ang dapat makabasa nito.",
-    after: "Kumakalat na sa pagawaan ang ibinigay mo. Mag-ingat ka, ha." },
   { id: "mangingisda", label: "Mangingisda", x: 4800, animation: owed("mangingisda"),
     waiting: "Maaga pa ako bukas sa laot. Ano'ng kailangan mo?",
     thanks: "Matagal ko nang hinihintay 'to. Sa bangka ko itatago, walang guardia na sumisilip doon.",
     after: "Nabasa ko na. Ipinasa ko na rin sa kapitbahay." },
+  { id: "tabakera", label: "Tabakera", x: 6900, animation: owed("tabakera"),
+    waiting: "Pagod na ako, iho. Maghapon akong nagbalot ng tabako.",
+    thanks: "Isisingit ko 'to sa mga tabako. Maraming babae sa pagawaan ang dapat makabasa nito.",
+    after: "Kumakalat na sa pagawaan ang ibinigay mo. Mag-ingat ka, ha." },
+  { id: "karpintero", label: "Karpintero", x: 10600, animation: owed("karpintero"),
+    waiting: "Gabi na, iho. Sarado na ang talyer.",
+    thanks: "Katipunan? ...Itatago ko 'to. Ipapabasa ko sa mga kasama ko sa talyer.",
+    after: "Wala akong nakita, wala akong narinig. Ingat ka, iho." },
 ];
 const pamphletFlag = (c) => "naibigayAngPolyetoKay_" + c.id;
 const PAMPHLET_FLAGS = CITIZENS.map(pamphletFlag);
@@ -474,6 +494,7 @@ async function thePlay() {
 
   // The curtain closes, and he is in the wings with the direktor.
   await playIntertitle(["Nagsara ang telon.", "Tumayo at pumalakpak ang mga manonood."], {
+    sfx: "applause", // Block 81
     whileBlack: () => {
       showDecoration("sultan", false);
       placePlayer(STAGE_DIREKTOR_X + 140, -1);
@@ -507,7 +528,18 @@ async function thePlay() {
 }
 
 // -------------------------------------------------------------
-// Block 80. The end of Act I. PLACEHOLDER, every line.
+// Block 80, and Block 81 against the histories. The end of Act I.
+// PLACEHOLDER, every line.
+//
+// What the histories say, and this follows (DECISIONS.md, Block 81):
+// Sakay acted in Principe Baldovino, a komedya attributed to Huseng
+// Sisiw, whose prince fights the enemy's armies and wins; he joined the
+// Katipunan in 1894, when a recruit was blindfolded, led into a dim room
+// hung in black, faced a posted warning and the Mabalasig ("terrible
+// brother"), answered three questions, went through ordeals, and signed
+// the oath in blood from his arm; "Anak ng Bayan" was the first grade's
+// (the Katipon's) password. The play's words, and the line Macario adds
+// to it, are ours.
 //
 // Four years on. Started from Nanay's gift through runSceneScript, as
 // the direktor's scene is started from his, so a reload before the
@@ -523,31 +555,54 @@ async function fourYearsLater() {
   if (window.Acts) Acts.gotoScene("entablado", { x: STAGE_PLAY_X, facing: -1 });
 }
 
-// Principe Baldovino, in the entablado. He is the company's lead now: he
-// needs no whisper from the wings, which the direktor notices, and the
-// line the crowd cheers is the line the Katipunan heard. The play's own
-// story is ours and must be checked against the source book.
+// Principe Baldovino, in the entablado: a komedya, so a prince, a
+// princess held by the enemy, and a battle he wins. He is the company's
+// lead now and needs no whisper from the wings. After the battle he adds
+// a line of his own again, as he did on his first night, and this one
+// is not about love: it is the line the Katipunan hears.
 async function principeBaldovino() {
   setCutscene(true);
+  prepareMusic("assets/audio/music/intense.mp3");
   await wait(400);
   await playDialogue([
-    { speaker: "Maryam", text: "Principe Baldovino! Nasakop na ng malupit na hari ang ating kaharian!" },
-    { speaker: "Maryam", text: "Pinagbabayad niya ang ating mga tao hanggang wala nang makain. Ano ang gagawin mo?" },
-    { speaker: "Macario", text: "Hindi ako luluhod sa haring hindi atin." },
-    { speaker: "Macario", text: "Ang lupang ito ay atin. Babawiin natin ito, kahit buhay ko pa ang kapalit!" },
-    { speaker: "Mga Manonood", text: "Mabuhay si Baldovino!" },
-    { speaker: "Direktor (pabulong)", text: "Apat na taon na... wala na akong naibubulong sa'yo." },
+    { speaker: "Maryam", text: "Principe Baldovino! Ikaw ba 'yan? Bihag ako ng kaaway, at bukas ay ilalayo nila ako sa kaharian!" },
+    { speaker: "Macario", text: "Prinsesa, huwag kang mangamba. Walang pader at walang hukbong makahahadlang sa akin." },
+    { speaker: "Direktor (pabulong)", text: "Ayan na ang mga kawal..." },
   ]);
 
-  await playIntertitle(["Nagsara ang telon.", "Muling tumayo ang mga manonood."], {
+  // The battle every komedya has: two of the enemy's soldiers from the
+  // right wing, fought for real (the first play's kawal).
+  turnPlayer(1);
+  setCutscene(false);
+  setMusic("assets/audio/music/intense.mp3");
+  showToast("Pindutin ang Atake para lumaban!", 2600);
+  await spawnEnemies([80, 200].map((d) => STAGE_WIDTH + d).map((x, i) => ({
+    type: "kawal", id: "baldovino-kawal-" + (i + 1), x,
+  })));
+  setMusic(null);
+  setCutscene(true);
+  placePlayer(STAGE_PLAY_X, -1);
+  await wait(300);
+
+  await playDialogue([
+    { speaker: "Maryam", text: "Iniligtas mo ako, mahal kong prinsipe!" },
+    { speaker: "Macario", text: "At tandaan ng lahat ng nakikinig:" },
+    { speaker: "Macario", text: "Walang bayang mananatiling alipin, kung ang mga anak nito ay handang lumaban!" },
+    { speaker: "Direktor (pabulong)", text: "Wala na naman 'yan sa iskrip..." },
+    { speaker: "Mga Manonood", text: "..." },
+    { speaker: "Mga Manonood", text: "Mabuhay si Baldovino!" },
+  ]);
+
+  await playIntertitle(["Nagsara ang telon.", "Muling tumayo at pumalakpak ang mga manonood."], {
+    sfx: "applause",
     whileBlack: () => placePlayer(STAGE_DIREKTOR_X + 140, -1),
   });
   await wait(300);
   await playDialogue([
-    { speaker: "Direktor", text: "Narinig mo ba? \"Mabuhay si Baldovino!\" Hanggang kalye, rinig 'yon." },
-    { speaker: "Maryam", text: "Apat na taon na, pero nanginginig pa rin ang tuhod mo, 'no?" },
-    { speaker: "Macario", text: "Medyo lang." },
-    { speaker: "Maryam", text: "Sabi ko na nga ba." },
+    { speaker: "Direktor", text: "Macario... 'yung idinagdag mo sa dulo. Wala 'yon sa iskrip." },
+    { speaker: "Macario", text: "Pasensya na po. Bigla na naman pong lumabas." },
+    { speaker: "Direktor", text: "Nagustuhan ng mga tao. Pero may guardia civil sa likod ng mga upuan ngayong gabi. Mag-ingat ka." },
+    { speaker: "Maryam", text: "Apat na taon na, pero hindi ka pa rin marunong sumunod sa iskrip, 'no?" },
   ]);
   // Saved before the men come, so a reload from here plays only them.
   state.flags.naitanghalAngBaldovino = true;
@@ -576,13 +631,14 @@ async function theKatipunanAsks() {
   await playDialogue([
     { speaker: "Katipunero", text: "Principe Baldovino." },
     { speaker: "Macario", text: "Macario po. Sino po sila?" },
-    { speaker: "Katipunero", text: "'Yung sinabi mo kanina. \"Ang lupang ito ay atin.\" Linya lang ba 'yon?" },
+    { speaker: "Katipunero", text: "'Yung huling linya mo kanina. Wala 'yon sa komedya." },
+    { speaker: "Katipunero", text: "Linya lang ba 'yon, o pinaniniwalaan mo?" },
     { speaker: "Macario", text: "..." },
     { speaker: "Katipunero", text: "May kaibigan kang nagtanong-tanong tungkol sa amin. Sabi niya, gusto mo raw sumali." },
     { speaker: "Macario", text: "Kayo po ba... ang Katipunan?" },
     { speaker: "Kasama", text: "Hinaan mo ang boses mo." },
     { speaker: "Katipunero", text: "Minsan ko lang itatanong. Sigurado ka bang gusto mong sumali?" },
-    { speaker: "Katipunero", text: "Hindi ito dula. Dito, hindi kahoy ang mga espada." },
+    { speaker: "Katipunero", text: "Hindi ito komedya. Dito, hindi kahoy ang mga espada." },
     { speaker: "Macario (sa isip)", text: "Si Nanay..." },
     { speaker: "Macario (sa isip)", text: "Pero kaya nga ako sasali. Para wala nang inang mauubusan ng pambili ng bigas dahil sa cedula." },
     { speaker: "Macario", text: "Sigurado po ako." },
@@ -603,51 +659,78 @@ async function theKatipunanAsks() {
   setCutscene(false);
 }
 
-// The Kasama on the street, once the word is said: a card naming the
-// place, and the fade into the room (the Test Room's way in, Block 74).
+// The Kasama on the street, once the word is said: the blindfold, as a
+// recruit was led in, and the fade into the room (the Test Room's way
+// in, Block 74).
 async function intoThePulungan() {
   setCutscene(true);
-  await playIntertitle(["Sa isang lihim na silid sa Tondo"], { keepBlack: true });
+  await playIntertitle(["Piniringan ang mga mata ni Macario,",
+    "at dinala siya sa isang lihim na silid sa Tondo."], { keepBlack: true });
   if (window.Acts) Acts.gotoScene("pulungan", { x: PULUNGAN_ENTER_X, facing: 1 });
 }
 
-// The oath, in the pulungan. A scene script on arrival (and on a reload
-// into the room, which plays it again from the top). The three
-// questions and the signature in blood are the Katipunan's own rite as
-// the history books tell it; the wording is ours. Its doneFlag is the
-// step's own flag, so the pamphlets are announced as he is sent out.
+// Block 81. The rite, in the pulungan, in the order the histories give
+// it: the blindfold off in a dim room hung in black, the warning on the
+// wall, the Mabalasig's challenge to turn back, the three questions, an
+// ordeal (of the two recorded, the leap over a fire said to be burning,
+// rather than the revolver said to be loaded, for a Grade 8 room), the
+// oath signed in blood from the arm, and the first grade's name and
+// password. The warning is a paraphrase, not the original's words. A
+// scene script on arrival (and on a reload into the room, which plays
+// it again from the top). Its doneFlag is the step's own flag, so the
+// pamphlets are announced as he is sent out.
 async function theOath() {
   setCutscene(true);
   await wait(400);
   await playDialogue([
-    { speaker: "Pangulo", text: "Ito ba ang bata?" },
-    { speaker: "Kasama", text: "Siya po. Alam niya ang salita." },
-    { speaker: "Pangulo", text: "Lumapit ka." },
+    { speaker: "Mabalasig", text: "Alisin ang kanyang piring." },
+    { speaker: "Macario (sa isip)", text: "Madilim... itim ang lahat ng kurtina." },
+    { speaker: "Mabalasig", text: "Basahin mo ang nakasulat sa dingding." },
+    { speaker: "Macario", text: "\"Kung may lakas at tapang ka, magpatuloy ka. Kung pag-uusisa lamang ang nagdala sa iyo rito, umalis ka na.\"" },
+    { speaker: "Mabalasig", text: "Ako ang Mabalasig. Ito na ang huli mong pagkakataong umatras." },
+    { speaker: "Mabalasig", text: "Kung kulang ang tapang mo, walang lugar para sa iyo rito." },
+    { speaker: "Macario", text: "Hindi po ako aatras." },
+    { speaker: "Mabalasig", text: "Lumapit ka." },
   ]);
-  await movePlayer(PANGULO_X - BESIDE, 170);
+  await movePlayer(MABALASIG_X - BESIDE, 170);
   turnPlayer(1);
   await wait(300);
   await playDialogue([
-    { speaker: "Pangulo", text: "Bago ka namin tanggapin, tatlong tanong. Sagutin mo nang tapat." },
-    { speaker: "Pangulo", text: "Ano ang kalagayan ng ating bayan noong unang panahon, bago dumating ang mga Kastila?" },
-    { speaker: "Macario", text: "Malaya po. May sarili tayong pamumuhay at pamahalaan." },
-    { speaker: "Pangulo", text: "At ngayon?" },
+    { speaker: "Mabalasig", text: "Tatlong tanong. Sagutin mo nang tapat." },
+    { speaker: "Mabalasig", text: "Ano ang kalagayan ng ating bayan nang dumating ang mga Kastila?" },
+    { speaker: "Macario", text: "May sarili po tayong pamumuhay at pamahalaan. Malaya po tayo." },
+    { speaker: "Mabalasig", text: "At ano ang kalagayan nito ngayon?" },
     { speaker: "Macario", text: "Alipin po sa sarili nating lupa." },
-    { speaker: "Pangulo", text: "At sa darating na panahon?" },
-    { speaker: "Macario", text: "Malaya pong muli... kung may lalaban." },
-    { speaker: "Pangulo", text: "..." },
-    { speaker: "Pangulo", text: "Lagdaan mo ang panunumpa. Sa sarili mong dugo." },
+    { speaker: "Mabalasig", text: "At ano ang maaasahan nito sa darating na panahon?" },
+    { speaker: "Macario", text: "Kalayaan po... kung may lalaban." },
+    { speaker: "Mabalasig", text: "..." },
+    { speaker: "Mabalasig", text: "Piringan siyang muli." },
   ]);
-  await playIntertitle(["Lumagda si Macario sa panunumpa, gamit ang sarili niyang dugo."]);
+  await playIntertitle(["Muling piniringan si Macario."]);
+  await playDialogue([
+    { speaker: "Mabalasig", text: "Sa harap mo ay may nagliliyab na apoy. Tumalon ka." },
+    { speaker: "Macario (sa isip)", text: "Wala akong makita..." },
+    { speaker: "Macario (sa isip)", text: "Para kay Nanay. Para sa bayan." },
+  ]);
+  await playIntertitle(["Tumalon siya.", "Walang apoy. Pagsubok lamang iyon ng kanyang tapang."]);
   await wait(300);
   await playDialogue([
-    { speaker: "Pangulo", text: "Mula ngayon, kapatid ka na namin, Macario." },
+    { speaker: "Mabalasig", text: "Ngayon, ang panunumpa." },
+    { speaker: "Mabalasig", text: "Isumpa mong ipagtatanggol mo ang Katipunan, iingatan mo ang mga lihim nito, at tutulungan mo ang bawat kapatid sa anumang panganib." },
+    { speaker: "Macario", text: "Isinusumpa ko po." },
+  ]);
+  await playIntertitle(["Hiniwaan si Macario sa braso,",
+    "at sa sarili niyang dugo, nilagdaan niya ang panunumpa."]);
+  await wait(300);
+  await playDialogue([
+    { speaker: "Mabalasig", text: "Mula ngayon, kapatid ka na namin, Macario. Isa ka nang Katipon, ang unang baitang." },
+    { speaker: "Mabalasig", text: "Kaya \"Anak ng Bayan\" ang salitang ibinigay sa iyo. Iyon ang hudyat ng mga Katipon." },
     { speaker: "Katipunero", text: "Maligayang pagdating, kapatid. Hindi na linya lang 'yung sinabi mo sa entablado." },
-    { speaker: "Pangulo", text: "Heto ang una mong gawain. Mga polyeto." },
-    { speaker: "Pangulo", text: "Nakasulat diyan kung bakit tayo lumalaban. Kailangang mabasa ito ng ating mga kababayan." },
-    { speaker: "Pangulo", text: "Tatlo ang naghihintay nito sa kalye." },
-    { speaker: "Kasama", text: "Ang karpintero, malapit lang paglabas mo. Ang tabakera, sa tabi ng patahian. At ang mangingisda, bago ang puno ng mansanas." },
-    { speaker: "Kasama", text: "Iabot mo nang palihim. Kapag nahulihan ka ng guardia civil, hindi ka na makakauwi sa nanay mo." },
+    { speaker: "Mabalasig", text: "Heto ang una mong gawain. Mga polyeto." },
+    { speaker: "Mabalasig", text: "Nakasulat diyan kung bakit tayo lumalaban. Kailangang mabasa ito ng ating mga kababayan." },
+    { speaker: "Kasama", text: "Sa likod ka dadaan. Ang mangingisda ang pinakamalapit, bago ang puno ng mansanas. Ang tabakera, lampas sa patahian. Ang karpintero, lampas pa kay Mang Tomas." },
+    { speaker: "Kasama", text: "May mga guardia civil na nagroronda ngayong gabi. Huwag kang dadaan sa harap nila. Magtago ka kung kailangan." },
+    { speaker: "Kasama", text: "Kapag nahuli ka, hindi ka na makakauwi sa nanay mo." },
     { speaker: "Macario", text: "Opo. Ako na po ang bahala." },
   ]);
   setCutscene(false);
@@ -862,6 +945,27 @@ window.ACT_1 = {
       panelSky: STREET_SKY,
       startX: STREET_SPOT,
       hintSpots: HINT_SPOTS,
+      // Block 81. The pamphlet run's guardia civil (PAMPHLET_GUARDS): the
+      // catalogue's bantay, on duty only while the pamphlets are the task,
+      // not shooting, so being seen is a catch rather than a gunfight on
+      // a street full of neighbours.
+      guards: PAMPHLET_GUARDS.map((g, i) => ({
+        type: "bantay", id: "guardia-" + (i + 1), shoots: false,
+        x: g.beat[0], patrolFrom: g.beat[0], patrolTo: g.beat[1], facing: 1,
+        requiresFlag: "tinanggapSaKatipunan", unlessFlag: "naipamigayAngMgaPolyeto",
+      })),
+      hideSpots: PAMPHLET_GUARDS.map((g) => ({ x: g.hide, width: 110,
+        requiresFlag: "tinanggapSaKatipunan", unlessFlag: "naipamigayAngMgaPolyeto" })),
+      // A catch sends him to the furthest of these reached: the back door,
+      // then each of the three once handed a pamphlet.
+      checkpoints: [
+        { x: BACK_DOOR_X, flag: "tinanggapSaKatipunan" },
+        ...CITIZENS.map((c) => ({ x: c.x - BESIDE, flag: pamphletFlag(c) })),
+      ],
+      // Block 81. No gun on this street: a shot at the guardia civil among
+      // the neighbours is not the errand the Kasama gave (a long hold
+      // punches, as on the stage).
+      noRanged: true,
       decorations: [
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1].idle,
@@ -1389,16 +1493,17 @@ window.ACT_1 = {
       // wide. Its picture is owed (ART.md), so the engine draws a dark
       // room with the file name on it until it arrives; the dirt strip
       // stays until then, and a painting with its own floor sets ground:
-      // false. The way out stays shut until he is sworn in and leads back
-      // to the Kasama, facing the street the pamphlets go to.
+      // false. The way out stays shut until he is sworn in. Since Block 81
+      // it is the back way ("Sa likod ka dadaan"), onto the street short
+      // of the mangingisda, facing the three and the guardia civil.
       id: "pulungan",
       worldWidth: PULUNGAN_WIDTH,
       backdrop: { src: "assets/backgrounds/act1/pulungan.jpg" },
       noRanged: true,
       startX: PULUNGAN_ENTER_X,
       exits: [
-        { id: "labas", x: 0, width: 70, label: "Lumabas", requiresFlag: "tinanggapSaKatipunan",
-          toScene: "tondo", toX: KASAMA_X - BESIDE, toFacing: -1 },
+        { id: "labas", x: 0, width: 70, label: "Lumabas sa likod", requiresFlag: "tinanggapSaKatipunan",
+          toScene: "tondo", toX: BACK_DOOR_X, toFacing: 1 },
       ],
       scripts: [
         { requiresFlag: "nakausapAngKasama", doneFlag: "tinanggapSaKatipunan",
@@ -1417,12 +1522,12 @@ window.ACT_1 = {
           ],
         },
         {
-          id: "pangulo", x: PANGULO_X, label: "Pangulo", animation: PANGULO,
+          id: "mabalasig", x: MABALASIG_X, label: "Mabalasig", animation: MABALASIG,
           dialogueSets: [
             {
               // PLACEHOLDER.
               lines: [
-                { speaker: "Pangulo", text: "Humayo ka na, kapatid. Naghihintay ang tatlo." },
+                { speaker: "Mabalasig", text: "Humayo ka na, kapatid. Naghihintay ang tatlo." },
               ],
             },
           ],

@@ -9,8 +9,9 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 29 Sep 2026, after Block 80 (the end of Act I).
-test.js 729 passed, 0 failed; verify_new_scene.js 175 passed,
+Last updated: 29 Sep 2026, after Block 81 (the ending checked against
+the histories; guards on the pamphlet run; applause; a new card sound).
+test.js 729 passed, 0 failed; verify_new_scene.js 188 passed,
 0 failed.
 
 ## Start here
@@ -66,9 +67,11 @@ a time in the quest log (finished ones in Mga Setting):
    11  Hanapin ang naghihintay sa       the password to the Kasama,
        kalye                            x 12500
    12  Sumapi sa Katipunan              the oath in the pulungan
-   13  Ipamigay ang mga polyeto (n/3)   the karpintero, the tabakera,
-                                        the mangingisda; the third ends
-                                        the act and the post-test runs
+   13  Ipamigay ang mga polyeto (n/3)   out the back door, past three
+                                        guardia civil: the mangingisda,
+                                        the tabakera, the karpintero;
+                                        the third ends the act and the
+                                        post-test runs
 
 Act I completes (holdOpen is gone since Block 80). It pays no barya per
 step; the performance award is paid on completion.
@@ -97,17 +100,17 @@ settings. The teacher dashboard is a light report page in English.
 The proponent has confirmed on the phone: Block 36's speed fix (18 Sep
 2026) and Blocks 37 and 38 as functional. Blocks 57 and 58 were accepted
 from the harness and screenshots (23 Sep 2026). The proponent reported
-the device pass done on 29 Sep 2026, before Block 80; Block 80 has not
-been seen on the phone.
+the device pass done on 29 Sep 2026, before Block 80; Blocks 80 and 81
+have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v49    js/game.js v78       js/shell.js v19
+    css/style.css v49    js/game.js v79       js/shell.js v19
     js/inventory.js v9   js/acts.js v14       js/assessment.js v4
-    content/act1.js v55  content/items.js v11  content/act2-4.js v1
+    content/act1.js v56  content/items.js v11  content/act2-4.js v1
     content/enemies.js v1   content/questions.js v1
-    js/asset-manifest.js v1 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 28 (in js/game.js; Block 80 added no file)
+    js/asset-manifest.js v2 (bumped by make-asset-manifest.js)
+    ASSET_VERSION 29 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v1
@@ -116,47 +119,53 @@ Current versions, which index.html must match on every push:
 
 In order.
 
-1. Look at Block 80 on the phone, in landscape, from a private tab,
-after the push. Give Nanay the savings and play to the end. What to
-look for, and what failure looks like:
+1. Look at Blocks 80 and 81 on the phone, in landscape, from a private
+tab, after the push, with the sound on. Give Nanay the savings and play
+to the end. What to look for, and what failure looks like:
 
-    The four years: straight after Nanay's last line, a black card,
-      "Pagkalipas ng apat na taon" and "Ngayong gabi sa entablado:
-      Principe Baldovino", lifting onto the stage with Macario beside
-      Maryam, mid-play. Failure: a glimpse of the street between the
-      card and the stage, or no card.
-    The play and the wings: six lines, the curtain, four lines with the
-      direktor and Maryam; then Macario crosses to stage right as two
-      dashed boxes (katipunero.png, kasama.png) come out of the right
-      wing. They ask whether he is sure; he thinks of Nanay and the
-      cedula, says yes, and is given "Anak ng Bayan". They walk off.
-    The street: Lumabas, and the Kasama box stands at 12500, left of the
-      direktor. Talking to him plays the word and a black card, "Sa
-      isang lihim na silid sa Tondo".
-    The pulungan: a dark wall with a dashed border and the file name
-      pulungan.jpg, three boxes (Kasama, Pangulo, Katipunero), the three
-      questions, a card for the signature in blood, the pamphlets and
-      who takes them. Lumabas on the left, shut until the oath is done.
-    The pamphlets: three boxes on the street (karpintero 10600, tabakera
-      6900, mangingisda 4800), Iabot ang polyeto on each, the log
-      counting (n/3). After the third, three thoughts, the card "Wakas
-      ng Unang Yugto", and the post-test (Panapos na Pagsusulit).
-      Failure: no post-test, or a post-test while a card is still up.
+    The four years: straight after Nanay's last line, a black card with
+      a low drum and a curtain's swish (not the old bell), "Pagkalipas
+      ng apat na taon" and "Ngayong gabi sa entablado: Principe
+      Baldovino", lifting onto the stage mid-play. Failure: a glimpse of
+      the street between the card and the stage.
+    The play: three lines, then two kawal from the right wing to fight;
+      then Macario's added line, a silent crowd, "Mabuhay si
+      Baldovino!", and the curtain card to applause (the first play's
+      curtain too). Failure: silence, or the drum, under the curtain.
+      Judge whether the applause sounds like a crowd or like rain; a
+      recorded one can replace it.
+    The wings: the direktor warns about the added line; two dashed
+      boxes (katipunero.png, kasama.png) ask whether he is sure and give
+      him "Anak ng Bayan".
+    The street: no guards and no hearts yet. The Kasama box at 12500;
+      the word, and a card: blindfolded, to a secret room.
+    The pulungan: a dark wall named pulungan.jpg; the Mabalasig box; the
+      warning, the challenge, the three questions, the blindfold again,
+      the fire, the oath, the blood; "Lumabas sa likod" on the left.
+    The run: out at x 4100 with the hearts showing and three guardia
+      civil walking their beats, a crate in each. Seen, the meter fills
+      and he is caught: a heart, and back to the door or to the last
+      person reached. From behind, a punch takes one down. Hand the
+      three their pamphlets (mangingisda, tabakera, karpintero); after
+      the third, "Wakas ng Unang Yugto" and the post-test. Failure: a
+      guard who sees him while he stands at a person's side, a crate
+      that does not hide him, or no post-test.
     Watch whether students find the Kasama and the three from what they
-      are told; there is no guide.
+      are told, and whether the guards are too hard; beats and crates
+      are PAMPHLET_GUARDS in content/act1.js.
 
 2. Decide the four years. The opening card says 1880, so four years on
-is 1884, and the Katipunan was founded in 1892; Sakay is usually said to
-have joined in 1894, which the post-test asks. The four-year card names
-no year for that reason. Change the gap or the opening year so the
-story agrees with the history the test teaches (STORY.md, Open
-questions).
+is 1884, and the Katipunan was founded in 1892; Sakay joined in 1894,
+which the post-test asks. The card names no year for that reason. With
+his 1870 birth, a jump of fourteen years (1880 to 1894) would be exact.
+Change the gap or the opening year (STORY.md, Open questions).
 
-3. The proponents' review of Block 80: every line is ours (+ in
+3. The proponents' review of Blocks 80 and 81: every line is ours (+ in
 STORY.md, PLACEHOLDER in content/act1.js), and so are the names
-Katipunero, Kasama, Pangulo, Karpintero, Tabakera and Mangingisda. What
-happens in Principe Baldovino, the password, the three questions and
-what the pamphlets were are to be checked against the source book.
+Katipunero, Kasama, Karpintero, Tabakera and Mangingisda. Block 81
+checked the rite, the password and Principe Baldovino against the
+histories (DECISIONS.md, Block 81, with sources); still for the source
+book: the play's words, the ordeal chosen, and what the pamphlets were.
 
 4. The assessment item bank against Act I. The pre-test and post-test
 (db/seeds/macario_items_v3.sql, built into content/questions.js,
@@ -174,7 +183,7 @@ but before the pilot either keep it, hide it (one line in shell.js,
 _openSettings), or remove testRoom from content/act1.js.
 
 6. Art from the artist: ART.md's Owed list (the Mananahi, the direktor,
-Aling Rosa, and since Block 80 the Katipunero, the Kasama, the Pangulo,
+Aling Rosa, and since Block 80 the Katipunero, the Kasama, the Mabalasig,
 the three who take the pamphlets and the pulungan's painting; Macario's
 death pose; the night backdrop), and a side-view walk for Nanay. PNGs
 with transparency; each goes through ART.md's steps.
@@ -324,7 +333,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (729 and 175 checks) |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (729 and 188 checks) |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -421,6 +430,9 @@ machine, the assessment module.
     80  the end of Act I: four years on, Principe Baldovino, the
         Katipunan, the oath, the pamphlets; holdOpen removed; an owed
         backdrop drawn as a placeholder room
+    81  the ending checked against the histories (the komedya, the
+        Mabalasig's rite); guards on duty by flag, on the pamphlet run;
+        applause; a new black-card sound
 
 ## Blocks remaining
 
@@ -506,14 +518,14 @@ test.js (729 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (175 checks) drives the real
+what is covered. verify_new_scene.js (188 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest and the Test Room, and checks that every line of the content is
 in STORY.md, that ART.md's Owed list matches the disk, and that the
 asset manifest matches assets/ and every picture in it opens. Anything
 other than "0 failed" is a regression. Both never touch the live
-project. Both are green as of Block 80.
+project. Both are green as of Block 81.
 
 A check that clicks, or reads pixels, is worth more than one that reads
 a style (the dead Atake button would have passed any style assertion).
