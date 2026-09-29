@@ -3280,3 +3280,61 @@ back with one line. The card's sound was tried twice (Block 58's bell,
 Block 81's drum) and fitted neither time; silence is the honest third
 answer. test.js's check was rewritten: a card is silent, and a card
 that names applause plays it. game.js v82.
+
+The feel pass (Block 85). Twelve suggestions were listed and the
+proponent asked for all of them; ten are built here, and TRACKER.md
+carries the other two (the item bank, which the proponents must
+approve, and the art, which the artist owes).
+
+Night is a scene field, night: true or { requiresFlag, unlessFlag,
+music }, read like a guard's duty: the day paintings and the road take
+a moonlit filter (the same two layers greyFilter reaches, so the people
+stay readable) and the music becomes the night's while it lasts. Act I's
+street is night from the oath until the last pamphlet. The music is
+crickets over a faint wind, music/gabi.wav, made by make-scene-sfx.js
+as an eight-second loop that joins without a click, because the calm
+track said "nothing is wrong" and intense.mp3 said "fight".
+
+Detection is heard: notice, two soft rising notes when a guard's meter
+starts from empty (not more than once in 2.5 s for one guard), and
+caught, a low stab on a catch. The first notice in a save also says, as
+a toast, to hide behind a crate or get out of his sight: there is no
+guide, and this is the one line of teaching stealth gets. The crates
+stay in the middle of each beat, where following a guard's back and
+ducking in when he turns is what works.
+
+The post-test opens on "Handa ka na ba?" with the number of questions
+and a button, instead of straight over the act's last black card
+(assessment.js, runTest, post only).
+
+The rite and the Katipunan's approach were cut by five lines of ours
+and broken with movement: the older man leaves when he has his answer
+and the Kasama gives the word alone; Macario looks around the dark room
+before the warning; he carries the pamphlets to the Kasama by the door
+and hears the directions there, where the way out is.
+
+A dialogue line may name a sound (line.sfx) in place of the blip: the
+crowd's "Mabuhay!" lines cheer, a crowd made the way the applause is.
+
+An outfit without sheets may name a tint (item.tint, a CSS filter),
+applied to Macario's sprite element when it is worn (Game.setOutfitTint,
+through inventory.js): the stage clothes warm him toward a costume's
+gold until the artist draws them. One element, set on a change, never in
+the loop.
+
+Fast reading: lines are remembered as read (short hashes in
+state.flags.__nabasa, an "__" flag so a replay keeps them), and holding
+E, the interact button or the dialogue box moves through read lines
+every 140 ms after 450 ms of holding, stopping at the first unread one.
+A first reading is one tap a line. Holding E used to fire on key
+autorepeat and skip every line, read or not; that is fixed.
+
+Less walking: the Mananahi comes to watch the first play and pays
+Macario outside the entablado (a second NPC, and a new NPC field,
+hiddenWhile, keeping her shop empty from the play until the years
+pass), which removes a walk of about 7000px; her first line changes
+from hearing of the play to having seen it.
+
+game.js v83, style.css v50, inventory.js v11, assessment.js v5,
+content/act1.js v59, content/items.js v13, asset-manifest.js v3,
+ASSET_VERSION 30. verify_new_scene.js to 200.

@@ -171,6 +171,9 @@ const KABAYO_X = 3560;
 // body is centred on the trunk.
 const PUNO_X = 5800 - 40;
 const MANANAHI_X = 6400;
+// Block 85. Where she waits after the first play, outside the entablado,
+// left of where Lumabas puts Macario (13480) and 200 clear of the join.
+const MANANAHI_AT_PLAY_X = 13250;
 const DIREKTOR_X = 13600;     // at the far end, by the entablado
 
 // Inside the entablado, one phone screen wide (a sideways phone at
@@ -489,7 +492,7 @@ async function thePlay() {
     { speaker: "Sultan", text: "Kung ganyan katapang ang pag-ibig mo sa aking anak, sino ako para humadlang?" },
     { speaker: "Maryam", text: "Ama!" },
     { speaker: "Sultan", text: "Sa inyo na ang aking basbas." },
-    { speaker: "Mga Manonood", text: "Mabuhay! Mabuhay!" },
+    { speaker: "Mga Manonood", text: "Mabuhay! Mabuhay!", sfx: "cheer" },
   ]);
 
   // The curtain closes, and he is in the wings with the direktor.
@@ -594,7 +597,7 @@ async function principeBaldovino() {
     { speaker: "Macario", text: "Walang bayang mananatiling alipin, kung ang mga anak nito ay handang lumaban!" },
     { speaker: "Direktor (pabulong)", text: "Wala na naman 'yan sa iskrip..." },
     { speaker: "Mga Manonood", text: "..." },
-    { speaker: "Mga Manonood", text: "Mabuhay si Baldovino!" },
+    { speaker: "Mga Manonood", text: "Mabuhay si Baldovino!", sfx: "cheer" },
   ]);
 
   await playIntertitle(["Nagsara ang telon.", "Muling tumayo at pumalakpak ang mga manonood."], {
@@ -660,17 +663,18 @@ async function theKatipunanAsks() {
     { speaker: "Macario (sa isip)", text: "Si Nanay..." },
     { speaker: "Macario (sa isip)", text: "Pero kaya nga ako sasali. Para wala nang inang mauubusan ng pambili ng bigas dahil sa cedula." },
     { speaker: "Macario", text: "Sigurado po ako." },
-    { speaker: "Katipunero", text: "Kung gayon, makinig ka." },
+  ]);
+  // Block 85. Broken with movement, not read in one breath: the older
+  // man has what he came for and goes, and the Kasama stays a moment.
+  await moveDecoration("katipunero", STAGE_WIDTH + 100, 200);
+  showDecoration("katipunero", false);
+  await playDialogue([
     { speaker: "Kasama", text: "Paglabas mo, hanapin mo ako sa kalye, bago ang entablado." },
     { speaker: "Kasama", text: "Lalapitan mo ako at sasabihin mo: \"Anak ng Bayan.\" Kapag hindi mo 'yon sinabi, hindi kita kilala." },
     { speaker: "Macario", text: "Anak ng Bayan." },
     { speaker: "Kasama", text: "Hindi rito. Sa labas." },
   ]);
-  await Promise.all([
-    moveDecoration("katipunero", STAGE_WIDTH + 100, 200),
-    moveDecoration("kasama", STAGE_WIDTH + 180, 200),
-  ]);
-  showDecoration("katipunero", false);
+  await moveDecoration("kasama", STAGE_WIDTH + 180, 200);
   showDecoration("kasama", false);
   state.flags.nilapitanNgKatipunan = true;
   markDirty();
@@ -703,10 +707,16 @@ async function theOath() {
   await playDialogue([
     { speaker: "Mabalasig", text: "Alisin ang kanyang piring." },
     { speaker: "Macario (sa isip)", text: "Madilim... itim ang lahat ng kurtina." },
+  ]);
+  // Block 85. He looks around the room before anyone speaks again.
+  turnPlayer(-1);
+  await wait(700);
+  turnPlayer(1);
+  await wait(400);
+  await playDialogue([
     { speaker: "Mabalasig", text: "Basahin mo ang nakasulat sa dingding." },
     { speaker: "Macario", text: "\"Kung may lakas at tapang ka, magpatuloy ka. Kung pag-uusisa lamang ang nagdala sa iyo rito, umalis ka na.\"" },
     { speaker: "Mabalasig", text: "Ako ang Mabalasig. Ito na ang huli mong pagkakataong umatras." },
-    { speaker: "Mabalasig", text: "Kung kulang ang tapang mo, walang lugar para sa iyo rito." },
     { speaker: "Macario", text: "Hindi po ako aatras." },
     { speaker: "Mabalasig", text: "Lumapit ka." },
   ]);
@@ -751,12 +761,17 @@ async function theOath() {
     { speaker: "Mabalasig", text: "Mula ngayon, kapatid ka na namin, Macario. Isa ka nang Katipon, ang unang baitang." },
     { speaker: "Mabalasig", text: "Kaya \"Anak ng Bayan\" ang salitang ibinigay sa iyo. Iyon ang hudyat ng mga Katipon." },
     { speaker: "Katipunero", text: "Maligayang pagdating, kapatid. Hindi na linya lang 'yung sinabi mo sa entablado." },
-    { speaker: "Mabalasig", text: "Heto ang una mong gawain. Mga polyeto." },
-    { speaker: "Mabalasig", text: "Nakasulat diyan kung bakit tayo lumalaban. Kailangang mabasa ito ng ating mga kababayan." },
+    { speaker: "Mabalasig", text: "Heto ang una mong gawain: mga polyeto. Kailangang mabasa ito ng ating mga kababayan." },
+  ]);
+  // Block 85. He takes the pamphlets to the Kasama by the door, who
+  // tells him the rest there, where the way out is.
+  await movePlayer(PULUNGAN_KASAMA_X + BESIDE, 170);
+  turnPlayer(-1);
+  await wait(300);
+  await playDialogue([
     { speaker: "Kasama", text: "Sa likod ka dadaan. Ang mangingisda ang pinakamalapit, bago ang puno ng mansanas. Ang tabakera, lampas sa patahian. Ang karpintero, lampas pa kay Mang Tomas." },
     { speaker: "Kasama", text: "May mga guardia civil na nagroronda ngayong gabi. Huwag kang dadaan sa harap nila. Magtago ka kung kailangan." },
     { speaker: "Kasama", text: "Mabuti't suot mo pa 'yang damit-teatro. Kapag tumigil ka at hindi gumalaw, hindi ka nila agad papansinin." },
-    { speaker: "Kasama", text: "Kapag nahuli ka, hindi ka na makakauwi sa nanay mo." },
     { speaker: "Macario", text: "Opo. Ako na po ang bahala." },
   ]);
   setCutscene(false);
@@ -988,6 +1003,10 @@ window.ACT_1 = {
         { x: BACK_DOOR_X, flag: "tinanggapSaKatipunan" },
         ...CITIZENS.map((c) => ({ x: c.x - BESIDE, flag: pamphletFlag(c) })),
       ],
+      // Block 85. Night on the pamphlet run, as the story says it is: the
+      // street darkened, and the crickets instead of the day's music.
+      night: { requiresFlag: "tinanggapSaKatipunan", unlessFlag: "naipamigayAngMgaPolyeto",
+               music: "assets/audio/music/gabi.wav" },
       // Block 81. No gun on this street: a shot at the guardia civil among
       // the neighbours is not the errand the Kasama gave (a long hold
       // punches, as on the stage).
@@ -1203,10 +1222,29 @@ window.ACT_1 = {
               ],
             },
             {
+              // PLACEHOLDER. Four years on.
+              lines: [
+                { speaker: "Mananahi", text: "Kapag may tahi ulit, ipapatawag kita, ha?" },
+              ],
+            },
+          ],
+          // Block 85. At the play from the night of it until the years
+          // pass: she is outside the entablado (below), so being paid is
+          // not a 7000px walk back to her shop.
+          hiddenWhile: { requiresFlag: "naitanghalAngDula", unlessFlag: "lumipasAngApatNaTaon" },
+        },
+        {
+          // Block 85. The Mananahi after the first play, outside the
+          // entablado: she came to watch the costume she sewed. Her pay
+          // is here, and she has seen it herself rather than heard it.
+          id: "mananahi-sa-entablado", x: MANANAHI_AT_PLAY_X, label: "Mananahi", animation: MANANAHI,
+          startsHidden: true, revealedByFlag: "naitanghalAngDula", hiddenByFlag: "lumipasAngApatNaTaon",
+          dialogueSets: [
+            {
               // PLACEHOLDER. After the play; the pay is her gift button.
               skipIfFlag: "nabayaranNgMananahi",
               lines: [
-                { speaker: "Mananahi", text: "Macario! Totoo ba 'yung ibinalita sa akin? Ikaw raw ang bumida sa entablado?" },
+                { speaker: "Mananahi", text: "Macario! Nanood ako sa likod. Ikaw pala ang bumida!" },
                 { speaker: "Macario", text: "Nawala po kasi 'yung artista nila. Ako na lang po ang pinagsuot ng damit." },
                 { speaker: "Mananahi", text: "Aba, e 'di ikaw pala ang unang nagsuot ng tinahi ko! Kasya ba?" },
                 { speaker: "Macario", text: "Kasyang-kasya po." },
@@ -1215,15 +1253,8 @@ window.ACT_1 = {
             },
             {
               // PLACEHOLDER. Paid, before the savings are given.
-              skipIfFlag: "naibigayAngIponKayNanay",
               lines: [
                 { speaker: "Mananahi", text: "Iuwi mo na 'yan sa nanay mo. Matutuwa 'yon." },
-              ],
-            },
-            {
-              // PLACEHOLDER. Afterwards.
-              lines: [
-                { speaker: "Mananahi", text: "Kapag may tahi ulit, ipapatawag kita, ha?" },
               ],
             },
           ],

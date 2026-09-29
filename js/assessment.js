@@ -244,6 +244,20 @@ const Assessment = {
       return null;
     }
 
+    // Block 85. A breath before the post-test: it used to open straight
+    // over the act's last black card. One calm card, and the questions
+    // wait for the student's tap. Not before the pre-test, which already
+    // follows the trivia card.
+    if (testType === "post") {
+      await this._message({
+        eyebrow: label,
+        title: "Handa ka na ba?",
+        body: "Tapos na ang yugtong ito. May " + items.length + " tanong tungkol sa iyong nilaro. " +
+          "Huminga muna, at sagutin nang tapat.",
+        button: "Handa na ako",
+      });
+    }
+
     const answers = await this._askAll(items, label);
     const result = await this._submit(actNumber, testType, items, answers, label, tries.length + 1);
     this._close();

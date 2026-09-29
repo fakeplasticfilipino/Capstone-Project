@@ -61,5 +61,8 @@ window.ITEMS = [
       "Habang nakatayo ka nang tahimik, mas matagal kang mapapansin ng guardia civil.",
     price: 0,
     effect: { stillDetectionMult: 0.2 },
+    // Block 85. A stand-in until the costume is drawn: Macario warmed
+    // toward the gold of a stage costume, so a student can see it is on.
+    tint: "sepia(0.55) saturate(1.6) hue-rotate(-12deg) brightness(1.05)",
   },
 ];

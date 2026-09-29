@@ -344,6 +344,15 @@ html, body {
   filter: grayscale(1);
 }
 
+/* Block 85. Night for a stretch of the story (a scene's night): the day
+   paintings and the road dimmed and cooled toward moonlight. Only these
+   two layers, the same ones greyFilter reaches, so the people on the
+   road stay readable. */
+#skyline.night-tint,
+#ground-tiles.night-tint {
+  filter: brightness(0.42) saturate(0.55) sepia(0.25) hue-rotate(185deg);
+}
+
 /* A scene whose backdrop already paints a floor (ground: false, the
    inside of the entablado) hides the dirt strip. Block 34. */
 #ground-tiles.ground-hidden {

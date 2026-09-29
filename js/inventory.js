@@ -606,6 +606,8 @@ const Inventory = {
     if (!window.Game || !Game.setOutfit) return;
     const worn = this.item(this.equipped("outfit"));
     Game.setOutfit(worn && worn.sheets ? worn.sheets : null);
+    // Block 85. An outfit without sheets may name a stand-in tint.
+    if (Game.setOutfitTint) Game.setOutfitTint(worn && !worn.sheets && worn.tint ? worn.tint : null);
   },
 
   // -----------------------------------------------------------

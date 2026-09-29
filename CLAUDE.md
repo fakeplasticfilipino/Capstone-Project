@@ -394,6 +394,8 @@ Scene shape:
       id,                                        persisted as current_room
       worldWidth, startX,
       dangerous: true,                           optional; shows the hearts
+      night: true | { requiresFlag, unlessFlag,  optional; moonlit backdrop
+               music },                          and its own track (Block 85)
       greyFilter: true,                          optional; greys backdrop + ground
       backdrop: { src },                         optional; own picture, drawn once
       panels: ["assets/...jpg", ...],            optional; paintings side by
@@ -619,6 +621,8 @@ NPC shape:
       revealedByFlag: "someFlag",                optional; unhides when set
       hiddenByFlag: "someFlag",                  optional; leaves when set
                                                  (Block 58)
+      hiddenWhile: { requiresFlag, unlessFlag }, optional; away for that
+                                                 stretch (Block 85)
       opensShop: true,                           optional; see below
       opensShopAfter: "someFlag",                optional; talks, then sells
       nearSound: "assets/audio/sfx/x.mp3",       optional; loops while near
@@ -633,7 +637,9 @@ NPC shape:
                                                  reach (Block 69)
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete(),
-                       skipIfFlag, requiresFlag }],  both optional
+                       skipIfFlag, requiresFlag }],  both optional; a
+                                                 line's sfx replaces its
+                                                 blip (Block 85)
       gift: { buttonLabel, requiresFlag, givenFlag,
               responseLines, completesQuest,
               onComplete() }                     optional; onComplete optional
@@ -860,6 +866,9 @@ low-end phone would buy nothing. Only ownership is stored.
                                                  while that quest is open
       buyFlag: "someFlag",                       optional; see below
       soldBy: "npcId"                            optional; that seller only
+      tint: "sepia(0.5)"                         optional; an outfit with no
+                                                 sheets tints Macario while
+                                                 worn (Block 85)
     }
 
 There are three groups, and the inventory screen, the shop and

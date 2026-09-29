@@ -42,7 +42,9 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 29 Sep 2026, Block 83 (the opening is Tondo, 1890, at
+Last updated: 30 Sep 2026, Block 85 (the feel pass: night on the
+run, the crowd heard, the rite trimmed and broken with movement, the
+Mananahi at the play). Before that, 29 Sep 2026, Block 83 (the opening is Tondo, 1890, at
 the proponent's direction, so the four-year cut names Tondo, 1894).
 Before that, Block 82 (the direktor's stage clothes for
 the walk home; the leap over the fire shown, not told). Before that,
@@ -100,7 +102,8 @@ Act I lives on it, left to right:
     x 4800     the mangingisda (four years on, once Macario is sworn in)
     x 5800     the apple tree (Puno ng mansanas): the silhouette tree
                over that join, with no picture of its own
-    x 6400     the Mananahi
+    x 6400     the Mananahi (from the first play until the four years,
+               outside the entablado instead, at x 13250)
     x 6900     the tabakera (as the mangingisda)
     x 7800     Aling Rosa, a customer
     x 9300     Mang Tomas, a customer
@@ -403,6 +406,8 @@ last one falls.
   + Sultan: Sa inyo na ang aking basbas.
   + Mga Manonood: Mabuhay! Mabuhay!
 
+    (A crowd's cheer is heard with the line, since Block 85.)
+
   + [BLACK] Nagsara ang telon.
   + [BLACK] Tumayo at pumalakpak ang mga manonood.
 
@@ -434,9 +439,11 @@ may reverse.
 
 ### 9. The Mananahi pays
 
-tondo, x 6400. Talk, then the button reads Kunin ang bayad. +50 barya.
+tondo, outside the entablado (x 13250), where she has come to watch;
+since Block 85, so that being paid is not a walk back across the
+street. Talk, then the button reads Kunin ang bayad. +50 barya.
 
-  + Mananahi: Macario! Totoo ba 'yung ibinalita sa akin? Ikaw raw ang bumida sa entablado?
+  + Mananahi: Macario! Nanood ako sa likod. Ikaw pala ang bumida!
   + Macario: Nawala po kasi 'yung artista nila. Ako na lang po ang pinagsuot ng damit.
   + Mananahi: Aba, e 'di ikaw pala ang unang nagsuot ng tinahi ko! Kasya ba?
   + Macario: Kasyang-kasya po.
@@ -498,6 +505,8 @@ her side.
   + Mga Manonood: ...
   + Mga Manonood: Mabuhay si Baldovino!
 
+    (The cheer again.)
+
     (His own line again, as on his first night; this one is not about
     love. The crowd is quiet for a moment before it cheers.)
 
@@ -544,7 +553,10 @@ this.
   + Macario (sa isip): Si Nanay...
   + Macario (sa isip): Pero kaya nga ako sasali. Para wala nang inang mauubusan ng pambili ng bigas dahil sa cedula.
   + Macario: Sigurado po ako.
-  + Katipunero: Kung gayon, makinig ka.
+
+    (The Katipunero has his answer and walks off into the wing. The
+    Kasama stays a moment.)
+
   + Kasama: Paglabas mo, hanapin mo ako sa kalye, bago ang entablado.
   + Kasama: Lalapitan mo ako at sasabihin mo: "Anak ng Bayan." Kapag hindi mo 'yon sinabi, hindi kita kilala.
   + Macario: Anak ng Bayan.
@@ -593,10 +605,12 @@ ours.
 
   + Mabalasig: Alisin ang kanyang piring.
   + Macario (sa isip): Madilim... itim ang lahat ng kurtina.
+
+    (He looks around the room.)
+
   + Mabalasig: Basahin mo ang nakasulat sa dingding.
   + Macario: "Kung may lakas at tapang ka, magpatuloy ka. Kung pag-uusisa lamang ang nagdala sa iyo rito, umalis ka na."
   + Mabalasig: Ako ang Mabalasig. Ito na ang huli mong pagkakataong umatras.
-  + Mabalasig: Kung kulang ang tapang mo, walang lugar para sa iyo rito.
   + Macario: Hindi po ako aatras.
   + Mabalasig: Lumapit ka.
 
@@ -633,12 +647,13 @@ ours.
   + Mabalasig: Mula ngayon, kapatid ka na namin, Macario. Isa ka nang Katipon, ang unang baitang.
   + Mabalasig: Kaya "Anak ng Bayan" ang salitang ibinigay sa iyo. Iyon ang hudyat ng mga Katipon.
   + Katipunero: Maligayang pagdating, kapatid. Hindi na linya lang 'yung sinabi mo sa entablado.
-  + Mabalasig: Heto ang una mong gawain. Mga polyeto.
-  + Mabalasig: Nakasulat diyan kung bakit tayo lumalaban. Kailangang mabasa ito ng ating mga kababayan.
+  + Mabalasig: Heto ang una mong gawain: mga polyeto. Kailangang mabasa ito ng ating mga kababayan.
+
+    (He takes them to the Kasama by the door.)
+
   + Kasama: Sa likod ka dadaan. Ang mangingisda ang pinakamalapit, bago ang puno ng mansanas. Ang tabakera, lampas sa patahian. Ang karpintero, lampas pa kay Mang Tomas.
   + Kasama: May mga guardia civil na nagroronda ngayong gabi. Huwag kang dadaan sa harap nila. Magtago ka kung kailangan.
   + Kasama: Mabuti't suot mo pa 'yang damit-teatro. Kapag tumigil ka at hindi gumalaw, hindi ka nila agad papansinin.
-  + Kasama: Kapag nahuli ka, hindi ka na makakauwi sa nanay mo.
   + Macario: Opo. Ako na po ang bahala.
 
 Completes: Sumapi sa Katipunan. The student is free; the way out,
@@ -677,6 +692,12 @@ of the three he has already reached. From behind, a guard can be taken
 down. Standing still in the stage clothes, he is noticed five times
 more slowly. He can run, except near a guard (Block 82). Nobody speaks;
 the Kasama's warning is the whole of the instruction.
+
+At night (Block 85): the street darkened toward moonlight while the
+pamphlets are the task, and crickets instead of the day's music. The
+first time a guard starts to notice him, a hint says to hide behind a
+crate or get out of his sight; a rising note sounds whenever one starts
+to notice, and a sting on a catch.
 
 The pamphlets count (n/3). After the third, wherever he is:
 
@@ -743,7 +764,7 @@ Mananahi:
   + Mananahi: Hinahanap ka raw ng direktor sa entablado. Bilisan mo!
     (delivered, the play not yet done; only an old save reaches this)
   + Mananahi: Iuwi mo na 'yan sa nanay mo. Matutuwa 'yon.
-    (paid, before the savings)
+    (paid, before the savings; outside the entablado)
   + Mananahi: Kapag may tahi ulit, ipapatawag kita, ha?
     (afterwards)
 

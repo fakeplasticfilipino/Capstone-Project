@@ -9,10 +9,13 @@
 
 window.ASSET_MANIFEST = [
   "assets/audio/music/calm.mp3",
+  "assets/audio/music/gabi.wav",
   "assets/audio/music/intense.mp3",
   "assets/audio/sfx/applause.wav",
   "assets/audio/sfx/blip.wav",
   "assets/audio/sfx/catch.wav",
+  "assets/audio/sfx/caught.wav",
+  "assets/audio/sfx/cheer.wav",
   "assets/audio/sfx/coin.wav",
   "assets/audio/sfx/door.wav",
   "assets/audio/sfx/fanfare.wav",
@@ -24,6 +27,7 @@ window.ASSET_MANIFEST = [
   "assets/audio/sfx/jump.wav",
   "assets/audio/sfx/knockout.wav",
   "assets/audio/sfx/miss.wav",
+  "assets/audio/sfx/notice.wav",
   "assets/audio/sfx/page.wav",
   "assets/audio/sfx/punch.wav",
   "assets/audio/sfx/quest.wav",

@@ -863,10 +863,14 @@ const artDrift = () => {
   // ---------------------------------------------------------------
   console.log("\nThe Mananahi's pay, and Nanay");
   ok("the next task is the Mananahi's pay", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.payM]));
-  await walkTo(page, 6300);
+  // Block 85. She came to watch, and waits outside, not at her shop.
+  const mAt = await page.evaluate(() => NPCS.filter((n) => /^mananahi/.test(n.id)).map((n) => [n.id, n.x, Boolean(n.hidden)]));
+  ok("the Mananahi waits outside the entablado, and not at her shop (Block 85)",
+     JSON.stringify(mAt) === JSON.stringify([["mananahi", 6400, true], ["mananahi-sa-entablado", 13250, false]]), mAt);
+  await walkTo(page, 13130);
   await page.keyboard.press("e");
   const m2 = await readConversation(page, 6);
-  ok("she has heard about the play", m2.lines.length === 5 && /bumida/.test(m2.lines[0]), m2.lines);
+  ok("she watched the play herself", m2.lines.length === 5 && /Nanood ako/.test(m2.lines[0]), m2.lines);
   ok("Kunin ang bayad", (await gift(page)) === "Kunin ang bayad");
   await readConversation(page, 2);
   await page.waitForTimeout(200);
@@ -930,6 +934,7 @@ const artDrift = () => {
   ok("after the battle, a line of his own that is not in the script, and a silence before the cheer",
      pb1b.lines.length === 6 && pb1b.lines[2] === BALDOVINO_LINE && /iskrip/.test(pb1b.lines[3]) &&
      pb1b.lines[4] === "Mga Manonood: ..." && /Mabuhay si Baldovino/.test(pb1b.lines[5]), pb1b.lines);
+  ok("the crowd is heard cheering with its line (Block 85)", await page.evaluate(() => __sfx.includes("cheer")));
   ok("the curtain closes", await waitIntertitle(page, true, 3000) &&
      (await intertitle(page)).lines[0] === "Nagsara ang telon.");
   // The card's sound comes with its first line, after the fade in.
@@ -946,23 +951,28 @@ const artDrift = () => {
     toast: document.getElementById("toast").textContent }));
   ok("the stage clothes are his, worn, with their effect, and a toast says so (Block 82)",
      suit.worn && suit.still === 0.2 && /Damit-Pangteatro/.test(suit.toast), suit);
+  ok("and he looks different in them: a stand-in tint on his sprite (Block 85)", await page.evaluate(() =>
+    /sepia/.test(document.querySelector("#player .player-sprite").style.filter) &&
+    document.getElementById("player").classList.contains("outfit-tinted")));
   const pb2b = await readConversation(page, 2);
   ok("and Maryam teases", pb2b.lines.length === 1 && /iskrip/.test(pb2b.lines[0]), pb2b.lines);
   ok("the play is saved before anyone comes", await page.evaluate(() => state.flags.naitanghalAngBaldovino === true));
 
   console.log("\nThe Katipunan asks");
   const kk = await readConversation(page, 20);
+  const kk2 = await readConversation(page, 6);
   const kkPlace = await page.evaluate(() => ({ x: posX, facing,
     men: ["katipunero", "kasama"].map((id) => document.getElementById("dec-" + id).textContent) }));
   ok("two men come out of the right wing to him at stage right, both placeholder boxes",
      kkPlace.x === 700 && kkPlace.facing === 1 &&
      /katipunero\.png/.test(kkPlace.men[0]) && /kasama\.png/.test(kkPlace.men[1]), kkPlace);
   ok("they ask whether he is sure, he gives his reason, says yes, and is given the word",
-     kk.lines.length === 18 && kk.lines[0] === "Katipunero: Principe Baldovino." &&
+     kk.lines.length === 13 && kk.lines[0] === "Katipunero: Principe Baldovino." &&
      /Wala 'yon sa komedya/.test(kk.lines[2]) &&
-     kk.lines.includes(SURE_Q) && kk.lines.includes("Macario: Sigurado po ako.") &&
+     kk.lines.includes(SURE_Q) && kk.lines[12] === "Macario: Sigurado po ako." &&
      kk.lines.some((l) => /^Macario \(sa isip\):.*cedula/.test(l)) &&
-     kk.lines[16] === "Macario: Anak ng Bayan." && kk.lines[17] === "Kasama: Hindi rito. Sa labas.", kk.lines);
+     kk2.lines.length === 4 && kk2.lines[2] === "Macario: Anak ng Bayan." && kk2.lines[3] === "Kasama: Hindi rito. Sa labas.",
+     { kk: kk.lines, kk2: kk2.lines });
   await settle(page);
   await page.waitForTimeout(1500);
   ok("they leave, the play step is done, and the world is his",
@@ -1011,9 +1021,11 @@ const artDrift = () => {
   ok("the task is to join", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.join]));
   // Block 81. The rite, in the histories' order.
   const o1 = await readConversation(page, 10);
-  ok("the blindfold off, the warning on the wall, and the Mabalasig's challenge to turn back",
-     o1.lines.length === 8 && o1.lines[0] === "Mabalasig: Alisin ang kanyang piring." &&
-     /pag-uusisa/.test(o1.lines[3]) && /umatras/.test(o1.lines[4]) && o1.lines[6] === "Macario: Hindi po ako aatras.", o1.lines);
+  const o1b = await readConversation(page, 10);
+  ok("the blindfold off, he looks around, the warning on the wall, and the Mabalasig's challenge to turn back",
+     o1.lines.length === 2 && o1.lines[0] === "Mabalasig: Alisin ang kanyang piring." &&
+     o1b.lines.length === 5 && /pag-uusisa/.test(o1b.lines[1]) && /umatras/.test(o1b.lines[2]) &&
+     o1b.lines[3] === "Macario: Hindi po ako aatras.", { o1: o1.lines, o1b: o1b.lines });
   const o2 = await readConversation(page, 10);
   ok("the three questions, answered: when the Spaniards came, now, and the future",
      o2.lines.length === 9 && /dumating ang mga Kastila/.test(o2.lines[1]) && /ngayon/.test(o2.lines[3]) &&
@@ -1044,10 +1056,12 @@ const artDrift = () => {
      /braso/.test((await intertitle(page)).lines[0]));
   await waitIntertitle(page, false, 12000);
   const o5 = await readConversation(page, 10);
-  ok("a Katipon now, which is why his word was Anak ng Bayan; sent out the back with the pamphlets, warned of the guardia civil",
-     o5.lines.length === 10 && /Katipon/.test(o5.lines[0]) && /Anak ng Bayan/.test(o5.lines[1]) &&
-     /mangingisda.*tabakera.*karpintero/.test(o5.lines[5]) && /guardia civil/.test(o5.lines[6]) &&
-     /damit-teatro/.test(o5.lines[7]) && o5.lines[9] === "Macario: Opo. Ako na po ang bahala.", o5.lines);
+  const o5b = await readConversation(page, 10);
+  ok("a Katipon now, which is why his word was Anak ng Bayan; at the door, sent out the back with the pamphlets, warned of the guardia civil",
+     o5.lines.length === 4 && /Katipon/.test(o5.lines[0]) && /Anak ng Bayan/.test(o5.lines[1]) && /polyeto/.test(o5.lines[3]) &&
+     o5b.lines.length === 4 && /mangingisda.*tabakera.*karpintero/.test(o5b.lines[0]) && /guardia civil/.test(o5b.lines[1]) &&
+     /damit-teatro/.test(o5b.lines[2]) && o5b.lines[3] === "Macario: Opo. Ako na po ang bahala." &&
+     await page.evaluate(() => posX === 420 && facing === -1), { o5: o5.lines, o5b: o5b.lines });
   await settle(page);
   await page.waitForTimeout(300);
   ok("sworn in; the task is the pamphlets (0/3)", await page.evaluate(() => state.flags.tinanggapSaKatipunan === true) &&
@@ -1064,6 +1078,12 @@ const artDrift = () => {
      street === "nanay,kutsero,kabayo,puno,mananahi,aling-rosa,mang-tomas,direktor,kasama,mangingisda,tabakera,karpintero", street);
   const p1 = await panels(page);
   ok("nobody stands behind a tree", p1.blocked.length === 0, p1.blocked);
+  const night = await page.evaluate(() => ({
+    sky: document.getElementById("skyline").classList.contains("night-tint"),
+    road: document.getElementById("ground-tiles").classList.contains("night-tint"),
+    music: musicSrc }));
+  ok("night on the run: the street and road darkened, crickets for music (Block 85)",
+     night.sky && night.road && /gabi\.wav$/.test(night.music), night);
   const gd = await page.evaluate(() => ({
     guards: GUARDS.map((g) => [g.type, g.shoots, g.patrolFrom, g.patrolTo, Boolean(g.animation && /bantay\.png$/.test(g.animation.src))]),
     hides: HIDE_SPOTS.length, hearts: !document.getElementById("hud").classList.contains("hidden"),
@@ -1096,6 +1116,8 @@ const artDrift = () => {
     return { x: posX, hp: Game.health().health, hp0, seen: Game.stats().detections - seen0,
       slowed, secs: Math.round((performance.now() - t0) / 100) / 10 };
   });
+  ok("a guard starting to notice is heard, the first time with a hint, and a catch stings (Block 85)",
+     await page.evaluate(() => __sfx.includes("notice") && __sfx.includes("caught") && state.flags.__turoSaBantay === true));
   ok("seen by one, he is caught: a heart, a detection, and back to the back door",
      caught.x === 4100 && caught.hp === caught.hp0 - 1 && caught.seen === 1, caught);
   ok("standing still in the stage clothes, the guard's meter is slowed and drawn so, and takes seconds to fill",
@@ -1132,6 +1154,10 @@ const artDrift = () => {
   ok("Nanay does not know, and worries", /guardia civil/.test(nanayLine), nanayLine);
   await handOver(10600, "Karpintero", 3);
 
+  ok("a line shown is remembered as read, for fast-forwarding (Block 85)", await page.evaluate(() => {
+    const line = { speaker: "Pagsubok", text: "Isang linya " + Date.now() };
+    return noteLineRead(line) === false && noteLineRead(line) === true && state.flags.__nabasa.length > 50;
+  }));
   console.log("\nThe end of Act I");
   const end = await readConversation(page, 4);
   ok("his thought after the third", end.lines.length === 3 && /tatlo/.test(end.lines[0]) && /Nanay/.test(end.lines[1]), end.lines);
@@ -1145,6 +1171,9 @@ const artDrift = () => {
     if (post.quiz && /Panapos/.test(post.eyebrow)) break;
     await page.waitForTimeout(100);
   }
+  ok("and it opens on a calm card, not a question (Block 85)", await page.evaluate(() =>
+    document.getElementById("quiz-title").textContent === "Handa ka na ba?" &&
+    document.querySelectorAll(".quiz-choice").length === 0));
   ok("every step is done, Act I finishes, and the post-test opens",
      post.done === 13 && post.status === "posttest" && post.quiz && /Panapos/.test(post.eyebrow), post);
   await ctx.close();
@@ -1225,7 +1254,7 @@ const artDrift = () => {
   r = await resume("entablado", Object.assign({}, savingsGiven, { naitanghalAngBaldovino: true }));
   c = await readConversation(r.page, 20);
   ok("a reload after Principe Baldovino and before the men have gone plays only the men",
-     c.lines[0] === "Katipunero: Principe Baldovino." && c.lines.length === 18 &&
+     c.lines[0] === "Katipunero: Principe Baldovino." && c.lines.length === 13 &&
      await r.page.evaluate(() => posX === 700), c.lines);
   await r.ctx.close();
 

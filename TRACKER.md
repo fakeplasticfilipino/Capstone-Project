@@ -9,10 +9,11 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 30 Sep 2026, after Block 84 (black screens silent).
+Last updated: 30 Sep 2026, after Block 85 (the feel pass, ten of its
+twelve). Before that, Block 84 (black screens silent).
 Before that, Block 83 (the opening in 1890, the cut to 1894). Before that, Block 82 (the direktor's stage clothes;
 the fire leap shown, not told; running allowed away from guards).
-test.js 730 passed, 0 failed; verify_new_scene.js 193 passed,
+test.js 730 passed, 0 failed; verify_new_scene.js 200 passed,
 0 failed.
 
 ## Start here
@@ -108,12 +109,12 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v49    js/game.js v82       js/shell.js v19
-    js/inventory.js v10  js/acts.js v14       js/assessment.js v4
-    content/act1.js v58  content/items.js v12  content/act2-4.js v1
+    css/style.css v50    js/game.js v83       js/shell.js v19
+    js/inventory.js v11  js/acts.js v14       js/assessment.js v5
+    content/act1.js v59  content/items.js v13  content/act2-4.js v1
     content/enemies.js v1   content/questions.js v1
-    js/asset-manifest.js v2 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 29 (in js/game.js)
+    js/asset-manifest.js v3 (bumped by make-asset-manifest.js)
+    ASSET_VERSION 30 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v1
@@ -341,7 +342,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (730 and 193 checks) |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (730 and 200 checks) |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -445,6 +446,9 @@ machine, the assessment module.
         the fire leap shown; running allowed away from guards
     83  the opening in 1890, the cut to 1894
     84  black screens silent: no sound on a black card or a scene fade
+    85  the feel pass: night, detection sounds, a breath before the
+        post-test, the rite trimmed, crickets, the cheer, the costume
+        tint, the first-guard hint, fast-forward, the Mananahi at the play
 
 ## Blocks remaining
 
@@ -457,6 +461,37 @@ which is deliberate. (NOT STARTED)
 
 Real items for Sandata, Anting-anting and Damit, and outfit art,
 decided against the source material. (NOT STARTED)
+
+The feel pass, agreed 30 Sep 2026: all twelve to be done, in this
+order of payoff. Each line says what "done" is.
+
+    4   Night on the pamphlet run: the street darkened while the
+        pamphlets are the task. (COMPLETE, Block 85)
+    7   Detection sounds: a rising note when a guard starts noticing,
+        a sting on a catch. (COMPLETE, Block 85)
+    10  A breath before the post-test: a calm "Handa ka na ba?" card
+        with a button after "Wakas ng Unang Yugto". (COMPLETE, Block 85)
+    1   The long reading stretches (the wings, the Katipunan, the
+        rite) trimmed and broken up with movement. (COMPLETE, Block 85)
+    5   Music on the run: a quieter night sound, not calm.mp3.
+        (COMPLETE, Block 85: crickets, music/gabi.wav)
+    6   The crowd heard: a cheer on the "Mabuhay!" lines. (COMPLETE,
+        Block 85)
+    8   The costume seen: a stand-in tint on Macario while the stage
+        clothes are worn, until the artist draws them. (COMPLETE,
+        Block 85)
+    9   The first guard teaches: a first-time hint to hide or stand
+        still, and the first crate where it is needed. (COMPLETE,
+        Block 85: the hint; the crates stay mid-beat, where hiding works)
+    3   Fast reading: a way to get through lines already read.
+        (COMPLETE, Block 85: hold E, the interact button or the box)
+    2   Less walking: fewer end-to-end trips on the 14500px street.
+        (COMPLETE, Block 85: the Mananahi pays outside the entablado,
+        about 7000px less; the running of Block 82 does the rest)
+    11  The item bank matched to the finished Act I (the post-test now
+        runs); needs the proponents to approve the items. (NOT STARTED)
+    12  The placeholder art: the Mananahi, the direktor and the Kasama
+        first. Needs the artist (ART.md). (BLOCKED)
 
 ## Blocked on other people
 
@@ -530,14 +565,14 @@ test.js (730 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (193 checks) drives the real
+what is covered. verify_new_scene.js (200 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest and the Test Room, and checks that every line of the content is
 in STORY.md, that ART.md's Owed list matches the disk, and that the
 asset manifest matches assets/ and every picture in it opens. Anything
 other than "0 failed" is a regression. Both never touch the live
-project. Both are green as of Block 84.
+project. Both are green as of Block 85.
 
 A check that clicks, or reads pixels, is worth more than one that reads
 a style (the dead Atake button would have passed any style assertion).

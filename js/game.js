@@ -243,7 +243,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 29;
+const ASSET_VERSION = 30;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -789,6 +789,7 @@ function loadScene(sceneId) {
   document
     .getElementById("ground-tiles")
     .classList.toggle("grey-filter", Boolean(scene.greyFilter));
+  applyNight(scene); // Block 85
 
   // Block 34. A scene may bring its own backdrop picture (the inside of
   // the entablado) instead of the shared Tondo.png, and may hide the dirt
@@ -1384,6 +1385,10 @@ function revealNpcsByFlag() {
 // the change should happen in front of the student (under a black card).
 function npcShouldHide(npc) {
   if (npc.hiddenByFlag && state.flags[npc.hiddenByFlag]) return true;
+  // Block 85. Away for a stretch of the story and back after it
+  // ({ requiresFlag, unlessFlag }, read as a guard's duty is): the
+  // Mananahi at the play, away from her shop until the years pass.
+  if (npc.hiddenWhile && guardOnDuty(npc.hiddenWhile)) return true;
   return Boolean(npc.startsHidden) && !state.flags[npc.revealedByFlag];
 }
 
@@ -1811,6 +1816,16 @@ async function setOutfit(sheets) {
   applyAnim(currentAnim, true);
 }
 
+// Block 85. A worn outfit with no art of its own (the stage clothes) may
+// name a stand-in tint, a CSS filter on Macario's sprite, so a student
+// can see he is wearing something. null clears it. One element, set when
+// the outfit changes, never in the loop. inventory.js is the only caller.
+function setOutfitTint(filter) {
+  if (!playerSpriteEl) return;
+  playerSpriteEl.style.filter = filter || "";
+  player.classList.toggle("outfit-tinted", Boolean(filter));
+}
+
 function applyAnim(name, force) {
   if (!spritesReady) return;
   if (currentAnim === name && !force) return;
@@ -1990,7 +2005,10 @@ document.addEventListener("keydown", (e) => {
   const wasDown = keysPressed[key];
   keysPressed[key] = true;
 
-  if (key === "e") handleInteractPress();
+  // Block 85. Not on autorepeat: holding E used to fire it thirty times a
+  // second and skip every line, read or not. A hold now fast-forwards
+  // only through lines already read (updateFastForward).
+  if (key === "e" && !wasDown) handleInteractPress();
 
   // Guarded on wasDown so holding a key does not re-fire on autorepeat.
   if (!wasDown && (key === " " || key === "w" || key === "arrowup")) {
@@ -2089,6 +2107,7 @@ btnInteract.addEventListener(
   "touchstart",
   (e) => {
     e.preventDefault();
+    interactTouchHeld = true; // Block 85, for a held fast-forward
     handleInteractPress();
   },
   { passive: false }
@@ -2342,7 +2361,63 @@ function showDialogueStep() {
   const line = activeSet.lines[dialogueStep];
   dialogueSpeaker.textContent = line.speaker;
   dialogueText.textContent = line.text;
-  playSfx("blip"); // Block 58
+  // Block 58, the blip. Block 85: a line may name its own sound instead
+  // (line.sfx, one of SFX_SOURCES), for a crowd that cheers.
+  playSfx(line.sfx && SFX_SOURCES[line.sfx] ? line.sfx : "blip");
+  dialogueLineWasRead = noteLineRead(line);
+}
+
+// =============================================================
+// Block 85. Lines already read, for fast-forwarding. Holding E, the
+// interact button or the dialogue box moves through lines this save has
+// shown before, one every FAST_FORWARD_STEP_MS, after FAST_FORWARD_AFTER_MS
+// of holding; it stops at the first line never read. A replay after a
+// failed post-test, or a reload mid-scene, is where it helps; a first
+// reading is still one tap a line, since the dialogue is the lesson.
+// Kept as short hashes in state.flags.__nabasa, an "__" flag so a replay
+// keeps it (acts.js, replayAct).
+// =============================================================
+const FAST_FORWARD_AFTER_MS = 450;
+const FAST_FORWARD_STEP_MS = 140;
+let dialogueLineWasRead = false;
+let advanceHeldSince = 0;
+let lastFastAdvance = 0;
+let interactTouchHeld = false;
+let dialoguePointerHeld = false;
+
+function lineKey(line) {
+  const s = (line.speaker || "") + "|" + (line.text || "");
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+
+// Records the line and says whether it had been read before.
+function noteLineRead(line) {
+  if (!Array.isArray(state.flags.__nabasa)) state.flags.__nabasa = [];
+  if (!noteLineRead.set || noteLineRead.list !== state.flags.__nabasa) {
+    noteLineRead.list = state.flags.__nabasa;
+    noteLineRead.set = new Set(noteLineRead.list);
+  }
+  const key = lineKey(line);
+  if (noteLineRead.set.has(key)) return true;
+  noteLineRead.set.add(key);
+  noteLineRead.list.push(key);
+  saveDirty = true; // the next save carries it; no redraw needed
+  return false;
+}
+
+function updateFastForward(now) {
+  const held = inDialogue && (keysPressed["e"] || interactTouchHeld || dialoguePointerHeld);
+  if (!held) {
+    advanceHeldSince = 0;
+    return;
+  }
+  if (!advanceHeldSince) advanceHeldSince = now;
+  if (now - advanceHeldSince < FAST_FORWARD_AFTER_MS) return;
+  if (!dialogueLineWasRead || now - lastFastAdvance < FAST_FORWARD_STEP_MS) return;
+  lastFastAdvance = now;
+  advanceDialogue();
 }
 
 function advanceDialogue() {
@@ -2565,7 +2640,7 @@ async function fadeToScene(sceneId, placement) {
 
   // Each scene's own music, or Calm (Block 35), so a fight's track never
   // follows him out of the room it was fought in.
-  setMusic(currentScene && currentScene.music);
+  setMusic(sceneTrack(currentScene)); // Block 85: a night may have its own
 
   await wait(900); // fade back in
   cutscenePlaying = false;
@@ -2738,6 +2813,30 @@ function withEnemyType(placed, kind) {
 // Guards carry their own runtime state, reset on every scene load so a
 // respawn starts them where the level designer put them rather than
 // wherever they happened to be standing.
+// Block 85. A scene may turn to night for a stretch of its story:
+// night: true, or night: { requiresFlag, unlessFlag, music }. The
+// paintings and the road are darkened toward blue (style.css,
+// .night-tint), the characters are not, so they stay readable; music,
+// when given, is the scene's track while it is night. Read on every
+// scene load and again when a save's flags arrive (refreshOnDuty).
+function sceneNight(scene) {
+  const n = scene && scene.night;
+  if (!n) return null;
+  if (n === true) return {};
+  return guardOnDuty(n) ? n : null;
+}
+
+function sceneTrack(scene) {
+  const night = sceneNight(scene);
+  return (night && night.music) || (scene && scene.music) || null;
+}
+
+function applyNight(scene) {
+  const on = Boolean(sceneNight(scene));
+  document.getElementById("skyline").classList.toggle("night-tint", on);
+  document.getElementById("ground-tiles").classList.toggle("night-tint", on);
+}
+
 // Also read for hide spots, which the same stretch of story brings.
 function guardOnDuty(placed) {
   return (!placed.requiresFlag || Boolean(state.flags[placed.requiresFlag])) &&
@@ -2763,6 +2862,10 @@ function refreshOnDuty() {
     HIDE_SPOTS = spots;
     buildHideSpots();
   }
+  // Block 85. And the night, and its music, which a login into the
+  // scene never reaches through a fade.
+  applyNight(scene);
+  if (sceneNight(scene) && sceneNight(scene).music) setMusic(sceneTrack(scene));
 }
 
 function buildGuards(token) {
@@ -3019,6 +3122,22 @@ function updateGuards(step) {
       // caught, only a slower one.
       const stillMult = playerStill ? equipEffects.stillDetectionMult : 1;
       guard.disguised = stillMult < 1;
+      // Block 85. Heard as well as seen: a rising note the moment a
+      // guard starts to notice, from an empty meter, not more often than
+      // NOTICE_SFX_GAP_MS for the same guard. The first time in a save,
+      // a hint says what to do about it; there is no guide, so this is
+      // the one line of teaching stealth gets.
+      if (guard.alert === 0 && now - (guard.noticedAt || 0) > NOTICE_SFX_GAP_MS) {
+        guard.noticedAt = now;
+        playSfx("notice");
+        if (!state.flags.__turoSaBantay) {
+          state.flags.__turoSaBantay = true;
+          markDirty();
+          showToast(HIDE_SPOTS.length
+            ? "May nakapansin! Magtago sa likod ng kahon, o lumayo sa tingin niya."
+            : "May nakapansin! Lumayo sa tingin niya.", 3600);
+        }
+      }
       guard.alert = Math.min(1, guard.alert + (guard.alertRate || 0.012) * stillMult * step);
       // Block 38. The first time the clothes are what is holding a guard
       // back in a scene, say so. The meter turning blue (drawGuard) says
@@ -3344,8 +3463,14 @@ function playerIsSafe() {
 function caughtBy(guard) {
   guard.alert = 0;
   detections += 1;
+  playSfx("caught"); // Block 85, a sting over the hurt
   damagePlayer("Nakita ka ng bantay!", true);
 }
+
+// Block 85. How long one guard waits before his notice note can sound
+// again: a student stepping in and out of his sight should not hear it
+// on every step.
+const NOTICE_SFX_GAP_MS = 2500;
 
 // =============================================================
 // HEALTH
@@ -4275,6 +4400,14 @@ function destroyProjectile() {
 dialogueBox.addEventListener("click", () => {
   if (inDialogue) advanceDialogue();
 });
+
+// Block 85. Holding the box or the interact button fast-forwards through
+// lines already read (updateFastForward).
+dialogueBox.addEventListener("pointerdown", () => { dialoguePointerHeld = true; });
+["pointerup", "pointercancel", "pointerleave"].forEach((type) =>
+  dialogueBox.addEventListener(type, () => { dialoguePointerHeld = false; }));
+["touchend", "touchcancel"].forEach((type) =>
+  btnInteract.addEventListener(type, () => { interactTouchHeld = false; }));
 
 // =============================================================
 // SCRIPTED SCENES AND COMBAT (Block 35)
@@ -5550,6 +5683,11 @@ const SFX_SOURCES = {
   // intertitle): a crowd clapping, for the black card a content file
   // names it on (playIntertitle's sfx).
   applause: "assets/audio/sfx/applause.wav",
+  // Block 85 (make-scene-sfx.js): a guard starting to notice, a guard's
+  // catch, and a crowd's cheer for a dialogue line that names it.
+  notice: "assets/audio/sfx/notice.wav",
+  caught: "assets/audio/sfx/caught.wav",
+  cheer: "assets/audio/sfx/cheer.wav",
 };
 
 // Music sits under everything else. It is the one sound that never
@@ -5914,6 +6052,7 @@ function gameLoop(now) {
 
   let isWalking = false;
   const canAct = !inDialogue && !cutscenePlaying && !authGated && !uiBlocked;
+  if (!uiBlocked) updateFastForward(now); // Block 85
 
   // Block 63. The way being held, and a run once it has been held long
   // enough; both keys together is no way at all, and stays a walk.
@@ -6557,6 +6696,7 @@ window.Game = {
   // Swaps the player's sprite sheets for an outfit's. Awaitable, because
   // the sheets have to load before the swap is visible.
   setOutfit,
+  setOutfitTint, // Block 85
 
   // Currency. acts.js awards it, inventory.js spends it, and the column
   // itself is written by saveProgress along with everything else, so an
