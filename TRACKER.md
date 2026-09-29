@@ -489,7 +489,21 @@ order of payoff. Each line says what "done" is.
         (COMPLETE, Block 85: the Mananahi pays outside the entablado,
         about 7000px less; the running of Block 82 does the rest)
     11  The item bank matched to the finished Act I (the post-test now
-        runs); needs the proponents to approve the items. (NOT STARTED)
+        runs); needs the proponents to approve the items. (IN PROGRESS)
+        Checked 30 Sep 2026 against content/questions.js: eight of
+        each test's ten items are now taught by the story (Tondo, the
+        komedya, the stage's use to a leader, 1894 and the Katipunan,
+        its aim, its secrecy, the danger to a messenger, its ordinary
+        workers). Two need the proponents: the occupation item (pre 2,
+        post 2) keys "mananahi at barbero", but the game shows him
+        running a mananahi's errands and tending a kutsero's horse,
+        never barbering; and "Mangingisda at magsasaka" is a pre-test
+        distractor while a mangingisda is now someone he meets, which
+        can pull a student toward the wrong answer for the wrong
+        reason. Either the story shows the trade (a line from the
+        Mananahi taking him on as apprentice) or the item changes.
+        Not covered by any item yet, and worth one pair: the
+        Katipunan's rite (the three questions, Anak ng Bayan).
     12  The placeholder art: the Mananahi, the direktor and the Kasama
         first. Needs the artist (ART.md). (BLOCKED)
 
