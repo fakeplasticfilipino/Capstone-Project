@@ -364,6 +364,25 @@ const Inventory = {
     }
   },
 
+  // Block 82. One item handed over by the story at a moment of its own
+  // (the direktor's stage clothes), rather than on entering an act.
+  // Content calls it, then equip. Idempotent the same two ways as
+  // grantForAct, and a guest gets it in memory, since a guest plays the
+  // same story. Resolves true when the item is owned afterwards.
+  async grant(id) {
+    const item = this.item(id);
+    if (!item || !this._active()) return false;
+    if (this.owns(id)) return true;
+    this._setCount(id, 1);
+    this._changed();
+    const ok = await this._writeCount(id, 1);
+    if (!ok) {
+      this._setCount(id, 0);
+      this._changed();
+    }
+    return ok;
+  },
+
   // -----------------------------------------------------------
   // Equipping
   // -----------------------------------------------------------

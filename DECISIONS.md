@@ -3211,3 +3211,52 @@ revealNpcsByFlag, builds the guards and crates again when the restored
 flags change which are on duty. Found by a screenshot, not the harness,
 which reached the street only through a scene change; it now reloads
 onto the street on both sides of the oath.
+
+The stage clothes, showing rather than telling, and the run (Block 82).
+Requested after Block 81: a line where the one who hired him suggests
+he wear his theatre suit, the suit slowing detection five times while
+he stands still; anything the game can represent animated rather than
+told; and bugs fixed, starting with being unable to run during the
+pamphlets.
+
+The suggestion is the direktor's, who hired Macario into the company:
+after the warning about guardia civil in the audience, he tells him to
+go home in costume, because nobody looks twice at a tired actor. The
+Kasama picks it up in the pulungan ("Mabuti't suot mo pa..."), which is
+where a student learns what it does. The item is the stage clothes of
+Blocks 32 and 38 returning under their old id, damit-entablado, as the
+same thing (an id is never reused for a different item, and this is
+not a different one): outfit slot, stillDetectionMult 0.2, Block 38's
+number, which is exactly five times slower, price 0. It is granted and
+worn by content through a new Inventory.grant(id), which works for a
+guest in memory, because grantForAct gives items on entering an act and
+this one belongs to a moment in the story. No tile picture and no
+sheets, so no art is owed; the guard's meter drawn pale blue while the
+clothes help is how the effect is seen.
+
+Show, not tell. jumpPlayer(dx) is a new script call: the jump's own
+velocity, sound, pose and dust, carried forward over the time a jump
+takes, resolving on landing. The fire ordeal's two black cards ("Tumalon
+siya." and the line saying there was no fire) became Macario leaping
+and the Mabalasig saying it. After the Baldovino battle Macario walks
+back to Maryam instead of being placed there. The cards that remain
+narrate what the game cannot draw without art: a blindfold, the curtain,
+the cut in the arm.
+
+The run. runAllowed refused a run wherever any guard existed in the
+scene (Block 63), which was right for one short corridor and wrong for
+a 14500px street with three guards on it. It now refuses only within a
+guard's sight plus RUN_GUARD_MARGIN (150), middle to middle as sight is
+measured, or near any hostile guard; a guard taken down does not count.
+test.js's check was rewritten to the new rule: a run far from the
+fixture guard, none beside him.
+
+Other bugs looked for, by playing the run headless with real keys: the
+catch, the checkpoint, the crates and the running all behaved; none
+further found. The reload-onto-the-street bug of Block 81 was the one
+found that way before.
+
+game.js v80, inventory.js v10, content/act1.js v57, content/items.js
+v12. verify_new_scene.js to 193: the stage clothes worn with their
+effect, the leap played with no card, running near and far, and the
+meter slowed while he stands still in costume.

@@ -4997,17 +4997,22 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("running raises dust behind him from a small reused pool",
        walk.dust.length === 6 && walk.dust.some((c) => /dust-(start|stride)/.test(c)), walk.dust);
 
+    // Block 82. The rule is near a guard, not in a scene that has one:
+    // far down the road he runs, beside a guard he does not.
     const guarded = await page.evaluate(async () => {
       loadScene("misyon"); // the fixture guard's scene
       const g = GUARDS[0];
       posX = Math.max(0, g.patrolFrom - 900); posY = floorHeightAt(posX); onGround = true;
       keysPressed["a"] = true;
       await new Promise((r) => setTimeout(r, 900));
-      const running = isRunning();
+      const farRunning = isRunning();
       keysPressed["a"] = false;
-      return { running, guards: GUARDS.length };
+      posX = g.pos + GUARD_WIDTH / 2 - PLAYER_WIDTH / 2 - 150; posY = floorHeightAt(posX);
+      const nearAllowed = runAllowed();
+      return { farRunning, nearAllowed, guards: GUARDS.length };
     });
-    ok("no run where a guard is watching", guarded.guards > 0 && guarded.running === false, guarded);
+    ok("a run far from a guard, and none where a guard is watching",
+       guarded.guards > 0 && guarded.farRunning === true && guarded.nearAllowed === false, guarded);
 
     const coyote = await page.evaluate(() => {
       loadScene("tondo");

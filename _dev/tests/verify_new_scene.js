@@ -426,7 +426,10 @@ const artDrift = () => {
   ok("one street, the entablado, the pulungan (Block 80) and the guards' room, and no other scene", await page.evaluate(() =>
     JSON.stringify(SCENES.map((s) => s.id)) === '["tondo","entablado","pulungan","bantayan"]' &&
     !(SCENES[0].exits || []).length));
-  ok("the item catalogue is empty", await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 0));
+  ok("the item catalogue is the stage clothes alone (Block 82), not for sale, a still-detection effect",
+     await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 1 && ITEMS[0].id === "damit-entablado" &&
+       ITEMS[0].price === 0 && ITEMS[0].slot === "outfit" && ITEMS[0].effect.stillDetectionMult === 0.2 &&
+       !Inventory.owns("damit-entablado")));
 
   const t0 = await intertitle(page);
   ok("the game opens on black: Tondo, 1880", t0.up && t0.black &&
@@ -934,10 +937,17 @@ const artDrift = () => {
   ok("to applause, not the card's own drum", await page.evaluate(() =>
     __sfx.includes("applause") && !__sfx.includes("intertitle")), await page.evaluate(() => __sfx));
   await waitIntertitle(page, false, 12000);
-  const pb2 = await readConversation(page, 6);
-  ok("in the wings, the direktor warns him about the added line, and Maryam teases",
-     pb2.lines.length === 4 && /idinagdag/.test(pb2.lines[0]) && /guardia civil/.test(pb2.lines[2]) &&
-     /iskrip/.test(pb2.lines[3]), pb2.lines);
+  const pb2 = await readConversation(page, 8);
+  ok("in the wings, the direktor warns him about the added line and tells him to go home in costume",
+     pb2.lines.length === 6 && /idinagdag/.test(pb2.lines[0]) && /guardia civil/.test(pb2.lines[2]) &&
+     /hubarin/.test(pb2.lines[3]) && pb2.lines[4] === "Macario: Po?" && /tahimik/.test(pb2.lines[5]), pb2.lines);
+  const suit = await page.evaluate(() => ({ worn: Inventory.isWorn("damit-entablado"),
+    still: Inventory.effects().stillDetectionMult,
+    toast: document.getElementById("toast").textContent }));
+  ok("the stage clothes are his, worn, with their effect, and a toast says so (Block 82)",
+     suit.worn && suit.still === 0.2 && /Damit-Pangteatro/.test(suit.toast), suit);
+  const pb2b = await readConversation(page, 2);
+  ok("and Maryam teases", pb2b.lines.length === 1 && /iskrip/.test(pb2b.lines[0]), pb2b.lines);
   ok("the play is saved before anyone comes", await page.evaluate(() => state.flags.naitanghalAngBaldovino === true));
 
   console.log("\nThe Katipunan asks");
@@ -1014,9 +1024,20 @@ const artDrift = () => {
   await waitIntertitle(page, false, 12000);
   const o3 = await readConversation(page, 4);
   ok("the ordeal: leap the fire", o3.lines.length === 3 && /apoy/.test(o3.lines[0]), o3.lines);
-  ok("and there was no fire", await waitIntertitle(page, true, 3000) &&
-     /Walang apoy/.test((await intertitle(page)).lines[1] || ""));
-  await waitIntertitle(page, false, 12000);
+  // Block 82. The leap is played, not carded: he leaves the ground and
+  // lands forward.
+  let leap = { up: false };
+  for (let i = 0; i < 40; i++) {
+    const s = await page.evaluate(() => ({ y: posY - floorHeightAt(posX), x: posX, card:!document.getElementById("intertitle").classList.contains("hidden") }));
+    if (s.y > 30) leap.up = true;
+    leap.card = leap.card || s.card;
+    if (leap.up && s.y === 0) { leap.x = s.x; break; }
+    await page.waitForTimeout(40);
+  }
+  ok("he jumps, seen, with no card, and lands forward", leap.up && leap.x === 690 && !leap.card &&
+     await page.evaluate(() => __sfx.includes("jump")), leap);
+  const o3b = await readConversation(page, 3);
+  ok("and the Mabalasig says there was no fire", o3b.lines.length === 2 && /Walang apoy/.test(o3b.lines[1]), o3b.lines);
   const o4 = await readConversation(page, 4);
   ok("the oath", o4.lines.length === 3 && /Katipunan/.test(o4.lines[1]) && o4.lines[2] === "Macario: Isinusumpa ko po.", o4.lines);
   ok("signed in blood from his arm, on a black card", await waitIntertitle(page, true, 3000) &&
@@ -1024,9 +1045,9 @@ const artDrift = () => {
   await waitIntertitle(page, false, 12000);
   const o5 = await readConversation(page, 10);
   ok("a Katipon now, which is why his word was Anak ng Bayan; sent out the back with the pamphlets, warned of the guardia civil",
-     o5.lines.length === 9 && /Katipon/.test(o5.lines[0]) && /Anak ng Bayan/.test(o5.lines[1]) &&
+     o5.lines.length === 10 && /Katipon/.test(o5.lines[0]) && /Anak ng Bayan/.test(o5.lines[1]) &&
      /mangingisda.*tabakera.*karpintero/.test(o5.lines[5]) && /guardia civil/.test(o5.lines[6]) &&
-     o5.lines[8] === "Macario: Opo. Ako na po ang bahala.", o5.lines);
+     /damit-teatro/.test(o5.lines[7]) && o5.lines[9] === "Macario: Opo. Ako na po ang bahala.", o5.lines);
   await settle(page);
   await page.waitForTimeout(300);
   ok("sworn in; the task is the pamphlets (0/3)", await page.evaluate(() => state.flags.tinanggapSaKatipunan === true) &&
@@ -1051,17 +1072,34 @@ const artDrift = () => {
      JSON.stringify(gd.guards) === JSON.stringify([["bantay", false, 5000, 5600, true], ["bantay", false, 7400, 8000, true],
        ["bantay", false, 9700, 10150, true]]) && gd.hides === 3 && gd.hearts && gd.noRanged, gd);
   // Seen: stood in front of the first, who faces him, until he catches.
+  // Block 82. He can run where no guard is near, and not beside one.
+  const run = await page.evaluate(() => {
+    const far = runAllowed();
+    posX = 4700; posY = floorHeightAt(posX);
+    const near = runAllowed();
+    posX = 4100; posY = floorHeightAt(posX);
+    return { far, near };
+  });
+  ok("he can run on the street, away from the guards, and not beside one (Block 82)", run.far && !run.near, run);
   const caught = await page.evaluate(async () => {
     const g = GUARDS[0];
     const hp0 = Game.health().health, seen0 = Game.stats().detections;
     g.pos = 5300; g.facing = -1; g.patrolFrom = g.patrolTo = 5300;
     posX = 5150; posY = floorHeightAt(posX); velY = 0; onGround = true;
-    for (let i = 0; i < 100 && posX !== 4100; i++) await new Promise((r) => setTimeout(r, 50));
+    const t0 = performance.now();
+    let slowed = false;
+    for (let i = 0; i < 400 && posX !== 4100; i++) {
+      slowed = slowed || Boolean(g.disguised);
+      await new Promise((r) => setTimeout(r, 50));
+    }
     g.patrolFrom = 5000; g.patrolTo = 5600;
-    return { x: posX, hp: Game.health().health, hp0, seen: Game.stats().detections - seen0 };
+    return { x: posX, hp: Game.health().health, hp0, seen: Game.stats().detections - seen0,
+      slowed, secs: Math.round((performance.now() - t0) / 100) / 10 };
   });
   ok("seen by one, he is caught: a heart, a detection, and back to the back door",
      caught.x === 4100 && caught.hp === caught.hp0 - 1 && caught.seen === 1, caught);
+  ok("standing still in the stage clothes, the guard's meter is slowed and drawn so, and takes seconds to fill",
+     caught.slowed && caught.secs >= 4, caught);
   // The rest of the walk is about the hand-overs, not the stealth: the
   // guards are made short-sighted.
   await page.evaluate(() => GUARDS.forEach((g) => { g.detectRadius = 1; g.alert = 0; }));

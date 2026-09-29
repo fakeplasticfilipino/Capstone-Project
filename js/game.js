@@ -4334,8 +4334,17 @@ let jumpBufferedAt = 0;
 let dustPool = null;
 let dustNext = 0;
 
+// Block 82. Off only near a guard, not wherever one exists: the pamphlet
+// run put three on a 14500px street, and "no running anywhere on it" was
+// reported as a bug. Near means inside his sight plus RUN_GUARD_MARGIN,
+// measured the way updateGuards measures sight (middle to middle), or
+// any guard who has turned hostile. A guard taken down does not count.
+const RUN_GUARD_MARGIN = 150;
 function runAllowed() {
-  return !GUARDS.length && !enemiesAlive();
+  if (enemiesAlive()) return false;
+  const mid = posX + PLAYER_WIDTH / 2;
+  return !GUARDS.some((g) => !g.disabled && (g.hostile ||
+    Math.abs(g.pos + GUARD_WIDTH / 2 - mid) < (g.detectRadius || 240) + RUN_GUARD_MARGIN));
 }
 
 // Called every frame by the game loop with the way being held (or 0) and
@@ -4899,6 +4908,41 @@ function movePlayer(toX, pxPerSecond) {
       posX = Math.abs(target - posX) <= stepPx ? target : posX + Math.sign(target - posX) * stepPx;
       posY = groundHeightAt(posX);
       if (posX === target) return done();
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+// Block 82. A script's jump: Macario leaps, forward by dx if given, with
+// the jump's own sound, pose and dust, and the promise resolves when he
+// lands. The loop's physics carries him up and down (it runs through a
+// cutscene); this only carries him across, over the time a jump takes.
+// For something the story says he does that the game can show (the
+// leap over the fire) rather than a black card saying it.
+const JUMP_FLIGHT_MS = (2 * JUMP_VELOCITY / GRAVITY) * (1000 / 60);
+function jumpPlayer(dx) {
+  const token = actLoadToken;
+  const fromX = posX;
+  const toX = Math.max(0, Math.min(posX + (Number(dx) || 0), WORLD_WIDTH - PLAYER_WIDTH));
+  if (toX !== fromX) facing = toX < fromX ? -1 : 1;
+  velY = JUMP_VELOCITY;
+  onGround = false;
+  lastGroundedAt = 0;
+  playSfx("jump");
+  spawnDust(posX + PLAYER_WIDTH / 2, posY, facing, "jump");
+  return new Promise((resolve) => {
+    let flown = 0;
+    let last = 0;
+    const tick = (now) => {
+      if (token !== actLoadToken) return resolve();
+      if (!paused) flown += last ? Math.min(now - last, 50) : 0;
+      last = now;
+      posX = fromX + (toX - fromX) * Math.min(1, flown / JUMP_FLIGHT_MS);
+      if ((onGround && flown > 100) || flown > 3000) {
+        posX = toX;
+        return resolve();
+      }
       requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);

@@ -748,6 +748,11 @@ of them plain globals in game.js, like addQuest:
     movePlayer(x, pxPerSecond)   walks Macario there with his walk cycle
                                  (Block 57); resolves on arrival
     placePlayer(x, facing)       puts him there at once (Block 57)
+    jumpPlayer(dx)               a jump with its sound, pose and dust,
+                                 forward by dx; resolves on landing
+                                 (Block 82). Show what can be shown:
+                                 an action the game can play is not
+                                 put on a black card
     runSceneScript()             plays the scene's pending script now,
                                  for a script a gift or a conversation
                                  unlocks mid-scene (Block 57)
@@ -876,6 +881,10 @@ same row, up to maxStack. Carrying one does nothing. Gamitin
 nothing, a heal at full health, is refused and spends nothing, the same
 rule a heart pickup follows. The last unit's row is deleted rather than
 left at quantity 0. use.heal is the only use built.
+
+An item may also be handed over by the story at a moment of its own:
+content calls Inventory.grant(id) (Block 82; a guest gets it in memory)
+and then Inventory.equip(id), as the direktor's stage clothes are.
 
 Quest items are kind "quest". No slot, no use, never more than one. They
 exist to be handed over: content calls Inventory.consume(id) at that
@@ -1662,7 +1671,7 @@ look, by system:
     audio and sound effects               Blocks 30, 58, 60, 65, 81
     scenes, exits, scripts, cutscenes     Blocks 19, 31, 34, 35, 52, 57
     guards, stealth and sight             Blocks 37, 38, 42, 46, 47, 73,
-                                          75
+                                          75, 81, 82 (running near them)
     performance                           Blocks 36, 54, 66
     teacher dashboard                     Blocks 39, 68, 69, 70
     repository layout                     Block 44

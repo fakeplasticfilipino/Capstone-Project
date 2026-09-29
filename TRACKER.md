@@ -9,9 +9,9 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 29 Sep 2026, after Block 81 (the ending checked against
-the histories; guards on the pamphlet run; applause; a new card sound).
-test.js 729 passed, 0 failed; verify_new_scene.js 188 passed,
+Last updated: 29 Sep 2026, after Block 82 (the direktor's stage clothes;
+the fire leap shown, not told; running allowed away from guards).
+test.js 729 passed, 0 failed; verify_new_scene.js 193 passed,
 0 failed.
 
 ## Start here
@@ -75,8 +75,10 @@ a time in the quest log (finished ones in Mga Setting):
 
 Act I completes (holdOpen is gone since Block 80). It pays no barya per
 step; the performance award is paid on completion.
-content/items.js is empty, so no item ships (the harness fixture covers
-every item path). Acts II to IV are registered stubs.
+One item ships: the stage clothes (damit-entablado), which the direktor
+gives Macario after Principe Baldovino, worn from then on; standing
+still in them, a guard notices him five times more slowly. The harness
+fixture covers every other item path. Acts II to IV are registered stubs.
 
 Outside the story: the Test Room (Mga Setting from pause, then Test
 Room): a "<WIP>" card, three bantay who patrol, see, turn hostile, fire
@@ -105,9 +107,9 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v49    js/game.js v79       js/shell.js v19
-    js/inventory.js v9   js/acts.js v14       js/assessment.js v4
-    content/act1.js v56  content/items.js v11  content/act2-4.js v1
+    css/style.css v49    js/game.js v80       js/shell.js v19
+    js/inventory.js v10  js/acts.js v14       js/assessment.js v4
+    content/act1.js v57  content/items.js v12  content/act2-4.js v1
     content/enemies.js v1   content/questions.js v1
     js/asset-manifest.js v2 (bumped by make-asset-manifest.js)
     ASSET_VERSION 29 (in js/game.js)
@@ -142,8 +144,14 @@ to the end. What to look for, and what failure looks like:
     The pulungan: a dark wall named pulungan.jpg; the Mabalasig box; the
       warning, the challenge, the three questions, the blindfold again,
       the fire, the oath, the blood; "Lumabas sa likod" on the left.
+    The stage clothes: after the curtain the direktor tells him to go
+      home in costume; a toast "Suot mo: Damit-Pangteatro", and the
+      inventory shows it worn. In the pulungan the fire leap is a jump
+      he makes, with no card, and the Mabalasig says there was no fire.
     The run: out at x 4100 with the hearts showing and three guardia
-      civil walking their beats, a crate in each. Seen, the meter fills
+      civil walking their beats, a crate in each. He runs when no guard
+      is near and drops to a walk near one. Standing still, a guard's
+      meter fills slowly and is drawn pale blue. Seen, the meter fills
       and he is caught: a heart, and back to the door or to the last
       person reached. From behind, a punch takes one down. Hand the
       three their pamphlets (mangingisda, tabakera, karpintero); after
@@ -287,9 +295,9 @@ registered stubs.
 Objective 2, gameplay mechanics: dynamic difficulty, health, equipment,
 cosmetic rewards. (IN PROGRESS) All four are built and tested against
 the harness fixture. The shipped Act I uses health (the play's fight);
-its difficulty is the 1.00 of Act I, so the lever cannot be seen; no
-equipment or cosmetic item ships (content/items.js is empty). What
-remains is content and art, not code.
+its difficulty is the 1.00 of Act I, so the lever cannot be seen; one
+equipment item ships, the stage clothes (Block 82), and no cosmetic.
+What remains is content and art, not code.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and post-tests
 graded in the game (Block 68, with a pass mark and a replay for a failed
@@ -333,7 +341,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (729 and 188 checks) |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (729 and 193 checks) |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -433,6 +441,8 @@ machine, the assessment module.
     81  the ending checked against the histories (the komedya, the
         Mabalasig's rite); guards on duty by flag, on the pamphlet run;
         applause; a new black-card sound
+    82  the stage clothes from the direktor (Inventory.grant); jumpPlayer,
+        the fire leap shown; running allowed away from guards
 
 ## Blocks remaining
 
@@ -518,14 +528,14 @@ test.js (729 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (188 checks) drives the real
+what is covered. verify_new_scene.js (193 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest and the Test Room, and checks that every line of the content is
 in STORY.md, that ART.md's Owed list matches the disk, and that the
 asset manifest matches assets/ and every picture in it opens. Anything
 other than "0 failed" is a regression. Both never touch the live
-project. Both are green as of Block 81.
+project. Both are green as of Block 82.
 
 A check that clicks, or reads pixels, is worth more than one that reads
 a style (the dead Atake button would have passed any style assertion).

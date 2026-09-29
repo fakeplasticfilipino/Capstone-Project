@@ -581,7 +581,9 @@ async function principeBaldovino() {
   })));
   setMusic(null);
   setCutscene(true);
-  placePlayer(STAGE_PLAY_X, -1);
+  // Block 82. Back to her side on his own feet, seen, not moved there.
+  await movePlayer(STAGE_PLAY_X, 220);
+  turnPlayer(-1);
   await wait(300);
 
   await playDialogue([
@@ -602,6 +604,20 @@ async function principeBaldovino() {
     { speaker: "Direktor", text: "Macario... 'yung idinagdag mo sa dulo. Wala 'yon sa iskrip." },
     { speaker: "Macario", text: "Pasensya na po. Bigla na naman pong lumabas." },
     { speaker: "Direktor", text: "Nagustuhan ng mga tao. Pero may guardia civil sa likod ng mga upuan ngayong gabi. Mag-ingat ka." },
+    { speaker: "Direktor", text: "Pag-uwi mo, huwag mo nang hubarin 'yang damit mo." },
+    { speaker: "Macario", text: "Po?" },
+    { speaker: "Direktor", text: "Walang guardia na nag-uusisa sa artistang pagod. Tumayo ka lang nang tahimik, iisipin nilang nagpapahinga ka lang." },
+  ]);
+  // Block 82. The stage clothes, worn from here (content/items.js): a
+  // guard notices him five times more slowly while he stands still. The
+  // guard's meter drawn pale blue while they help is how a student sees
+  // it working.
+  if (window.Inventory && Inventory.grant) {
+    if (await Inventory.grant("damit-entablado")) Inventory.equip("damit-entablado");
+  }
+  showToast("Suot mo: Damit-Pangteatro", 2600);
+  await wait(400);
+  await playDialogue([
     { speaker: "Maryam", text: "Apat na taon na, pero hindi ka pa rin marunong sumunod sa iskrip, 'no?" },
   ]);
   // Saved before the men come, so a reload from here plays only them.
@@ -712,7 +728,14 @@ async function theOath() {
     { speaker: "Macario (sa isip)", text: "Wala akong makita..." },
     { speaker: "Macario (sa isip)", text: "Para kay Nanay. Para sa bayan." },
   ]);
-  await playIntertitle(["Tumalon siya.", "Walang apoy. Pagsubok lamang iyon ng kanyang tapang."]);
+  // Block 82. The leap is shown, not told on a card: he jumps, and it is
+  // the Mabalasig who says there was no fire.
+  await jumpPlayer(50);
+  await wait(500);
+  await playDialogue([
+    { speaker: "Mabalasig", text: "Alisin ang piring." },
+    { speaker: "Mabalasig", text: "Walang apoy. Tapang mo ang sinubok namin, hindi ang balat mo." },
+  ]);
   await wait(300);
   await playDialogue([
     { speaker: "Mabalasig", text: "Ngayon, ang panunumpa." },
@@ -730,6 +753,7 @@ async function theOath() {
     { speaker: "Mabalasig", text: "Nakasulat diyan kung bakit tayo lumalaban. Kailangang mabasa ito ng ating mga kababayan." },
     { speaker: "Kasama", text: "Sa likod ka dadaan. Ang mangingisda ang pinakamalapit, bago ang puno ng mansanas. Ang tabakera, lampas sa patahian. Ang karpintero, lampas pa kay Mang Tomas." },
     { speaker: "Kasama", text: "May mga guardia civil na nagroronda ngayong gabi. Huwag kang dadaan sa harap nila. Magtago ka kung kailangan." },
+    { speaker: "Kasama", text: "Mabuti't suot mo pa 'yang damit-teatro. Kapag tumigil ka at hindi gumalaw, hindi ka nila agad papansinin." },
     { speaker: "Kasama", text: "Kapag nahuli ka, hindi ka na makakauwi sa nanay mo." },
     { speaker: "Macario", text: "Opo. Ako na po ang bahala." },
   ]);

@@ -42,7 +42,9 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 29 Sep 2026, Block 81 (the play and the rite checked
+Last updated: 29 Sep 2026, Block 82 (the direktor's stage clothes for
+the walk home; the leap over the fire shown, not told). Before that,
+Block 81 (the play and the rite checked
 against the histories: a komedya battle and an ad-lib, the Mabalasig,
 the blindfold, the warning, the ordeal; guardia civil on the pamphlet
 run, which now starts from the back door). Before that, Block 80 (the
@@ -483,7 +485,8 @@ the words below are ours, written in the genre (Block 81).
 
 The battle. Two of the enemy's soldiers come in from the right wing
 and the student fights them (the first play's kawal), with the fight
-music, the hearts showing and no gun on a stage.
+music, the hearts showing and no gun on a stage. Then he walks back to
+her side.
 
   + Maryam: Iniligtas mo ako, mahal kong prinsipe!
   + Macario: At tandaan ng lahat ng nakikinig:
@@ -505,6 +508,16 @@ In the wings. (Macario beside the direktor, Maryam behind him.)
   + Direktor: Macario... 'yung idinagdag mo sa dulo. Wala 'yon sa iskrip.
   + Macario: Pasensya na po. Bigla na naman pong lumabas.
   + Direktor: Nagustuhan ng mga tao. Pero may guardia civil sa likod ng mga upuan ngayong gabi. Mag-ingat ka.
+  + Direktor: Pag-uwi mo, huwag mo nang hubarin 'yang damit mo.
+  + Macario: Po?
+  + Direktor: Walang guardia na nag-uusisa sa artistang pagod. Tumayo ka lang nang tahimik, iisipin nilang nagpapahinga ka lang.
+
+    (Block 82. He keeps the stage clothes on: the costume the Mananahi
+    sewed, first worn as Don Rodrigo. They go into his inventory, worn,
+    with a toast, "Suot mo: Damit-Pangteatro". While he stands still in
+    them a guard takes five times as long to notice him, and the guard's
+    meter is drawn pale blue while they are helping.)
+
   + Maryam: Apat na taon na, pero hindi ka pa rin marunong sumunod sa iskrip, 'no?
 
 ### 12. The Katipunan asks
@@ -602,8 +615,10 @@ ours.
   + Macario (sa isip): Wala akong makita...
   + Macario (sa isip): Para kay Nanay. Para sa bayan.
 
-  + [BLACK] Tumalon siya.
-  + [BLACK] Walang apoy. Pagsubok lamang iyon ng kanyang tapang.
+    (He jumps, and lands. Shown, not told, since Block 82.)
+
+  + Mabalasig: Alisin ang piring.
+  + Mabalasig: Walang apoy. Tapang mo ang sinubok namin, hindi ang balat mo.
 
   + Mabalasig: Ngayon, ang panunumpa.
   + Mabalasig: Isumpa mong ipagtatanggol mo ang Katipunan, iingatan mo ang mga lihim nito, at tutulungan mo ang bawat kapatid sa anumang panganib.
@@ -619,6 +634,7 @@ ours.
   + Mabalasig: Nakasulat diyan kung bakit tayo lumalaban. Kailangang mabasa ito ng ating mga kababayan.
   + Kasama: Sa likod ka dadaan. Ang mangingisda ang pinakamalapit, bago ang puno ng mansanas. Ang tabakera, lampas sa patahian. Ang karpintero, lampas pa kay Mang Tomas.
   + Kasama: May mga guardia civil na nagroronda ngayong gabi. Huwag kang dadaan sa harap nila. Magtago ka kung kailangan.
+  + Kasama: Mabuti't suot mo pa 'yang damit-teatro. Kapag tumigil ka at hindi gumalaw, hindi ka nila agad papansinin.
   + Kasama: Kapag nahuli ka, hindi ka na makakauwi sa nanay mo.
   + Macario: Opo. Ako na po ang bahala.
 
@@ -655,8 +671,9 @@ Mang Tomas (9700 to 10150). Each has a crate in the middle of his beat
 to hide behind. They do not shoot: one who sees Macario catches him,
 which costs a heart and puts him back at the back door, or at the last
 of the three he has already reached. From behind, a guard can be taken
-down. Nobody speaks; the Kasama's warning is the whole of the
-instruction.
+down. Standing still in the stage clothes, he is noticed five times
+more slowly. He can run, except near a guard (Block 82). Nobody speaks;
+the Kasama's warning is the whole of the instruction.
 
 The pamphlets count (n/3). After the third, wherever he is:
 
