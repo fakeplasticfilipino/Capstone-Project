@@ -794,7 +794,10 @@ function loadScene(sceneId) {
   // strip when the picture already has a floor. Both are set or cleared
   // on every load, like greyFilter, so leaving the scene restores Tondo.
   const skylineEl = document.getElementById("skyline");
-  if (scene.backdrop && scene.backdrop.src) {
+  // Block 80. A backdrop that is owed art (not in the manifest) is not
+  // put into the stylesheet at all, where the browser would ask for it
+  // and 404; buildSkylineTiles draws its placeholder instead.
+  if (scene.backdrop && scene.backdrop.src && assetExpected(scene.backdrop.src) !== false) {
     loadImage(scene.backdrop.src); // Block 62, as the panels are
     // Absolute, because a url() inside a custom property is resolved
     // against the stylesheet that reads it (css/style.css, one folder
@@ -930,6 +933,13 @@ function buildSkylineTiles(layerIds) {
     tile.style.width = Math.max(WORLD_WIDTH, viewport.clientWidth) + "px";
     tile.style.backgroundSize = "cover";
     tile.style.backgroundPosition = "center bottom";
+    // Block 80. Owed art: the placeholder rule every missing sprite
+    // follows, as a room. A dark wall with the file name on it, so the
+    // scene reads as indoors and the artist can see what is wanted.
+    if (assetExpected(backdrop.src) === false) {
+      tile.classList.add("backdrop-owed");
+      tile.textContent = backdrop.src;
+    }
     layer.appendChild(tile);
     actElements.push(tile);
     return;

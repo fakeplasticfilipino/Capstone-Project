@@ -28,7 +28,8 @@ Macario's sheets (256px cells).
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 28 Sep 2026, Block 77.
+Last updated: 29 Sep 2026, Block 80 (the end of Act I: the Katipunan's
+three people, the three who take the pamphlets, and the pulungan).
 
 ## Owed
 
@@ -47,6 +48,39 @@ Named by the game and missing. Each is a placeholder box today.
     assets/sprites/characters/aling-rosa.png
         Aling Rosa, a customer. Act I, on the street at x 7800. Talks
         and takes a delivery; an idle sheet is enough. (NOT STARTED)
+
+    assets/sprites/characters/katipunero.png
+        The Katipunero, the older of the two men who find Macario in the
+        wings after Principe Baldovino (Block 80), and in the pulungan
+        at the oath. Walks on and off the stage, then talks; an idle
+        sheet and a walk sheet. (NOT STARTED)
+
+    assets/sprites/characters/kasama.png
+        The Kasama, the Katipunero's companion: in the wings beside him,
+        then waiting on the street at x 12500, then by the door of the
+        pulungan. Walks on and off the stage, then talks; an idle sheet
+        and a walk sheet. (NOT STARTED)
+
+    assets/sprites/characters/pangulo.png
+        The Pangulo, who swears Macario into the Katipunan in the
+        pulungan and gives him the pamphlets. Talks; an idle sheet is
+        enough. (NOT STARTED)
+
+    assets/sprites/characters/karpintero.png
+    assets/sprites/characters/tabakera.png
+    assets/sprites/characters/mangingisda.png
+        The three who take the pamphlets, on the street once Macario is
+        sworn in: a carpenter (x 10600), a woman from the cigar factory
+        (x 6900) and a fisherman (x 4800). Talk and take a pamphlet; an
+        idle sheet each is enough. (NOT STARTED)
+
+    assets/backgrounds/act1/pulungan.jpg
+        The Katipunan's secret room, where the oath is taken (Block 80).
+        One painting of a room at night, drawn once and not tiled, one
+        phone screen wide like the entablado's (entablado-inside.jpg is
+        the model for its shape); a floor of its own if the painting has
+        one, and the content then sets ground: false. Until it arrives
+        the room is a dark wall with the file name on it. (NOT STARTED)
 
     assets/sprites/player/macario-dead.png
         Macario's death pose, 5 frames, played once. Named by the

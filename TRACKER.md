@@ -9,9 +9,9 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 28 Sep 2026, after Block 79 (the context files
-compacted). Everything through Block 79 is pushed to main and live.
-test.js 729 passed, 0 failed; verify_new_scene.js 132 passed, 0 failed.
+Last updated: 29 Sep 2026, after Block 80 (the end of Act I).
+test.js 729 passed, 0 failed; verify_new_scene.js 175 passed,
+0 failed.
 
 ## Start here
 
@@ -35,13 +35,15 @@ whole act on the title screen, and never lets a student in with art
 missing; a service worker keeps every file on the phone.
 
 Act I is the only act with content, rewritten in Block 52 against the
-proponents' script and built forward since. STORY.md has it beat by
-beat, with every line. It is one street ten paintings long (14500px,
-street-01..04.jpg in order, twice, then 01 and 02, a silhouette tree
-over each join; keep anyone a student must reach 90px clear of a
-multiple of 1450) and the inside of the entablado, which only the
-direktor takes Macario into. Nine objectives, one chain, shown one at a
-time in the quest log (finished ones in Mga Setting):
+proponents' script and built forward since, and since Block 80 it has
+an ending. STORY.md has it beat by beat, with every line. It is one
+street ten paintings long (14500px, street-01..04.jpg in order, twice,
+then 01 and 02, a silhouette tree over each join; keep anyone a student
+must reach 90px clear of a multiple of 1450), the inside of the
+entablado, which only the direktor (and later the four-year card) takes
+Macario into, and the pulungan, the Katipunan's secret room, which only
+the Kasama takes him into. Thirteen objectives, one chain, shown one at
+a time in the quest log (finished ones in Mga Setting):
 
     1  Umuwi kasama si Nanay            the thought after the opening
     2  Maghanap ng trabaho: kausapin    the Kutsero's first conversation
@@ -56,11 +58,20 @@ time in the quest log (finished ones in Mga Setting):
     7  Gumanap bilang Don Rodrigo sa    the play and its fight; 79 to
        dula                             110 barya
     8  Kunin ang bayad sa Mananahi      her gift button, 50 barya
-    9  Ibigay kay Nanay ang naipon      Nanay's gift (n/100)
+    9  Ibigay kay Nanay ang naipon      Nanay's gift (n/100); then a
+                                        black card, four years on
+   10  Gumanap bilang Principe          the play, and the Katipunan's
+       Baldovino                        two men in the wings asking
+                                        whether he is sure
+   11  Hanapin ang naghihintay sa       the password to the Kasama,
+       kalye                            x 12500
+   12  Sumapi sa Katipunan              the oath in the pulungan
+   13  Ipamigay ang mga polyeto (n/3)   the karpintero, the tabakera,
+                                        the mangingisda; the third ends
+                                        the act and the post-test runs
 
-Act I cannot be completed yet, on purpose: holdOpen keeps it (and the
-post-test) open until the story past the entablado is written. It pays
-no barya per step; the performance award is paid on completion.
+Act I completes (holdOpen is gone since Block 80). It pays no barya per
+step; the performance award is paid on completion.
 content/items.js is empty, so no item ships (the harness fixture covers
 every item path). Acts II to IV are registered stubs.
 
@@ -85,17 +96,18 @@ settings. The teacher dashboard is a light report page in English.
 
 The proponent has confirmed on the phone: Block 36's speed fix (18 Sep
 2026) and Blocks 37 and 38 as functional. Blocks 57 and 58 were accepted
-from the harness and screenshots (23 Sep 2026). Nothing since has been
-seen on the phone; the device pass is Next action, 3.
+from the harness and screenshots (23 Sep 2026). The proponent reported
+the device pass done on 29 Sep 2026, before Block 80; Block 80 has not
+been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v48    js/game.js v77       js/shell.js v19
+    css/style.css v49    js/game.js v78       js/shell.js v19
     js/inventory.js v9   js/acts.js v14       js/assessment.js v4
-    content/act1.js v54  content/items.js v11  content/act2-4.js v1
+    content/act1.js v55  content/items.js v11  content/act2-4.js v1
     content/enemies.js v1   content/questions.js v1
     js/asset-manifest.js v1 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 28 (in js/game.js)
+    ASSET_VERSION 28 (in js/game.js; Block 80 added no file)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v1
@@ -104,95 +116,71 @@ Current versions, which index.html must match on every push:
 
 In order.
 
-1. Decide whether students should see the Test Room button (Block 74).
+1. Look at Block 80 on the phone, in landscape, from a private tab,
+after the push. Give Nanay the savings and play to the end. What to
+look for, and what failure looks like:
+
+    The four years: straight after Nanay's last line, a black card,
+      "Pagkalipas ng apat na taon" and "Ngayong gabi sa entablado:
+      Principe Baldovino", lifting onto the stage with Macario beside
+      Maryam, mid-play. Failure: a glimpse of the street between the
+      card and the stage, or no card.
+    The play and the wings: six lines, the curtain, four lines with the
+      direktor and Maryam; then Macario crosses to stage right as two
+      dashed boxes (katipunero.png, kasama.png) come out of the right
+      wing. They ask whether he is sure; he thinks of Nanay and the
+      cedula, says yes, and is given "Anak ng Bayan". They walk off.
+    The street: Lumabas, and the Kasama box stands at 12500, left of the
+      direktor. Talking to him plays the word and a black card, "Sa
+      isang lihim na silid sa Tondo".
+    The pulungan: a dark wall with a dashed border and the file name
+      pulungan.jpg, three boxes (Kasama, Pangulo, Katipunero), the three
+      questions, a card for the signature in blood, the pamphlets and
+      who takes them. Lumabas on the left, shut until the oath is done.
+    The pamphlets: three boxes on the street (karpintero 10600, tabakera
+      6900, mangingisda 4800), Iabot ang polyeto on each, the log
+      counting (n/3). After the third, three thoughts, the card "Wakas
+      ng Unang Yugto", and the post-test (Panapos na Pagsusulit).
+      Failure: no post-test, or a post-test while a card is still up.
+    Watch whether students find the Kasama and the three from what they
+      are told; there is no guide.
+
+2. Decide the four years. The opening card says 1880, so four years on
+is 1884, and the Katipunan was founded in 1892; Sakay is usually said to
+have joined in 1894, which the post-test asks. The four-year card names
+no year for that reason. Change the gap or the opening year so the
+story agrees with the history the test teaches (STORY.md, Open
+questions).
+
+3. The proponents' review of Block 80: every line is ours (+ in
+STORY.md, PLACEHOLDER in content/act1.js), and so are the names
+Katipunero, Kasama, Pangulo, Karpintero, Tabakera and Mangingisda. What
+happens in Principe Baldovino, the password, the three questions and
+what the pamphlets were are to be checked against the source book.
+
+4. The assessment item bank against Act I. The pre-test and post-test
+(db/seeds/macario_items_v3.sql, built into content/questions.js,
+editable on the dashboard) and the trivia card were written against the
+old act's facts (Tondo, the tailor-and-barber trade, the moro-moro,
+1894, the Katipunan). Act I now reaches the stage and the Katipunan, but
+not the tailor-and-barber trade and not 1894 (item 2). The post-test now
+runs, so this decides whether the study measures anything; do it before
+the pilot.
+
+5. Decide whether students should see the Test Room button (Block 74).
 It is in settings for every student, study accounts included. It is
 outside the story and returns to the same spot, so it harms nothing,
 but before the pilot either keep it, hide it (one line in shell.js,
 _openSettings), or remove testRoom from content/act1.js.
 
-2. Run db/migrations/007_macario_schema_v7.sql in the Supabase SQL
-editor and record it in the Run log. Without it the dashboard's Talaan
-Papers card cannot load or save and no papers lie on the road. Then
-write one paper, open the game and walk right from Nanay: paper 1 lies
-at about 2500 and opens a card with what was typed.
-
-3. A device pass, on the phone, in landscape, from a private tab. What
-to look for, and what failure looks like:
-
-    Loading (Blocks 62, 78): a green bar on the title; tapping in early
-      waits on "Sandali lang..."; on a slow or dropped connection,
-      after about 10 seconds with nothing arriving, "Mabagal ang
-      koneksyon..." and Subukan ulit, then in by itself once the art
-      is there; a second visit opens at once. Try it right after a
-      push, and with data switched off and on mid-load. Failure: any
-      placeholder box on Macario, Nanay, a guard or the street, or the
-      bar stuck on a good connection.
-    Text: dialogue and buttons in VT323 pixel letters, not Courier.
-    The opening: "Tondo, 1880" on black from the first frame, readable;
-      the siga walk on stepping (three builds, feet on the road, no
-      sliding when they stop); Macario walks off beside Nanay (who
-      slides) to where the cedula talk plays.
-    Moving: holding a direction breaks into a run with dust; a jump
-      pressed a hair late or early still happens; no double jump.
-    The apples: the silhouette tree at 5800 reads Pumitas; the basket
-      follows the buttons and a dragged finger; after the horse, a
-      30-second round with golden apples and a best score. Too hard or
-      easy is CATCH_* in game.js.
-    The road: the horse, both pays ("+50" with a coin), the Mananahi,
-      the customers, the direktor, all found without a guide (watch
-      whether students get lost, and where).
-    The play: the direktor's scene reads naturally; the stage fills the
-      screen; the Sultan walks on and off; four soldiers are a fair
-      first fight; each punch swooshes and a landed one thumps, holds
-      an instant and jolts, at the moment the arm is fully out; a hit
-      soldier slides, the last blow topples him. Too sticky is IMPACTS
-      in game.js.
-    The Test Room: the card lifts onto black with no flash of the
-      street; a patrol walks with his legs stepping; a guard who sees
-      Macario stops, lowers his rifle to the hip and fires from the
-      muzzle, and a jump clears the bullet; punched he reels back and
-      slides, a second punch or a shot topples him away from the blow;
-      taken from behind he falls forward; Lumabas returns to the same
-      spot. Whether the bantay's made-from-a-still walk, and the
-      code-drawn siga, are good enough is the proponent's call.
-    Sound, at classroom volume: the dialogue blip barely there, the
-      rest clear but not sharp; nothing with Mga tunog off. Levels are
-      in _dev/tools/make-sfx.py (rerun it, bump ASSET_VERSION).
-    Screens: Mga Setting lists the finished tasks and reaches Bumalik;
-      the inventory and shop fit without scrolling; labels on the touch
-      buttons readable at each text size.
-    From earlier blocks, still unseen: the joins covered at head height
-      and the crowns reading as leaves, banding in the JPEG skies, guest
-      mode, and the teacher dashboard.
-
-4. Write the next passage of Act I with the proponents, after the
-direktor pays. When the passage that ends the act is written, remove
-holdOpen and the post-test runs. Write to CLAUDE.md, Conventions,
-Writing dialogue, and start from STORY.md, Threads left open. Also from
-the proponents: every line marked PLACEHOLDER in content/act1.js (+ in
-STORY.md), the names of ours (Aling Rosa, Mang Tomas, Julian, Don
-Rodrigo, the Sultan), and the play's choices (kingdoms not named by
-religion, a blessing rather than a conversion), which are theirs to
-reverse. Check the play against the source book.
-
-5. The assessment item bank no longer matches Act I. The pre-test and
-post-test (db/seeds/macario_items_v3.sql, built into
-content/questions.js, editable on the dashboard) and the trivia card
-were written against the old act's facts (Tondo, the tailor-and-barber
-trade, the moro-moro, 1894, the Katipunan). The story so far teaches
-none of them; the teacher's Talaan papers (up to three per act) are the
-only way to put them on the road. Before the pilot, either the new
-passages carry those facts or the items are rewritten to the story.
-Data collection covers Act I only, so this decides whether the study
-measures anything.
-
-6. Art from the artist: ART.md's Owed list (the Mananahi, the direktor
-and Aling Rosa are boxes on screen; Macario's death pose; the night
-backdrop), a side-view walk for Nanay, and whoever the next passages
-bring on. PNGs with transparency; each goes through ART.md's steps.
+6. Art from the artist: ART.md's Owed list (the Mananahi, the direktor,
+Aling Rosa, and since Block 80 the Katipunero, the Kasama, the Pangulo,
+the three who take the pamphlets and the pulungan's painting; Macario's
+death pose; the night backdrop), and a side-view walk for Nanay. PNGs
+with transparency; each goes through ART.md's steps.
 
 7. Then the remaining polish, the pilot, and Acts II to IV against the
-source material.
+source material, Act II starting from STORY.md, Threads left open.
 
 ## The milestone
 
@@ -259,9 +247,9 @@ Trust this over any memory of a chat.
                                         assessment_items whole, teachers
                                         edit items and trivia,
                                         assessment_scores gains attempt
-    db/migrations/007_macario_schema_v7.sql    NOT RUN. talaan_entries,
-                                        the teacher's Talaan papers;
-                                        depends on my_role() (002)
+    db/migrations/007_macario_schema_v7.sql    RUN, 29 Sep 2026 (the
+                                        proponent). talaan_entries, the
+                                        teacher's Talaan papers
 
     db/seeds/macario_items_v3.sql              RUN, 28 Aug 2026
     db/seeds/enrollment_setup.sql              only for a fresh database
@@ -282,10 +270,10 @@ eleven tables, matching the revised ERD.
 What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS) The
-framework is complete. Act I is playable through all nine objectives on
-one street and in the entablado, and is held open until its next passage
-is written, so it does not yet complete or run its post-test. Acts II to
-IV are registered stubs.
+framework is complete. Act I is playable from the opening to its end,
+thirteen objectives on one street, in the entablado and in the
+pulungan, and completes into its post-test (Block 80). Acts II to IV are
+registered stubs.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health, equipment,
 cosmetic rewards. (IN PROGRESS) All four are built and tested against
@@ -307,7 +295,7 @@ The paper specifies seventeen.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest for a quick look. A student can change the password in settings |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I playable through nine objectives, held open until its next passage; Acts II to IV are stubs |
+| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I playable to its end, thirteen objectives, completing into its post-test; Acts II to IV are stubs |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
 | Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships the play's fight (four soldiers, real walk and sword art); the Test Room's guards can be punched or shot down |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. The story's Act I has no stealth section yet; the Test Room shows all of it |
@@ -336,7 +324,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (729 and 132 checks) |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (729 and 175 checks) |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -430,11 +418,14 @@ machine, the assessment module.
     78  loading that cannot be walked past; the asset manifest
     79  the context files compacted: DECISIONS.md split from CLAUDE.md,
         this file rewritten as present state
+    80  the end of Act I: four years on, Principe Baldovino, the
+        Katipunan, the oath, the pamphlets; holdOpen removed; an owed
+        backdrop drawn as a placeholder room
 
 ## Blocks remaining
 
-Act I's next passage, and the item bank to match it (Next action, 4 and
-5). (IN PROGRESS)
+Act I's lines and history checked by the proponents, and the item bank
+matched to the finished act (Next action, 2 to 4). (IN PROGRESS)
 
 Acts II to IV written against the source material, with their trivia
 and test items. Until then those acts skip their tests with a notice,
@@ -515,13 +506,14 @@ test.js (729 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (132 checks) drives the real
-content through Act I end to end, including reloads mid-beat, old saves,
+what is covered. verify_new_scene.js (175 checks) drives the real
+content through Act I end to end, to the post-test opening, including
+reloads mid-beat, old saves,
 a guest and the Test Room, and checks that every line of the content is
 in STORY.md, that ART.md's Owed list matches the disk, and that the
 asset manifest matches assets/ and every picture in it opens. Anything
 other than "0 failed" is a regression. Both never touch the live
-project. Both are green as of Block 79.
+project. Both are green as of Block 80.
 
 A check that clicks, or reads pixels, is worth more than one that reads
 a style (the dead Atake button would have passed any style assertion).

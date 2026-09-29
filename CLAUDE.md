@@ -1105,7 +1105,10 @@ its size, is the case it exists for; every 256px sheet in this project
 is scaled down or barely up and keeps the browser's smoothing.
 
 Missing images do not break anything. They fall back to a dashed
-placeholder box showing the expected filename.
+placeholder box showing the expected filename. A scene's own backdrop
+that is owed (not in the manifest) is drawn the same way, as a dark
+wall with the dashed border and the file name, and is never put into
+--skyline-src, where the browser would ask for it (Block 80).
 
 ## Scenes
 
@@ -1657,7 +1660,7 @@ look, by system:
     repository layout                     Block 44
     quests and objectives                 Blocks 48, 52, 56, 57
     Act I's story passages                Blocks 19 to 21, 31 to 37,
-                                          52 to 59
+                                          52 to 59, 80 (the ending)
     STORY.md and ART.md                   Blocks 61, 77
     loading, retries, service worker      Blocks 62, 78
     run, jump, dust, apple game, rewards  Blocks 57, 63, 65, 67
@@ -1665,6 +1668,7 @@ look, by system:
     siga and bantay art                   Blocks 72, 73, 75
     test room, enemy catalogue            Blocks 74, 76
     these files compacted                 Block 79
+    an owed scene backdrop                Block 80
 
 ## Pitfalls
 

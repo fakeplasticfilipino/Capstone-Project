@@ -42,13 +42,12 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 28 Sep 2026, Block 74 (the guards' room is reached only
-from a Test Room button in settings, recorded under its own heading;
-the plot itself is unchanged). Before that, 25 Sep 2026, Block 70 (the Talaan's papers are the
-teacher's, at three fixed places on the street). Before that, Block 69
-(the Talaan's words and hints removed, the apple tree now the
-silhouette tree at 5800, and no guide: the student finds each person
-unaided).
+Last updated: 29 Sep 2026, Block 80 (the end of Act I: four years on,
+Principe Baldovino, the Katipunan, the oath and the pamphlets; beats 11
+to 15). Before that, 28 Sep 2026, Block 74 (the guards' room is reached
+only from a Test Room button in settings, recorded under its own
+heading). Before that, 25 Sep 2026, Block 70 (the Talaan's papers are
+the teacher's, at three fixed places on the street).
 
 ## The story in brief
 
@@ -60,15 +59,23 @@ into a theatre company's crisis: their lead actor is sick and the
 house is full. The costume he carried fits him. He goes on, forgets his
 first line, adds one of his own, wins the stage fight, and walks off to
 a standing crowd and an offer to join the company. He brings the money
-home to his mother. The act is held open there; what comes next is not
-written yet.
+home to his mother.
+
+Four years on he is the company's lead, playing Principe Baldovino, and
+the line the crowd cheers ("Ang lupang ito ay atin") is heard by two
+men of the Katipunan. They find him in the wings and ask whether he is
+sure he wants to join; he thinks of his mother and the cedula, and says
+he is. He says their password to the one waiting on the street, is
+taken to a secret room, answers the three questions, signs in his own
+blood, and is sent out with pamphlets for three people on the street.
+The third handed over ends Act I, and the post-test follows.
 
 Acts II to IV are not written. Their content files are registered stubs
 (content/act2.js to act4.js) and hold no story.
 
 ## Places
 
-Act I has two.
+Act I has three.
 
 tondo, the street. One long road, 14500 wide, ten paintings of the town
 end to end (street-01 to 04 in order, twice, then 01 and 02), a palm or
@@ -79,22 +86,36 @@ Act I lives on it, left to right:
     x 2000     Nanay, where she and Macario walk to in the opening
     x 3300     the Kutsero
     x 3560     his white horse, Kabayo
+    x 4800     the mangingisda (four years on, once Macario is sworn in)
     x 5800     the apple tree (Puno ng mansanas): the silhouette tree
                over that join, with no picture of its own
     x 6400     the Mananahi
+    x 6900     the tabakera (as the mangingisda)
     x 7800     Aling Rosa, a customer
     x 9300     Mang Tomas, a customer
+    x 10600    the karpintero (as the mangingisda)
+    x 12500    the Kasama (four years on, once the Katipunan has found
+               Macario in the wings)
     x 13600    the direktor, at the far end, by the entablado
 
 The siga are not on the street after the opening: they walk on behind
 Macario at the very start and are gone when he walks off with Nanay.
+Everyone else stays through the four years.
 
 entablado, inside the theatre. One painting of a stage (curtains, a
 painted backdrop of a Moorish city by the sea), one phone screen wide,
 1180. The direktor stands in the left wing (x 60), Maryam on the stage
 (x 300); the Sultan and his soldiers come from the right wing; the way
 out, Lumabas, is at the right edge and leads back to the street beside
-the direktor. It is reached only with the direktor, once.
+the direktor. It is reached only with the direktor, once, and four
+years later by the black card, into Principe Baldovino.
+
+pulungan, the Katipunan's secret room. One screen wide, 1180. The way
+out, Lumabas, is on the left, where he came in, and stays shut until
+he is sworn in; the Kasama stands by it (x 300), the Pangulo (x 760)
+and the Katipunero (x 920) at the far end. It is reached only with the
+Kasama, once, and leads back to the street beside him. Its painting is
+owed: until it arrives it is a dark wall with the file name on it.
 
 ## Cast
 
@@ -128,10 +149,25 @@ the direktor. It is reached only with the direktor, once.
     Mga Kawal      in the play, the Sultan's four soldiers. Real art
                    (walk and sword sheets).
     Mga Manonood   the audience. Heard, never seen.
+    Katipunero     the older of two men of the Katipunan who find
+                   Macario in the wings, and at his oath. Placeholder
+                   box (katipunero.png).
+    Kasama         his companion, who gives Macario the password, waits
+                   for him on the street and leads him in. Placeholder
+                   box (kasama.png).
+    Pangulo        who swears Macario in and gives him the pamphlets.
+                   Placeholder box (pangulo.png).
+    Karpintero,    the three who take the pamphlets: a carpenter, a
+    Tabakera,      woman from the cigar factory and a fisherman.
+    Mangingisda    Placeholder boxes (karpintero.png, tabakera.png,
+                   mangingisda.png).
 
 Names and roles marked as ours: Aling Rosa, Mang Tomas, Julian, Don
-Rodrigo (the part Macario plays), the Sultan. The proponents may rename
-any of them.
+Rodrigo (the part Macario plays), the Sultan, and every person of
+Block 80 (the Katipunero, the Kasama, the Pangulo and the three). The
+proponents may rename any of them. Principe Baldovino is the
+proponents' own, and the part Sakay is known to have played; what
+happens in it here is ours.
 
 ## Act I, beat by beat
 
@@ -408,8 +444,152 @@ Macario keeps what the play paid beyond that.
     Nanay: Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay
     Macario: Maraming salamat nay!
 
-Completes: Ibigay kay Nanay ang naipon (n/100). Every task is done and
-Act I is held open here: the post-test waits for the rest of the story.
+Completes: Ibigay kay Nanay ang naipon (n/100). As she finishes, the
+screen goes black.
+
+### 11. Four years on
+
+Plays by itself straight after the savings; a reload before the card
+lifts plays it again.
+
+  + [BLACK] Pagkalipas ng apat na taon
+  + [BLACK] Ngayong gabi sa entablado: Principe Baldovino
+
+    (The card lifts onto the entablado, in the middle of the play.
+    Macario on his mark beside Maryam, facing her.)
+
+  + Maryam: Principe Baldovino! Nasakop na ng malupit na hari ang ating kaharian!
+  + Maryam: Pinagbabayad niya ang ating mga tao hanggang wala nang makain. Ano ang gagawin mo?
+  + Macario: Hindi ako luluhod sa haring hindi atin.
+  + Macario: Ang lupang ito ay atin. Babawiin natin ito, kahit buhay ko pa ang kapalit!
+  + Mga Manonood: Mabuhay si Baldovino!
+  + Direktor (pabulong): Apat na taon na... wala na akong naibubulong sa'yo.
+
+  + [BLACK] Nagsara ang telon.
+  + [BLACK] Muling tumayo ang mga manonood.
+
+In the wings. (Macario beside the direktor, Maryam behind him.)
+
+  + Direktor: Narinig mo ba? "Mabuhay si Baldovino!" Hanggang kalye, rinig 'yon.
+  + Maryam: Apat na taon na, pero nanginginig pa rin ang tuhod mo, 'no?
+  + Macario: Medyo lang.
+  + Maryam: Sabi ko na nga ba.
+
+### 12. The Katipunan asks
+
+entablado. Straight on from the play; a reload from here plays only
+this.
+
+    (Macario walks to stage right. Two men who are not of the company
+    come in from the right wing and stop in front of him.)
+
+  + Katipunero: Principe Baldovino.
+  + Macario: Macario po. Sino po sila?
+  + Katipunero: 'Yung sinabi mo kanina. "Ang lupang ito ay atin." Linya lang ba 'yon?
+  + Macario: ...
+  + Katipunero: May kaibigan kang nagtanong-tanong tungkol sa amin. Sabi niya, gusto mo raw sumali.
+  + Macario: Kayo po ba... ang Katipunan?
+  + Kasama: Hinaan mo ang boses mo.
+  + Katipunero: Minsan ko lang itatanong. Sigurado ka bang gusto mong sumali?
+  + Katipunero: Hindi ito dula. Dito, hindi kahoy ang mga espada.
+  + Macario (sa isip): Si Nanay...
+  + Macario (sa isip): Pero kaya nga ako sasali. Para wala nang inang mauubusan ng pambili ng bigas dahil sa cedula.
+  + Macario: Sigurado po ako.
+  + Katipunero: Kung gayon, makinig ka.
+  + Kasama: Paglabas mo, hanapin mo ako sa kalye, bago ang entablado.
+  + Kasama: Lalapitan mo ako at sasabihin mo: "Anak ng Bayan." Kapag hindi mo 'yon sinabi, hindi kita kilala.
+  + Macario: Anak ng Bayan.
+  + Kasama: Hindi rito. Sa labas.
+
+    (They walk off into the right wing. The student is free; Lumabas
+    leads back to the street beside the direktor.)
+
+Completes: Gumanap bilang Principe Baldovino.
+
+### 13. The word
+
+tondo, the Kasama at x 12500, left of the direktor. Talk (Usap).
+
+  + Macario: Anak ng Bayan.
+  + Kasama: ...
+  + Kasama: Walang sumunod sa'yo?
+  + Macario: Wala po.
+  + Kasama: Sumunod ka sa akin. Huwag kang lilingon.
+
+  + [BLACK] Sa isang lihim na silid sa Tondo
+
+    (The card lifts onto the pulungan.)
+
+Completes: Hanapin ang naghihintay sa kalye.
+
+### 14. The oath
+
+pulungan. Plays by itself on arrival; a reload in the room plays it
+again from the top. The three questions and the signature in blood are
+the Katipunan's own rite as the history books tell it; the words are
+ours.
+
+  + Pangulo: Ito ba ang bata?
+  + Kasama: Siya po. Alam niya ang salita.
+  + Pangulo: Lumapit ka.
+
+    (Macario walks up to the Pangulo.)
+
+  + Pangulo: Bago ka namin tanggapin, tatlong tanong. Sagutin mo nang tapat.
+  + Pangulo: Ano ang kalagayan ng ating bayan noong unang panahon, bago dumating ang mga Kastila?
+  + Macario: Malaya po. May sarili tayong pamumuhay at pamahalaan.
+  + Pangulo: At ngayon?
+  + Macario: Alipin po sa sarili nating lupa.
+  + Pangulo: At sa darating na panahon?
+  + Macario: Malaya pong muli... kung may lalaban.
+  + Pangulo: ...
+  + Pangulo: Lagdaan mo ang panunumpa. Sa sarili mong dugo.
+
+  + [BLACK] Lumagda si Macario sa panunumpa, gamit ang sarili niyang dugo.
+
+  + Pangulo: Mula ngayon, kapatid ka na namin, Macario.
+  + Katipunero: Maligayang pagdating, kapatid. Hindi na linya lang 'yung sinabi mo sa entablado.
+  + Pangulo: Heto ang una mong gawain. Mga polyeto.
+  + Pangulo: Nakasulat diyan kung bakit tayo lumalaban. Kailangang mabasa ito ng ating mga kababayan.
+  + Pangulo: Tatlo ang naghihintay nito sa kalye.
+  + Kasama: Ang karpintero, malapit lang paglabas mo. Ang tabakera, sa tabi ng patahian. At ang mangingisda, bago ang puno ng mansanas.
+  + Kasama: Iabot mo nang palihim. Kapag nahulihan ka ng guardia civil, hindi ka na makakauwi sa nanay mo.
+  + Macario: Opo. Ako na po ang bahala.
+
+Completes: Sumapi sa Katipunan. The student is free; Lumabas leads
+back to the street beside the Kasama, facing left, down the street.
+
+### 15. The pamphlets
+
+tondo. The karpintero (x 10600), the tabakera (x 6900) and the
+mangingisda (x 4800), in any order. Each button reads Iabot ang
+polyeto, and Macario says the same thing to each:
+
+  + Macario: Para po sa inyo. Itago n'yo po, at basahin nang palihim.
+
+Karpintero:
+
+  + Karpintero: Katipunan? ...Itatago ko 'to. Ipapabasa ko sa mga kasama ko sa talyer.
+
+Tabakera:
+
+  + Tabakera: Isisingit ko 'to sa mga tabako. Maraming babae sa pagawaan ang dapat makabasa nito.
+
+Mangingisda:
+
+  + Mangingisda: Matagal ko nang hinihintay 'to. Sa bangka ko itatago, walang guardia na sumisilip doon.
+
+The pamphlets count (n/3). After the third, wherever he is:
+
+  + Macario (sa isip): Naibigay ko na ang tatlo.
+  + Macario (sa isip): Dati, barya ang iniipon ko para kay Nanay.
+  + Macario (sa isip): Ngayon, may mas malaki na akong ipinaglalaban.
+
+  + [BLACK] Dito nagsimula ang paglilingkod ni Macario sa Katipunan.
+  + [BLACK] Wakas ng Unang Yugto
+
+Completes: Ipamigay ang mga polyeto (3/3), the last task. Act I is
+finished, and the post-test runs.
 
 ## The Test Room (not the plot)
 
@@ -439,6 +619,8 @@ Nanay:
     (before the savings)
     Nanay: Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay
     (after)
+  + Nanay: Ginagabi ka na naman, anak. Mag-ingat ka sa mga guardia civil sa labas.
+    (once he is sworn in; she does not know)
 
 Kutsero:
 
@@ -492,6 +674,8 @@ Direktor, on the street:
     (Macario agreed but is still outside, after a reload; takes him in)
   + Direktor: Hindi pa rin ako makapaniwala. Iniligtas mo ang palabas namin, iho.
     (after the play)
+  + Direktor: Apat na taon na, iho, at ikaw pa rin ang hinahanap ng mga manonood.
+    (four years on)
 
 Direktor and Maryam, in the entablado:
 
@@ -499,10 +683,38 @@ Direktor and Maryam, in the entablado:
     (before the play)
   + Direktor: Bumalik ka rito kahit kailan mo gusto. May puwesto ka sa amin.
     (after)
+  + Direktor: Magpahinga ka na, iho. May palabas ulit tayo sa Sabado.
+    (four years on)
   + Maryam: Kaya mo 'yan. Tumingin ka lang sa akin kapag nalito ka.
     (before the play)
   + Maryam: Alam mo, mas bagay sa'yo si Don Rodrigo kaysa kay Julian. Huwag mo lang sasabihin sa kanya.
     (after)
+  + Maryam: Sino 'yung dalawang lalaking kausap mo kanina? Ang seryoso ng mga mukha.
+    (four years on, after the two men)
+
+Kasama, on the street:
+
+  + Kasama: Ano pa'ng hinihintay mo? Sumunod ka na.
+    (the word said, after a reload before the oath; takes him in)
+  + Kasama: Huwag kang tumambay rito. Ipamigay mo na ang mga polyeto.
+    (during the pamphlets)
+  + Kasama: Magaling, kapatid. Magkikita pa tayo.
+    (afterwards)
+
+In the pulungan, after the oath:
+
+  + Kasama: Lumabas ka nang mag-isa. Hindi tayo dapat makitang magkasama.
+  + Pangulo: Humayo ka na, kapatid. Naghihintay ang tatlo.
+  + Katipunero: Sa susunod na palabas mo, manonood ulit ako. Sa likod, gaya ng dati.
+
+The three, before the pamphlet and after:
+
+  + Karpintero: Gabi na, iho. Sarado na ang talyer.
+  + Karpintero: Wala akong nakita, wala akong narinig. Ingat ka, iho.
+  + Tabakera: Pagod na ako, iho. Maghapon akong nagbalot ng tabako.
+  + Tabakera: Kumakalat na sa pagawaan ang ibinigay mo. Mag-ingat ka, ha.
+  + Mangingisda: Maaga pa ako bukas sa laot. Ano'ng kailangan mo?
+  + Mangingisda: Nabasa ko na. Ipinasa ko na rin sa kapitbahay.
 
 ## The Talaan
 
@@ -533,12 +745,15 @@ next passage. None of these is a promise; they are what is there.
 
     The father. The siga's taunt ("inaantay mo pa din tatay mo?") is
       the first thing said in the game and is never answered.
-    The company. The direktor has offered Macario a place ("may
-      puwesto ka sa kompanya namin"). Sakay's life on the stage is a
-      real thread worth following against the source book.
-    Maryam. Teases him twice and prefers him to Julian.
-    Julian. Sick tonight; he will want his part back.
-    The money. Nanay has her 100; Macario kept what the play paid.
+    The company. Macario took the direktor's offer: four years on he
+      is its lead. The direktor and Maryam both saw the two men.
+    Maryam. Teases him three times, prefers him to Julian, and asks
+      who the serious men were. He has not answered.
+    Julian. Sick on the first night; never heard of again.
+    Nanay. Does not know he has joined, and already worries about the
+      guardia civil.
+    The Katipunan. Macario is a sworn member with one errand done. The
+      Kasama: "Magkikita pa tayo." Act II starts from here.
 
 ## Open questions for the proponents
 
@@ -549,6 +764,16 @@ next passage. None of these is a promise; they are what is there.
       not named by religion.
     Check the play against the source book, and the year on the
       opening card against Sakay's birth year in it.
+    The four years. The opening says 1880, so four years on is 1884,
+      and the Katipunan was founded in 1892; Sakay is usually said to
+      have joined in 1894, and the post-test asks about 1894. The card
+      therefore names no year ("Pagkalipas ng apat na taon"). Either
+      the gap or the opening year should change so the two agree with
+      the history the tests teach.
+    What happens in Principe Baldovino (a prince swearing to win back
+      his kingdom from a foreign king is ours), the password (Anak ng
+      Bayan, the first degree's word as commonly told), the three
+      questions, and what the pamphlets were.
     What the direktor pays (79 to 110 at random, the proponents' own
       numbers from Block 56).
     The Talaan: whether Act I should have words a student earns

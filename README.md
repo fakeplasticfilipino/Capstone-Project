@@ -44,10 +44,10 @@ anything about progress stated anywhere else, including here, may be out
 of date.
 
 In short: every system is built and covered by automated tests, and the
-game runs on a real Android phone. Act I is written and playable as far
-as the story goes so far; it is held open, and its post-test waits, until
-the next passage is written against the resource person's source
-material. Acts II to IV are registered and empty. A few characters are
+game runs on a real Android phone. Act I is written and playable from
+its opening to its end, where its post-test runs; its lines are still
+being checked against the resource person's source material. Acts II to
+IV are registered and empty. Several characters, and one room, are
 still placeholder boxes until the artist's drawings arrive (ART.md).
 
 ## Stack

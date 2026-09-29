@@ -11,8 +11,11 @@
 // horse, 50 barya) and the Mananahi's (two customers, then the
 // direktor last). Since Block 59: the direktor's missing actor, the
 // play inside the entablado (backstage, the curtain, the fight, the
-// pay), the Mananahi's pay, Nanay's gift with no jump in time, the act
-// held open, and the finished tasks listed in settings.
+// pay), the Mananahi's pay, and Nanay's gift. Since Block 80, the end of
+// the act: four years on, Principe Baldovino, the Katipunan in the
+// wings, the word to the Kasama, the oath in the pulungan, the three
+// pamphlets, and the post-test opening; the finished tasks listed in
+// settings.
 // It also checks that a reload in the middle of a script replays it,
 // that saves from Blocks 52 to 57 land somewhere sensible, and that a
 // guest gets the same opening.
@@ -160,8 +163,10 @@ const readConversation = async (page, max) => {
   return { lines, facings };
 };
 
-const waitForScene = async (page, id) => {
-  for (let i = 0; i < 60; i++) {
+// A black card before the fade (Block 80's) can hold the screen longer
+// than the default six seconds; ms says how long to wait.
+const waitForScene = async (page, id, ms) => {
+  for (let i = 0; i < (ms || 6000) / 100; i++) {
     const s = await page.evaluate(() => ({ id: currentSceneId, fading: document.getElementById("blackout").classList.contains("visible") }));
     if (s.id === id && !s.fading) return true;
     await page.waitForTimeout(100);
@@ -242,7 +247,18 @@ const STEP = {
   play: "Gumanap bilang Don Rodrigo sa dula",
   payM: "Kunin ang bayad sa Mananahi",
   nanay: "Ibigay kay Nanay ang naipon",
+  // Block 80.
+  baldovino: "Gumanap bilang Principe Baldovino",
+  kasama: "Hanapin ang naghihintay sa kalye",
+  join: "Sumapi sa Katipunan",
+  pamphlets: "Ipamigay ang mga polyeto",
 };
+// Block 80. The end of Act I.
+const FOUR_YEARS = ["Pagkalipas ng apat na taon", "Ngayong gabi sa entablado: Principe Baldovino"];
+const BALDOVINO_LINE = "Macario: Ang lupang ito ay atin. Babawiin natin ito, kahit buhay ko pa ang kapalit!";
+const SURE_Q = "Katipunero: Minsan ko lang itatanong. Sigurado ka bang gusto mong sumali?";
+const PAMPHLET_LINE = "Macario: Para po sa inyo. Itago n'yo po, at basahin nang palihim.";
+const THE_END = ["Dito nagsimula ang paglilingkod ni Macario sa Katipunan.", "Wakas ng Unang Yugto"];
 const PANIC_FIRST = "Direktor: Teka... nasaan na ba si Julian?";
 const PANIC_YES = "Macario: Sige po. Susubukan ko.";
 const BACKSTAGE_FIRST = "Maryam: Ikaw ba 'yung papalit kay Julian?";
@@ -404,11 +420,11 @@ const artDrift = () => {
   });
   ok("every picture in the manifest opens in the browser (" + opened.count + ")",
      opened.count > 20 && opened.bad.length === 0, opened.bad);
-  ok("Act I has nine objectives, pays no barya per step, and is held open",
-     await page.evaluate(() => Acts.objectivesFor(1).length === 9 && Acts.perObjective(2) === 0 &&
-       ACT_1.holdOpen === true));
-  ok("one street, the entablado and the guards' room (Block 73), and no other scene", await page.evaluate(() =>
-    JSON.stringify(SCENES.map((s) => s.id)) === '["tondo","entablado","bantayan"]' &&
+  ok("Act I has thirteen objectives, pays no barya per step, and is no longer held open (Block 80)",
+     await page.evaluate(() => Acts.objectivesFor(1).length === 13 && Acts.perObjective(2) === 0 &&
+       !ACT_1.holdOpen));
+  ok("one street, the entablado, the pulungan (Block 80) and the guards' room, and no other scene", await page.evaluate(() =>
+    JSON.stringify(SCENES.map((s) => s.id)) === '["tondo","entablado","pulungan","bantayan"]' &&
     !(SCENES[0].exits || []).length));
   ok("the item catalogue is empty", await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 0));
 
@@ -862,26 +878,170 @@ const artDrift = () => {
      n1.lines.length === 9 && JSON.stringify([...n1.lines.slice(0, 3), ...n1.lines.slice(7)]) === JSON.stringify(NANAY_THANKS_OWN) &&
      /entablado/.test(n1.lines[3]), n1.lines);
   ok("the savings are spent, and he keeps the rest", (await page.evaluate(() => Game.currency())) === afterPay + 50 - 100);
+
+  // ---------------------------------------------------------------
+  // Block 80. The end of Act I.
+  console.log("\nFour years on: Principe Baldovino");
+  ok("straight after Nanay, a black card: four years on, and the play",
+     await waitIntertitle(page, true, 5000) &&
+     JSON.stringify((await intertitle(page)).lines) === JSON.stringify(FOUR_YEARS), await intertitle(page));
+  ok("and the step in hand is the new play", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.baldovino]));
+  // Until the stage is on screen, whenever the card is not black the
+  // screen behind it must be: the street is never seen between the two.
+  let streetSeen = false;
+  for (let i = 0; i < 150; i++) {
+    const st = await page.evaluate(() => ({ scene: currentSceneId,
+      card: document.getElementById("intertitle").classList.contains("visible"),
+      black: document.getElementById("blackout").classList.contains("visible") }));
+    if (st.scene === "entablado") break;
+    if (!st.card && !st.black) streetSeen = true;
+    await page.waitForTimeout(100);
+  }
+  ok("the card lifts onto black and the fade takes him onto the stage, with no street between", !streetSeen);
+  ok("the entablado, in the middle of the play", await waitForScene(page, "entablado"));
+  const bp = await page.evaluate(() => ({ x: posX, facing, ids: NPCS.map((n) => n.id).sort().join(",") }));
+  ok("on his mark beside Maryam, facing her, with the direktor in the wings",
+     bp.x === 440 && bp.facing === -1 && bp.ids === "direktor,maryam", bp);
+  const pb1 = await readConversation(page, 8);
+  ok("Principe Baldovino: the line the crowd cheers, and no whisper needed",
+     pb1.lines.length === 6 && /^Maryam: Principe Baldovino!/.test(pb1.lines[0]) &&
+     pb1.lines[3] === BALDOVINO_LINE && /^Direktor \(pabulong\):/.test(pb1.lines[5]), pb1.lines);
+  ok("the curtain closes", await waitIntertitle(page, true, 3000) &&
+     (await intertitle(page)).lines[0] === "Nagsara ang telon.");
+  await waitIntertitle(page, false, 12000);
+  const pb2 = await readConversation(page, 6);
+  ok("in the wings, the direktor and Maryam", pb2.lines.length === 4 && /Mabuhay si Baldovino/.test(pb2.lines[0]) &&
+     pb2.lines[2] === "Macario: Medyo lang.", pb2.lines);
+  ok("the play is saved before anyone comes", await page.evaluate(() => state.flags.naitanghalAngBaldovino === true));
+
+  console.log("\nThe Katipunan asks");
+  const kk = await readConversation(page, 20);
+  const kkPlace = await page.evaluate(() => ({ x: posX, facing,
+    men: ["katipunero", "kasama"].map((id) => document.getElementById("dec-" + id).textContent) }));
+  ok("two men come out of the right wing to him at stage right, both placeholder boxes",
+     kkPlace.x === 700 && kkPlace.facing === 1 &&
+     /katipunero\.png/.test(kkPlace.men[0]) && /kasama\.png/.test(kkPlace.men[1]), kkPlace);
+  ok("they ask whether he is sure, he gives his reason, says yes, and is given the word",
+     kk.lines.length === 17 && kk.lines[0] === "Katipunero: Principe Baldovino." &&
+     kk.lines.includes(SURE_Q) && kk.lines.includes("Macario: Sigurado po ako.") &&
+     kk.lines.some((l) => /^Macario \(sa isip\):.*cedula/.test(l)) &&
+     kk.lines[15] === "Macario: Anak ng Bayan." && kk.lines[16] === "Kasama: Hindi rito. Sa labas.", kk.lines);
+  await settle(page);
   await page.waitForTimeout(1500);
-  ok("no jump in time: no black card after Nanay", !(await intertitle(page)).up);
-  ok("every step is done and Act I stays open: no post-test (holdOpen)", await page.evaluate(() =>
-    Acts.countDone(1) === 9 && Acts.status === "playing" &&
-    document.getElementById("act-screen").classList.contains("hidden")));
-  const all = await doneInSettings(page);
-  ok("settings lists all nine finished tasks", all.length === 9 && all[0] === "Umuwi kasama si Nanay", all);
+  ok("they leave, the play step is done, and the world is his",
+     await page.evaluate(() => state.flags.nilapitanNgKatipunan === true && !cutscenePlaying &&
+       document.getElementById("dec-katipunero").style.display === "none"));
+  ok("the next task is the one waiting on the street",
+     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.kasama]));
+  const lines4 = await page.evaluate(() => ["direktor", "maryam"].map((id) => {
+    const n = NPCS.find((x) => x.id === id);
+    startDialogue(n);
+    const l = dialogueText.textContent;
+    endDialogue();
+    return l;
+  }));
+  ok("the direktor and Maryam have their four-years-on lines, and Maryam saw the men",
+     /Sabado/.test(lines4[0]) && /dalawang lalaki/.test(lines4[1]), lines4);
+  await walkTo(page, 1080);
+  await page.keyboard.press("e");
+  ok("Lumabas: back on the street by the direktor", await waitForScene(page, "tondo") && (await settle(page), true) &&
+     await page.evaluate(() => posX === 13480));
+
+  console.log("\nThe word, and the oath");
+  const kasamaSt = await page.evaluate(() => {
+    const n = NPCS.find((x) => x.id === "kasama");
+    return { shown: n && !n.hidden, x: n && n.x };
+  });
+  ok("the Kasama waits on the street, left of the direktor", kasamaSt.shown && kasamaSt.x === 12500, kasamaSt);
+  await walkTo(page, 12380);
+  await page.keyboard.press("e");
+  const w1 = await readConversation(page, 6);
+  ok("Macario says the word, and the Kasama leads him off",
+     w1.lines.length === 5 && w1.lines[0] === "Macario: Anak ng Bayan." && /lilingon/.test(w1.lines[4]), w1.lines);
+  ok("a black card names the place", await waitIntertitle(page, true, 3000) &&
+     (await intertitle(page)).lines[0] === "Sa isang lihim na silid sa Tondo");
+  ok("and the fade takes him to the pulungan", await waitForScene(page, "pulungan", 15000));
+  const pulungan = await page.evaluate(() => {
+    const tile = document.querySelector("#skyline .skyline-tile");
+    return { ids: NPCS.map((n) => n.id).join(","), x: posX,
+      owed: tile && tile.classList.contains("backdrop-owed") && /pulungan\.jpg/.test(tile.textContent),
+      src: document.getElementById("skyline").style.getPropertyValue("--skyline-src") };
+  });
+  ok("the room: the Kasama, the Pangulo and the Katipunero, its owed painting drawn as a dark wall named for the file (Block 80)",
+     pulungan.ids === "kasama,pangulo,katipunero" && pulungan.x === 120 && pulungan.owed && pulungan.src === "", pulungan);
+  ok("the task is to join", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.join]));
+  const o1 = await readConversation(page, 4);
+  ok("the Pangulo calls him forward", o1.lines.length === 3 && o1.lines[0] === "Pangulo: Ito ba ang bata?", o1.lines);
+  const o2 = await readConversation(page, 10);
+  ok("the three questions, answered, and the oath to sign",
+     o2.lines.length === 9 && /unang panahon/.test(o2.lines[1]) && o2.lines[3] === "Pangulo: At ngayon?" &&
+     /darating/.test(o2.lines[5]) && /dugo/.test(o2.lines[8]), o2.lines);
+  ok("he walked up to the Pangulo", await page.evaluate(() => posX === 640 && facing === 1));
+  ok("he signs in his blood, on a black card", await waitIntertitle(page, true, 3000) &&
+     /dugo/.test((await intertitle(page)).lines[0]));
+  await waitIntertitle(page, false, 12000);
+  const o3 = await readConversation(page, 10);
+  ok("he is welcomed, and sent out with the pamphlets to three people named with their places",
+     o3.lines.length === 8 && /kapatid/.test(o3.lines[0]) && /karpintero.*tabakera.*mangingisda/.test(o3.lines[5]) &&
+     o3.lines[7] === "Macario: Opo. Ako na po ang bahala.", o3.lines);
+  await settle(page);
+  await page.waitForTimeout(300);
+  ok("sworn in; the task is the pamphlets (0/3)", await page.evaluate(() => state.flags.tinanggapSaKatipunan === true) &&
+     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.pamphlets + " (0/3)"]));
+  await walkTo(page, 100);
+  await page.keyboard.press("e");
+  ok("Lumabas, on the left: back on the street beside the Kasama, facing down the street",
+     await waitForScene(page, "tondo") && (await settle(page), true) &&
+     await page.evaluate(() => posX === 12380 && facing === -1));
+
+  console.log("\nThe pamphlets");
   const street = await page.evaluate(() => NPCS.filter((n) => !n.hidden).map((n) => n.id).join(","));
-  ok("the street keeps everyone (no clearing any more)",
-     street === "nanay,kutsero,kabayo,puno,mananahi,aling-rosa,mang-tomas,direktor", street);
+  ok("the three are on the street now, and everyone else still is",
+     street === "nanay,kutsero,kabayo,puno,mananahi,aling-rosa,mang-tomas,direktor,kasama,karpintero,tabakera,mangingisda", street);
   const p1 = await panels(page);
   ok("nobody stands behind a tree", p1.blocked.length === 0, p1.blocked);
-  const moved = await page.evaluate(async () => {
-    const x0 = posX;
-    keysPressed["a"] = true;
-    await new Promise((r) => setTimeout(r, 400));
-    keysPressed["a"] = false;
-    return x0 - posX;
+  const handOver = async (x, name, n) => {
+    await walkTo(page, x - 120);
+    await page.keyboard.press("e");
+    const before = await readConversation(page, 2);
+    ok(name + " talks first, and nothing is given by talking", before.lines.length === 1 &&
+       !(await page.evaluate((id) => state.flags["naibigayAngPolyetoKay_" + id], name.toLowerCase())), before.lines);
+    ok(name + ": Iabot ang polyeto", (await gift(page)) === "Iabot ang polyeto");
+    const t = await readConversation(page, 3);
+    ok(name + " takes it, and the count moves",
+       t.lines.length === 2 && t.lines[0] === PAMPHLET_LINE && t.lines[1].startsWith(name + ":") &&
+       (n === 3 || JSON.stringify((await log(page)).current) === JSON.stringify([STEP.pamphlets + " (" + n + "/3)"])), t.lines);
+  };
+  await handOver(10600, "Karpintero", 1);
+  await handOver(6900, "Tabakera", 2);
+  const all = await doneInSettings(page);
+  ok("settings lists the twelve finished tasks", all.length === 12 && all[0] === "Umuwi kasama si Nanay" &&
+     all[11] === STEP.join, all);
+  const nanayLine = await page.evaluate(() => {
+    const n = NPCS.find((x) => x.id === "nanay");
+    startDialogue(n);
+    const l = dialogueText.textContent;
+    endDialogue();
+    return l;
   });
-  ok("he can walk the street", moved > 20, moved);
+  ok("Nanay does not know, and worries", /guardia civil/.test(nanayLine), nanayLine);
+  await handOver(4800, "Mangingisda", 3);
+
+  console.log("\nThe end of Act I");
+  const end = await readConversation(page, 4);
+  ok("his thought after the third", end.lines.length === 3 && /tatlo/.test(end.lines[0]) && /Nanay/.test(end.lines[1]), end.lines);
+  ok("the last black card", await waitIntertitle(page, true, 3000) &&
+     JSON.stringify((await intertitle(page)).lines) === JSON.stringify(THE_END), await intertitle(page));
+  let post = null;
+  for (let i = 0; i < 150; i++) {
+    post = await page.evaluate(() => ({ status: Acts.status, done: Acts.countDone(1),
+      quiz: !document.getElementById("quiz").classList.contains("hidden"),
+      eyebrow: document.getElementById("quiz-eyebrow").textContent }));
+    if (post.quiz && /Panapos/.test(post.eyebrow)) break;
+    await page.waitForTimeout(100);
+  }
+  ok("every step is done, Act I finishes, and the post-test opens",
+     post.done === 13 && post.status === "posttest" && post.quiz && /Panapos/.test(post.eyebrow), post);
   await ctx.close();
 
   // ---------------------------------------------------------------
@@ -946,9 +1106,50 @@ const artDrift = () => {
 
   r = await resume("patahian", Object.assign({}, upToMananahi,
     { naihatidAngMgaDamit: true, nabayaranNgMananahi: true, naibigayAngIponKayNanay: true, natanggapAngPadala: true }));
-  await r.page.waitForTimeout(400);
-  ok("a Block 56 or 57 save past the savings lands on the street with every step done, and no 1884",
-     await r.page.evaluate(() => currentSceneId === "tondo" && Acts.countDone(1) === 9) && !(await intertitle(r.page)).up);
+  ok("a Block 56 or 57 save past the savings, which never saw the first play, gets the four years (Block 80)",
+     await waitIntertitle(r.page, true, 5000) &&
+     JSON.stringify((await intertitle(r.page)).lines) === JSON.stringify(FOUR_YEARS));
+  ok("and goes on to Principe Baldovino, not the first play",
+     await waitForScene(r.page, "entablado", 20000) &&
+     /^Maryam: Principe Baldovino!/.test((await readConversation(r.page, 1)).lines[0] || ""));
+  await r.ctx.close();
+
+  // Block 80. Reloads through the end of the act.
+  const savingsGiven = Object.assign({}, delivered, { naihatidAngMgaDamit: true, naitanghalAngDula: true,
+    nabayaranNgMananahi: true, naibigayAngIponKayNanay: true, lumipasAngApatNaTaon: true });
+  r = await resume("entablado", Object.assign({}, savingsGiven, { naitanghalAngBaldovino: true }));
+  c = await readConversation(r.page, 20);
+  ok("a reload after Principe Baldovino and before the men have gone plays only the men",
+     c.lines[0] === "Katipunero: Principe Baldovino." && c.lines.length === 17 &&
+     await r.page.evaluate(() => posX === 700), c.lines);
+  await r.ctx.close();
+
+  const worded = Object.assign({}, savingsGiven, { naitanghalAngBaldovino: true, nilapitanNgKatipunan: true,
+    nakausapAngKasama: true });
+  r = await resume("pulungan", worded);
+  for (let i = 0; i < 60 && !(await line(r.page)); i++) await r.page.waitForTimeout(100);
+  const rp = await r.page.evaluate(() => ({ scene: currentSceneId, x: posX }));
+  c = await readConversation(r.page, 4);
+  ok("a reload in the pulungan before the oath is over plays it again from the top",
+     c.lines[0] === "Pangulo: Ito ba ang bata?" && rp.scene === "pulungan" && rp.x === 120, { lines: c.lines, rp });
+  await r.ctx.close();
+
+  r = await resume("tondo", worded);
+  await r.page.waitForTimeout(300);
+  await walkTo(r.page, 12380);
+  await r.page.keyboard.press("e");
+  c = await readConversation(r.page, 2);
+  ok("the word said but the oath not taken: the Kasama takes him in again, in one line",
+     c.lines.length === 1 && /Sumunod ka na/.test(c.lines[0]) && await waitForScene(r.page, "pulungan", 15000), c.lines);
+  await r.ctx.close();
+
+  const pamphletsDone = Object.assign({}, worded, { tinanggapSaKatipunan: true,
+    naibigayAngPolyetoKay_karpintero: true, naibigayAngPolyetoKay_tabakera: true,
+    naibigayAngPolyetoKay_mangingisda: true, naipamigayAngTatlongPolyeto: true });
+  r = await resume("tondo", pamphletsDone);
+  c = await readConversation(r.page, 4);
+  ok("a reload after the third pamphlet and before the end plays the end again",
+     c.lines.length === 3 && /tatlo/.test(c.lines[0]), c.lines);
   await r.ctx.close();
 
   r = await resume("tondo", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true,

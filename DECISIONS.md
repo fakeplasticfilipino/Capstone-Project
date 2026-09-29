@@ -3027,3 +3027,86 @@ why" rule and cost almost nothing to download (compressed, and kept on
 the phone after the first visit); stripping them would need the build
 step this project avoids. A stale comment is cut when its code is next
 touched. No shipped file changed.
+
+The end of Act I (Block 80). Requested by the proponent after the device
+pass: after Nanay is given the savings, a cut, then four years later
+Macario inside the theatre performing Principe Baldovino, the four years
+said on the cut in letters; after the play, members of the KKK
+approach him and ask whether he is sure he wants to join; an NPC on the
+street takes him to a new room where he is formally accepted; then a
+mission to hand pamphlets to three citizens. Placeholders where there
+is no art.
+
+Built from the parts the act already had, with one engine change. The
+cut is a black card (playIntertitle) started from Nanay's gift through
+runSceneScript, exactly as the direktor's scene starts from his, and it
+leaves the fade's black up (keepBlack, Block 73) so the card lifts onto
+the stage without the street between. The play, the men in the wings
+and the oath are scene scripts; the men are decorations walked on and
+off, as the Sultan is; the Kasama, the Pangulo and the three are NPCs;
+the pamphlets are gifts counted from their flags, as the deliveries
+are. The third pamphlet sets a flag that a last scene script waits on,
+and that script's doneFlag is the thirteenth objective, so setting it
+finishes the act through the ordinary check and the post-test runs. The
+act ends on a beat (a thought and "Wakas ng Unang Yugto") rather than
+on the gift's own closing line, because the post-test opening straight
+over a thank-you would read as the game cutting the student off.
+
+holdOpen (Block 56) is removed from Act I rather than from acts.js; it
+stays in the engine for the next act written a passage at a time.
+
+The four years. The opening says "Tondo, 1880", so four years on is
+1884, eight years before the Katipunan was founded (1892) and ten before
+the year the post-test gives for Sakay joining (1894). The request was
+four years and the card says four years, but it names no year, so the
+game does not state a date the post-test contradicts. Which number
+moves is the proponents' call and is Next action in TRACKER.md.
+
+A save made before this block that gave Nanay the savings without ever
+playing the first play (the Block 56 and 57 saves the harness keeps)
+now gets the four years too. The first play's script gained unlessFlag
+lumipasAngApatNaTaon so such a save goes to Principe Baldovino and not
+back to Don Rodrigo four years late.
+
+Reload points. Each beat saves on its way out and replays from its
+start: the card (before it lifts), the play (before the wings), the men
+(a script of their own, listed before the play's because the first due
+entry is the one run), the oath (the room is saved as current_room, and
+the script plays on login), the Kasama (a one-line set that takes him in
+again), and the last beat. naitanghalAngBaldovino is set mid-script, as
+naitanghalAngDula is before the direktor's pay, so a reload after the
+curtain does not replay the play.
+
+The step for the play is finished by the men leaving, not by the
+curtain, so "Bagong gawain: Hanapin ang naghihintay sa kalye" appears
+after they have told him to go there rather than in the middle of them
+asking. Repeat lines that the four years made wrong were given a set of
+their own (the direktor on the street and inside, Maryam, Nanay), each
+by requiresFlag so the set is read from the flags and a second
+conversation cannot step past it.
+
+The history. The three questions (the country's past, present and
+future) and the signature in blood are the Katipunan's rite as it is
+commonly taught, and "Anak ng Bayan" as the first degree's password is
+the same; Block 37 used the password too and flagged it for the source
+book. What happens in Principe Baldovino is ours: Sakay is known to have
+played the part, and the comedia's plot is not something to guess at,
+so it is written as a prince refusing a foreign king, which is also why
+the Katipunan notices him. All of it is marked for checking.
+
+An owed backdrop. The pulungan's painting does not exist. A scene's own
+backdrop used to go straight into --skyline-src, so a missing one was
+requested by the browser (a 404 the loader never counted) and drew
+nothing, leaving the street's fallback behind a blank room. Since this
+block loadScene leaves the stylesheet alone for a backdrop the manifest
+does not list, and buildSkylineTiles draws the tile as the placeholder
+rule every missing sprite follows: a dark wall, the dashed yellow
+border, the file name. Nothing is asked for until the painting is in
+assets/ and the manifest.
+
+The people are placeholders with their own file names (katipunero,
+kasama, pangulo, karpintero, tabakera, mangingisda), in ART.md's Owed
+list, which the harness checks against the disk. No file was added, so
+ASSET_VERSION is unchanged. game.js v78, style.css v49, content/act1.js
+v55. verify_new_scene.js to 175: the whole ending walked with real key
+presses to the post-test opening, and a reload at each beat.

@@ -257,6 +257,21 @@ html, body {
   pointer-events: none;
 }
 
+/* Block 80. A scene's own backdrop that is still owed art: a dark room
+   with the file name on it, in the placeholder box's dashed yellow. */
+.skyline-tile.backdrop-owed {
+  background-image: none;
+  background-color: #1e1712;
+  border: 2px dashed #ffd54f;
+  box-sizing: border-box;
+  color: #ffd54f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  text-align: center;
+}
+
 /* Flipped about its own centre, so it stays in its own slot. */
 .skyline-tile-mirrored {
   transform: scaleX(-1);
