@@ -58,7 +58,7 @@
 // Block 41 stand-ins) at the proponent's request, so anyone without
 // the artist's own sheet names a file that does not exist and is drawn
 // as the dashed placeholder box with that name on it: mananahi.png,
-// direktor.png, aling-rosa.png. The siga are the exception since Block
+// direktor.png, mananahi.png. The siga are the exception since Block
 // 72: drawn from nothing by _dev/tools/draw-siga.js at the proponent's
 // request, not traced or recoloured from anyone's sheet. Real
 // art replaces each by being saved under that name and measured
@@ -194,7 +194,7 @@ const APPROACH_X = 700;
 const BESIDE = 120;
 
 // Block 80. The Kasama waits on the street "bago ang entablado", between
-// the last join (13050) and Mang Tomas, left of the direktor.
+// the last join (13050) and the direktor, left of him.
 const KASAMA_X = 12500;
 
 // Block 80. The secret room, one screen wide like the entablado: the way
@@ -219,8 +219,8 @@ const PULUNGAN_KATIPUNERO_X = 920;
 const BACK_DOOR_X = 4100;
 const PAMPHLET_GUARDS = [
   { beat: [5000, 5600], hide: 5250 },   // between the mangingisda and the tree
-  { beat: [7400, 8000], hide: 7650 },   // past the tabakera, before Aling Rosa
-  { beat: [9700, 10150], hide: 9880 },  // past Mang Tomas, before the karpintero
+  { beat: [7400, 8000], hide: 7650 },   // past the tabakera
+  { beat: [9700, 10150], hide: 9880 },  // before the karpintero
 ];
 // A guard's sight is 260 from the middle of his body, so each beat's
 // right end stops short of the next person's hand-over spot (x - 120).
@@ -250,6 +250,8 @@ const HORSE_JOB = {
   title: "Kabayo",
   hint: "Suklayin siya kapag nasa berde ang guhit.",
   verb: "Suklayin",
+  scene: "horse",
+  art: KABAYO,
   hitText: "Hiiiii!",
   missText: "Umiwas ang kabayo!",
   giver: "Kutsero",
@@ -260,8 +262,11 @@ const SEWING_JOB = {
   full: "punoNaAngMananahi",
   first: "natulungangMananahi",
   title: "Pananahi",
-  hint: "Tahiin kapag nasa berde ang guhit.",
-  verb: "Tahiin",
+  hint: "Hawakan ang pindutan, bitawan kapag nasa berde.",
+  verb: "Hilahin",
+  mode: "hold",
+  scene: "cloth",
+  snapText: "Napatid ang sinulid!",
   hitText: "Diretso ang tahi!",
   missText: "Baluktot ang tahi!",
   giver: "Mananahi",
@@ -273,19 +278,6 @@ const SEWING_BEFORE_ERRAND = 2;
 const SEWING_FLAGS = ["natapusanNgTahi1", "natapusanNgTahi2"];
 const TAHIAN_X = 6400 + 140; // the sewing table, beside the Mananahi
 
-// Block 57, cut to two in Block 59, and to scenery in Block 89. The
-// Mananahi's customers on the way: they wait, and say so. Names and
-// lines are PLACEHOLDER. Mang Tomas wears the Tindero's real sheet;
-// Aling Rosa is a placeholder.
-const CUSTOMERS = [
-  { id: "aling-rosa", label: "Aling Rosa", x: 7800,
-    animation: { src: "assets/sprites/characters/aling-rosa.png", frames: 1, fps: 1 },
-    waiting: "Hay naku, ang tagal naman ng baro ko. Pista pa naman bukas." },
-  { id: "mang-tomas", label: "Mang Tomas", x: 9300,
-    animation: { src: "assets/sprites/characters/tindero.png", frames: 14, fps: 6, columns: 5,
-                 contentTop: 69, contentHeight: 121, footX: 128 },
-    waiting: "Galing ka ba sa Mananahi? Kanina ko pa hinihintay 'yung pantalon ko." },
-];
 // The direktor's costumes are the one delivery, and the last.
 const DIREKTOR_FLAG = "naihatidKay_direktor";
 
@@ -293,7 +285,7 @@ const DIREKTOR_FLAG = "naihatidKay_direktor";
 // once Macario has been sworn in, in the order the Kasama names them and
 // (Block 81) the order he meets them from the back door: the mangingisda
 // before the apple tree, the tabakera past the Mananahi, the karpintero
-// past Mang Tomas. All clear of the joins by 270px or more. Names and
+// past the middle of the street. All clear of the joins by 270px or more. Names and
 // lines are PLACEHOLDER; their art is owed.
 const CITIZENS = [
   { id: "mangingisda", label: "Mangingisda", x: 4800, animation: owed("mangingisda"),
@@ -807,7 +799,7 @@ async function theOath() {
   turnPlayer(-1);
   await wait(300);
   await playDialogue([
-    { speaker: "Kasama", text: "Sa likod ka dadaan. Ang mangingisda ang pinakamalapit, bago ang puno ng mansanas. Ang tabakera, lampas sa patahian. Ang karpintero, lampas pa kay Mang Tomas." },
+    { speaker: "Kasama", text: "Sa likod ka dadaan. Ang mangingisda ang pinakamalapit. Ang tabakera, lampas sa patahian. Ang karpintero, malapit na sa entablado." },
     { speaker: "Kasama", text: "May mga guardia civil na nagroronda ngayong gabi. Huwag kang dadaan sa harap nila. Magtago ka kung kailangan." },
     { speaker: "Kasama", text: "Mabuti't suot mo pa 'yang damit-teatro. Kapag tumigil ka at hindi gumalaw, hindi ka nila agad papansinin." },
     { speaker: "Macario", text: "Opo. Ako na po ang bahala." },
@@ -855,6 +847,10 @@ async function workAt(job) {
     title: job.title,
     hint: job.hint,
     verb: job.verb,
+    mode: job.mode,
+    scene: job.scene,
+    art: job.art,
+    snapText: job.snapText,
     hitText: job.hitText,
     missText: job.missText,
     rounds: JOB_ROUNDS,
@@ -1300,11 +1296,6 @@ window.ACT_1 = {
             },
           ],
         },
-        // The two customers on the way (CUSTOMERS, above).
-        ...CUSTOMERS.map((c) => ({
-          id: c.id, x: c.x, label: c.label, animation: c.animation,
-          dialogueSets: [{ lines: [{ speaker: c.label, text: c.waiting }] }],
-        })),
         {
           // The direktor, on the street by the entablado: the one
           // delivery, and the story's turn (Block 59). PLACEHOLDER,

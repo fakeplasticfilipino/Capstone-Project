@@ -9,12 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 30 Sep 2026, after Block 89 (the work is there to be done: grooming and
-sewing, repeatable; 86 to 89 not yet seen on the phone). Before that, Block 85 (the feel pass, ten of its
+Last updated: 30 Sep 2026, after Block 90 (the work gets harder, sewing is held, each job
+has a picture; 86 to 90 not yet seen on the phone). Before that, Block 85 (the feel pass, ten of its
 twelve). Before that, Block 84 (black screens silent).
 Before that, Block 83 (the opening in 1890, the cut to 1894). Before that, Block 82 (the direktor's stage clothes;
 the fire leap shown, not told; running allowed away from guards).
-test.js 761 passed, 0 failed; verify_new_scene.js 197 passed,
+test.js 761 passed, 0 failed; verify_new_scene.js 201 passed,
 0 failed.
 
 ## Start here
@@ -96,7 +96,7 @@ same spot. Enemies are content: content/enemies.js describes each kind
 once (bantay, kawal) and scenes place them by type.
 
 Art: Macario's idle, walk, jump, punch and shot are the artist's; so are
-Nanay, the Kutsero, Kabayo, the Tindero (worn by Mang Tomas), Maryam,
+Nanay, the Kutsero, Kabayo, Maryam,
 the play's soldiers, the bantay's still, the street paintings and the
 inside of the entablado. The siga are drawn in code (Block 72) and the
 bantay's walk, shot and flinch are made from his still (Blocks 73, 75),
@@ -116,9 +116,9 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v54    js/game.js v87       js/shell.js v19
+    css/style.css v55    js/game.js v88       js/shell.js v19
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v61  content/items.js v13  content/act2-4.js v1
+    content/act1.js v62  content/items.js v13  content/act2-4.js v1
     content/enemies.js v2   content/questions.js v1
     js/asset-manifest.js v3 (bumped by make-asset-manifest.js)
     ASSET_VERSION 30 (in js/game.js)
@@ -206,7 +206,7 @@ but before the pilot either keep it, hide it (one line in shell.js,
 _openSettings), or remove testRoom from content/act1.js.
 
 6. Art from the artist: ART.md's Owed list (the Mananahi, the direktor,
-Aling Rosa, and since Block 80 the Katipunero, the Kasama, the Mabalasig,
+and since Block 80 the Katipunero, the Kasama, the Mabalasig,
 the three who take the pamphlets and the pulungan's painting; Macario's
 death pose; the night backdrop), and a side-view walk for Nanay. PNGs
 with transparency; each goes through ART.md's steps.
@@ -470,6 +470,8 @@ machine, the assessment module.
         fast; transparent busts
     89  Act I's work is there to be done: the horse and the sewing as
         one repeatable game, the Mananahi stopping him as the one script
+    90  the work gets harder as it goes; sewing played by holding; a
+        picture for each job; Aling Rosa and Mang Tomas removed
 
 ## Blocks remaining
 

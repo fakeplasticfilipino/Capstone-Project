@@ -30,7 +30,7 @@ const TeacherTalaan = {
   PLACES: {
     1: [
       "On the road between Nanay and the Kutsero. Every student walks past it early in the act.",
-      "Past Aling Rosa, the first customer, at jump height: the student has to jump for it.",
+      "Past the Mananahi's sewing, at jump height: the student has to jump for it.",
       "Near the end of the street, before the direktor, at jump height.",
     ],
   },

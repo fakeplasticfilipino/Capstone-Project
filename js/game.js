@@ -5341,17 +5341,29 @@ function moveDecoration(id, toX, pxPerSecond) {
 // ---- Work ---------------------------------------------------------
 //
 // Block 89. The one mini-game for every job a student can do again and
-// again (grooming the horse, sewing): a marker sweeps a bar, a green
-// patch waits at a new place each stroke, and pressing the button, E,
-// Space, Enter or the bar itself is a stroke. Resolves with how many
-// were good out of opts.rounds, or -1 if he walked away before the last.
-// Content names the words (title, hint, verb, doneText) and decides what
-// the strokes are worth; this only plays them.
+// again (grooming the horse, sewing), in two ways to play it: "tap"
+// (default), where a marker sweeps a bar and a stroke is pressing the
+// button, E, Space, Enter or the bar itself while it is over the green
+// patch; and "hold" (Block 90), where holding fills the bar and a stroke
+// is letting go inside the patch, the bar snapping if it is held to the
+// end. The patch is thinner with every stroke, and the marker quicker.
+// Above the bar a small picture shows the work: the horse and a brush
+// that sweeps over it on a good stroke, or a cloth that is stitched.
+// Resolves with how many strokes were good out of opts.rounds, or -1 if
+// he walked away before the last. Content names the words (title, hint,
+// verb, hitText, missText, doneText), the mode and the picture
+// (opts.scene "horse" or "cloth", opts.art the horse's sheet), and
+// decides what the strokes are worth; this only plays them.
 const WORK_ROUNDS = 5;
-const WORK_ZONE = 0.26;        // the good part of the bar, as a fraction of it
-const WORK_SWEEP_MS = 1000;    // one pass across, at the start
-const WORK_SWEEP_STEP = 90;    // quicker by this much with each stroke
+const WORK_ZONE_FIRST = 0.34;  // the good part of the bar at the first stroke, as a fraction of it
+const WORK_ZONE_LAST = 0.11;   // and at the last: it thins with every stroke
+const WORK_SWEEP_MS = 1000;    // tap: one pass across, at the start
+const WORK_SWEEP_STEP = 90;    // and quicker by this much with each stroke
 const WORK_SWEEP_MIN_MS = 560;
+const WORK_HOLD_MS = 1500;     // hold: the time to fill the bar, at the start
+const WORK_HOLD_STEP = 150;
+const WORK_HOLD_MIN_MS = 800;
+const WORK_HORSE_HEIGHT = 120; // the horse in the picture, as drawn tall
 
 function playWorkGame(opts) {
   const o = opts || {};
@@ -5359,6 +5371,10 @@ function playWorkGame(opts) {
   if (!screen || !screen.classList.contains("hidden")) return Promise.resolve(-1);
   const titleEl = document.getElementById("work-title");
   const hintEl = document.getElementById("work-hint");
+  const stageEl = document.getElementById("work-stage");
+  const propEl = document.getElementById("work-prop");
+  const toolEl = document.getElementById("work-tool");
+  const marksEl = document.getElementById("work-marks");
   const barEl = document.getElementById("work-bar");
   const zoneEl = document.getElementById("work-zone");
   const markerEl = document.getElementById("work-marker");
@@ -5368,30 +5384,107 @@ function playWorkGame(opts) {
 
   return new Promise((resolve) => {
     const rounds = Math.max(1, Math.floor(Number(o.rounds) || WORK_ROUNDS));
+    const hold = o.mode === "hold";
     const openedAt = performance.now();
     let stroke = 0;
     let good = 0;
     let pos = 0;
     let dir = 1;
     let zoneAt = 0;
+    let zoneWidth = WORK_ZONE_FIRST;
     let last = 0;
     let raf = 0;
     let closed = false;
     let over = false;
+    let holding = false;
+    let holdStart = 0;
+    let spent = false; // hold: the bar snapped, so nothing until he lets go
+    let flip = false;
+    let taken = false; // a stroke key went down here, so its release is ours
 
     function setResult(text, cls) {
       resultEl.textContent = text || "";
       resultEl.className = "shell-sub" + (cls ? " " + cls : "");
     }
 
+    // Restarts a CSS animation on a reused element by swapping between two
+    // identical ones, as the catch game does, without reading a layout.
+    function replay(el, base) {
+      flip = !flip;
+      el.className = base + (flip ? " work-anim-a" : " work-anim-b");
+    }
+
     function newZone() {
-      zoneAt = 0.08 + Math.random() * (0.84 - WORK_ZONE);
+      zoneWidth = WORK_ZONE_FIRST +
+        (WORK_ZONE_LAST - WORK_ZONE_FIRST) * Math.min(1, stroke / Math.max(1, rounds - 1));
+      zoneAt = hold
+        ? 0.28 + Math.random() * (0.68 - zoneWidth)
+        : 0.06 + Math.random() * (0.88 - zoneWidth);
       zoneEl.style.left = zoneAt * 100 + "%";
-      zoneEl.style.width = WORK_ZONE * 100 + "%";
+      zoneEl.style.width = zoneWidth * 100 + "%";
     }
 
     function sweepMs() {
-      return Math.max(WORK_SWEEP_MIN_MS, WORK_SWEEP_MS - stroke * WORK_SWEEP_STEP);
+      return hold
+        ? Math.max(WORK_HOLD_MIN_MS, WORK_HOLD_MS - stroke * WORK_HOLD_STEP)
+        : Math.max(WORK_SWEEP_MIN_MS, WORK_SWEEP_MS - stroke * WORK_SWEEP_STEP);
+    }
+
+    function draw() {
+      if (hold) markerEl.style.width = pos * 100 + "%";
+      else markerEl.style.left = pos * 100 + "%";
+    }
+
+    // The picture of the work. A good stroke does the work in it; a bad
+    // one is the horse shying or a crooked stitch.
+    const scene = buildWorkScene();
+
+    function buildWorkScene() {
+      const kind = o.scene === "cloth" ? "cloth" : "horse";
+      stageEl.className = "work-stage-" + kind;
+      propEl.className = "";
+      propEl.removeAttribute("style");
+      propEl.textContent = "";
+      toolEl.className = "";
+      toolEl.removeAttribute("style");
+      marksEl.textContent = "";
+      stageEl.appendChild(toolEl);
+      if (kind === "horse") {
+        toolEl.className = "work-brush";
+        if (o.art) {
+          loadSpriteSheet(o.art).then(() => {
+            if (closed || o.art.failed) return;
+            bodySprite(propEl, o.art, WORK_HORSE_HEIGHT, stageEl.clientWidth || 220);
+          });
+        }
+        return {
+          stroke(hit, n) {
+            if (hit) {
+              replay(toolEl, "work-brush");
+              propEl.style.filter = "brightness(" + (1 + 0.07 * n) + ") saturate(" + (1 + 0.05 * n) + ")";
+            } else {
+              replay(propEl, "work-shy");
+            }
+          },
+        };
+      }
+      for (let i = 0; i < rounds; i++) {
+        const mark = document.createElement("i");
+        mark.style.left = (12 + (76 * i) / Math.max(1, rounds - 1)) + "%";
+        marksEl.appendChild(mark);
+      }
+      marksEl.appendChild(toolEl);
+      toolEl.className = "work-needle";
+      toolEl.style.left = "12%";
+      return {
+        stroke(hit, n, k) {
+          const mark = marksEl.children[k];
+          if (mark) mark.className = hit ? "work-stitch-ok" : "work-stitch-bad";
+          replay(toolEl, "work-needle");
+          const next = Math.min(rounds - 1, k + 1);
+          toolEl.style.left = (12 + (76 * next) / Math.max(1, rounds - 1)) + "%";
+        },
+      };
     }
 
     function tick(now) {
@@ -5399,25 +5492,37 @@ function playWorkGame(opts) {
       const dt = last ? Math.min(now - last, 50) : 16;
       last = now;
       if (!over) {
-        pos += dir * dt / sweepMs();
-        if (pos >= 1) { pos = 1; dir = -1; }
-        if (pos <= 0) { pos = 0; dir = 1; }
-        markerEl.style.left = pos * 100 + "%";
+        if (hold) {
+          pos = holding ? Math.min(1, (now - holdStart) / sweepMs()) : 0;
+          if (holding && pos >= 1) {
+            // Held to the end: the thread snaps.
+            holding = false;
+            spent = true;
+            strike(false, o.snapText || "Napatid!");
+            pos = 0;
+          }
+        } else {
+          pos += dir * dt / sweepMs();
+          if (pos >= 1) { pos = 1; dir = -1; }
+          if (pos <= 0) { pos = 0; dir = 1; }
+        }
+        draw();
       }
       raf = requestAnimationFrame(tick);
     }
 
-    function strike() {
+    function strike(hit, text) {
       if (over) return;
-      const hit = pos >= zoneAt && pos <= zoneAt + WORK_ZONE;
+      const k = stroke;
       stroke++;
       if (hit) good++;
       playSfx(hit ? "catch" : "miss");
-      setResult(hit ? (o.hitText || "Magaling!") : (o.missText || "Sablay!"), hit ? "work-hit" : "work-miss");
+      scene.stroke(hit, good, k);
+      setResult(hit ? (o.hitText || "Magaling!") : (text || o.missText || "Sablay!"), hit ? "work-hit" : "work-miss");
       if (stroke >= rounds) {
         over = true;
-        const text = typeof o.doneText === "function" ? o.doneText(good, rounds) : o.doneText;
-        hintEl.textContent = text || "Tapos na!";
+        const done = typeof o.doneText === "function" ? o.doneText(good, rounds) : o.doneText;
+        hintEl.textContent = done || "Tapos na!";
         setLabel(hitBtn, "Tapos na");
       } else {
         hintEl.textContent = (o.hint || "") + "  ·  " + stroke + "/" + rounds;
@@ -5425,8 +5530,25 @@ function playWorkGame(opts) {
       }
     }
 
-    function press() {
-      if (over) close(); else strike();
+    function inZone() {
+      return pos >= zoneAt && pos <= zoneAt + zoneWidth;
+    }
+
+    function down() {
+      if (over) { close(); return; }
+      if (!hold) { strike(inZone()); return; }
+      if (holding || spent) return;
+      holding = true;
+      holdStart = performance.now();
+    }
+
+    function up() {
+      spent = false;
+      if (!hold || !holding || over) return;
+      holding = false;
+      strike(inZone());
+      pos = 0;
+      draw();
     }
 
     function close() {
@@ -5434,8 +5556,14 @@ function playWorkGame(opts) {
       closed = true;
       cancelAnimationFrame(raf);
       window.removeEventListener("keydown", onKeyDown, true);
+      window.removeEventListener("keyup", onKeyUp, true);
       barEl.onpointerdown = null;
+      barEl.onpointerup = null;
       hitBtn.onclick = null;
+      hitBtn.onpointerdown = null;
+      hitBtn.onpointerup = null;
+      hitBtn.onpointerleave = null;
+      hitBtn.onpointercancel = null;
       stopBtn.onclick = null;
       screen.classList.add("hidden");
       setUiBlocked(false);
@@ -5445,17 +5573,30 @@ function playWorkGame(opts) {
     // In the capture phase and stopped there, as the catch game does, so
     // the world does not also act on the key. The E that closed the
     // conversation opening this is older than openedAt and is ignored.
+    function isStroke(key) {
+      return key === "e" || key === " " || key === "enter";
+    }
+
     function onKeyDown(e) {
       const key = (e.key || "").toLowerCase();
       if (key === "escape") {
         e.preventDefault(); e.stopPropagation();
         close();
-      } else if (key === "e" || key === " " || key === "enter") {
+      } else if (isStroke(key)) {
         e.preventDefault(); e.stopPropagation();
-        if (!e.repeat && e.timeStamp >= openedAt) press();
+        if (!e.repeat && e.timeStamp >= openedAt) { taken = true; down(); }
       } else if (key === "a" || key === "d" || key === "arrowleft" || key === "arrowright") {
         e.stopPropagation();
       }
+    }
+
+    // Only the release of a key it took: the E that opened the game went
+    // down in the world, and the world has to see it come up.
+    function onKeyUp(e) {
+      if (!taken || !isStroke((e.key || "").toLowerCase())) return;
+      e.stopPropagation();
+      taken = false;
+      up();
     }
 
     titleEl.textContent = o.title || "";
@@ -5463,16 +5604,28 @@ function playWorkGame(opts) {
     setResult("", "");
     setLabel(hitBtn, o.verb || "Sige");
     setLabel(stopBtn, "Bumalik");
-    hitBtn.onclick = press;
+    barEl.className = hold ? "work-fill" : "";
+    if (hold) {
+      hitBtn.onpointerdown = (e) => { e.preventDefault(); down(); };
+      hitBtn.onpointerup = up;
+      hitBtn.onpointerleave = up;
+      hitBtn.onpointercancel = up;
+      barEl.onpointerdown = (e) => { e.preventDefault(); down(); };
+      barEl.onpointerup = up;
+    } else {
+      hitBtn.onclick = down;
+      barEl.onpointerdown = (e) => { e.preventDefault(); down(); };
+    }
     stopBtn.onclick = close;
-    barEl.onpointerdown = (e) => { e.preventDefault(); press(); };
     window.addEventListener("keydown", onKeyDown, true);
+    window.addEventListener("keyup", onKeyUp, true);
 
     setUiBlocked(true);
     keysPressed["a"] = false;
     keysPressed["d"] = false;
     newZone();
     markerEl.style.left = "0%";
+    markerEl.style.width = "";
     screen.classList.remove("hidden");
     raf = requestAnimationFrame(tick);
   });

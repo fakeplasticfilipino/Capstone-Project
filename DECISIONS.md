@@ -3483,3 +3483,34 @@ rounds. The numbers are chosen, not tested on students.
 Not built: a job that gets harder, a job that ends the day, more than two
 jobs, an apple-catching return. game.js v87, style.css v54, act1.js v61.
 test.js 761, verify_new_scene.js 197.
+
+## Block 90: the work gets harder, and the sewing is a different game
+
+The green patch is 34% of the bar at the first stroke and 11% at the
+fifth, shrinking evenly, and the marker gets quicker as before. Each
+round starts easy again, so a job repeated for barya is not a job that
+gets harder each time.
+
+The sewing is played another way: hold the button (or E) and the bar
+fills, and a stroke is letting go inside the patch. Held to the end the
+thread snaps and the stroke is lost. It is the same game and the same
+pay, with one option (mode "hold") rather than a second mini-game, per
+the Consistency rule. The fill time also shortens with each stroke.
+
+Each job has a picture above the bar, drawn in CSS so nothing is owed to
+the artist: the horse from his own sheet (the NPC's art, through
+bodySprite) with a brush that sweeps over him on a good stroke and him
+shying from a bad one, brighter as it goes well; a cloth with a seam of
+five marks, a needle that pokes and moves on, and a stitch kept at each
+good stroke, a crooked red one at each bad.
+
+A bug the new key handling exposed and the suite caught: the game took
+the release of the stroke key (keyup) even when the press that opened
+it had gone down in the world, so the world never saw E come up and
+ignored the next E. It now takes only the release of a key it took.
+
+Aling Rosa and Mang Tomas are gone entirely (their lines, their places,
+their art from ART.md); the Kasama's directions no longer name them or the
+apple tree. Their names come out of STORY.md's cast. tindero.png stays in
+assets/, unused. game.js v88, style.css v55, act1.js v62. test.js 761,
+verify_new_scene.js 201.

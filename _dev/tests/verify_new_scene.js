@@ -331,9 +331,35 @@ const workStroke = (page, wantHit) => page.evaluate((wantHit) => new Promise((re
   };
   tick();
 }), wantHit);
-const workRound = async (page, wantHit) => {
-  for (let i = 0; i < 5; i++) await workStroke(page, wantHit);
+// The hold-to-fill way (the sewing): hold E, let go over the patch, or early.
+const workStrokeHold = (page, wantHit) => page.evaluate((wantHit) => new Promise((resolve) => {
+  const zone = document.getElementById("work-zone");
+  const marker = document.getElementById("work-marker");
+  window.dispatchEvent(new KeyboardEvent("keydown", { key: "e", bubbles: true }));
+  const tick = () => {
+    const z0 = parseFloat(zone.style.left);
+    const z1 = z0 + parseFloat(zone.style.width);
+    const m = parseFloat(marker.style.width) || 0;
+    const inside = m >= z0 + 1.5 && m <= z1 - 1.5;
+    const early = m > 1 && m < z0 - 3;
+    if (wantHit ? inside : early) {
+      window.dispatchEvent(new KeyboardEvent("keyup", { key: "e", bubbles: true }));
+      resolve(true);
+      return;
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}), wantHit);
+// A round of five, noting how wide the patch was before each stroke.
+const workRound = async (page, wantHit, hold) => {
+  const widths = [];
+  for (let i = 0; i < 5; i++) {
+    widths.push(await page.evaluate(() => parseFloat(document.getElementById("work-zone").style.width)));
+    await (hold ? workStrokeHold : workStroke)(page, wantHit);
+  }
   const done = await workState(page);
+  done.widths = widths;
   await page.click("#work-hit");
   await page.waitForTimeout(200);
   return done;
@@ -771,6 +797,14 @@ const artDrift = () => {
   const w2 = await workRound(page, true);
   ok("five good strokes pay the most, 7 barya, and the button said Tapos na",
      /\+7 barya/.test(w2.hint) && w2.hitLabel === "Tapos na", w2);
+  ok("the patch gets thinner with every stroke (Block 90)",
+     w2.widths.every((w, i) => i === 0 || w < w2.widths[i - 1]) && w2.widths[0] >= 30 && w2.widths[4] <= 14, w2.widths);
+  const horse = await page.evaluate(() => ({
+    sprite: /kabayo\.png/.test(document.getElementById("work-prop").style.backgroundImage),
+    brush: document.getElementById("work-tool").className,
+    stage: document.getElementById("work-stage").className }));
+  ok("the picture is the horse from his own sheet, and the brush swept over him on a good stroke",
+     horse.sprite && /work-brush/.test(horse.brush) && /work-anim/.test(horse.brush) && horse.stage === "work-stage-horse", horse);
   ok("closing gives him the world back and the pay", await page.evaluate(() =>
     !uiBlocked && Game.currency() === 7 && state.flags.kitaSaKutsero === 7));
   ok("the keys the game takes do not move Macario", (await page.evaluate(() => posX)) === x0);
@@ -819,12 +853,18 @@ const artDrift = () => {
     document.querySelector("#btn-interact .lbl").textContent) === "Manahi");
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
-  ok("E opens the same game with the sewing's words", (await workState(page)).title === "Pananahi");
-  await workRound(page, true);
+  ok("E opens the same game with the sewing's words, played by holding instead", await page.evaluate(() =>
+    document.getElementById("work-title").textContent === "Pananahi" &&
+    document.getElementById("work-bar").classList.contains("work-fill") &&
+    document.getElementById("work-stage").className === "work-stage-cloth"));
+  const sew1 = await workRound(page, true, true);
+  ok("letting go over the patch five times pays 7, and the seam is five stitches", /\+7 barya/.test(sew1.hint) &&
+     await page.evaluate(() => document.querySelectorAll("#work-marks i.work-stitch-ok").length === 5), sew1);
+  ok("its patch thins too", sew1.widths.every((w, i) => i === 0 || w < sew1.widths[i - 1]), sew1.widths);
   ok("the first round counts (1/2)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.sew + " (1/2)"]));
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
-  await workRound(page, true);
+  await workRound(page, true, true);
   const stop = await readConversation(page, 7);
   ok("after the second round she stops him: the costumes for the direktor, forgotten",
      stop.lines.length === 7 && stop.lines[0] === "Mananahi: Macario, teka! Ihinto mo muna 'yan." &&
@@ -1128,7 +1168,7 @@ const artDrift = () => {
   console.log("\nThe pamphlets, past the guardia civil");
   const street = await page.evaluate(() => NPCS.filter((n) => !n.hidden).map((n) => n.id).join(","));
   ok("the three are on the street now, and everyone else still is",
-     street === "nanay,kutsero,kabayo,tahian,mananahi,aling-rosa,mang-tomas,direktor,kasama,mangingisda,tabakera,karpintero", street);
+     street === "nanay,kutsero,kabayo,tahian,mananahi,direktor,kasama,mangingisda,tabakera,karpintero", street);
   const p1 = await panels(page);
   ok("nobody stands behind a tree", p1.blocked.length === 0, p1.blocked);
   const night = await page.evaluate(() => ({

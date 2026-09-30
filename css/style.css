@@ -4061,3 +4061,119 @@ body.text-lg .notebook-entry-text { font-size: 22px; }
 
 #work-result.work-hit { color: var(--px-green-hi); }
 #work-result.work-miss { color: #ffb4b4; }
+
+/* Block 90. The work game's picture (game.js, playWorkGame): the horse
+   from its own sheet with a brush that sweeps over it, or a cloth that is
+   stitched; and the hold-to-fill bar the sewing uses. The pictures are
+   drawn in CSS, so nothing is owed to the artist. */
+#work-stage {
+  position: relative;
+  height: 140px;
+  margin: 0 0 8px;
+  background: linear-gradient(#8fc7ee, #cfe8f5 70%, #6b8f3a 70%, #58792f);
+  border: 3px solid var(--px-ink);
+  overflow: hidden;
+}
+
+#work-prop {
+  position: absolute;
+  bottom: 10px;
+}
+
+.work-stage-cloth {
+  background: linear-gradient(#e9d9b8, #d8c39a) !important;
+}
+
+.work-stage-cloth #work-prop {
+  left: 50%;
+  bottom: 22px;
+  width: 220px;
+  height: 84px;
+  margin-left: -110px;
+  border: 3px solid var(--px-ink);
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0 3px, transparent 3px 12px),
+    repeating-linear-gradient(90deg, #c94f3d 0 12px, #b8402f 12px 24px);
+  box-sizing: border-box;
+}
+
+#work-marks {
+  position: absolute;
+  left: 50%;
+  bottom: 56px;
+  width: 220px;
+  height: 10px;
+  margin-left: -110px;
+}
+
+#work-marks i {
+  position: absolute;
+  bottom: 0;
+  width: 26px;
+  height: 4px;
+  margin-left: -13px;
+  border-bottom: 2px dotted rgba(255, 251, 232, 0.5);
+}
+
+#work-marks i.work-stitch-ok { border-bottom: 4px solid #fffbe8; }
+#work-marks i.work-stitch-bad { border-bottom: 4px solid #ffb4b4; transform: rotate(-14deg); }
+
+#work-tool.work-brush {
+  position: absolute;
+  left: 50%;
+  bottom: 72px;
+  width: 58px;
+  height: 18px;
+  margin-left: -29px;
+  border: 2px solid var(--px-ink);
+  border-radius: 3px;
+  background: linear-gradient(90deg, #e3c07a 0 32%, #8a5a2b 32% 100%);
+}
+
+#work-tool.work-needle {
+  position: absolute;
+  bottom: 0;
+  width: 4px;
+  height: 46px;
+  margin-left: -2px;
+  background: linear-gradient(#f2f2f2, #b9b9b9);
+  border: 1px solid var(--px-ink);
+  transition: left 0.25s ease-out;
+}
+
+.work-brush.work-anim-a { animation: work-brush-a 0.6s ease-in-out; }
+.work-brush.work-anim-b { animation: work-brush-b 0.6s ease-in-out; }
+.work-needle.work-anim-a { animation: work-poke-a 0.3s ease-out; }
+.work-needle.work-anim-b { animation: work-poke-b 0.3s ease-out; }
+#work-prop.work-anim-a { animation: work-shy-a 0.35s ease-out; }
+#work-prop.work-anim-b { animation: work-shy-b 0.35s ease-out; }
+
+@keyframes work-brush-a {
+  0% { transform: translate(-90px, -4px) rotate(-8deg); }
+  50% { transform: translate(90px, -14px) rotate(6deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+@keyframes work-brush-b {
+  0% { transform: translate(-90px, -4px) rotate(-8deg); }
+  50% { transform: translate(90px, -14px) rotate(6deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+@keyframes work-poke-a { 50% { transform: translateY(18px); } }
+@keyframes work-poke-b { 50% { transform: translateY(18px); } }
+@keyframes work-shy-a { 25% { transform: translateX(-7px); } 75% { transform: translateX(7px); } }
+@keyframes work-shy-b { 25% { transform: translateX(-7px); } 75% { transform: translateX(7px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .work-brush.work-anim-a, .work-brush.work-anim-b,
+  .work-needle.work-anim-a, .work-needle.work-anim-b,
+  #work-prop.work-anim-a, #work-prop.work-anim-b { animation: none; }
+}
+
+/* Hold mode: the marker is the fill, growing from the left. */
+#work-bar.work-fill #work-marker {
+  left: 0 !important;
+  margin-left: 0;
+  box-shadow: none;
+  background: #d9a441;
+  opacity: 0.9;
+}

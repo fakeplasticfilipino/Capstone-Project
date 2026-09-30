@@ -46,10 +46,6 @@ Named by the game and missing. Each is a placeholder box today.
         the street (x 13600) and in the wings of the entablado. Talks;
         an idle sheet is enough. (NOT STARTED)
 
-    assets/sprites/characters/aling-rosa.png
-        Aling Rosa, a customer. Act I, on the street at x 7800. Talks
-        and takes a delivery; an idle sheet is enough. (NOT STARTED)
-
     assets/sprites/characters/katipunero.png
         The Katipunero, the older of the two men who find Macario in the
         wings after Principe Baldovino (Block 80), and in the pulungan
@@ -112,8 +108,6 @@ forgotten.
     Nanay's walk. She has a real idle sheet and slides on with it
         (Block 57); a side-view walk sheet from the artist is owed if
         she should walk.
-    Mang Tomas. Wears the Tindero's real sheet; a customer of his own
-        would replace it.
     The Sultan. Walks on his soldiers' walk sheet (muslim-walk.png);
         a sheet of his own would set him apart from them.
     Item tiles. No item ships (content/items.js is empty); each item

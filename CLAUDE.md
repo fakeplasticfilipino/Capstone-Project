@@ -741,11 +741,16 @@ of them plain globals in game.js, like addQuest:
     wait(ms)                     resolves after ms; a pause in a script
     playWorkGame(opts)           the work game (Block 89): a marker sweeps
                                  a bar and each stroke pressed over the
-                                 green patch is good. opts title, hint,
-                                 verb, hitText, missText, doneText(good),
-                                 rounds; resolves with the good strokes,
-                                 or -1 if he left before the last.
-                                 One game for every repeatable job
+                                 green patch is good; the patch thins
+                                 with every stroke (Block 90). opts
+                                 title, hint, verb, hitText, missText,
+                                 doneText(good), rounds, mode ("tap", or
+                                 "hold": hold to fill, let go over the
+                                 patch), scene ("horse" with art: the
+                                 horse's sheet, or "cloth"), snapText;
+                                 resolves with the good strokes, or -1 if
+                                 he left before the last. One game for
+                                 every repeatable job
     playCatchGame(opts)          the apple mini-game (Block 57, replacing
                                  Block 56's playTimingGame); resolves with
                                  how many were caught when it closes.

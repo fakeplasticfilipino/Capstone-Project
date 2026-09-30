@@ -112,8 +112,6 @@ Act I lives on it, left to right:
                outside the entablado instead, at x 13250)
     x 6540     her tahian, the sewing (scenery, used with E)
     x 6900     the tabakera (as the mangingisda)
-    x 7800     Aling Rosa, a customer who is waiting
-    x 9300     Mang Tomas, a customer who is waiting
     x 10600    the karpintero (as the mangingisda)
     x 12500    the Kasama (four years on, once the Katipunan has found
                Macario in the wings)
@@ -156,10 +154,6 @@ with the file name on it.
     Kabayo         the kutsero's white horse. Real art.
     Mananahi       a seamstress, his second employer. Placeholder box
                    (mananahi.png).
-    Aling Rosa     her customer; a baro for tomorrow's fiesta.
-                   Placeholder box (aling-rosa.png).
-    Mang Tomas     her customer; a pair of trousers. Wears the
-                   Tindero's real art.
     Direktor       head of the theatre company. Placeholder box
                    (direktor.png), on the street and on the stage.
     Julian         the company's lead actor. Never seen: sick with a
@@ -189,7 +183,7 @@ with the file name on it.
     Guardia civil  three bantay on the street, on the pamphlet run
                    only. Real art (the bantay of the enemy catalogue).
 
-Names and roles marked as ours: Aling Rosa, Mang Tomas, Julian, Don
+Names and roles marked as ours: Julian, Don
 Rodrigo (the part Macario plays), the Sultan, and every person of
 Block 80 (the Katipunero, the Kasama and the three). The proponents
 may rename any of them. Principe Baldovino is a real komedya and a part
@@ -267,7 +261,9 @@ spoken to, Macario thinks it over instead:
 
 Grooming is a small game (Block 89, game.js, playWorkGame): a marker
 sweeps a bar, a green patch waits at a new place, and five strokes,
-pressed with the button or E, are a round. Each good stroke is worth
+pressed with the button or E, are a round. The patch is thinner with
+each stroke (Block 90), and over the horse a brush sweeps on a good
+one while he shies from a bad one. Each good stroke is worth
 more: a round pays 4 to 7 barya (5 good strokes pay 7, none pay 4), it
 can be done again as often as he likes, and the Kutsero stops paying at
 25 from this job. A round cut short pays nothing.
@@ -303,14 +299,16 @@ Completes: Kausapin ang Mananahi.
 ### 6. The sewing, and being stopped
 
 tondo, x 6540, beside her. The same game as the horse with the sewing's
-words, the button reading Manahi; the same pay (4 to 7 a round, 25 in
+words, the button reading Manahi, played by holding the button to fill
+the bar and letting go over the green (Block 90), a cloth that gains a
+stitch at each stroke; the same pay (4 to 7 a round, 25 in
 all). Before she has been spoken to:
 
   + Macario (sa isip): Tahian ito ng Mananahi. Kausapin ko muna siya.
 
-  + (the game) Pananahi / Tahiin kapag nasa berde ang guhit.
+  + (the game) Pananahi / Hawakan ang pindutan, bitawan kapag nasa berde.
   + (a good stroke) Diretso ang tahi!
-  + (a missed one) Baluktot ang tahi!
+  + (a missed one, or held too long) Baluktot ang tahi! / Napatid ang sinulid!
 
 The quest line counts the first two rounds (n/2). When the second is done
 she stops him, the one thing here that is scripted:
@@ -327,9 +325,6 @@ Completes: Tulungan ang Mananahi sa pananahi (2/2). With the costumes on
 him the sewing waits:
 
   + Macario (sa isip): May dala akong damit para sa direktor. Ihahatid ko muna.
-
-Aling Rosa and Mang Tomas, on the way, are customers still waiting and
-say so (Repeat lines); they take nothing from him.
 
 The direktor, at the far end, x 13600. The button reads Iabot ang damit,
 offered once she has sent him:
@@ -664,7 +659,7 @@ ours.
 
     (He takes them to the Kasama by the door.)
 
-  + Kasama: Sa likod ka dadaan. Ang mangingisda ang pinakamalapit, bago ang puno ng mansanas. Ang tabakera, lampas sa patahian. Ang karpintero, lampas pa kay Mang Tomas.
+  + Kasama: Sa likod ka dadaan. Ang mangingisda ang pinakamalapit. Ang tabakera, lampas sa patahian. Ang karpintero, malapit na sa entablado.
   + Kasama: May mga guardia civil na nagroronda ngayong gabi. Huwag kang dadaan sa harap nila. Magtago ka kung kailangan.
   + Kasama: Mabuti't suot mo pa 'yang damit-teatro. Kapag tumigil ka at hindi gumalaw, hindi ka nila agad papansinin.
   + Macario: Opo. Ako na po ang bahala.
@@ -698,7 +693,7 @@ Karpintero:
 The guardia civil (Block 81). On this run only, three bantay walk the
 street, one before each of the three: between the mangingisda and the
 apple tree (5000 to 5600), past the tabakera (7400 to 8000), and past
-Mang Tomas (9700 to 10150). Each has a crate in the middle of his beat
+the middle of the street (9700 to 10150). Each has a crate in the middle of his beat
 to hide behind. They do not shoot: one who sees Macario catches him,
 which costs a heart and puts him back at the back door, or at the last
 of the three he has already reached. From behind, a guard can be taken
@@ -777,14 +772,6 @@ Mananahi:
   + Mananahi: Kapag may tahi ulit, ipapatawag kita, ha?
     (afterwards)
 
-Aling Rosa:
-
-  + Aling Rosa: Hay naku, ang tagal naman ng baro ko. Pista pa naman bukas.
-
-Mang Tomas:
-
-  + Mang Tomas: Galing ka ba sa Mananahi? Kanina ko pa hinihintay 'yung pantalon ko.
-
 Direktor, on the street:
 
   + Direktor: Pasensya na, iho, abala kami. Mamayang gabi na ang palabas at ang dami pang kulang.
@@ -846,7 +833,7 @@ Where they lie is fixed:
 
     Paper 1   x 2500, on the road between Nanay and the Kutsero; every
               student walks into it on the way to the first job
-    Paper 2   x 8200, past Aling Rosa, at jump height
+    Paper 2   x 8200, past the Mananahi's sewing, at jump height
     Paper 3   x 12200, before the direktor, at jump height
 
 An empty slot lays nothing. With no papers written the Talaan button
@@ -879,7 +866,7 @@ next passage. None of these is a promise; they are what is there.
 ## Open questions for the proponents
 
     Every + line above: accept, rewrite or replace.
-    The names ours gave: Aling Rosa, Mang Tomas, Julian, Don Rodrigo,
+    The names ours gave: Julian, Don Rodrigo,
       the Sultan.
     The play's ending (a blessing, not a conversion) and its kingdoms
       not named by religion.
