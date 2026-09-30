@@ -28,9 +28,12 @@ Macario's sheets (256px cells).
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 29 Sep 2026, Block 81 (the Pangulo became the
-Mabalasig). Before that, Block 80 (the end of Act I: the Katipunan's
-three people, the three who take the pamphlets, and the pulungan).
+Last updated: 30 Sep 2026, Block 91 (nine pictures owed: the death pose,
+the night backdrop and Aling Rosa are gone with the things that named
+them, and the unused Tindero file was deleted). Before that, Block 81
+(the Pangulo became the Mabalasig) and Block 80 (the end of Act I: the
+Katipunan's three people, the three who take the pamphlets, and the
+pulungan).
 
 ## Owed
 
@@ -38,8 +41,8 @@ Named by the game and missing. Each is a placeholder box today.
 
     assets/sprites/characters/mananahi.png
         The Mananahi, the seamstress. Act I, on the street at x 6400;
-        Macario's second employer. Talks and gives; an idle sheet is
-        enough. (NOT STARTED)
+        Macario's second employer, who sends him with the costumes
+        (Block 89). Talks; an idle sheet is enough. (NOT STARTED)
 
     assets/sprites/characters/direktor.png
         The direktor of the theatre company. Act I, at the far end of
@@ -77,20 +80,12 @@ Named by the game and missing. Each is a placeholder box today.
     assets/backgrounds/act1/pulungan.jpg
         The Katipunan's secret room, where the oath is taken (Block 80).
         The histories describe a dim room hung with black curtains, a
-        warning written on the wall. One painting of a room at night, drawn once and not tiled, one
-        phone screen wide like the entablado's (entablado-inside.jpg is
-        the model for its shape); a floor of its own if the painting has
-        one, and the content then sets ground: false. Until it arrives
-        the room is a dark wall with the file name on it. (NOT STARTED)
-
-    assets/sprites/player/macario-dead.png
-        Macario's death pose, 5 frames, played once. Named by the
-        engine; no shipped scene plays it yet, so nobody sees the box
-        today. (NOT STARTED)
-
-    assets/backgrounds/act1/tondo-night.png
-        The night backdrop. Named by the engine and the stylesheet; no
-        shipped scene turns to night, so nothing shows. (NOT STARTED)
+        warning written on the wall. One painting of a dim room, drawn once
+        and not tiled, one phone screen wide like the entablado's
+        (entablado-inside.jpg is the model for its shape); a floor of its
+        own if the painting has one, and the content then sets
+        ground: false. Until it arrives the room is a dark wall with the
+        file name on it. (NOT STARTED)
 
 ## Stand-ins
 
@@ -115,11 +110,13 @@ forgotten.
 
 ## No picture, by design
 
-Drawn by the game itself, not owed by anyone: the apple tree (the
-silhouette tree over the join at 5800, Block 69), the shadow trees over
-every join (_dev/tools/make-shadow-tree.py), platforms, crates, hazards,
-heart pickups, bullets, the guard's sight cone, the dust, the Talaan's
-papers, and every icon (inline SVG in index.html).
+Drawn by the game itself, not owed by anyone: the shadow trees over
+every join (_dev/tools/make-shadow-tree.py), the Mananahi's sewing table
+(scenery with no picture, Block 89), the work game's brush, cloth and
+needle (CSS, Block 90), the night on the pamphlet run (a tint over the
+day's paintings, Block 85, so no night painting is owed), platforms,
+crates, hazards, heart pickups, bullets, the guard's sight cone, the
+dust, the Talaan's papers, and every icon (inline SVG in index.html).
 
 ## Acts II to IV
 

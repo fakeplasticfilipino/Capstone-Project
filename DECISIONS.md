@@ -3514,3 +3514,31 @@ their art from ART.md); the Kasama's directions no longer name them or the
 apple tree. Their names come out of STORY.md's cast. tindero.png stays in
 assets/, unused. game.js v88, style.css v55, act1.js v62. test.js 761,
 verify_new_scene.js 201.
+
+## Block 91: what nothing used any more
+
+Removed at the proponent's request, "the unnecessary stuff such as the
+night version and macario-dead":
+
+The legacy stage performance, the only consumer of both. Before scenes,
+an act could declare a stage: a raised platform with ramps, a button
+Ganap, a poem in two halves with a fade to a separate night painting
+(#skyline-night, tondo-night.png) between them, and Macario's death
+pose (macario-dead.png) after. No shipped content used it since the
+Act I reset, and the harness never tested it. Gone with it: STAGE and
+buildStage, the ramps in floorHeightAt (which now returns the ground and
+nothing else), startPerformance, runNightTransition, runDeathSequence,
+the cutscene-part1 and -part2 dialogue modes, the #stage-platform and
+.stage-slope rules, the #skyline-night layer and its rules, the death
+sheet and the "dead" sheet an outfit could declare, and is_night from
+the save. The column stays in the database, unwritten. Block 85's night
+on the pamphlet run is not this: it is a tint over the day paintings
+(night-tint, applyNight) and stays, so no night painting is owed.
+
+Aling Rosa's art entry and the unused Tindero sheet (tindero.png,
+deleted; the manifest regenerated, ASSET_VERSION 31). The fixture's
+objective flag for the old performance is now an ordinary flag.
+
+ART.md is down to nine owed pictures, all people and the pulungan.
+game.js v89, style.css v56, asset-manifest v4. test.js 759,
+verify_new_scene.js 201.

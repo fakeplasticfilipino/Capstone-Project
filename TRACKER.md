@@ -9,12 +9,13 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 30 Sep 2026, after Block 90 (the work gets harder, sewing is held, each job
-has a picture; 86 to 90 not yet seen on the phone). Before that, Block 85 (the feel pass, ten of its
-twelve). Before that, Block 84 (black screens silent).
-Before that, Block 83 (the opening in 1890, the cut to 1894). Before that, Block 82 (the direktor's stage clothes;
-the fire leap shown, not told; running allowed away from guards).
-test.js 761 passed, 0 failed; verify_new_scene.js 201 passed,
+Last updated: 30 Sep 2026, after Block 91 (the legacy stage
+performance, the night backdrop layer, the death pose and the unused
+Tindero removed; nine pictures owed). Before that, Block 90 (the work
+gets harder, sewing is held, each job has a picture), Block 89 (the work
+is there to be done), Block 88 (one combat template), Block 87 (the
+opening fight, busts) and Block 86 (the dash attack).
+test.js 759 passed, 0 failed; verify_new_scene.js 201 passed,
 0 failed.
 
 ## Start here
@@ -24,8 +25,8 @@ What MACARIO is right now.
 Every engine system is built and covered by the suites: movement, jump
 (with coyote time and a buffer) and a run; one-way platforms; health,
 hazards and heart pickups; guards with a detection meter, a sight cone,
-hide spots, and hostility (chase and shoot); melee, a takedown and a
-ranged shot; enemies that fight back; blows with weight (a flash, a
+hide spots, and hostility (chase and shoot); melee that is a dash through
+the enemy, a takedown and a ranged shot; enemies that fight back; blows with weight (a flash, a
 slide, a stagger, a topple and fade), the same for every kind of body;
 scripted scenes, black cards and arrival dialogues; dynamic difficulty;
 the act state machine; trivia, pre-test and post-test graded in the game
@@ -111,17 +112,18 @@ settings. The teacher dashboard is a light report page in English.
 The proponent has confirmed on the phone: Block 36's speed fix (18 Sep
 2026) and Blocks 37 and 38 as functional. Blocks 57 and 58 were accepted
 from the harness and screenshots (23 Sep 2026). The proponent reported
-the device pass done on 29 Sep 2026, before Block 80; Blocks 80 and 81
+Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
+Blocks 86 to 89 from the desktop browser the same day; Blocks 90 and 91
 have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v55    js/game.js v88       js/shell.js v19
+    css/style.css v56    js/game.js v89       js/shell.js v19
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
     content/act1.js v62  content/items.js v13  content/act2-4.js v1
     content/enemies.js v2   content/questions.js v1
-    js/asset-manifest.js v3 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 30 (in js/game.js)
+    js/asset-manifest.js v4 (bumped by make-asset-manifest.js)
+    ASSET_VERSION 31 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v1
@@ -130,54 +132,35 @@ Current versions, which index.html must match on every push:
 
 In order.
 
-1. Look at Blocks 80 to 85 on the phone, in landscape, from a private
-tab, after the push, with the sound on. Give Nanay the savings and play
-to the end. What to look for, and what failure looks like:
+1. Look at Blocks 86 to 91 on the phone, in landscape, from a private
+tab, after the push, with the sound on. Play from the start. What to
+look for, and what failure looks like (Blocks 80 to 85 are confirmed):
 
-    Block 85 first: the Mananahi waits outside the entablado after the
-      first play and pays there; crowd lines cheer; the stage clothes
-      warm Macario's colours; the pamphlet street is night with
-      crickets; a guard starting to notice plays a rising note and the
-      first time a hint toast; a catch stings; holding E or the
-      interact button fast-forwards through lines already read, never
-      unread ones; the post-test opens on "Handa ka na ba?". Black
-      cards and scene fades are silent (Block 84), except applause.
-    The four years: straight after Nanay's last line, a silent black
-      card, "Pagkalipas ng apat na taon", "Tondo, 1894" and "Ngayong
-      gabi sa entablado: Principe Baldovino", lifting onto the stage
-      mid-play. Failure: a glimpse of the street between the card and
-      the stage.
-    The play: three lines, then two kawal from the right wing to fight;
-      then Macario's added line, a silent crowd, "Mabuhay si
-      Baldovino!", and the curtain card to applause (the first play's
-      curtain too). Failure: silence, or the drum, under the curtain.
-      Judge whether the applause sounds like a crowd or like rain; a
-      recorded one can replace it.
-    The wings: the direktor warns about the added line; two dashed
-      boxes (katipunero.png, kasama.png) ask whether he is sure and give
-      him "Anak ng Bayan".
-    The street: no guards and no hearts yet. The Kasama box at 12500;
-      the word, and a card: blindfolded, to a secret room.
-    The pulungan: a dark wall named pulungan.jpg; the Mabalasig box; the
-      warning, the challenge, the three questions, the blindfold again,
-      the fire, the oath, the blood; "Lumabas sa likod" on the left.
-    The stage clothes: after the curtain the direktor tells him to go
-      home in costume; a toast "Suot mo: Damit-Pangteatro", and the
-      inventory shows it worn. In the pulungan the fire leap is a jump
-      he makes, with no card, and the Mabalasig says there was no fire.
-    The run: out at x 4100 with the hearts showing and three guardia
-      civil walking their beats, a crate in each. He runs when no guard
-      is near and drops to a walk near one. Standing still, a guard's
-      meter fills slowly and is drawn pale blue. Seen, the meter fills
-      and he is caught: a heart, and back to the door or to the last
-      person reached. From behind, a punch takes one down. Hand the
-      three their pamphlets (mangingisda, tabakera, karpintero); after
-      the third, "Wakas ng Unang Yugto" and the post-test. Failure: a
-      guard who sees him while he stands at a person's side, a crate
-      that does not hide him, or no post-test.
-    Watch whether students find the Kasama and the three from what they
-      are told, and whether the guards are too hard; beats and crates
-      are PAMPHLET_GUARDS in content/act1.js.
+    The opening: the siga's insult, then a fight with the three (fight
+      music, hearts, "Pindutin ang Atake para lumaban!"), then Nanay
+      walks in. Failure: no fight, or Nanay arriving over the siga.
+    Combat: a tap with an enemy ahead slides Macario through him, a
+      quick eased slide, and he ends on the far side. From far off it
+      stops short and leaves him stumbling for a moment. An enemy
+      decides once Macario is near, lights up and strikes fast in front
+      of it, so standing there costs a heart and sliding through or
+      jumping does not. Failure: spamming Atake in place still wins, an
+      enemy that strikes at nothing behind it that then hits, or the
+      Atake button dead on the phone.
+    Dialogue: a bust of the speaker with no frame, Macario on the left
+      and anyone else on the right, the text clear of both. Failure:
+      text under a portrait, or a portrait cut off on the phone.
+    The work: E on Kabayo (Suklayin) is the grooming game, E at the
+      tahian beside the Mananahi (Manahi) is the sewing game, played by
+      holding. The green patch gets thinner each stroke; a round pays 4
+      to 7; each job stops at 25. After the second round of sewing the
+      Mananahi stops him and sends him to the direktor. Nanay's button
+      waits until the play is done and he holds 100. Failure: a round
+      that will not open a second time, the sewing table open while he
+      carries the costumes, or no way to reach 100.
+    Watch whether the patch is too thin by the fifth stroke on a phone,
+      and whether students find the Kasama and the three from what they
+      are told; beats and crates are PAMPHLET_GUARDS in content/act1.js.
 
 2. The years are settled (Block 83): the opening reads "Tondo, 1890"
 and the four-year cut "Tondo, 1894", the year Sakay joined. Open only:
@@ -196,7 +179,9 @@ book: the play's words, the ordeal chosen, and what the pamphlets were.
 built into content/questions.js, editable on the dashboard). Checked 30
 Sep 2026: eight of ten items per test are now taught by the story; the
 occupation item and one distractor need the proponents' decision (Blocks
-remaining, the feel pass, item 11). The post-test now runs, so this
+remaining, the feel pass, item 11). Since Block 89 he does groom the
+Kutsero's horse and help the Mananahi sew, so the mananahi half of the
+occupation item is now shown; the barbero half still never is. The post-test now runs, so this
 decides whether the study measures anything; do it before the pilot.
 
 5. Decide whether students should see the Test Room button (Block 74).
@@ -205,11 +190,10 @@ outside the story and returns to the same spot, so it harms nothing,
 but before the pilot either keep it, hide it (one line in shell.js,
 _openSettings), or remove testRoom from content/act1.js.
 
-6. Art from the artist: ART.md's Owed list (the Mananahi, the direktor,
-and since Block 80 the Katipunero, the Kasama, the Mabalasig,
-the three who take the pamphlets and the pulungan's painting; Macario's
-death pose; the night backdrop), and a side-view walk for Nanay. PNGs
-with transparency; each goes through ART.md's steps.
+6. Art from the artist: ART.md's Owed list, nine pictures (the Mananahi,
+the direktor, the Katipunero, the Kasama, the Mabalasig, the three who
+take the pamphlets and the pulungan's painting), and a side-view walk
+for Nanay. PNGs with transparency; each goes through ART.md's steps.
 
 7. Then the remaining polish, the pilot, and Acts II to IV against the
 source material, Act II starting from STORY.md, Threads left open.
@@ -472,6 +456,8 @@ machine, the assessment module.
         one repeatable game, the Mananahi stopping him as the one script
     90  the work gets harder as it goes; sewing played by holding; a
         picture for each job; Aling Rosa and Mang Tomas removed
+    91  the legacy stage performance (poem, night, death), the night
+        backdrop layer and the unused Tindero file removed
 
 ## Blocks remaining
 

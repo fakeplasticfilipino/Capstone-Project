@@ -161,7 +161,6 @@ const GUARD_CHASE_SPEED = 2.6; // per 60fps frame; SPEED is 5
 // Block 35. A fighting enemy has the same body as a guard, for the same
 // reason: it hits, gets hit and gets knocked back like Macario does.
 const ENEMY_WIDTH = PLAYER_WIDTH;
-const PLATFORM_HEIGHT = 40; // must match #stage-platform's CSS height
 const GROUND_LEVEL = 60; // must match --ground-level in style.css
 const DISPLAY_HEIGHT = 134; // shared sprite height (player + animated NPCs)
 
@@ -243,7 +242,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 30;
+const ASSET_VERSION = 31;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -666,7 +665,6 @@ let currentScene = null; // the scene data currently built
 let currentSceneId = null;
 
 let NPCS = []; // the current SCENE's NPCs
-let STAGE = null; // the current scene's stage, or null if it has none
 let WORLD_WIDTH = 4400; // overwritten per scene
 let PLATFORMS = []; // one-way platforms, jumped up through and landed on
 let GUARDS = []; // patrolling guards, empty outside stealth scenes
@@ -700,10 +698,6 @@ const SKYLINE_ASPECT = 1952 / 736;
 // persisted either.
 let collectedPickups = new Set();
 
-let stageEl = null;
-let slopeLeft = null;
-let slopeRight = null;
-
 let actElements = []; // every DOM node loadAct created, for cleanup
 let decorationEls = [];
 let npcAnimators = []; // animated sprites needing an .update(now) each frame
@@ -728,7 +722,6 @@ function scenesFor(actData) {
       worldWidth: actData.worldWidth,
       startX: actData.startX,
       npcs: actData.npcs,
-      stage: actData.stage,
       decorations: actData.decorations,
     },
   ];
@@ -765,7 +758,6 @@ function loadScene(sceneId) {
   currentRoom = scene.id; // persisted through game_progress.current_room
 
   NPCS = scene.npcs || [];
-  STAGE = scene.stage || null;
   WORLD_WIDTH = scene.worldWidth || 4400;
   PLATFORMS = scene.platforms || [];
   // Block 81. A crate, like a guard, may be there for one stretch only.
@@ -825,7 +817,6 @@ function loadScene(sceneId) {
   buildSkylineTiles();
   buildNpcs(token);
   buildDecorations(token);
-  buildStage();
   buildPlatforms();
   buildHideSpots();
   buildHazards();
@@ -847,12 +838,7 @@ function unloadScene() {
   decorationEls = [];
   npcAnimators = [];
 
-  stageEl = null;
-  slopeLeft = null;
-  slopeRight = null;
-
   NPCS = [];
-  STAGE = null;
   PLATFORMS = [];
   GUARDS = [];
   HIDE_SPOTS = [];
@@ -888,10 +874,9 @@ function unloadAct() {
 // needs no new art and no image editing, which is the constraint the
 // backdrop has always had.
 //
-// Tiles are absolutely positioned divs inside #skyline and #skyline-night,
-// each taking its picture from its own layer's --skyline-src, so one
-// function serves both and greyFilter (a filter on #skyline) still
-// applies to everything inside it. Widths are whole pixels and each tile
+// Tiles are absolutely positioned divs inside #skyline, each taking its
+// picture from the layer's --skyline-src, so greyFilter (a filter on
+// #skyline) still applies to everything inside it. Widths are whole pixels and each tile
 // overlaps the next by one, because two fractional edges can leave a
 // hairline of the sky showing through; the overlap is invisible exactly
 // because the mirrored columns match. background-size is the tile's own
@@ -902,19 +887,13 @@ function unloadAct() {
 // no resize handling anywhere in this engine; see CLAUDE.md) and pushed to
 // actElements, so unloadScene removes them with everything else the scene
 // made.
-// Block 36. The night layer is built only when a scene actually turns to
-// night (runNightTransition), rather than at every scene load. It is
-// invisible until then, and a second full set of backdrop tiles is a
-// second set of textures for a phone to hold for nothing.
-function buildSkylineTiles(layerIds) {
+function buildSkylineTiles() {
   const backdrop = currentScene && currentScene.backdrop;
 
   // Block 43. A street drawn as a row of different paintings, each one
-  // panel, with a shadow tree in front of every join. Only the day layer:
-  // there is no night art for the panels, and no shipped scene turns to
-  // night.
+  // panel, with a shadow tree in front of every join.
   if (currentScene && Array.isArray(currentScene.panels) && currentScene.panels.length) {
-    if (!layerIds || layerIds.includes("skyline")) buildPanelBackdrop(currentScene);
+    buildPanelBackdrop(currentScene);
     return;
   }
 
@@ -923,8 +902,7 @@ function buildSkylineTiles(layerIds) {
   // copy of a stage would put a second set of curtains beside the first.
   // It covers the whole visible world, anchored at the bottom so the
   // painted floor stays under the characters' feet; on a screen wider
-  // than the picture's own shape the top edge is what gets cropped. The
-  // night layer is left empty, since only Tondo has a night picture.
+  // than the picture's own shape the top edge is what gets cropped.
   if (backdrop && backdrop.src) {
     const layer = document.getElementById("skyline");
     if (!layer) return;
@@ -947,25 +925,23 @@ function buildSkylineTiles(layerIds) {
     return;
   }
 
-  (layerIds || ["skyline"]).forEach((id) => {
-    const layer = document.getElementById(id);
-    if (!layer) return;
-    const height = layer.clientHeight;
-    if (!height) return; // not laid out yet; skip rather than divide by 0
+  const layer = document.getElementById("skyline");
+  if (!layer) return;
+  const height = layer.clientHeight;
+  if (!height) return; // not laid out yet; skip rather than divide by 0
 
-    const tileWidth = Math.max(1, Math.round(height * SKYLINE_ASPECT));
-    const totalWidth = world.clientWidth;
-    layer.classList.add("skyline-tiled");
+  const tileWidth = Math.max(1, Math.round(height * SKYLINE_ASPECT));
+  const totalWidth = world.clientWidth;
+  layer.classList.add("skyline-tiled");
 
-    for (let i = 0, x = 0; x < totalWidth; i++, x += tileWidth) {
-      const tile = document.createElement("div");
-      tile.className = "skyline-tile" + (i % 2 ? " skyline-tile-mirrored" : "");
-      tile.style.left = x + "px";
-      tile.style.width = tileWidth + 1 + "px";
-      layer.appendChild(tile);
-      actElements.push(tile);
-    }
-  });
+  for (let i = 0, x = 0; x < totalWidth; i++, x += tileWidth) {
+    const tile = document.createElement("div");
+    tile.className = "skyline-tile" + (i % 2 ? " skyline-tile-mirrored" : "");
+    tile.style.left = x + "px";
+    tile.style.width = tileWidth + 1 + "px";
+    layer.appendChild(tile);
+    actElements.push(tile);
+  }
 }
 
 // =============================================================
@@ -1230,34 +1206,8 @@ function buildDecorations(token) {
   });
 }
 
-function buildStage() {
-  if (!STAGE) return; // acts without a stage skip this entirely
-
-  stageEl = document.createElement("div");
-  stageEl.id = "stage-platform";
-  stageEl.style.left = STAGE.x - STAGE.width / 2 + "px";
-  stageEl.style.width = STAGE.width + "px";
-  world.appendChild(stageEl);
-  actElements.push(stageEl);
-
-  // Sloped ramps on both sides so the player visually walks up onto it.
-  slopeLeft = document.createElement("div");
-  slopeLeft.className = "stage-slope stage-slope-left";
-  slopeLeft.style.left = STAGE.x - STAGE.width / 2 - STAGE.rampWidth + "px";
-  slopeLeft.style.width = STAGE.rampWidth + "px";
-  world.appendChild(slopeLeft);
-  actElements.push(slopeLeft);
-
-  slopeRight = document.createElement("div");
-  slopeRight.className = "stage-slope stage-slope-right";
-  slopeRight.style.left = STAGE.x + STAGE.width / 2 + "px";
-  slopeRight.style.width = STAGE.rampWidth + "px";
-  world.appendChild(slopeRight);
-  actElements.push(slopeRight);
-}
-
 // --- Fallback checks for CSS-only background images -----------------------
-// The skyline, night skyline, and ground tiles are set purely in CSS and
+// The skyline and ground tiles are set purely in CSS and
 // are not act-specific, so they are checked once here rather than inside
 // loadAct. Each is preloaded only to detect a 404 and substitute a
 // labelled placeholder fill.
@@ -1281,11 +1231,6 @@ checkBackgroundImage(
   document.getElementById("skyline"),
   "assets/backgrounds/act1/street-01.jpg",
   "assets/backgrounds/act1/street-01.jpg"
-);
-checkBackgroundImage(
-  document.getElementById("skyline-night"),
-  "assets/backgrounds/act1/tondo-night.png",
-  "assets/backgrounds/act1/tondo-night.png"
 );
 checkBackgroundImage(
   document.getElementById("ground-tiles"),
@@ -1412,8 +1357,8 @@ function refreshNpcVisibility() {
 // it rather than merely standing at that x.
 // =============================================================
 
-function floorHeightAt(x) {
-  return GROUND_LEVEL + getPlatformOffset(x);
+function floorHeightAt() {
+  return GROUND_LEVEL;
 }
 
 // The highest platform top at x that the player is at or above. Only
@@ -1440,28 +1385,6 @@ function groundHeightAt(x, fromY) {
 
   const plat = platformTopUnder(x, fromY);
   return plat !== null && plat > floor ? plat : floor;
-}
-
-// How high (0 to PLATFORM_HEIGHT) the player is lifted at world-x.
-function getPlatformOffset(x) {
-  if (!STAGE) return 0; // this scene has no stage
-
-  const half = STAGE.width / 2;
-  const left = STAGE.x - half;
-  const right = STAGE.x + half;
-  const rampLeftStart = left - STAGE.rampWidth;
-  const rampRightEnd = right + STAGE.rampWidth;
-
-  if (x >= left && x <= right) return PLATFORM_HEIGHT;
-  if (x >= rampLeftStart && x < left) {
-    const t = (x - rampLeftStart) / STAGE.rampWidth;
-    return t * PLATFORM_HEIGHT;
-  }
-  if (x > right && x <= rampRightEnd) {
-    const t = (rampRightEnd - x) / STAGE.rampWidth;
-    return t * PLATFORM_HEIGHT;
-  }
-  return 0;
 }
 
 // --- Player sprite animation ---------------------------------------------
@@ -1500,7 +1423,6 @@ const BASE_SPRITE_SHEETS = {
     src: "assets/sprites/player/macario-walk.png", frames: 20, fps: 12, columns: 5,
     contentTop: 60, contentHeight: 127, footX: 126,
   },
-  dead: { src: "assets/sprites/player/macario-dead.png", frames: 5, fps: 6, columns: 5, loop: false },
 
   // Block 28. The redrawn shooting sheet: 5 by 3, 12 of its 15 cells,
   // played as two named views of the one image through startFrame and
@@ -1772,7 +1694,6 @@ let facing = 1; // 1 = facing right, -1 = facing left
 Promise.all([
   loadSpriteSheet(SPRITE_SHEETS.idle),
   loadSpriteSheet(SPRITE_SHEETS.walk),
-  loadSpriteSheet(SPRITE_SHEETS.dead),
   loadSpriteSheet(SPRITE_SHEETS.shootAim),
   loadSpriteSheet(SPRITE_SHEETS.shootFire),
   loadSpriteSheet(SPRITE_SHEETS.melee),
@@ -1796,7 +1717,7 @@ async function setOutfit(sheets) {
   const next = Object.assign({}, BASE_SPRITE_SHEETS);
 
   if (sheets) {
-    ["idle", "walk", "dead"].forEach((name) => {
+    ["idle", "walk"].forEach((name) => {
       if (sheets[name] && sheets[name].src) next[name] = sheets[name];
     });
   }
@@ -1809,7 +1730,6 @@ async function setOutfit(sheets) {
   await Promise.all([
     loadSpriteSheet(next.idle),
     loadSpriteSheet(next.walk),
-    loadSpriteSheet(next.dead),
   ]);
 
   spritesReady = true;
@@ -1987,11 +1907,10 @@ function setUiBlocked(value) {
 let dialogueStep = 0;
 let activeNpc = null;
 let activeSet = null;
-let activeMode = null; // "npc" | "gift" | "cutscene-part1" | "cutscene-part2"
+let activeMode = null; // "npc" | "gift" | "arrival"
 let nearby = { type: null, ref: null };
 
 const blackout = document.getElementById("blackout");
-const skylineNight = document.getElementById("skyline-night");
 
 // The pre-login backdrop. enterGameAsUser() reloads whichever act
 // game_progress.current_act names once the student is known; until
@@ -2179,17 +2098,6 @@ function findNearby() {
     }
   }
 
-  if (STAGE) {
-    // STAGE.x is the stage's centre, so it is compared with the centre
-    // of the body rather than its left edge.
-    const stageDist = Math.abs(posX + PLAYER_WIDTH / 2 - STAGE.x);
-    if (stageDist < INTERACT_DISTANCE && stageDist < closestDist) {
-      closest = STAGE;
-      closestType = "stage";
-      closestDist = stageDist;
-    }
-  }
-
   return { type: closestType, ref: closest };
 }
 
@@ -2241,8 +2149,6 @@ function handleInteractPress() {
     nearby.ref.onInteract();
   } else if (nearby.type === "npc") {
     startDialogue(nearby.ref);
-  } else if (nearby.type === "stage") {
-    startPerformance();
   } else if (nearby.type === "exit" && window.Acts) {
     const exit = nearby.ref;
     // Block 74. An exit marked back returns to wherever the student was
@@ -2335,24 +2241,6 @@ function startGift(npc) {
   activeNpc = npc;
   activeMode = "gift";
   activeSet = { lines: npc.gift.responseLines };
-  inDialogue = true;
-  dialogueStep = 0;
-  dialogueBox.classList.remove("hidden");
-  showDialogueStep();
-}
-
-function startPerformance() {
-  if (cutscenePlaying) return;
-  cutscenePlaying = true;
-  // Same reasoning as respawnInScene: don't let a held attack button
-  // leave the shooting pose stuck across a scene the player no longer
-  // controls.
-  attackHoldStart = 0;
-  shooting = null;
-  clearTimeout(shootFireTimer);
-  activeNpc = null;
-  activeMode = "cutscene-part1";
-  activeSet = { lines: STAGE.poemPart1 };
   inDialogue = true;
   dialogueStep = 0;
   dialogueBox.classList.remove("hidden");
@@ -2515,12 +2403,6 @@ function endDialogue() {
     if (finishedSet.doneFlag) state.flags[finishedSet.doneFlag] = true;
     markDirty();
     if (finishedSet.onComplete) finishedSet.onComplete();
-  } else if (finishedMode === "cutscene-part1") {
-    // First half of the poem is done. Fade to night, then continue.
-    runNightTransition();
-  } else if (finishedMode === "cutscene-part2") {
-    // Second half is done. Now the death animation and blackout.
-    runDeathSequence();
   }
 
   activeNpc = null;
@@ -2532,53 +2414,6 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function runNightTransition() {
-  blackout.classList.add("visible");
-  await wait(900); // fade to black
-
-  buildSkylineTiles(["skyline-night"]); // built now rather than at every load
-  skylineNight.classList.add("visible"); // swap while hidden behind black
-  markDirty();
-
-  await wait(400); // hold black briefly
-  blackout.classList.remove("visible");
-
-  await wait(900); // fade back in, revealing the night scene
-  activeMode = "cutscene-part2";
-  activeSet = { lines: STAGE.poemPart2 };
-  inDialogue = true;
-  dialogueStep = 0;
-  dialogueBox.classList.remove("hidden");
-  showDialogueStep();
-}
-
-async function runDeathSequence() {
-  applyAnim("dead", true);
-  const deadSheet = SPRITE_SHEETS.dead;
-  const animMs = (deadSheet.frames / deadSheet.fps) * 1000;
-
-  await wait(animMs + 400); // let the animation finish and hold
-  blackout.classList.add("visible");
-
-  await wait(900); // fade to black and hold
-  blackout.classList.remove("visible");
-
-  await wait(900); // fade back in, scene now permanently night
-  applyAnim("idle", true);
-  cutscenePlaying = false;
-
-  state.flags.deathSequenceDone = true;
-
-  // Content may hide an NPC behind this moment by declaring
-  // deathSequenceDone as its revealedByFlag, so setting the flag above
-  // is all this needs to know. The engine does not know which NPC, or
-  // whether there is one at all.
-  revealNpcsByFlag();
-
-  markDirty();
-  saveProgress(); // save immediately rather than waiting for the next tick
-}
-
 // teleportToNewRoom() and hideActWorld() lived here. Both existed
 // only to serve the placeholder Act I ending, which faded to black
 // and left the player in an empty room with no interactables and no
@@ -2588,9 +2423,8 @@ async function runDeathSequence() {
 
 // A plain scene-to-scene move under cover of black, for content that
 // wants the fade without the stage's poem/death machinery around it.
-// Reuses the same #blackout element and hold/fade timings as
-// runNightTransition/runDeathSequence above rather than inventing a
-// second blackout mechanism. Acts.gotoScene calls this rather than
+// Reuses the one #blackout element rather than inventing a second
+// blackout mechanism. Acts.gotoScene calls this rather than
 // loadScene directly.
 //
 // cutscenePlaying is set for the duration so movement, jumping,
@@ -2600,7 +2434,7 @@ async function runDeathSequence() {
 // scene swap mid-stride would otherwise be visible for a frame on
 // either side of the blackout, and an interact press during the fade
 // could fire against a scene that is no longer the one on screen. The
-// same defensive clear startPerformance and respawnInScene already do
+// same defensive clear respawnInScene already does
 // is repeated here, since a fade can just as easily start with the
 // attack button held down as either of those can.
 // Block 78. How long a scene change's black holds before it says what it
@@ -2681,7 +2515,7 @@ async function fadeToScene(sceneId, placement) {
     if (arrival.facing === 1 || arrival.facing === -1) facing = arrival.facing;
   }
 
-  await wait(400); // hold black briefly, same as runNightTransition
+  await wait(400); // hold black briefly
   blackout.classList.remove("visible");
 
   // Each scene's own music, or Calm (Block 35), so a fight's track never
@@ -4146,9 +3980,9 @@ let projectile = null; // at most one in flight
 // button is held, "fire" for the brief flourish right after a throw, and
 // "melee" for the punch a tap plays (Block 27). The main loop's own
 // idle/walk switch (see gameLoop) is suppressed while this is set, the
-// same way cutscenePlaying already suppresses it for the death sequence.
+// same way cutscenePlaying already suppresses it during a cutscene.
 // The name predates melee having a clip of its own; it is kept because
-// every reset path already clears it (respawnInScene, startPerformance,
+// every reset path already clears it (respawnInScene,
 // loadScene) and a rename would be churn through all of them.
 let shooting = null; // null | "aim" | "fire" | "melee"
 let shootFireTimer = null; // hands the pose back after fire
@@ -6668,7 +6502,7 @@ function gameLoop(now) {
   updateProjectile(step);
 
   // During the stage cutscene, leave whatever animation is already set
-  // (such as "dead") rather than switching back to idle or walk. The
+  // (such as a pose held by a script) rather than switching back to idle or walk. The
   // same holds while an attack clip owns the pose (aiming, firing or
   // punching) — see updateAttackHoldPose, playShootFire and playMelee.
   if (canAct) updateAttackHoldPose(now);
@@ -6729,9 +6563,6 @@ function gameLoop(now) {
       setClass(btnInteract, "active", true);
     } else if (nearby.type === "npc") {
       setLabel(btnInteract, nearby.ref.interactLabel || "Usap");
-      setClass(btnInteract, "active", true);
-    } else if (nearby.type === "stage") {
-      setLabel(btnInteract, "Ganap");
       setClass(btnInteract, "active", true);
     } else if (nearby.type === "exit") {
       setLabel(btnInteract, nearby.ref.label || "Pasok");
@@ -7058,10 +6889,6 @@ function applyLoadedState(row) {
   // currentRoom is set by loadScene, which has already run and has
   // already resolved an unknown or legacy scene id to a real one.
 
-  if (row.is_night) {
-    skylineNight.classList.add("visible");
-  }
-
   // Any NPC whose reveal flag is already set in the restored save.
   revealNpcsByFlag();
   // Block 81. And any guard or crate the restored story puts on duty.
@@ -7099,7 +6926,6 @@ async function saveProgress() {
     // dashboard's Act column is meaningless, and there is nothing
     // for the next login to resume into.
     current_act: window.Acts ? Acts.current : 1,
-    is_night: skylineNight.classList.contains("visible"),
     currency,
     save_state: {
       quests,

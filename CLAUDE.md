@@ -413,7 +413,6 @@ Scene shape:
                            x, facing,
                            lines, onComplete }],
       npcs: [...],
-      stage: {...} | omitted,
       decorations: [...],
       platforms: [{ x, y, width }],              optional; one-way
       hideSpots: [{ x, width,                    optional; suppress detection
@@ -446,8 +445,8 @@ Scene shape:
                   doneFlag, x, facing, run }]    play by themselves (Block 52)
     }
 
-Acts written before scenes existed declare worldWidth, startX, npcs, stage
-and decorations directly on the act. scenesFor() wraps those in a single
+Acts written before scenes existed declare worldWidth, startX, npcs and
+decorations directly on the act. scenesFor() wraps those in a single
 implicit scene, so content/act2.js through act4.js need no changes. Do not
 "modernise" them; the fallback is the compatibility guarantee.
 
@@ -554,7 +553,7 @@ around every scene change instead of swapping instantly.
 backdrop (Block 34) replaces the shared Tondo.png for one scene with a
 picture of its own, drawn once to cover the visible world and anchored
 at the bottom, never tiled or mirrored, because it is one room rather
-than a street. The night layer stays empty under it. ground: false hides
+than a street. ground: false hides
 #ground-tiles for a picture that paints its own floor. Both are cleared
 on every load, so a scene without them gets Tondo and the dirt back.
 
@@ -872,7 +871,7 @@ low-end phone would buy nothing. Only ownership is stored.
             | { maxHealthBonus: 1 }              while worn
             | { stillDetectionMult: 0.5 }
       sheets: { walk: {...} }                    cosmetic only; any of
-                                                 idle, walk, dead
+                                                 idle, walk
       use: { heal: 1 },                          consumable only; applied
                                                  once by Gamitin
       maxStack: 5,                               consumable only; default 5
@@ -1062,8 +1061,8 @@ DISPLAY_HEIGHT, feet wherever the frame's own bottom edge happens to
 be) — this is why cosmetics with no art yet and the test harness's own
 fixture sheets need no changes to keep working. See Decisions on record
 for the numbers measured for Macario and Nanay and why this was needed;
-the same measurement is owed to Dead.png and to any outfit's walk/idle/
-dead sheets once real art exists for them.
+the same measurement is owed to any outfit's walk and idle sheets once
+real art exists for them.
 
 A sheet may also declare frameBottoms, one native-pixel bottom edge per
 frame, for art that draws movement INTO the cell: Macario's jump sheet
@@ -1919,10 +1918,9 @@ drawn off-centre, where the character will visibly stand to one side
 of his hitbox. Run measure-sprite.js on every new sheet and paste all
 three numbers, not just the two vertical ones.
 
-The backdrop's tiles are children of #skyline and #skyline-night, which
-are static elements that outlive a scene. They are pushed to actElements
-so unloadScene removes them, and the layers keep their .skyline-tiled
-class, so between an unloadScene and the next loadScene the backdrop is
+The backdrop's tiles are children of #skyline, a static element that
+outlives a scene. They are pushed to actElements so unloadScene removes
+them, and the layer keeps its .skyline-tiled class, so between an unloadScene and the next loadScene the backdrop is
 blank. Every caller today does both back to back, under the blackout. A
 new caller that unloads without loading straight after must expect that.
 

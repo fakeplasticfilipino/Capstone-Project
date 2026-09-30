@@ -53,7 +53,6 @@ window.ASSET_MANIFEST = [
   "assets/sprites/characters/siga-2.png",
   "assets/sprites/characters/siga-3-walk.png",
   "assets/sprites/characters/siga-3.png",
-  "assets/sprites/characters/tindero.png",
   "assets/sprites/enemies/bantay-hit.png",
   "assets/sprites/enemies/bantay-shoot.png",
   "assets/sprites/enemies/bantay-walk.png",

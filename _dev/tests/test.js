@@ -64,7 +64,7 @@ window.ACT_1 = {
   titleTagalog: "Ang Pinagmulan ni Macario",
   objectives: [
     { id: "pinagmulan", label: "Alamin ang pinagmulan", flag: "nalamanAngPinagmulan" },
-    { id: "entablado", label: "Umarte sa entablado", flag: "deathSequenceDone" },
+    { id: "entablado", label: "Umarte sa entablado", flag: "naitanghalAngKuwento" },
     { id: "katipunan", label: "Sumapi sa Katipunan", flag: "sumapiSaKatipunan" },
     { id: "mensahe", label: "Ihatid ang lihim na mensahe", flag: "naihatidAngMensahe" },
     { id: "pag-alis", label: "Magpaalam sa dating buhay", flag: "nagpaalam" },
@@ -273,8 +273,8 @@ const visible = (page, sel) => page.evaluate((s) => {
   {
     const state = {
       session: { user: { id: "u1" } },
-      game_progress: [{ student_id: "u1", current_act: 1, current_room: "misyon", is_night: true,
-        save_state: { quests: [], flags: { nalamanAngPinagmulan: true, deathSequenceDone: true, sumapiSaKatipunan: true }, posX: 200 } }],
+      game_progress: [{ student_id: "u1", current_act: 1, current_room: "misyon",
+        save_state: { quests: [], flags: { nalamanAngPinagmulan: true, naitanghalAngKuwento: true, sumapiSaKatipunan: true }, posX: 200 } }],
       act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 3 }],
     };
     const { ctx, page } = await newPage(state, fixtureRoutes());
@@ -419,8 +419,8 @@ const visible = (page, sel) => page.evaluate((s) => {
   // front of them.
   const atTestRoom = () => ({
     session: { user: { id: "u1" } },
-    game_progress: [{ student_id: "u1", current_act: 1, current_room: "misyon", is_night: true,
-      save_state: { quests: [], flags: { nalamanAngPinagmulan: true, deathSequenceDone: true, sumapiSaKatipunan: true }, posX: 200 } }],
+    game_progress: [{ student_id: "u1", current_act: 1, current_room: "misyon",
+      save_state: { quests: [], flags: { nalamanAngPinagmulan: true, naitanghalAngKuwento: true, sumapiSaKatipunan: true }, posX: 200 } }],
     act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 3 }],
   });
 
@@ -2512,7 +2512,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       meleeAttack = () => { hits++; real(); };
       startAttackHold();
       endAttackHold();
-      shooting = null; // what respawnInScene and startPerformance do
+      shooting = null; // what respawnInScene does
       setTimeout(() => { meleeAttack = real; resolve({ hits, pending: meleePending }); }, 500);
     }));
     ok("a punch interrupted before its fist lands does not hit",
@@ -3543,7 +3543,6 @@ const visible = (page, sel) => page.evaluate((s) => {
         tiles: tiles.length, mirrored: sky.querySelectorAll(".skyline-tile-mirrored").length,
         size: tiles[0] && tiles[0].style.backgroundSize,
         tileWidth: tiles[0] && parseFloat(tiles[0].style.width),
-        night: document.getElementById("skyline-night").querySelectorAll(".skyline-tile").length,
         ground: getComputedStyle(document.getElementById("ground-tiles")).display,
       };
     });
@@ -3551,7 +3550,6 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a scene's backdrop replaces the shared picture", /nanay\.png/.test(inside.src), inside);
     ok("drawn once, covering, not tiled or mirrored",
        inside.tiles === 1 && inside.mirrored === 0 && inside.size === "cover" && inside.tileWidth >= 1176, inside);
-    ok("with no night tiles behind it", inside.night === 0, inside);
     ok("ground: false hides the dirt strip", inside.ground === "none", inside);
 
     await page.evaluate(() => { posX = 60; });
@@ -3941,13 +3939,11 @@ const visible = (page, sel) => page.evaluate((s) => {
       const tondo = { world: world.style.width, scene: WORLD_WIDTH };
       loadScene("misyon");
       return { tondo, misyon: { world: world.style.width, scene: WORLD_WIDTH },
-               tiles: document.getElementById("skyline").querySelectorAll(".skyline-tile").length,
-               nightTiles: document.getElementById("skyline-night").querySelectorAll(".skyline-tile").length };
+               tiles: document.getElementById("skyline").querySelectorAll(".skyline-tile").length };
     });
     ok("the world is exactly as wide as the scene",
        widths.tondo.world === widths.tondo.scene + "px" && widths.misyon.world === widths.misyon.scene + "px", widths);
     ok("the backdrop is tiled across that width", widths.tiles > 0, widths);
-    ok("and the night layer is not built until a scene turns to night", widths.nightTiles === 0, widths);
 
     // One element per track, kept across a swap, so coming back to Calm
     // does not download it again.
