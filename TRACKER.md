@@ -619,7 +619,11 @@ reloads mid-beat, old saves,
 a guest and the Test Room, and checks that every line of the content is
 in STORY.md, that ART.md's Owed list matches the disk, and that the
 asset manifest matches assets/ and every picture in it opens. Anything
-other than "0 failed" is a regression. Both never touch the live
+other than "0 failed" is a regression, with one caution learned on
+30 Sep 2026: on a busy machine verify_new_scene.js has twice failed a
+timing check (the pamphlet guard catch) or lost a page ("Page crashed")
+once, and passed on the next run; rerun before believing either. test.js
+has not done it. Both never touch the live
 project. Both are green as of Block 85.
 
 A check that clicks, or reads pixels, is worth more than one that reads
