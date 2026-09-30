@@ -42,7 +42,11 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 30 Sep 2026, Block 87 (the opening ends in a fight with the
+Last updated: 30 Sep 2026, Block 89 (the work is there to be done, not
+staged: the horse to groom and the sewing, each repeatable for barya; the
+Mananahi stopping Macario to send him to the direktor is the one script;
+the apple quest, the two customers' deliveries and both paydays are gone).
+Before that, Block 87 (the opening ends in a fight with the
 three siga before Nanay comes; the siga's laugh after Nanay's first line
 is gone, since they are beaten). Before that, Block 85 (the feel pass: night on the
 run, the crowd heard, the rite trimmed and broken with movement, the
@@ -65,9 +69,11 @@ the teacher's, at three fixed places on the street).
 
 Act I, Ang Pinagmulan ni Macario. Tondo, 1890. A boy teased about the
 father who never came back learns that his mother spent the last of
-their money on her cedula, and goes out to earn. He tends a kutsero's
-horse, runs a mananahi's deliveries, and on the last delivery walks
-into a theatre company's crisis: their lead actor is sick and the
+their money on her cedula, and goes out to earn. He takes work where it
+is, grooming a kutsero's horse and helping a mananahi sew, as often as he
+likes for a few barya a time, until she stops him and sends him with the
+theatre company's costumes, and he walks
+into their crisis: their lead actor is sick and the
 house is full. The costume he carried fits him. He goes on, forgets his
 first line, adds one of his own, wins the stage fight, and walks off to
 a standing crowd and an offer to join the company. He brings the money
@@ -100,15 +106,14 @@ Act I lives on it, left to right:
     x 900      where Macario stands when the game opens
     x 2000     Nanay, where she and Macario walk to in the opening
     x 3300     the Kutsero
-    x 3560     his white horse, Kabayo
+    x 3560     his white horse, Kabayo (used with E, not talked to)
     x 4800     the mangingisda (four years on, once Macario is sworn in)
-    x 5800     the apple tree (Puno ng mansanas): the silhouette tree
-               over that join, with no picture of its own
     x 6400     the Mananahi (from the first play until the four years,
                outside the entablado instead, at x 13250)
+    x 6540     her tahian, the sewing (scenery, used with E)
     x 6900     the tabakera (as the mangingisda)
-    x 7800     Aling Rosa, a customer
-    x 9300     Mang Tomas, a customer
+    x 7800     Aling Rosa, a customer who is waiting
+    x 9300     Mang Tomas, a customer who is waiting
     x 10600    the karpintero (as the mangingisda)
     x 12500    the Kasama (four years on, once the Katipunan has found
                Macario in the wings)
@@ -248,89 +253,91 @@ tondo, x 3300. Walk up and talk (Usap).
     Kutsero: Macario? Buti naman at naisipan mo magtrabaho
     Macario: Kailangan na 'ho eh, nangangailangan si Nanay
     Kutsero: O sige, magsimula ka na kaagad, alagaan mo yung puting kabayo kuwadra
-  + Kutsero: Gutom na 'yon. May puno ng mansanas diyan sa unahan. Kumuha ka ng tatlo, tapos ipakain mo sa kanya.
+  + Kutsero: Suklayin mo siya. Bawat linis na matapos mo, may bayad ka sa akin.
 
 Completes: Maghanap ng trabaho: kausapin ang Kutsero.
 
-### 3. The apples and the horse
+### 3. The horse
 
-tondo, the apple tree, which is the silhouette tree over the join at
-x 5800 (walking up to it, the button reads Pumitas), then the horse at
-x 3560. Nothing points the way: the Kutsero's "diyan sa unahan" is the
-whole of the direction.
+tondo, x 3560, beside the Kutsero. Nothing is staged: the horse is
+simply there, and the button reads Suklayin. Before the Kutsero has been
+spoken to, Macario thinks it over instead:
 
-The tree opens a mini-game, "Puno ng mansanas": apples shake in the
-leaves and fall one at a time, and a basket moved left and right
-catches them. Three are needed; a miss costs nothing but the wait for
-the next. Stopping early keeps what was caught. Macario's thoughts at
-the tree, when it is not the task or the three are already in hand:
+  + Macario (sa isip): Kabayo ito ng Kutsero. Kausapin ko muna siya bago ko galawin.
 
-  + Macario (sa isip): Ang daming bunga ng punong ito.
-  + Macario (sa isip): Tatlo na ang hawak ko. Dalhin ko na sa kabayo.
+Grooming is a small game (Block 89, game.js, playWorkGame): a marker
+sweeps a bar, a green patch waits at a new place, and five strokes,
+pressed with the button or E, are a round. Each good stroke is worth
+more: a round pays 4 to 7 barya (5 good strokes pay 7, none pay 4), it
+can be done again as often as he likes, and the Kutsero stops paying at
+25 from this job. A round cut short pays nothing.
 
-With three, the horse's button reads Ipakain ang mansanas:
+  + (the game) Kabayo / Suklayin siya kapag nasa berde ang guhit.
+  + (a good stroke) Hiiiii!
+  + (a missed one) Umiwas ang kabayo!
+  + (the end) n/5 ang maayos. +n barya
 
-  + Macario: Heto na, kaibigan. Dahan-dahan lang, ha.
-  + Kabayo: Hiiiii!
+Completes, with the first round: Alagaan ang kabayo ng Kutsero. Nothing
+else waits on the horse; the job stays there.
 
-Completes: Kumuha ng tatlong mansanas at ipakain sa kabayo (n/3).
+### 4. The Kutsero, afterwards
 
-After the horse is fed, the tree is a game of its own (Block 65, ours):
-thirty seconds to catch as many as he can, every fifth apple golden and
-worth three, three in a row a streak. Nothing is paid and nothing waits
-on it; his best is kept.
+  + Kutsero: Sapat na 'yan sa ngayon, Macario. Malinis na malinis na si Kabayo.
 
-  + (the window) Ilan ang masasalo mo sa loob ng 30 segundo? Rekord mo: n.
-  + (a streak) Sunod-sunod! xn
-  + (a golden apple) Ginintuang mansanas! +3
-  + (a miss) Sayang!
-  + (the end) Nakasalo ka ng n! / Bagong rekord: n! / Nakasalo ka ng n. Rekord mo: n.
-
-### 4. The Kutsero pays
-
-tondo, x 3300. The button reads Kunin ang bayad. +50 barya.
-
-  + Kutsero: Heto ang limampung barya. Pinaghirapan mo 'yan.
-  + Macario: Maraming salamat po!
-
-Completes: Kunin ang bayad sa Kutsero.
+Said, with no game, once the horse has paid its 25. Before that, see
+Repeat lines.
 
 ### 5. The Mananahi
 
-tondo, x 6400. Talk, once the Kutsero has paid.
+tondo, x 6400. Talk, at any time after the first step: she does not wait
+on the Kutsero.
 
     Macario: Mananahi, tumatanggap ba kayo ng trabahador?
     Mananahi: Oo naman Macario, kamusta na ang inay mo?
     Macario: Okay lang 'ho, nangangailangan kami ng pera ngayon
     Mananahi: O sige sige, tara dito
-  + Mananahi: May tatlong tahi akong tapos na. 'Yung baro ni Aling Rosa, 'yung pantalon ni Mang Tomas, at 'yung mga damit ng direktor para sa palabas mamayang gabi.
-  + Mananahi: Kina Aling Rosa at Mang Tomas ka muna, madadaanan mo naman sila. Nasa dulo pa ng kalye 'yung entablado, kaya sa direktor ka na huling pumunta.
-  + Macario: Sige po, ihahatid ko na ngayon.
+  + Mananahi: Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ang bawat matapos mo.
 
 Completes: Kausapin ang Mananahi.
 
-### 6. The deliveries
+### 6. The sewing, and being stopped
 
-tondo. Aling Rosa (x 7800) and Mang Tomas (x 9300) in either order,
-then the direktor (x 13600). Each button reads Iabot ang damit.
+tondo, x 6540, beside her. The same game as the horse with the sewing's
+words, the button reading Manahi; the same pay (4 to 7 a round, 25 in
+all). Before she has been spoken to:
 
-Aling Rosa:
+  + Macario (sa isip): Tahian ito ng Mananahi. Kausapin ko muna siya.
 
-  + Macario: Magandang araw po! Padala po ng Mananahi.
-  + Aling Rosa: Ay, salamat, iho! Pakisabi sa Mananahi, ang ganda ng pagkakatahi.
+  + (the game) Pananahi / Tahiin kapag nasa berde ang guhit.
+  + (a good stroke) Diretso ang tahi!
+  + (a missed one) Baluktot ang tahi!
 
-Mang Tomas:
+The quest line counts the first two rounds (n/2). When the second is done
+she stops him, the one thing here that is scripted:
 
-  + Macario: Magandang araw po! Padala po ng Mananahi.
-  + Mang Tomas: Aba, sakto 'to sa akin. Salamat, bata.
+  + Mananahi: Macario, teka! Ihinto mo muna 'yan.
+  + Macario: Po? May mali po ba sa tahi ko?
+  + Mananahi: Wala, wala. Nakalimutan ko lang ang mas mahalaga.
+  + Mananahi: 'Yung mga damit ng direktor para sa palabas mamayang gabi. Kanina pa dapat nakarating 'yon.
+  + Mananahi: Ikaw na ang magdala. Nasa dulo pa ng kalye ang entablado.
+  + Macario: Sige po, ihahatid ko na ngayon.
+  + Mananahi: Bilisan mo, ha. Huwag mong ibababa sa daan 'yan.
 
-The direktor will not take his until both are done (his line for that
-is under Repeat lines). Then:
+Completes: Tulungan ang Mananahi sa pananahi (2/2). With the costumes on
+him the sewing waits:
+
+  + Macario (sa isip): May dala akong damit para sa direktor. Ihahatid ko muna.
+
+Aling Rosa and Mang Tomas, on the way, are customers still waiting and
+say so (Repeat lines); they take nothing from him.
+
+The direktor, at the far end, x 13600. The button reads Iabot ang damit,
+offered once she has sent him:
 
   + Macario: Magandang hapon po. Padala po ng Mananahi, 'yung mga damit para sa palabas.
   + Direktor: Salamat sa Diyos, dumating din! Akin na, iho.
 
-The deliveries count (n/3); the step is finished by the next beat.
+Completes, with the next beat: Ihatid ang mga damit sa direktor.
 
 ### 7. The missing actor
 
@@ -445,27 +452,25 @@ conversion of the princess, and its kingdoms are not named by
 religion: a choice made for a Grade 8 classroom that the proponents
 may reverse.
 
-### 9. The Mananahi pays
+### 9. The Mananahi at the play
 
 tondo, outside the entablado (x 13250), where she has come to watch;
-since Block 85, so that being paid is not a walk back across the
-street. Talk, then the button reads Kunin ang bayad. +50 barya.
+since Block 85, so that she is not a walk back across the street. She
+no longer pays (Block 89): the work paid each time. No task waits on
+her. Talk:
 
   + Mananahi: Macario! Nanood ako sa likod. Ikaw pala ang bumida!
   + Macario: Nawala po kasi 'yung artista nila. Ako na lang po ang pinagsuot ng damit.
   + Mananahi: Aba, e 'di ikaw pala ang unang nagsuot ng tinahi ko! Kasya ba?
   + Macario: Kasyang-kasya po.
-  + Mananahi: Sabi ko na nga ba. Halika, kunin mo na ang bayad mo.
-
-  + Mananahi: Heto ang limampung barya. Salamat, Macario, malaking tulong ka.
-  + Macario: Salamat din po!
-
-Completes: Kunin ang bayad sa Mananahi.
+  + Mananahi: Sabi ko na nga ba.
 
 ### 10. The savings
 
-tondo, x 2000. The button reads Ibigay ang ipon. 100 barya go to Nanay;
-Macario keeps what the play paid beyond that.
+tondo, x 2000. The button reads Ibigay ang ipon, and appears once the
+play is done and he holds 100 barya (Block 89): the play's 79 to 110
+and what the work brought in, so anyone short goes back to the horse
+or the sewing. 100 barya go to Nanay; Macario keeps the rest.
 
     Macario: Nay, nakapag-ipon na ako ng pera para makatulong
     Nanay: Maraming salamat anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?
@@ -752,52 +757,40 @@ Nanay:
 
 Kutsero:
 
-  + Kutsero: Nasa unahan lang ang puno. Tatlong mansanas, ha.
-    (while the apples are the task)
-  + Kutsero: Aba, busog na busog na siya! Halika, may bayad ka sa akin.
-    (the horse fed, not yet paid)
-  + Kutsero: Salamat, Macario. Balik ka lang kung kailangan mo pa ng trabaho.
-    (afterwards)
-
-Kabayo:
-
-  + Kabayo: Hiiiii!
+  + Kutsero: Nariyan lang si Kabayo. Suklayin mo, may barya ka sa bawat linis.
+    (before the first grooming)
+  + Kutsero: Ang ganda ng trabaho mo. Balik ka lang kung gusto mo pa ng dagdag na barya.
+    (while there is more to earn)
+  + Kutsero: Sapat na 'yan sa ngayon, Macario. Malinis na malinis na si Kabayo.
+    (paid all he will pay)
 
 Mananahi:
 
-  + Mananahi: O, Macario. Naghahanap ka raw ng trabaho? Unahin mo muna 'yung sa Kutsero, tapos balikan mo ako. Baka may maipagawa ako sa'yo.
-    (before the Kutsero has paid)
-  + Mananahi: O, may bitbit ka pa? Ihatid mo na, baka hinahanap na nila.
-    (deliveries still to make)
+  + Mananahi: Ihatid mo na 'yung damit ng direktor, baka hinahanap na nila.
+    (sent with the costumes, not yet delivered)
+  + Mananahi: Nariyan ang tahian, kung gusto mo pa ng dagdag na barya.
+    (while there is sewing to do)
   + Mananahi: Hinahanap ka raw ng direktor sa entablado. Bilisan mo!
     (delivered, the play not yet done; only an old save reaches this)
-  + Mananahi: Iuwi mo na 'yan sa nanay mo. Matutuwa 'yon.
-    (paid, before the savings; outside the entablado)
+  + Mananahi: Iuwi mo na 'yang naipon mo sa nanay mo. Matutuwa 'yon.
+    (after the first talk outside the entablado)
   + Mananahi: Kapag may tahi ulit, ipapatawag kita, ha?
     (afterwards)
 
 Aling Rosa:
 
   + Aling Rosa: Hay naku, ang tagal naman ng baro ko. Pista pa naman bukas.
-    (waiting)
-  + Aling Rosa: Isusuot ko 'to bukas sa pista. Abangan mo ako, ha!
-    (afterwards)
 
 Mang Tomas:
 
   + Mang Tomas: Galing ka ba sa Mananahi? Kanina ko pa hinihintay 'yung pantalon ko.
-    (waiting)
-  + Mang Tomas: Salamat ulit, bata. Ingat ka sa daan.
-    (afterwards)
 
 Direktor, on the street:
 
   + Direktor: Pasensya na, iho, abala kami. Mamayang gabi na ang palabas at ang dami pang kulang.
-    (before the Mananahi's errand)
-  + Direktor: Galing ka sa Mananahi? Mamaya ko pa kailangan 'yang mga damit namin, iho. Ihatid mo muna 'yung sa iba, baka sila ang naiinip na.
-    (the errand, the other two not yet delivered)
+    (before the Mananahi has sent him)
   + Direktor: Ikaw 'yung bata ng Mananahi, 'di ba? Dala mo na ba ang mga damit namin?
-    (ready for his)
+    (sent, with the costumes still on him)
   + Direktor: O, ano pa'ng hinihintay natin? Tara na sa loob, naghihintay na ang mga tao!
     (Macario agreed but is still outside, after a reload; takes him in)
   + Direktor: Hindi pa rin ako makapaniwala. Iniligtas mo ang palabas namin, iho.

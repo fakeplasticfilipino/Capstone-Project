@@ -641,6 +641,8 @@ NPC shape:
                                                  line's sfx replaces its
                                                  blip (Block 85)
       gift: { buttonLabel, requiresFlag, givenFlag,
+              requiresCurrency,                  optional; offered only while
+                                                 he holds this many (Block 89)
               responseLines, completesQuest,
               onComplete() }                     optional; onComplete optional
     }
@@ -737,6 +739,13 @@ of them plain globals in game.js, like addQuest:
     setMusic(src | null)         null is the scene's own track, else Calm
     setQuestText(id, text)       rewrites a logged quest's line (Block 37)
     wait(ms)                     resolves after ms; a pause in a script
+    playWorkGame(opts)           the work game (Block 89): a marker sweeps
+                                 a bar and each stroke pressed over the
+                                 green patch is good. opts title, hint,
+                                 verb, hitText, missText, doneText(good),
+                                 rounds; resolves with the good strokes,
+                                 or -1 if he left before the last.
+                                 One game for every repeatable job
     playCatchGame(opts)          the apple mini-game (Block 57, replacing
                                  Block 56's playTimingGame); resolves with
                                  how many were caught when it closes.
@@ -1320,6 +1329,15 @@ see, and what failure looks like, before they test.
 
 Additive work is preferred over refactors when both would work. Refactors
 of working code require a commit first.
+
+Autonomy (Block 89). Act I is things that are there, not steps that are
+staged. A quest names something to find; the person, the animal or the
+work is simply on the street, usable at any time and as often as it
+makes sense, and content gates it only on what the story needs (the
+Kutsero has been spoken to). The work is one game with different words
+(playWorkGame), paying a small bounded sum a round up to a cap; the
+scripts that remain are the turns the story cannot leave to the student.
+A new activity is a NPC with onInteract, not a new mechanic.
 
 Consistency. One thing is done one way. Everything that fights, a guard
 on patrol who has seen Macario, a soldier in the play, a street tough in

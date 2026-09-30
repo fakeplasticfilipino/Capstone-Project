@@ -9,12 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 30 Sep 2026, after Block 88 (one combat template, transparent busts;
-86 to 88 not yet seen on the phone). Before that, Block 85 (the feel pass, ten of its
+Last updated: 30 Sep 2026, after Block 89 (the work is there to be done: grooming and
+sewing, repeatable; 86 to 89 not yet seen on the phone). Before that, Block 85 (the feel pass, ten of its
 twelve). Before that, Block 84 (black screens silent).
 Before that, Block 83 (the opening in 1890, the cut to 1894). Before that, Block 82 (the direktor's stage clothes;
 the fire leap shown, not told; running allowed away from guards).
-test.js 757 passed, 0 failed; verify_new_scene.js 201 passed,
+test.js 761 passed, 0 failed; verify_new_scene.js 197 passed,
 0 failed.
 
 ## Start here
@@ -46,31 +46,37 @@ then 01 and 02, a silhouette tree over each join; keep anyone a student
 must reach 90px clear of a multiple of 1450), the inside of the
 entablado, which only the direktor (and later the four-year card) takes
 Macario into, and the pulungan, the Katipunan's secret room, which only
-the Kasama takes him into. Thirteen objectives, one chain, shown one at
-a time in the quest log (finished ones in Mga Setting):
+the Kasama takes him into. Twelve objectives, one chain, shown one at
+a time in the quest log (finished ones in Mga Setting). Since Block 89
+nothing but the turns is staged: the work is simply there, and can be
+done again.
 
     1  Umuwi kasama si Nanay            the thought after the opening
     2  Maghanap ng trabaho: kausapin    the Kutsero's first conversation
        ang Kutsero
-    3  Kumuha ng tatlong mansanas at    apples caught (n/3); done by
-       ipakain sa kabayo                feeding the horse
-    4  Kunin ang bayad sa Kutsero       his gift button, 50 barya
-    5  Kausapin ang Mananahi            her first conversation
-    6  Ihatid ang mga tinahing damit    Aling Rosa, Mang Tomas, the
-       (n/3)                            direktor; done when Macario
-                                        agrees to act
+    3  Alagaan ang kabayo ng Kutsero    the first grooming round; the
+                                        horse stays there: 4 to 7 barya
+                                        a round, 25 in all
+    4  Kausapin ang Mananahi            her first conversation
+    5  Tulungan ang Mananahi sa         the same game as sewing, at her
+       pananahi (n/2)                   tahian; after the second round
+                                        she stops him and sends him
+                                        with the costumes
+    6  Ihatid ang mga damit sa          the direktor's gift button; done
+       direktor                         when Macario agrees to act
     7  Gumanap bilang Don Rodrigo sa    the play and its fight; 79 to
        dula                             110 barya
-    8  Kunin ang bayad sa Mananahi      her gift button, 50 barya
-    9  Ibigay kay Nanay ang naipon      Nanay's gift (n/100); then a
-                                        black card, four years on
-   10  Gumanap bilang Principe          the play, and the Katipunan's
+    8  Ibigay kay Nanay ang naipon      Nanay's gift (n/100), offered
+                                        once the play is done and he
+                                        holds 100; then a black card,
+                                        four years on
+    9  Gumanap bilang Principe          the play, and the Katipunan's
        Baldovino                        two men in the wings asking
                                         whether he is sure
-   11  Hanapin ang naghihintay sa       the password to the Kasama,
+   10  Hanapin ang naghihintay sa       the password to the Kasama,
        kalye                            x 12500
-   12  Sumapi sa Katipunan              the oath in the pulungan
-   13  Ipamigay ang mga polyeto (n/3)   out the back door, past three
+   11  Sumapi sa Katipunan              the oath in the pulungan
+   12  Ipamigay ang mga polyeto (n/3)   out the back door, past three
                                         guardia civil: the mangingisda,
                                         the tabakera, the karpintero;
                                         the third ends the act and the
@@ -110,9 +116,9 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v53    js/game.js v86       js/shell.js v19
+    css/style.css v54    js/game.js v87       js/shell.js v19
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v60  content/items.js v13  content/act2-4.js v1
+    content/act1.js v61  content/items.js v13  content/act2-4.js v1
     content/enemies.js v2   content/questions.js v1
     js/asset-manifest.js v3 (bumped by make-asset-manifest.js)
     ASSET_VERSION 30 (in js/game.js)
@@ -297,7 +303,7 @@ What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS) The
 framework is complete. Act I is playable from the opening to its end,
-thirteen objectives on one street, in the entablado and in the
+twelve objectives on one street, in the entablado and in the
 pulungan, and completes into its post-test (Block 80). Acts II to IV are
 registered stubs.
 
@@ -321,7 +327,7 @@ The paper specifies seventeen.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest for a quick look. A student can change the password in settings |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I playable to its end, thirteen objectives, completing into its post-test; Acts II to IV are stubs |
+| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I playable to its end, twelve objectives, completing into its post-test; Acts II to IV are stubs |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
 | Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships the play's fight (four soldiers, real walk and sword art); the Test Room's guards can be punched or shot down |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. The story's Act I has no stealth section yet; the Test Room shows all of it |
@@ -462,6 +468,8 @@ machine, the assessment module.
         portraits as busts
     88  one template for everything that fights: decide, tell, strike
         fast; transparent busts
+    89  Act I's work is there to be done: the horse and the sewing as
+        one repeatable game, the Mananahi stopping him as the one script
 
 ## Blocks remaining
 

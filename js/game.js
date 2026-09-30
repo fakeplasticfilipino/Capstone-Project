@@ -2198,6 +2198,8 @@ function canGiveGift(npc) {
   if (!gift) return false;
   if (!state.flags[gift.requiresFlag]) return false;
   if (state.flags[gift.givenFlag]) return false;
+  // Block 89. A gift that is money waits until he has it.
+  if (gift.requiresCurrency && currency < gift.requiresCurrency) return false;
   return true;
 }
 
@@ -5333,6 +5335,146 @@ function moveDecoration(id, toX, pxPerSecond) {
       requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
+  });
+}
+
+// ---- Work ---------------------------------------------------------
+//
+// Block 89. The one mini-game for every job a student can do again and
+// again (grooming the horse, sewing): a marker sweeps a bar, a green
+// patch waits at a new place each stroke, and pressing the button, E,
+// Space, Enter or the bar itself is a stroke. Resolves with how many
+// were good out of opts.rounds, or -1 if he walked away before the last.
+// Content names the words (title, hint, verb, doneText) and decides what
+// the strokes are worth; this only plays them.
+const WORK_ROUNDS = 5;
+const WORK_ZONE = 0.26;        // the good part of the bar, as a fraction of it
+const WORK_SWEEP_MS = 1000;    // one pass across, at the start
+const WORK_SWEEP_STEP = 90;    // quicker by this much with each stroke
+const WORK_SWEEP_MIN_MS = 560;
+
+function playWorkGame(opts) {
+  const o = opts || {};
+  const screen = document.getElementById("work-screen");
+  if (!screen || !screen.classList.contains("hidden")) return Promise.resolve(-1);
+  const titleEl = document.getElementById("work-title");
+  const hintEl = document.getElementById("work-hint");
+  const barEl = document.getElementById("work-bar");
+  const zoneEl = document.getElementById("work-zone");
+  const markerEl = document.getElementById("work-marker");
+  const resultEl = document.getElementById("work-result");
+  const hitBtn = document.getElementById("work-hit");
+  const stopBtn = document.getElementById("work-stop");
+
+  return new Promise((resolve) => {
+    const rounds = Math.max(1, Math.floor(Number(o.rounds) || WORK_ROUNDS));
+    const openedAt = performance.now();
+    let stroke = 0;
+    let good = 0;
+    let pos = 0;
+    let dir = 1;
+    let zoneAt = 0;
+    let last = 0;
+    let raf = 0;
+    let closed = false;
+    let over = false;
+
+    function setResult(text, cls) {
+      resultEl.textContent = text || "";
+      resultEl.className = "shell-sub" + (cls ? " " + cls : "");
+    }
+
+    function newZone() {
+      zoneAt = 0.08 + Math.random() * (0.84 - WORK_ZONE);
+      zoneEl.style.left = zoneAt * 100 + "%";
+      zoneEl.style.width = WORK_ZONE * 100 + "%";
+    }
+
+    function sweepMs() {
+      return Math.max(WORK_SWEEP_MIN_MS, WORK_SWEEP_MS - stroke * WORK_SWEEP_STEP);
+    }
+
+    function tick(now) {
+      if (closed) return;
+      const dt = last ? Math.min(now - last, 50) : 16;
+      last = now;
+      if (!over) {
+        pos += dir * dt / sweepMs();
+        if (pos >= 1) { pos = 1; dir = -1; }
+        if (pos <= 0) { pos = 0; dir = 1; }
+        markerEl.style.left = pos * 100 + "%";
+      }
+      raf = requestAnimationFrame(tick);
+    }
+
+    function strike() {
+      if (over) return;
+      const hit = pos >= zoneAt && pos <= zoneAt + WORK_ZONE;
+      stroke++;
+      if (hit) good++;
+      playSfx(hit ? "catch" : "miss");
+      setResult(hit ? (o.hitText || "Magaling!") : (o.missText || "Sablay!"), hit ? "work-hit" : "work-miss");
+      if (stroke >= rounds) {
+        over = true;
+        const text = typeof o.doneText === "function" ? o.doneText(good, rounds) : o.doneText;
+        hintEl.textContent = text || "Tapos na!";
+        setLabel(hitBtn, "Tapos na");
+      } else {
+        hintEl.textContent = (o.hint || "") + "  ·  " + stroke + "/" + rounds;
+        newZone();
+      }
+    }
+
+    function press() {
+      if (over) close(); else strike();
+    }
+
+    function close() {
+      if (closed) return;
+      closed = true;
+      cancelAnimationFrame(raf);
+      window.removeEventListener("keydown", onKeyDown, true);
+      barEl.onpointerdown = null;
+      hitBtn.onclick = null;
+      stopBtn.onclick = null;
+      screen.classList.add("hidden");
+      setUiBlocked(false);
+      resolve(over ? good : -1);
+    }
+
+    // In the capture phase and stopped there, as the catch game does, so
+    // the world does not also act on the key. The E that closed the
+    // conversation opening this is older than openedAt and is ignored.
+    function onKeyDown(e) {
+      const key = (e.key || "").toLowerCase();
+      if (key === "escape") {
+        e.preventDefault(); e.stopPropagation();
+        close();
+      } else if (key === "e" || key === " " || key === "enter") {
+        e.preventDefault(); e.stopPropagation();
+        if (!e.repeat && e.timeStamp >= openedAt) press();
+      } else if (key === "a" || key === "d" || key === "arrowleft" || key === "arrowright") {
+        e.stopPropagation();
+      }
+    }
+
+    titleEl.textContent = o.title || "";
+    hintEl.textContent = (o.hint || "") + "  ·  0/" + rounds;
+    setResult("", "");
+    setLabel(hitBtn, o.verb || "Sige");
+    setLabel(stopBtn, "Bumalik");
+    hitBtn.onclick = press;
+    stopBtn.onclick = close;
+    barEl.onpointerdown = (e) => { e.preventDefault(); press(); };
+    window.addEventListener("keydown", onKeyDown, true);
+
+    setUiBlocked(true);
+    keysPressed["a"] = false;
+    keysPressed["d"] = false;
+    newZone();
+    markerEl.style.left = "0%";
+    screen.classList.remove("hidden");
+    raf = requestAnimationFrame(tick);
   });
 }
 

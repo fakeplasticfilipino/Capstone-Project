@@ -3343,7 +3343,8 @@ body.text-lg #dialogue-text { font-size: 27px; }
    the top, one apple and a basket. The buttons take the shell's own
    styles (and so its 44px on glass). Sizes the engine reads are marked;
    change them together with their constants in game.js. */
-#catch-screen {
+#catch-screen,
+#work-screen {
   position: fixed;
   inset: 0;
   z-index: 90;
@@ -3355,11 +3356,13 @@ body.text-lg #dialogue-text { font-size: 27px; }
   background: rgba(18, 12, 7, 0.72);
 }
 
-#catch-screen.hidden {
+#catch-screen.hidden,
+#work-screen.hidden {
   display: none;
 }
 
-#catch-box {
+#catch-box,
+#work-box {
   width: min(92vw, 560px);
   background: var(--px-panel);
   border: 3px solid var(--px-edge);
@@ -3369,12 +3372,15 @@ body.text-lg #dialogue-text { font-size: 27px; }
   text-align: center;
 }
 
-#catch-title {
+#catch-title,
+#work-title {
   margin: 0 0 4px;
 }
 
 #catch-hint,
-#catch-result {
+#catch-result,
+#work-hint,
+#work-result {
   color: var(--c-cream);
   margin: 0 0 8px;
   min-height: 1.25em;
@@ -3460,12 +3466,14 @@ body.text-lg #dialogue-text { font-size: 27px; }
   will-change: transform;
 }
 
-#catch-actions {
+#catch-actions,
+#work-actions {
   display: flex;
   gap: 10px;
 }
 
-#catch-actions .shell-btn {
+#catch-actions .shell-btn,
+#work-actions .shell-btn {
   flex: 1;
 }
 
@@ -4017,3 +4025,39 @@ body.text-lg .notebook-entry-text { font-size: 22px; }
   background-repeat: no-repeat;
   filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.45));
 }
+
+/* Block 89. The work mini-game's bar (game.js, playWorkGame): a marker
+   that sweeps, and the green patch it has to be over when the button is
+   pressed. Both are placed by left in percent, so the bar's width is
+   never read. */
+#work-bar {
+  position: relative;
+  height: 46px;
+  margin: 0 0 8px;
+  background: #3a2a1a;
+  border: 3px solid var(--px-ink);
+  overflow: hidden;
+  touch-action: none;
+  cursor: pointer;
+}
+
+#work-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--px-green-hi);
+  opacity: 0.85;
+}
+
+#work-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  margin-left: -3px;
+  background: #fffbe8;
+  box-shadow: 0 0 0 2px var(--px-ink);
+}
+
+#work-result.work-hit { color: var(--px-green-hi); }
+#work-result.work-miss { color: #ffb4b4; }

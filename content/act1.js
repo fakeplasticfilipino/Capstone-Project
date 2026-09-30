@@ -16,11 +16,13 @@
 //   she stays for the rest of the act. There she tells him the money
 //   went on the cedula; he says he will work, and wonders where.
 //
-//   The Kutsero gives him work: three apples from the tree up the road
-//   (a mini-game, game.js, playCatchGame), fed to the white horse, and
-//   50 barya. Then the Mananahi: three finished orders, to Aling Rosa,
-//   to Mang Tomas, and last to the direktor at the far end of the
-//   street, whose are the costumes for tonight's play.
+//   Block 89: nothing is staged but the turns. The Kutsero and the
+//   Mananahi each give him work that is simply there afterwards: the
+//   horse to groom, the sewing to help with, each a game he can do again
+//   for four to seven barya a round, up to 25 from each. The one thing
+//   that is scripted is the Mananahi stopping him at the sewing to send
+//   him to the direktor at the far end of the street with the costumes
+//   for tonight's play.
 //
 //   The direktor's lead actor has not come; he is sick, and the seats
 //   are full. The costume fits Macario, so the direktor begs him to
@@ -166,10 +168,6 @@ const STREET_SPOT = 900;      // Macario, for the opening
 const NANAY_X = 2000;         // where she and Macario walk to, and stay
 const KUTSERO_X = 3300;
 const KABAYO_X = 3560;
-// Block 69. The apple tree is the silhouette tree over the join at 5800
-// (a broadleaf, not a palm), so it needs no picture of its own: its
-// body is centred on the trunk.
-const PUNO_X = 5800 - 40;
 const MANANAHI_X = 6400;
 // Block 85. Where she waits after the first play, outside the entablado,
 // left of where Lumabas puts Macario (13480) and 200 clear of the join.
@@ -234,35 +232,62 @@ const BANTAYAN_WIDTH = 3 * PANEL; // 4350
 const BANTAYAN_START = 150;
 
 const SAVINGS_GOAL = 100;
-const JOB_PAY = 50; // each job pays this, once; the two make the savings
 
-// Three apples, one flag each, so the quest line can count them
-// (countFlags) and a student who stops at two keeps two.
-const APPLE_FLAGS = ["nakuhangMansanas1", "nakuhangMansanas2", "nakuhangMansanas3"];
+// Block 89. The two jobs are things that are there, not steps: the horse
+// to groom and the sewing to help with, each a round of the work game
+// (game.js, playWorkGame) that pays JOB_PAY_MIN to JOB_PAY_MAX by how
+// many strokes were good, and stops paying at JOB_CAP from that job. With
+// the play's 79 to 110 the savings are reached by anyone who has done
+// three or four rounds.
+const JOB_PAY_MIN = 4;
+const JOB_PAY_MAX = 7;
+const JOB_CAP = 25;
+const JOB_ROUNDS = 5;
+const HORSE_JOB = {
+  earned: "kitaSaKutsero",
+  full: "punoNaAngKutsero",
+  first: "naalagaanAngKabayo",
+  title: "Kabayo",
+  hint: "Suklayin siya kapag nasa berde ang guhit.",
+  verb: "Suklayin",
+  hitText: "Hiiiii!",
+  missText: "Umiwas ang kabayo!",
+  giver: "Kutsero",
+  fullText: "Sapat na 'yan sa ngayon, Macario. Malinis na malinis na si Kabayo.",
+};
+const SEWING_JOB = {
+  earned: "kitaSaMananahi",
+  full: "punoNaAngMananahi",
+  first: "natulungangMananahi",
+  title: "Pananahi",
+  hint: "Tahiin kapag nasa berde ang guhit.",
+  verb: "Tahiin",
+  hitText: "Diretso ang tahi!",
+  missText: "Baluktot ang tahi!",
+  giver: "Mananahi",
+  fullText: "Sapat na ang natahi mo ngayon, iho. Bukas na ulit.",
+};
+// The sewing he does before the Mananahi stops him, counted in the quest
+// line (countFlags) and by the flags below.
+const SEWING_BEFORE_ERRAND = 2;
+const SEWING_FLAGS = ["natapusanNgTahi1", "natapusanNgTahi2"];
+const TAHIAN_X = 6400 + 140; // the sewing table, beside the Mananahi
 
-// Block 57, cut to two in Block 59. The Mananahi's customers on the
-// way, one table from which the people, the gifts and the flags are
-// derived. The direktor is the third delivery and the last,
-// and is written out on his own below, because his is where the story
-// turns. Names and lines are PLACEHOLDER. Mang Tomas wears the
-// Tindero's real sheet; Aling Rosa is a placeholder.
+// Block 57, cut to two in Block 59, and to scenery in Block 89. The
+// Mananahi's customers on the way: they wait, and say so. Names and
+// lines are PLACEHOLDER. Mang Tomas wears the Tindero's real sheet;
+// Aling Rosa is a placeholder.
 const CUSTOMERS = [
   { id: "aling-rosa", label: "Aling Rosa", x: 7800,
     animation: { src: "assets/sprites/characters/aling-rosa.png", frames: 1, fps: 1 },
-    waiting: "Hay naku, ang tagal naman ng baro ko. Pista pa naman bukas.",
-    thanks: "Ay, salamat, iho! Pakisabi sa Mananahi, ang ganda ng pagkakatahi.",
-    after: "Isusuot ko 'to bukas sa pista. Abangan mo ako, ha!" },
+    waiting: "Hay naku, ang tagal naman ng baro ko. Pista pa naman bukas." },
   { id: "mang-tomas", label: "Mang Tomas", x: 9300,
     animation: { src: "assets/sprites/characters/tindero.png", frames: 14, fps: 6, columns: 5,
                  contentTop: 69, contentHeight: 121, footX: 128 },
-    waiting: "Galing ka ba sa Mananahi? Kanina ko pa hinihintay 'yung pantalon ko.",
-    thanks: "Aba, sakto 'to sa akin. Salamat, bata.",
-    after: "Salamat ulit, bata. Ingat ka sa daan." },
+    waiting: "Galing ka ba sa Mananahi? Kanina ko pa hinihintay 'yung pantalon ko." },
 ];
-const customerFlag = (c) => "naihatidKay_" + c.id.replace(/-/g, "_");
+// The direktor's costumes are the one delivery, and the last.
 const DIREKTOR_FLAG = "naihatidKay_direktor";
-// All three deliveries, in the order the quest line counts them.
-const DELIVERY_FLAGS = [...CUSTOMERS.map(customerFlag), DIREKTOR_FLAG];
 
 // Block 80. The three who take the Katipunan's pamphlets, on the street
 // once Macario has been sworn in, in the order the Kasama names them and
@@ -808,70 +833,99 @@ async function thePamphletsDelivered() {
 }
 
 // -------------------------------------------------------------
-// The apples. The tree opens the mini-game only while the apples are
-// the task; any other time Macario just looks at it.
+// Block 89. The jobs. Both are the same activity with different words
+// (playWorkGame), repeatable until the giver has paid JOB_CAP. Nothing
+// here is a step of the story except the first round, which finishes the
+// quest line's step, and the Mananahi stopping him at the sewing.
 // -------------------------------------------------------------
-function applesHeld() {
-  return APPLE_FLAGS.filter((f) => state.flags[f]).length;
+function jobPay(good, earned) {
+  const pay = JOB_PAY_MIN + Math.round((JOB_PAY_MAX - JOB_PAY_MIN) * good / JOB_ROUNDS);
+  return Math.max(0, Math.min(pay, JOB_CAP - earned));
 }
 
-// Block 65. PLACEHOLDER. Once the horse is fed the tree is a game of its
-// own: thirty seconds, as many as he can catch, golden apples worth
-// three, and his best kept in a flag as a number (as Block 56 kept pay).
-// Nothing is paid and nothing waits on it.
-const APPLE_ROUND_MS = 30000;
-const APPLE_BEST_FLAG = "rekordSaMansanas";
-
-function appleRound() {
-  const best = Number(state.flags[APPLE_BEST_FLAG]) || 0;
-  playCatchGame({
-    title: "Puno ng mansanas",
-    hint: best ? "Ilan ang masasalo mo sa loob ng 30 segundo? Rekord mo: " + best + "."
-               : "Ilan ang masasalo mo sa loob ng 30 segundo?",
-    timeLimitMs: APPLE_ROUND_MS,
-    missText: "Sayang!",
+// One round. Returns how many barya it paid, or -1 if he left it.
+async function workAt(job) {
+  const earned = Number(state.flags[job.earned]) || 0;
+  if (earned >= JOB_CAP) {
+    await playDialogue([{ speaker: job.giver, text: job.fullText }]);
+    return -1;
+  }
+  let pay = 0;
+  const good = await playWorkGame({
+    title: job.title,
+    hint: job.hint,
+    verb: job.verb,
+    hitText: job.hitText,
+    missText: job.missText,
+    rounds: JOB_ROUNDS,
     doneText(n) {
-      if (n > best) {
-        state.flags[APPLE_BEST_FLAG] = n;
-        markDirty();
-        return best ? "Bagong rekord: " + n + "!" : "Nakasalo ka ng " + n + "!";
-      }
-      return "Nakasalo ka ng " + n + ". Rekord mo: " + best + ".";
+      pay = jobPay(n, earned);
+      return n + "/" + JOB_ROUNDS + " ang maayos. +" + pay + " barya";
     },
   });
+  if (good < 0) return -1;
+  Game.addCurrency(pay);
+  state.flags[job.earned] = earned + pay;
+  state.flags[job.first] = true;
+  if (earned + pay >= JOB_CAP) state.flags[job.full] = true;
+  markDirty();
+  showToast("+" + pay + " barya", 2200);
+  return pay;
 }
 
-function pickApples() {
-  if (state.flags.napakainAngKabayo) {
-    appleRound();
-    return;
-  }
+function thinkAloud(text) {
+  return playDialogue([{ speaker: "Macario (sa isip)", text }]);
+}
+
+function groomHorse() {
   if (!state.flags.nakausapAngKutsero) {
-    playDialogue([{ speaker: "Macario (sa isip)", text: "Ang daming bunga ng punong ito." }]);
+    thinkAloud("Kabayo ito ng Kutsero. Kausapin ko muna siya bago ko galawin.");
     return;
   }
-  if (applesHeld() >= APPLE_FLAGS.length) {
-    playDialogue([{ speaker: "Macario (sa isip)", text: "Tatlo na ang hawak ko. Dalhin ko na sa kabayo." }]);
-    return;
-  }
-  playCatchGame({
-    title: "Puno ng mansanas",
-    hint: "Saluhin ng basket ang mga nahuhulog na mansanas.",
-    goal: APPLE_FLAGS.length,
-    start: applesHeld(),
-    onCatch(n) {
-      state.flags[APPLE_FLAGS[n - 1]] = true;
-      markDirty(); // redraws the (n/3)
-      return "Nasalo mo! (" + n + "/" + APPLE_FLAGS.length + ")";
-    },
-    doneText: "Tatlo na! Dalhin mo na sa kabayo.",
-  });
+  workAt(HORSE_JOB);
 }
 
-// A job's pay: fixed, once, shown as a toast.
-function payForJob() {
-  Game.addCurrency(JOB_PAY);
-  showToast("+" + JOB_PAY + " barya", 2200);
+async function sew() {
+  if (!state.flags.nakausapAngMananahi) {
+    thinkAloud("Tahian ito ng Mananahi. Kausapin ko muna siya.");
+    return;
+  }
+  if (state.flags.mayDalangDamit && !state.flags.naihatidAngMgaDamit) {
+    thinkAloud("May dala akong damit para sa direktor. Ihahatid ko muna.");
+    return;
+  }
+  const pay = await workAt(SEWING_JOB);
+  if (pay < 0) return;
+  // Counted, so the first two rounds are the quest line's (n/2) and the
+  // second is when she stops him.
+  const rounds = (Number(state.flags.bilangNgTahi) || 0) + 1;
+  state.flags.bilangNgTahi = rounds;
+  if (rounds <= SEWING_FLAGS.length) state.flags[SEWING_FLAGS[rounds - 1]] = true;
+  if (rounds >= SEWING_BEFORE_ERRAND && !state.flags.tinawagAngMananahi) {
+    state.flags.tinawagAngMananahi = true;
+    markDirty();
+    setTimeout(() => runSceneScript(), 0);
+  }
+  markDirty();
+}
+
+// The one thing scripted about the work: she stops him at the sewing,
+// because the costumes for tonight were forgotten. PLACEHOLDER, every
+// line. The flag it sets is what lets the direktor take his delivery.
+async function mananahiStopsHim() {
+  setCutscene(true);
+  turnPlayer(-1);
+  await wait(300);
+  await playDialogue([
+    { speaker: "Mananahi", text: "Macario, teka! Ihinto mo muna 'yan." },
+    { speaker: "Macario", text: "Po? May mali po ba sa tahi ko?" },
+    { speaker: "Mananahi", text: "Wala, wala. Nakalimutan ko lang ang mas mahalaga." },
+    { speaker: "Mananahi", text: "'Yung mga damit ng direktor para sa palabas mamayang gabi. Kanina pa dapat nakarating 'yon." },
+    { speaker: "Mananahi", text: "Ikaw na ang magdala. Nasa dulo pa ng kalye ang entablado." },
+    { speaker: "Macario", text: "Sige po, ihahatid ko na ngayon." },
+    { speaker: "Mananahi", text: "Bilisan mo, ha. Huwag mong ibababa sa daan 'yan." },
+  ]);
+  setCutscene(false);
 }
 
 // ---- The Talaan ------------------------------------------------------
@@ -926,18 +980,16 @@ window.ACT_1 = {
       flag: "nagpasyangMagtrabaho" },
     { id: "kausapin_kutsero", label: "Maghanap ng trabaho: kausapin ang Kutsero",
       flag: "nakausapAngKutsero" },
-    { id: "pakainin_kabayo", label: "Kumuha ng tatlong mansanas at ipakain sa kabayo",
-      flag: "napakainAngKabayo", countFlags: APPLE_FLAGS },
-    { id: "bayad_kutsero", label: "Kunin ang bayad sa Kutsero",
-      flag: "nabayaranNgKutsero" },
+    { id: "alagaan_kabayo", label: "Alagaan ang kabayo ng Kutsero",
+      flag: HORSE_JOB.first },
     { id: "kausapin_mananahi", label: "Kausapin ang Mananahi",
       flag: "nakausapAngMananahi" },
-    { id: "ihatid_damit", label: "Ihatid ang mga tinahing damit",
-      flag: "naihatidAngMgaDamit", countFlags: DELIVERY_FLAGS },
+    { id: "tulungan_mananahi", label: "Tulungan ang Mananahi sa pananahi",
+      flag: "tinawagAngMananahi", countFlags: SEWING_FLAGS },
+    { id: "ihatid_damit", label: "Ihatid ang mga damit sa direktor",
+      flag: "naihatidAngMgaDamit" },
     { id: "gumanap_sa_dula", label: "Gumanap bilang Don Rodrigo sa dula",
       flag: "naitanghalAngDula" },
-    { id: "bayad_mananahi", label: "Kunin ang bayad sa Mananahi",
-      flag: "nabayaranNgMananahi" },
     { id: "mag_ipon", label: "Ibigay kay Nanay ang naipon",
       flag: "naibigayAngIponKayNanay", countCurrency: SAVINGS_GOAL },
     { id: "gumanap_baldovino", label: "Gumanap bilang Principe Baldovino",
@@ -967,10 +1019,6 @@ window.ACT_1 = {
 
   // The chain is the quest log, so there is nothing to add at the start.
   startingQuests: [],
-
-  // Block 68. Kept when the act is replayed after a failed post-test
-  // (acts.js, replayAct): the apple round's best score.
-  keepFlagsOnReplay: ["rekordSaMansanas"],
 
   // Block 70. The teacher's Talaan papers. The pool is empty here and
   // filled from the database; with no papers written, nothing lies on
@@ -1043,6 +1091,10 @@ window.ACT_1 = {
         // A reload after the talk with Nanay and before the thought.
         { requiresFlag: "nakausapSiNanaySaBahay", doneFlag: "nagpasyangMagtrabaho",
           x: NANAY_X - BESIDE, facing: 1, run: () => thinkingAboutWork(false) },
+        // Block 89. The Mananahi stops him at the sewing and sends him to
+        // the direktor. No x: he is where he was sewing.
+        { requiresFlag: "tinawagAngMananahi", unlessFlag: "naihatidAngMgaDamit", doneFlag: "mayDalangDamit",
+          run: mananahiStopsHim },
         // Block 59. The costumes handed over, and the direktor's lead
         // actor missing.
         { requiresFlag: DIREKTOR_FLAG, doneFlag: "naihatidAngMgaDamit",
@@ -1084,7 +1136,8 @@ window.ACT_1 = {
           ],
           gift: {
             buttonLabel: "Ibigay ang ipon",
-            requiresFlag: "nabayaranNgMananahi",
+            requiresFlag: "naitanghalAngDula",
+            requiresCurrency: SAVINGS_GOAL,
             givenFlag: "naibigayAngIponKayNanay",
             // The proponents' lines, with four of ours (PLACEHOLDER) after
             // the third, for the play Block 59 added.
@@ -1109,6 +1162,7 @@ window.ACT_1 = {
         },
         {
           id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: KUTSERO,
+          // Picked from the flags each time, not stepped through.
           dialogueSets: [
             {
               skipIfFlag: "nakausapAngKutsero",
@@ -1117,8 +1171,8 @@ window.ACT_1 = {
                 { speaker: "Kutsero", text: "Macario? Buti naman at naisipan mo magtrabaho" },
                 { speaker: "Macario", text: "Kailangan na 'ho eh, nangangailangan si Nanay" },
                 { speaker: "Kutsero", text: "O sige, magsimula ka na kaagad, alagaan mo yung puting kabayo kuwadra" },
-                // PLACEHOLDER. What the work is, for the new job.
-                { speaker: "Kutsero", text: "Gutom na 'yon. May puno ng mansanas diyan sa unahan. Kumuha ka ng tatlo, tapos ipakain mo sa kanya." },
+                // PLACEHOLDER. What the work is, and that it pays each time.
+                { speaker: "Kutsero", text: "Suklayin mo siya. Bawat linis na matapos mo, may bayad ka sa akin." },
               ],
               onComplete() {
                 state.flags.nakausapAngKutsero = true;
@@ -1126,93 +1180,59 @@ window.ACT_1 = {
               },
             },
             {
-              // PLACEHOLDER. While the apples are the task.
-              skipIfFlag: "napakainAngKabayo",
+              // PLACEHOLDER. Before the first grooming.
+              requiresFlag: "nakausapAngKutsero",
+              skipIfFlag: "naalagaanAngKabayo",
               lines: [
-                { speaker: "Kutsero", text: "Nasa unahan lang ang puno. Tatlong mansanas, ha." },
+                { speaker: "Kutsero", text: "Nariyan lang si Kabayo. Suklayin mo, may barya ka sa bawat linis." },
               ],
             },
             {
-              // PLACEHOLDER. The horse is fed; the pay is his gift button.
-              skipIfFlag: "nabayaranNgKutsero",
+              // PLACEHOLDER. While there is more to earn.
+              requiresFlag: "nakausapAngKutsero",
+              skipIfFlag: HORSE_JOB.full,
               lines: [
-                { speaker: "Kutsero", text: "Aba, busog na busog na siya! Halika, may bayad ka sa akin." },
+                { speaker: "Kutsero", text: "Ang ganda ng trabaho mo. Balik ka lang kung gusto mo pa ng dagdag na barya." },
               ],
             },
             {
-              // PLACEHOLDER. Afterwards.
+              // PLACEHOLDER. Paid all he will pay.
               lines: [
-                { speaker: "Kutsero", text: "Salamat, Macario. Balik ka lang kung kailangan mo pa ng trabaho." },
+                { speaker: "Kutsero", text: HORSE_JOB.fullText },
               ],
             },
           ],
-          gift: {
-            buttonLabel: "Kunin ang bayad",
-            requiresFlag: "napakainAngKabayo",
-            givenFlag: "nabayaranNgKutsero",
-            // PLACEHOLDER.
-            responseLines: [
-              { speaker: "Kutsero", text: "Heto ang limampung barya. Pinaghirapan mo 'yan." },
-              { speaker: "Macario", text: "Maraming salamat po!" },
-            ],
-            onComplete: payForJob,
-          },
         },
         {
-          // The white horse, beside the Kutsero, and the one he is fed to.
+          // The white horse, beside the Kutsero: something to use rather
+          // than someone to talk to (Block 89).
           id: "kabayo", x: KABAYO_X, label: "Kabayo", animation: KABAYO,
           displayHeight: 120,
           nearSound: "assets/audio/sfx/horse.mp3",
-          dialogueSets: [
-            {
-              // PLACEHOLDER.
-              lines: [
-                { speaker: "Kabayo", text: "Hiiiii!" },
-              ],
-            },
-          ],
-          gift: {
-            buttonLabel: "Ipakain ang mansanas",
-            requiresFlag: "nakuhangMansanas3",
-            givenFlag: "napakainAngKabayo",
-            // PLACEHOLDER.
-            responseLines: [
-              { speaker: "Macario", text: "Heto na, kaibigan. Dahan-dahan lang, ha." },
-              { speaker: "Kabayo", text: "Hiiiii!" },
-            ],
-          },
+          interactLabel: "Suklayin",
+          dialogueSets: [],
+          onInteract: groomHorse,
         },
         {
-          // Block 57. Something to use rather than someone to talk to:
-          // E opens the apple mini-game (onInteract). Block 69: scenery,
-          // with no picture; the shadow tree over the join is the tree.
-          id: "puno", x: PUNO_X, label: "Puno ng mansanas", scenery: true,
-          interactLabel: "Pumitas",
+          // The Mananahi's sewing, beside her: scenery with no picture,
+          // only a body to reach (Block 69), used with E (Block 89).
+          id: "tahian", x: TAHIAN_X, label: "Tahian", scenery: true,
+          interactLabel: "Manahi",
           dialogueSets: [],
-          onInteract: pickApples,
+          onInteract: sew,
         },
         {
           id: "mananahi", x: MANANAHI_X, label: "Mananahi", animation: MANANAHI,
           dialogueSets: [
             {
-              // PLACEHOLDER. Before the Kutsero's job is done.
-              skipIfFlag: "nabayaranNgKutsero",
-              lines: [
-                { speaker: "Mananahi", text: "O, Macario. Naghahanap ka raw ng trabaho? Unahin mo muna 'yung sa Kutsero, tapos balikan mo ako. Baka may maipagawa ako sa'yo." },
-              ],
-            },
-            {
-              requiresFlag: "nabayaranNgKutsero",
               skipIfFlag: "nakausapAngMananahi",
               lines: [
                 { speaker: "Macario", text: "Mananahi, tumatanggap ba kayo ng trabahador?" },
                 { speaker: "Mananahi", text: "Oo naman Macario, kamusta na ang inay mo?" },
                 { speaker: "Macario", text: "Okay lang 'ho, nangangailangan kami ng pera ngayon" },
                 { speaker: "Mananahi", text: "O sige sige, tara dito" },
-                // PLACEHOLDER. What the work is.
-                { speaker: "Mananahi", text: "May tatlong tahi akong tapos na. 'Yung baro ni Aling Rosa, 'yung pantalon ni Mang Tomas, at 'yung mga damit ng direktor para sa palabas mamayang gabi." },
-                { speaker: "Mananahi", text: "Kina Aling Rosa at Mang Tomas ka muna, madadaanan mo naman sila. Nasa dulo pa ng kalye 'yung entablado, kaya sa direktor ka na huling pumunta." },
-                { speaker: "Macario", text: "Sige po, ihahatid ko na ngayon." },
+                // PLACEHOLDER. What the work is, and that it pays each time.
+                { speaker: "Mananahi", text: "Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ang bawat matapos mo." },
               ],
               onComplete() {
                 state.flags.nakausapAngMananahi = true;
@@ -1220,10 +1240,18 @@ window.ACT_1 = {
               },
             },
             {
-              // PLACEHOLDER. While there are clothes still to deliver.
+              // PLACEHOLDER. Sent with the costumes, not yet delivered.
+              requiresFlag: "mayDalangDamit",
               skipIfFlag: "naihatidAngMgaDamit",
               lines: [
-                { speaker: "Mananahi", text: "O, may bitbit ka pa? Ihatid mo na, baka hinahanap na nila." },
+                { speaker: "Mananahi", text: "Ihatid mo na 'yung damit ng direktor, baka hinahanap na nila." },
+              ],
+            },
+            {
+              // PLACEHOLDER. While there is sewing to do.
+              skipIfFlag: "mayDalangDamit",
+              lines: [
+                { speaker: "Mananahi", text: "Nariyan ang tahian, kung gusto mo pa ng dagdag na barya." },
               ],
             },
             {
@@ -1248,77 +1276,43 @@ window.ACT_1 = {
         },
         {
           // Block 85. The Mananahi after the first play, outside the
-          // entablado: she came to watch the costume she sewed. Her pay
-          // is here, and she has seen it herself rather than heard it.
+          // entablado: she came to watch the costume she sewed, and has
+          // seen it herself rather than heard it. She no longer pays
+          // (Block 89): the work paid each time.
           id: "mananahi-sa-entablado", x: MANANAHI_AT_PLAY_X, label: "Mananahi", animation: MANANAHI,
           startsHidden: true, revealedByFlag: "naitanghalAngDula", hiddenByFlag: "lumipasAngApatNaTaon",
           dialogueSets: [
             {
-              // PLACEHOLDER. After the play; the pay is her gift button.
-              skipIfFlag: "nabayaranNgMananahi",
+              // PLACEHOLDER. After the play.
               lines: [
                 { speaker: "Mananahi", text: "Macario! Nanood ako sa likod. Ikaw pala ang bumida!" },
                 { speaker: "Macario", text: "Nawala po kasi 'yung artista nila. Ako na lang po ang pinagsuot ng damit." },
                 { speaker: "Mananahi", text: "Aba, e 'di ikaw pala ang unang nagsuot ng tinahi ko! Kasya ba?" },
                 { speaker: "Macario", text: "Kasyang-kasya po." },
-                { speaker: "Mananahi", text: "Sabi ko na nga ba. Halika, kunin mo na ang bayad mo." },
+                { speaker: "Mananahi", text: "Sabi ko na nga ba." },
               ],
             },
             {
-              // PLACEHOLDER. Paid, before the savings are given.
+              // PLACEHOLDER. Afterwards, before the savings are given.
               lines: [
-                { speaker: "Mananahi", text: "Iuwi mo na 'yan sa nanay mo. Matutuwa 'yon." },
+                { speaker: "Mananahi", text: "Iuwi mo na 'yang naipon mo sa nanay mo. Matutuwa 'yon." },
               ],
             },
           ],
-          gift: {
-            buttonLabel: "Kunin ang bayad",
-            requiresFlag: "naitanghalAngDula",
-            givenFlag: "nabayaranNgMananahi",
-            // PLACEHOLDER.
-            responseLines: [
-              { speaker: "Mananahi", text: "Heto ang limampung barya. Salamat, Macario, malaking tulong ka." },
-              { speaker: "Macario", text: "Salamat din po!" },
-            ],
-            onComplete: payForJob,
-          },
         },
         // The two customers on the way (CUSTOMERS, above).
         ...CUSTOMERS.map((c) => ({
           id: c.id, x: c.x, label: c.label, animation: c.animation,
-          dialogueSets: [
-            { skipIfFlag: customerFlag(c),
-              lines: [{ speaker: c.label, text: c.waiting }] },
-            { lines: [{ speaker: c.label, text: c.after }] },
-          ],
-          gift: {
-            buttonLabel: "Iabot ang damit",
-            requiresFlag: "nakausapAngMananahi",
-            givenFlag: customerFlag(c),
-            responseLines: [
-              { speaker: "Macario", text: "Magandang araw po! Padala po ng Mananahi." },
-              { speaker: c.label, text: c.thanks },
-            ],
-            // Counted from the flags, so the order of the two does not
-            // matter and a reload cannot miscount. Both done is what lets
-            // the direktor take his.
-            onComplete() {
-              if (CUSTOMERS.every((x) => state.flags[customerFlag(x)])) {
-                state.flags.naihatidSaDalawangSuki = true;
-              }
-              markDirty();
-            },
-          },
+          dialogueSets: [{ lines: [{ speaker: c.label, text: c.waiting }] }],
         })),
         {
-          // The direktor, on the street by the entablado: the last of the
-          // three deliveries (Block 59). PLACEHOLDER, every line.
+          // The direktor, on the street by the entablado: the one
+          // delivery, and the story's turn (Block 59). PLACEHOLDER,
+          // every line.
           id: "direktor", x: DIREKTOR_X, label: "Direktor", animation: DIREKTOR,
           // With a requiresFlag among them, the set is picked from the
           // flags each time (CLAUDE.md, Block 48), so the one that takes
-          // him inside comes first: an old save whose deliveries were
-          // all done under Block 57 has none of this block's flags for
-          // the two customers, and must still be taken in.
+          // him inside comes first.
           dialogueSets: [
             {
               // Macario said yes, and a reload or an old save left him on
@@ -1333,21 +1327,15 @@ window.ACT_1 = {
               },
             },
             {
-              // Before the Mananahi's errand.
-              skipIfFlag: "nakausapAngMananahi",
+              // Before the Mananahi has sent him.
+              skipIfFlag: "mayDalangDamit",
               lines: [
                 { speaker: "Direktor", text: "Pasensya na, iho, abala kami. Mamayang gabi na ang palabas at ang dami pang kulang." },
               ],
             },
             {
-              // The errand, with the other two not yet delivered.
-              skipIfFlag: "naihatidSaDalawangSuki",
-              lines: [
-                { speaker: "Direktor", text: "Galing ka sa Mananahi? Mamaya ko pa kailangan 'yang mga damit namin, iho. Ihatid mo muna 'yung sa iba, baka sila ang naiinip na." },
-              ],
-            },
-            {
-              // Ready for his; the costumes are his gift button.
+              // Sent, with the costumes still on him; they are his gift
+              // button.
               skipIfFlag: DIREKTOR_FLAG,
               lines: [
                 { speaker: "Direktor", text: "Ikaw 'yung bata ng Mananahi, 'di ba? Dala mo na ba ang mga damit namin?" },
@@ -1369,7 +1357,7 @@ window.ACT_1 = {
           ],
           gift: {
             buttonLabel: "Iabot ang damit",
-            requiresFlag: "naihatidSaDalawangSuki",
+            requiresFlag: "mayDalangDamit",
             givenFlag: DIREKTOR_FLAG,
             responseLines: [
               { speaker: "Macario", text: "Magandang hapon po. Padala po ng Mananahi, 'yung mga damit para sa palabas." },

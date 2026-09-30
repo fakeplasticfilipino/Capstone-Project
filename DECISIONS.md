@@ -3437,3 +3437,49 @@ the box with a fade at its bottom edge, PORTRAIT_HEIGHT 400 cropped to
 a 170 by 200 window.
 
 game.js v86, style.css v53. test.js 757, verify_new_scene.js 201.
+
+## Block 89: the work is there to be done
+
+Act I was a chain of staged errands: three apples, feed the horse, be
+paid once; three deliveries; be paid once. Each step had one way to
+happen and one moment to happen in. The proponent asked for the
+opposite philosophy: a quest, and the things are simply there.
+
+The Kutsero and the Mananahi now each give work that is available at
+any time afterwards, as often as the student likes: the horse (E on
+Kabayo, Suklayin) and the sewing (E on the tahian, a scenery body beside
+the Mananahi). Both are one game, playWorkGame: a marker sweeps a bar,
+a green patch waits at a new place, five strokes are a round. A round
+pays JOB_PAY_MIN to JOB_PAY_MAX (4 to 7) by how many strokes were good,
+and each job stops paying at JOB_CAP (25); the last round is cut to what
+is left. Leaving before the fifth stroke pays nothing. The first round
+finishes the quest line's step and nothing else waits on it. The pay
+and the cap are in flags (kitaSaKutsero, kitaSaMananahi), not "__"
+flags, so a replay after a failed post-test starts them again; the
+alternative left a student who replayed with no way to reach 100.
+
+The one script is the Mananahi stopping him at the sewing. After the
+second round (the quest line counts it, n/2) she stops him and sends him
+with the direktor's costumes; that sets mayDalangDamit, which is what
+offers the direktor's gift and closes the sewing until it is delivered.
+The script has an unlessFlag on the delivery: the objective chain marks
+an earlier step done by setting its flag, so a save that jumped ahead
+would otherwise have replayed her.
+
+Cut: the apples and the tree, the horse's feeding, both paydays (the
+Mananahi's second pay at the play with them), and Aling Rosa's and Mang
+Tomas's deliveries. The two remain on the street as customers still
+waiting, one line each. Thirteen objectives became twelve. Everything
+above is content; the engine gained playWorkGame and one field on a
+gift, requiresCurrency, because the savings step is no longer certain to
+be affordable: the play pays 79 to 110 and the jobs at most 50, so a
+student short of 100 goes back to the horse or the sewing instead of
+handing Nanay less. Nanay's button waits for the money.
+
+Money on the way, for balancing: Kutsero 25 at most, Mananahi 25, the
+play 79 to 110, so 100 is reached by anyone who has done three or four
+rounds. The numbers are chosen, not tested on students.
+
+Not built: a job that gets harder, a job that ends the day, more than two
+jobs, an apple-catching return. game.js v87, style.css v54, act1.js v61.
+test.js 761, verify_new_scene.js 197.

@@ -6145,6 +6145,48 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nBO. The work game and a gift that costs (Block 89)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const r = await page.evaluate(async () => {
+      const wait = (ms) => new Promise((res) => setTimeout(res, ms));
+      const out = {};
+      // Leaving early pays nothing: -1, and the world is his again.
+      let result = null;
+      playWorkGame({ title: "Pagsubok", hint: "x", verb: "Sige", rounds: 3 }).then((n) => { result = n; });
+      await wait(100);
+      out.up = !document.getElementById("work-screen").classList.contains("hidden");
+      out.blocked = uiBlocked;
+      out.title = document.getElementById("work-title").textContent;
+      document.getElementById("work-stop").click();
+      await wait(60);
+      out.early = result;
+      out.free = !uiBlocked;
+      // Three strokes end it, and it resolves with the good ones.
+      result = null;
+      playWorkGame({ title: "Pagsubok", hint: "x", verb: "Sige", rounds: 3 }).then((n) => { result = n; });
+      await wait(100);
+      for (let i = 0; i < 3; i++) document.getElementById("work-hit").click();
+      out.label = document.querySelector("#work-hit .lbl").textContent;
+      document.getElementById("work-hit").click();
+      await wait(60);
+      out.done = result;
+      // A gift that asks for money is not offered until he has it.
+      const npc = { gift: { requiresFlag: "f", givenFlag: "g", requiresCurrency: 100 } };
+      state.flags.f = true; state.flags.g = false;
+      currency = 99;
+      out.poor = canGiveGift(npc);
+      currency = 100;
+      out.rich = canGiveGift(npc);
+      return out;
+    });
+    ok("the work game opens, blocks the world and takes its title", r.up && r.blocked && r.title === "Pagsubok", r);
+    ok("leaving before the last stroke resolves -1 and frees him", r.early === -1 && r.free, r);
+    ok("the last stroke turns the button to Tapos na, and closing resolves with the good ones", r.label === "Tapos na" && r.done >= 0 && r.done <= 3, r);
+    ok("a gift that asks for barya waits until he holds them", r.poor === false && r.rich === true, r);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

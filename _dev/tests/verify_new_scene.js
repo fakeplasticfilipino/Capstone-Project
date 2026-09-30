@@ -253,12 +253,11 @@ const NANAY_THANKS_OWN = [
 ];
 const STEP = {
   kutsero: "Maghanap ng trabaho: kausapin ang Kutsero",
-  apples: "Kumuha ng tatlong mansanas at ipakain sa kabayo",
-  payK: "Kunin ang bayad sa Kutsero",
+  groom: "Alagaan ang kabayo ng Kutsero",
   mananahi: "Kausapin ang Mananahi",
-  clothes: "Ihatid ang mga tinahing damit",
+  sew: "Tulungan ang Mananahi sa pananahi",
+  clothes: "Ihatid ang mga damit sa direktor",
   play: "Gumanap bilang Don Rodrigo sa dula",
-  payM: "Kunin ang bayad sa Mananahi",
   nanay: "Ibigay kay Nanay ang naipon",
   // Block 80.
   baldovino: "Gumanap bilang Principe Baldovino",
@@ -304,6 +303,42 @@ const catchState = (page) => page.evaluate(() => {
     result: document.getElementById("catch-result").textContent,
     stop: document.querySelector("#catch-stop .lbl").textContent };
 });
+// Block 89. The work game as drawn, and one stroke of it: waits, inside
+// the page, for the marker to be over the green patch (or clear of it)
+// and presses E at that moment, so the timing is the game's own.
+const workState = (page) => page.evaluate(() => ({
+  up: !document.getElementById("work-screen").classList.contains("hidden"),
+  title: document.getElementById("work-title").textContent,
+  hint: document.getElementById("work-hint").textContent,
+  result: document.getElementById("work-result").textContent,
+  hitLabel: document.querySelector("#work-hit .lbl").textContent,
+}));
+const workStroke = (page, wantHit) => page.evaluate((wantHit) => new Promise((resolve) => {
+  const zone = document.getElementById("work-zone");
+  const marker = document.getElementById("work-marker");
+  const tick = () => {
+    const z0 = parseFloat(zone.style.left);
+    const z1 = z0 + parseFloat(zone.style.width);
+    const m = parseFloat(marker.style.left);
+    const inside = m >= z0 + 3 && m <= z1 - 3;
+    const outside = m < z0 - 3 || m > z1 + 3;
+    if (wantHit ? inside : outside) {
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "e", bubbles: true }));
+      resolve(true);
+      return;
+    }
+    requestAnimationFrame(tick);
+  };
+  tick();
+}), wantHit);
+const workRound = async (page, wantHit) => {
+  for (let i = 0; i < 5; i++) await workStroke(page, wantHit);
+  const done = await workState(page);
+  await page.click("#work-hit");
+  await page.waitForTimeout(200);
+  return done;
+};
+
 // Steers the basket with the real keys, under the apple (catch) or away
 // from it (miss), until that apple is gone.
 const playApple = async (page, wantCatch) => {
@@ -433,8 +468,8 @@ const artDrift = () => {
   });
   ok("every picture in the manifest opens in the browser (" + opened.count + ")",
      opened.count > 20 && opened.bad.length === 0, opened.bad);
-  ok("Act I has thirteen objectives, pays no barya per step, and is no longer held open (Block 80)",
-     await page.evaluate(() => Acts.objectivesFor(1).length === 13 && Acts.perObjective(2) === 0 &&
+  ok("Act I has twelve objectives, pays no barya per step, and is no longer held open (Block 80)",
+     await page.evaluate(() => Acts.objectivesFor(1).length === 12 && Acts.perObjective(2) === 0 &&
        !ACT_1.holdOpen));
   ok("one street, the entablado, the pulungan (Block 80) and the guards' room, and no other scene", await page.evaluate(() =>
     JSON.stringify(SCENES.map((s) => s.id)) === '["tondo","entablado","pulungan","bantayan"]' &&
@@ -507,6 +542,8 @@ const artDrift = () => {
       if (!scriptWalking && seen.walking) break;
       await new Promise((r) => setTimeout(r, 80));
     }
+    // He may arrive first: where the fight left him decides who has the longer walk.
+    await new Promise((r) => setTimeout(r, 600));
     const nanay = currentScene.decorations.find((d) => d.id === "nanay");
     return { walking: seen.walking, anim: [...seen.anim], from: seen.xs[0], to: posX, facing,
       nanayAt: nanay.currentX, scene: currentSceneId,
@@ -712,95 +749,96 @@ const artDrift = () => {
      await page.evaluate(() => Acts.countDone(1) === 1), { before: storyBefore, after: back.story });
 
   // ---------------------------------------------------------------
-  console.log("\nThe Kutsero's job: apples, the horse, the pay");
+  console.log("\nThe Kutsero's job: a horse to groom, again and again (Block 89)");
   await walkTo(page, 3200);
   await page.keyboard.press("e");
   const k1 = await readConversation(page, 5);
   ok("the Kutsero's lines as written, then what the job is",
-     JSON.stringify(k1.lines.slice(0, 4)) === JSON.stringify(KUTSERO) && /mansanas/.test(k1.lines[4] || ""), k1.lines);
+     JSON.stringify(k1.lines.slice(0, 4)) === JSON.stringify(KUTSERO) && /Bawat linis/.test(k1.lines[4] || ""), k1.lines);
   await page.waitForTimeout(200);
-  ok("the task counts the apples (0/3)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.apples + " (0/3)"]));
-  ok("the horse is too early to feed", await page.evaluate(() => !canGiveGift(NPCS.find((n) => n.id === "kabayo"))));
-
-  await walkTo(page, 5740);
-  const treeBtn = await page.evaluate(() => ({ label: document.querySelector("#btn-interact .lbl").textContent,
-    picture: document.getElementById("npc-puno").children.length,
-    join: panelJoins(currentScene).includes(NPCS.find((n) => n.id === "puno").x + NPC_WIDTH / 2),
-    broadleaf: document.querySelectorAll(".shadow-tree")[3].style.backgroundImage === SHADOW_TREE_URLS[3] }));
-  ok("the apple tree is the silhouette tree at 5800, with no picture of its own, and reads Pumitas (Block 69)",
-     treeBtn.label === "Pumitas" && treeBtn.picture === 0 && treeBtn.join && treeBtn.broadleaf, treeBtn);
-  await page.keyboard.press("e");
-  await page.waitForTimeout(250);
-  const cg = await catchState(page);
-  ok("E opens the apple mini-game, and the world is blocked", cg.up && await page.evaluate(() =>
-    uiBlocked && document.getElementById("catch-title").textContent === "Puno ng mansanas"), cg);
-  const x0 = await page.evaluate(() => posX);
-  const missed = await playApple(page, false);
-  ok("an apple that misses the basket falls, and nothing is lost",
-     missed.result === "Nahulog sa lupa! May isa pa." && await page.evaluate(() => !state.flags.nakuhangMansanas1), missed);
-  ok("the keys that move the basket do not move Macario", (await page.evaluate(() => posX)) === x0);
-  const got1 = await playApple(page, true);
-  ok("an apple caught in the basket counts", got1.result === "Nasalo mo! (1/3)" &&
-     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.apples + " (1/3)"]), got1);
-  await page.click("#catch-stop");
-  await page.waitForTimeout(150);
-  ok("Bumalik closes it and gives him the world back", await page.evaluate(() =>
-    document.getElementById("catch-screen").classList.contains("hidden") && !uiBlocked && Shell.state === "playing"));
-  await page.keyboard.press("e");
-  await page.waitForTimeout(250);
-  ok("coming back, he still holds the one he caught", (await catchState(page)).result === "Hawak mo: 1/3");
-  await playApple(page, true);
-  const got3 = await playApple(page, true);
-  ok("three caught: done, and the button says Tapos na", got3.result === "Tatlo na! Dalhin mo na sa kabayo." &&
-     got3.stop === "Tapos na", got3);
-  await page.keyboard.press("e");
-  await page.waitForTimeout(200);
-  ok("E closes it once all three are caught", !(await catchState(page)).up);
-  ok("(3/3)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.apples + " (3/3)"]));
+  ok("the task is the horse", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.groom]));
+  ok("there is no apple tree to use any more", await page.evaluate(() => !NPCS.some((n) => n.id === "puno")));
 
   await walkTo(page, 3480);
-  ok("beside the horse, the button reads Ipakain ang mansanas", (await gift(page)) === "Ipakain ang mansanas");
-  const h1 = await readConversation(page, 2);
-  ok("Macario feeds him", h1.lines.length === 2 && /^Macario:/.test(h1.lines[0]), h1.lines);
+  ok("beside the horse, the button reads Suklayin", await page.evaluate(() =>
+    document.querySelector("#btn-interact .lbl").textContent) === "Suklayin");
+  await page.keyboard.press("e");
+  await page.waitForTimeout(250);
+  const wOpen = await workState(page);
+  ok("E opens the work game, with the world blocked", wOpen.up && wOpen.title === "Kabayo" &&
+     await page.evaluate(() => uiBlocked), wOpen);
+  const x0 = await page.evaluate(() => posX);
+  const w2 = await workRound(page, true);
+  ok("five good strokes pay the most, 7 barya, and the button said Tapos na",
+     /\+7 barya/.test(w2.hint) && w2.hitLabel === "Tapos na", w2);
+  ok("closing gives him the world back and the pay", await page.evaluate(() =>
+    !uiBlocked && Game.currency() === 7 && state.flags.kitaSaKutsero === 7));
+  ok("the keys the game takes do not move Macario", (await page.evaluate(() => posX)) === x0);
+  ok("the first round finishes the step, and the log moves on to the Mananahi",
+     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.mananahi]));
+  await page.keyboard.press("e");
+  await page.waitForTimeout(250);
+  await workRound(page, false);
+  ok("five bad strokes still pay 4: the job is there to be done again", await page.evaluate(() =>
+    Game.currency() === 11 && state.flags.kitaSaKutsero === 11));
+  await page.keyboard.press("e");
+  await page.waitForTimeout(250);
+  await workStroke(page, true);
+  await page.click("#work-stop");
   await page.waitForTimeout(200);
-  ok("the task moves to the Kutsero's pay", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.payK]));
-  await walkTo(page, 3200);
-  ok("beside the Kutsero, Kunin ang bayad", (await gift(page)) === "Kunin ang bayad");
-  await readConversation(page, 2);
-  ok("he is paid exactly 50", (await page.evaluate(() => Game.currency())) === 50);
-
+  ok("leaving before the last stroke pays nothing", await page.evaluate(() =>
+    Game.currency() === 11 && !uiBlocked));
+  await page.evaluate(() => { state.flags.kitaSaKutsero = 22; });
+  await page.keyboard.press("e");
+  await page.waitForTimeout(250);
+  const w3 = await workRound(page, true);
+  ok("near the 25 barya a job will pay, a round is cut to what is left (3)",
+     /\+3 barya/.test(w3.hint) && await page.evaluate(() =>
+       Game.currency() === 14 && state.flags.kitaSaKutsero === 25 && state.flags.punoNaAngKutsero === true), w3);
+  await page.keyboard.press("e");
+  const full = await readConversation(page, 1);
+  ok("after that the Kutsero says that is enough, and there is no game",
+     /^Kutsero: Sapat na/.test(full.lines[0] || "") && !(await workState(page)).up, full.lines);
 
   // ---------------------------------------------------------------
-  console.log("\nThe Mananahi's job: two customers, then the direktor");
+  console.log("\nThe Mananahi's job: sewing, and being stopped (Block 89)");
   ok("the next task is the Mananahi", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.mananahi]));
   await walkTo(page, 6300);
   await page.keyboard.press("e");
-  const m1 = await readConversation(page, 8);
-  ok("the Mananahi's lines as written, then the three orders, the direktor's last",
-     JSON.stringify(m1.lines.slice(0, 4)) === JSON.stringify(MANANAHI) && /Aling Rosa/.test(m1.lines[4] || "") &&
-     /direktor/.test(m1.lines[4] || "") && /huling/.test(m1.lines[5] || "") && m1.lines.length === 7, m1.lines);
+  const m1 = await readConversation(page, 5);
+  ok("the Mananahi's lines as written, then the sewing, which pays each time",
+     JSON.stringify(m1.lines.slice(0, 4)) === JSON.stringify(MANANAHI) && /tahian/i.test(m1.lines[4] || "") &&
+     m1.lines.length === 5, m1.lines);
   await page.waitForTimeout(200);
-  ok("the task counts the deliveries (0/3)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.clothes + " (0/3)"]));
+  ok("the task counts the sewing (0/2)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.sew + " (0/2)"]));
+  ok("the direktor cannot take a delivery yet", await page.evaluate(() =>
+    !canGiveGift(NPCS.find((n) => n.id === "direktor"))));
 
-  await walkTo(page, 13480);
-  ok("the direktor will not take his before the other two", (await gift(page)) === null);
+  await walkTo(page, 6540);
+  ok("beside the sewing, the button reads Manahi", await page.evaluate(() =>
+    document.querySelector("#btn-interact .lbl").textContent) === "Manahi");
   await page.keyboard.press("e");
-  const early = await readConversation(page, 2);
-  ok("and says so", early.lines.length === 1 && /Ihatid mo muna/.test(early.lines[0]), early.lines);
-  await walkTo(page, 6300);
-
-  const customers = [["Aling Rosa", 7700], ["Mang Tomas", 9200]];
-  for (let i = 0; i < customers.length; i++) {
-    const [name, x] = customers[i];
-    await walkTo(page, x);
-    ok(name + ": Iabot ang damit", (await gift(page)) === "Iabot ang damit");
-    const cl = await readConversation(page, 2);
-    await page.waitForTimeout(150);
-    const cur = (await log(page)).current[0];
-    ok(name + " thanks him, and the count moves",
-       cl.lines.length === 2 && cl.lines[1].startsWith(name + ":") &&
-       cur === STEP.clothes + " (" + (i + 1) + "/3)", { cl: cl.lines, cur });
-  }
+  await page.waitForTimeout(250);
+  ok("E opens the same game with the sewing's words", (await workState(page)).title === "Pananahi");
+  await workRound(page, true);
+  ok("the first round counts (1/2)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.sew + " (1/2)"]));
+  await page.keyboard.press("e");
+  await page.waitForTimeout(250);
+  await workRound(page, true);
+  const stop = await readConversation(page, 7);
+  ok("after the second round she stops him: the costumes for the direktor, forgotten",
+     stop.lines.length === 7 && stop.lines[0] === "Mananahi: Macario, teka! Ihinto mo muna 'yan." &&
+     /direktor/.test(stop.lines[3]), stop.lines);
+  await page.waitForTimeout(300);
+  ok("the task is to take them to the direktor, and the world is his", await page.evaluate(() =>
+    state.flags.mayDalangDamit === true && !cutscenePlaying) &&
+     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.clothes]));
+  await page.keyboard.press("e");
+  const held = await readConversation(page, 1);
+  ok("with the costumes on him the sewing waits", /^Macario \(sa isip\):/.test(held.lines[0] || "") &&
+     !(await workState(page)).up, held.lines);
+  const jobMoney = await page.evaluate(() => Game.currency());
+  ok("the two jobs have paid 28 in all", jobMoney === 28, jobMoney);
 
   // ---------------------------------------------------------------
   console.log("\nThe direktor's missing actor");
@@ -868,7 +906,7 @@ const artDrift = () => {
   const afterPay = await page.evaluate(() => Game.currency());
   ok("in the wings, the direktor is overjoyed and pays him 79 to 110",
      s4.lines.length === 7 && /Nakatayo/.test(s4.lines[0]) && s5.lines.length === 2 &&
-     afterPay - before >= 79 && afterPay - before <= 110 && before === 50, { s4: s4.lines, s5: s5.lines, before, afterPay });
+     afterPay - before >= 79 && afterPay - before <= 110 && before === jobMoney, { s4: s4.lines, s5: s5.lines, before, afterPay });
   await page.waitForTimeout(400);
   ok("the play is done, and the world is his", await page.evaluate(() =>
     state.flags.naitanghalAngDula === true && !cutscenePlaying));
@@ -878,8 +916,8 @@ const artDrift = () => {
      await page.evaluate(() => posX === 13480));
 
   // ---------------------------------------------------------------
-  console.log("\nThe Mananahi's pay, and Nanay");
-  ok("the next task is the Mananahi's pay", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.payM]));
+  console.log("\nThe Mananahi at the play, and Nanay");
+  ok("the next task is to give Nanay the savings", /^Ibigay kay Nanay ang naipon/.test((await log(page)).current[0] || ""));
   // Block 85. She came to watch, and waits outside, not at her shop.
   const mAt = await page.evaluate(() => NPCS.filter((n) => /^mananahi/.test(n.id)).map((n) => [n.id, n.x, Boolean(n.hidden)]));
   ok("the Mananahi waits outside the entablado, and not at her shop (Block 85)",
@@ -888,20 +926,18 @@ const artDrift = () => {
   await page.keyboard.press("e");
   const m2 = await readConversation(page, 6);
   ok("she watched the play herself", m2.lines.length === 5 && /Nanood ako/.test(m2.lines[0]), m2.lines);
-  ok("Kunin ang bayad", (await gift(page)) === "Kunin ang bayad");
-  await readConversation(page, 2);
-  await page.waitForTimeout(200);
-  ok("paid 50 more", (await page.evaluate(() => Game.currency())) === afterPay + 50);
-  ok("the task is to give Nanay the savings (100/100)",
-     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.nanay + " (100/100)"]));
+  ok("and pays nothing: the work paid each time (Block 89)", (await gift(page)) === null);
 
+  await page.evaluate(() => { Game.spendCurrency(Game.currency()); Game.addCurrency(99); });
   await walkTo(page, 1880);
-  ok("beside Nanay: Ibigay ang ipon", (await gift(page)) === "Ibigay ang ipon");
+  ok("with 99 barya, Nanay's savings are not yet offered", (await gift(page)) === null);
+  await page.evaluate(() => Game.addCurrency(31));
+  ok("with 130 they are: Ibigay ang ipon", (await gift(page)) === "Ibigay ang ipon");
   const n1 = await readConversation(page, 10);
   ok("Nanay's lines as written, with the play told in the middle",
      n1.lines.length === 9 && JSON.stringify([...n1.lines.slice(0, 3), ...n1.lines.slice(7)]) === JSON.stringify(NANAY_THANKS_OWN) &&
      /entablado/.test(n1.lines[3]), n1.lines);
-  ok("the savings are spent, and he keeps the rest", (await page.evaluate(() => Game.currency())) === afterPay + 50 - 100);
+  ok("the savings are spent, and he keeps the rest", (await page.evaluate(() => Game.currency())) === 30);
 
   // ---------------------------------------------------------------
   // Block 80. The end of Act I.
@@ -1092,7 +1128,7 @@ const artDrift = () => {
   console.log("\nThe pamphlets, past the guardia civil");
   const street = await page.evaluate(() => NPCS.filter((n) => !n.hidden).map((n) => n.id).join(","));
   ok("the three are on the street now, and everyone else still is",
-     street === "nanay,kutsero,kabayo,puno,mananahi,aling-rosa,mang-tomas,direktor,kasama,mangingisda,tabakera,karpintero", street);
+     street === "nanay,kutsero,kabayo,tahian,mananahi,aling-rosa,mang-tomas,direktor,kasama,mangingisda,tabakera,karpintero", street);
   const p1 = await panels(page);
   ok("nobody stands behind a tree", p1.blocked.length === 0, p1.blocked);
   const night = await page.evaluate(() => ({
@@ -1159,8 +1195,8 @@ const artDrift = () => {
   ok("a catch now puts him at the tabakera, the furthest of the three reached", await page.evaluate(() =>
     respawnX(currentScene) === 6780));
   const all = await doneInSettings(page);
-  ok("settings lists the twelve finished tasks", all.length === 12 && all[0] === "Umuwi kasama si Nanay" &&
-     all[11] === STEP.join, all);
+  ok("settings lists the eleven finished tasks", all.length === 11 && all[0] === "Umuwi kasama si Nanay" &&
+     all[10] === STEP.join, all);
   const nanayLine = await page.evaluate(() => {
     const n = NPCS.find((x) => x.id === "nanay");
     startDialogue(n);
@@ -1192,7 +1228,7 @@ const artDrift = () => {
     document.getElementById("quiz-title").textContent === "Handa ka na ba?" &&
     document.querySelectorAll(".quiz-choice").length === 0));
   ok("every step is done, Act I finishes, and the post-test opens",
-     post.done === 13 && post.status === "posttest" && post.quiz && /Panapos/.test(post.eyebrow), post);
+     post.done === 12 && post.status === "posttest" && post.quiz && /Panapos/.test(post.eyebrow), post);
   await ctx.close();
 
   // ---------------------------------------------------------------
@@ -1211,9 +1247,9 @@ const artDrift = () => {
     return r;
   };
   const upToMananahi = { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true,
-    nakausapAngKutsero: true, napakainAngKabayo: true, nabayaranNgKutsero: true, nakausapAngMananahi: true };
+    nakausapAngKutsero: true, naalagaanAngKabayo: true, nakausapAngMananahi: true };
   const delivered = Object.assign({}, upToMananahi,
-    { naihatidKay_aling_rosa: true, naihatidKay_mang_tomas: true, naihatidSaDalawangSuki: true, naihatidKay_direktor: true });
+    { tinawagAngMananahi: true, mayDalangDamit: true, naihatidKay_direktor: true });
 
   let r = await resume("tondo", { nakitaAngMgaSiga: true });
   ok("a reload mid-opening starts again from Tondo, 1890", (await intertitle(r.page)).lines[0] === "Tondo, 1890");
@@ -1325,15 +1361,15 @@ const artDrift = () => {
   await r.ctx.close();
 
   r = await resume("tondo", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true,
-    nakausapAngKutsero: true, kinitaSaKutsero: 30 }, 30);
+    nakausapAngKutsero: true, kitaSaKutsero: 12 }, 12);
   await r.page.waitForTimeout(400);
   const rj = await r.page.evaluate(() => ({ cut: cutscenePlaying, box: !dialogueBox.classList.contains("hidden"),
     title: !document.getElementById("intertitle").classList.contains("hidden"),
     toast: document.getElementById("toast").classList.contains("hidden") }));
   const rl = await log(r.page);
-  ok("a Block 56 save mid-job lands on the apples, with nothing replayed and no toast",
+  ok("a save with the Kutsero spoken to lands on the horse, with nothing replayed and no toast",
      !rj.cut && !rj.box && !rj.title && rj.toast &&
-     JSON.stringify(rl.current) === JSON.stringify([STEP.apples + " (0/3)"]), { rj, rl });
+     JSON.stringify(rl.current) === JSON.stringify([STEP.groom]), { rj, rl });
   await r.ctx.close();
 
   // ---------------------------------------------------------------
