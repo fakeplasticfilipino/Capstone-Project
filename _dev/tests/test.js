@@ -3760,6 +3760,96 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("beating the last one resolves what the script is waiting on", won.won === true, won);
     ok("the hearts go away with them", won.hearts, won);
     ok("and the doorway is offered again", won.exitAgain === "exit", won);
+
+    // ---- The attack is a movement: a dash through the enemy.
+    const runDash = (gap, swingSoon) => page.evaluate(({ gap, swingSoon }) => new Promise((resolve) => {
+      ENEMIES.forEach((e) => { e.dead = true; });
+      loadScene("tondo");
+      posX = 300; posY = floorHeightAt(posX); onGround = true; facing = 1;
+      health = maxHealth; invulnUntil = 0; dash = null; dashReadyAt = 0; dashStumbleUntil = 0;
+      spawnEnemies([{ id: "d" + Math.random(), x: 300 + PLAYER_WIDTH / 2 + gap - ENEMY_WIDTH / 2, hp: 2, img: "assets/Kaaway.png" }]);
+      const e = ENEMIES[ENEMIES.length - 1];
+      e.staggerUntil = performance.now() + 1e9;
+      if (swingSoon) e.nextSwingAt = performance.now() + 60;
+      const samples = [];
+      const t0 = performance.now();
+      const start = posX;
+      playMelee();
+      const timer = setInterval(() => {
+        samples.push({ t: performance.now() - t0, x: posX });
+        if (!dash) {
+          clearInterval(timer);
+          let maxSpeed = 0, maxJump = 0;
+          for (let i = 1; i < samples.length; i++) {
+            const dx = Math.abs(samples[i].x - samples[i - 1].x);
+            maxJump = Math.max(maxJump, dx);
+            maxSpeed = Math.max(maxSpeed, dx / Math.max(1, samples[i].t - samples[i - 1].t));
+          }
+          resolve({ pw: PLAYER_WIDTH, start, end: posX, centre: 300 + PLAYER_WIDTH / 2 + gap, hp: e.hp, health, max: maxHealth,
+                    ms: samples[samples.length - 1].t, maxSpeed, maxJump, firstStep: Math.abs(samples[0].x - start),
+                    stumble: dashStumbleUntil > performance.now(), ready: dashReadyAt > performance.now() });
+        }
+      }, 8);
+    }), { gap, swingSoon });
+
+    const near = await runDash(120);
+    ok("a tap with an enemy ahead moves him: his position really changes", Math.abs(near.end - near.start) > 100, near);
+    ok("the dash carries him through to the far side of the enemy", near.end + near.pw / 2 > near.centre + 60, near);
+    ok("and the enemy took the blow on the way", near.hp === 1, near);
+    ok("it takes a visible moment, not a snap", near.ms >= 150 && near.ms <= 500, near);
+    ok("it is faster than walking (0.3 px/ms) at its peak", near.maxSpeed > 0.45, near);
+    ok("but never a teleport: no frame moves him more than 60px", near.maxJump < 60, near);
+    ok("and it eases in rather than starting at full speed", near.firstStep < 25, near);
+    ok("a landed dash leaves no stumble", !near.stumble, near);
+
+    const far = await runDash(300);
+    ok("from too far off the dash stops short of the enemy", far.end + far.pw / 2 < far.centre - 30, far);
+    ok("and hits nothing", far.hp === 2, far);
+    ok("and leaves him stumbling with a wait before the next", far.stumble && far.ready, far);
+
+    const dodge = await runDash(50, true);
+    ok("an enemy's swing that lands mid-dash misses him", dodge.health === dodge.max, dodge);
+
+    const spread = await page.evaluate(() => {
+      ENEMIES.forEach((e) => { e.dead = true; });
+      spawnEnemies(Array.from({ length: 12 }, (_, i) => ({ id: "r" + i, x: 900 + i, hp: 2, img: "assets/Kaaway.png" })));
+      const speeds = ENEMIES.filter((e) => !e.dead).map((e) => e.speed);
+      const base = ENEMY_BASE_SPEED * difficultyMultiplier(currentActData && currentActData.number);
+      const windups = Array.from({ length: 50 }, () => jitter(ENEMY_WINDUP_MS, ENEMY_WINDUP_SPREAD));
+      return { min: Math.min(...speeds), max: Math.max(...speeds), base,
+               wMin: Math.min(...windups), wMax: Math.max(...windups),
+               windup: ENEMY_WINDUP_MS, spreadMs: ENEMY_WINDUP_SPREAD, tell: ENEMY_TELEGRAPH_MS };
+    });
+    ok("enemies do not all walk at one speed", spread.max > spread.min, spread);
+    ok("and the spread stays within a tenth either way", spread.min >= spread.base * 0.89 && spread.max <= spread.base * 1.11, spread);
+    ok("swing timing varies but stays bounded", spread.wMax > spread.wMin && spread.wMin >= spread.windup && spread.wMax <= spread.windup + spread.spreadMs, spread);
+    ok("the tell is short", spread.tell <= 350, spread);
+
+    // ---- The speaker stands on the dialogue box.
+    const portraits = await page.evaluate(async () => {
+      ENEMIES.forEach((e) => { e.dead = true; });
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const npc = { id: "px", label: "Testtao", animation: Object.assign({}, BASE_SPRITE_SHEETS.idle) };
+      NPCS.push(npc);
+      inDialogue = true;
+      activeSet = { lines: [{ speaker: "Macario", text: "a" }, { speaker: "Macario (sa isip)", text: "b" },
+                            { speaker: npc ? npc.label : "Nobody", text: "c" }, { speaker: "Nobody", text: "d" }] };
+      dialogueBox.classList.remove("hidden");
+      const seen = [];
+      for (let i = 0; i < 4; i++) {
+        dialogueStep = i;
+        showDialogueStep();
+        await wait(200);
+        seen.push({ left: portraitLeft.classList.contains("shown"), right: portraitRight.classList.contains("shown") });
+      }
+      inDialogue = false;
+      dialogueBox.classList.add("hidden");
+      return { seen, npcLabel: npc && npc.label };
+    });
+    ok("Macario speaking shows him on the left only", portraits.seen[0].left && !portraits.seen[0].right, portraits);
+    ok("and so does his thought", portraits.seen[1].left && !portraits.seen[1].right, portraits);
+    ok("an NPC with art shows on the right only", portraits.seen[2].right && !portraits.seen[2].left, portraits);
+    ok("a speaker with no art has no portrait", !portraits.seen[3].left && !portraits.seen[3].right, portraits);
     await ctx.close();
   }
 

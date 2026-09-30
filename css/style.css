@@ -3982,3 +3982,27 @@ body.text-lg .notebook-entry-text { font-size: 22px; }
 @media (orientation: landscape) and (max-height: 500px) {
   .shell-input { min-height: 63px; }
 }
+
+/* Dialogue portraits: whoever is speaking stands on the top edge of the
+   box, Macario on the left and everyone else on the right. They sit
+   outside the text column, so the text keeps its whole width. */
+.dialogue-portrait {
+  position: absolute;
+  bottom: 100%;
+  width: 150px;
+  height: 170px;
+  margin-bottom: -4px;
+  pointer-events: none;
+  display: none;
+}
+
+.dialogue-portrait.shown { display: block; }
+#dialogue-portrait-left { left: 20px; }
+#dialogue-portrait-right { right: 20px; }
+
+.portrait-sprite {
+  position: absolute;
+  bottom: 0;
+  background-repeat: no-repeat;
+  filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.45));
+}

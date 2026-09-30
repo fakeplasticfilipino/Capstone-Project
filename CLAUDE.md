@@ -1382,7 +1382,10 @@ Detection is a meter rather than a switch. A bar that is visibly filling
 is what teaches the mechanic; an instant catch teaches only that the level
 is unfair.
 
-Melee reads the guard's facing. From behind an unalerted guard it is a
+A tap with an enemy ahead is a dash through him (Block 86): a hit ends
+Macario behind the enemy, a tap from beyond DASH_HIT_RANGE stops short,
+hits nothing and leaves him exposed, and he cannot be struck mid-dash.
+With no enemy ahead the tap is the old punch. Melee reads the guard's facing. From behind an unalerted guard it is a
 takedown; from the front it alerts the guard and costs a health point.
 That is what makes stealth and combat interlock rather than sit beside each
 other, and it means a corridor can be solved two ways.

@@ -3338,3 +3338,39 @@ from hearing of the play to having seen it.
 game.js v83, style.css v50, inventory.js v11, assessment.js v5,
 content/act1.js v59, content/items.js v13, asset-manifest.js v3,
 ASSET_VERSION 30. verify_new_scene.js to 200.
+
+## Block 86: the attack is a movement; the speaker on the box
+
+Combat was stand and tap. A tap with a living enemy ahead (nearest in
+front, within DASH_SEEK 340) now sends Macario through him: an eased
+slide of DASH_MIN_MS to DASH_MAX_MS (200 to 400), faster than walking
+at its peak (about 0.75 px/ms on average against 0.3), that really
+moves posX. Within DASH_HIT_RANGE (170) it hits as his centre crosses
+the enemy's and carries him DASH_PASS (110) beyond, so he ends behind
+the enemy, clear of its reach. From further it stops DASH_MISS_TRAVEL
+(140) along, hits nothing, and costs a longer wait (520ms against 120)
+and a stumble (250ms without walking), leaving him in front of the
+enemy's sword. That gap is the skill the change was for. He cannot be
+struck while the dash is under way, which is what makes dashing through
+a swing an answer to it. The blow's direction is the dash's, so the
+enemy slides on past him, not back toward where he came from. With no
+enemy ahead the old punch stands, so guards, takedowns and the stealth
+rule are untouched.
+
+Enemies: the tell is 300ms (was 350) and the swing lands on it. Each
+enemy walks 0.9 to 1.1 of its kind's speed, and the wind-up (600 to 900)
+and cooldown (1300 to 2100) are drawn each time, so no sequence can be
+memorised, and none is shorter than before is fair. A swing already
+begun still lands at ENEMY_STRIKE_REACH (68), so stepping back a few
+pixels does not cancel it; leaving further, or dashing, does.
+
+Dialogue: the speaker stands on the top edge of the box, Macario on the
+left, anyone else on the right, drawn from the first frame of a sheet
+the scene already holds (an NPC's or decoration's animation, else the
+player's idle) through bodySprite. A speaker whose art is owed, or who
+has none (the crowd), shows no portrait, so the placeholder boxes do
+not appear on the box. Speakers are matched by label or decoration id
+after dropping a trailing "(...)" (Direktor (pabulong), Macario (sa
+isip)).
+
+Not seen on the phone yet. game.js v84, style.css v51. test.js to 750.

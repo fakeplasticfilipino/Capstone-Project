@@ -2357,8 +2357,50 @@ function startPerformance() {
   showDialogueStep();
 }
 
+// The speaker stands on the box: Macario on the left, anyone else on
+// the right. The picture is the first frame of a sheet the scene already
+// has (an NPC's or decoration's own, else the player's idle), drawn by
+// bodySprite like everything else; a speaker with no art, or art still
+// owed, simply has no portrait.
+const PORTRAIT_HEIGHT = 150;
+const PORTRAIT_WIDTH = 150;
+const portraitLeft = document.getElementById("dialogue-portrait-left");
+const portraitRight = document.getElementById("dialogue-portrait-right");
+let drawnPortrait = { sheet: null, side: null };
+
+function portraitSheetFor(speaker) {
+  const name = String(speaker || "").replace(/\s*\(.*\)\s*$/, "").trim().toLowerCase();
+  if (name === "macario") return { side: "left", sheet: SPRITE_SHEETS.idle };
+  const npc = NPCS.find((n) => n.animation && n.label && n.label.toLowerCase() === name);
+  if (npc) return { side: "right", sheet: npc.animation };
+  const decorations = (currentScene && currentScene.decorations) || [];
+  const id = name === "siga" || name === "mga siga" ? "siga-1" : name;
+  const dec = decorations.find((d) => d.animation && d.id === id);
+  return { side: "right", sheet: dec ? dec.animation : null };
+}
+
+function drawDialoguePortrait(speaker) {
+  const { side, sheet } = portraitSheetFor(speaker);
+  if (sheet === drawnPortrait.sheet && side === drawnPortrait.side) return;
+  drawnPortrait = { sheet, side };
+  portraitLeft.classList.remove("shown");
+  portraitRight.classList.remove("shown");
+  if (!sheet) return;
+  const box = side === "left" ? portraitLeft : portraitRight;
+  loadSpriteSheet(sheet).then(() => {
+    if (drawnPortrait.sheet !== sheet || sheet.failed) return;
+    const sprite = document.createElement("div");
+    sprite.className = "portrait-sprite";
+    bodySprite(sprite, sheet, PORTRAIT_HEIGHT, PORTRAIT_WIDTH);
+    if (side === "right") sprite.style.transform = "scaleX(-1)";
+    box.replaceChildren(sprite);
+    box.classList.add("shown");
+  });
+}
+
 function showDialogueStep() {
   const line = activeSet.lines[dialogueStep];
+  drawDialoguePortrait(line.speaker);
   dialogueSpeaker.textContent = line.speaker;
   dialogueText.textContent = line.text;
   // Block 58, the blip. Block 85: a line may name its own sound instead
@@ -2436,6 +2478,7 @@ function endDialogue() {
 
   inDialogue = false;
   dialogueBox.classList.add("hidden");
+  drawnPortrait = { sheet: null, side: null };
 
   if (finishedMode === "gift") {
     const gift = finishedNpc.gift;
@@ -2592,6 +2635,7 @@ async function fadeToScene(sceneId, placement) {
   cutscenePlaying = true;
   attackHoldStart = 0;
   shooting = null;
+  dash = null;
   clearTimeout(shootFireTimer);
 
   blackout.classList.add("visible");
@@ -4145,6 +4189,85 @@ function endAttackHold() {
   }
 }
 
+// The attack is also a movement. A tap with an enemy ahead sends Macario
+// sliding through him and out the other side, so where a swing leaves him
+// is the decision: a hit ends him behind the enemy, a dash begun too far
+// away stops short of him, misses, and leaves him standing in front of
+// the enemy's sword with his feet planted for a moment. He cannot be hurt
+// by an enemy while the dash itself is under way.
+const DASH_SEEK = 340;        // farthest enemy a tap will go for, centre to centre
+const DASH_HIT_RANGE = 170;   // farthest one it reaches
+const DASH_PASS = 110;        // how far past his centre a hit carries him
+const DASH_MISS_TRAVEL = 140; // how far a dash from beyond that gets
+const DASH_SPEED = 0.75;      // px per ms on average; walking is 0.3
+const DASH_MIN_MS = 200;
+const DASH_MAX_MS = 400;
+const DASH_RECOVER_HIT_MS = 120;
+const DASH_RECOVER_MISS_MS = 520;
+const DASH_STUMBLE_MS = 250;  // no walking after a miss
+
+let dash = null;
+let dashReadyAt = 0;
+let dashStumbleUntil = 0;
+
+function findDashTarget() {
+  const centre = posX + PLAYER_WIDTH / 2;
+  return ENEMIES
+    .filter((e) => !e.dead)
+    .map((e) => ({ e, gap: (e.pos + ENEMY_WIDTH / 2 - centre) * facing }))
+    .filter(({ gap }) => gap > -20 && gap <= DASH_SEEK)
+    .sort((a, b) => a.gap - b.gap)[0];
+}
+
+function startDash(target) {
+  const hits = target.gap <= DASH_HIT_RANGE;
+  const travel = hits ? Math.max(target.gap, 0) + DASH_PASS : DASH_MISS_TRAVEL;
+  const to = Math.max(0, Math.min(posX + facing * travel, WORLD_WIDTH - PLAYER_WIDTH));
+  dash = {
+    from: posX,
+    to,
+    dir: facing,
+    target: hits ? target.e : null,
+    hitDone: false,
+    t: 0,
+    ms: Math.max(DASH_MIN_MS, Math.min(DASH_MAX_MS, Math.abs(to - posX) / DASH_SPEED)),
+  };
+  clearTimeout(shootFireTimer);
+  shooting = "melee";
+  meleePending = false;
+  meleeEndAt = 0;
+  applyAnim("melee", true);
+  flashAttack();
+  playSfx("swing");
+  spawnDust(posX + PLAYER_WIDTH / 2, posY, facing, "land");
+}
+
+// Eased in and out (smoothstep) so he gathers speed and settles rather
+// than snapping. Time is the frame delta, which a hit-stop does not
+// deliver, so a freeze on the blow holds the dash with it. True while
+// the dash is under way.
+function updateDash(deltaMs, now) {
+  dash.t += deltaMs;
+  const u = Math.min(1, dash.t / dash.ms);
+  posX = dash.from + (dash.to - dash.from) * u * u * (3 - 2 * u);
+  facing = dash.dir;
+
+  const target = dash.target;
+  if (target && !dash.hitDone && !target.dead) {
+    const gap = (target.pos + ENEMY_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) * dash.dir;
+    if (gap <= 0 || (u >= 1 && gap <= 45)) {
+      dash.hitDone = true;
+      takeBlow(target, ENEMY_PUNCH_DAMAGE, dash.dir);
+    }
+  }
+  if (u < 1) return true;
+
+  dashReadyAt = now + (dash.hitDone ? DASH_RECOVER_HIT_MS : DASH_RECOVER_MISS_MS);
+  if (!dash.hitDone) dashStumbleUntil = now + DASH_STUMBLE_MS;
+  dash = null;
+  return false;
+}
+
 // Plays the punch once. The hit is not resolved here: it lands when the
 // clip reaches the frame where his arm is fully out (the sheet's
 // contact), so the swing, the thump and the enemy's stagger all happen
@@ -4160,6 +4283,12 @@ function endAttackHold() {
 // included. clearTimeout stops a fire clip's pending hand-back from
 // ending this clip early.
 function playMelee() {
+  if (dash || performance.now() < dashReadyAt) return;
+  const target = findDashTarget();
+  if (target) {
+    startDash(target);
+    return;
+  }
   if (meleePending && shooting === "melee" && currentAnim === "melee") return;
   const sheet = SPRITE_SHEETS.melee;
   clearTimeout(shootFireTimer);
@@ -5190,9 +5319,19 @@ function moveDecoration(id, toX, pxPerSecond) {
 const ENEMY_BASE_SPEED = 2.2;   // per 60fps frame; well under SPEED (5)
 const ENEMY_REACH = 55;         // centre to centre; under MELEE_RANGE (70)
 const ENEMY_SPACING = 50;       // enemies queue rather than stack
-const ENEMY_WINDUP_MS = 700;    // from reaching him to the first swing
-const ENEMY_COOLDOWN_MS = 1800; // between swings: a beat to punch back in
-const ENEMY_TELEGRAPH_MS = 350; // the lit-up warning before a swing
+const ENEMY_STRIKE_REACH = 68;  // a swing already begun still lands this far
+const ENEMY_WINDUP_MS = 600;    // from reaching him to the first swing, plus up to the spread
+const ENEMY_WINDUP_SPREAD = 300;
+const ENEMY_COOLDOWN_MS = 1300; // between swings: a beat to punch back in, likewise
+const ENEMY_COOLDOWN_SPREAD = 800;
+const ENEMY_PACE_SPREAD = 0.2;  // each enemy walks 0.9 to 1.1 of his kind's speed
+const ENEMY_TELEGRAPH_MS = 300; // the lit-up warning before a swing
+
+// Bounded so the timing varies without ever being unfair: a swing is
+// always at least the base after the last, and the tell is fixed.
+function jitter(base, spread) {
+  return base + Math.random() * spread;
+}
 const ENEMY_ATTACK_FOLLOW_MS = 280; // the attack clip's follow-through
 const ENEMY_STAGGER_MS = 350;
 // Block 60. A hit no longer moves an enemy 45px in one frame: he is sent
@@ -5230,7 +5369,7 @@ function spawnEnemies(defs) {
       pos: def.x,
       hp,
       maxHp: hp,
-      speed: (def.speed || ENEMY_BASE_SPEED) * speedScale,
+      speed: (def.speed || ENEMY_BASE_SPEED) * speedScale * (1 - ENEMY_PACE_SPREAD / 2 + Math.random() * ENEMY_PACE_SPREAD),
       facing: -1,
       dead: false,
       nextSwingAt: 0,
@@ -5398,7 +5537,7 @@ function updateEnemies(step, now) {
     enemy.facing = dir;
 
     if (now >= enemy.staggerUntil) {
-      if (dist > ENEMY_REACH) {
+      if (dist > (enemy.nextSwingAt ? ENEMY_STRIKE_REACH : ENEMY_REACH)) {
         // Wait behind a comrade who is already closer, instead of
         // walking through him.
         const blocked = ENEMIES.some((other) => {
@@ -5415,10 +5554,10 @@ function updateEnemies(step, now) {
         enemy.nextSwingAt = 0;
       } else {
         enemy.walking = false;
-        if (!enemy.nextSwingAt) enemy.nextSwingAt = now + ENEMY_WINDUP_MS;
+        if (!enemy.nextSwingAt) enemy.nextSwingAt = now + jitter(ENEMY_WINDUP_MS, ENEMY_WINDUP_SPREAD);
         if (now >= enemy.nextSwingAt) {
-          enemy.nextSwingAt = now + ENEMY_COOLDOWN_MS;
-          const hit = damagePlayer("Nasugatan ka!", false);
+          enemy.nextSwingAt = now + jitter(ENEMY_COOLDOWN_MS, ENEMY_COOLDOWN_SPREAD);
+          const hit = !dash && damagePlayer("Nasugatan ka!", false);
           if (hit && health > 0) {
             posX = Math.max(0, Math.min(posX + dir * ENEMY_HIT_RECOIL, WORLD_WIDTH - PLAYER_WIDTH));
             velY = HAZARD_RECOIL_VELOCITY;
@@ -5514,7 +5653,7 @@ const BODY_KINDS = {
     isDown: (e) => e.dead,
     hit(e) { e.fillEl.style.width = Math.max(0, (e.hp / e.maxHp) * 100) + "%"; },
     staggered(e, now) {
-      e.nextSwingAt = Math.max(e.nextSwingAt || 0, now + ENEMY_STAGGER_MS + ENEMY_WINDUP_MS);
+      e.nextSwingAt = Math.max(e.nextSwingAt || 0, now + ENEMY_STAGGER_MS + jitter(ENEMY_WINDUP_MS, ENEMY_WINDUP_SPREAD));
     },
     down(e) {
       e.dead = true;
@@ -6060,7 +6199,10 @@ function gameLoop(now) {
                   keysPressed["a"] && !keysPressed["d"] ? -1 : 0;
   const moveSpeed = updateRun(heldDir, canAct, now, step);
 
-  if (canAct) {
+  if (!canAct) dash = null;
+  const dashing = dash ? updateDash(deltaMs, now) : false;
+  if (dashing) isWalking = true;
+  if (canAct && !dashing && now >= dashStumbleUntil) {
     if (keysPressed["a"]) {
       posX -= moveSpeed * step;
       facing = -1;
