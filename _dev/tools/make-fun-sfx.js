@@ -11,6 +11,10 @@
 //   fanfare   the last page found: a short four-note flourish
 //   streak    the apple game, a third catch in a row: the catch chime's
 //             brighter cousin
+//   jump      (Block 93, replacing make-sfx.py's) a foot pushing off the
+//             dirt: a soft scuff and a low thump, no tone. The old square
+//             wave sweeping up was a cartoon boing, and the proponent
+//             found it goofy.
 //
 // Usage, from the repository root (no dependencies):
 //
@@ -152,4 +156,19 @@ const C6 = 1046.5, E6 = 1318.5, G6 = 1568.0, C7 = 2093.0, A5 = 880.0, D6 = 1174.
 // A streak in the apple game: two quick notes, a step above the catch.
 {
   write("streak", scale(arpeggio([A5, D6], 0.06, 0.2), 0.6), 0.57);
+}
+
+// A jump (Block 93): the push-off, heard, not a tune. Dull noise for the
+// scuff of a sole on dirt, and under it a short sine falling from 150 to
+// 70 Hz for the weight leaving the ground. Quiet: it is pressed often.
+{
+  const scuff = mul(smooth(noise(0.13, 93), 7), env(len(0.13), 0.004, 3));
+  const n = len(0.09);
+  const thump = new Float64Array(n);
+  let phase = 0;
+  for (let i = 0; i < n; i++) {
+    phase += (150 - 80 * i / n) / RATE;
+    thump[i] = Math.sin(2 * Math.PI * phase);
+  }
+  write("jump", add(scale(scuff, 1.6), scale(mul(thump, env(n, 0.003, 2.5)), 0.55)), 0.5);
 }

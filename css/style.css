@@ -1059,6 +1059,9 @@ html, body {
 .hide-spot {
   position: absolute;
   bottom: var(--ground-level);
+  /* Block 93. In front of Macario (#player is 1), below the shadow trees
+     (3): he ducks behind it rather than standing before it. */
+  z-index: 2;
   height: 78px;
   background: #4e342e;
   border: 3px solid #6d4c41;
@@ -3243,6 +3246,22 @@ body.text-lg #dialogue-text { font-size: 27px; }
   color: var(--c-cream-faint);
 }
 
+/* Block 93. The way out of a room (scene.wayOut), above the step in
+   hand: an arrow instead of the bullet, in the green of the log's own
+   title, so it reads as where to go rather than as one more task. */
+/* Block 93. Macario while a crate hides him (game.js, player-hiding). */
+#player.player-hiding {
+  opacity: 0.7;
+}
+
+#quest-list li.quest-way {
+  color: var(--c-green-light);
+}
+
+#quest-list li.quest-way::before {
+  content: "\2192";
+}
+
 
 
 /* EVERY TAPPABLE THING ON A SCREEN, at 44px on glass.
@@ -3965,6 +3984,23 @@ body.text-lg .notebook-entry-text { font-size: 22px; }
 .dialogue-portrait.shown { display: block; }
 #dialogue-portrait-left { left: 12px; }
 #dialogue-portrait-right { right: 12px; }
+
+/* Block 93. The box at the top of the screen, for a scene that asks
+   (dialogueAtTop, the entablado): the frame's edge and shadow on its
+   lower side, and the busts hang from the top instead of rising. */
+body.dialogue-top #dialogue-box {
+  top: 0;
+  bottom: auto;
+  border-top: none;
+  border-bottom: 4px solid var(--px-edge);
+  box-shadow: 0 3px 0 var(--px-ink);
+}
+
+body.dialogue-top .dialogue-portrait {
+  top: 0;
+  bottom: auto;
+  height: 150px;
+}
 
 .portrait-sprite {
   position: absolute;

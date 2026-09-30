@@ -28,7 +28,9 @@ Macario's sheets (256px cells).
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 30 Sep 2026, Block 91 (nine pictures owed: the death pose,
+Last updated: 30 Sep 2026, Block 93 (eleven owed: Nanay's walk and
+the Mananahi's sewing table are named now, so each shows as a
+placeholder box until drawn). Before that, Block 91 (nine pictures owed: the death pose,
 the night backdrop and Aling Rosa are gone with the things that named
 them, and the unused Tindero file was deleted). Before that, Block 81
 (the Pangulo became the Mabalasig) and Block 80 (the end of Act I: the
@@ -77,6 +79,19 @@ Named by the game and missing. Each is a placeholder box today.
         (x 6900) and a fisherman (x 4800). Talk and take a pamphlet; an
         idle sheet each is enough. (NOT STARTED)
 
+    assets/sprites/characters/nanay-walk.png
+        Nanay walking, side on, facing right: she walks on in the
+        opening and home with Macario (Block 93). Her standing sheet
+        (nanay.png) faces the front, so this is a sheet of its own; a
+        placeholder box walks in her place until it arrives.
+        (NOT STARTED)
+
+    assets/sprites/scenery/tahian.png
+        The Mananahi's sewing table (tahian), beside her on the street
+        (x 6540), where Macario sews (Block 89). A still is enough,
+        about 90px tall in the game against Macario's 134; it is drawn
+        at that height (displayHeight). (NOT STARTED)
+
     assets/backgrounds/act1/pulungan.jpg
         The Katipunan's secret room, where the oath is taken (Block 80).
         The histories describe a dim room hung with black curtains, a
@@ -100,9 +115,6 @@ forgotten.
     The bantay's walk, shot and flinch (bantay-walk, -shoot, -hit).
         Made from the artist's one still by _dev/tools/animate-bantay.js
         (Blocks 73, 75); the still itself (bantay.png) is the artist's.
-    Nanay's walk. She has a real idle sheet and slides on with it
-        (Block 57); a side-view walk sheet from the artist is owed if
-        she should walk.
     The Sultan. Walks on his soldiers' walk sheet (muslim-walk.png);
         a sheet of his own would set him apart from them.
     Item tiles. No item ships (content/items.js is empty); each item
@@ -111,8 +123,7 @@ forgotten.
 ## No picture, by design
 
 Drawn by the game itself, not owed by anyone: the shadow trees over
-every join (_dev/tools/make-shadow-tree.py), the Mananahi's sewing table
-(scenery with no picture, Block 89), the work game's brush, cloth and
+every join (_dev/tools/make-shadow-tree.py), the work game's brush, cloth and
 needle (CSS, Block 90), the night on the pamphlet run (a tint over the
 day's paintings, Block 85, so no night painting is owed), platforms,
 crates, hazards, heart pickups, bullets, the guard's sight cone, the

@@ -110,8 +110,9 @@ write("catch", tone("square", sweep(500, 1400, 0.09), 0.09, 1.5), 0.2)
 thud = tone("sine", sweep(180, 60, 0.18), 0.18, 2.5) + 0.25 * noise(0.18) * env(len(t_of(0.18)), curve=6)
 write("miss", thud, 0.45)
 
-# A jump: a short upward swish, quiet, since it is pressed often.
-write("jump", tone("square", sweep(260, 620, 0.11), 0.11, 1.4), 0.1)
+# The jump is no longer made here: its square wave sweeping up read as a
+# cartoon boing, and Block 93 replaced it with a scuff and a thump, made
+# by _dev/tools/make-fun-sfx.js.
 
 # A door, or any fade to another place: a low swoosh of filtered noise.
 n = noise(0.5, seed=3)

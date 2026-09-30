@@ -76,14 +76,18 @@ const talk = async (page, times) => {
 // Block 92. The running count of the savings sits beside the step in
 // hand (pinned), so "current" is the step and "pinned" the count; when the
 // savings ARE the step in hand there is one line and current has it.
+// Block 93. The way out of a room, when there is one, is its own line at
+// the top (way), not a step.
 const log = (page) => page.evaluate(() => {
-  const all = [...document.querySelectorAll("#quest-list li")].map((li) => li.textContent);
+  const all = [...document.querySelectorAll("#quest-list li:not(.quest-way)")].map((li) => li.textContent);
+  const wayEl = document.querySelector("#quest-list li.quest-way");
   const isPin = (x) => /^Mag-ipon para kay Nanay/.test(x);
   const rest = all.filter((x) => !isPin(x));
   return {
     current: rest.length ? rest : all,
     pinned: all.filter(isPin),
     lines: all.length,
+    way: wayEl ? wayEl.textContent : null,
     toggle: !!document.getElementById("quest-done-toggle"),
   };
 });
@@ -207,14 +211,14 @@ const newPage = async (browser, test) => {
 };
 
 const OPENING = [
-  "Siga: Ano Macario, inaantay mo pa din tatay mo?",
+  "Siga: Ano, Macario? Hinihintay mo pa rin ang tatay mo?",
   "Mga Siga: BAHAHAHAHAHAHA!",
-  "Macario: Isarado mo 'yang bunganga mo!",
+  "Macario: Isara mo 'yang bunganga mo!",
 ];
 const NANAY_ARRIVES = [
-  "Nanay: Macario, uwi na, may kailangan akong sabihin sayo",
-  "Nanay: Wag mo pansinin yung mga yan",
-  "Macario: Tsk",
+  "Nanay: Macario, umuwi na tayo. May kailangan akong sabihin sa'yo.",
+  "Nanay: Tama na 'yan, anak. Huwag mo na silang pansinin.",
+  "Macario: Tsk.",
 ];
 // Block 87. The insult ends in a fight with the three siga. Waits for
 // them, says what they are, and knocks them all down.
@@ -231,35 +235,35 @@ const winOpeningFight = (page) => page.evaluate(async () => {
   return info;
 });
 const AT_HOME = [
-  "Macario: Nay, ano po ba yung sasabihin niyo?",
-  "Nanay: Macario, anak, naubos na yung pera natin sa pagbili ko ng Cedula...",
-  "Nanay: Wala na tayong pambili ng bigas, humingi ako ng ulam sa kapitbahay para sa hapunan natin ngayon...",
-  "Nanay: Pasensya ka na anak ha?",
-  "Macario: Okay lang 'Nay, magta-trabaho na po ako para makatulong sainyo",
-  "Nanay: Sigurado ka ba diyan 'nak?",
-  "Macario: Opo inay, ako na po ang bahala",
+  "Macario: 'Nay, ano po ba 'yung sasabihin n'yo?",
+  "Nanay: Macario, anak, naubos na 'yung pera natin sa pagbili ko ng cedula...",
+  "Nanay: Wala na tayong pambili ng bigas. Humingi na lang ako ng ulam sa kapitbahay para sa hapunan natin ngayon...",
+  "Nanay: Pasensya ka na, anak, ha?",
+  "Macario: Ayos lang po, 'Nay. Magtatrabaho na po ako para makatulong sa inyo.",
+  "Nanay: Sigurado ka ba diyan, 'nak?",
+  "Macario: Opo, 'Nay. Ako na po ang bahala.",
 ];
-const THOUGHT = "Macario (sa isip): Kailangan ko ng pera para matulungan si Nanay, saan kaya ako makakahanap ng trabaho?";
+const THOUGHT = "Macario (sa isip): Kailangan ko ng pera para matulungan si Nanay. Saan kaya ako makakahanap ng trabaho?";
 const KUTSERO = [
-  "Macario: Kutsero, maaari po ba akong magtrabaho dito?",
-  "Kutsero: Macario? Buti naman at naisipan mo magtrabaho",
-  "Macario: Kailangan na 'ho eh, nangangailangan si Nanay",
-  "Kutsero: O sige, magsimula ka na kaagad, alagaan mo yung puting kabayo kuwadra",
+  "Macario: Kutsero, maaari po ba akong magtrabaho rito?",
+  "Kutsero: Macario? Mabuti naman at naisipan mong magtrabaho.",
+  "Macario: Kailangan na po, e. Nangangailangan po si Nanay.",
+  "Kutsero: O sige, magsimula ka na agad. Alagaan mo 'yung puting kabayo sa kuwadra.",
 ];
 const MANANAHI = [
-  "Macario: Mananahi, tumatanggap ba kayo ng trabahador?",
-  "Mananahi: Oo naman Macario, kamusta na ang inay mo?",
-  "Macario: Okay lang 'ho, nangangailangan kami ng pera ngayon",
-  "Mananahi: O sige sige, tara dito",
+  "Macario: Mananahi, tumatanggap po ba kayo ng trabahador?",
+  "Mananahi: Oo naman, Macario. Kumusta na ang inay mo?",
+  "Macario: Ayos lang po. Nangangailangan lang po kami ng pera ngayon.",
+  "Mananahi: O, sige, sige. Tara rito.",
 ];
 // The proponents' five lines. Block 59 tells the play between the third
 // and the fourth.
 const NANAY_THANKS_OWN = [
-  "Macario: Nay, nakapag-ipon na ako ng pera para makatulong",
-  "Nanay: Maraming salamat anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?",
-  "Macario: Opo Nay, nagtrabaho ako para sa Kutsero at mananahi",
-  "Nanay: Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay",
-  "Macario: Maraming salamat nay!",
+  "Macario: 'Nay, nakapag-ipon na po ako ng pera para makatulong.",
+  "Nanay: Maraming salamat, anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?",
+  "Macario: Opo, 'Nay. Nagtrabaho po ako sa Kutsero at sa Mananahi.",
+  "Nanay: Ituloy mo lang 'yan, 'nak. Malayo ang mararating mo sa buhay.",
+  "Macario: Maraming salamat po, 'Nay!",
 ];
 const STEP = {
   kutsero: "Maghanap ng trabaho: kausapin ang Kutsero",
@@ -554,16 +558,25 @@ const artDrift = () => {
   ok("the insult becomes a fight with the three siga, on their own art, hearts showing, Macario free to act",
      brawl.count === 3 && brawl.art && brawl.hearts && !brawl.cutscene, brawl);
 
+  // Block 93. She comes from just past the right edge of the screen to a
+  // step in front of him, wherever the fight left him, walking on her
+  // owed walk sheet (the placeholder box), and stands on her own sheet.
   const slide = await page.evaluate(async () => {
     const dec = currentScene.decorations.find((d) => d.id === "nanay");
     for (let i = 0; i < 80 && !dec.moving; i++) await new Promise((r) => setTimeout(r, 50));
     const moving = dec.moving;
-    for (let i = 0; i < 80 && dec.moving; i++) await new Promise((r) => setTimeout(r, 50));
-    return { moving, walkSheet: dec.walkSpriteEl, src: dec.spriteEl.style.backgroundImage,
-             shown: dec.spriteEl.style.display !== "none" };
+    const from = dec.currentX, edge = viewEdges().right;
+    const walkShown = Boolean(dec.walkSpriteEl) && dec.walkSpriteEl.style.display !== "none" &&
+      /nanay-walk\.png/.test(dec.walkSpriteEl.textContent);
+    for (let i = 0; i < 120 && dec.moving; i++) await new Promise((r) => setTimeout(r, 50));
+    const view = viewEdges();
+    return { moving, walkShown, from, edge, gap: dec.currentX - posX, at: dec.currentX, view,
+             src: dec.spriteEl.style.backgroundImage, shown: dec.spriteEl.style.display !== "none" };
   });
-  ok("Nanay slides on with her own sheet, no walk cycle (Block 57)",
-     slide.moving && slide.walkSheet === null && /nanay\.png/.test(slide.src) && slide.shown, slide);
+  ok("Nanay walks on from off the screen as her owed walk's placeholder, and stops a step in front of him (Block 93)",
+     slide.moving && slide.walkShown && slide.from >= slide.edge - 30 && Math.round(slide.gap) === 190 &&
+     slide.at > slide.view.left && slide.at < slide.view.right &&
+     /nanay\.png/.test(slide.src) && slide.shown, slide);
 
   const c2 = await readConversation(page, 4);
   ok("Nanay's arrival, as written, and Macario's Tsk", JSON.stringify(c2.lines) === JSON.stringify(NANAY_ARRIVES), c2.lines);
@@ -799,13 +812,17 @@ const artDrift = () => {
   ok("there is no apple tree to use any more", await page.evaluate(() => !NPCS.some((n) => n.id === "puno")));
 
   await walkTo(page, 3480);
-  ok("beside the horse, the button reads Suklayin", await page.evaluate(() =>
-    document.querySelector("#btn-interact .lbl").textContent) === "Suklayin");
+  ok("beside the horse, the button reads Suklayin, with a brush (Block 93)", await page.evaluate(() =>
+    document.querySelector("#btn-interact .lbl").textContent === "Suklayin" &&
+    document.querySelector("#btn-interact .ico use").getAttribute("href") === "#i-brush"));
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
   const wOpen = await workState(page);
   ok("E opens the work game, with the world blocked", wOpen.up && wOpen.title === "Kabayo" &&
      await page.evaluate(() => uiBlocked), wOpen);
+  // Block 93. The grooming's buttons show a brush, never the sword.
+  const icons = await page.evaluate(() => document.querySelector("#work-hit .ico use").getAttribute("href"));
+  ok("the grooming button shows a brush, not the sword (Block 93)", icons === "#i-brush", icons);
   const x0 = await page.evaluate(() => posX);
   const w2 = await workRound(page, true);
   ok("five good strokes pay the most, 7 barya, and the button said Tapos na",
@@ -863,8 +880,10 @@ const artDrift = () => {
     !canGiveGift(NPCS.find((n) => n.id === "direktor"))));
 
   await walkTo(page, 6540);
-  ok("beside the sewing, the button reads Manahi", await page.evaluate(() =>
-    document.querySelector("#btn-interact .lbl").textContent) === "Manahi");
+  ok("beside the sewing, the button reads Manahi, with a needle, and the table is seen (Block 93)", await page.evaluate(() =>
+    document.querySelector("#btn-interact .lbl").textContent === "Manahi" &&
+    document.querySelector("#btn-interact .ico use").getAttribute("href") === "#i-needle" &&
+    /tahian.png/.test(document.getElementById("npc-tahian").textContent)));
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
   ok("E opens the same game with the sewing's words, played by holding instead", await page.evaluate(() =>
@@ -946,7 +965,18 @@ const artDrift = () => {
   ok("they are the catalogue's kawal: its sheets and its hp (Block 76)",
      kawal.every((e) => e.type === "kawal" && e.kind === "enemy" && e.hp === 2 &&
        /muslim-walk.png$/.test(e.walk) && /muslim-attack.png$/.test(e.sword)), kawal);
-  await page.evaluate(() => ENEMIES.forEach((e) => hitEnemy(e, 99)));
+  // Block 93. The fight leaves him at the stage's edge; he walks back to
+  // his mark before the Sultan returns, and stands (not stuck in the walk)
+  // while they talk. The box is at the top on the stage, and the Sultan,
+  // whose borrowed sheet is small, has no blurred bust.
+  await page.evaluate(() => { posX = 1000; ENEMIES.forEach((e) => hitEnemy(e, 99)); });
+  for (let i = 0; i < 100 && !(await line(page)); i++) await page.waitForTimeout(100);
+  await page.waitForTimeout(300);
+  const markBack = await page.evaluate(() => ({ x: posX, anim: currentAnim, facing,
+    top: document.body.classList.contains("dialogue-top") && dialogueBox.getBoundingClientRect().top < 5,
+    bust: document.getElementById("dialogue-portrait-right").classList.contains("shown") }));
+  ok("after the fight he walks back to his mark, faces the Sultan and stands; the box is at the top; no blurred bust (Block 93)",
+     markBack.x === 440 && markBack.anim === "idle" && markBack.facing === 1 && markBack.top && !markBack.bust, markBack);
   const s3 = await readConversation(page, 5);
   ok("the Sultan comes back and gives his blessing, and the crowd cheers",
      s3.lines.length === 5 && /basbas/.test(s3.lines[3]) && /^Mga Manonood:/.test(s3.lines[4]), s3.lines);
@@ -964,7 +994,12 @@ const artDrift = () => {
   await page.waitForTimeout(400);
   ok("the play is done, and the world is his", await page.evaluate(() =>
     state.flags.naitanghalAngDula === true && !cutscenePlaying));
+  const lgPlay = await log(page);
+  ok("and the log says the way out, at the top (Block 93)",
+     lgPlay.way === "Lumabas ng entablado: pumunta sa kanan", lgPlay);
   await walkTo(page, 1080);
+  const doorIcon = await page.evaluate(() => document.querySelector("#btn-interact .ico use").getAttribute("href"));
+  ok("the door's button shows the door, not the talk bubble (Block 93)", doorIcon === "#i-out", doorIcon);
   await page.keyboard.press("e");
   ok("Lumabas: back on the street by the direktor", await waitForScene(page, "tondo") && (await settle(page), true) &&
      await page.evaluate(() => posX === 13480));
@@ -1086,8 +1121,10 @@ const artDrift = () => {
   ok("they leave, the play step is done, and the world is his",
      await page.evaluate(() => state.flags.nilapitanNgKatipunan === true && !cutscenePlaying &&
        document.getElementById("dec-katipunero").style.display === "none"));
-  ok("the next task is the one waiting on the street",
-     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.kasama]));
+  const lg4 = await log(page);
+  ok("the next task is the one waiting on the street, and the log says the way out of the entablado (Block 93)",
+     JSON.stringify(lg4.current) === JSON.stringify([STEP.kasama]) &&
+     lg4.way === "Lumabas ng entablado: pumunta sa kanan", lg4);
   const lines4 = await page.evaluate(() => ["direktor", "maryam"].map((id) => {
     const n = NPCS.find((x) => x.id === id);
     startDialogue(n);
@@ -1172,8 +1209,11 @@ const artDrift = () => {
      await page.evaluate(() => posX === 420 && facing === -1), { o5: o5.lines, o5b: o5b.lines });
   await settle(page);
   await page.waitForTimeout(300);
-  ok("sworn in; the task is the pamphlets (0/3)", await page.evaluate(() => state.flags.tinanggapSaKatipunan === true) &&
-     JSON.stringify((await log(page)).current) === JSON.stringify([STEP.pamphlets + " (0/3)"]));
+  const lg5 = await log(page);
+  ok("sworn in; the task is the pamphlets (0/3), and the way out the back is said (Block 93)",
+     await page.evaluate(() => state.flags.tinanggapSaKatipunan === true) &&
+     JSON.stringify(lg5.current) === JSON.stringify([STEP.pamphlets + " (0/3)"]) &&
+     lg5.way === "Lumabas sa likod: pumunta sa kaliwa", lg5);
   await walkTo(page, 100);
   await page.keyboard.press("e");
   ok("Lumabas sa likod: onto the street by the back way, short of the mangingisda, facing him",
@@ -1211,6 +1251,12 @@ const artDrift = () => {
   ok("he can run on the street, away from the guards, and not beside one (Block 82)", run.far && !run.near, run);
   const caught = await page.evaluate(async () => {
     const g = GUARDS[0];
+    // Block 93. From full health: health is carried through the whole
+    // act, and a blow landed in an earlier fight before the harness
+    // knocked everyone down (their timing is random) left him on one
+    // heart here now and then, so the catch emptied the hearts and read
+    // as a respawn instead of one heart lost.
+    health = maxHealth; renderHearts();
     const hp0 = Game.health().health, seen0 = Game.stats().detections;
     g.pos = 5300; g.facing = -1; g.patrolFrom = g.patrolTo = 5300;
     posX = 5150; posY = floorHeightAt(posX); velY = 0; onGround = true;

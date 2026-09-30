@@ -39,10 +39,16 @@ How to read the script:
     (stage direction)      what happens, not what is said
 
 Lines of ours are written to the standard in CLAUDE.md, Conventions,
-Writing dialogue. The proponents' lines are kept exactly as given,
-misspellings included, and are never rewritten to match ours.
+Writing dialogue. The proponents' lines are never rewritten to match
+ours. Since Block 93 their spelling and grammar are corrected, at their
+request, with the wording and the meaning kept (po rather than 'ho,
+'Nay, rin and rito after a vowel, 'yung, no "Okay").
 
-Last updated: 30 Sep 2026, Block 92 (tutorials that stop the world until
+Last updated: 30 Sep 2026, Block 93 (the proponents' early lines
+corrected; Nanay comes to Macario wherever the fight left him, walking
+on a placeholder until her walk sheet arrives; the tahian is seen;
+Macario walks back to his mark before the Sultan returns; the way out of
+the entablado and the pulungan is said in the log). Before that, Block 92 (tutorials that stop the world until
 the task is done: walking and jumping after the opening thought, Atake in
 the opening fight, the first red !, talking, and the bag after the stage
 clothes; the savings step is also pinned in the log). Before that, Block 89 (the work is there to be done, not
@@ -144,7 +150,8 @@ with the file name on it.
 
     Macario        the boy, the player. Real art (idle, walk, jump,
                    punch, shooting).
-    Nanay          his mother. Real art; slides rather than walks.
+    Nanay          his mother. Real art standing; walks as a
+                   placeholder box (nanay-walk.png, owed, Block 93).
     Mga Siga       three street toughs, drawn in code (Block 72,
                    draw-siga.js), each with an idle and a walk: the
                    leader in a red panyo with a stalk of grass in his
@@ -208,9 +215,9 @@ tondo, x 900. Plays by itself the first time a student enters Act I.
     (Macario stands alone, facing right. The three siga walk up
     behind him from the left. He turns to face them.)
 
-    Siga: Ano Macario, inaantay mo pa din tatay mo?
+    Siga: Ano, Macario? Hinihintay mo pa rin ang tatay mo?
     Mga Siga: BAHAHAHAHAHAHA!
-    Macario: Isarado mo 'yang bunganga mo!
+    Macario: Isara mo 'yang bunganga mo!
 
     (Block 87. The insult ends in a fight. The three siga step out of
     the scenery and come at him; the student fights them, with the fight
@@ -219,24 +226,31 @@ tondo, x 900. Plays by itself the first time a student enters Act I.
     he taps decides where it leaves him. When the last one falls the
     music goes back to calm, and:)
 
-    (Nanay comes in from the right. He turns to her.)
+    (Nanay comes in from the right, from just past the edge of the
+    screen, and stops a step in front of him, wherever the fight left
+    him (Block 93). He turns to her. She walks on the placeholder of
+    her owed walk sheet.)
 
-    Nanay: Macario, uwi na, may kailangan akong sabihin sayo
-    Nanay: Wag mo pansinin yung mga yan
-    Macario: Tsk
+    Nanay: Macario, umuwi na tayo. May kailangan akong sabihin sa'yo.
+    Nanay: Tama na 'yan, anak. Huwag mo na silang pansinin.
+
+    (Block 93. Her line was "Wag mo pansinin yung mga yan", said
+    before Block 87 put a fight in front of it; it now ends the fight
+    rather than a taunt.)
+    Macario: Tsk.
 
     (He and Nanay walk off together to the right, to x 2000, and the
     siga are left behind. There, outside:)
 
-    Macario: Nay, ano po ba yung sasabihin niyo?
-    Nanay: Macario, anak, naubos na yung pera natin sa pagbili ko ng Cedula...
-    Nanay: Wala na tayong pambili ng bigas, humingi ako ng ulam sa kapitbahay para sa hapunan natin ngayon...
-    Nanay: Pasensya ka na anak ha?
-    Macario: Okay lang 'Nay, magta-trabaho na po ako para makatulong sainyo
-    Nanay: Sigurado ka ba diyan 'nak?
-    Macario: Opo inay, ako na po ang bahala
+    Macario: 'Nay, ano po ba 'yung sasabihin n'yo?
+    Nanay: Macario, anak, naubos na 'yung pera natin sa pagbili ko ng cedula...
+    Nanay: Wala na tayong pambili ng bigas. Humingi na lang ako ng ulam sa kapitbahay para sa hapunan natin ngayon...
+    Nanay: Pasensya ka na, anak, ha?
+    Macario: Ayos lang po, 'Nay. Magtatrabaho na po ako para makatulong sa inyo.
+    Nanay: Sigurado ka ba diyan, 'nak?
+    Macario: Opo, 'Nay. Ako na po ang bahala.
 
-    Macario (sa isip): Kailangan ko ng pera para matulungan si Nanay, saan kaya ako makakahanap ng trabaho?
+    Macario (sa isip): Kailangan ko ng pera para matulungan si Nanay. Saan kaya ako makakahanap ng trabaho?
 
 Completes: Umuwi kasama si Nanay. Nanay stays at x 2000 for the rest of
 the act. A reload during the opening plays it again from the black
@@ -246,10 +260,10 @@ card; a reload after the talk plays only the thought.
 
 tondo, x 3300. Walk up and talk (Usap).
 
-    Macario: Kutsero, maaari po ba akong magtrabaho dito?
-    Kutsero: Macario? Buti naman at naisipan mo magtrabaho
-    Macario: Kailangan na 'ho eh, nangangailangan si Nanay
-    Kutsero: O sige, magsimula ka na kaagad, alagaan mo yung puting kabayo kuwadra
+    Macario: Kutsero, maaari po ba akong magtrabaho rito?
+    Kutsero: Macario? Mabuti naman at naisipan mong magtrabaho.
+    Macario: Kailangan na po, e. Nangangailangan po si Nanay.
+    Kutsero: O sige, magsimula ka na agad. Alagaan mo 'yung puting kabayo sa kuwadra.
   + Kutsero: Suklayin mo siya. Bawat linis na matapos mo, may bayad ka sa akin.
 
 Completes: Maghanap ng trabaho: kausapin ang Kutsero.
@@ -291,17 +305,18 @@ Repeat lines.
 tondo, x 6400. Talk, at any time after the first step: she does not wait
 on the Kutsero.
 
-    Macario: Mananahi, tumatanggap ba kayo ng trabahador?
-    Mananahi: Oo naman Macario, kamusta na ang inay mo?
-    Macario: Okay lang 'ho, nangangailangan kami ng pera ngayon
-    Mananahi: O sige sige, tara dito
+    Macario: Mananahi, tumatanggap po ba kayo ng trabahador?
+    Mananahi: Oo naman, Macario. Kumusta na ang inay mo?
+    Macario: Ayos lang po. Nangangailangan lang po kami ng pera ngayon.
+    Mananahi: O, sige, sige. Tara rito.
   + Mananahi: Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ang bawat matapos mo.
 
 Completes: Kausapin ang Mananahi.
 
 ### 6. The sewing, and being stopped
 
-tondo, x 6540, beside her. The same game as the horse with the sewing's
+tondo, x 6540, beside her, at her table (tahian.png, owed: a
+placeholder box until it is drawn, Block 93). The same game as the horse with the sewing's
 words, the button reading Manahi, played by holding the button to fill
 the bar and letting go over the green (Block 90), a cloth that gains a
 stitch at each stroke; the same pay (4 to 7 a round, 25 in
@@ -411,7 +426,8 @@ gun on a stage. Running out of hearts starts the fight again with the
 fallen ones still down. The fight music (intense.mp3) plays until the
 last one falls.
 
-    (The Sultan comes back to a stage of fallen soldiers.)
+    (Macario walks back to his mark beside Maryam, and the Sultan comes
+    back to a stage of fallen soldiers; Block 93.)
 
   + Sultan: Natalo... ang lahat ng aking kawal?
   + Sultan: Kung ganyan katapang ang pag-ibig mo sa aking anak, sino ako para humadlang?
@@ -442,7 +458,8 @@ In the wings. (Macario beside the direktor, Maryam behind him.)
   + Direktor: At kung gusto mo, may puwesto ka sa kompanya namin. Pag-isipan mo, ha?
 
 Completes: Gumanap bilang Don Rodrigo sa dula. The student is free;
-Lumabas at the right edge leads back to the street. A reload before the
+Lumabas at the right edge leads back to the street, and the log says so
+at the top: "Lumabas ng entablado: pumunta sa kanan" (Block 93). A reload before the
 pay plays the play again from backstage.
 
 The play's ending is a blessing, not the moro-moro's traditional
@@ -470,15 +487,15 @@ play is done and he holds 100 barya (Block 89): the play's 79 to 110
 and what the work brought in, so anyone short goes back to the horse
 or the sewing. 100 barya go to Nanay; Macario keeps the rest.
 
-    Macario: Nay, nakapag-ipon na ako ng pera para makatulong
-    Nanay: Maraming salamat anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?
-    Macario: Opo Nay, nagtrabaho ako para sa Kutsero at mananahi
+    Macario: 'Nay, nakapag-ipon na po ako ng pera para makatulong.
+    Nanay: Maraming salamat, anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?
+    Macario: Opo, 'Nay. Nagtrabaho po ako sa Kutsero at sa Mananahi.
   + Macario: Tapos, Nay... umarte pa po ako sa entablado.
   + Nanay: Ikaw? Sa entablado?
   + Macario: Nagkasakit po kasi 'yung bida nila. Ako na lang po ang ipinalit ng direktor.
   + Nanay: Kaya pala hindi mawala-wala 'yang ngiti mo.
-    Nanay: Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay
-    Macario: Maraming salamat nay!
+    Nanay: Ituloy mo lang 'yan, 'nak. Malayo ang mararating mo sa buhay.
+    Macario: Maraming salamat po, 'Nay!
 
 Completes: Mag-ipon para kay Nanay (n/100), which since Block 92 is
 also a second line in the log from the moment he has spoken to the
@@ -670,7 +687,8 @@ ours.
   + Macario: Opo. Ako na po ang bahala.
 
 Completes: Sumapi sa Katipunan. The student is free; the way out,
-Lumabas sa likod, leads onto the street at x 4100, short of the
+Lumabas sa likod ("Lumabas sa likod: pumunta sa kaliwa" at the top of
+the log, Block 93), leads onto the street at x 4100, short of the
 mangingisda, facing right.
 
 ### 15. The pamphlets
@@ -750,7 +768,7 @@ Nanay:
 
   + Nanay: Mag-iingat ka sa trabaho, anak. At umuwi ka bago dumilim.
     (before the savings)
-    Nanay: Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay
+    Nanay: Ituloy mo lang 'yan, 'nak. Malayo ang mararating mo sa buhay.
     (after)
   + Nanay: Ginagabi ka na naman, anak. Mag-ingat ka sa mga guardia civil sa labas.
     (once he is sworn in; she does not know)

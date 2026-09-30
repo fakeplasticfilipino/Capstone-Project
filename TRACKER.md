@@ -9,15 +9,21 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 30 Sep 2026, after Block 92 (enemies dash from further with
-a red ! first, tutorials that stop the world, the savings pinned in the
-log; not yet seen on the phone). Before that, Block 91 (the legacy stage
+Last updated: 30 Sep 2026, after Block 93 (the Act I polish list: the
+stuck walk, Nanay coming to Macario and walking as a placeholder, a new
+jump sound, the proponents' early lines corrected, icons by action, the
+trees' roots, the tahian seen, enemies that move between blows and hop
+over him, the first play's walk back to the mark, the way out in the
+log, the stage's dialogue at the top; not yet seen on the phone).
+Before that, Block 92 (enemies dash from further with a red ! first,
+tutorials that stop the world, the savings pinned in the log). Before
+that, Block 91 (the legacy stage
 performance, the night backdrop layer, the death pose and the unused
 Tindero removed; nine pictures owed). Before that, Block 90 (the work
 gets harder, sewing is held, each job has a picture), Block 89 (the work
 is there to be done), Block 88 (one combat template), Block 87 (the
 opening fight, busts) and Block 86 (the dash attack).
-test.js 763 passed, 0 failed; verify_new_scene.js 212 passed,
+test.js 767 passed, 0 failed; verify_new_scene.js 216 passed,
 0 failed.
 
 ## Start here
@@ -122,12 +128,12 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v57    js/game.js v90       js/shell.js v20
+    css/style.css v58    js/game.js v91       js/shell.js v20
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v63  content/items.js v13  content/act2-4.js v1
+    content/act1.js v64  content/items.js v13  content/act2-4.js v1
     content/enemies.js v2   content/questions.js v1
     js/asset-manifest.js v4 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 31 (in js/game.js)
+    ASSET_VERSION 32 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v1
@@ -136,9 +142,26 @@ Current versions, which index.html must match on every push:
 
 In order.
 
-1. Look at Blocks 90 to 92 on the phone, in landscape, from a private
+1. Look at Blocks 90 to 93 on the phone, in landscape, from a private
 tab, after the push, with the sound on. Play from the start. What to
 look for, and what failure looks like (Blocks 80 to 85 are confirmed):
+
+    Block 93, the polish list: walk while a scene takes over (the end
+      of a fight, a door): he stands, never walks on the spot. After
+      the opening fight, fight your way far left: Nanay still walks on
+      from the right edge of the screen, as a dashed box naming
+      nanay-walk.png, and stops a step from him. The jump sounds like a
+      foot on dirt, not a boing. Suklayin shows a brush, Manahi a
+      needle, a door the door icon, never the sword. No tan notches at
+      the bottom of any tree. The tahian is a dashed box beside the
+      Mananahi. In a fight, enemies back off and shuffle between
+      strikes, and now and then one hops over Macario and strikes from
+      behind after a red !. In the first play he walks back beside
+      Maryam before the Sultan returns, and the lines are at the top of
+      the screen on the stage. After the play the log's first line is
+      a green arrow, "Lumabas ng entablado: pumunta sa kanan". Behind a
+      crate on the pamphlet run he is half hidden and dimmed. Failure:
+      any of these not so, or an enemy that hurts him with a hop.
 
     The opening: the siga's insult, then a fight with the three (fight
       music, hearts): the world waits, a card asks for Atake with the
@@ -202,10 +225,11 @@ outside the story and returns to the same spot, so it harms nothing,
 but before the pilot either keep it, hide it (one line in shell.js,
 _openSettings), or remove testRoom from content/act1.js.
 
-6. Art from the artist: ART.md's Owed list, nine pictures (the Mananahi,
-the direktor, the Katipunero, the Kasama, the Mabalasig, the three who
-take the pamphlets and the pulungan's painting), and a side-view walk
-for Nanay. PNGs with transparency; each goes through ART.md's steps.
+6. Art from the artist: ART.md's Owed list, eleven pictures (the
+Mananahi, the direktor, the Katipunero, the Kasama, the Mabalasig, the
+three who take the pamphlets, the pulungan's painting, Nanay's
+side-view walk and the Mananahi's sewing table, the last two named in
+Block 93 so they show as placeholders). PNGs with transparency; each goes through ART.md's steps.
 
 7. Then the remaining polish, the pilot, and Acts II to IV against the
 source material, Act II starting from STORY.md, Threads left open.
@@ -219,6 +243,50 @@ commits; older README versions), and every commit carries the author
 name and email. Only a history rewrite and a force push purges them, and
 the GitHub username stays in the repository's URL either way. The
 proponent has not yet decided whether to rewrite the history.
+
+## Act I polish list (Block 93)
+
+Agreed 30 Sep 2026 after a full playthrough: the proponent's own list
+(1 to 12) and what the playthrough found (13 to 17). Each line says
+what done is. Built and checked by both suites and in headless
+screenshots; not yet seen on the phone (Next action 1). Why each was
+built as it was: DECISIONS.md, Block 93.
+
+    1   Macario stuck in the walk pose when a cutscene starts (and no
+        jump pose in the scripted leap): the loop picks the pose in a
+        cutscene as if nothing were held. (COMPLETE)
+    2   Nanay's walk: a placeholder walk sheet (nanay-walk.png, owed)
+        shown while she moves. (COMPLETE)
+    3   Nanay comes in after the opening fight relative to Macario, from
+        just off the screen, wherever the fight left him. (COMPLETE)
+    4   The jump's sound replaced; the proponent dislikes it. (COMPLETE)
+    5   The proponents' early lines corrected (spelling, po, 'Nay,
+        rin/rito, no "Okay"), meaning kept. (COMPLETE)
+    6   Icons by action: a brush for Suklayin, a needle for Manahi and
+        Hilahin, the door for Lumabas, not the sword or the talk bubble.
+        (COMPLETE)
+    7   The shadow trees' roots cut holes at the base (opposite winding
+        in one path). (COMPLETE)
+    8   The tailor's table shown: a placeholder (tahian.png, owed).
+        (COMPLETE)
+    9   Enemies move between attacks: they back off and shuffle while
+        cooling down, and now and then hop over Macario to strike from
+        behind. (COMPLETE)
+    10  After the first play's fight Macario walks back to his mark in the
+        middle before the Sultan returns. (COMPLETE)
+    11  A line in the log says the way out of the entablado and the
+        pulungan while the student is free there. (COMPLETE)
+    12  Missing sprites: left for the artist (ART.md). (BLOCKED)
+    13  Nanay's "Wag mo pansinin" after the siga are already beaten:
+        reworded to fit the fight. (COMPLETE)
+    14  The dialogue box covers the actors on the stage: the box moves to
+        the top of the screen in the entablado. (COMPLETE)
+    15  The Sultan's portrait is a blurry crop of a small sprite: no
+        portrait from a sheet that low. (COMPLETE)
+    16  Hiding: the crate drawn over Macario, and Macario dimmed while
+        hidden. (COMPLETE)
+    17  The log still says "Umuwi kasama si Nanay" during the walking and
+        jumping lessons: the step is done before them. (COMPLETE)
 
 ## The milestone
 
@@ -362,7 +430,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (763 and 212 checks) |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 216 checks) |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -482,6 +550,7 @@ machine, the assessment module.
         backdrop layer and the unused Tindero file removed
     92  enemy dash and red !, tutorials that stop the world, the savings
         pinned in the log
+    93  the Act I polish list (TRACKER.md, above; DECISIONS.md)
 
 ## Blocks remaining
 
@@ -609,11 +678,11 @@ From the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js (763 checks) drives the shipping index.html with a stubbed
+test.js (767 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (212 checks) drives the real
+what is covered. verify_new_scene.js (216 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest and the Test Room, and checks that every line of the content is
@@ -624,7 +693,11 @@ other than "0 failed" is a regression, with one caution learned on
 timing check (the pamphlet guard catch) or lost a page ("Page crashed")
 once, and passed on the next run; rerun before believing either. test.js
 has not done it. Both never touch the live
-project. Both are green as of Block 85.
+project. Both are green as of Block 93. The guard-catch flake was
+traced in Block 93: a siga's blow landing, at random, in the moment
+before the harness knocks the opening fight down left Macario short of
+hearts for the rest of the act, so the catch emptied them. That check
+now starts from full health.
 
 A check that clicks, or reads pixels, is worth more than one that reads
 a style (the dead Atake button would have passed any style assertion).

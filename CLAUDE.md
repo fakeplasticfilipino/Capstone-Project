@@ -401,6 +401,13 @@ Scene shape:
       night: true | { requiresFlag, unlessFlag,  optional; moonlit backdrop
                music },                          and its own track (Block 85)
       greyFilter: true,                          optional; greys backdrop + ground
+      wayOut: "Lumabas ...: pumunta sa kanan",   optional; said at the top of
+                                                 the log while the student is
+                                                 free in the room (Block 93)
+      dialogueAtTop: true,                       optional; the dialogue box at
+                                                 the top of the screen, for a
+                                                 room whose people stand low
+                                                 (the stage; Block 93)
       backdrop: { src },                         optional; own picture, drawn once
       panels: ["assets/...jpg", ...],            optional; paintings side by
       panelWidth: 1450,                          side, a shadow tree at each
@@ -536,7 +543,11 @@ forgets the flag would take a heart the student cannot see.
 There is no guide (removed in Block 69, at the proponent's direction):
 nothing on screen says where to go next, and a student finds each
 person from what the story says. Block 42's guide list is gone from
-the act format and the engine.
+the act format and the engine. The one exception is a room's way out
+(wayOut, Block 93, at the proponent's request): a line with an arrow at
+the top of the log, shown once no script of the scene is pending or
+playing, because a room the story walks him into gives no other sign of
+its door.
 
 An act with an empty objectives array can never complete, which is how
 Acts II through IV are kept from reporting progress they have not made.
@@ -635,6 +646,10 @@ NPC shape:
       interactLabel: "Pumitas",                  instead of a conversation,
                                                  and the button reads this
                                                  (Block 57)
+      interactIcon: "i-brush",                   optional; that button's icon
+                                                 (default i-hand); talking is
+                                                 i-talk, a door i-out
+                                                 (Block 93)
       scenery: true,                             optional; no picture and no
                                                  placeholder, only a body to
                                                  reach (Block 69)
@@ -754,7 +769,8 @@ of them plain globals in game.js, like addQuest:
                                  doneText(good), rounds, mode ("tap", or
                                  "hold": hold to fill, let go over the
                                  patch), scene ("horse" with art: the
-                                 horse's sheet, or "cloth"), snapText;
+                                 horse's sheet, or "cloth"), snapText,
+                                 icon (the button's symbol; Block 93);
                                  resolves with the good strokes, or -1 if
                                  he left before the last. One game for
                                  every repeatable job
@@ -789,6 +805,12 @@ of them plain globals in game.js, like addQuest:
                                  (Block 58); revealNpcsByFlag calls it
     unlockGlossary(id)           earns a word in the Talaan, once
                                  (Block 68)
+    playerX()                    where Macario stands now, and
+    viewEdges()                  { left, right } of what the screen shows,
+    placeDecoration(id, x)       and a decoration put there at once: for
+                                 someone who comes to him wherever a
+                                 fight left him (Block 93), rather than to
+                                 a fixed spot
 
 scripts (Block 52) are how a scene plays one of these by itself. The
 first entry whose requiresFlag is set (or that has none) and whose
@@ -819,7 +841,11 @@ rather than patrol and are a separate list from guards: they walk at
 Macario and, within ENEMY_COMMIT_RANGE (230), decide: a red "!" over
 the head (the tell, ATTACK_TELL_MS), then a dash of ENEMY_DASH_DISTANCE
 (220) in ENEMY_DASH_MS (200) the way they faced, hitting whoever it
-touches. A punch is one
+touches. Between blows (Block 93) an enemy is never still: while it
+cools down it backs off to ENEMY_KEEP (150) or shuffles, and once it
+has struck, a decision may be (ENEMY_HOP_CHANCE) a hop clean over
+Macario to land ENEMY_HOP_PAST (90) beyond him, which hurts nobody and
+is always followed by a strike, the same tell and dash. A punch is one
 point, a shot two, and a hit knocks them back and cancels the decision. Their speed is scaled by act number exactly as guard
 speed is. Running out of health restarts the fight rather than ending it,
 with the beaten ones staying beaten, and no exit is offered while any of
@@ -1292,7 +1318,10 @@ Tagalog, and a teacher is not a player.
 Writing dialogue. The proponent's standard, set by the direktor's scene
 and the play in Block 59 ("organic and fresh"): every line a session
 writes for a character is held to it. The proponents' own lines are
-never rewritten to match; ours around them are. What it means in
+never rewritten to match; ours around them are. Their spelling and
+grammar are corrected since Block 93, at their request, with the
+wording and meaning kept: po (not 'ho) and 'Nay to his elders, rin and
+rito after a vowel, 'yung and sa'yo, no "Okay". What it means in
 practice, each one taken from those scenes:
 
   People talk; they do not explain. Information arrives because
@@ -1734,8 +1763,9 @@ look, by system:
     melee, shooting, combat               Blocks 17, 27, 28, 35, 40, 60,
                                           71, 75, 76, 86 (the dash),
                                           88 (one template), 92 (the
-                                          enemy dash and the red !)
-    audio and sound effects               Blocks 30, 58, 60, 65, 81
+                                          enemy dash and the red !), 93
+                                          (moving between blows, the hop)
+    audio and sound effects               Blocks 30, 58, 60, 65, 81, 93
     scenes, exits, scripts, cutscenes     Blocks 19, 31, 34, 35, 52, 57
     guards, stealth and sight             Blocks 37, 38, 42, 46, 47, 73,
                                           75, 81, 82 (running near them)
@@ -1754,6 +1784,7 @@ look, by system:
     the work game and the jobs            Blocks 89, 90
     dialogue portraits                    Blocks 87, 88
     tutorials                             Block 92
+    the Act I polish list                 Block 93
     what was removed (stage, night,
       death pose)                         Block 91
     questions, replays, Talaan            Blocks 64, 68, 69, 70

@@ -61,13 +61,19 @@ def trunk(top, base_half, top_half, lean, flare=22, wobble=(4.0, 3.1, 0.0), neck
     # Roots flaring into the ground, so the trunk sits in the road rather
     # than on it: three of them, uneven, none reaching past the base's own
     # width by more than half again.
+    #
+    # Block 93. Every root is wound the same way round as the trunk. They
+    # share one path, whose fill is nonzero, so a root wound the other way
+    # cancelled the trunk where they overlapped and cut a triangle out of
+    # the base: the right-hand two did, on every tree, until this.
     for side, reach, rise in ((-1, 1.52, 30), (1, 1.34, 24), (1, 1.72, 16)):
-        d += " " + poly([
+        pts = [
             (CX + side * base_half * reach, BASE_Y),
             (CX + side * base_half * (reach * 0.66), BASE_Y - rise),
             (CX + side * base_half * 0.34, BASE_Y - rise * 0.35),
             (CX, BASE_Y),
-        ])
+        ]
+        d += " " + poly(pts if side < 0 else pts[::-1])
     return d
 
 

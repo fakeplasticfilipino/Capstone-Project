@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Long Road</title>
-  <link rel="stylesheet" href="css/style.css?v=57" />
+  <link rel="stylesheet" href="css/style.css?v=58" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -38,6 +38,9 @@
     <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-jump" viewBox="0 0 24 24"><path d="M12 4.5v10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M7.5 9 12 4.5 16.5 9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19.5h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
     <symbol id="i-blade" viewBox="0 0 24 24"><path d="M21 2.6 20.2 8.4 11.6 15.4 8.6 12.4Z" fill="currentColor" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9 12 4.7 16.3l3 3L12 15" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/><path d="m5.4 19-2.4 2.4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-brush" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="5" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 14v5M9.3 14v5M12.6 14v5M15.9 14v5M19 14v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 9V6.5a1.5 1.5 0 0 1 1.5-1.5h5A1.5 1.5 0 0 1 16 6.5V9" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-needle" viewBox="0 0 24 24"><path d="M4 20 17.5 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="18.8" cy="5.2" rx="2.2" ry="1.3" transform="rotate(-45 18.8 5.2)" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M18.5 5.5c2 3 1 6-2 7s-5 3-4 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2 2"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11m0-1.5V4a1.5 1.5 0 0 1 3 0v7m0-5.5a1.5 1.5 0 0 1 3 0V12m0-3.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.5a6 6 0 0 1-4.9-2.5L4.8 14a1.6 1.6 0 0 1 2.6-1.8L8 13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-talk" viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4H6.5A2.5 2.5 0 0 1 4 13.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
     <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4M5.3 5.3l2.8 2.8M15.9 15.9l2.8 2.8M18.7 5.3l-2.8 2.8M8.1 15.9l-2.8 2.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="butt"/></symbol>
     <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
@@ -173,7 +176,7 @@
         <p id="work-result" class="shell-sub"></p>
         <div id="work-actions">
           <button id="work-hit" class="shell-btn shell-btn-primary" type="button">
-            <span class="ico"><svg aria-hidden="true"><use href="#i-blade"></use></svg></span><span class="lbl"></span>
+            <span class="ico"><svg aria-hidden="true"><use href="#i-hand"></use></svg></span><span class="lbl"></span>
           </button>
           <button id="work-stop" class="shell-btn shell-btn-ghost" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
@@ -580,14 +583,14 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="content/enemies.js?v=2"></script>
-  <script src="content/act1.js?v=63"></script>
+  <script src="content/act1.js?v=64"></script>
   <script src="content/act2.js?v=1"></script>
   <script src="content/act3.js?v=1"></script>
   <script src="content/act4.js?v=1"></script>
   <script src="content/items.js?v=13"></script>
   <script src="content/questions.js?v=1"></script>
   <script src="js/asset-manifest.js?v=4"></script>
-  <script src="js/game.js?v=90"></script>
+  <script src="js/game.js?v=91"></script>
   <script src="js/acts.js?v=14"></script>
   <script src="js/inventory.js?v=11"></script>
   <script src="js/assessment.js?v=5"></script>

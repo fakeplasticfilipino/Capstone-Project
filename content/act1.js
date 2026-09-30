@@ -96,12 +96,15 @@ const STREET_SKY = "#51a6ea";
 // with only src, frames 1 and fps 1 names art that does not exist yet
 // and is drawn as the placeholder box (see the header).
 
-// Nanay's real sheet (5 by 3, 14 frames). Block 57: she slides on with
-// it rather than walking, at the proponent's direction.
+// Nanay's real sheet (5 by 3, 14 frames). Block 57: she slid on with
+// it rather than walking. Block 93: a walk sheet is named for her, shown
+// while she moves, and owed (ART.md), so until it arrives she walks as
+// the placeholder box, at the proponent's direction.
 const NANAY = {
   src: "assets/sprites/characters/nanay.png", frames: 14, fps: 6, columns: 5,
   contentTop: 45, contentHeight: 166, footX: 127,
 };
+const NANAY_WALK = { src: "assets/sprites/characters/nanay-walk.png", frames: 1, fps: 1 };
 
 // The three siga (Block 72), each an idle sheet and a walk sheet drawn
 // by _dev/tools/draw-siga.js: the leader in the red panyo, the big one
@@ -192,6 +195,9 @@ const APPROACH_X = 700;
 
 // Where Macario stops beside someone he has walked or been sent to.
 const BESIDE = 120;
+// Block 93. How far in front of him Nanay stops when she comes for him
+// after the opening fight (the old fixed spots, 900 and 1090, apart).
+const NANAY_MEETS = 190;
 
 // Block 80. The Kasama waits on the street "bago ang entablado", between
 // the last join (13050) and the direktor, left of him.
@@ -250,6 +256,7 @@ const HORSE_JOB = {
   title: "Kabayo",
   hint: "Suklayin siya kapag nasa berde ang guhit.",
   verb: "Suklayin",
+  icon: "i-brush",
   scene: "horse",
   art: KABAYO,
   hitText: "Hiiiii!",
@@ -264,6 +271,7 @@ const SEWING_JOB = {
   title: "Pananahi",
   hint: "Hawakan ang pindutan, bitawan kapag nasa berde.",
   verb: "Hilahin",
+  icon: "i-needle",
   mode: "hold",
   scene: "cloth",
   snapText: "Napatid ang sinulid!",
@@ -277,6 +285,7 @@ const SEWING_JOB = {
 const SEWING_BEFORE_ERRAND = 2;
 const SEWING_FLAGS = ["natapusanNgTahi1", "natapusanNgTahi2"];
 const TAHIAN_X = 6400 + 140; // the sewing table, beside the Mananahi
+const TAHIAN = { src: "assets/sprites/scenery/tahian.png", frames: 1, fps: 1 };
 
 // The direktor's costumes are the one delivery, and the last.
 const DIREKTOR_FLAG = "naihatidKay_direktor";
@@ -330,9 +339,9 @@ async function openingOnTheStreet() {
   await wait(300);
 
   await playDialogue([
-    { speaker: "Siga", text: "Ano Macario, inaantay mo pa din tatay mo?" },
+    { speaker: "Siga", text: "Ano, Macario? Hinihintay mo pa rin ang tatay mo?" },
     { speaker: "Mga Siga", text: "BAHAHAHAHAHAHA!" },
-    { speaker: "Macario", text: "Isarado mo 'yang bunganga mo!" },
+    { speaker: "Macario", text: "Isara mo 'yang bunganga mo!" },
   ]);
 
   // The insult ends in a fight (Block 87): the three step out of the
@@ -353,15 +362,20 @@ async function openingOnTheStreet() {
   turnPlayer(1);
   await wait(300);
 
-  // Nanay, from the right. She slides on (Block 57, no walk sheet).
+  // Nanay, from the right. Block 93: from just past the edge of the
+  // screen to a step in front of him, wherever the fight left him; a
+  // fixed spot put her off screen when he had fought his way left. She
+  // walks on the owed walk sheet (a placeholder box until it arrives).
+  const here = playerX();
+  placeDecoration("nanay", Math.max(here + NANAY_MEETS, viewEdges().right + 80));
   showDecoration("nanay", true);
-  await moveDecoration("nanay", 1090, 170);
+  await moveDecoration("nanay", here + NANAY_MEETS, 170);
   await wait(300);
 
   await playDialogue([
-    { speaker: "Nanay", text: "Macario, uwi na, may kailangan akong sabihin sayo" },
-    { speaker: "Nanay", text: "Wag mo pansinin yung mga yan" },
-    { speaker: "Macario", text: "Tsk" },
+    { speaker: "Nanay", text: "Macario, umuwi na tayo. May kailangan akong sabihin sa'yo." },
+    { speaker: "Nanay", text: "Tama na 'yan, anak. Huwag mo na silang pansinin." },
+    { speaker: "Macario", text: "Tsk." },
   ]);
 
   // They walk away together, the siga left behind off screen.
@@ -374,13 +388,13 @@ async function openingOnTheStreet() {
   await wait(300);
 
   await playDialogue([
-    { speaker: "Macario", text: "Nay, ano po ba yung sasabihin niyo?" },
-    { speaker: "Nanay", text: "Macario, anak, naubos na yung pera natin sa pagbili ko ng Cedula..." },
-    { speaker: "Nanay", text: "Wala na tayong pambili ng bigas, humingi ako ng ulam sa kapitbahay para sa hapunan natin ngayon..." },
-    { speaker: "Nanay", text: "Pasensya ka na anak ha?" },
-    { speaker: "Macario", text: "Okay lang 'Nay, magta-trabaho na po ako para makatulong sainyo" },
-    { speaker: "Nanay", text: "Sigurado ka ba diyan 'nak?" },
-    { speaker: "Macario", text: "Opo inay, ako na po ang bahala" },
+    { speaker: "Macario", text: "'Nay, ano po ba 'yung sasabihin n'yo?" },
+    { speaker: "Nanay", text: "Macario, anak, naubos na 'yung pera natin sa pagbili ko ng cedula..." },
+    { speaker: "Nanay", text: "Wala na tayong pambili ng bigas. Humingi na lang ako ng ulam sa kapitbahay para sa hapunan natin ngayon..." },
+    { speaker: "Nanay", text: "Pasensya ka na, anak, ha?" },
+    { speaker: "Macario", text: "Ayos lang po, 'Nay. Magtatrabaho na po ako para makatulong sa inyo." },
+    { speaker: "Nanay", text: "Sigurado ka ba diyan, 'nak?" },
+    { speaker: "Macario", text: "Opo, 'Nay. Ako na po ang bahala." },
   ]);
 
   // From here she is someone to talk to. The flag is saved now, so a
@@ -401,8 +415,13 @@ async function thinkingAboutWork(alreadyHeld) {
   if (!alreadyHeld) setCutscene(true);
   await wait(300);
   await playDialogue([
-    { speaker: "Macario (sa isip)", text: "Kailangan ko ng pera para matulungan si Nanay, saan kaya ako makakahanap ng trabaho?" },
+    { speaker: "Macario (sa isip)", text: "Kailangan ko ng pera para matulungan si Nanay. Saan kaya ako makakahanap ng trabaho?" },
   ]);
+  // Block 93. The step is done with the thought, before the lessons, so
+  // the log already names the Kutsero while he learns to walk there (the
+  // script's doneFlag sets it again, harmlessly, when it resolves).
+  state.flags.nagpasyangMagtrabaho = true;
+  markDirty();
   setCutscene(false);
   // Block 92. The first things a student needs, each waiting for him.
   await teach("lakad");
@@ -518,8 +537,11 @@ async function thePlay() {
 
   // The Sultan comes back to a stage of fallen soldiers. A quick fight
   // can end before he is off, and two walks at once would fight over
-  // him, so he finishes leaving first.
-  await sultanOff;
+  // him, so he finishes leaving first. Block 93: meanwhile Macario walks
+  // back to his mark beside Maryam, as he does after Principe Baldovino;
+  // the fight could leave him at the edge of the stage, or on the very
+  // spot the Sultan walks back to.
+  await Promise.all([sultanOff, movePlayer(STAGE_PLAY_X, 220)]);
   showDecoration("sultan", true);
   turnPlayer(1);
   await moveDecoration("sultan", SULTAN_MARK, 200);
@@ -855,6 +877,7 @@ async function workAt(job) {
     title: job.title,
     hint: job.hint,
     verb: job.verb,
+    icon: job.icon,
     mode: job.mode,
     scene: job.scene,
     art: job.art,
@@ -1088,7 +1111,7 @@ window.ACT_1 = {
         // Nanay while the opening moves her: off to the right, hidden
         // until she comes to call him home. The NPC below takes over
         // once she has stopped.
-        { id: "nanay", x: 1750, hidden: true, animation: NANAY },
+        { id: "nanay", x: 1750, hidden: true, animation: NANAY, walkAnimation: NANAY_WALK },
       ],
       scripts: [
         { unlessFlag: "nakausapSiNanaySaBahay", doneFlag: "nagpasyangMagtrabaho",
@@ -1128,7 +1151,7 @@ window.ACT_1 = {
             {
               skipIfFlag: "tinanggapSaKatipunan",
               lines: [
-                { speaker: "Nanay", text: "Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay" },
+                { speaker: "Nanay", text: "Ituloy mo lang 'yan, 'nak. Malayo ang mararating mo sa buhay." },
               ],
             },
             {
@@ -1147,15 +1170,15 @@ window.ACT_1 = {
             // The proponents' lines, with four of ours (PLACEHOLDER) after
             // the third, for the play Block 59 added.
             responseLines: [
-              { speaker: "Macario", text: "Nay, nakapag-ipon na ako ng pera para makatulong" },
-              { speaker: "Nanay", text: "Maraming salamat anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?" },
-              { speaker: "Macario", text: "Opo Nay, nagtrabaho ako para sa Kutsero at mananahi" },
+              { speaker: "Macario", text: "'Nay, nakapag-ipon na po ako ng pera para makatulong." },
+              { speaker: "Nanay", text: "Maraming salamat, anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?" },
+              { speaker: "Macario", text: "Opo, 'Nay. Nagtrabaho po ako sa Kutsero at sa Mananahi." },
               { speaker: "Macario", text: "Tapos, Nay... umarte pa po ako sa entablado." },
               { speaker: "Nanay", text: "Ikaw? Sa entablado?" },
               { speaker: "Macario", text: "Nagkasakit po kasi 'yung bida nila. Ako na lang po ang ipinalit ng direktor." },
               { speaker: "Nanay", text: "Kaya pala hindi mawala-wala 'yang ngiti mo." },
-              { speaker: "Nanay", text: "Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay" },
-              { speaker: "Macario", text: "Maraming salamat nay!" },
+              { speaker: "Nanay", text: "Ituloy mo lang 'yan, 'nak. Malayo ang mararating mo sa buhay." },
+              { speaker: "Macario", text: "Maraming salamat po, 'Nay!" },
             ],
             // Block 80. And then four years pass (fourYearsLater), a
             // scene script waiting on this gift's flag.
@@ -1172,10 +1195,10 @@ window.ACT_1 = {
             {
               skipIfFlag: "nakausapAngKutsero",
               lines: [
-                { speaker: "Macario", text: "Kutsero, maaari po ba akong magtrabaho dito?" },
-                { speaker: "Kutsero", text: "Macario? Buti naman at naisipan mo magtrabaho" },
-                { speaker: "Macario", text: "Kailangan na 'ho eh, nangangailangan si Nanay" },
-                { speaker: "Kutsero", text: "O sige, magsimula ka na kaagad, alagaan mo yung puting kabayo kuwadra" },
+                { speaker: "Macario", text: "Kutsero, maaari po ba akong magtrabaho rito?" },
+                { speaker: "Kutsero", text: "Macario? Mabuti naman at naisipan mong magtrabaho." },
+                { speaker: "Macario", text: "Kailangan na po, e. Nangangailangan po si Nanay." },
+                { speaker: "Kutsero", text: "O sige, magsimula ka na agad. Alagaan mo 'yung puting kabayo sa kuwadra." },
                 // PLACEHOLDER. What the work is, and that it pays each time.
                 { speaker: "Kutsero", text: "Suklayin mo siya. Bawat linis na matapos mo, may bayad ka sa akin." },
               ],
@@ -1215,14 +1238,18 @@ window.ACT_1 = {
           displayHeight: 120,
           nearSound: "assets/audio/sfx/horse.mp3",
           interactLabel: "Suklayin",
+          interactIcon: "i-brush", // Block 93
           dialogueSets: [],
           onInteract: groomHorse,
         },
         {
-          // The Mananahi's sewing, beside her: scenery with no picture,
-          // only a body to reach (Block 69), used with E (Block 89).
-          id: "tahian", x: TAHIAN_X, label: "Tahian", scenery: true,
+          // The Mananahi's sewing table, beside her, used with E (Block
+          // 89). Scenery with no picture until Block 93, which named one,
+          // owed (ART.md), so the table is seen: the placeholder box until
+          // the artist draws it.
+          id: "tahian", x: TAHIAN_X, label: "Tahian", animation: TAHIAN, displayHeight: 90,
           interactLabel: "Manahi",
+          interactIcon: "i-needle", // Block 93
           dialogueSets: [],
           onInteract: sew,
         },
@@ -1232,10 +1259,10 @@ window.ACT_1 = {
             {
               skipIfFlag: "nakausapAngMananahi",
               lines: [
-                { speaker: "Macario", text: "Mananahi, tumatanggap ba kayo ng trabahador?" },
-                { speaker: "Mananahi", text: "Oo naman Macario, kamusta na ang inay mo?" },
-                { speaker: "Macario", text: "Okay lang 'ho, nangangailangan kami ng pera ngayon" },
-                { speaker: "Mananahi", text: "O sige sige, tara dito" },
+                { speaker: "Macario", text: "Mananahi, tumatanggap po ba kayo ng trabahador?" },
+                { speaker: "Mananahi", text: "Oo naman, Macario. Kumusta na ang inay mo?" },
+                { speaker: "Macario", text: "Ayos lang po. Nangangailangan lang po kami ng pera ngayon." },
+                { speaker: "Mananahi", text: "O, sige, sige. Tara rito." },
                 // PLACEHOLDER. What the work is, and that it pays each time.
                 { speaker: "Mananahi", text: "Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ang bawat matapos mo." },
               ],
@@ -1459,6 +1486,11 @@ window.ACT_1 = {
       ground: false,
       noRanged: true,
       startX: STAGE_ENTER_X,
+      // Block 93. Said at the top of the log once the student is free
+      // here: nothing else says the way out is at the right edge.
+      wayOut: "Lumabas ng entablado: pumunta sa kanan",
+      // Block 93. The actors stand low on the stage, under the box.
+      dialogueAtTop: true,
       exits: [
         { id: "labas", x: STAGE_WIDTH - 70, width: 70, label: "Lumabas",
           toScene: "tondo", toX: DIREKTOR_X - BESIDE, toFacing: 1 },
@@ -1559,6 +1591,7 @@ window.ACT_1 = {
       backdrop: { src: "assets/backgrounds/act1/pulungan.jpg" },
       noRanged: true,
       startX: PULUNGAN_ENTER_X,
+      wayOut: "Lumabas sa likod: pumunta sa kaliwa", // Block 93
       exits: [
         { id: "labas", x: 0, width: 70, label: "Lumabas sa likod", requiresFlag: "tinanggapSaKatipunan",
           toScene: "tondo", toX: BACK_DOOR_X, toFacing: 1 },

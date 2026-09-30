@@ -3579,3 +3579,88 @@ first talk, so the barya can be watched as they are earned.
 
 game.js v90, style.css v57, shell.js v20, act1.js v63. test.js 763,
 verify_new_scene.js 212.
+
+## Block 93: the Act I polish list
+
+A full playthrough on 30 Sep 2026, headless at 823 by 412, against the
+proponent's own list of twelve; five more were found on the way. All
+are in TRACKER.md, Act I polish list.
+
+The stuck walk. The loop left whatever pose was showing when a cutscene
+began, for a script's held pose; no script holds one, and a walk or a
+dash caught at that moment stayed a walk on the spot for the whole
+scene. A cutscene now picks the pose as if nothing were held, so he
+stands, and the leap in the pulungan shows the jump for the first time.
+
+Nanay comes to him. After the opening fight she walked to a fixed spot
+(1090), off screen whenever the fight had carried him left. She now
+starts just past the right edge of what the screen shows and stops 190
+in front of him (NANAY_MEETS, the old distance), through three small
+calls for content: playerX, viewEdges, placeDecoration. The walk home
+starts from there. She walks on a named, owed walk sheet
+(nanay-walk.png), which is the placeholder box until drawn: the
+proponent asked for the placeholder rather than the slide, and the
+Mananahi's table (tahian.png, scenery/) is named the same way, so both
+are on ART.md's Owed list, eleven now.
+
+The jump's sound. The proponent disliked the square wave sweeping up (a
+cartoon boing, make-sfx.py). It is a scuff and a low thump now, no tone
+(make-fun-sfx.js, which already held the other generated sounds that
+are not the combat's). ASSET_VERSION 32.
+
+The proponents' lines. At their request their spelling and grammar are
+corrected, meaning kept: po for 'ho, 'Nay for Nay and inay, rin and
+rito after a vowel, 'yung, sa'yo, sa inyo, kumusta, periods between
+thoughts, "Ayos lang" for "Okay lang". Nanay's "Wag mo pansinin yung mga
+yan" was written before Block 87 put a fight in front of it, and now
+reads "Tama na 'yan, anak. Huwag mo na silang pansinin.", ending the
+fight rather than a taunt. They remain theirs, unmarked in STORY.md.
+
+Icons by action. The work game's button always showed the sword, and
+the main action button the talk bubble whatever E would do. The work
+game takes opts.icon (a brush for grooming, a needle for sewing), an
+NPC used rather than talked to names interactIcon (default a hand), and
+a door shows the door. setIcon now writes only on a change, as setLabel
+does, because the loop sets the icon every frame.
+
+The trees' roots. All four shadow trees had tan triangles cut out of
+their base: the trunk and its three roots are one path, filled nonzero,
+and the two right-hand roots were wound against the trunk, so where they
+overlapped it the winding summed to zero. They are wound the same way
+now, in the pasted SVGs and in make-shadow-tree.py.
+
+Enemies between blows. They stood still for the whole cooldown after a
+dash, which read as stopping. While cooling down an enemy now backs off
+to 150 from Macario, facing him, or shuffles a little either way within
+reach. And once he has struck, a decision may be (three in ten) a hop
+clean over Macario instead of the dash: an arc 150 high over half a
+second, landing 90 beyond him, which hurts nobody, is knocked out of the
+air by a punch, and is always followed by a strike from there with the
+usual tell (a second hop in a row was the harness's first catch). One
+enemy in the air at a time. Guards are untouched: they shoot. The
+numbers are chosen, not tested on students.
+
+The first play. After the fight Macario walks back to his mark beside
+Maryam while the Sultan finishes leaving, as he already did after
+Principe Baldovino; the Sultan had been walking back onto the spot a
+fight left him on.
+
+The way out. A scene may declare wayOut, a line with an arrow at the
+top of the log shown only when no script of the scene is pending or
+playing: "Lumabas ng entablado: pumunta sa kanan" and "Lumabas sa likod:
+pumunta sa kaliwa". It is read only once the world is handed over
+(questAnnounceReady), because loadAct reaches the log at parse time and
+the running-scripts set is declared below it. It is the one thing on
+screen that says where to go since the guide was removed (Block 69),
+asked for by the proponent.
+
+Found on the way: the dialogue box covered the actors on the stage, so a
+scene may ask for it at the top (dialogueAtTop, the entablado); a bust
+is not drawn from a sheet under 90 native pixels tall (the Sultan
+borrows the soldiers' 70px walk and was a smear at nearly six times);
+a crate now stands in front of Macario, who is dimmed while it hides
+him; and the first step is marked done with the thought, so the log
+names the Kutsero during the walking and jumping lessons.
+
+game.js v91, style.css v58, act1.js v64, ASSET_VERSION 32. test.js 767,
+verify_new_scene.js 216.

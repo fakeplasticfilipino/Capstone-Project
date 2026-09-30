@@ -6201,7 +6201,9 @@ const visible = (page, sel) => page.evaluate((s) => {
           tellAt = now; p0 = e.pos;
           sign = getComputedStyle(e.el, "::after").content;
         }
-        if (p0 !== null) {
+        // Block 93. Measured while the dash is under way only: after it
+        // he moves again (backing off, shuffling), which is not the dash.
+        if (p0 !== null && (e.dash || !moveAt)) {
           const moved = Math.abs(e.pos - p0);
           if (moved > 3 && !moveAt) moveAt = now;
           if (moved > maxMove) { maxMove = moved; lastMoveAt = now; }
@@ -6216,6 +6218,55 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("with a red ! over its head while it winds up", r.sign === '"!"', r);
     ok("then dashes most of its length in a fifth of a second: nobody can miss it", r.maxMove >= 190 && r.dashMs <= 320, r);
     ok("after a tell of about a quarter of a second", r.tellMs >= 200 && r.tellMs <= 500, r);
+    await ctx.close();
+  }
+
+  console.log("\nBQ. Enemies move between blows, and hop over him (Block 93)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const r = await page.evaluate(() => new Promise((resolve) => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      posX = 1400; posY = floorHeightAt(posX); onGround = true; facing = 1;
+      health = maxHealth; invulnUntil = performance.now() + 1e9;
+      spawnEnemies([{ id: "m1", x: 1400 + PLAYER_WIDTH / 2 + 200 - ENEMY_WIDTH / 2, hp: 2, img: "assets/Kaaway.png" }]);
+      const e = ENEMIES[ENEMIES.length - 1];
+      const out = { coolMoves: 0, coolSamples: 0, hop: null, lift: 0 };
+      const random = Math.random;
+      const t0 = performance.now();
+      const timer = setInterval(() => {
+        const now = performance.now();
+        const dist = Math.abs(posX + PLAYER_WIDTH / 2 - (e.pos + ENEMY_WIDTH / 2));
+        // Cooling down after the first dash, he is not a statue.
+        if (e.swings === 1 && !e.dash && !e.hop && now < e.cooldownUntil && !e.nextSwingAt && e.facing === Math.sign(posX - e.pos)) {
+          out.coolSamples++;
+          if (e.walking) out.coolMoves++;
+          if (out.firstDist === undefined) out.firstDist = dist;
+          out.maxDist = Math.max(out.maxDist || 0, dist);
+        }
+        // After that first strike every decision is a hop, to see one.
+        if (e.swings >= 1 && !out.hop) Math.random = () => 0;
+        if (e.hop && !out.hop) out.hop = { from: e.pos, player: posX + PLAYER_WIDTH / 2, side0: Math.sign(e.pos + ENEMY_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) };
+        if (e.hop) out.lift = Math.max(out.lift, parseFloat(e.el.style.marginBottom) || 0);
+        if (out.hop && !e.hop && out.side1 === undefined) {
+          out.side1 = Math.sign(e.pos + ENEMY_WIDTH / 2 - (posX + PLAYER_WIDTH / 2));
+          out.landGap = Math.abs(e.pos + ENEMY_WIDTH / 2 - (posX + PLAYER_WIDTH / 2));
+          out.healthAfterHop = health;
+        }
+        if (out.side1 !== undefined && e.nextSwingAt) out.struckAfter = true;
+        if (now - t0 > 6000 || out.struckAfter) {
+          clearInterval(timer);
+          Math.random = random;
+          resolve(out);
+        }
+      }, 16);
+    }));
+    ok("cooling down within reach, he keeps moving: he backs off from Macario rather than standing",
+       r.coolSamples > 5 && r.coolMoves / r.coolSamples > 0.5 && r.maxDist > r.firstDist + 40, r);
+    ok("after his first strike he may hop over Macario instead, high over his head",
+       r.hop && r.lift > 100, r);
+    ok("he lands on Macario's other side, about 90px beyond him, having hurt nobody",
+       r.hop && r.side1 === -r.hop.side0 && Math.abs(r.landGap - 90) < 25 && r.healthAfterHop === 3, r);
+    ok("and then strikes from there, with the usual red !", r.struckAfter === true, r);
     await ctx.close();
   }
 
