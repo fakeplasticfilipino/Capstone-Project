@@ -123,14 +123,23 @@ Current versions, which index.html must match on every push:
 
 In order.
 
-1. Look at Blocks 80 and 81 on the phone, in landscape, from a private
+1. Look at Blocks 80 to 85 on the phone, in landscape, from a private
 tab, after the push, with the sound on. Give Nanay the savings and play
 to the end. What to look for, and what failure looks like:
 
-    The four years: straight after Nanay's last line, a silent black card, "Pagkalipas
-      ng apat na taon" and "Ngayong gabi sa entablado: Principe
-      Baldovino", lifting onto the stage mid-play. Failure: a glimpse of
-      the street between the card and the stage.
+    Block 85 first: the Mananahi waits outside the entablado after the
+      first play and pays there; crowd lines cheer; the stage clothes
+      warm Macario's colours; the pamphlet street is night with
+      crickets; a guard starting to notice plays a rising note and the
+      first time a hint toast; a catch stings; holding E or the
+      interact button fast-forwards through lines already read, never
+      unread ones; the post-test opens on "Handa ka na ba?". Black
+      cards and scene fades are silent (Block 84), except applause.
+    The four years: straight after Nanay's last line, a silent black
+      card, "Pagkalipas ng apat na taon", "Tondo, 1894" and "Ngayong
+      gabi sa entablado: Principe Baldovino", lifting onto the stage
+      mid-play. Failure: a glimpse of the street between the card and
+      the stage.
     The play: three lines, then two kawal from the right wing to fight;
       then Macario's added line, a silent crowd, "Mabuhay si
       Baldovino!", and the curtain card to applause (the first play's
@@ -176,14 +185,12 @@ checked the rite, the password and Principe Baldovino against the
 histories (DECISIONS.md, Block 81, with sources); still for the source
 book: the play's words, the ordeal chosen, and what the pamphlets were.
 
-4. The assessment item bank against Act I. The pre-test and post-test
-(db/seeds/macario_items_v3.sql, built into content/questions.js,
-editable on the dashboard) and the trivia card were written against the
-old act's facts (Tondo, the tailor-and-barber trade, the moro-moro,
-1894, the Katipunan). Act I now reaches the stage and the Katipunan, but
-not the tailor-and-barber trade and not 1894 (item 2). The post-test now
-runs, so this decides whether the study measures anything; do it before
-the pilot.
+4. The assessment item bank against Act I (db/seeds/macario_items_v3.sql,
+built into content/questions.js, editable on the dashboard). Checked 30
+Sep 2026: eight of ten items per test are now taught by the story; the
+occupation item and one distractor need the proponents' decision (Blocks
+remaining, the feel pass, item 11). The post-test now runs, so this
+decides whether the study measures anything; do it before the pilot.
 
 5. Decide whether students should see the Test Room button (Block 74).
 It is in settings for every student, study accounts included. It is
