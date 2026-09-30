@@ -42,7 +42,9 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 30 Sep 2026, Block 85 (the feel pass: night on the
+Last updated: 30 Sep 2026, Block 87 (the opening ends in a fight with the
+three siga before Nanay comes; the siga's laugh after Nanay's first line
+is gone, since they are beaten). Before that, Block 85 (the feel pass: night on the
 run, the crowd heard, the rite trimmed and broken with movement, the
 Mananahi at the play). Before that, 29 Sep 2026, Block 83 (the opening is Tondo, 1890, at
 the proponent's direction, so the four-year cut names Tondo, 1894).
@@ -208,10 +210,16 @@ tondo, x 900. Plays by itself the first time a student enters Act I.
     Mga Siga: BAHAHAHAHAHAHA!
     Macario: Isarado mo 'yang bunganga mo!
 
+    (Block 87. The insult ends in a fight. The three siga step out of
+    the scenery and come at him; the student fights them, with the fight
+    music and the hearts showing: "Pindutin ang Atake para lumaban!".
+    A tap sends Macario sliding through the nearest one, so how far off
+    he taps decides where it leaves him. When the last one falls the
+    music goes back to calm, and:)
+
     (Nanay comes in from the right. He turns to her.)
 
     Nanay: Macario, uwi na, may kailangan akong sabihin sayo
-    Mga Siga: HAHAHAHHHHA! NAGSUMBONG SA NANAY!
     Nanay: Wag mo pansinin yung mga yan
     Macario: Tsk
 

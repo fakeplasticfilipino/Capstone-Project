@@ -6071,6 +6071,32 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  console.log("\nBN. The dash reaches the Test Room's guards (Block 87)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const r = await page.evaluate(() => new Promise((resolve) => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      const g = GUARDS[0];
+      g.disabled = false; g.hp = 2; g.maxHp = 2;
+      posX = 400; posY = floorHeightAt(posX); onGround = true; facing = 1;
+      g.pos = 400 + PLAYER_WIDTH / 2 + 120 - GUARD_WIDTH / 2;
+      g.staggerUntil = 0;
+      becomeHostile(g, performance.now());
+      g.nextShotAt = performance.now() + 1e9;
+      invulnUntil = performance.now() + 1e9;
+      const start = posX;
+      playMelee();
+      const timer = setInterval(() => {
+        if (dash) return;
+        clearInterval(timer);
+        resolve({ start, end: posX, hp: g.hp, gc: g.pos + GUARD_WIDTH / 2, pw: PLAYER_WIDTH });
+      }, 10);
+    }));
+    ok("a hostile guard ahead is dashed through, and takes the blow", r.hp === 1 && r.end - r.start > 100, r);
+    ok("and Macario ends on the far side of him", r.end + r.pw / 2 > r.gc + 40, r);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   console.log("\n" + pass + " passed, " + fail + " failed");

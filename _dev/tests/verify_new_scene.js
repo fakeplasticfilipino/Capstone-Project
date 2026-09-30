@@ -203,10 +203,23 @@ const OPENING = [
 ];
 const NANAY_ARRIVES = [
   "Nanay: Macario, uwi na, may kailangan akong sabihin sayo",
-  "Mga Siga: HAHAHAHHHHA! NAGSUMBONG SA NANAY!",
   "Nanay: Wag mo pansinin yung mga yan",
   "Macario: Tsk",
 ];
+// Block 87. The insult ends in a fight with the three siga. Waits for
+// them, says what they are, and knocks them all down.
+const winOpeningFight = (page) => page.evaluate(async () => {
+  for (let i = 0; i < 100 && !(ENEMIES.length && enemiesAlive()); i++) await new Promise((r) => setTimeout(r, 50));
+  await new Promise((r) => setTimeout(r, 400));
+  const info = {
+    count: ENEMIES.filter((e) => !e.dead).length,
+    art: ENEMIES.every((e) => e.spriteEl && !e.spriteEl.classList.contains("sprite-placeholder")),
+    hearts: !document.getElementById("hud").classList.contains("hidden"),
+    cutscene: cutscenePlaying,
+  };
+  ENEMIES.forEach((e) => { if (!e.dead) hitEnemy(e, 99); });
+  return info;
+});
 const AT_HOME = [
   "Macario: Nay, ano po ba yung sasabihin niyo?",
   "Nanay: Macario, anak, naubos na yung pera natin sa pagbili ko ng Cedula...",
@@ -465,6 +478,10 @@ const artDrift = () => {
   const c1 = await readConversation(page, 3);
   ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
   ok("Macario faces the siga, behind him on the left", c1.facings.every((f) => f === -1), c1.facings);
+
+  const brawl = await winOpeningFight(page);
+  ok("the insult becomes a fight with the three siga, on their own art, hearts showing, Macario free to act",
+     brawl.count === 3 && brawl.art && brawl.hearts && !brawl.cutscene, brawl);
 
   const slide = await page.evaluate(async () => {
     const dec = currentScene.decorations.find((d) => d.id === "nanay");
@@ -1204,6 +1221,7 @@ const artDrift = () => {
   await waitIntertitle(r.page, false, 8000);
   let c = await readConversation(r.page, 3);
   ok("and plays the siga again", JSON.stringify(c.lines) === JSON.stringify(OPENING), c.lines);
+  await winOpeningFight(r.page);
   await r.ctx.close();
 
   r = await resume("bahay", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true });

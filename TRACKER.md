@@ -9,12 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 30 Sep 2026, after Block 86 (the dash attack and dialogue
-portraits, not yet seen on the phone). Before that, Block 85 (the feel pass, ten of its
+Last updated: 30 Sep 2026, after Block 87 (the opening fight, busts, the dash on
+guards; 86 and 87 not yet seen on the phone). Before that, Block 85 (the feel pass, ten of its
 twelve). Before that, Block 84 (black screens silent).
 Before that, Block 83 (the opening in 1890, the cut to 1894). Before that, Block 82 (the direktor's stage clothes;
 the fire leap shown, not told; running allowed away from guards).
-test.js 750 passed, 0 failed; verify_new_scene.js 200 passed,
+test.js 752 passed, 0 failed; verify_new_scene.js 201 passed,
 0 failed.
 
 ## Start here
@@ -110,10 +110,10 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v51    js/game.js v84       js/shell.js v19
+    css/style.css v52    js/game.js v85       js/shell.js v19
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v59  content/items.js v13  content/act2-4.js v1
-    content/enemies.js v1   content/questions.js v1
+    content/act1.js v60  content/items.js v13  content/act2-4.js v1
+    content/enemies.js v2   content/questions.js v1
     js/asset-manifest.js v3 (bumped by make-asset-manifest.js)
     ASSET_VERSION 30 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
@@ -458,6 +458,8 @@ machine, the assessment module.
         post-test, the rite trimmed, crickets, the cheer, the costume
         tint, the first-guard hint, fast-forward, the Mananahi at the play
     86  the dash attack, enemy tells and spread, dialogue portraits
+    87  the opening ends in a fight with the siga; the dash on guards;
+        portraits as busts
 
 ## Blocks remaining
 

@@ -33,7 +33,25 @@
 // which reads the art for the Sultan from here, and before game.js.
 // =============================================================
 
+// The three siga of the opening (Block 87), on the walk sheets drawn in
+// code (_dev/tools/draw-siga.js). They have no attack sheet: the lit-up
+// warning before a swing is the tell. displayHeight keeps the three sizes
+// the opening gave them (content/act1.js, sigaSheets).
+const sigaFighter = (n, top, height, hp) => ({
+  kind: "enemy",
+  hp,
+  displayHeight: Math.round(134 * height / 127),
+  animation: {
+    src: `assets/sprites/characters/siga-${n}-walk.png`, frames: 8, fps: 14, columns: 4,
+    contentTop: top, contentHeight: height, footX: 128,
+  },
+});
+
 window.ENEMY_TYPES = {
+  siga1: sigaFighter(1, 61, 127, 2),
+  siga2: sigaFighter(2, 51, 137, 2),
+  siga3: sigaFighter(3, 73, 115, 1),
+
   // The guardia civil (Block 73). The still is the artist's (delivered
   // as Guard.png); the walk, the shot (Block 73) and the flinch (Block
   // 75) are made from it by _dev/tools/animate-bantay.js, which moves the

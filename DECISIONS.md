@@ -3374,3 +3374,30 @@ after dropping a trailing "(...)" (Direktor (pabulong), Macario (sa
 isip)).
 
 Not seen on the phone yet. game.js v84, style.css v51. test.js to 750.
+
+## Block 87: the opening fight, the dash on guards, busts
+
+The Test Room showed the dash did nothing: its opponents are guards, not
+enemies, and the dash only looked for enemies. It now also takes a guard
+who is hostile, or who faces away (a takedown from behind); one who is
+unaware and facing Macario is left to the stealth rules, so a tap on the
+pamphlet street does not lunge at a sentry. The blow itself is
+strikeGuard, split out of meleeAttack so a punch and a dash do the same
+thing to a guard.
+
+The opening now runs insult, fight, Nanay. The three siga leave the
+scenery and become enemies where they stood (types siga1 to siga3 in
+content/enemies.js, on the walk sheets already drawn, hp 2, 2, 1),
+with the fight music and the tutorial toast the play uses. An enemy can
+now carry displayHeight, as a decoration does, so the three keep their
+sizes, and any enemy with a walk sheet steps it only while walking
+(before, only those with an attack sheet did). The siga's laugh after
+Nanay's first line was dropped, since they are beaten; STORY.md says so.
+
+The dialogue portrait is now a framed bust, head to chest, in the
+margin beside the text (140 by 130 frame, the figure drawn 270 tall and
+cropped by the frame), not a standing figure over the box. The box keeps
+190px clear each side for it.
+
+game.js v85, style.css v52, content/act1.js v60, enemies.js v2.
+test.js 752, verify_new_scene.js 201.

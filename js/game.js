@@ -2358,12 +2358,12 @@ function startPerformance() {
 }
 
 // The speaker stands on the box: Macario on the left, anyone else on
-// the right. The picture is the first frame of a sheet the scene already
+// the right, head to chest in a frame. The picture is the first frame of a sheet the scene already
 // has (an NPC's or decoration's own, else the player's idle), drawn by
 // bodySprite like everything else; a speaker with no art, or art still
 // owed, simply has no portrait.
-const PORTRAIT_HEIGHT = 150;
-const PORTRAIT_WIDTH = 150;
+const PORTRAIT_HEIGHT = 270; // the whole figure, of which the frame shows the head and chest
+const PORTRAIT_WIDTH = 134;  // the frame, inside its border
 const portraitLeft = document.getElementById("dialogue-portrait-left");
 const portraitRight = document.getElementById("dialogue-portrait-right");
 let drawnPortrait = { sheet: null, side: null };
@@ -4210,11 +4210,14 @@ let dash = null;
 let dashReadyAt = 0;
 let dashStumbleUntil = 0;
 
+// Enemies, and guards worth going for: one already hostile, or one
+// facing away, who can be taken down from behind. An unaware guard
+// looking his way is left to the stealth rules, not lunged at.
 function findDashTarget() {
   const centre = posX + PLAYER_WIDTH / 2;
-  return ENEMIES
-    .filter((e) => !e.dead)
-    .map((e) => ({ e, gap: (e.pos + ENEMY_WIDTH / 2 - centre) * facing }))
+  const guards = GUARDS.filter((g) => !g.disabled && (g.hostile || (g.facing === facing && g.alert < 1)));
+  return ENEMIES.filter((e) => !e.dead).concat(guards)
+    .map((e) => ({ e, gap: (e.pos + bodyKindOf(e).width / 2 - centre) * facing }))
     .filter(({ gap }) => gap > -20 && gap <= DASH_SEEK)
     .sort((a, b) => a.gap - b.gap)[0];
 }
@@ -4253,11 +4256,12 @@ function updateDash(deltaMs, now) {
   facing = dash.dir;
 
   const target = dash.target;
-  if (target && !dash.hitDone && !target.dead) {
-    const gap = (target.pos + ENEMY_WIDTH / 2 - (posX + PLAYER_WIDTH / 2)) * dash.dir;
+  if (target && !dash.hitDone && !bodyKindOf(target).isDown(target)) {
+    const gap = (target.pos + bodyKindOf(target).width / 2 - (posX + PLAYER_WIDTH / 2)) * dash.dir;
     if (gap <= 0 || (u >= 1 && gap <= 45)) {
       dash.hitDone = true;
-      takeBlow(target, ENEMY_PUNCH_DAMAGE, dash.dir);
+      if (target.kind === "guard") strikeGuard(target, dash.dir);
+      else takeBlow(target, ENEMY_PUNCH_DAMAGE, dash.dir);
     }
   }
   if (u < 1) return true;
@@ -4382,26 +4386,29 @@ function meleeAttack() {
     if (guard.disabled) continue;
     const guardCentre = guard.pos + GUARD_WIDTH / 2;
     if (guardCentre < lo || guardCentre > hi) continue;
-
-    // Behind means the guard is facing away from Macario.
-    const behind = Math.sign(guardCentre - centre) === guard.facing;
-
-    const away = Math.sign(guardCentre - centre) || facing;
-    if (guard.hostile) {
-      // Block 38. Already fighting: a punch is a hit, not a mistake.
-      hitGuard(guard, ENEMY_PUNCH_DAMAGE, away);
-    } else if (behind && guard.alert < 1) {
-      disableGuard(guard, "Natumba ang bantay.", away);
-    } else if (guard.shoots) {
-      // From the front he sees it coming, turns on Macario, and it costs
-      // a heart, the same price the stealth rule always charged.
-      becomeHostile(guard, performance.now());
-      damagePlayer("Nakita ka ng bantay!");
-    } else {
-      guard.alert = 1;
-      damagePlayer("Nakita ka ng bantay!");
-    }
+    strikeGuard(guard, Math.sign(guardCentre - centre) || facing);
     return; // one target per swing
+  }
+}
+
+// What a blow does to a guard, whichever way it came (a punch, or the
+// dash through him). away is the way the blow travelled. Behind means
+// the guard is facing the way it went, so away from Macario.
+function strikeGuard(guard, away) {
+  const behind = away === guard.facing;
+  if (guard.hostile) {
+    // Block 38. Already fighting: a punch is a hit, not a mistake.
+    hitGuard(guard, ENEMY_PUNCH_DAMAGE, away);
+  } else if (behind && guard.alert < 1) {
+    disableGuard(guard, "Natumba ang bantay.", away);
+  } else if (guard.shoots) {
+    // From the front he sees it coming, turns on Macario, and it costs
+    // a heart, the same price the stealth rule always charged.
+    becomeHostile(guard, performance.now());
+    damagePlayer("Nakita ka ng bantay!");
+  } else {
+    guard.alert = 1;
+    damagePlayer("Nakita ka ng bantay!");
   }
 }
 
@@ -5380,6 +5387,7 @@ function spawnEnemies(defs) {
     el.className = "entity enemy";
     el.id = "enemy-" + def.id;
     mountBody(el, enemy.pos, ENEMY_WIDTH);
+    const height = def.displayHeight || DISPLAY_HEIGHT;
 
     const meter = document.createElement("div");
     meter.className = "guard-meter enemy-meter";
@@ -5406,14 +5414,14 @@ function spawnEnemies(defs) {
     }
     world.appendChild(el);
     if (def.animation) {
-      setupNpcAnimation(def.animation, sprite, DISPLAY_HEIGHT, token, ENEMY_WIDTH,
-        def.attackAnimation ? { playing: () => enemy.walking && !enemy.attacking } : undefined);
+      setupNpcAnimation(def.animation, sprite, height, token, ENEMY_WIDTH,
+        { playing: () => enemy.walking && !enemy.attacking });
       if (attackSprite) {
-        setupNpcAnimation(def.attackAnimation, attackSprite, DISPLAY_HEIGHT, token, ENEMY_WIDTH,
+        setupNpcAnimation(def.attackAnimation, attackSprite, height, token, ENEMY_WIDTH,
           { playing: () => enemy.attacking, loop: false });
       }
     } else {
-      bodyPlaceholder(sprite, def.img || "Kaaway", DISPLAY_HEIGHT, ENEMY_WIDTH);
+      bodyPlaceholder(sprite, def.img || "Kaaway", height, ENEMY_WIDTH);
     }
 
     enemy.el = el;

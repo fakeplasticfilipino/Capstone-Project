@@ -318,15 +318,28 @@ async function openingOnTheStreet() {
     { speaker: "Macario", text: "Isarado mo 'yang bunganga mo!" },
   ]);
 
+  // The insult ends in a fight (Block 87): the three step out of the
+  // scenery and become enemies where they stood. Beaten, they are gone
+  // before Nanay comes.
+  ["siga-1", "siga-2", "siga-3"].forEach((id) => showDecoration(id, false));
+  setCutscene(false);
+  setMusic("assets/audio/music/intense.mp3");
+  showToast("Pindutin ang Atake para lumaban!", 2600);
+  await spawnEnemies([[ "siga1", 760 ], [ "siga2", 690 ], [ "siga3", 620 ]].map(([type, x], i) => ({
+    type, id: "siga-away-" + (i + 1), x: x - 20,
+  })));
+  setMusic(null);
+  setCutscene(true);
+  turnPlayer(1);
+  await wait(300);
+
   // Nanay, from the right. She slides on (Block 57, no walk sheet).
   showDecoration("nanay", true);
   await moveDecoration("nanay", 1090, 170);
-  turnPlayer(1);
   await wait(300);
 
   await playDialogue([
     { speaker: "Nanay", text: "Macario, uwi na, may kailangan akong sabihin sayo" },
-    { speaker: "Mga Siga", text: "HAHAHAHHHHA! NAGSUMBONG SA NANAY!" },
     { speaker: "Nanay", text: "Wag mo pansinin yung mga yan" },
     { speaker: "Macario", text: "Tsk" },
   ]);
