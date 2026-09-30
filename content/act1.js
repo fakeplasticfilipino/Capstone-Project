@@ -342,9 +342,12 @@ async function openingOnTheStreet() {
   setCutscene(false);
   setMusic("assets/audio/music/intense.mp3");
   showToast("Pindutin ang Atake para lumaban!", 2600);
-  await spawnEnemies([[ "siga1", 760 ], [ "siga2", 690 ], [ "siga3", 620 ]].map(([type, x], i) => ({
+  const brawl = spawnEnemies([[ "siga1", 760 ], [ "siga2", 690 ], [ "siga3", 620 ]].map(([type, x], i) => ({
     type, id: "siga-away-" + (i + 1), x: x - 20,
   })));
+  // Block 92. The world waits until he has struck once.
+  await teach("atake");
+  await brawl;
   setMusic(null);
   setCutscene(true);
   turnPlayer(1);
@@ -401,6 +404,9 @@ async function thinkingAboutWork(alreadyHeld) {
     { speaker: "Macario (sa isip)", text: "Kailangan ko ng pera para matulungan si Nanay, saan kaya ako makakahanap ng trabaho?" },
   ]);
   setCutscene(false);
+  // Block 92. The first things a student needs, each waiting for him.
+  await teach("lakad");
+  await teach("talon");
 }
 
 // -------------------------------------------------------------
@@ -709,6 +715,8 @@ async function theKatipunanAsks() {
   state.flags.nilapitanNgKatipunan = true;
   markDirty();
   setCutscene(false);
+  // Block 92. The stage clothes are in the bag now.
+  if (window.Inventory) await teach("bag");
 }
 
 // The Kasama on the street, once the word is said: the blindfold, as a
@@ -986,8 +994,9 @@ window.ACT_1 = {
       flag: "naihatidAngMgaDamit" },
     { id: "gumanap_sa_dula", label: "Gumanap bilang Don Rodrigo sa dula",
       flag: "naitanghalAngDula" },
-    { id: "mag_ipon", label: "Ibigay kay Nanay ang naipon",
-      flag: "naibigayAngIponKayNanay", countCurrency: SAVINGS_GOAL },
+    { id: "mag_ipon", label: "Mag-ipon para kay Nanay",
+      flag: "naibigayAngIponKayNanay", countCurrency: SAVINGS_GOAL,
+      pinned: { from: "nakausapAngKutsero" } },
     { id: "gumanap_baldovino", label: "Gumanap bilang Principe Baldovino",
       flag: "nilapitanNgKatipunan" },
     { id: "hanapin_kasama", label: "Hanapin ang naghihintay sa kalye",

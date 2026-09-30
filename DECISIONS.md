@@ -3542,3 +3542,40 @@ objective flag for the old performance is now an ordinary flag.
 ART.md is down to nine owed pictures, all people and the pulungan.
 game.js v89, style.css v56, asset-manifest v4. test.js 759,
 verify_new_scene.js 201.
+
+## Block 92: a dash you can see coming, and lessons that wait
+
+Enemies had range 130 and a quiet lunge, so nothing warned the student
+and spamming Atake still won. An enemy now decides at ENEMY_COMMIT_RANGE
+(230), shows a red "!" above its head for the tell (a CSS ::after on the
+lit-up body, which guards get too, rifle or not), then dashes
+ENEMY_DASH_DISTANCE (220) in ENEMY_DASH_MS (200), eased, with a swing
+and dust, in the direction it faced when it decided. It hits whatever it
+touches on the way, low enough (a jump clears it); Macario behind it,
+past its length, or backed away by the end of the tell, is missed. The
+old strike-at-the-end with a lunge is gone. The distances are chosen,
+not tested on students.
+
+Tutorials (teach, noteTask, TUTORIALS in game.js) teach a control at the
+moment it matters and stop the world until it is used: a card at the top,
+the control pulsing, enemies, guards and bullets held, and every timer
+carried forward when it is over (shiftTimers, which setPaused now uses
+too: it had missed enemy cooldowns and dashes). Macario's own controls
+work throughout. A task is reported by the code where it happens (move,
+jump, attack, interact) or by shell.js (inventory); "react" is answered
+by any of move, jump or attack. A card stays at least 600ms so what was
+already in motion cannot dismiss a lesson nobody read; one is taught once
+per save (a "__turo_" flag, kept by a replay); two asked for at once
+queue, content's ahead of the engine's own (the first red !, the first
+person within reach). Content asks for walking and jumping after the
+opening thought, Atake in the opening fight and the bag after the stage
+clothes; a fight lesson is taken down, unlearned, when the fight ends.
+Under the harness (window.__TEST) they are off unless a test asks.
+
+The log can now carry a second line: an objective with pinned: { from }
+stays beside the step in hand from that flag until it is done. Act I
+pins the savings, renamed "Mag-ipon para kay Nanay", from the Kutsero's
+first talk, so the barya can be watched as they are earned.
+
+game.js v90, style.css v57, shell.js v20, act1.js v63. test.js 763,
+verify_new_scene.js 212.

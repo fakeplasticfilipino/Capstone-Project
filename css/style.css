@@ -4124,3 +4124,72 @@ body.text-lg .notebook-entry-text { font-size: 22px; }
   background: #d9a441;
   opacity: 0.9;
 }
+
+/* Block 92. The warning before a blow, for a guard or an enemy alike: a
+   red "!" over the head for as long as the tell lasts (game.js, setTell).
+   Above the health meter, which sits at the top of the body. */
+.enemy-windup::after {
+  content: "!";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 30px);
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #e53935;
+  box-sizing: border-box;
+  color: #fff;
+  font: 700 18px/20px var(--px-font);
+  text-align: center;
+  z-index: 6;
+  animation: warn-pop 0.24s steps(2, end) infinite alternate;
+}
+
+@keyframes warn-pop {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-4px) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enemy-windup::after { animation: none; }
+}
+
+/* Block 92. The tutorial card and the pulse on the control it asks for
+   (game.js, teach). The card takes no taps, so nothing is hidden behind
+   it; the world beneath waits until the task is done. */
+#tutorial-card {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(70vw, 520px);
+  z-index: 60;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  background: var(--px-panel);
+  border: 3px solid #ffd54f;
+  box-shadow: var(--px-frame);
+  color: var(--c-cream);
+  font-size: 22px;
+  line-height: 1.2;
+  text-align: center;
+  pointer-events: none;
+}
+
+#tutorial-card.hidden { display: none; }
+
+.tutorial-pulse {
+  outline: 4px solid #ffd54f;
+  outline-offset: 3px;
+  animation: tutorial-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes tutorial-pulse {
+  50% { outline-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-pulse { animation: none; }
+}

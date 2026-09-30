@@ -42,7 +42,10 @@ Lines of ours are written to the standard in CLAUDE.md, Conventions,
 Writing dialogue. The proponents' lines are kept exactly as given,
 misspellings included, and are never rewritten to match ours.
 
-Last updated: 30 Sep 2026, Block 89 (the work is there to be done, not
+Last updated: 30 Sep 2026, Block 92 (tutorials that stop the world until
+the task is done: walking and jumping after the opening thought, Atake in
+the opening fight, the first red !, talking, and the bag after the stage
+clothes; the savings step is also pinned in the log). Before that, Block 89 (the work is there to be done, not
 staged: the horse to groom and the sewing, each repeatable for barya; the
 Mananahi stopping Macario to send him to the direktor is the one script;
 the apple quest, the two customers' deliveries and both paydays are gone).
@@ -477,7 +480,9 @@ or the sewing. 100 barya go to Nanay; Macario keeps the rest.
     Nanay: Tuloy mo lang yan Nak, malayo ang mararating mo sa buhay
     Macario: Maraming salamat nay!
 
-Completes: Ibigay kay Nanay ang naipon (n/100). As she finishes, the
+Completes: Mag-ipon para kay Nanay (n/100), which since Block 92 is
+also a second line in the log from the moment he has spoken to the
+Kutsero, counting the barya as they come in. As she finishes, the
 screen goes black.
 
 ### 11. Four years on

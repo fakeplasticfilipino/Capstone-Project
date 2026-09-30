@@ -9,13 +9,15 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 30 Sep 2026, after Block 91 (the legacy stage
+Last updated: 30 Sep 2026, after Block 92 (enemies dash from further with
+a red ! first, tutorials that stop the world, the savings pinned in the
+log; not yet seen on the phone). Before that, Block 91 (the legacy stage
 performance, the night backdrop layer, the death pose and the unused
 Tindero removed; nine pictures owed). Before that, Block 90 (the work
 gets harder, sewing is held, each job has a picture), Block 89 (the work
 is there to be done), Block 88 (one combat template), Block 87 (the
 opening fight, busts) and Block 86 (the dash attack).
-test.js 759 passed, 0 failed; verify_new_scene.js 201 passed,
+test.js 763 passed, 0 failed; verify_new_scene.js 212 passed,
 0 failed.
 
 ## Start here
@@ -67,7 +69,8 @@ done again.
        direktor                         when Macario agrees to act
     7  Gumanap bilang Don Rodrigo sa    the play and its fight; 79 to
        dula                             110 barya
-    8  Ibigay kay Nanay ang naipon      Nanay's gift (n/100), offered
+    8  Mag-ipon para kay Nanay (n/100)  shown from the Kutsero's talk as a
+                                        second line; Nanay's gift, offered
                                         once the play is done and he
                                         holds 100; then a black card,
                                         four years on
@@ -118,9 +121,9 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v56    js/game.js v89       js/shell.js v19
+    css/style.css v57    js/game.js v90       js/shell.js v20
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v62  content/items.js v13  content/act2-4.js v1
+    content/act1.js v63  content/items.js v13  content/act2-4.js v1
     content/enemies.js v2   content/questions.js v1
     js/asset-manifest.js v4 (bumped by make-asset-manifest.js)
     ASSET_VERSION 31 (in js/game.js)
@@ -132,13 +135,22 @@ Current versions, which index.html must match on every push:
 
 In order.
 
-1. Look at Blocks 86 to 91 on the phone, in landscape, from a private
+1. Look at Blocks 90 to 92 on the phone, in landscape, from a private
 tab, after the push, with the sound on. Play from the start. What to
 look for, and what failure looks like (Blocks 80 to 85 are confirmed):
 
     The opening: the siga's insult, then a fight with the three (fight
-      music, hearts, "Pindutin ang Atake para lumaban!"), then Nanay
-      walks in. Failure: no fight, or Nanay arriving over the siga.
+      music, hearts): the world waits, a card asks for Atake with the
+      button pulsing, and goes when he strikes once; the first red !
+      stops it again with a card about the warning; then Nanay walks in.
+      After the thought, cards ask him to walk and to jump, and beside
+      Nanay to talk. Failure: a card that never goes, a lesson that
+      pauses nothing, or two cards on top of each other.
+    Enemies: the red ! over their heads, then a dash of about a screen's
+      quarter, from further off than before. Failure: a dash that is
+      easy to miss, or a hit with no sign before it.
+    The log: after the Kutsero, two lines, the step and "Mag-ipon para
+      kay Nanay (n/100)" counting up as he earns.
     Combat: a tap with an enemy ahead slides Macario through him, a
       quick eased slide, and he ends on the far side. From far off it
       stops short and leaves him stumbling for a moment. An enemy
@@ -458,6 +470,8 @@ machine, the assessment module.
         picture for each job; Aling Rosa and Mang Tomas removed
     91  the legacy stage performance (poem, night, death), the night
         backdrop layer and the unused Tindero file removed
+    92  enemy dash and red !, tutorials that stop the world, the savings
+        pinned in the log
 
 ## Blocks remaining
 

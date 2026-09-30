@@ -601,6 +601,14 @@ function syncObjectiveChain() {
     next.push({ id: o.id, text: objectiveLine(o), done });
     if (!done) break;
   }
+  // Block 92. A step may be pinned: once its flag "from" is set it stays
+  // in the log beside the step in hand until it is done itself, so a
+  // student sees a running count (the barya) while doing something else.
+  list.forEach((o) => {
+    if (!o.pinned || state.flags[o.flag] || !state.flags[o.pinned.from]) return;
+    if (next.some((q) => q.id === o.id)) return;
+    next.push({ id: o.id, text: objectiveLine(o), done: false });
+  });
   quests.length = 0;
   quests.push(...next);
 }
@@ -1958,6 +1966,7 @@ function handleJumpPress() {
   lastGroundedAt = 0; // spent: the coyote window cannot give a second jump
   velY = JUMP_VELOCITY;
   onGround = false;
+  noteTask("jump");
   playSfx("jump"); // Block 58
   spawnDust(posX + PLAYER_WIDTH / 2, posY, facing, "jump"); // Block 63
 }
@@ -2136,6 +2145,7 @@ function npcOpensShop(npc) {
 
 function handleInteractPress() {
   if (authGated || uiBlocked) return;
+  if (!inDialogue && !cutscenePlaying && nearby.type) noteTask("interact");
   if (inDialogue) {
     advanceDialogue();
   } else if (cutscenePlaying) {
@@ -3163,9 +3173,8 @@ function updateHostileGuard(guard, step, now) {
   const deciding = guard.aiming || now >= guard.nextShotAt - GUARD_AIM_LEAD_MS;
   if (!deciding) turnToward(guard, Math.sign(dx), now);
   const range = (guard.detectRadius || 240) + GUARD_FIRE_RANGE_EXTRA;
-  // A guard with no rifle sheet shows the same lit-up tell an enemy does.
-  setTell(guard, !guard.shootAnimation && dist <= range &&
-    now < guard.nextShotAt && guard.nextShotAt - now <= ATTACK_TELL_MS);
+  // The same sign an enemy shows, whether or not he has a rifle sheet.
+  setTell(guard, dist <= range && now < guard.nextShotAt && guard.nextShotAt - now <= ATTACK_TELL_MS);
 
   // Block 73. A guard with a shoot sheet stops to shoot: he brings the
   // rifle down GUARD_AIM_LEAD_MS before each shot, holds it through the
@@ -4148,6 +4157,7 @@ function updateDash(deltaMs, now) {
 // ending this clip early.
 function playMelee() {
   if (dash || performance.now() < dashReadyAt) return;
+  noteTask("attack");
   const target = findDashTarget();
   if (target) {
     startDash(target);
@@ -5172,6 +5182,110 @@ function moveDecoration(id, toX, pxPerSecond) {
   });
 }
 
+// ---- Tutorials ----------------------------------------------------
+//
+// Block 92. Teaching a control the moment it matters: teach(id) shows a
+// card, pulses the control it asks for, and STOPS THE WORLD (enemies,
+// guards, bullets and their timers) until the student does the task,
+// then carries on, with every timer carried forward (shiftTimers). The
+// student's own controls still work, or the task could not be done.
+// Content calls teach(id) where it wants one and awaits it; the engine
+// calls it itself for what is always true (the first warning sign, the
+// first person within reach). Each is taught once per save
+// (the flag "__turo_" + id, kept by a replay) and can be switched off
+// on a device with localStorage.macarioTutorials = "off".
+//
+// A task is a plain name that the code where it happens reports with
+// noteTask: "move" (walked 60px), "jump", "attack" (a tap on Atake),
+// "interact" (E at someone), "inventory" (shell.js, on opening it), and
+// "react", which any of move, jump or attack answers.
+const TUTORIALS = {
+  lakad: { task: "move", target: ["btn-left", "btn-right"],
+    text: "Lumakad gamit ang A at D, o ang mga pindutan sa kaliwa." },
+  talon: { task: "jump", target: ["btn-jump"],
+    text: "Tumalon gamit ang Space, o ang pindutang Talon." },
+  usap: { task: "interact", target: ["btn-interact"],
+    text: "Pindutin ang E, o ang pindutang Usap, para kausapin siya." },
+  atake: { task: "attack", target: ["btn-attack"],
+    text: "Pindutin ang J, o ang Atake, para sumugod sa kalaban. Sa kabila niya ka dadaan." },
+  tanda: { task: "react", target: [],
+    text: "Ang pulang ! ay babala: susugod siya! Sumugod sa likod niya, tumalon, o umatras." },
+  bag: { task: "inventory", target: ["btn-inventory"],
+    text: "Buksan ang Bag para makita ang mga suot mo." },
+};
+
+let tutorial = null; // the one being taught, or null
+
+function tutorialsOn() {
+  // The harness (window.__TEST, which nothing else defines) has them off
+  // unless a test asks (__TEST.tutorials), so a fight under test does not
+  // wait for a keypress nobody is making.
+  if (window.__TEST) return Boolean(window.__TEST.tutorials);
+  try { return localStorage.getItem("macarioTutorials") !== "off"; } catch (e) { return true; }
+}
+
+let tutorialEndedAt = 0;
+const TUTORIAL_GAP_MS = 500;
+
+// auto is the engine's own asking (the first sign, the first person); it
+// leaves a beat after a lesson so that a lesson content is about to ask
+// for next is not pre-empted by it.
+function teach(id, auto) {
+  const def = TUTORIALS[id];
+  if (!def || state.flags["__turo_" + id] || !tutorialsOn()) return Promise.resolve(false);
+  if (auto && performance.now() - tutorialEndedAt < TUTORIAL_GAP_MS) return Promise.resolve(false);
+  // One at a time: another asked for while one is up waits its turn.
+  if (tutorial) return tutorial.promise.then(() => teach(id));
+  let resolve;
+  const promise = new Promise((r) => { resolve = r; });
+  tutorial = { id, def, resolve, promise, startX: posX, startedAt: performance.now() };
+  document.getElementById("tutorial-text").textContent = def.text;
+  document.getElementById("tutorial-card").classList.remove("hidden");
+  def.target.forEach((name) => {
+    const el = document.getElementById(name);
+    if (el) el.classList.add("tutorial-pulse");
+  });
+  return promise;
+}
+
+// Puts the card away and lets the world go on. learned is false when it
+// is being taken down because the reason for it is gone, so it is not
+// remembered as taught.
+function endTutorial(learned) {
+  const done = tutorial;
+  tutorial = null;
+  tutorialEndedAt = performance.now();
+  if (learned) {
+    state.flags["__turo_" + done.id] = true;
+    markDirty();
+    playSfx("catch");
+  }
+  document.getElementById("tutorial-card").classList.add("hidden");
+  done.def.target.forEach((n) => {
+    const el = document.getElementById(n);
+    if (el) el.classList.remove("tutorial-pulse");
+  });
+  shiftTimers(performance.now() - done.startedAt);
+  done.resolve(learned);
+}
+
+// A card is up for at least this long before a task answers it, so what
+// was already in motion (a dash begun a frame before) cannot dismiss a
+// lesson nobody has read.
+const TUTORIAL_MIN_MS = 600;
+
+function noteTask(name) {
+  if (!tutorial || performance.now() - tutorial.startedAt < TUTORIAL_MIN_MS) return;
+  const task = tutorial.def.task;
+  const react = task === "react" && (name === "move" || name === "jump" || name === "attack");
+  if (task === name || react) endTutorial(true);
+}
+
+// A lesson about a fight ends with the fight (finishFight).
+function cancelTutorial(...ids) {
+  if (tutorial && ids.includes(tutorial.id)) endTutorial(false);
+}
+
 // ---- Work ---------------------------------------------------------
 //
 // Block 89. The one mini-game for every job a student can do again and
@@ -5468,9 +5582,9 @@ function playWorkGame(opts) {
 // ---- Combat -------------------------------------------------------
 //
 // Deliberately small, like stealth. An enemy walks at Macario and, once
-// he is within ENEMY_COMMIT_RANGE, decides: he lights up, lunges and
-// strikes in front of him a quarter of a second later, before Macario
-// need be anywhere near. Standing in front of it is what costs a heart;
+// he is within ENEMY_COMMIT_RANGE, decides: a red "!" over his head,
+// then a dash of ENEMY_DASH_DISTANCE in front of him a quarter of a
+// second later, before Macario need be anywhere near. Standing in front of it is what costs a heart;
 // sliding through to the far side, or jumping it, is what answers it. A
 // punch takes one point, a shot two; being hit knocks an enemy back and
 // cancels what he decided, so punching the one in front is always a way
@@ -5480,10 +5594,10 @@ function playWorkGame(opts) {
 
 const ENEMY_BASE_SPEED = 2.2;   // per 60fps frame; well under SPEED (5)
 const ENEMY_SPACING = 50;       // enemies queue rather than stack
-const ENEMY_COMMIT_RANGE = 130; // he decides to strike once Macario is this close
-const ENEMY_LUNGE_SPEED = 4;    // per 60fps frame, closing in while he winds up
-const ENEMY_LUNGE_STOP = 50;    // and no nearer than this
-const ENEMY_STRIKE_REACH = 78;  // the blow lands this far in front of him
+const ENEMY_COMMIT_RANGE = 230; // he decides to strike once Macario is this close
+const ENEMY_DASH_DISTANCE = 220; // and dashes this far in front of him, whatever Macario does
+const ENEMY_DASH_MS = 200;       // in this long, quick and plain to see
+const ENEMY_STRIKE_REACH = 45;  // the dash hits whoever it touches this far in front of him
 const ENEMY_STRIKE_BEHIND = 10; // and this far behind (a shoulder's width)
 const ENEMY_STRIKE_HEIGHT = 70; // a jump or a platform above this is out of reach
 const ENEMY_PACE_SPREAD = 0.2;  // each enemy walks 0.9 to 1.1 of his kind's speed
@@ -5520,6 +5634,7 @@ function turnToward(body, dir, now) {
 // The lit-up body that says a blow is coming, for either kind.
 function setTell(body, on) {
   if (Boolean(on) === Boolean(body.drawnWindup)) return;
+  if (on) teach("tanda", true); // the first warning sign ever seen (Block 92)
   body.el.classList.toggle("enemy-windup", Boolean(on));
   body.drawnWindup = Boolean(on);
 }
@@ -5654,6 +5769,7 @@ function spawnEnemies(defs) {
 
 function finishFight() {
   updateHudVisibility();
+  cancelTutorial("atake", "tanda");
   const resolve = enemiesDone;
   enemiesDone = null;
   if (resolve) setTimeout(resolve, FIGHT_END_BEAT_MS);
@@ -5753,14 +5869,12 @@ function updateEnemies(step, now) {
 
     if (now >= enemy.staggerUntil) {
       enemy.walking = false;
-      if (enemy.nextSwingAt) {
-        // Decided: he holds the way he faced, closes in a little, and
-        // strikes when the tell is over.
-        const ahead = dx * enemy.facing;
-        if (ahead > ENEMY_LUNGE_STOP && !comradeAhead(enemy, dir, centre, playerCentre)) {
-          enemy.pos += enemy.facing * Math.min(ENEMY_LUNGE_SPEED * step, ahead - ENEMY_LUNGE_STOP);
-        }
-        if (now >= enemy.nextSwingAt) enemyStrike(enemy, now);
+      if (enemy.dash) {
+        enemyDash(enemy, now);
+      } else if (enemy.nextSwingAt) {
+        // Decided: he holds the way he faced and dashes when the tell
+        // is over.
+        if (now >= enemy.nextSwingAt) startEnemyDash(enemy, now);
       } else if (dir !== enemy.facing) {
         turnToward(enemy, dir, now);
       } else {
@@ -5784,7 +5898,7 @@ function updateEnemies(step, now) {
     // A stagger cancels it.
     if (enemy.nextSwingAt && !enemy.attacking && now >= enemy.staggerUntil) {
       enemy.attacking = true;
-      enemy.attackEnd = enemy.nextSwingAt + ENEMY_ATTACK_FOLLOW_MS;
+      enemy.attackEnd = enemy.nextSwingAt + ENEMY_DASH_MS + ENEMY_ATTACK_FOLLOW_MS;
     }
     if (enemy.attacking && (now >= enemy.attackEnd || now < enemy.staggerUntil)) {
       enemy.attacking = false;
@@ -5822,17 +5936,35 @@ function comradeAhead(enemy, dir, centre, playerCentre) {
   });
 }
 
-// The blow: it lands on whoever is in front of him, low enough and near
-// enough, when the tell ends. Behind him, or up on a jump, it hits air.
-function enemyStrike(enemy, now) {
-  const ahead = (posX + PLAYER_WIDTH / 2 - (enemy.pos + ENEMY_WIDTH / 2)) * enemy.facing;
+// The dash, when the tell ends: a fixed distance the way he faced,
+// eased, with dust and a swing, so it cannot be missed. It hits whoever
+// it touches on the way, low enough; Macario behind him, out of its
+// length, or up on a jump, is missed.
+function startEnemyDash(enemy, now) {
   enemy.nextSwingAt = 0;
-  enemy.cooldownUntil = now + jitter(ATTACK_COOLDOWN_MS, ATTACK_COOLDOWN_SPREAD);
-  if (ahead < -ENEMY_STRIKE_BEHIND || ahead > ENEMY_STRIKE_REACH) return;
-  if (posY - floorHeightAt(posX) > ENEMY_STRIKE_HEIGHT) return;
-  if (damagePlayer("Nasugatan ka!", false) && health > 0) {
-    posX = Math.max(0, Math.min(posX + enemy.facing * ENEMY_HIT_RECOIL, WORLD_WIDTH - PLAYER_WIDTH));
-    velY = HAZARD_RECOIL_VELOCITY;
+  enemy.dash = { from: enemy.pos, to: enemy.pos + enemy.facing * ENEMY_DASH_DISTANCE, t0: now, hit: false };
+  playSfx("swing");
+  spawnDust(enemy.pos + ENEMY_WIDTH / 2, GROUND_LEVEL, enemy.facing, "land");
+}
+
+function enemyDash(enemy, now) {
+  const d = enemy.dash;
+  const u = Math.min(1, (now - d.t0) / ENEMY_DASH_MS);
+  enemy.pos = d.from + (d.to - d.from) * u * u * (3 - 2 * u);
+  if (!d.hit) {
+    const ahead = (posX + PLAYER_WIDTH / 2 - (enemy.pos + ENEMY_WIDTH / 2)) * enemy.facing;
+    const reached = ahead >= -ENEMY_STRIKE_BEHIND && ahead <= ENEMY_STRIKE_REACH;
+    if (reached && posY - floorHeightAt(posX) <= ENEMY_STRIKE_HEIGHT) {
+      d.hit = true;
+      if (damagePlayer("Nasugatan ka!", false) && health > 0) {
+        posX = Math.max(0, Math.min(posX + enemy.facing * ENEMY_HIT_RECOIL, WORLD_WIDTH - PLAYER_WIDTH));
+        velY = HAZARD_RECOIL_VELOCITY;
+      }
+    }
+  }
+  if (u >= 1) {
+    enemy.dash = null;
+    enemy.cooldownUntil = now + jitter(ATTACK_COOLDOWN_MS, ATTACK_COOLDOWN_SPREAD);
   }
 }
 
@@ -5890,10 +6022,12 @@ const BODY_KINDS = {
     hit(e) { e.fillEl.style.width = Math.max(0, (e.hp / e.maxHp) * 100) + "%"; },
     staggered(e, now) {
       e.nextSwingAt = 0;
+      e.dash = null;
       e.cooldownUntil = Math.max(e.cooldownUntil || 0, now + ENEMY_STAGGER_MS + jitter(ATTACK_TELL_MS, ATTACK_TELL_SPREAD));
     },
     down(e) {
       e.dead = true;
+      e.dash = null;
       setTell(e, false);
       // A swing cut off by the blow is put away, or he would fall with
       // his sword still raised (Block 60).
@@ -5980,6 +6114,7 @@ function resetEnemies() {
     enemy.hp = enemy.maxHp;
     enemy.knockVel = 0;
     enemy.nextSwingAt = 0;
+    enemy.dash = null;
     enemy.cooldownUntil = 0;
     enemy.turnAt = 0;
     enemy.staggerUntil = 0;
@@ -6332,6 +6467,25 @@ function isPaused() {
   return paused;
 }
 
+// Every timer measured against performance.now() that the world's
+// stopping would otherwise let run out: carried forward by the time it
+// stood still, for a pause and for a tutorial alike (Block 92).
+function shiftTimers(elapsed) {
+  if (invulnUntil) invulnUntil += elapsed;
+  if (attackHoldStart) attackHoldStart += elapsed;
+  if (landPoseUntil) landPoseUntil += elapsed;
+  if (dashReadyAt) dashReadyAt += elapsed;
+  if (dashStumbleUntil) dashStumbleUntil += elapsed;
+  ENEMIES.forEach((e) => {
+    ["nextSwingAt", "staggerUntil", "cooldownUntil", "turnAt", "hitAt"].forEach((k) => { if (e[k]) e[k] += elapsed; });
+    if (e.dash) e.dash.t0 += elapsed;
+  });
+  GUARDS.forEach((g) => {
+    ["nextShotAt", "staggerUntil", "turnAt", "aimSince", "lowerSince", "shotAt", "noticedAt", "hitAt"]
+      .forEach((k) => { if (g[k]) g[k] += elapsed; });
+  });
+}
+
 function setPaused(value) {
   const next = Boolean(value);
   if (next === paused) return next;
@@ -6350,14 +6504,7 @@ function setPaused(value) {
   if (paused) {
     pausedAt = performance.now();
   } else {
-    const elapsed = performance.now() - pausedAt;
-    if (invulnUntil) invulnUntil += elapsed;
-    if (attackHoldStart) attackHoldStart += elapsed;
-    ENEMIES.forEach((e) => {
-      if (e.nextSwingAt) e.nextSwingAt += elapsed;
-      if (e.staggerUntil) e.staggerUntil += elapsed;
-    });
-    if (landPoseUntil) landPoseUntil += elapsed;
+    shiftTimers(performance.now() - pausedAt);
 
     // Resume on a fresh delta. Without this, the first frame back
     // integrates the entire pause in one step. It is clamped to
@@ -6488,9 +6635,13 @@ function gameLoop(now) {
   // Walking or in the air is moving; anything else, including talking
   // or holding the attack button, is standing still.
   playerStill = !isWalking && onGround;
-  if (canAct) updateGuards(step);
-  if (canAct) updateGuardBullets(step);
-  if (canAct) updateEnemies(step, now);
+  // Block 92. A tutorial stops these and only these; Macario's own
+  // controls, gravity and the camera go on.
+  if (tutorial && (tutorial.def.task === "move" || tutorial.def.task === "react") &&
+      Math.abs(posX - tutorial.startX) > 60) noteTask("move");
+  if (canAct && !tutorial) updateGuards(step);
+  if (canAct && !tutorial) updateGuardBullets(step);
+  if (canAct && !tutorial) updateEnemies(step, now);
   updateKnockback(step);
 
   // After the vertical resolution, so the ground test sees where the
@@ -6558,6 +6709,8 @@ function gameLoop(now) {
       setClass(btnShopMain, "hidden", false);
     }
     nearby = findNearby();
+    // Block 92. The first person within reach is taught to be talked to.
+    if (nearby.type === "npc" && !nearby.ref.scenery && !nearby.ref.interactLabel && !tutorial) teach("usap", true);
     if (nearby.type === "npc" && npcOpensShop(nearby.ref)) {
       setLabel(btnInteract, "Tindahan");
       setClass(btnInteract, "active", true);
@@ -6996,6 +7149,8 @@ function stopSaving() {
 // =============================================================
 
 window.Game = {
+  // Block 92. shell.js reports the tasks only it can see (opening the bag).
+  noteTask,
   setPaused,
   isPaused,
   flushSave,

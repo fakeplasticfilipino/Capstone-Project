@@ -999,6 +999,7 @@ const Shell = {
     this._note(this.el.inventoryNote, "");
     this._renderInventory();
     this._showPanel("inventory");
+    if (window.Game && Game.noteTask) Game.noteTask("inventory"); // Block 92
   },
 
   _closeInventory() {

@@ -290,6 +290,8 @@ skips the entire act lookup and silently drops everyone into Act I.
 
 game.js exposes window.Game and nothing else:
 
+    noteTask(name)       shell.js reports "inventory" when the bag
+                         opens, for a tutorial waiting on it; Block 92
     setPaused(bool)      returns false if refused, which it is mid-cutscene
     isPaused()
     flushSave()          awaitable; logout must await it
@@ -360,7 +362,11 @@ world belongs to the scene.
       developmentNotice,                         optional; marks a stub
       objectives: [{ id, label, flag,
                      countFlags,                 countFlags optional (Block 48)
-                     countCurrency }],           optional; barya target (Block 52)
+                     countCurrency,              optional; barya target (Block 52)
+                     pinned: { from } }],        optional; stays in the log
+                                                 beside the step in hand
+                                                 once flag "from" is set,
+                                                 until done (Block 92)
       linearObjectives: true,                    optional; the quest log is
                                                  the objective chain (Block 48)
       objectiveCurrency: false,                  optional; no barya per step
@@ -737,6 +743,13 @@ of them plain globals in game.js, like addQuest:
     setMusic(src | null)         null is the scene's own track, else Calm
     setQuestText(id, text)       rewrites a logged quest's line (Block 37)
     wait(ms)                     resolves after ms; a pause in a script
+    teach(id)                    a tutorial (Block 92): a card, the control
+                                 pulsing, and the world (enemies, guards,
+                                 bullets) stopped until the student does
+                                 the task; ids in game.js, TUTORIALS
+                                 (lakad, talon, usap, atake, tanda, bag).
+                                 Resolves when done; skipped if taught
+                                 before (flag "__turo_" + id) or off
     playWorkGame(opts)           the work game (Block 89): a marker sweeps
                                  a bar and each stroke pressed over the
                                  green patch is good; the patch thins
@@ -806,8 +819,10 @@ only while he walks and the attack sheet replaces it for each swing,
 from the start of the telegraph to ENEMY_ATTACK_FOLLOW_MS after the
 blow, played once from its first frame. Enemies fight
 rather than patrol and are a separate list from guards: they walk at
-Macario and, within ENEMY_COMMIT_RANGE, decide: light up (the tell,
-ATTACK_TELL_MS), lunge and strike in front of them. A punch is one
+Macario and, within ENEMY_COMMIT_RANGE (230), decide: a red "!" over
+the head (the tell, ATTACK_TELL_MS), then a dash of ENEMY_DASH_DISTANCE
+(220) in ENEMY_DASH_MS (200) the way they faced, hitting whoever it
+touches. A punch is one
 point, a shot two, and a hit knocks them back and cancels the decision. Their speed is scaled by act number exactly as guard
 speed is. Running out of health restarts the fight rather than ending it,
 with the beaten ones staying beaten, and no exit is offered while any of

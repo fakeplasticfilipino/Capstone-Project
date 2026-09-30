@@ -73,10 +73,20 @@ const talk = async (page, times) => {
 
 // Block 48, Block 57. What the quest log shows: the one task in hand.
 // The finished ones are in settings now, read by doneInSettings below.
-const log = (page) => page.evaluate(() => ({
-  current: [...document.querySelectorAll("#quest-list li")].map((li) => li.textContent),
-  toggle: !!document.getElementById("quest-done-toggle"),
-}));
+// Block 92. The running count of the savings sits beside the step in
+// hand (pinned), so "current" is the step and "pinned" the count; when the
+// savings ARE the step in hand there is one line and current has it.
+const log = (page) => page.evaluate(() => {
+  const all = [...document.querySelectorAll("#quest-list li")].map((li) => li.textContent);
+  const isPin = (x) => /^Mag-ipon para kay Nanay/.test(x);
+  const rest = all.filter((x) => !isPin(x));
+  return {
+    current: rest.length ? rest : all,
+    pinned: all.filter(isPin),
+    lines: all.length,
+    toggle: !!document.getElementById("quest-done-toggle"),
+  };
+});
 
 // Block 43. The painted backdrop of the scene in hand: its panels, the
 // shadow trees over the joins, whether every painting really loads, and
@@ -258,7 +268,7 @@ const STEP = {
   sew: "Tulungan ang Mananahi sa pananahi",
   clothes: "Ihatid ang mga damit sa direktor",
   play: "Gumanap bilang Don Rodrigo sa dula",
-  nanay: "Ibigay kay Nanay ang naipon",
+  nanay: "Mag-ipon para kay Nanay",
   // Block 80.
   baldovino: "Gumanap bilang Principe Baldovino",
   kasama: "Hanapin ang naghihintay sa kalye",
@@ -783,6 +793,9 @@ const artDrift = () => {
      JSON.stringify(k1.lines.slice(0, 4)) === JSON.stringify(KUTSERO) && /Bawat linis/.test(k1.lines[4] || ""), k1.lines);
   await page.waitForTimeout(200);
   ok("the task is the horse", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.groom]));
+  const twoLines = await log(page);
+  ok("and a second line stays beside it: the savings, counted as he earns (Block 92)",
+     twoLines.lines === 2 && twoLines.pinned[0] === "Mag-ipon para kay Nanay (0/100)", twoLines);
   ok("there is no apple tree to use any more", await page.evaluate(() => !NPCS.some((n) => n.id === "puno")));
 
   await walkTo(page, 3480);
@@ -810,6 +823,7 @@ const artDrift = () => {
   ok("the keys the game takes do not move Macario", (await page.evaluate(() => posX)) === x0);
   ok("the first round finishes the step, and the log moves on to the Mananahi",
      JSON.stringify((await log(page)).current) === JSON.stringify([STEP.mananahi]));
+  ok("and the savings line counts the 7 he earned", (await log(page)).pinned[0] === "Mag-ipon para kay Nanay (7/100)");
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
   await workRound(page, false);
@@ -957,7 +971,8 @@ const artDrift = () => {
 
   // ---------------------------------------------------------------
   console.log("\nThe Mananahi at the play, and Nanay");
-  ok("the next task is to give Nanay the savings", /^Ibigay kay Nanay ang naipon/.test((await log(page)).current[0] || ""));
+  ok("the next task is to give Nanay the savings", /^Mag-ipon para kay Nanay/.test((await log(page)).current[0] || "") &&
+     (await log(page)).lines === 1);
   // Block 85. She came to watch, and waits outside, not at her shop.
   const mAt = await page.evaluate(() => NPCS.filter((n) => /^mananahi/.test(n.id)).map((n) => [n.id, n.x, Boolean(n.hidden)]));
   ok("the Mananahi waits outside the entablado, and not at her shop (Block 85)",
@@ -1473,6 +1488,89 @@ const artDrift = () => {
   ok("a reload keeps a found paper found, and lays only the other",
      JSON.stringify(kept.laid) === "[12200]" && kept.book.found === 1 && kept.book.total === 2, kept);
   await r.ctx.close();
+
+  // ---------------------------------------------------------------
+  console.log("\nTutorials: the world waits for the task (Block 92)");
+  {
+    const tt = await newPage(browser, { session: null, tutorials: true });
+    const p = tt.page;
+    await p.click("#shell-guest");
+    await p.waitForTimeout(700);
+    await waitIntertitle(p, false, 15000);
+    await readConversation(p, 3);
+    const cardOf = () => p.evaluate(() => ({
+      shown: !document.getElementById("tutorial-card").classList.contains("hidden"),
+      text: document.getElementById("tutorial-text").textContent,
+      pulsing: [...document.querySelectorAll(".tutorial-pulse")].map((b) => b.id),
+    }));
+    const waitCard = async (re) => {
+      for (let i = 0; i < 80; i++) {
+        const c = await cardOf();
+        if (c.shown && re.test(c.text)) return c;
+        await p.waitForTimeout(100);
+      }
+      return cardOf();
+    };
+    const atake = await waitCard(/Atake/);
+    ok("as the fight opens a card asks for Atake, and the button pulses",
+       atake.shown && atake.pulsing.join() === "btn-attack", atake);
+    const hold1 = await p.evaluate(() => ({ pos: ENEMIES.map((e) => Math.round(e.pos)).join(), n: ENEMIES.length, hp: health }));
+    await p.waitForTimeout(1800);
+    const hold2 = await p.evaluate(() => ({ pos: ENEMIES.map((e) => Math.round(e.pos)).join(), n: ENEMIES.length, hp: health,
+      tells: document.querySelectorAll(".enemy-windup").length }));
+    ok("and the world waits: three enemies, and none has moved, lit up or struck", hold1.n === 3 &&
+       hold1.pos === hold2.pos && hold2.hp === hold1.hp && hold2.tells === 0, { hold1, hold2 });
+    await p.keyboard.press("j");
+    await p.waitForTimeout(150);
+    const went = await p.evaluate(() => ({ hidden: document.getElementById("tutorial-card").classList.contains("hidden"),
+      flag: state.flags.__turo_atake === true, pulse: document.querySelectorAll(".tutorial-pulse").length }));
+    ok("one strike lets it go on: it is remembered, and the Atake card is gone (the first red ! may follow)",
+       went.flag && went.pulse === 0 && !/Atake/.test((await cardOf()).text && (await cardOf()).shown ? (await cardOf()).text : ""), went);
+    await p.evaluate(() => ENEMIES.forEach((e) => { if (!e.dead) hitEnemy(e, 99); }));
+
+    // Presses E through everything he is told until the walking card is up.
+    for (let i = 0; i < 400; i++) {
+      const c = await cardOf();
+      if (c.shown && /Lumakad/.test(c.text)) break;
+      if (await line(p)) await p.keyboard.press("e");
+      await p.waitForTimeout(150);
+    }
+    const lakad = await waitCard(/Lumakad/);
+    ok("after the thought, a card asks him to walk, the arrows pulsing",
+       lakad.shown && lakad.pulsing.sort().join() === "btn-left,btn-right", lakad);
+    await p.keyboard.down("d");
+    await p.waitForTimeout(500);
+    await p.keyboard.up("d");
+    await p.waitForTimeout(150);
+    const talon = await waitCard(/Tumalon/);
+    ok("walking is learned, and the next card asks him to jump",
+       await p.evaluate(() => state.flags.__turo_lakad === true) && talon.shown && talon.pulsing.join() === "btn-jump", talon);
+    await p.waitForTimeout(700);
+    await p.keyboard.press(" ");
+    const usap = await waitCard(/kausapin/);
+    ok("jumping is learned, and beside Nanay, the first person within reach, the next is to talk",
+       await p.evaluate(() => state.flags.__turo_talon === true) && usap.shown && usap.pulsing.join() === "btn-interact", usap);
+    await p.waitForTimeout(700);
+    await p.keyboard.press("e");
+    await p.waitForTimeout(200);
+    ok("talking clears it, and nothing else waits", await p.evaluate(() => state.flags.__turo_usap === true) && !(await cardOf()).shown);
+    await readConversation(p, 2);
+
+    // The first warning sign ever seen: the world stops on it.
+    await p.evaluate(() => { spawnEnemies([{ type: "siga1", id: "tanda-1", x: posX + 200 }]); });
+    const tanda = await waitCard(/babala/);
+    const sign = await p.evaluate(() => {
+      const el = document.querySelector(".enemy-windup");
+      return { has: Boolean(el), content: el ? getComputedStyle(el, "::after").content : null };
+    });
+    ok("the first red ! stops the world with a card about it", tanda.shown && sign.has && sign.content === '"!"', { tanda, sign });
+    await p.waitForTimeout(700);
+    await p.keyboard.press("j");
+    await p.waitForTimeout(200);
+    ok("and any answer, here an attack, lets it go", !(await cardOf()).shown &&
+       await p.evaluate(() => state.flags.__turo_tanda === true));
+    await tt.ctx.close();
+  }
 
   // ---------------------------------------------------------------
   console.log("\nGuest");

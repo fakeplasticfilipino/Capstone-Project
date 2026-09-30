@@ -3681,8 +3681,9 @@ const visible = (page, sel) => page.evaluate((s) => {
       setTimeout(() => resolve({ gap: ENEMIES[0].pos - (posX + PLAYER_WIDTH),
                                  spaced: Math.abs(ENEMIES[0].pos - ENEMIES[1].pos) }), 2500);
     }));
-    ok("they walk to arm's length rather than into him", closed.gap > 0 && closed.gap < 80, closed);
-    ok("and queue instead of standing in each other", closed.spaced > 30, closed);
+    ok("they close to dash range and dash at him, well before arm's length (Block 92)",
+       closed.gap > -300 && closed.gap < 260, closed);
+    ok("and are not stacked on one spot (they dash on their own timing)", closed.spaced > 5, closed);
 
     const swing = await page.evaluate(() => new Promise((resolve) => {
       // From a clean slate: the walk above already cost him hearts, and a
@@ -6180,6 +6181,41 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("leaving before the last stroke resolves -1 and frees him", r.early === -1 && r.free, r);
     ok("the last stroke turns the button to Tapos na, and closing resolves with the good ones", r.label === "Tapos na" && r.done >= 0 && r.done <= 3, r);
     ok("a gift that asks for barya waits until he holds them", r.poor === false && r.rich === true, r);
+    await ctx.close();
+  }
+
+  console.log("\nBP. The dash is plain to see, and warned (Block 92)");
+  {
+    const { ctx, page } = await enterTestRoom();
+    const r = await page.evaluate(() => new Promise((resolve) => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      posX = 400; posY = floorHeightAt(posX); onGround = true; facing = 1;
+      health = maxHealth; invulnUntil = performance.now() + 1e9;
+      spawnEnemies([{ id: "w1", x: 400 + PLAYER_WIDTH / 2 + 200 - ENEMY_WIDTH / 2, hp: 2, img: "assets/Kaaway.png" }]);
+      const e = ENEMIES[ENEMIES.length - 1];
+      const t0 = performance.now();
+      let tellAt = 0, moveAt = 0, sign = null, p0 = null, maxMove = 0, lastMoveAt = 0;
+      const timer = setInterval(() => {
+        const now = performance.now() - t0;
+        if (e.nextSwingAt && !tellAt) {
+          tellAt = now; p0 = e.pos;
+          sign = getComputedStyle(e.el, "::after").content;
+        }
+        if (p0 !== null) {
+          const moved = Math.abs(e.pos - p0);
+          if (moved > 3 && !moveAt) moveAt = now;
+          if (moved > maxMove) { maxMove = moved; lastMoveAt = now; }
+        }
+        if (now > 1500) {
+          clearInterval(timer);
+          resolve({ tellAt, moveAt, sign, maxMove, dashMs: lastMoveAt - moveAt, tellMs: moveAt - tellAt, range: ENEMY_COMMIT_RANGE, dist: ENEMY_DASH_DISTANCE });
+        }
+      }, 8);
+    }));
+    ok("an enemy 200px off already decides (the commit range is longer than it was)", r.tellAt > 0 && r.range >= 230, r);
+    ok("with a red ! over its head while it winds up", r.sign === '"!"', r);
+    ok("then dashes most of its length in a fifth of a second: nobody can miss it", r.maxMove >= 190 && r.dashMs <= 320, r);
+    ok("after a tell of about a quarter of a second", r.tellMs >= 200 && r.tellMs <= 500, r);
     await ctx.close();
   }
 
