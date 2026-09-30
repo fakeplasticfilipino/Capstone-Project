@@ -15,8 +15,9 @@ sit the post-test again.
 
 Gameplay is movement, a run and a jump; stealth past patrols with a
 detection meter and a visible line of sight; a punch, a takedown and a
-ranged shot; enemies that fight back, with blows that land with weight;
-and health with hazards and collectible hearts. Guard and enemy speed
+ranged shot, and an attack that is a dash through the enemy; enemies that fight back, with blows that land with weight;
+health with hazards and collectible hearts; jobs to do again for barya;
+and short tutorials that stop the world until the control is used. Guard and enemy speed
 scale with the act number. An inventory with three equipment slots, a
 shop and in-game currency awarded by performance are built, ready for
 the items the story will bring.

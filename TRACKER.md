@@ -97,7 +97,8 @@ Outside the story: the Test Room (Mga Setting from pause, then Test
 Room): a "<WIP>" card, three bantay who patrol, see, turn hostile, fire
 from the hip and take blows, a platform, a crate, and a door back to the
 same spot. Enemies are content: content/enemies.js describes each kind
-once (bantay, kawal) and scenes place them by type.
+once (bantay, kawal, and the three siga of the opening) and scenes place
+them by type.
 
 Art: Macario's idle, walk, jump, punch and shot are the artist's; so are
 Nanay, the Kutsero, Kabayo, Maryam,
@@ -109,14 +110,14 @@ both waiting on the proponent's verdict. What is still owed is ART.md.
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
 for the play's fight and the Test Room, the gunshot, the horse near
-Kabayo, and sixteen short effects; Musika and Mga tunog switches in
+Kabayo, and about twenty short effects; Musika and Mga tunog switches in
 settings. The teacher dashboard is a light report page in English.
 
 The proponent has confirmed on the phone: Block 36's speed fix (18 Sep
 2026) and Blocks 37 and 38 as functional. Blocks 57 and 58 were accepted
 from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
-Blocks 86 to 89 from the desktop browser the same day; Blocks 90 and 91
+Blocks 86 to 89 from the desktop browser the same day; Blocks 90 to 92
 have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
@@ -146,19 +147,18 @@ look for, and what failure looks like (Blocks 80 to 85 are confirmed):
       After the thought, cards ask him to walk and to jump, and beside
       Nanay to talk. Failure: a card that never goes, a lesson that
       pauses nothing, or two cards on top of each other.
-    Enemies: the red ! over their heads, then a dash of about a screen's
-      quarter, from further off than before. Failure: a dash that is
-      easy to miss, or a hit with no sign before it.
+    Enemies: a red ! over their heads as soon as he is within about
+      230px, then a dash of 220px the way they faced. Standing in front
+      of it costs a heart; sliding through, jumping or backing away does
+      not. Failure: a dash that is easy to miss, or a hit with no sign
+      before it.
     The log: after the Kutsero, two lines, the step and "Mag-ipon para
       kay Nanay (n/100)" counting up as he earns.
     Combat: a tap with an enemy ahead slides Macario through him, a
       quick eased slide, and he ends on the far side. From far off it
-      stops short and leaves him stumbling for a moment. An enemy
-      decides once Macario is near, lights up and strikes fast in front
-      of it, so standing there costs a heart and sliding through or
-      jumping does not. Failure: spamming Atake in place still wins, an
-      enemy that strikes at nothing behind it that then hits, or the
-      Atake button dead on the phone.
+      stops short and leaves him stumbling for a moment. Failure:
+      spamming Atake in place still wins, or the Atake button dead on
+      the phone.
     Dialogue: a bust of the speaker with no frame, Macario on the left
       and anyone else on the right, the text clear of both. Failure:
       text under a portrait, or a portrait cut off on the phone.
@@ -209,6 +209,16 @@ for Nanay. PNGs with transparency; each goes through ART.md's steps.
 
 7. Then the remaining polish, the pilot, and Acts II to IV against the
 source material, Act II starting from STORY.md, Threads left open.
+
+8. Privacy of the public repository (30 Sep 2026). Done: the names of
+the team, the resource person and the school are out of every tracked
+file, docs-private/ and *.pdf and *.docx are gitignored, and the two
+private files were deleted from GitHub. Open: they and the names are
+still in the git history (the proposal and the validation form in older
+commits; older README versions), and every commit carries the author
+name and email. Only a history rewrite and a force push purges them, and
+the GitHub username stays in the repository's URL either way. The
+proponent has not yet decided whether to rewrite the history.
 
 ## The milestone
 
@@ -325,9 +335,9 @@ The paper specifies seventeen.
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest for a quick look. A student can change the password in settings |
 | Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I playable to its end, twelve objectives, completing into its post-test; Acts II to IV are stubs |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
-| Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships the play's fight (four soldiers, real walk and sword art); the Test Room's guards can be punched or shot down |
+| Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the Test Room's guards can be punched or shot down |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. The story's Act I has no stealth section yet; the Test Room shows all of it |
-| Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the apple tree), NPCs that open the shop |
+| Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game, tutorials that wait for the task, NPCs that open the shop |
 | Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. Act I uses them; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (fixture; none ships) |
@@ -352,7 +362,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (730 and 200 checks) |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (763 and 212 checks) |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -584,7 +594,8 @@ light report page for laptops and projectors. (BY DESIGN)
 
 ## Deferred
 
-A student-facing join screen (join_code exists; classes are assigned by
+The game_progress.is_night column is no longer written (Block 91); it can
+be dropped in a later migration. A student-facing join screen (join_code exists; classes are assigned by
 the administrator). Multiple save slots. Dashboard export and
 per-question item analysis. Offline play and save conflicts. Persisting
 partial test answers (a reload mid-test asks the questions again;
@@ -598,11 +609,11 @@ From the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
-test.js (730 checks) drives the shipping index.html with a stubbed
+test.js (763 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (200 checks) drives the real
+what is covered. verify_new_scene.js (212 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest and the Test Room, and checks that every line of the content is

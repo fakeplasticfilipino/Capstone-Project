@@ -127,8 +127,7 @@ off the repository.
                                made from it by animate-bantay.js
                                (Blocks 73, 75)
       sprites/scenery/         things on the street that are used, not
-                               talked to (empty; the apple tree is a
-                               silhouette tree since Block 69)
+                               talked to (empty)
       backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
                                ground-lupa.jpg
       items/                   inventory and shop tile pictures
@@ -206,7 +205,7 @@ never both at once.
 
 Four layers, with a strict dependency direction.
 
-Content, in content/actN.js and content/items.js. Pure data. NPCs, stage,
+Content, in content/actN.js and content/items.js. Pure data. NPCs,
 decorations, objectives, starting quests, hazards, pickups, and the item
 catalogue. Contains no engine logic. Registers itself on window.
 
@@ -690,12 +689,9 @@ replay its first beat. onComplete fires once, when that conversation ends.
 A gift's onComplete fires once, right after its flag and its quest are
 both set (endDialogue, game.js), the same position in the sequence a
 dialogueSet's own onComplete already has. Most gifts have nothing
-further to do once given; Kabayo's (content/act1.js, Blocks 20-21)
-uses it to add the next quest, "Pumunta sa entablado", and leave the
-scene, Acts.gotoScene("tondo") — the kutsero scene is a flashback, and
-resolving it returns Macario to tondo without finishing Act I, whose
-later objectives (the entablado, the Katipunan, the pamphlets) are
-still open.
+further to do once given; Nanay's (content/act1.js) spends the savings
+and lets the scene script that waits on its flag run (setTimeout of
+runSceneScript), which is how a gift starts a cutscene.
 
 opensShop: true skips dialogue entirely: pressing E opens Tindahan
 directly (Game.onShopRequest, below), and the NPC needs no
@@ -762,7 +758,8 @@ of them plain globals in game.js, like addQuest:
                                  resolves with the good strokes, or -1 if
                                  he left before the last. One game for
                                  every repeatable job
-    playCatchGame(opts)          the apple mini-game (Block 57, replacing
+    playCatchGame(opts)          the apple mini-game (no shipped content
+                                 uses it since Block 89; Block 57, replacing
                                  Block 56's playTimingGame); resolves with
                                  how many were caught when it closes.
                                  Block 65: timeLimitMs for a round
@@ -924,7 +921,7 @@ and then Inventory.equip(id), as the direktor's stage clothes are.
 
 Quest items are kind "quest". No slot, no use, never more than one. They
 exist to be handed over: content calls Inventory.consume(id) at that
-moment (Kabayo's gift takes "mansanas-kabayo"). A quest item with
+moment (once, Kabayo's gift took "mansanas-kabayo"). A quest item with
 forQuest is listed in the shop only while that quest is logged and not
 done, so it is neither a spoiler before the quest nor a trap after it.
 
@@ -1735,7 +1732,9 @@ look, by system:
     bodies and collision                  Blocks 22 to 24
     inventory, shop, items, equipment     Blocks 20, 22, 25, 32
     melee, shooting, combat               Blocks 17, 27, 28, 35, 40, 60,
-                                          71, 75, 76
+                                          71, 75, 76, 86 (the dash),
+                                          88 (one template), 92 (the
+                                          enemy dash and the red !)
     audio and sound effects               Blocks 30, 58, 60, 65, 81
     scenes, exits, scripts, cutscenes     Blocks 19, 31, 34, 35, 52, 57
     guards, stealth and sight             Blocks 37, 38, 42, 46, 47, 73,
@@ -1743,7 +1742,8 @@ look, by system:
     performance                           Blocks 36, 54, 66
     teacher dashboard                     Blocks 39, 68, 69, 70
     repository layout                     Block 44
-    quests and objectives                 Blocks 48, 52, 56, 57
+    quests and objectives                 Blocks 48, 52, 56, 57, 89, 92
+                                          (autonomy; the pinned line)
     Act I's story passages                Blocks 19 to 21, 31 to 37,
                                           52 to 59, 80 (the ending),
                                           81 (checked against the
@@ -1751,6 +1751,11 @@ look, by system:
     STORY.md and ART.md                   Blocks 61, 77
     loading, retries, service worker      Blocks 62, 78
     run, jump, dust, apple game, rewards  Blocks 57, 63, 65, 67
+    the work game and the jobs            Blocks 89, 90
+    dialogue portraits                    Blocks 87, 88
+    tutorials                             Block 92
+    what was removed (stage, night,
+      death pose)                         Block 91
     questions, replays, Talaan            Blocks 64, 68, 69, 70
     siga and bantay art                   Blocks 72, 73, 75
     test room, enemy catalogue            Blocks 74, 76
