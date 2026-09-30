@@ -794,9 +794,9 @@ only while he walks and the attack sheet replaces it for each swing,
 from the start of the telegraph to ENEMY_ATTACK_FOLLOW_MS after the
 blow, played once from its first frame. Enemies fight
 rather than patrol and are a separate list from guards: they walk at
-Macario, stop at ENEMY_REACH, light up for ENEMY_TELEGRAPH_MS and swing.
-A punch is one point, a shot two, and a hit knocks them back and delays
-the next swing. Their speed is scaled by act number exactly as guard
+Macario and, within ENEMY_COMMIT_RANGE, decide: light up (the tell,
+ATTACK_TELL_MS), lunge and strike in front of them. A punch is one
+point, a shot two, and a hit knocks them back and cancels the decision. Their speed is scaled by act number exactly as guard
 speed is. Running out of health restarts the fight rather than ending it,
 with the beaten ones staying beaten, and no exit is offered while any of
 them is up.
@@ -1320,6 +1320,19 @@ see, and what failure looks like, before they test.
 
 Additive work is preferred over refactors when both would work. Refactors
 of working code require a commit first.
+
+Consistency. One thing is done one way. Everything that fights, a guard
+on patrol who has seen Macario, a soldier in the play, a street tough in
+the opening, follows the same template (Block 88): it decides, shows it
+(the lit-up body or the levelled rifle), strikes fast in the way it
+faced when it decided, cools down for a bounded random time, takes a beat
+to turn, and takes a blow through takeBlow. A fight is scripted by
+spawning bodies that are already aware of Macario (spawnEnemies takes
+either half of the catalogue), never by a second kind of behaviour. A
+new rule about a fighter goes into the shared helpers (jitter,
+turnToward, setTell, ATTACK_*), not into one kind's update. The same
+holds beyond combat: a second way of doing what the code already does
+once is a reason to stop and merge, not to add.
 
 Simple beats complete. This is a capstone with a fixed defense date, not a
 commercial game. When a requirement can be met by a small mechanic that is

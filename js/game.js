@@ -2358,12 +2358,12 @@ function startPerformance() {
 }
 
 // The speaker stands on the box: Macario on the left, anyone else on
-// the right, head to chest in a frame. The picture is the first frame of a sheet the scene already
+// the right, head to chest with no frame. The picture is the first frame of a sheet the scene already
 // has (an NPC's or decoration's own, else the player's idle), drawn by
 // bodySprite like everything else; a speaker with no art, or art still
 // owed, simply has no portrait.
-const PORTRAIT_HEIGHT = 270; // the whole figure, of which the frame shows the head and chest
-const PORTRAIT_WIDTH = 134;  // the frame, inside its border
+const PORTRAIT_HEIGHT = 400; // the whole figure, of which the frame shows the head and chest
+const PORTRAIT_WIDTH = 170;  // the frame
 const portraitLeft = document.getElementById("dialogue-portrait-left");
 const portraitRight = document.getElementById("dialogue-portrait-right");
 let drawnPortrait = { sheet: null, side: null };
@@ -2896,7 +2896,8 @@ function refreshOnDuty() {
   const scene = currentScene;
   if (!scene) return;
   const want = (scene.guards || []).filter(guardOnDuty);
-  if (want.map((g) => g.id).join(",") !== GUARDS.map((g) => g.id).join(",")) {
+  const placed = GUARDS.filter((g) => !g.fight);
+  if (want.map((g) => g.id).join(",") !== placed.map((g) => g.id).join(",")) {
     GUARDS.forEach((g) => { if (g.el) g.el.remove(); });
     buildGuards(actLoadToken);
   }
@@ -2926,121 +2927,128 @@ function buildGuards(token) {
   // (requiresFlag, unlessFlag), read when the scene is built, as an
   // exit's requiresFlag is read when it is reached: the pamphlet run
   // puts guardia civil on a street that has none the rest of the act.
-  GUARDS = ((currentScene && currentScene.guards) || []).filter(guardOnDuty).map((placed) => {
-    // Block 76. A guard placed by type takes the catalogue's fields
-    // under his own (content/enemies.js).
-    const def = withEnemyType(placed, "guard");
-    return Object.assign({}, def, {
-      kind: "guard",
-      pos: def.x,
-      baseSpeed: def.speed || 1.4,
-      speed: (def.speed || 1.4) * speedScale,
-      facing: def.facing || 1,
-      // Kept separately because respawnInScene needs the facing the level
-      // gave this guard, not the one it happened to be walking in. Without
-      // it every guard resets to facing right, including the outpost
-      // sentry the content deliberately faces left.
-      facingStart: def.facing || 1,
-      alert: 0,
-      disabled: false,
-      // Block 37. A guard that shoots fires once its meter fills instead
-      // of catching, and then waits this long before it can fire again.
-      nextShotAt: 0,
-      // Block 38. A shooting guard who has seen Macario stays on him.
-      hostile: false,
-      hp: def.hp || GUARD_HP,
-      maxHp: def.hp || GUARD_HP,
-      chaseSpeed: GUARD_CHASE_SPEED * speedScale,
-      // Block 73. Whether he moved this frame, and his aim (see
-      // guardShootFrame): when he began bringing the rifle down, when he
-      // last fired, and when he began raising it again.
-      moving: false,
-      aiming: false,
-      aimSince: 0,
-      shotAt: 0,
-      lowerSince: 0,
-      // Block 75. The slide after a blow, and the stagger.
-      knockVel: 0,
-      hitAt: 0,
-      staggerUntil: 0,
-      // What was last written to the page, so the loop writes only on a
-      // change (Block 36).
-      drawnFill: -1,
-      drawnFacing: 0,
-      drawnAlerted: null,
-      drawnPose: "idle",
-    });
+  GUARDS = ((currentScene && currentScene.guards) || []).filter(guardOnDuty)
+    .map((placed) => makeGuard(placed, speedScale));
+  GUARDS.forEach((guard) => mountGuard(guard, token));
+}
+
+// One guard's state, from his placement: a scene's guards list, or a
+// scripted fight (Block 88).
+function makeGuard(placed, speedScale) {
+  // Block 76. A guard placed by type takes the catalogue's fields
+  // under his own (content/enemies.js).
+  const def = withEnemyType(placed, "guard");
+  return Object.assign({}, def, {
+    kind: "guard",
+    pos: def.x,
+    baseSpeed: def.speed || 1.4,
+    speed: (def.speed || 1.4) * speedScale,
+    facing: def.facing || 1,
+    // Kept separately because respawnInScene needs the facing the level
+    // gave this guard, not the one it happened to be walking in. Without
+    // it every guard resets to facing right, including the outpost
+    // sentry the content deliberately faces left.
+    facingStart: def.facing || 1,
+    alert: 0,
+    disabled: false,
+    // Block 37. A guard that shoots fires once its meter fills instead
+    // of catching, and then waits this long before it can fire again.
+    nextShotAt: 0,
+    // Block 38. A shooting guard who has seen Macario stays on him.
+    hostile: false,
+    hp: def.hp || GUARD_HP,
+    maxHp: def.hp || GUARD_HP,
+    chaseSpeed: GUARD_CHASE_SPEED * speedScale,
+    // Block 73. Whether he moved this frame, and his aim (see
+    // guardShootFrame): when he began bringing the rifle down, when he
+    // last fired, and when he began raising it again.
+    moving: false,
+    aiming: false,
+    aimSince: 0,
+    shotAt: 0,
+    lowerSince: 0,
+    // Block 75. The slide after a blow, and the stagger.
+    knockVel: 0,
+    hitAt: 0,
+    staggerUntil: 0,
+    // What was last written to the page, so the loop writes only on a
+    // change (Block 36).
+    drawnFill: -1,
+    drawnFacing: 0,
+    drawnAlerted: null,
+    drawnPose: "idle",
   });
+}
 
-  GUARDS.forEach((guard) => {
-    const el = document.createElement("div");
-    el.className = "entity guard";
-    el.id = "guard-" + guard.id;
-    mountBody(el, guard.pos, GUARD_WIDTH);
+// His body in the world, from his state.
+function mountGuard(guard, token) {
+  const el = document.createElement("div");
+  el.className = "entity guard";
+  el.id = "guard-" + guard.id;
+  mountBody(el, guard.pos, GUARD_WIDTH);
 
-    const meter = document.createElement("div");
-    meter.className = "guard-meter";
-    const fill = document.createElement("div");
-    fill.className = "guard-meter-fill";
-    meter.appendChild(fill);
-    el.appendChild(meter);
+  const meter = document.createElement("div");
+  meter.className = "guard-meter";
+  const fill = document.createElement("div");
+  fill.className = "guard-meter-fill";
+  meter.appendChild(fill);
+  el.appendChild(meter);
 
-    // Block 37. The ground he can see, drawn. Which way a guard faces and
-    // how far he sees are the whole of the stealth rule, and neither was
-    // visible before: a placeholder box has no front. The band starts at
-    // the middle of his body and runs detectRadius, the same centre to
-    // centre distance updateGuards measures, so the picture and the rule
-    // are one number. It lies on the floor, so standing on a platform
-    // above it reads as being out of his sight, which is what it is.
-    const sight = document.createElement("div");
-    sight.className = "guard-sight";
-    sight.style.width = (guard.detectRadius || 240) + "px";
-    el.appendChild(sight);
+  // Block 37. The ground he can see, drawn. Which way a guard faces and
+  // how far he sees are the whole of the stealth rule, and neither was
+  // visible before: a placeholder box has no front. The band starts at
+  // the middle of his body and runs detectRadius, the same centre to
+  // centre distance updateGuards measures, so the picture and the rule
+  // are one number. It lies on the floor, so standing on a platform
+  // above it reads as being out of his sight, which is what it is.
+  const sight = document.createElement("div");
+  sight.className = "guard-sight";
+  sight.style.width = (guard.detectRadius || 240) + "px";
+  el.appendChild(sight);
 
-    if (guard.animation) {
-      const sprite = document.createElement("div");
-      sprite.className = "sprite npc-sprite npc-anim-sprite";
-      el.appendChild(sprite);
-      guard.spriteEl = sprite;
-      // Block 73. A guard may bring a walk sheet, shown while he moves,
-      // and a shoot sheet, shown while he aims and fires, beside his
-      // standing one: three sprites in one body, only one displayed,
-      // the way an enemy carries his attack sheet (Block 40). The shoot
-      // sheet's frame is chosen by the shot itself (guardShootFrame),
-      // not by a clock, so its flash lands on the frame the bullet
-      // leaves.
-      const extra = (sheet, opts) => {
-        const extraEl = document.createElement("div");
-        extraEl.className = "sprite npc-sprite npc-anim-sprite";
-        extraEl.style.display = "none";
-        el.appendChild(extraEl);
-        setupNpcAnimation(sheet, extraEl, DISPLAY_HEIGHT, token, GUARD_WIDTH, opts);
-        return extraEl;
-      };
-      world.appendChild(el);
-      setupNpcAnimation(guard.animation, sprite, DISPLAY_HEIGHT, token, GUARD_WIDTH);
-      guard.walkSpriteEl = guard.walkAnimation
-        ? extra(guard.walkAnimation, { playing: () => guard.drawnPose === "walk" })
-        : null;
-      guard.shootSpriteEl = guard.shootAnimation
-        ? extra(guard.shootAnimation, { frameAt: (now) => guardShootFrame(guard, now) })
-        : null;
-      // Block 75. His hit sheet, while he reels and as he falls.
-      guard.hitSpriteEl = guard.hitAnimation
-        ? extra(guard.hitAnimation, { frameAt: (now) => guardHitFrame(guard, now) })
-        : null;
-    } else {
-      const sprite = document.createElement("div");
-      sprite.className = "sprite npc-sprite";
-      bodyPlaceholder(sprite, guard.img || "Guard", DISPLAY_HEIGHT, GUARD_WIDTH);
-      el.appendChild(sprite);
-      world.appendChild(el);
-    }
+  if (guard.animation) {
+    const sprite = document.createElement("div");
+    sprite.className = "sprite npc-sprite npc-anim-sprite";
+    el.appendChild(sprite);
+    guard.spriteEl = sprite;
+    // Block 73. A guard may bring a walk sheet, shown while he moves,
+    // and a shoot sheet, shown while he aims and fires, beside his
+    // standing one: three sprites in one body, only one displayed,
+    // the way an enemy carries his attack sheet (Block 40). The shoot
+    // sheet's frame is chosen by the shot itself (guardShootFrame),
+    // not by a clock, so its flash lands on the frame the bullet
+    // leaves.
+    const extra = (sheet, opts) => {
+      const extraEl = document.createElement("div");
+      extraEl.className = "sprite npc-sprite npc-anim-sprite";
+      extraEl.style.display = "none";
+      el.appendChild(extraEl);
+      setupNpcAnimation(sheet, extraEl, DISPLAY_HEIGHT, token, GUARD_WIDTH, opts);
+      return extraEl;
+    };
+    world.appendChild(el);
+    setupNpcAnimation(guard.animation, sprite, DISPLAY_HEIGHT, token, GUARD_WIDTH);
+    guard.walkSpriteEl = guard.walkAnimation
+      ? extra(guard.walkAnimation, { playing: () => guard.drawnPose === "walk" })
+      : null;
+    guard.shootSpriteEl = guard.shootAnimation
+      ? extra(guard.shootAnimation, { frameAt: (now) => guardShootFrame(guard, now) })
+      : null;
+    // Block 75. His hit sheet, while he reels and as he falls.
+    guard.hitSpriteEl = guard.hitAnimation
+      ? extra(guard.hitAnimation, { frameAt: (now) => guardHitFrame(guard, now) })
+      : null;
+  } else {
+    const sprite = document.createElement("div");
+    sprite.className = "sprite npc-sprite";
+    bodyPlaceholder(sprite, guard.img || "Guard", DISPLAY_HEIGHT, GUARD_WIDTH);
+    el.appendChild(sprite);
+    world.appendChild(el);
+  }
 
-    guard.el = el;
-    guard.fillEl = fill;
-    actElements.push(el);
-  });
+  guard.el = el;
+  guard.fillEl = fill;
+  actElements.push(el);
 }
 
 // Hazards are drawn rather than invisible, for the same reason the hide
@@ -3308,11 +3316,20 @@ function becomeHostile(guard, now) {
 
 function updateHostileGuard(guard, step, now) {
   // Block 75. Reeling from a blow: no walking, no aim, no shot.
-  if (now < (guard.staggerUntil || 0)) return;
+  if (now < (guard.staggerUntil || 0)) {
+    setTell(guard, false);
+    return;
+  }
   const dx = posX + PLAYER_WIDTH / 2 - (guard.pos + GUARD_WIDTH / 2);
   const dist = Math.abs(dx);
-  if (dx !== 0) guard.facing = Math.sign(dx);
+  // Block 88. The template of the enemies: once a shot is coming he holds
+  // the way he faced, and otherwise takes a beat to turn.
+  const deciding = guard.aiming || now >= guard.nextShotAt - GUARD_AIM_LEAD_MS;
+  if (!deciding) turnToward(guard, Math.sign(dx), now);
   const range = (guard.detectRadius || 240) + GUARD_FIRE_RANGE_EXTRA;
+  // A guard with no rifle sheet shows the same lit-up tell an enemy does.
+  setTell(guard, !guard.shootAnimation && dist <= range &&
+    now < guard.nextShotAt && guard.nextShotAt - now <= ATTACK_TELL_MS);
 
   // Block 73. A guard with a shoot sheet stops to shoot: he brings the
   // rifle down GUARD_AIM_LEAD_MS before each shot, holds it through the
@@ -3408,7 +3425,7 @@ const PLAYER_HIT_HEIGHT = 110;      // how tall the body is for a bullet
 
 
 function guardFire(guard, now) {
-  guard.nextShotAt = now + GUARD_SHOT_COOLDOWN_MS;
+  guard.nextShotAt = now + jitter(GUARD_SHOT_COOLDOWN_MS - ATTACK_TELL_SPREAD * 3, ATTACK_TELL_SPREAD * 6);
   guard.shotAt = now;
   playSfx("gunShot");
 
@@ -3697,6 +3714,13 @@ function respawnInScene() {
     guard.nextShotAt = 0;
     guard.hostile = false;
     guard.disguised = false;
+    guard.turnAt = 0;
+    setTell(guard, false);
+    if (guard.fight) {
+      guard.hostile = true;
+      guard.alert = 1;
+      guard.nextShotAt = performance.now() + GUARD_AIM_MS;
+    }
     guard.aiming = false;
     guard.moving = false;
     guard.shotAt = 0;
@@ -5314,30 +5338,61 @@ function moveDecoration(id, toX, pxPerSecond) {
 
 // ---- Combat -------------------------------------------------------
 //
-// Deliberately small, like stealth. An enemy walks at Macario, stops at
-// arm's length, and swings on a timer. The swing is telegraphed: the
-// enemy lights up for ENEMY_TELEGRAPH_MS before it lands, which is the
-// whole of what teaches a Grade 8 student when to step back. A punch takes
-// one point, a shot two; being hit knocks an enemy back and delays its
-// next swing, so punching the one in front is always a way through. Speed
+// Deliberately small, like stealth. An enemy walks at Macario and, once
+// he is within ENEMY_COMMIT_RANGE, decides: he lights up, lunges and
+// strikes in front of him a quarter of a second later, before Macario
+// need be anywhere near. Standing in front of it is what costs a heart;
+// sliding through to the far side, or jumping it, is what answers it. A
+// punch takes one point, a shot two; being hit knocks an enemy back and
+// cancels what he decided, so punching the one in front is always a way
+// through. Speed
 // is scaled by act exactly as guard speed is (difficultyMultiplier), which
 // keeps dynamic difficulty the one lever it was.
 
 const ENEMY_BASE_SPEED = 2.2;   // per 60fps frame; well under SPEED (5)
-const ENEMY_REACH = 55;         // centre to centre; under MELEE_RANGE (70)
 const ENEMY_SPACING = 50;       // enemies queue rather than stack
-const ENEMY_STRIKE_REACH = 68;  // a swing already begun still lands this far
-const ENEMY_WINDUP_MS = 600;    // from reaching him to the first swing, plus up to the spread
-const ENEMY_WINDUP_SPREAD = 300;
-const ENEMY_COOLDOWN_MS = 1300; // between swings: a beat to punch back in, likewise
-const ENEMY_COOLDOWN_SPREAD = 800;
+const ENEMY_COMMIT_RANGE = 130; // he decides to strike once Macario is this close
+const ENEMY_LUNGE_SPEED = 4;    // per 60fps frame, closing in while he winds up
+const ENEMY_LUNGE_STOP = 50;    // and no nearer than this
+const ENEMY_STRIKE_REACH = 78;  // the blow lands this far in front of him
+const ENEMY_STRIKE_BEHIND = 10; // and this far behind (a shoulder's width)
+const ENEMY_STRIKE_HEIGHT = 70; // a jump or a platform above this is out of reach
 const ENEMY_PACE_SPREAD = 0.2;  // each enemy walks 0.9 to 1.1 of his kind's speed
-const ENEMY_TELEGRAPH_MS = 300; // the lit-up warning before a swing
 
-// Bounded so the timing varies without ever being unfair: a swing is
-// always at least the base after the last, and the tell is fixed.
+// One template for every body that fights, guard or enemy (Block 88):
+// it decides, shows it, then strikes fast, in the way it chose. The tell
+// is the whole of the wind-up (a lit-up body, or a levelled rifle), a
+// quarter of a second and a little, and the blow goes where he faced when
+// he decided, so sliding through to his back is the answer to it. Turning
+// takes a beat, and staggering cancels a decision. Times are bounded
+// random, so the player reads the body rather than a clock.
+const ATTACK_TELL_MS = 250;
+const ATTACK_TELL_SPREAD = 100;
+const ATTACK_COOLDOWN_MS = 900;
+const ATTACK_COOLDOWN_SPREAD = 700;
+const ATTACK_TURN_MS = 250;
+
 function jitter(base, spread) {
   return base + Math.random() * spread;
+}
+
+// Faces dir after ATTACK_TURN_MS of looking that way, not at once.
+function turnToward(body, dir, now) {
+  if (!dir || dir === body.facing) {
+    body.turnAt = 0;
+  } else if (!body.turnAt) {
+    body.turnAt = now + ATTACK_TURN_MS;
+  } else if (now >= body.turnAt) {
+    body.facing = dir;
+    body.turnAt = 0;
+  }
+}
+
+// The lit-up body that says a blow is coming, for either kind.
+function setTell(body, on) {
+  if (Boolean(on) === Boolean(body.drawnWindup)) return;
+  body.el.classList.toggle("enemy-windup", Boolean(on));
+  body.drawnWindup = Boolean(on);
 }
 const ENEMY_ATTACK_FOLLOW_MS = 280; // the attack clip's follow-through
 const ENEMY_STAGGER_MS = 350;
@@ -5357,7 +5412,7 @@ const ENEMY_PUNCH_DAMAGE = 1;
 const ENEMY_SHOT_DAMAGE = 2;
 
 function enemiesAlive() {
-  return ENEMIES.some((e) => !e.dead);
+  return ENEMIES.some((e) => !e.dead) || GUARDS.some((g) => g.fight && !g.disabled);
 }
 
 // defs: [{ id, x, hp, speed, img | animation }]. Resolves once every one
@@ -5366,7 +5421,29 @@ function spawnEnemies(defs) {
   const token = actLoadToken;
   const speedScale = difficultyMultiplier(currentActData && currentActData.number);
 
-  const spawned = (defs || []).map((placed) => {
+  // Block 88. A type from the guard half of the catalogue fights the same
+  // way it does on patrol, but already hostile: a scripted fight needs no
+  // meter to fill, the body is simply aware of Macario.
+  const enemyDefs = [];
+  (defs || []).forEach((placed) => {
+    const type = placed.type && (window.ENEMY_TYPES || {})[placed.type];
+    if (type && type.kind === "guard") {
+      const guard = makeGuard(placed, speedScale);
+      Object.assign(guard, {
+        hostile: true,
+        alert: 1,
+        fight: true,
+        nextShotAt: performance.now() + GUARD_AIM_MS,
+        facing: posX + PLAYER_WIDTH / 2 < guard.pos + GUARD_WIDTH / 2 ? -1 : 1,
+      });
+      mountGuard(guard, token);
+      GUARDS.push(guard);
+    } else {
+      enemyDefs.push(placed);
+    }
+  });
+
+  const spawned = enemyDefs.map((placed) => {
     // Block 76. An enemy placed by type takes the catalogue's fields
     // under its own (content/enemies.js).
     const def = withEnemyType(placed, "enemy");
@@ -5377,9 +5454,11 @@ function spawnEnemies(defs) {
       hp,
       maxHp: hp,
       speed: (def.speed || ENEMY_BASE_SPEED) * speedScale * (1 - ENEMY_PACE_SPREAD / 2 + Math.random() * ENEMY_PACE_SPREAD),
-      facing: -1,
+      facing: posX + PLAYER_WIDTH / 2 < def.x + ENEMY_WIDTH / 2 ? -1 : 1,
       dead: false,
       nextSwingAt: 0,
+      cooldownUntil: 0,
+      turnAt: 0,
       staggerUntil: 0,
     });
 
@@ -5542,48 +5621,39 @@ function updateEnemies(step, now) {
     const dx = playerCentre - centre;
     const dir = Math.sign(dx) || enemy.facing;
     const dist = Math.abs(dx);
-    enemy.facing = dir;
 
     if (now >= enemy.staggerUntil) {
-      if (dist > (enemy.nextSwingAt ? ENEMY_STRIKE_REACH : ENEMY_REACH)) {
-        // Wait behind a comrade who is already closer, instead of
-        // walking through him.
-        const blocked = ENEMIES.some((other) => {
-          if (other === enemy || other.dead) return false;
-          const oc = other.pos + ENEMY_WIDTH / 2;
-          return Math.sign(oc - centre) === dir &&
-            Math.abs(oc - centre) < ENEMY_SPACING &&
-            Math.abs(playerCentre - oc) < dist;
-        });
-        if (!blocked) {
-          enemy.pos += dir * Math.min(enemy.speed * step, dist - ENEMY_REACH);
+      enemy.walking = false;
+      if (enemy.nextSwingAt) {
+        // Decided: he holds the way he faced, closes in a little, and
+        // strikes when the tell is over.
+        const ahead = dx * enemy.facing;
+        if (ahead > ENEMY_LUNGE_STOP && !comradeAhead(enemy, dir, centre, playerCentre)) {
+          enemy.pos += enemy.facing * Math.min(ENEMY_LUNGE_SPEED * step, ahead - ENEMY_LUNGE_STOP);
         }
-        enemy.walking = !blocked;
-        enemy.nextSwingAt = 0;
+        if (now >= enemy.nextSwingAt) enemyStrike(enemy, now);
+      } else if (dir !== enemy.facing) {
+        turnToward(enemy, dir, now);
       } else {
-        enemy.walking = false;
-        if (!enemy.nextSwingAt) enemy.nextSwingAt = now + jitter(ENEMY_WINDUP_MS, ENEMY_WINDUP_SPREAD);
-        if (now >= enemy.nextSwingAt) {
-          enemy.nextSwingAt = now + jitter(ENEMY_COOLDOWN_MS, ENEMY_COOLDOWN_SPREAD);
-          const hit = !dash && damagePlayer("Nasugatan ka!", false);
-          if (hit && health > 0) {
-            posX = Math.max(0, Math.min(posX + dir * ENEMY_HIT_RECOIL, WORLD_WIDTH - PLAYER_WIDTH));
-            velY = HAZARD_RECOIL_VELOCITY;
+        enemy.turnAt = 0;
+        const blocked = comradeAhead(enemy, dir, centre, playerCentre);
+        if (dist > ENEMY_COMMIT_RANGE) {
+          if (!blocked) {
+            enemy.pos += dir * Math.min(enemy.speed * step, dist - ENEMY_COMMIT_RANGE);
           }
+          enemy.walking = !blocked;
+        } else if (now >= enemy.cooldownUntil && !blocked) {
+          enemy.nextSwingAt = now + jitter(ATTACK_TELL_MS, ATTACK_TELL_SPREAD);
         }
       }
     }
 
-    const telegraph = enemy.nextSwingAt && enemy.nextSwingAt - now <= ENEMY_TELEGRAPH_MS && now < enemy.nextSwingAt;
-    if (Boolean(telegraph) !== enemy.drawnWindup) {
-      enemy.el.classList.toggle("enemy-windup", Boolean(telegraph));
-      enemy.drawnWindup = Boolean(telegraph);
-    }
+    setTell(enemy, enemy.nextSwingAt);
 
     // Block 40. The attack clip runs from the start of the telegraph to
     // ENEMY_ATTACK_FOLLOW_MS after the blow, so the lunge lands on the hit.
     // A stagger cancels it.
-    if (telegraph && !enemy.attacking && now >= enemy.staggerUntil) {
+    if (enemy.nextSwingAt && !enemy.attacking && now >= enemy.staggerUntil) {
       enemy.attacking = true;
       enemy.attackEnd = enemy.nextSwingAt + ENEMY_ATTACK_FOLLOW_MS;
     }
@@ -5601,13 +5671,40 @@ function updateEnemies(step, now) {
       enemy.drawnPos = enemy.pos;
     }
     // Facing, written only when it turns (Block 36). The art faces right.
-    if (enemy.animation && enemy.spriteEl && dir !== enemy.drawnFacing) {
-      const flip = dir < 0 ? "scaleX(-1)" : "";
+    if (enemy.animation && enemy.spriteEl && enemy.facing !== enemy.drawnFacing) {
+      const flip = enemy.facing < 0 ? "scaleX(-1)" : "";
       enemy.spriteEl.style.transform = flip;
       if (enemy.attackSpriteEl) enemy.attackSpriteEl.style.transform = flip;
-      enemy.drawnFacing = dir;
+      enemy.drawnFacing = enemy.facing;
     }
   });
+}
+
+// Whether a comrade is nearer Macario and right in front of him: he waits
+// behind him, instead of walking or lunging through him.
+function comradeAhead(enemy, dir, centre, playerCentre) {
+  const dist = Math.abs(playerCentre - centre);
+  return ENEMIES.some((other) => {
+    if (other === enemy || other.dead) return false;
+    const oc = other.pos + ENEMY_WIDTH / 2;
+    return Math.sign(oc - centre) === dir &&
+      Math.abs(oc - centre) < ENEMY_SPACING &&
+      Math.abs(playerCentre - oc) < dist;
+  });
+}
+
+// The blow: it lands on whoever is in front of him, low enough and near
+// enough, when the tell ends. Behind him, or up on a jump, it hits air.
+function enemyStrike(enemy, now) {
+  const ahead = (posX + PLAYER_WIDTH / 2 - (enemy.pos + ENEMY_WIDTH / 2)) * enemy.facing;
+  enemy.nextSwingAt = 0;
+  enemy.cooldownUntil = now + jitter(ATTACK_COOLDOWN_MS, ATTACK_COOLDOWN_SPREAD);
+  if (ahead < -ENEMY_STRIKE_BEHIND || ahead > ENEMY_STRIKE_REACH) return;
+  if (posY - floorHeightAt(posX) > ENEMY_STRIKE_HEIGHT) return;
+  if (damagePlayer("Nasugatan ka!", false) && health > 0) {
+    posX = Math.max(0, Math.min(posX + enemy.facing * ENEMY_HIT_RECOIL, WORLD_WIDTH - PLAYER_WIDTH));
+    velY = HAZARD_RECOIL_VELOCITY;
+  }
 }
 
 // =============================================================
@@ -5650,6 +5747,8 @@ const BODY_KINDS = {
       g.disabled = true;
       g.alert = 0;
       g.aiming = false;
+      setTell(g, false);
+      if (g.fight && !enemiesAlive()) finishFight();
       // Dropped from behind (a takedown), he falls forward as he stood;
       // otherwise backward, leaning back in his hit sheet (drawGuard).
       g.fellForward = away === g.facing;
@@ -5661,11 +5760,12 @@ const BODY_KINDS = {
     isDown: (e) => e.dead,
     hit(e) { e.fillEl.style.width = Math.max(0, (e.hp / e.maxHp) * 100) + "%"; },
     staggered(e, now) {
-      e.nextSwingAt = Math.max(e.nextSwingAt || 0, now + ENEMY_STAGGER_MS + jitter(ENEMY_WINDUP_MS, ENEMY_WINDUP_SPREAD));
+      e.nextSwingAt = 0;
+      e.cooldownUntil = Math.max(e.cooldownUntil || 0, now + ENEMY_STAGGER_MS + jitter(ATTACK_TELL_MS, ATTACK_TELL_SPREAD));
     },
     down(e) {
       e.dead = true;
-      e.el.classList.remove("enemy-windup");
+      setTell(e, false);
       // A swing cut off by the blow is put away, or he would fall with
       // his sword still raised (Block 60).
       e.attacking = false;
@@ -5751,10 +5851,11 @@ function resetEnemies() {
     enemy.hp = enemy.maxHp;
     enemy.knockVel = 0;
     enemy.nextSwingAt = 0;
+    enemy.cooldownUntil = 0;
+    enemy.turnAt = 0;
     enemy.staggerUntil = 0;
     enemy.fillEl.style.width = "100%";
-    enemy.el.classList.remove("enemy-windup");
-    enemy.drawnWindup = false;
+    setTell(enemy, false);
     enemy.attacking = false;
     enemy.walking = false;
     enemy.el.style.left = enemy.pos + "px";

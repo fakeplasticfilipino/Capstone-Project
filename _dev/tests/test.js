@@ -3692,7 +3692,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       // make "health went down" read backwards.
       health = maxHealth;
       invulnUntil = 0;
-      ENEMIES.forEach((e) => { e.nextSwingAt = 0; });
+      ENEMIES.forEach((e) => { e.nextSwingAt = 0; e.cooldownUntil = 0; });
       const before = health;
       window.__sawWindup = false;
       const watch = setInterval(() => {
@@ -3701,7 +3701,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       setTimeout(() => {
         clearInterval(watch);
         resolve({ before, after: health, telegraphed: window.__sawWindup });
-      }, ENEMY_WINDUP_MS + 400);
+      }, ATTACK_TELL_MS + 400);
     }));
     ok("an enemy in reach takes a heart", swing.after === swing.before - 1, swing);
     ok("after lighting up first, so the swing is readable", swing.telegraphed, swing);
@@ -3762,15 +3762,14 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("and the doorway is offered again", won.exitAgain === "exit", won);
 
     // ---- The attack is a movement: a dash through the enemy.
-    const runDash = (gap, swingSoon) => page.evaluate(({ gap, swingSoon }) => new Promise((resolve) => {
+    const runDash = (gap, live) => page.evaluate(({ gap, live }) => new Promise((resolve) => {
       ENEMIES.forEach((e) => { e.dead = true; });
       loadScene("tondo");
       posX = 300; posY = floorHeightAt(posX); onGround = true; facing = 1;
       health = maxHealth; invulnUntil = 0; dash = null; dashReadyAt = 0; dashStumbleUntil = 0;
       spawnEnemies([{ id: "d" + Math.random(), x: 300 + PLAYER_WIDTH / 2 + gap - ENEMY_WIDTH / 2, hp: 2, img: "assets/Kaaway.png" }]);
       const e = ENEMIES[ENEMIES.length - 1];
-      e.staggerUntil = performance.now() + 1e9;
-      if (swingSoon) e.nextSwingAt = performance.now() + 60;
+      if (!live) e.staggerUntil = performance.now() + 1e9;
       const samples = [];
       const t0 = performance.now();
       const start = posX;
@@ -3785,12 +3784,15 @@ const visible = (page, sel) => page.evaluate((s) => {
             maxJump = Math.max(maxJump, dx);
             maxSpeed = Math.max(maxSpeed, dx / Math.max(1, samples[i].t - samples[i - 1].t));
           }
-          resolve({ pw: PLAYER_WIDTH, start, end: posX, centre: 300 + PLAYER_WIDTH / 2 + gap, hp: e.hp, health, max: maxHealth,
+          const result = { pw: PLAYER_WIDTH, start, end: posX, centre: 300 + PLAYER_WIDTH / 2 + gap, hp: e.hp, max: maxHealth,
                     ms: samples[samples.length - 1].t, maxSpeed, maxJump, firstStep: Math.abs(samples[0].x - start),
-                    stumble: dashStumbleUntil > performance.now(), ready: dashReadyAt > performance.now() });
+                    stumble: dashStumbleUntil > performance.now(), ready: dashReadyAt > performance.now(),
+                    facingAtEnd: e.facing };
+          // A live enemy gets time to decide and strike before we count.
+          setTimeout(() => resolve(Object.assign(result, { health, facingLater: e.facing })), live ? 500 : 0);
         }
       }, 8);
-    }), { gap, swingSoon });
+    }), { gap, live });
 
     const near = await runDash(120);
     ok("a tap with an enemy ahead moves him: his position really changes", Math.abs(near.end - near.start) > 100, near);
@@ -3807,18 +3809,45 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("and hits nothing", far.hp === 2, far);
     ok("and leaves him stumbling with a wait before the next", far.stumble && far.ready, far);
 
-    const dodge = await runDash(50, true);
-    ok("an enemy's swing that lands mid-dash misses him", dodge.health === dodge.max, dodge);
+    // Live enemies: they decide by themselves, before Macario is anywhere near.
+    const idle = await page.evaluate(() => new Promise((resolve) => {
+      ENEMIES.forEach((e) => { e.dead = true; });
+      loadScene("tondo");
+      posX = 300; posY = floorHeightAt(posX); onGround = true; facing = 1;
+      health = maxHealth; invulnUntil = 0;
+      spawnEnemies([{ id: "i1", x: 300 + 110, hp: 2, img: "assets/Kaaway.png" }]);
+      const e = ENEMIES[ENEMIES.length - 1];
+      const t0 = performance.now();
+      let tellAt = 0;
+      const watch = setInterval(() => {
+        if (!tellAt && e.nextSwingAt) tellAt = performance.now() - t0;
+        if (health < maxHealth || performance.now() - t0 > 1500) {
+          clearInterval(watch);
+          resolve({ tellAt, struckAt: performance.now() - t0, health, max: maxHealth });
+        }
+      }, 10);
+    }));
+    ok("a fast enemy decides before Macario acts, and standing in front of it costs a heart",
+       idle.health === idle.max - 1 && idle.tellAt < 150 && idle.struckAt < 700, idle);
+
+    const through = await runDash(100, true);
+    ok("sliding through an enemy who has decided to strike leaves the blow in the air",
+       through.hp === 1 && through.health === through.max, through);
+    ok("and he takes a beat to turn to Macario's new side", through.facingAtEnd === -1 && through.facingLater === 1, through);
+
+    const short = await runDash(250, true);
+    ok("a dash begun too far away ends in front of the blow, and it lands",
+       short.hp === 2 && short.health === short.max - 1, short);
 
     const spread = await page.evaluate(() => {
       ENEMIES.forEach((e) => { e.dead = true; });
       spawnEnemies(Array.from({ length: 12 }, (_, i) => ({ id: "r" + i, x: 900 + i, hp: 2, img: "assets/Kaaway.png" })));
       const speeds = ENEMIES.filter((e) => !e.dead).map((e) => e.speed);
       const base = ENEMY_BASE_SPEED * difficultyMultiplier(currentActData && currentActData.number);
-      const windups = Array.from({ length: 50 }, () => jitter(ENEMY_WINDUP_MS, ENEMY_WINDUP_SPREAD));
+      const windups = Array.from({ length: 50 }, () => jitter(ATTACK_TELL_MS, ATTACK_TELL_SPREAD));
       return { min: Math.min(...speeds), max: Math.max(...speeds), base,
                wMin: Math.min(...windups), wMax: Math.max(...windups),
-               windup: ENEMY_WINDUP_MS, spreadMs: ENEMY_WINDUP_SPREAD, tell: ENEMY_TELEGRAPH_MS };
+               windup: ATTACK_TELL_MS, spreadMs: ATTACK_TELL_SPREAD, tell: ATTACK_TELL_MS };
     });
     ok("enemies do not all walk at one speed", spread.max > spread.min, spread);
     ok("and the spread stays within a tenth either way", spread.min >= spread.base * 0.89 && spread.max <= spread.base * 1.11, spread);
@@ -4022,7 +4051,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("a bullet can be jumped", jumped.after === jumped.before, jumped);
 
-    const chase = await page.evaluate(() => {
+    const chase = await page.evaluate(async () => {
       setPaused(true);
       const g = GUARDS[0];
       g.nextShotAt = performance.now() + 60000; // no shots during the chase
@@ -4032,6 +4061,8 @@ const visible = (page, sel) => page.evaluate((s) => {
       const closed = g.pos - from;
       // Out of his sight entirely, behind him and far: he stays hostile.
       posX = Math.max(0, g.pos - 900);
+      updateGuards(1);
+      await new Promise((r) => setTimeout(r, ATTACK_TURN_MS + 60)); // he takes a beat to turn (Block 88)
       for (let i = 0; i < 300; i++) updateGuards(1);
       const r = { closed, hostile: g.hostile, facing: g.facing, alert: g.alert,
                   speedPerFrame: closed / 60 };
@@ -6094,6 +6125,23 @@ const visible = (page, sel) => page.evaluate((s) => {
     }));
     ok("a hostile guard ahead is dashed through, and takes the blow", r.hp === 1 && r.end - r.start > 100, r);
     ok("and Macario ends on the far side of him", r.end + r.pw / 2 > r.gc + 40, r);
+
+    // A scripted fight with a guard-kind body: aware from the start, and
+    // the fight is over when he is down.
+    const fight = await page.evaluate(async () => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      let over = false;
+      posX = 400; facing = 1;
+      spawnEnemies([{ type: "bantay", id: "fight-1", x: 700 }]).then(() => { over = true; });
+      const g = GUARDS.find((x) => x.id === "fight-1");
+      const state = { hostile: g.hostile, fight: g.fight, alive: enemiesAlive(), facing: g.facing };
+      knockOut(g, 1);
+      await new Promise((r) => setTimeout(r, FIGHT_END_BEAT_MS + 300));
+      return Object.assign(state, { over, aliveAfter: enemiesAlive() });
+    });
+    ok("a guard-kind type spawned in a fight is hostile at once, no meter to fill",
+       fight.hostile && fight.fight && fight.alive, fight);
+    ok("and beating him ends the fight like any other", fight.over && !fight.aliveAfter, fight);
     await ctx.close();
   }
 

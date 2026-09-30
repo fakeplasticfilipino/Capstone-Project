@@ -3401,3 +3401,39 @@ cropped by the frame), not a standing figure over the box. The box keeps
 
 game.js v85, style.css v52, content/act1.js v60, enemies.js v2.
 test.js 752, verify_new_scene.js 201.
+
+## Block 88: one template for everything that fights
+
+Spamming attack had no answer: an enemy stopped at arm's length and
+wound up for 600 to 900 ms, so Macario could dash in for free. The
+enemy now decides at ENEMY_COMMIT_RANGE (130), before Macario need be
+near: it lights up for ATTACK_TELL_MS (250 plus up to 100), lunges up to
+50px of him, and strikes ENEMY_STRIKE_REACH (78) in front of it, in the
+direction it faced when it decided (the facing is locked, and a turn
+takes ATTACK_TURN_MS). Behind it, or higher than ENEMY_STRIKE_HEIGHT
+(a jump), the blow hits air. So sliding through to its back, or jumping,
+answers a decision; dashing from too far ends in front of it, in the
+stumble, and takes the blow. The dash lost its invulnerability: the side
+of the enemy he ends on is the whole of the dodge. Cooldown is 900 to
+1600 ms; a blow to the enemy cancels what it decided.
+
+Guards and enemies had two unrelated behaviours. Not merged into one
+body (the guard has patrol, a meter, a rifle sheet and bullets, the enemy
+a walk and an attack sheet, and the harness holds hundreds of checks on
+each) but made to share the template: jitter, turnToward, setTell and
+the ATTACK_* times are used by both. A hostile guard now takes a beat to
+turn, holds the way he faced once a shot is coming (so a bullet goes
+where he looked), shows the same lit-up tell if he has no rifle sheet,
+and fires on a bounded random cooldown. A scripted fight needs no
+meter: spawnEnemies takes a type from either half of the catalogue and a
+guard-kind one is built already hostile (makeGuard, mountGuard, fight:
+true), counted by enemiesAlive and finishing the fight when down, and
+put back hostile by a respawn. Not built: a melee guard that patrols,
+or a shooting enemy in a scripted fight from a plain enemy-kind type.
+CLAUDE.md gains the Consistency rule.
+
+The dialogue portrait lost its frame and background: the bust stands on
+the box with a fade at its bottom edge, PORTRAIT_HEIGHT 400 cropped to
+a 170 by 200 window.
+
+game.js v86, style.css v53. test.js 757, verify_new_scene.js 201.

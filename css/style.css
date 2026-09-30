@@ -3983,9 +3983,11 @@ body.text-lg .notebook-entry-text { font-size: 22px; }
   .shell-input { min-height: 63px; }
 }
 
-/* Dialogue portraits: a framed bust of whoever is speaking, head to
-   chest, beside the text. Macario on the left, anyone else on the right.
-   The columns are kept clear of the text so it never runs under them. */
+/* Dialogue portraits: a bust of whoever is speaking, head to chest, with
+   no frame or background, standing in the margin beside the text and
+   rising a little above the box. Macario on the left and anyone else on
+   the right. The picture is cut off at the bottom by fading out, not by
+   an edge, and the columns are kept clear of the text. */
 #dialogue-box {
   min-height: 150px;
   padding-left: 190px;
@@ -3995,23 +3997,23 @@ body.text-lg .notebook-entry-text { font-size: 22px; }
 
 .dialogue-portrait {
   position: absolute;
-  bottom: 12px;
-  width: 140px;
-  height: 130px;
+  bottom: 0;
+  width: 170px;
+  height: 200px;
   overflow: hidden;
-  background: var(--px-ink);
-  border: 3px solid var(--px-edge);
-  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
   pointer-events: none;
   display: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 68%, transparent 100%);
 }
 
 .dialogue-portrait.shown { display: block; }
-#dialogue-portrait-left { left: 24px; }
-#dialogue-portrait-right { right: 24px; }
+#dialogue-portrait-left { left: 12px; }
+#dialogue-portrait-right { right: 12px; }
 
 .portrait-sprite {
   position: absolute;
-  top: 6px;
+  top: 8px;
   background-repeat: no-repeat;
+  filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.45));
 }
