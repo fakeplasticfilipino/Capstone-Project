@@ -3,14 +3,7 @@
 A narrative-driven 2D RPG on the life and historical role of Macario Sakay,
 built as a supplementary instructional tool for Grade 8 Araling Panlipunan.
 
-Capstone project, Bachelor of Science in Information Technology,
-STI College Dasmarinas.
-
-Proponents: Kurt Vincent S. Rino, Chauncy John F. Castro,
-Kennel Keith L. Malulan
-Adviser: Felecisimo Buensuceso Jr., MIT
-Resource person: Kimberly Donadillo-Espiritu, Araling Panlipunan teacher,
-Imus National High School
+Capstone project, Bachelor of Science in Information Technology.
 
 ## What it does
 

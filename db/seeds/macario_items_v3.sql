@@ -7,7 +7,7 @@
 -- Purely additive and idempotent. Run once in the Supabase SQL
 -- Editor. CLEAR THE EDITOR BEFORE PASTING.
 --
--- RUN THIS ONLY AFTER Ms. Donadillo-Espiritu has validated the
+-- RUN THIS ONLY AFTER the resource person has validated the
 -- items. The validation packet is the companion document. Seeding
 -- unvalidated items is how an unvalidated instrument ends up in
 -- front of real students.

@@ -201,7 +201,7 @@ source material, Act II starting from STORY.md, Threads left open.
 ## The milestone
 
 Final defense with student data collection, confirmed. Grade 8 students
-at Imus National High School play the game and sit both tests. School
+at the partner school play the game and sit both tests. School
 approval is secured.
 
 Parental consent was waived by the guidance office and the resource
@@ -520,7 +520,7 @@ order of payoff. Each line says what "done" is.
 
 These do not depend on any block. Start them before writing more code.
 
-Get Ms. Donadillo-Espiritu's delegation in writing. One paragraph is
+Get the resource person's delegation in writing. One paragraph is
 enough: that she reviewed the scope, delegated the assessment items and
 the storyline to the proponents, and trusts them to stay faithful to the
 source material she provided. It replaces the instrument validation form

@@ -71,8 +71,7 @@ before every push.
 ## Project
 
 MACARIO, a narrative-driven 2D RPG teaching the life and historical role of
-Macario Sakay, for Grade 8 Araling Panlipunan. Capstone project, BSIT,
-STI College Dasmarinas.
+Macario Sakay, for Grade 8 Araling Panlipunan. Capstone project, BSIT.
 
 Three stated objectives, which are what the panel will assess against:
 
@@ -1342,6 +1341,13 @@ Kutsero has been spoken to). The work is one game with different words
 (playWorkGame), paying a small bounded sum a round up to a cap; the
 scripts that remain are the turns the story cannot leave to the student.
 A new activity is a NPC with onInteract, not a new mechanic.
+
+Privacy. The repository is public. No file in it names the team, the
+adviser, the resource person or the school, and nothing private is
+committed: the proposal, the validation form and any document of that
+kind stay on the proponent's computer (docs-private/, and *.pdf and
+*.docx, are gitignored). Say "the resource person" and "the partner
+school". Test accounts are coded, never named.
 
 Consistency. One thing is done one way. Everything that fights, a guard
 on patrol who has seen Macario, a soldier in the play, a street tough in

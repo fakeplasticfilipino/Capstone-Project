@@ -308,8 +308,8 @@ grant execute on function public.submit_assessment(int, text, jsonb) to authenti
 -- PART 4 — SEED: ACT I ("The Awakening")
 --
 -- ⚠️ VALIDATE THESE WITH YOUR RESOURCE PERSON before testing on
--- real students. Ms. Donadillo-Espiritu is already listed in your
--- appendix as the subject-matter consultant — having her sign off
+-- real students. The resource person is already listed in your
+-- appendix as the subject-matter consultant — having them sign off
 -- on the item bank is a cheap, strong line in your defense.
 --
 -- Pre and post are PARALLEL FORMS: same five learning objectives,

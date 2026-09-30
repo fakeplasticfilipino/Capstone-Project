@@ -2,6 +2,9 @@
 # form) and old preview screenshots. Kept on the proponent's computer;
 # the repository is public and published, so they must not be pushed.
 docs-private/
+# Nothing of these kinds is ever meant to be in the public repository.
+*.pdf
+*.docx
 
 # Admin-only tools — must NEVER be pushed to a public repo.
 # These are meant to run locally on your own machine only.
