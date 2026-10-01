@@ -519,14 +519,18 @@ Fixed hints (Block 70) are the teacher's Talaan papers. hints.fixed
 lays paper n at the scene's hintSpots[n - 1], always, and at most
 hints.count (3) of them; the pool comes from talaan_entries (schema
 007), read by Acts.loadTalaan and handed over with Game.setHintPool,
-which replaces the content's own pool for that act only and lays the
-papers again at once if the act is on screen. A pool entry is { slot,
+which lays the papers again at once if the act is on screen. Since
+Block 94 the content's own pool is the default: a teacher's paper
+replaces its own slot only (hintsDef merges by slot), and a slot she
+has not written keeps the content's paper. A pool entry is { slot,
 title, text }; an empty slot lays nothing, and a paper's flag is
 "pahiwatig_" + (slot - 1), so a paper the teacher rewrites stays found.
 listLabel names the list on the pause screen, label the card. Act I
-declares fixed hints with an empty pool and three spots (content/act1.js,
-HINT_SPOTS), so with no papers written nothing lies on the road and the
-Talaan button is hidden; with papers it counts them. The dashboard
+declares fixed hints with three spots (content/act1.js, HINT_SPOTS) and,
+since Block 94, three papers of facts of its own, so three always lie on
+the road and the Talaan button is always there; the dashboard names
+them (js/teacher-talaan.js, DEFAULTS), and a paper renamed in content is
+renamed there. The dashboard
 describes the three places in words (js/teacher-talaan.js, PLACES), and
 a spot moved in content is described again there.
 
@@ -774,6 +778,16 @@ of them plain globals in game.js, like addQuest:
                                  resolves with the good strokes, or -1 if
                                  he left before the last. One game for
                                  every repeatable job
+    playOrderGame(opts)          the barber's game (Block 94): each
+                                 round the customer (opts.speaker) asks
+                                 for a list of opts.tools ([{ label,
+                                 icon }], three), shown a word at a time
+                                 and taken away, pressed back in order
+                                 (buttons or 1 to 3); a wrong one ends
+                                 the round; opts.lengths (default 2 to
+                                 5), hint, hitText, missText,
+                                 doneText(good); resolves with the
+                                 rounds right, or -1 if he left
     playCatchGame(opts)          the apple mini-game (no shipped content
                                  uses it since Block 89; Block 57, replacing
                                  Block 56's playTimingGame); resolves with
@@ -811,6 +825,13 @@ of them plain globals in game.js, like addQuest:
                                  someone who comes to him wherever a
                                  fight left him (Block 93), rather than to
                                  a fixed spot
+    refreshOnDuty()              guards, crates and night read again
+                                 from the flags now, for a stretch of
+                                 story that ends mid-scene; call it under
+                                 a black card (Block 94)
+    playSfx(name)                an SFX_SOURCES sound, for something
+                                 shown rather than said (the door,
+                                 Block 94)
 
 scripts (Block 52) are how a scene plays one of these by itself. The
 first entry whose requiresFlag is set (or that has none) and whose
@@ -1781,7 +1802,9 @@ look, by system:
     STORY.md and ART.md                   Blocks 61, 77
     loading, retries, service worker      Blocks 62, 78
     run, jump, dust, apple game, rewards  Blocks 57, 63, 65, 67
-    the work game and the jobs            Blocks 89, 90
+    the work game and the jobs            Blocks 89, 90, 94 (the
+                                          barber's own game)
+    the end of Act I, a year on           Block 94
     dialogue portraits                    Blocks 87, 88
     tutorials                             Block 92
     the Act I polish list                 Block 93

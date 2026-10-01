@@ -9,7 +9,11 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 30 Sep 2026, after Block 93 (the Act I polish list: the
+Last updated: 1 Oct 2026, after Block 94 (a third job, the Barbero,
+with a memory game of his own; a new end, the report and a year on,
+Tondo, 1895, Macario the head of his council and the door shut on
+Nanay; three papers of facts in the Talaan, a teacher's paper replacing
+its slot; not yet seen on the phone). Before that, Block 93 (the Act I polish list: the
 stuck walk, Nanay coming to Macario and walking as a placeholder, a new
 jump sound, the proponents' early lines corrected, icons by action, the
 trees' roots, the tahian seen, enemies that move between blows and hop
@@ -23,7 +27,7 @@ Tindero removed; nine pictures owed). Before that, Block 90 (the work
 gets harder, sewing is held, each job has a picture), Block 89 (the work
 is there to be done), Block 88 (one combat template), Block 87 (the
 opening fight, busts) and Block 86 (the dash attack).
-test.js 767 passed, 0 failed; verify_new_scene.js 216 passed,
+test.js 767 passed, 0 failed; verify_new_scene.js 248 passed,
 0 failed.
 
 ## Start here
@@ -55,7 +59,7 @@ then 01 and 02, a silhouette tree over each join; keep anyone a student
 must reach 90px clear of a multiple of 1450), the inside of the
 entablado, which only the direktor (and later the four-year card) takes
 Macario into, and the pulungan, the Katipunan's secret room, which only
-the Kasama takes him into. Twelve objectives, one chain, shown one at
+the Kasama takes him into. Fourteen objectives, one chain, shown one at
 a time in the quest log (finished ones in Mga Setting). Since Block 89
 nothing but the turns is staged: the work is simply there, and can be
 done again.
@@ -66,31 +70,41 @@ done again.
     3  Alagaan ang kabayo ng Kutsero    the first grooming round; the
                                         horse stays there: 4 to 7 barya
                                         a round, 25 in all
-    4  Kausapin ang Mananahi            her first conversation
-    5  Tulungan ang Mananahi sa         the same game as sewing, at her
+    4  Magtrabaho sa barberya           the Barbero's first game (Block
+                                        94), his own: the customer's
+                                        order of tools, from memory;
+                                        4 to 7 a round, 25 in all
+    5  Kausapin ang Mananahi            her first conversation (before
+                                        the barber she sends him there)
+    6  Tulungan ang Mananahi sa         the same game as grooming, at her
        pananahi (n/2)                   tahian; after the second round
                                         she stops him and sends him
                                         with the costumes
-    6  Ihatid ang mga damit sa          the direktor's gift button; done
+    7  Ihatid ang mga damit sa          the direktor's gift button; done
        direktor                         when Macario agrees to act
-    7  Gumanap bilang Don Rodrigo sa    the play and its fight; 79 to
+    8  Gumanap bilang Don Rodrigo sa    the play and its fight; 79 to
        dula                             110 barya
-    8  Mag-ipon para kay Nanay (n/100)  shown from the Kutsero's talk as a
+    9  Mag-ipon para kay Nanay (n/100)  shown from the Kutsero's talk as a
                                         second line; Nanay's gift, offered
                                         once the play is done and he
                                         holds 100; then a black card,
                                         four years on
-    9  Gumanap bilang Principe          the play, and the Katipunan's
+   10  Gumanap bilang Principe          the play, and the Katipunan's
        Baldovino                        two men in the wings asking
                                         whether he is sure
-   10  Hanapin ang naghihintay sa       the password to the Kasama,
+   11  Hanapin ang naghihintay sa       the password to the Kasama,
        kalye                            x 12500
-   11  Sumapi sa Katipunan              the oath in the pulungan
-   12  Ipamigay ang mga polyeto (n/3)   out the back door, past three
+   12  Sumapi sa Katipunan              the oath in the pulungan
+   13  Ipamigay ang mga polyeto (n/3)   out the back door, past three
                                         guardia civil: the mangingisda,
                                         the tabakera, the karpintero;
-                                        the third ends the act and the
-                                        post-test runs
+                                        after the third the rounds end
+   14  Bumalik sa pulungan at mag-ulat  in by the back door (Kumatok);
+                                        the report, then a year on,
+                                        Tondo, 1895: the head of his
+                                        council, the lie to Nanay, the
+                                        door shut on her; this ends the
+                                        act and the post-test runs
 
 Act I completes (holdOpen is gone since Block 80). It pays no barya per
 step; the performance award is paid on completion.
@@ -128,23 +142,44 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v58    js/game.js v91       js/shell.js v20
+    css/style.css v59    js/game.js v92       js/shell.js v20
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v64  content/items.js v13  content/act2-4.js v1
+    content/act1.js v65  content/items.js v13  content/act2-4.js v1
     content/enemies.js v2   content/questions.js v1
     js/asset-manifest.js v4 (bumped by make-asset-manifest.js)
     ASSET_VERSION 32 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
-      js/teacher-questions.js v2, js/teacher-talaan.js v1
+      js/teacher-questions.js v2, js/teacher-talaan.js v2
 
 ## Next action
 
 In order.
 
-1. Look at Blocks 90 to 93 on the phone, in landscape, from a private
+1. Look at Blocks 90 to 94 on the phone, in landscape, from a private
 tab, after the push, with the sound on. Play from the start. What to
 look for, and what failure looks like (Blocks 80 to 85 are confirmed):
+
+    Block 94, the barber, the end and the papers. After the horse the
+      log says "Magtrabaho sa barberya"; the Barbero (a dashed box,
+      barbero.png) stands between the Kutsero and the Mananahi, his
+      chair beside him. Before the horse he sends Macario to the
+      Kutsero; before the barber the Mananahi sends him to the barber.
+      Gupitin at the chair opens his own game: the Suki's request
+      ("Suklay, Gunting..."), word by word, then "Ikaw na!", and three
+      tool buttons (comb, scissors, razor) to press in that order, four
+      rounds of two to five, a wrong tool ending the round; 4 to 7
+      barya. After the third pamphlet, a card ("Natapos ang ronda..."),
+      no guards or crates after it, still night; the log says "Bumalik
+      sa pulungan at mag-ulat"; Kumatok at the back door (x 4100). The
+      report, a card "Pagkalipas ng isang taon / Tondo, 1895", the men
+      calling him Pangulo, Nanay at the door and his lie, the door shut
+      on her with its sound, the last cards, then the post-test. Three
+      papers on the road (2500 on the ground, 8200 and 12200 by
+      jumping) with facts, with no teacher's papers written. Failure:
+      the barber skipped from the log, a game that will not take a
+      press, guards still on the street on the way back, a reload
+      after the report replaying it, or no papers.
 
     Block 93, the polish list: walk while a scene takes over (the end
       of a fight, a door): he stands, never walks on the spot. After
@@ -215,8 +250,10 @@ built into content/questions.js, editable on the dashboard). Checked 30
 Sep 2026: eight of ten items per test are now taught by the story; the
 occupation item and one distractor need the proponents' decision (Blocks
 remaining, the feel pass, item 11). Since Block 89 he does groom the
-Kutsero's horse and help the Mananahi sew, so the mananahi half of the
-occupation item is now shown; the barbero half still never is. The post-test now runs, so this
+Kutsero's horse and help the Mananahi sew, and since Block 94 he works
+for the Barbero, so both halves of the occupation item ("Mananahi at
+barbero") are now shown, and the Talaan's first paper says it too. The
+item bank still says Sakay joined in 1894; the story agrees. The post-test now runs, so this
 decides whether the study measures anything; do it before the pilot.
 
 5. Decide whether students should see the Test Room button (Block 74).
@@ -225,11 +262,11 @@ outside the story and returns to the same spot, so it harms nothing,
 but before the pilot either keep it, hide it (one line in shell.js,
 _openSettings), or remove testRoom from content/act1.js.
 
-6. Art from the artist: ART.md's Owed list, eleven pictures (the
+6. Art from the artist: ART.md's Owed list, thirteen pictures (the
 Mananahi, the direktor, the Katipunero, the Kasama, the Mabalasig, the
 three who take the pamphlets, the pulungan's painting, Nanay's
-side-view walk and the Mananahi's sewing table, the last two named in
-Block 93 so they show as placeholders). PNGs with transparency; each goes through ART.md's steps.
+side-view walk, the Mananahi's sewing table, and since Block 94 the
+Barbero and his chair). PNGs with transparency; each goes through ART.md's steps.
 
 7. Then the remaining polish, the pilot, and Acts II to IV against the
 source material, Act II starting from STORY.md, Threads left open.
@@ -551,6 +588,8 @@ machine, the assessment module.
     92  enemy dash and red !, tutorials that stop the world, the savings
         pinned in the log
     93  the Act I polish list (TRACKER.md, above; DECISIONS.md)
+    94  the Barbero and his own game (playOrderGame); the end a year on,
+        the head of his council; the Talaan's own papers of facts
 
 ## Blocks remaining
 

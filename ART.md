@@ -28,7 +28,9 @@ Macario's sheets (256px cells).
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 30 Sep 2026, Block 93 (eleven owed: Nanay's walk and
+Last updated: 1 Oct 2026, Block 94 (thirteen owed: the Barbero and his
+chair, the third job, and Nanay walking now also at the end, in the
+pulungan). Before that, Block 93 (eleven owed: Nanay's walk and
 the Mananahi's sewing table are named now, so each shows as a
 placeholder box until drawn). Before that, Block 91 (nine pictures owed: the death pose,
 the night backdrop and Aling Rosa are gone with the things that named
@@ -81,10 +83,22 @@ Named by the game and missing. Each is a placeholder box today.
 
     assets/sprites/characters/nanay-walk.png
         Nanay walking, side on, facing right: she walks on in the
-        opening and home with Macario (Block 93). Her standing sheet
+        opening and home with Macario (Block 93). Block 94 also stands
+        her at the door of the pulungan in the last scene, on nanay.png. Her standing sheet
         (nanay.png) faces the front, so this is a sheet of its own; a
         placeholder box walks in her place until it arrives.
         (NOT STARTED)
+
+    assets/sprites/characters/barbero.png
+        The Barbero, Macario's third employer (Block 94). Act I, on the
+        street at x 5300, between the Kutsero and the Mananahi; gone from
+        the oath on. Talks; an idle sheet is enough. A barber of 1890s
+        Tondo: camisa, an apron, scissors or a comb in hand. (NOT STARTED)
+
+    assets/sprites/scenery/silya-barbero.png
+        The Barbero's chair, beside him (x 5440), where Macario plays the
+        barber's game (Block 94). A still is enough, drawn about 90px tall
+        in the game (displayHeight), like the tahian. (NOT STARTED)
 
     assets/sprites/scenery/tahian.png
         The Mananahi's sewing table (tahian), beside her on the street
@@ -124,7 +138,7 @@ forgotten.
 
 Drawn by the game itself, not owed by anyone: the shadow trees over
 every join (_dev/tools/make-shadow-tree.py), the work game's brush, cloth and
-needle (CSS, Block 90), the night on the pamphlet run (a tint over the
+needle (CSS, Block 90), the barber's game (CSS and its icons, Block 94), the night on the pamphlet run (a tint over the
 day's paintings, Block 85, so no night painting is owed), platforms,
 crates, hazards, heart pickups, bullets, the guard's sight cone, the
 dust, the Talaan's papers, and every icon (inline SVG in index.html).

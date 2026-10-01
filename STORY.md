@@ -44,7 +44,11 @@ ours. Since Block 93 their spelling and grammar are corrected, at their
 request, with the wording and the meaning kept (po rather than 'ho,
 'Nay, rin and rito after a vowel, 'yung, no "Okay").
 
-Last updated: 30 Sep 2026, Block 93 (the proponents' early lines
+Last updated: 1 Oct 2026, Block 94 (a third job, the Barbero, with a
+game of his own; a new end: the report in the pulungan and a year on,
+Tondo, 1895, Macario the head of his council, lying to Nanay at the
+door as it is shut on her; three papers of facts of the game's own in
+the Talaan). Before that, 30 Sep 2026, Block 93 (the proponents' early lines
 corrected; Nanay comes to Macario wherever the fight left him, walking
 on a placeholder until her walk sheet arrives; the tahian is seen;
 Macario walks back to his mark before the Sultan returns; the way out of
@@ -79,8 +83,8 @@ the teacher's, at three fixed places on the street).
 Act I, Ang Pinagmulan ni Macario. Tondo, 1890. A boy teased about the
 father who never came back learns that his mother spent the last of
 their money on her cedula, and goes out to earn. He takes work where it
-is, grooming a kutsero's horse and helping a mananahi sew, as often as he
-likes for a few barya a time, until she stops him and sends him with the
+is, grooming a kutsero's horse, working a barber's chair and helping a
+mananahi sew, as often as he likes for a few barya a time, until she stops him and sends him with the
 theatre company's costumes, and he walks
 into their crisis: their lead actor is sick and the
 house is full. The costume he carried fits him. He goes on, forgets his
@@ -97,8 +101,15 @@ He says their password to the one waiting on the street, is taken
 blindfolded to a secret room, and goes through the rite: the warning,
 the Mabalasig, the three questions, the leap over the fire, the oath in
 blood. He is sent out the back with pamphlets for three people, past
-guardia civil on their rounds. The third handed over ends Act I, and
-the post-test follows.
+guardia civil on their rounds. When the rounds are over he goes back
+through the back door and reports.
+
+A year on, in 1895, he is the head of his own council of the Katipunan:
+the men bring him their business and take his orders. Nanay comes to
+the door, afraid of the secret meetings the neighbours talk about, and
+asks whether he is one of them. He tells her he is rehearsing a new
+komedya. The Kasama shuts the door on her as the men call him Pangulo,
+and Act I ends; the post-test follows.
 
 Acts II to IV are not written. Their content files are registered stubs
 (content/act2.js to act4.js) and hold no story.
@@ -116,7 +127,11 @@ Act I lives on it, left to right:
     x 2000     Nanay, where she and Macario walk to in the opening
     x 3300     the Kutsero
     x 3560     his white horse, Kabayo (used with E, not talked to)
+    x 4100     the pulungan's back door (Kumatok), open once the
+               pamphlets are given (Block 94)
     x 4800     the mangingisda (four years on, once Macario is sworn in)
+    x 5300     the Barbero (Block 94), and his chair at x 5440 (used
+               with E); closed, and gone, from the oath on
     x 6400     the Mananahi (from the first play until the four years,
                outside the entablado instead, at x 13250)
     x 6540     her tahian, the sewing (scenery, used with E)
@@ -143,7 +158,8 @@ out, Lumabas sa likod, is on the left and stays shut until he is sworn
 in; the Kasama stands by it (x 300), the Mabalasig (x 760) and the
 Katipunero (x 920) at the far end. It is reached only with the Kasama,
 once, and its back way leads onto the street at x 4100, short of the
-mangingisda. Its painting is owed: until it arrives it is a dark wall
+mangingisda; since Block 94 he goes back in by that door to report, and
+the act ends there, a year on. Its painting is owed: until it arrives it is a dark wall
 with the file name on it.
 
 ## Cast
@@ -162,6 +178,10 @@ with the file name on it.
                    ("Mga Siga").
     Kutsero        a carriage driver, Macario's first employer. Real art.
     Kabayo         the kutsero's white horse. Real art.
+    Barbero        a barber, his third employer (Block 94). Placeholder
+                   box (barbero.png), with his chair (silya-barbero.png).
+    Suki           the barber's customer, heard only in the barber's game,
+                   asking for the cut.
     Mananahi       a seamstress, his second employer. Placeholder box
                    (mananahi.png).
     Direktor       head of the theatre company. Placeholder box
@@ -300,10 +320,55 @@ else waits on the horse; the job stays there.
 Said, with no game, once the horse has paid its 25. Before that, see
 Repeat lines.
 
-### 5. The Mananahi
+### 5. The Barbero
 
-tondo, x 6400. Talk, at any time after the first step: she does not wait
-on the Kutsero.
+tondo, x 5300, his chair beside him at x 5440. Block 94, at the
+proponent's direction: Sakay is recorded as having been a barber. Before
+the horse has been groomed he sends Macario to the Kutsero:
+
+  + Barbero: Wala pa akong maipapagawa sa'yo, iho. Pero naghahanap daw ng tagaalaga ng kabayo ang Kutsero.
+
+After it, talk:
+
+  + Macario: Magandang araw po. Naghahanap po ba kayo ng katulong?
+  + Barbero: Katulong? Marunong ka bang humawak ng gunting?
+  + Macario: Nakapagsuklay na po ako ng kabayo.
+  + Barbero: ...
+  + Barbero: Hindi kabayo ang mga suki ko, iho.
+  + Barbero: Pero sige. Makinig kang mabuti sa gusto ng suki, at sundin mo nang tama ang pagkakasunod-sunod.
+  + Barbero: Nariyan ang silya. May bayad ang bawat gupit na matapos mo.
+
+The chair's button reads Gupitin. Before he has been spoken to:
+
+  + Macario (sa isip): Silya ito ng Barbero. Kausapin ko muna siya.
+
+The barber's game is his own (game.js, playOrderGame), not the work
+game: in each of four rounds the customer asks for the cut as a list of
+tools, said one word at a time and then taken away, two words the first
+round and five the last, and Macario uses the tools in that order (three
+buttons, Suklay, Gunting and Labaha, or the keys 1 to 3). A wrong tool
+ends the round. The same pay as the other jobs: 4 to 7 a round by the
+rounds done right, 25 in all.
+
+  + (the game) Barberya / Tandaan ang gusto ng suki
+  + (the request) Suki: Suklay, Gunting, Labaha.
+  + (the request taken away) Ikaw na!
+  + (a round right) Tama ang pagkakasunod-sunod!
+  + (a wrong tool) Naku, hindi 'yan ang gusto ng suki!
+  + (the end) n/4 ang maayos. +n barya
+  + Barbero: Sapat na ang nagupit mo ngayon, iho. Bukas ulit.
+    (once he has paid his 25)
+
+Completes, with the first round: Magtrabaho sa barberya.
+
+### 6. The Mananahi
+
+tondo, x 6400. Talk. Before the barber's first game she sends him there
+(Block 94), so the jobs are met in the order the log gives them:
+
+  + Mananahi: Wala pa akong maipapatahi sa'yo ngayon, iho. Pero balita ko, naghahanap ng katulong ang Barbero. Puntahan mo muna siya.
+
+After it:
 
     Macario: Mananahi, tumatanggap po ba kayo ng trabahador?
     Mananahi: Oo naman, Macario. Kumusta na ang inay mo?
@@ -313,7 +378,7 @@ on the Kutsero.
 
 Completes: Kausapin ang Mananahi.
 
-### 6. The sewing, and being stopped
+### 7. The sewing, and being stopped
 
 tondo, x 6540, beside her, at her table (tahian.png, owed: a
 placeholder box until it is drawn, Block 93). The same game as the horse with the sewing's
@@ -352,7 +417,7 @@ offered once she has sent him:
 
 Completes, with the next beat: Ihatid ang mga damit sa direktor.
 
-### 7. The missing actor
+### 8. The missing actor
 
 tondo, beside the direktor. Plays by itself straight after he takes
 the costumes.
@@ -381,7 +446,7 @@ the costumes.
 Completes: Ihatid ang mga tinahing damit (3/3). A reload before
 Macario says yes plays the scene again.
 
-### 8. The play
+### 9. The play
 
 entablado. Plays by itself on arrival. A moro-moro: two kingdoms at
 war and a love across them, the kind of play Tondo's stages put on.
@@ -467,7 +532,7 @@ conversion of the princess, and its kingdoms are not named by
 religion: a choice made for a Grade 8 classroom that the proponents
 may reverse.
 
-### 9. The Mananahi at the play
+### 10. The Mananahi at the play
 
 tondo, outside the entablado (x 13250), where she has come to watch;
 since Block 85, so that she is not a walk back across the street. She
@@ -480,7 +545,7 @@ her. Talk:
   + Macario: Kasyang-kasya po.
   + Mananahi: Sabi ko na nga ba.
 
-### 10. The savings
+### 11. The savings
 
 tondo, x 2000. The button reads Ibigay ang ipon, and appears once the
 play is done and he holds 100 barya (Block 89): the play's 79 to 110
@@ -490,6 +555,7 @@ or the sewing. 100 barya go to Nanay; Macario keeps the rest.
     Macario: 'Nay, nakapag-ipon na po ako ng pera para makatulong.
     Nanay: Maraming salamat, anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?
     Macario: Opo, 'Nay. Nagtrabaho po ako sa Kutsero at sa Mananahi.
+  + Macario: Pati po sa Barbero.
   + Macario: Tapos, Nay... umarte pa po ako sa entablado.
   + Nanay: Ikaw? Sa entablado?
   + Macario: Nagkasakit po kasi 'yung bida nila. Ako na lang po ang ipinalit ng direktor.
@@ -502,7 +568,7 @@ also a second line in the log from the moment he has spoken to the
 Kutsero, counting the barya as they come in. As she finishes, the
 screen goes black.
 
-### 11. Four years on
+### 12. Four years on
 
 Plays by itself straight after the savings; a reload before the card
 lifts plays it again.
@@ -562,7 +628,7 @@ In the wings. (Macario beside the direktor, Maryam behind him.)
 
   + Maryam: Apat na taon na, pero hindi ka pa rin marunong sumunod sa iskrip, 'no?
 
-### 12. The Katipunan asks
+### 13. The Katipunan asks
 
 entablado. Straight on from the play; a reload from here plays only
 this.
@@ -597,7 +663,7 @@ this.
 
 Completes: Gumanap bilang Principe Baldovino.
 
-### 13. The word
+### 14. The word
 
 tondo, the Kasama at x 12500, left of the direktor. Talk (Usap).
 
@@ -615,7 +681,7 @@ tondo, the Kasama at x 12500, left of the direktor. Talk (Usap).
 
 Completes: Hanapin ang naghihintay sa kalye.
 
-### 14. The oath
+### 15. The oath
 
 pulungan. Plays by itself on arrival; a reload in the room plays it
 again from the top.
@@ -691,7 +757,7 @@ Lumabas sa likod ("Lumabas sa likod: pumunta sa kaliwa" at the top of
 the log, Block 93), leads onto the street at x 4100, short of the
 mangingisda, facing right.
 
-### 15. The pamphlets
+### 16. The pamphlets
 
 tondo, at night in the story (the paintings are the day's). The
 mangingisda (x 4800), the tabakera (x 6900) and the karpintero
@@ -736,10 +802,92 @@ The pamphlets count (n/3). After the third, wherever he is:
   + Macario (sa isip): Dati, barya ang iniipon ko para kay Nanay.
   + Macario (sa isip): Ngayon, may mas malaki na akong ipinaglalaban.
 
-  + [BLACK] Dito nagsimula ang paglilingkod ni Macario sa Katipunan.
+  + [BLACK] Natapos ang ronda ng mga guardia civil.
+
+    (Block 94. Under the card the guardia civil leave the street and
+    their crates with them; the Kasama is gone from it too. It is still
+    night.)
+
+  + Macario (sa isip): Bago mag-umaga, kailangan kong mag-ulat sa pulungan. Sa likod ako dadaan.
+
+Completes: Ipamigay ang mga polyeto (3/3).
+
+### 17. The report
+
+tondo, the back door at x 4100, whose button reads Kumatok, and through
+it into the pulungan. Plays by itself on arrival (Block 94).
+
+  + Kasama: Nakabalik ka. Walang sumunod sa'yo?
+  + Macario: Wala po. Naiabot ko na po ang tatlo.
+
+    (He walks up to the Mabalasig.)
+
+  + Mabalasig: Lahat? Sa iisang gabi, at may ronda pa?
+  + Macario: Nagtago po ako sa likod ng mga kahon. Kapag tumitigil po ako, akala nila artistang pagod lang.
+  + Katipunero: Sabi ko sa inyo. Hindi lang linya ang alam ng batang 'yan.
+  + Mabalasig: ...
+  + Mabalasig: Hindi ka nagmadali, at walang nahuli. Tatandaan namin ang gabing ito, kapatid.
+
+### 18. A year on
+
+Straight on from the report; a reload after it plays only this, from
+the card. Block 94, at the proponent's direction: Act I ends the way
+The Godfather does. The histories make Sakay the head of a council of
+the Katipunan (a sangguniang balangay), never of the Katipunan itself,
+whose Supremo was Bonifacio, so that is what he becomes.
+
+  + [BLACK] Pagkalipas ng isang taon
+  + [BLACK] Tondo, 1895
+
+    (The card lifts on the same room. Macario stands at its head, where
+    the Mabalasig stood, facing the door; the Mabalasig stands behind
+    him and the Katipunero before him.)
+
+  + Katipunero: Pangulo, handa na ang mga polyeto para sa susunod na linggo.
+  + Macario: Hatiin sa tatlo. Iba't ibang daan, iba't ibang gabi.
+  + Macario: At walang dalawang kapatid na lalabas nang magkasama.
+  + Katipunero: Masusunod, Pangulo.
+
+    (The Katipunero goes out by the door. The Kasama comes in by it.)
+
+  + Kasama: Pangulo. May tatlong gustong sumapi. Naghihintay sila sa kabilang silid.
+  + Macario: Sino ang nagdala sa kanila?
+  + Kasama: Ako. Kilala ko ang mga pamilya nila.
+  + Macario: Piringan sila. Ang Mabalasig ang tatanggap sa kanila, gaya ng pagtanggap niya sa akin.
+  + Mabalasig: Masusunod.
+  + Kasama: ...
+  + Kasama: May isa pa, Pangulo. Nasa pinto ang nanay mo. Hinahanap ka.
+  + Macario: ...
+
+    (The door. Nanay stands in it. He goes to her, so she does not come
+    in.)
+
+  + Nanay: Macario, anak. Gabi-gabi ka na lang wala sa bahay.
+  + Nanay: Sabi ng mga kapitbahay, may mga lihim na pulong daw dito sa Tondo. Hinuhuli raw ng guardia civil ang mga dumadalo.
+  + Nanay: Anak... hindi ka naman kasali sa mga 'yon, 'di ba?
+  + Macario: ...
+  + Macario: Hindi po, 'Nay. Nag-eensayo lang po kami ng bagong komedya.
+  + Nanay: ...
+  + Nanay: O siya. Umuwi ka bago mag-umaga, ha?
+  + Macario: Opo, 'Nay.
+
+    (He turns his back on her and walks to his place. She is still in
+    the doorway.)
+
+  + Mabalasig: Pangulo, handa na ang mga bagong kapatid.
+  + Macario: Simulan na natin.
+
+    (The Kasama goes to the door.)
+
+  + Kasama: Pangulo.
+
+    (He shuts the door on her. The sound of it, and the room is quiet.)
+
+  + [BLACK] Isang taon pa lamang mula nang sumapi siya,
+  + [BLACK] pinuno na si Macario ng kanyang balangay sa Katipunan.
   + [BLACK] Wakas ng Unang Yugto
 
-Completes: Ipamigay ang mga polyeto (3/3), the last task. Act I is
+Completes: Bumalik sa pulungan at mag-ulat, the last task. Act I is
 finished, and the post-test runs.
 
 ## The Test Room (not the plot)
@@ -781,6 +929,13 @@ Kutsero:
     (while there is more to earn)
   + Kutsero: Sapat na 'yan sa ngayon, Macario. Malinis na malinis na si Kabayo.
     (paid all he will pay)
+
+Barbero (Block 94):
+
+  + Barbero: Artista ka na raw, Macario. Pero hindi mo pa rin nakakalimutan ang gunting, ha?
+    (four years on)
+  + Barbero: Nariyan ang silya, iho. Tandaan mo lang ang gusto ng suki.
+    (while there is more to earn)
 
 Mananahi:
 
@@ -828,15 +983,20 @@ Kasama, on the street:
   + Kasama: Ano pa'ng hinihintay mo? Sumunod ka na.
     (the word said, after a reload before the oath; takes him in)
   + Kasama: Huwag kang tumambay rito. Ipamigay mo na ang mga polyeto.
-    (during the pamphlets)
-  + Kasama: Magaling, kapatid. Magkikita pa tayo.
-    (afterwards)
+    (during the pamphlets; gone from the street when the rounds end,
+    Block 94)
 
 In the pulungan, after the oath:
 
   + Kasama: Lumabas ka nang mag-isa. Hindi tayo dapat makitang magkasama.
   + Mabalasig: Humayo ka na, kapatid. Naghihintay ang tatlo.
   + Katipunero: Sa susunod na palabas mo, manonood ulit ako. Sa likod, gaya ng dati.
+
+In the pulungan, a year on (Block 94):
+
+  + Kasama: Umuwi na ang nanay mo, Pangulo. Hindi ko siya pinapasok.
+  + Mabalasig: Nakapiring na ang tatlo sa kabilang silid, Pangulo.
+  + Katipunero: Naipadala na ang mga polyeto, Pangulo. Tatlong daan, gaya ng utos mo.
 
 The three, before the pamphlet and after:
 
@@ -850,8 +1010,16 @@ The three, before the pamphlet and after:
 ## The Talaan
 
 Block 70. The papers are the teacher's. Up to three, written on the
-dashboard (Talaan Papers); what they say is not in this file because
-it is not in the content, and it changes whenever the teacher saves.
+dashboard (Talaan Papers); what a teacher writes is not in this file
+because it is not in the content. Block 94: the game has three of its
+own, facts from the general histories, which lie wherever the teacher
+has written nothing; a paper she writes replaces its own slot only.
+They are ours, to be checked against the source book:
+
+  + [HINT] Si Macario Sakay: Ipinanganak si Macario Sakay sa Tondo, Maynila, noong 1870. Mahirap ang kanyang pamilya, kaya maaga siyang nagtrabaho: naging aprendis siya sa pagawaan ng kalesa, at naging barbero at mananahi.
+  + [HINT] Ang komedya: Mahilig sa teatro si Sakay. Umarte siya sa mga komedya o moro-moro, mga dula tungkol sa digmaan ng mga kaharian. Isa sa mga ginampanan niya ang Principe Baldovino.
+  + [HINT] Ang Katipunan: Itinatag ni Andres Bonifacio at ng kanyang mga kasama ang Katipunan noong Hulyo 7, 1892, sa Maynila. Lihim na samahan ito na naglalayong makamit ang kalayaan ng Pilipinas mula sa Espanya. Sumapi si Sakay noong 1894.
+
 Where they lie is fixed:
 
     Paper 1   x 2500, on the road between Nanay and the Kutsero; every
@@ -859,8 +1027,8 @@ Where they lie is fixed:
     Paper 2   x 8200, past the Mananahi's sewing, at jump height
     Paper 3   x 12200, before the direktor, at jump height
 
-An empty slot lays nothing. With no papers written the Talaan button
-does not appear. A found paper opens a card over a stopped world:
+A slot neither the teacher nor the game fills lays nothing; in Act I
+the game fills all three, so the Talaan button is always there. A found paper opens a card over a stopped world:
 
   + (card) Papel 1 / 3
   + (under a paper) Naitala ito sa Talaan. Buksan ang Talaan sa pause para basahin ulit.
@@ -881,12 +1049,29 @@ next passage. None of these is a promise; they are what is there.
     Maryam. Teases him three times, prefers him to Julian, and asks
       who the serious men were. He has not answered.
     Julian. Sick on the first night; never heard of again.
-    Nanay. Does not know he has joined, and already worries about the
-      guardia civil.
-    The Katipunan. Macario is a sworn member with one errand done. The
-      Kasama: "Magkikita pa tayo." Act II starts from here.
+    Nanay. Does not know he has joined. A year on she asks him outright
+      and he lies to her face; the door is shut on her (Block 94).
+    The Katipunan. A year on, 1895, Macario heads his own council and
+      gives its orders; three recruits wait to be sworn in. Act II starts
+      from here, and from the lie.
+    The barbershop. The Barbero, and the cut done in the order the
+      customer asks, are the third job; nothing later returns to them.
 
 ## Open questions for the proponents
+
+    Block 94. The end: the head of his council (a sangguniang balangay)
+      in 1895, at the proponent's direction after the histories were
+      checked; the year he became its head, and the council's name (the
+      histories commonly give a branch in Manila), to be checked against
+      the source book. Every line of the report and the year after is
+      ours, and so is the lie to Nanay.
+    The Talaan's three papers (Block 94), facts from the general
+      histories: his birth (1870), the calesa workshop, barber and
+      tailor; the komedya and Principe Baldovino; the Katipunan's
+      founding (7 July 1892) and his joining (1894). Check each against
+      the source book.
+    The barber's game: the three tools (suklay, gunting, labaha) and
+      their names.
 
     Every + line above: accept, rewrite or replace.
     The names ours gave: Julian, Don Rodrigo,

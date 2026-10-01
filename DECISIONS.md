@@ -3664,3 +3664,79 @@ names the Kutsero during the walking and jumping lessons.
 
 game.js v91, style.css v58, act1.js v64, ASSET_VERSION 32. test.js 767,
 verify_new_scene.js 216.
+
+## Block 94: the barber, the head of his council, and papers of facts
+
+At the proponent's direction, 1 Oct 2026, three things: Act I ends the
+way The Godfather does, Macario takes work as a barber, and the Talaan's
+papers carry facts.
+
+The end. After the third pamphlet he goes back to the pulungan and
+reports; a card, "Pagkalipas ng isang taon / Tondo, 1895"; and he is the
+head. The proponent asked for the head of the Katipunan, and accepted
+the correction before anything was built: in 1895 the Katipunan's
+Supremo was Bonifacio, and the histories make Sakay the head of a
+council of it (a sangguniang balangay), so that is what he becomes. The
+year he became its head and the council's name are left to the source
+book (STORY.md, Open questions). The Godfather's last scene, mapped: the
+men bring him business and take his orders (the pamphlets on three
+routes, the recruits to be blindfolded); his mother comes to the door
+and asks whether he is one of them; he lies, as the actor he is ("Nag-
+eensayo lang po kami ng bagong komedya"); he turns his back and goes to
+his place, and the Kasama shuts the door on her as they call him
+Pangulo. It pays off the thread STORY.md had left open (Nanay does not
+know, and already worries) and the play's craft, and it is the cost of
+secrecy that the item bank asks about.
+
+How it is built. The pamphlet step now ends on a card, "Natapos ang
+ronda ng mga guardia civil", under which the guards and their crates
+go off duty (a flag of their own, nataposAngRonda, and refreshOnDuty,
+which only ran on a save's arrival before); walking back past three
+guards with the respawn pointing the other way would have sent a caught
+student 5000px back. The night stays until he has reported. The street
+gains its first exit, Kumatok at the back door. In the pulungan the
+report and the year are one script; the report's flag is saved before
+the year, so a reload replays only the year from its card, the way
+Principe Baldovino hands on to the men. During the year the room's
+people are decorations that can move, the NPCs hidden (hiddenWhile), and
+the act's last flag is set after the last card, so the post-test
+follows the end, not the report. The Katipunero leaves as the Kasama
+comes in, at once: one after the other was seven seconds with nothing
+said.
+
+The barber. Sakay is recorded as a barber and a tailor; the item bank
+asks it ("Mananahi at barbero"), and until now only the tailor was
+shown. The Barbero stands between the Kutsero and the Mananahi, and
+each sends Macario on to the next until he has worked there (the barber
+to the Kutsero, the Mananahi to the barber), because a linear chain
+marks every earlier step done when a later flag is set: a student who
+met the Mananahi first would never have had the barber in the log.
+
+The proponent first asked for "his own cutscene" and corrected it
+mid-build to his own mini-game. The game is a memory one, chosen from
+three offered (it, snipping locks, a razor drag), because the horse and
+the sewing are already one timing game in two modes and a third mode
+would not be "his own". Each round the customer asks for the cut as a
+list of tools (Suklay, Gunting, Labaha), shown a word at a time and
+then taken away, and the student presses them in that order; a wrong
+tool ends the round; four rounds, two tools to five. It is a new
+engine call, playOrderGame, on its own screen, built from the work
+game's parts (the same box, buttons and result colours; the request on
+a cream strip; three new inline icons), and content names the words,
+as with playWorkGame. It pays as the other jobs do, 4 to 7 by rounds
+right, 25 in all, through the same workAt, which now plays either game.
+The tool buttons are shell buttons, 63 CSS px on the phone, 44 on glass.
+
+The papers. The Talaan's three slots were the teacher's alone, and
+empty until she wrote them, so most students would have found none. The
+content now holds three papers of its own (Sakay himself; the komedya;
+the Katipunan's founding and his joining), facts from the general
+histories, and hintsDef merges by slot: a paper the teacher writes
+replaces its slot, an empty one keeps the content's. The dashboard says
+which paper an empty slot keeps. They are taught after the pre-test and
+are fair for the post-test; the trivia card's rule does not apply to
+them. All three are ours, to be checked against the source book.
+
+game.js v92, style.css v59, act1.js v65, teacher-talaan.js v2,
+ASSET_VERSION 32 (no assets changed). Owed: barbero.png and
+silya-barbero.png.

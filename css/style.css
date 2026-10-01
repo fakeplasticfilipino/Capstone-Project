@@ -3310,7 +3310,8 @@ body.text-lg #dialogue-text { font-size: 27px; }
    styles (and so its 44px on glass). Sizes the engine reads are marked;
    change them together with their constants in game.js. */
 #catch-screen,
-#work-screen {
+#work-screen,
+#order-screen {
   position: fixed;
   inset: 0;
   z-index: 90;
@@ -3323,12 +3324,14 @@ body.text-lg #dialogue-text { font-size: 27px; }
 }
 
 #catch-screen.hidden,
-#work-screen.hidden {
+#work-screen.hidden,
+#order-screen.hidden {
   display: none;
 }
 
 #catch-box,
-#work-box {
+#work-box,
+#order-box {
   width: min(92vw, 560px);
   background: var(--px-panel);
   border: 3px solid var(--px-edge);
@@ -3339,7 +3342,8 @@ body.text-lg #dialogue-text { font-size: 27px; }
 }
 
 #catch-title,
-#work-title {
+#work-title,
+#order-title {
   margin: 0 0 4px;
 }
 
@@ -3433,13 +3437,15 @@ body.text-lg #dialogue-text { font-size: 27px; }
 }
 
 #catch-actions,
-#work-actions {
+#work-actions,
+#order-actions {
   display: flex;
   gap: 10px;
 }
 
 #catch-actions .shell-btn,
-#work-actions .shell-btn {
+#work-actions .shell-btn,
+#order-actions .shell-btn {
   flex: 1;
 }
 
@@ -4160,6 +4166,64 @@ body.dialogue-top .dialogue-portrait {
   background: #d9a441;
   opacity: 0.9;
 }
+
+/* Block 94. The barber's game (game.js, playOrderGame): the customer's
+   request in a speech strip, a row of marks for the rounds, and the three
+   tools as buttons. Drawn in CSS and the inline icons, so nothing is owed
+   to the artist. The tool buttons are shell buttons, and keep the shell's
+   touch sizes. */
+#order-stage {
+  margin: 0 0 8px;
+  padding: 10px 8px 8px;
+  background: linear-gradient(#f3e3c3, #d9c49c);
+  border: 3px solid var(--px-ink);
+  color: var(--px-ink);
+}
+
+#order-ask {
+  margin: 0 0 8px;
+  min-height: 2.6em;
+  font-size: 1.35em;
+  line-height: 1.3;
+}
+
+#order-ask.order-your-turn {
+  color: #2e6b1f;
+}
+
+#order-marks {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+#order-marks i {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--px-ink);
+  background: #fffbe8;
+}
+
+#order-marks i.order-ok { background: var(--px-green-hi); }
+#order-marks i.order-bad { background: #e05a4f; }
+
+#order-tools {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 6px;
+}
+
+#order-tools .order-tool {
+  flex: 1;
+  margin: 0; /* a shell button's bottom margin would make the last one taller */
+}
+
+#order-tools .order-tool:disabled {
+  opacity: 0.55;
+}
+
+#order-result.work-hit { color: var(--px-green-hi); }
+#order-result.work-miss { color: #ffb4b4; }
 
 /* Block 92. The warning before a blow, for a guard or an enemy alike: a
    red "!" over the head for as long as the tell lasts (game.js, setTell).

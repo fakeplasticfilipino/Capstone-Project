@@ -18,6 +18,11 @@
 // dashboard does not load the game's content. An act without places
 // is not offered. A spot moved in content is described again here.
 //
+// Block 94. The game has three papers of its own for Act I (content/
+// act1.js, hints.pool), laid in any slot the teacher leaves empty.
+// DEFAULTS names them, for the same reason PLACES describes the spots;
+// a paper renamed in content is renamed here too.
+//
 // Everything a teacher typed is written into inputs as values, never
 // as HTML.
 // =============================================================
@@ -33,6 +38,10 @@ const TeacherTalaan = {
       "Past the Mananahi's sewing, at jump height: the student has to jump for it.",
       "Near the end of the street, before the direktor, at jump height.",
     ],
+  },
+
+  DEFAULTS: {
+    1: ["Si Macario Sakay", "Ang komedya", "Ang Katipunan"],
   },
 
   init() {
@@ -115,7 +124,10 @@ const TeacherTalaan = {
       text.className = "qe-question tl-text";
       text.rows = 3;
       text.maxLength = this.TEXT_MAX;
-      text.placeholder = "What the paper says. Leave both boxes empty for no paper here.";
+      const own = (this.DEFAULTS[this.act()] || [])[slot - 1];
+      text.placeholder = own
+        ? "What the paper says. Leave both boxes empty to keep the game's own paper here (" + own + ")."
+        : "What the paper says. Leave both boxes empty for no paper here.";
       text.value = paper.body || "";
       text.setAttribute("aria-label", "Paper " + slot + " text");
       card.appendChild(text);
@@ -157,8 +169,11 @@ const TeacherTalaan = {
         if (error) throw error;
       }
       this.setStatus(keep.length
-        ? "Saved. " + keep.length + " of " + this.SLOTS + " papers will lie on the road from a student's next visit."
-        : "Saved. No papers: the Talaan is hidden in this act.", "ok");
+        ? "Saved. " + keep.length + " of " + this.SLOTS + " papers will lie on the road from a student's next visit." +
+          (this.DEFAULTS[act] && keep.length < this.SLOTS ? " The empty slots keep the game's own papers." : "")
+        : (this.DEFAULTS[act]
+          ? "Saved. No papers of yours: the game's own papers lie on the road."
+          : "Saved. No papers: the Talaan is hidden in this act."), "ok");
     } catch (err) {
       console.error("talaan save failed:", err);
       this.setStatus("Not saved: " + ((err && err.message) || "error") +

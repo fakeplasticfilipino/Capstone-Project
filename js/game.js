@@ -3749,7 +3749,13 @@ function hintsDef() {
   const pools = setHintPool.pools;
   const n = currentActData && currentActData.number;
   if (!def || !def.fixed || !pools || !pools[n]) return def;
-  return Object.assign({}, def, { pool: pools[n] });
+  // Block 94. The content's own papers are the defaults: a slot the
+  // teacher has written replaces that slot alone, and a slot she has not
+  // keeps the content's paper.
+  const bySlot = new Map();
+  (def.pool || []).forEach((h) => bySlot.set(Number(h.slot), h));
+  pools[n].forEach((h) => { if (h.title || h.text) bySlot.set(Number(h.slot), h); });
+  return Object.assign({}, def, { pool: [...bySlot.values()] });
 }
 
 // Block 70. The teacher's papers for an act ([{ slot, title, text }]),
@@ -5635,6 +5641,199 @@ function playWorkGame(opts) {
     markerEl.style.width = "";
     screen.classList.remove("hidden");
     raf = requestAnimationFrame(tick);
+  });
+}
+
+// Block 94. The barber's own game, at the proponent's request: a memory
+// game rather than a second timing one. Each round the customer asks for
+// the cut as a list of tools (opts.tools, [{ label, icon }]), said one
+// word at a time and then taken away; the student presses the tools in
+// that order (the buttons, or the keys 1 to 3). A wrong press ends the
+// round. The lists grow (opts.lengths, default 2 to 5). Resolves with the
+// rounds done right, or -1 if he left before the last. Content names the
+// words and decides what they are worth, as with playWorkGame.
+const ORDER_LENGTHS = [2, 3, 4, 5];
+const ORDER_WORD_MS = 900;   // each word of the request on screen
+const ORDER_HOLD_MS = 700;   // the whole request, before it is taken away
+const ORDER_NEXT_MS = 1300;  // after a round, before the next request
+
+function playOrderGame(opts) {
+  const o = opts || {};
+  const screen = document.getElementById("order-screen");
+  if (!screen || !screen.classList.contains("hidden")) return Promise.resolve(-1);
+  const titleEl = document.getElementById("order-title");
+  const hintEl = document.getElementById("order-hint");
+  const askEl = document.getElementById("order-ask");
+  const marksEl = document.getElementById("order-marks");
+  const toolsEl = document.getElementById("order-tools");
+  const resultEl = document.getElementById("order-result");
+  const stopBtn = document.getElementById("order-stop");
+  const tools = (o.tools || []).slice(0, 3);
+  const lengths = Array.isArray(o.lengths) && o.lengths.length ? o.lengths : ORDER_LENGTHS;
+  const rounds = lengths.length;
+  const who = o.speaker ? o.speaker + ": " : "";
+
+  return new Promise((resolve) => {
+    const openedAt = performance.now();
+    const timers = [];
+    const marks = [];
+    let round = 0;
+    let good = 0;
+    let want = [];
+    let at = 0;
+    let listening = false;
+    let over = false;
+    let closed = false;
+
+    function later(fn, ms) { timers.push(setTimeout(() => { if (!closed) fn(); }, ms)); }
+
+    function setResult(text, cls) {
+      resultEl.textContent = text || "";
+      resultEl.className = "shell-sub" + (cls ? " " + cls : "");
+    }
+
+    function drawMarks() {
+      marksEl.textContent = "";
+      for (let i = 0; i < rounds; i++) {
+        const m = document.createElement("i");
+        m.className = i < marks.length ? (marks[i] ? "order-ok" : "order-bad") : "";
+        marksEl.appendChild(m);
+      }
+    }
+
+    // The tool buttons, built once per game from what content asked for.
+    toolsEl.textContent = "";
+    const buttons = tools.map((t, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "shell-btn order-tool";
+      b.appendChild(makeIcon(t.icon || "i-hand"));
+      const lbl = document.createElement("span");
+      lbl.className = "lbl";
+      b.appendChild(lbl);
+      setLabel(b, (i + 1) + " " + t.label);
+      b.onclick = () => press(i);
+      toolsEl.appendChild(b);
+      return b;
+    });
+
+    function setListening(on) {
+      listening = on;
+      screen.dataset.listening = on ? "1" : "";
+      buttons.forEach((b) => { b.disabled = !on; });
+    }
+
+    // A new request, never the same tool three times in a row.
+    function ask() {
+      setListening(false);
+      setResult("", "");
+      const n = lengths[round];
+      want = [];
+      for (let k = 0; k < n; k++) {
+        let pick = Math.floor(Math.random() * tools.length);
+        if (k >= 2 && pick === want[k - 1] && pick === want[k - 2]) pick = (pick + 1) % tools.length;
+        want.push(pick);
+      }
+      at = 0;
+      screen.dataset.want = want.join(",");
+      hintEl.textContent = (o.hint || "") + "  ·  " + (round + 1) + "/" + rounds;
+      askEl.className = "";
+      askEl.textContent = who + "...";
+      want.forEach((w, k) => later(() => {
+        askEl.textContent = who + want.slice(0, k + 1).map((x) => tools[x].label).join(", ") +
+          (k === n - 1 ? "." : "...");
+        playSfx("blip");
+      }, 400 + k * ORDER_WORD_MS));
+      later(() => {
+        askEl.className = "order-your-turn";
+        askEl.textContent = o.yourTurn || "Ikaw na!";
+        setListening(true);
+      }, 400 + n * ORDER_WORD_MS + ORDER_HOLD_MS);
+    }
+
+    function press(i) {
+      if (!listening || over) return;
+      if (i === want[at]) {
+        at++;
+        playSfx("catch");
+        setResult(tools[i].label + " " + "✓".repeat(at), "work-hit");
+        if (at >= want.length) endRound(true);
+      } else {
+        playSfx("miss");
+        endRound(false);
+      }
+    }
+
+    function endRound(ok) {
+      setListening(false);
+      if (ok) good++;
+      marks.push(ok);
+      drawMarks();
+      askEl.className = "";
+      askEl.textContent = who + want.map((x) => tools[x].label).join(", ") + ".";
+      setResult(ok ? (o.hitText || "Tama!") : (o.missText || "Mali!"), ok ? "work-hit" : "work-miss");
+      round++;
+      if (round >= rounds) {
+        over = true;
+        const done = typeof o.doneText === "function" ? o.doneText(good, rounds) : o.doneText;
+        hintEl.textContent = done || "Tapos na!";
+        setLabel(stopBtn, "Tapos na");
+        setIcon(stopBtn, "i-check");
+        stopBtn.className = "shell-btn shell-btn-primary";
+        return;
+      }
+      later(ask, ORDER_NEXT_MS);
+    }
+
+    function close() {
+      if (closed) return;
+      closed = true;
+      timers.forEach(clearTimeout);
+      window.removeEventListener("keydown", onKeyDown, true);
+      stopBtn.onclick = null;
+      buttons.forEach((b) => { b.onclick = null; });
+      screen.classList.add("hidden");
+      screen.dataset.want = "";
+      screen.dataset.listening = "";
+      setUiBlocked(false);
+      resolve(over ? good : -1);
+    }
+
+    // Captured and stopped, as the work game's keys are. The E that
+    // opened the game is older than openedAt; once it is over, E, Space
+    // or Enter closes it.
+    function onKeyDown(e) {
+      const key = (e.key || "").toLowerCase();
+      if (key === "escape") {
+        e.preventDefault(); e.stopPropagation();
+        close();
+        return;
+      }
+      if (e.repeat || e.timeStamp < openedAt) { e.stopPropagation(); return; }
+      const n = Number(key);
+      if (n >= 1 && n <= tools.length) {
+        e.preventDefault(); e.stopPropagation();
+        press(n - 1);
+      } else if (key === "e" || key === " " || key === "enter") {
+        e.preventDefault(); e.stopPropagation();
+        if (over) close();
+      } else if (key === "a" || key === "d" || key === "arrowleft" || key === "arrowright") {
+        e.stopPropagation();
+      }
+    }
+
+    titleEl.textContent = o.title || "";
+    setLabel(stopBtn, "Bumalik");
+    setIcon(stopBtn, "i-back");
+    stopBtn.className = "shell-btn shell-btn-ghost";
+    stopBtn.onclick = close;
+    window.addEventListener("keydown", onKeyDown, true);
+    setUiBlocked(true);
+    keysPressed["a"] = false;
+    keysPressed["d"] = false;
+    drawMarks();
+    screen.classList.remove("hidden");
+    ask();
   });
 }
 

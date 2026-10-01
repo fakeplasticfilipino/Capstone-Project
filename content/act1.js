@@ -47,6 +47,15 @@
 //   people on the street. The third handed over ends Act I, and the
 //   post-test runs.
 //
+// Block 94, at the proponent's direction: a third job, the Barbero, with
+// a game of its own (the customer's order of tools, playOrderGame); and
+// a new end. After the third pamphlet the rounds end, he goes back
+// through the back door and reports, and a year on (Tondo, 1895) he is
+// the head of his own council: the men take his orders, he lies to
+// Nanay at the door, and the door is shut on her as they call him
+// Pangulo. That ends Act I, and the post-test runs. The Talaan has three
+// papers of facts of its own, which a teacher's paper replaces.
+//
 // The lines are the proponents' script as written, apostrophes
 // straightened. Lines marked PLACEHOLDER are ours, to be replaced by
 // the proponents: everything the job-givers, the horse, the customers,
@@ -161,6 +170,10 @@ const KATIPUNERO = owed("katipunero");
 const KASAMA = owed("kasama");
 const MABALASIG = owed("mabalasig");
 
+// Block 94. The Barbero and his chair, both owed (ART.md).
+const BARBERO = owed("barbero");
+const SILYA = { src: "assets/sprites/scenery/silya-barbero.png", frames: 1, fps: 1 };
+
 // The guards of the Test Room are the "bantay" of the enemy catalogue
 // (content/enemies.js, Block 76), where their art and numbers are.
 
@@ -171,6 +184,11 @@ const STREET_SPOT = 900;      // Macario, for the opening
 const NANAY_X = 2000;         // where she and Macario walk to, and stay
 const KUTSERO_X = 3300;
 const KABAYO_X = 3560;
+// Block 94. The barberya, between the Kutsero and the Mananahi, 410 clear
+// of the join at 5800. It stands in the first guard's beat, so it is
+// closed (hidden) from the oath on: the pamphlet run is at night.
+const BARBERO_X = 5300;
+const SILYA_X = 5440;
 const MANANAHI_X = 6400;
 // Block 85. Where she waits after the first play, outside the entablado,
 // left of where Lumabas puts Macario (13480) and 200 clear of the join.
@@ -211,6 +229,12 @@ const PULUNGAN_ENTER_X = 120;
 const PULUNGAN_KASAMA_X = 300;
 const MABALASIG_X = 760;
 const PULUNGAN_KATIPUNERO_X = 920;
+// Block 94. A year on, Macario stands where the Mabalasig stood, at the
+// head of the room, facing the door; the men come to him. Nanay is at the
+// door, on the left.
+const HEAD_X = MABALASIG_X;
+const BEFORE_HEAD_X = 560;
+const DOOR_X = 40;
 
 // Block 81. The pamphlet run. He leaves the pulungan by the back, onto
 // the street short of the mangingisda, so the three are met left to
@@ -280,6 +304,29 @@ const SEWING_JOB = {
   giver: "Mananahi",
   fullText: "Sapat na ang natahi mo ngayon, iho. Bukas na ulit.",
 };
+// Block 94. The third job, the Barbero's chair, with a game of its own at
+// the proponent's request (game.js, playOrderGame): the customer asks
+// for the cut as a list of tools, and Macario uses them in that order.
+// Paid like the other two, and its first round is the step in the log.
+const BARBER_JOB = {
+  game: "order",
+  earned: "kitaSaBarbero",
+  full: "punoNaAngBarbero",
+  first: "nakapaggupit",
+  title: "Barberya",
+  hint: "Tandaan ang gusto ng suki",
+  speaker: "Suki",
+  tools: [
+    { label: "Suklay", icon: "i-comb" },
+    { label: "Gunting", icon: "i-scissors" },
+    { label: "Labaha", icon: "i-razor" },
+  ],
+  hitText: "Tama ang pagkakasunod-sunod!",
+  missText: "Naku, hindi 'yan ang gusto ng suki!",
+  giver: "Barbero",
+  fullText: "Sapat na ang nagupit mo ngayon, iho. Bukas ulit.",
+};
+const BARBER_ROUNDS = 4;
 // The sewing he does before the Mananahi stops him, counted in the quest
 // line (countFlags) and by the flags below.
 const SEWING_BEFORE_ERRAND = 2;
@@ -837,10 +884,11 @@ async function theOath() {
   setCutscene(false);
 }
 
-// The third pamphlet handed over, whichever it was: his thought, and the
-// last card. Its doneFlag is the last step's flag, so setting it
-// finishes Act I and the post-test runs (acts.js, checkObjectives). A
-// reload before it ends plays it again.
+// The third pamphlet handed over, whichever it was: his thought, and
+// (Block 94) the night's rounds over, under a card, so the guards leave
+// the street unseen (refreshOnDuty reads the flag they go off duty on).
+// Its doneFlag is the pamphlets' step, so the log then asks him back to
+// the pulungan to report. A reload before it ends plays it again.
 async function thePamphletsDelivered() {
   setCutscene(true);
   await wait(400);
@@ -849,8 +897,144 @@ async function thePamphletsDelivered() {
     { speaker: "Macario (sa isip)", text: "Dati, barya ang iniipon ko para kay Nanay." },
     { speaker: "Macario (sa isip)", text: "Ngayon, may mas malaki na akong ipinaglalaban." },
   ]);
-  await playIntertitle(["Dito nagsimula ang paglilingkod ni Macario sa Katipunan.",
-    "Wakas ng Unang Yugto"]);
+  await playIntertitle(["Natapos ang ronda ng mga guardia civil."], {
+    whileBlack: () => {
+      state.flags.nataposAngRonda = true;
+      markDirty();
+      refreshOnDuty();
+      refreshNpcVisibility();
+    },
+  });
+  await wait(300);
+  await playDialogue([
+    { speaker: "Macario (sa isip)", text: "Bago mag-umaga, kailangan kong mag-ulat sa pulungan. Sa likod ako dadaan." },
+  ]);
+  setCutscene(false);
+}
+
+// -------------------------------------------------------------
+// Block 94, at the proponent's direction: the end of Act I is his rise,
+// told the way The Godfather ends. He reports, a year passes, and he is
+// the head of his own council of the Katipunan (a sangguniang balangay;
+// the histories make him the head of a council, never of the Katipunan,
+// whose Supremo was Bonifacio). Men take his orders; his mother comes to
+// the door and asks whether he is one of them; he lies to her, the way
+// the actor he is would; and the door is shut on her as they call him
+// Pangulo. PLACEHOLDER, every line.
+//
+// The report. Through the back door (the street's Kumatok), on arrival.
+// Its flag is saved before the year passes, so a reload from there plays
+// only the year (theYearAfter), as Principe Baldovino hands on to the men.
+// -------------------------------------------------------------
+async function theReport() {
+  setCutscene(true);
+  await wait(400);
+  await playDialogue([
+    { speaker: "Kasama", text: "Nakabalik ka. Walang sumunod sa'yo?" },
+    { speaker: "Macario", text: "Wala po. Naiabot ko na po ang tatlo." },
+  ]);
+  await movePlayer(MABALASIG_X - BESIDE, 170);
+  turnPlayer(1);
+  await wait(300);
+  await playDialogue([
+    { speaker: "Mabalasig", text: "Lahat? Sa iisang gabi, at may ronda pa?" },
+    { speaker: "Macario", text: "Nagtago po ako sa likod ng mga kahon. Kapag tumitigil po ako, akala nila artistang pagod lang." },
+    { speaker: "Katipunero", text: "Sabi ko sa inyo. Hindi lang linya ang alam ng batang 'yan." },
+    { speaker: "Mabalasig", text: "..." },
+    { speaker: "Mabalasig", text: "Hindi ka nagmadali, at walang nahuli. Tatandaan namin ang gabing ito, kapatid." },
+  ]);
+  state.flags.nakapagUlat = true;
+  markDirty();
+  await theYearAfter();
+}
+
+// A year on, in the same room. The people of the room are moving copies
+// here (decorations), the NPCs hidden while it plays (hiddenWhile), and
+// the last flag, set after the last card, finishes Act I.
+async function theYearAfter() {
+  setCutscene(true);
+  await playIntertitle(["Pagkalipas ng isang taon", "Tondo, 1895"], {
+    whileBlack: () => {
+      state.flags.lumipasAngIsangTaon = true;
+      markDirty();
+      refreshNpcVisibility();
+      showDecoration("katipunero-1895", true);
+      showDecoration("mabalasig-1895", true);
+      placePlayer(HEAD_X, -1);
+    },
+  });
+  await wait(400);
+  await playDialogue([
+    { speaker: "Katipunero", text: "Pangulo, handa na ang mga polyeto para sa susunod na linggo." },
+    { speaker: "Macario", text: "Hatiin sa tatlo. Iba't ibang daan, iba't ibang gabi." },
+    { speaker: "Macario", text: "At walang dalawang kapatid na lalabas nang magkasama." },
+    { speaker: "Katipunero", text: "Masusunod, Pangulo." },
+  ]);
+  // One goes out by the door as the other comes in by it.
+  showDecoration("kasama-1895", true);
+  await Promise.all([
+    moveDecoration("katipunero-1895", -120, 240)
+      .then(() => showDecoration("katipunero-1895", false)),
+    moveDecoration("kasama-1895", BEFORE_HEAD_X, 240),
+  ]);
+  await playDialogue([
+    { speaker: "Kasama", text: "Pangulo. May tatlong gustong sumapi. Naghihintay sila sa kabilang silid." },
+    { speaker: "Macario", text: "Sino ang nagdala sa kanila?" },
+    { speaker: "Kasama", text: "Ako. Kilala ko ang mga pamilya nila." },
+    { speaker: "Macario", text: "Piringan sila. Ang Mabalasig ang tatanggap sa kanila, gaya ng pagtanggap niya sa akin." },
+    { speaker: "Mabalasig", text: "Masusunod." },
+    { speaker: "Kasama", text: "..." },
+    { speaker: "Kasama", text: "May isa pa, Pangulo. Nasa pinto ang nanay mo. Hinahanap ka." },
+    { speaker: "Macario", text: "..." },
+  ]);
+
+  // Nanay, at the door. He goes to her, so she does not come in.
+  playSfx("door");
+  showDecoration("nanay-1895", true);
+  await wait(500);
+  await movePlayer(DOOR_X + NANAY_MEETS, 170);
+  turnPlayer(-1);
+  await wait(300);
+  await playDialogue([
+    { speaker: "Nanay", text: "Macario, anak. Gabi-gabi ka na lang wala sa bahay." },
+    { speaker: "Nanay", text: "Sabi ng mga kapitbahay, may mga lihim na pulong daw dito sa Tondo. Hinuhuli raw ng guardia civil ang mga dumadalo." },
+    { speaker: "Nanay", text: "Anak... hindi ka naman kasali sa mga 'yon, 'di ba?" },
+    { speaker: "Macario", text: "..." },
+    { speaker: "Macario", text: "Hindi po, 'Nay. Nag-eensayo lang po kami ng bagong komedya." },
+    { speaker: "Nanay", text: "..." },
+    { speaker: "Nanay", text: "O siya. Umuwi ka bago mag-umaga, ha?" },
+    { speaker: "Macario", text: "Opo, 'Nay." },
+  ]);
+
+  // He turns his back on her and goes back to his place; she is still at
+  // the door when the Kasama shuts it.
+  await movePlayer(HEAD_X, 170);
+  turnPlayer(-1);
+  await wait(300);
+  await playDialogue([
+    { speaker: "Mabalasig", text: "Pangulo, handa na ang mga bagong kapatid." },
+    { speaker: "Macario", text: "Simulan na natin." },
+  ]);
+  await moveDecoration("kasama-1895", DOOR_X + 110, 200);
+  await playDialogue([
+    { speaker: "Kasama", text: "Pangulo." },
+  ]);
+  playSfx("door");
+  showDecoration("nanay-1895", false);
+  await wait(1200);
+
+  await playIntertitle(["Isang taon pa lamang mula nang sumapi siya,",
+    "pinuno na si Macario ng kanyang balangay sa Katipunan.",
+    "Wakas ng Unang Yugto"], {
+    whileBlack: () => {
+      ["kasama-1895", "mabalasig-1895"].forEach((id) => showDecoration(id, false));
+      placePlayer(BEFORE_HEAD_X, -1);
+    },
+  });
+  // The last step: Act I finishes and the post-test runs.
+  state.flags.pinunoNgBalangay = true;
+  markDirty();
+  refreshNpcVisibility();
   setCutscene(false);
 }
 
@@ -860,12 +1044,13 @@ async function thePamphletsDelivered() {
 // here is a step of the story except the first round, which finishes the
 // quest line's step, and the Mananahi stopping him at the sewing.
 // -------------------------------------------------------------
-function jobPay(good, earned) {
-  const pay = JOB_PAY_MIN + Math.round((JOB_PAY_MAX - JOB_PAY_MIN) * good / JOB_ROUNDS);
+function jobPay(good, earned, rounds) {
+  const pay = JOB_PAY_MIN + Math.round((JOB_PAY_MAX - JOB_PAY_MIN) * good / rounds);
   return Math.max(0, Math.min(pay, JOB_CAP - earned));
 }
 
-// One round. Returns how many barya it paid, or -1 if he left it.
+// One round. Returns how many barya it paid, or -1 if he left it. The
+// barber's job plays its own game (Block 94); the other two the work game.
 async function workAt(job) {
   const earned = Number(state.flags[job.earned]) || 0;
   if (earned >= JOB_CAP) {
@@ -873,23 +1058,35 @@ async function workAt(job) {
     return -1;
   }
   let pay = 0;
-  const good = await playWorkGame({
-    title: job.title,
-    hint: job.hint,
-    verb: job.verb,
-    icon: job.icon,
-    mode: job.mode,
-    scene: job.scene,
-    art: job.art,
-    snapText: job.snapText,
-    hitText: job.hitText,
-    missText: job.missText,
-    rounds: JOB_ROUNDS,
-    doneText(n) {
-      pay = jobPay(n, earned);
-      return n + "/" + JOB_ROUNDS + " ang maayos. +" + pay + " barya";
-    },
-  });
+  const rounds = job.game === "order" ? BARBER_ROUNDS : JOB_ROUNDS;
+  const doneText = (n) => {
+    pay = jobPay(n, earned, rounds);
+    return n + "/" + rounds + " ang maayos. +" + pay + " barya";
+  };
+  const good = job.game === "order"
+    ? await playOrderGame({
+      title: job.title,
+      hint: job.hint,
+      speaker: job.speaker,
+      tools: job.tools,
+      hitText: job.hitText,
+      missText: job.missText,
+      doneText,
+    })
+    : await playWorkGame({
+      title: job.title,
+      hint: job.hint,
+      verb: job.verb,
+      icon: job.icon,
+      mode: job.mode,
+      scene: job.scene,
+      art: job.art,
+      snapText: job.snapText,
+      hitText: job.hitText,
+      missText: job.missText,
+      rounds,
+      doneText,
+    });
   if (good < 0) return -1;
   Game.addCurrency(pay);
   state.flags[job.earned] = earned + pay;
@@ -910,6 +1107,15 @@ function groomHorse() {
     return;
   }
   workAt(HORSE_JOB);
+}
+
+// Block 94. The barber's chair. His first round is the log's step.
+function cutHair() {
+  if (!state.flags.nakausapAngBarbero) {
+    thinkAloud("Silya ito ng Barbero. Kausapin ko muna siya.");
+    return;
+  }
+  workAt(BARBER_JOB);
 }
 
 async function sew() {
@@ -986,21 +1192,23 @@ window.ACT_1 = {
   //
   //   1  the thought on the street, at the end of the opening.
   //   2  the Kutsero's first conversation.
-  //   3  counts the apples caught; done when the horse is fed.
-  //   4  the Kutsero's gift button, which pays 50.
-  //   5  the Mananahi's first conversation, once the Kutsero has paid.
-  //   6  counts the deliveries; done when Macario agrees to act, at the
-  //      end of the direktor's scene (theMissingActor).
-  //   7  the play, inside the entablado (thePlay), which the direktor
+  //   3  the first grooming of the horse.
+  //   4  Block 94: the first round of the barber's game.
+  //   5  the Mananahi's first conversation.
+  //   6  two rounds of sewing, then she stops him (mananahiStopsHim).
+  //   7  done when Macario agrees to act, at the end of the direktor's
+  //      scene (theMissingActor).
+  //   8  the play, inside the entablado (thePlay), which the direktor
   //      pays for.
-  //   8  the Mananahi's gift button, which pays 50.
   //   9  Nanay's gift, "Ibigay ang ipon"; counts the barya to 100.
   //  10  Block 80: four years on, Principe Baldovino (principeBaldovino);
   //      done when the Katipunan's two men have gone (theKatipunanAsks).
   //  11  the word said to the Kasama on the street.
   //  12  the oath in the pulungan (theOath).
-  //  13  counts the pamphlets; done by the last beat after the third
-  //      (thePamphletsDelivered), which finishes Act I.
+  //  13  counts the pamphlets; done by the beat after the third
+  //      (thePamphletsDelivered).
+  //  14  Block 94: the report and the year after (theReport,
+  //      theYearAfter), which finishes Act I.
   linearObjectives: true,
   objectives: [
     { id: "umuwi_kasama_nanay", label: "Umuwi kasama si Nanay",
@@ -1009,6 +1217,9 @@ window.ACT_1 = {
       flag: "nakausapAngKutsero" },
     { id: "alagaan_kabayo", label: "Alagaan ang kabayo ng Kutsero",
       flag: HORSE_JOB.first },
+    // Block 94. The barber's first game.
+    { id: "barberya", label: "Magtrabaho sa barberya",
+      flag: BARBER_JOB.first },
     { id: "kausapin_mananahi", label: "Kausapin ang Mananahi",
       flag: "nakausapAngMananahi" },
     { id: "tulungan_mananahi", label: "Tulungan ang Mananahi sa pananahi",
@@ -1028,6 +1239,9 @@ window.ACT_1 = {
       flag: "tinanggapSaKatipunan" },
     { id: "ipamigay_polyeto", label: "Ipamigay ang mga polyeto",
       flag: "naipamigayAngMgaPolyeto", countFlags: PAMPHLET_FLAGS },
+    // Block 94. Done only at the very end, a year on (theYearAfter).
+    { id: "mag_ulat", label: "Bumalik sa pulungan at mag-ulat",
+      flag: "pinunoNgBalangay" },
   ],
 
   // Block 74. The guards' room, outside the story, reached only from the
@@ -1048,9 +1262,11 @@ window.ACT_1 = {
   // The chain is the quest log, so there is nothing to add at the start.
   startingQuests: [],
 
-  // Block 70. The teacher's Talaan papers. The pool is empty here and
-  // filled from the database; with no papers written, nothing lies on
-  // the road and the Talaan button stays hidden.
+  // Block 70. The teacher's Talaan papers. Block 94: the three below are
+  // the game's own, facts from the general histories, laid when the
+  // teacher has written nothing; a paper she writes on the dashboard
+  // replaces its own slot only (game.js, hintsDef). PLACEHOLDER, all
+  // three, to be checked against the source book.
   hints: {
     count: 3,
     fixed: true,
@@ -1059,7 +1275,14 @@ window.ACT_1 = {
     // PLACEHOLDER: ours, until the proponents word these.
     foundText: "Naitala ito sa Talaan. Buksan ang Talaan sa pause para basahin ulit.",
     completeText: "Nahanap mo na ang lahat ng papel!",
-    pool: [],
+    pool: [
+      { slot: 1, title: "Si Macario Sakay",
+        text: "Ipinanganak si Macario Sakay sa Tondo, Maynila, noong 1870. Mahirap ang kanyang pamilya, kaya maaga siyang nagtrabaho: naging aprendis siya sa pagawaan ng kalesa, at naging barbero at mananahi." },
+      { slot: 2, title: "Ang komedya",
+        text: "Mahilig sa teatro si Sakay. Umarte siya sa mga komedya o moro-moro, mga dula tungkol sa digmaan ng mga kaharian. Isa sa mga ginampanan niya ang Principe Baldovino." },
+      { slot: 3, title: "Ang Katipunan",
+        text: "Itinatag ni Andres Bonifacio at ng kanyang mga kasama ang Katipunan noong Hulyo 7, 1892, sa Maynila. Lihim na samahan ito na naglalayong makamit ang kalayaan ng Pilipinas mula sa Espanya. Sumapi si Sakay noong 1894." },
+    ],
   },
 
 
@@ -1076,16 +1299,17 @@ window.ACT_1 = {
       startX: STREET_SPOT,
       hintSpots: HINT_SPOTS,
       // Block 81. The pamphlet run's guardia civil (PAMPHLET_GUARDS): the
-      // catalogue's bantay, on duty only while the pamphlets are the task,
-      // not shooting, so being seen is a catch rather than a gunfight on
+      // catalogue's bantay, on duty only while the pamphlets are the task
+      // (Block 94: until the card after the third, nataposAngRonda), not
+      // shooting, so being seen is a catch rather than a gunfight on
       // a street full of neighbours.
       guards: PAMPHLET_GUARDS.map((g, i) => ({
         type: "bantay", id: "guardia-" + (i + 1), shoots: false,
         x: g.beat[0], patrolFrom: g.beat[0], patrolTo: g.beat[1], facing: 1,
-        requiresFlag: "tinanggapSaKatipunan", unlessFlag: "naipamigayAngMgaPolyeto",
+        requiresFlag: "tinanggapSaKatipunan", unlessFlag: "nataposAngRonda",
       })),
       hideSpots: PAMPHLET_GUARDS.map((g) => ({ x: g.hide, width: 110,
-        requiresFlag: "tinanggapSaKatipunan", unlessFlag: "naipamigayAngMgaPolyeto" })),
+        requiresFlag: "tinanggapSaKatipunan", unlessFlag: "nataposAngRonda" })),
       // A catch sends him to the furthest of these reached: the back door,
       // then each of the three once handed a pamphlet.
       checkpoints: [
@@ -1094,12 +1318,20 @@ window.ACT_1 = {
       ],
       // Block 85. Night on the pamphlet run, as the story says it is: the
       // street darkened, and the crickets instead of the day's music.
-      night: { requiresFlag: "tinanggapSaKatipunan", unlessFlag: "naipamigayAngMgaPolyeto",
+      // Block 94: still night on the walk back, until he has reported.
+      night:{ requiresFlag: "tinanggapSaKatipunan", unlessFlag: "nakapagUlat",
                music: "assets/audio/music/gabi.wav" },
       // Block 81. No gun on this street: a shot at the guardia civil among
       // the neighbours is not the errand the Kasama gave (a long hold
       // punches, as on the stage).
       noRanged: true,
+      // Block 94. The pulungan's back door, the way he came out, open once
+      // the pamphlets are given, to go back and report.
+      exits: [
+        { id: "likod", x: BACK_DOOR_X - 20, width: 100, label: "Kumatok",
+          requiresFlag: "naipamigayAngMgaPolyeto",
+          toScene: "pulungan", toX: PULUNGAN_ENTER_X, toFacing: 1 },
+      ],
       decorations: [
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1].idle,
@@ -1173,6 +1405,8 @@ window.ACT_1 = {
               { speaker: "Macario", text: "'Nay, nakapag-ipon na po ako ng pera para makatulong." },
               { speaker: "Nanay", text: "Maraming salamat, anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?" },
               { speaker: "Macario", text: "Opo, 'Nay. Nagtrabaho po ako sa Kutsero at sa Mananahi." },
+              // PLACEHOLDER. Block 94, the third job.
+              { speaker: "Macario", text: "Pati po sa Barbero." },
               { speaker: "Macario", text: "Tapos, Nay... umarte pa po ako sa entablado." },
               { speaker: "Nanay", text: "Ikaw? Sa entablado?" },
               { speaker: "Macario", text: "Nagkasakit po kasi 'yung bida nila. Ako na lang po ang ipinalit ng direktor." },
@@ -1243,6 +1477,71 @@ window.ACT_1 = {
           onInteract: groomHorse,
         },
         {
+          // Block 94. The Barbero, the third job. Before the horse he sends
+          // Macario to the Kutsero, as the Mananahi sends him here, so the
+          // jobs are met in the log's order and none is passed by. Closed
+          // from the oath on: his stand is in the first guard's beat, and
+          // the run is at night. PLACEHOLDER, every line.
+          id: "barbero", x: BARBERO_X, label: "Barbero", animation: BARBERO,
+          hiddenByFlag: "tinanggapSaKatipunan",
+          // Picked from the flags each time (Block 48).
+          dialogueSets: [
+            {
+              skipIfFlag: HORSE_JOB.first,
+              lines: [
+                { speaker: "Barbero", text: "Wala pa akong maipapagawa sa'yo, iho. Pero naghahanap daw ng tagaalaga ng kabayo ang Kutsero." },
+              ],
+            },
+            {
+              requiresFlag: HORSE_JOB.first,
+              skipIfFlag: "nakausapAngBarbero",
+              lines: [
+                { speaker: "Macario", text: "Magandang araw po. Naghahanap po ba kayo ng katulong?" },
+                { speaker: "Barbero", text: "Katulong? Marunong ka bang humawak ng gunting?" },
+                { speaker: "Macario", text: "Nakapagsuklay na po ako ng kabayo." },
+                { speaker: "Barbero", text: "..." },
+                { speaker: "Barbero", text: "Hindi kabayo ang mga suki ko, iho." },
+                { speaker: "Barbero", text: "Pero sige. Makinig kang mabuti sa gusto ng suki, at sundin mo nang tama ang pagkakasunod-sunod." },
+                { speaker: "Barbero", text: "Nariyan ang silya. May bayad ang bawat gupit na matapos mo." },
+              ],
+              onComplete() {
+                state.flags.nakausapAngBarbero = true;
+                markDirty();
+              },
+            },
+            {
+              // Four years on.
+              requiresFlag: "lumipasAngApatNaTaon",
+              lines: [
+                { speaker: "Barbero", text: "Artista ka na raw, Macario. Pero hindi mo pa rin nakakalimutan ang gunting, ha?" },
+              ],
+            },
+            {
+              // Before the first cut, and while there is more to earn.
+              requiresFlag: "nakausapAngBarbero",
+              skipIfFlag: BARBER_JOB.full,
+              lines: [
+                { speaker: "Barbero", text: "Nariyan ang silya, iho. Tandaan mo lang ang gusto ng suki." },
+              ],
+            },
+            {
+              lines: [
+                { speaker: "Barbero", text: BARBER_JOB.fullText },
+              ],
+            },
+          ],
+        },
+        {
+          // Block 94. His chair, used with E, as the tahian is: the
+          // barber's own game (cutHair). Owed (ART.md), a placeholder box.
+          id: "silya", x: SILYA_X, label: "Silya", animation: SILYA, displayHeight: 90,
+          hiddenByFlag: "tinanggapSaKatipunan",
+          interactLabel: "Gupitin",
+          interactIcon: "i-scissors",
+          dialogueSets: [],
+          onInteract: cutHair,
+        },
+        {
           // The Mananahi's sewing table, beside her, used with E (Block
           // 89). Scenery with no picture until Block 93, which named one,
           // owed (ART.md), so the table is seen: the placeholder box until
@@ -1256,6 +1555,14 @@ window.ACT_1 = {
         {
           id: "mananahi", x: MANANAHI_X, label: "Mananahi", animation: MANANAHI,
           dialogueSets: [
+            {
+              // PLACEHOLDER. Block 94. Before the barber: she sends him
+              // there first, so the jobs are met in the log's order.
+              skipIfFlag: BARBER_JOB.first,
+              lines: [
+                { speaker: "Mananahi", text: "Wala pa akong maipapatahi sa'yo ngayon, iho. Pero balita ko, naghahanap ng katulong ang Barbero. Puntahan mo muna siya." },
+              ],
+            },
             {
               skipIfFlag: "nakausapAngMananahi",
               lines: [
@@ -1403,6 +1710,9 @@ window.ACT_1 = {
           // here to be asked again. PLACEHOLDER, every line.
           id: "kasama", x: KASAMA_X, label: "Kasama", animation: KASAMA,
           startsHidden: true, revealedByFlag: "nilapitanNgKatipunan",
+          // Block 94. Gone from the street when the rounds end: he is in
+          // the pulungan, waiting for the report.
+          hiddenByFlag: "nataposAngRonda",
           dialogueSets: [
             {
               requiresFlag: "nakausapAngKasama",
@@ -1428,14 +1738,8 @@ window.ACT_1 = {
               },
             },
             {
-              skipIfFlag: "naipamigayAngMgaPolyeto",
               lines: [
                 { speaker: "Kasama", text: "Huwag kang tumambay rito. Ipamigay mo na ang mga polyeto." },
-              ],
-            },
-            {
-              lines: [
-                { speaker: "Kasama", text: "Magaling, kapatid. Magkikita pa tayo." },
               ],
             },
           ],
@@ -1597,13 +1901,36 @@ window.ACT_1 = {
           toScene: "tondo", toX: BACK_DOOR_X, toFacing: 1 },
       ],
       scripts: [
+        // Block 94. A reload after the report and before the end plays
+        // only the year after. Listed first: the first entry due is run.
+        { requiresFlag: "nakapagUlat", doneFlag: "pinunoNgBalangay", run: theYearAfter },
+        // Block 94. Back through the back door with the three given.
+        { requiresFlag: "naipamigayAngMgaPolyeto", doneFlag: "nakapagUlat",
+          x: PULUNGAN_ENTER_X, facing: 1, run: theReport },
         { requiresFlag: "nakausapAngKasama", doneFlag: "tinanggapSaKatipunan",
           x: PULUNGAN_ENTER_X, facing: 1, run: theOath },
+      ],
+      // Block 94. The year after (theYearAfter): the room's people as
+      // decorations that can move, and Nanay at the door, all hidden
+      // until it plays.
+      decorations: [
+        { id: "katipunero-1895", x: BEFORE_HEAD_X, hidden: true, animation: KATIPUNERO },
+        { id: "mabalasig-1895", x: PULUNGAN_KATIPUNERO_X, hidden: true, animation: MABALASIG },
+        { id: "kasama-1895", x: -120, hidden: true, animation: KASAMA },
+        { id: "nanay-1895", x: DOOR_X, hidden: true, animation: NANAY },
       ],
       npcs: [
         {
           id: "kasama", x: PULUNGAN_KASAMA_X, label: "Kasama", animation: KASAMA,
+          hiddenWhile: { requiresFlag: "lumipasAngIsangTaon", unlessFlag: "pinunoNgBalangay" },
           dialogueSets: [
+            {
+              // PLACEHOLDER. Block 94, a year on.
+              requiresFlag: "pinunoNgBalangay",
+              lines: [
+                { speaker: "Kasama", text: "Umuwi na ang nanay mo, Pangulo. Hindi ko siya pinapasok." },
+              ],
+            },
             {
               // PLACEHOLDER.
               lines: [
@@ -1614,7 +1941,15 @@ window.ACT_1 = {
         },
         {
           id: "mabalasig", x: MABALASIG_X, label: "Mabalasig", animation: MABALASIG,
+          hiddenWhile: { requiresFlag: "lumipasAngIsangTaon", unlessFlag: "pinunoNgBalangay" },
           dialogueSets: [
+            {
+              // PLACEHOLDER. Block 94, a year on.
+              requiresFlag: "pinunoNgBalangay",
+              lines: [
+                { speaker: "Mabalasig", text: "Nakapiring na ang tatlo sa kabilang silid, Pangulo." },
+              ],
+            },
             {
               // PLACEHOLDER.
               lines: [
@@ -1625,7 +1960,15 @@ window.ACT_1 = {
         },
         {
           id: "katipunero", x: PULUNGAN_KATIPUNERO_X, label: "Katipunero", animation: KATIPUNERO,
+          hiddenWhile: { requiresFlag: "lumipasAngIsangTaon", unlessFlag: "pinunoNgBalangay" },
           dialogueSets: [
+            {
+              // PLACEHOLDER. Block 94, a year on.
+              requiresFlag: "pinunoNgBalangay",
+              lines: [
+                { speaker: "Katipunero", text: "Naipadala na ang mga polyeto, Pangulo. Tatlong daan, gaya ng utos mo." },
+              ],
+            },
             {
               // PLACEHOLDER.
               lines: [
