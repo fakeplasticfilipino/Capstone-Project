@@ -44,7 +44,14 @@ ours. Since Block 93 their spelling and grammar are corrected, at their
 request, with the wording and the meaning kept (po rather than 'ho,
 'Nay, rin and rito after a vowel, 'yung, no "Okay").
 
-Last updated: 1 Oct 2026, Block 95 (no door to find after the
+Last updated: 1 Oct 2026, Block 103 (no story change: on the pamphlet
+night the street is the three's and the guards' alone, the horse and
+the tahian too). Before that, Block 102 (the barber's game easier and
+paid by the round right, 20 in all; the night empty of the day's
+people; Nanay's night line removed), Block 101 (the proponent's art for
+Nanay, the Kutsero, the Barbero, Maryam, the Sultan, the kawal and the
+Mabalasig) and Block 100 (the horse; the Kutsero's "puting" dropped).
+Before that, Block 95 (no door to find after the
 pamphlets: the Kasama comes to Macario and takes him back; the Test
 Room is gone). Before that, Block 94 (a third job, the Barbero, with a
 game of his own; a new end: the report in the pulungan and a year on,

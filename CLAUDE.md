@@ -683,7 +683,9 @@ NPC shape:
       hiddenByFlag: "someFlag",                  optional; leaves when set
                                                  (Block 58)
       hiddenWhile: { requiresFlag, unlessFlag }, optional; away for that
-                                                 stretch (Block 85)
+                                                 stretch (Block 85), or a
+                                                 list of them, any of which
+                                                 hides it (Block 102)
       opensShop: true,                           optional; see below
       opensShopAfter: "someFlag",                optional; talks, then sells
       facesPlayer: true,                         optional; side-on art that
@@ -1980,6 +1982,12 @@ look, by system:
                                           test room removed in 95)
     these files compacted                 Block 79
     an owed scene backdrop                Block 80
+    the pamphlet night, the street        Blocks 102, 103 (only the
+      emptied                             three and the guards)
+    the barber's pay                      Block 102 (by the round
+                                          right, 20 in one run)
+    testing: CI and when to run           Block 104 (GitHub Actions;
+      the suites                          Deployment, Testing a push)
 
 ## Pitfalls
 

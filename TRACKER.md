@@ -9,8 +9,9 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 103, the end of the session.
-The day's work, newest first: Block 103, the horse and the sewing
+Last updated: 1 Oct 2026, after Block 104, the end of the session.
+The day's work, newest first: Block 104, the suites run on GitHub
+Actions on every push (first run green, 12 minutes); Block 103, the horse and the sewing
 table away at night; Block 102, the pamphlet three's art, an easier
 barber, an empty night street; Block 101, the proponent's seven
 characters in place of old art and placeholders, and a calm idle;
@@ -21,11 +22,14 @@ Block 96, the big siga from the artist's still. Blocks 90 to 97 were
 tested on the phone that day with no fault reported; Blocks 98 to 103
 have not been seen on a device yet (Next action 1). Earlier blocks:
 the Blocks list below, and DECISIONS.md. test.js 767 passed, 0 failed;
-verify_new_scene.js 242 passed, 0 failed. Everything is committed and
-pushed to main.
+verify_new_scene.js 242 passed, 0 failed, locally and on CI. Everything
+is committed and pushed to main.
 
-A new session, on any device: read CLAUDE.md, then this file's Start
-here and Next action, then STORY.md before touching content. A
+A new session, on any device: git pull first; read CLAUDE.md, then
+this file's Start here and Next action, then STORY.md before touching
+content; look at the last CI run (the Actions tab) to know the build
+was green when this file was written; and check for pictures the
+proponent dropped into assets/ (git status shows them untracked). A
 computer that has never run the suites needs the setup under
 Verification first.
 
@@ -603,8 +607,9 @@ decided against the source material. (NOT STARTED)
 
 The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
 Block 85 except two. The item bank matched to Act I is Next action 4
-(IN PROGRESS), and the placeholder art (the Mananahi, the direktor and
-the Kasama first) waits on the artist (BLOCKED). The list: DECISIONS.md,
+(IN PROGRESS). The placeholder art it waited on has arrived: every
+person is drawn since Block 102; only the chair, the sewing table and
+the pulungan's painting are still owed (ART.md; BLOCKED). The list: DECISIONS.md,
 Block 85.
 
 ## Blocked on other people
@@ -715,9 +720,11 @@ asset manifest matches assets/ and every picture in it opens. Anything
 other than "0 failed" is a regression, with one caution learned on
 30 Sep 2026: on a busy machine verify_new_scene.js has twice failed a
 timing check (the pamphlet guard catch) or lost a page ("Page crashed")
-once, and passed on the next run; rerun before believing either. test.js
-has not done it. Both never touch the live
-project. Both are green as of Block 99. The guard-catch flake was
+once, and passed on the next run; rerun before believing either.
+test.js did it once on 1 Oct 2026 ("after lighting up first, so the
+swing is readable": an enemy already mid-dash when the check starts
+watching for its red !), and passed on the rerun. Both never touch the
+live project. Both are green as of Block 104, locally and on CI. The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check
