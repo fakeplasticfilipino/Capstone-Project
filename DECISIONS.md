@@ -3740,3 +3740,31 @@ them. All three are ours, to be checked against the source book.
 game.js v92, style.css v59, act1.js v65, teacher-talaan.js v2,
 ASSET_VERSION 32 (no assets changed). Owed: barbero.png and
 silya-barbero.png.
+
+## Block 95: the Kasama takes him back; the Test Room removed
+
+At the proponent's request, 1 Oct 2026. The back door Block 94 put on
+the street (Kumatok, x 4100) was not found on the phone: a doorway on a
+dark street is a zone with no picture, and nothing points at it since
+the guide went (Block 69). The proponent asked for the person who
+takes him to the pulungan instead. After the rounds-over card the
+Kasama comes to Macario wherever he is, from just past the edge of the
+screen, as Nanay does after the opening fight (placeDecoration and the
+view's edge, Block 93), says three lines and a card takes him back. No
+walk and no search, and the pamphlet step's flag is set before the fade
+so the report is due on arrival. A reload that lands between the two
+finds the Kasama at his old spot (x 12500), whose line takes him in.
+The street has no exit again.
+
+The Test Room (Blocks 73 and 74) is removed, at the proponent's
+direction: the settings button, the guards' room scene, the act's
+testRoom, the engine's testRoom/enterTestRoom and the exit back: true
+with its __returnTo flag. It was outside the story and Next action 5
+had asked whether students should see it. What it alone showed (guards
+that shoot, the bantay's walk, shot and flinch on screen) stays in the
+engine and in test.js's fixture, and the bantay stay in the enemy
+catalogue for the pamphlet run. The harness's own enterTestRoom() and
+atTestRoom() in test.js are its fixture world, older than the feature,
+and keep their names.
+
+game.js v93, shell.js v21, act1.js v66.

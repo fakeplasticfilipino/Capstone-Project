@@ -174,8 +174,9 @@ const MABALASIG = owed("mabalasig");
 const BARBERO = owed("barbero");
 const SILYA = { src: "assets/sprites/scenery/silya-barbero.png", frames: 1, fps: 1 };
 
-// The guards of the Test Room are the "bantay" of the enemy catalogue
-// (content/enemies.js, Block 76), where their art and numbers are.
+// The guardia civil of the pamphlet run are the "bantay" of the enemy
+// catalogue (content/enemies.js, Block 76), where their art and numbers
+// are.
 
 // ---- Where everyone stands ---------------------------------------
 // An NPC's x is the left edge of an 80px body. Joins at 1450, 2900,
@@ -254,12 +255,6 @@ const PAMPHLET_GUARDS = [
 ];
 // A guard's sight is 260 from the middle of his body, so each beat's
 // right end stops short of the next person's hand-over spot (x - 120).
-
-// The guards' room (Block 73, work in progress, not the plot): three
-// paintings of the town, three guards, and a door back to Nanay at the
-// far end. Joins at 1450 and 2900.
-const BANTAYAN_WIDTH = 3 * PANEL; // 4350
-const BANTAYAN_START = 150;
 
 const SAVINGS_GOAL = 100;
 
@@ -789,8 +784,8 @@ async function theKatipunanAsks() {
 }
 
 // The Kasama on the street, once the word is said: the blindfold, as a
-// recruit was led in, and the fade into the room (the Test Room's way
-// in, Block 74).
+// recruit was led in, and the fade into the room (the card held black,
+// keepBlack, so the street is not seen between them).
 async function intoThePulungan() {
   setCutscene(true);
   await playIntertitle(["Piniringan ang mga mata ni Macario,",
@@ -887,8 +882,11 @@ async function theOath() {
 // The third pamphlet handed over, whichever it was: his thought, and
 // (Block 94) the night's rounds over, under a card, so the guards leave
 // the street unseen (refreshOnDuty reads the flag they go off duty on).
-// Its doneFlag is the pamphlets' step, so the log then asks him back to
-// the pulungan to report. A reload before it ends plays it again.
+// Block 95, at the proponent's request: the Kasama then comes to him,
+// wherever he is, as Nanay does after the opening fight, and takes him
+// back to the pulungan; a door to find on a dark street was not found.
+// Its doneFlag is the pamphlets' step, set before the fade so the report
+// is due on arrival. A reload before it ends plays it again.
 async function thePamphletsDelivered() {
   setCutscene(true);
   await wait(400);
@@ -906,10 +904,32 @@ async function thePamphletsDelivered() {
     },
   });
   await wait(300);
+  turnPlayer(1);
+  const here = playerX();
+  placeDecoration("kasama-kalye", Math.max(here + NANAY_MEETS, viewEdges().right + 80));
+  showDecoration("kasama-kalye", true);
+  await moveDecoration("kasama-kalye", here + NANAY_MEETS, 200);
+  await wait(300);
   await playDialogue([
-    { speaker: "Macario (sa isip)", text: "Bago mag-umaga, kailangan kong mag-ulat sa pulungan. Sa likod ako dadaan." },
+    { speaker: "Kasama", text: "Tapos na ang tatlo?" },
+    { speaker: "Macario", text: "Opo. Walang nakakita sa akin." },
+    { speaker: "Kasama", text: "Mabuti. Sumunod ka. Hinihintay ka nila sa pulungan." },
   ]);
-  setCutscene(false);
+  await toThePulunganAgain();
+}
+
+// The Kasama takes him back, through a card held black into the fade, as
+// he took him in the first time. Also the Kasama's line on the street
+// after a reload between the pamphlets and the report.
+async function toThePulunganAgain() {
+  setCutscene(true);
+  state.flags.naipamigayAngMgaPolyeto = true;
+  markDirty();
+  await playIntertitle(["Ibinalik siya ng Kasama sa lihim na silid."], {
+    keepBlack: true,
+    whileBlack: () => showDecoration("kasama-kalye", false),
+  });
+  if (window.Acts) Acts.gotoScene("pulungan", { x: PULUNGAN_ENTER_X, facing: 1 });
 }
 
 // -------------------------------------------------------------
@@ -922,7 +942,7 @@ async function thePamphletsDelivered() {
 // the actor he is would; and the door is shut on her as they call him
 // Pangulo. PLACEHOLDER, every line.
 //
-// The report. Through the back door (the street's Kumatok), on arrival.
+// The report, on arrival (the Kasama brings him, Block 95).
 // Its flag is saved before the year passes, so a reload from there plays
 // only the year (theYearAfter), as Principe Baldovino hands on to the men.
 // -------------------------------------------------------------
@@ -930,8 +950,8 @@ async function theReport() {
   setCutscene(true);
   await wait(400);
   await playDialogue([
-    { speaker: "Kasama", text: "Nakabalik ka. Walang sumunod sa'yo?" },
-    { speaker: "Macario", text: "Wala po. Naiabot ko na po ang tatlo." },
+    { speaker: "Kasama", text: "Narito na siya." },
+    { speaker: "Macario", text: "Naiabot ko na po ang tatlo." },
   ]);
   await movePlayer(MABALASIG_X - BESIDE, 170);
   turnPlayer(1);
@@ -1244,11 +1264,6 @@ window.ACT_1 = {
       flag: "pinunoNgBalangay" },
   ],
 
-  // Block 74. The guards' room, outside the story, reached only from the
-  // Test Room button in settings: a "<WIP>" card, then the room. Its
-  // door returns to wherever the student was (game.js, enterTestRoom).
-  testRoom: { scene: "bantayan", card: ["<WIP>"], x: BANTAYAN_START, facing: 1 },
-
   // Block 80. No holdOpen any more (Block 56 held the act open while its
   // story was unwritten): the last pamphlet's beat finishes Act I and
   // the post-test runs.
@@ -1318,21 +1333,17 @@ window.ACT_1 = {
       ],
       // Block 85. Night on the pamphlet run, as the story says it is: the
       // street darkened, and the crickets instead of the day's music.
-      // Block 94: still night on the walk back, until he has reported.
-      night:{ requiresFlag: "tinanggapSaKatipunan", unlessFlag: "nakapagUlat",
+      // Block 94: still night after the rounds, until he has reported.
+      night: { requiresFlag: "tinanggapSaKatipunan", unlessFlag: "nakapagUlat",
                music: "assets/audio/music/gabi.wav" },
       // Block 81. No gun on this street: a shot at the guardia civil among
       // the neighbours is not the errand the Kasama gave (a long hold
       // punches, as on the stage).
       noRanged: true,
-      // Block 94. The pulungan's back door, the way he came out, open once
-      // the pamphlets are given, to go back and report.
-      exits: [
-        { id: "likod", x: BACK_DOOR_X - 20, width: 100, label: "Kumatok",
-          requiresFlag: "naipamigayAngMgaPolyeto",
-          toScene: "pulungan", toX: PULUNGAN_ENTER_X, toFacing: 1 },
-      ],
       decorations: [
+        // Block 95. The Kasama who comes to take him back to the pulungan
+        // after the pamphlets (thePamphletsDelivered), hidden until then.
+        { id: "kasama-kalye", x: KASAMA_X, hidden: true, animation: KASAMA },
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1].idle,
           walkAnimation: SIGA[1].walk, displayHeight: SIGA[1].height },
@@ -1710,10 +1721,28 @@ window.ACT_1 = {
           // here to be asked again. PLACEHOLDER, every line.
           id: "kasama", x: KASAMA_X, label: "Kasama", animation: KASAMA,
           startsHidden: true, revealedByFlag: "nilapitanNgKatipunan",
-          // Block 94. Gone from the street when the rounds end: he is in
-          // the pulungan, waiting for the report.
-          hiddenByFlag: "nataposAngRonda",
+          // Block 95. Away while he comes to Macario after the rounds (a
+          // decoration, kasama-kalye, thePamphletsDelivered); back here
+          // after, for a reload that lands before the report.
+          hiddenWhile: { requiresFlag: "nataposAngRonda", unlessFlag: "naipamigayAngMgaPolyeto" },
           dialogueSets: [
+            {
+              // PLACEHOLDER. Block 95. Afterwards, a year on.
+              requiresFlag: "nakapagUlat",
+              lines: [
+                { speaker: "Kasama", text: "Sa pulungan na tayo mag-usap, Pangulo. Maraming mata ang kalye." },
+              ],
+            },
+            {
+              // PLACEHOLDER. Block 95. The pamphlets given, the report not
+              // yet made (a reload): he takes him back.
+              requiresFlag: "naipamigayAngMgaPolyeto",
+              skipIfFlag: "nakapagUlat",
+              lines: [
+                { speaker: "Kasama", text: "Mabuti. Sumunod ka. Hinihintay ka nila sa pulungan." },
+              ],
+              onComplete: toThePulunganAgain,
+            },
             {
               requiresFlag: "nakausapAngKasama",
               skipIfFlag: "tinanggapSaKatipunan",
@@ -1977,38 +2006,6 @@ window.ACT_1 = {
             },
           ],
         },
-      ],
-    },
-    {
-      // Block 73, and since Block 74 reached only from the Test Room
-      // button in settings (testRoom, above), never from the story. Three
-      // bantay with every part of the stealth and hostile-guard system
-      // (game.js, Blocks 37, 38 and 73): a patrol, a sentry with his back
-      // turned for a takedown, and a second patrol; a platform above
-      // their sight with a heart on it, and a crate to hide behind. Seen,
-      // a guard turns hostile, stops, levels his rifle and fires, and
-      // takes two punches or shots to put down. The door at the far end
-      // goes back to wherever the student came from (back: true); beside
-      // Nanay only if that is not known.
-      id: "bantayan",
-      worldWidth: BANTAYAN_WIDTH,
-      panels: [STREET_PAINTINGS[2], STREET_PAINTINGS[3], STREET_PAINTINGS[2]],
-      panelSky: STREET_SKY,
-      startX: BANTAYAN_START,
-      music: "assets/audio/music/intense.mp3",
-      platforms: [{ x: 1150, y: 150, width: 220 }],
-      pickups: [{ id: "bantayan-puso", x: 1240, y: 150, type: "heart" }],
-      hideSpots: [{ x: 2500, width: 110 }],
-      guards: [
-        { type: "bantay", id: "bantay-1", x: 700, patrolFrom: 560, patrolTo: 1000, facing: -1 },
-        { type: "bantay", id: "bantay-2", x: 1900, patrolFrom: 1900, patrolTo: 1900, facing: 1,
-          detectRadius: 280 },
-        { type: "bantay", id: "bantay-3", x: 3300, patrolFrom: 3100, patrolTo: 3700, facing: -1,
-          speed: 1.5, detectRadius: 300 },
-      ],
-      exits: [
-        { id: "labas", x: BANTAYAN_WIDTH - 120, width: 100, label: "Lumabas", back: true,
-          toScene: "tondo", toX: NANAY_X - BESIDE, toFacing: 1 },
       ],
     },
   ],

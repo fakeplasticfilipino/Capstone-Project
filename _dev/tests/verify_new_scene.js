@@ -290,6 +290,7 @@ const PAMPHLET_LINE = "Macario: Para po sa inyo. Itago n'yo po, at basahin nang 
 const THE_END = ["Isang taon pa lamang mula nang sumapi siya,",
   "pinuno na si Macario ng kanyang balangay sa Katipunan.", "Wakas ng Unang Yugto"];
 const ROUNDS_OVER = ["Natapos ang ronda ng mga guardia civil."];
+const BROUGHT_BACK = ["Ibinalik siya ng Kasama sa lihim na silid."];
 const A_YEAR_ON = ["Pagkalipas ng isang taon", "Tondo, 1895"];
 const THE_LIE = "Macario: Hindi po, 'Nay. Nag-eensayo lang po kami ng bagong komedya.";
 
@@ -546,10 +547,11 @@ const artDrift = () => {
   ok("Act I has fourteen objectives (Block 94), pays no barya per step, and is no longer held open (Block 80)",
      await page.evaluate(() => Acts.objectivesFor(1).length === 14 && Acts.perObjective(2) === 0 &&
        !ACT_1.holdOpen));
-  ok("one street, the entablado, the pulungan (Block 80) and the guards' room, and no other scene; the street's one door is the pulungan's back door (Block 94)", await page.evaluate(() =>
-    JSON.stringify(SCENES.map((s) => s.id)) === '["tondo","entablado","pulungan","bantayan"]' &&
-    JSON.stringify((SCENES[0].exits || []).map((e) => e.id + ">" + e.toScene + ":" + e.requiresFlag)) ===
-      '["likod>pulungan:naipamigayAngMgaPolyeto"]'));
+  ok("one street, the entablado and the pulungan (Block 80), no guards' room (Block 95), no door on the street, and no test room",
+     await page.evaluate(() =>
+    JSON.stringify(SCENES.map((s) => s.id)) === '["tondo","entablado","pulungan"]' &&
+    !(SCENES[0].exits || []).length && !ACT_1.testRoom && !Game.enterTestRoom &&
+    !document.getElementById("shell-testroom")));
   ok("the item catalogue is the stage clothes alone (Block 82), not for sale, a still-detection effect",
      await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 1 && ITEMS[0].id === "damit-entablado" &&
        ITEMS[0].price === 0 && ITEMS[0].slot === "outfit" && ITEMS[0].effect.stillDetectionMult === 0.2 &&
@@ -666,172 +668,6 @@ const artDrift = () => {
   await page.waitForTimeout(1200);
   ok("the first step is saved and counted", await page.evaluate(() =>
     __DB.game_progress[0].save_state.flags.nagpasyangMagtrabaho === true && Acts.countDone(1) === 1));
-
-  // ---------------------------------------------------------------
-  // Block 74. The test room, outside the story: the Test Room button in
-  // settings, a "<WIP>" card, the guards' room (Block 73), and its door
-  // back to wherever he was.
-  // ---------------------------------------------------------------
-  console.log("\nThe Test Room, from settings (Blocks 73 and 74)");
-  await walkTo(page, 2600);
-  await page.evaluate(() => { facing = -1; });
-  await page.waitForTimeout(100);
-  const storyBefore = await page.evaluate(() =>
-    JSON.stringify(Object.keys(state.flags).filter((k) => !k.startsWith("__")).sort().map((k) => [k, state.flags[k]])));
-  await page.keyboard.press("Escape");
-  await page.waitForTimeout(200);
-  await page.click("#shell-pause-settings");
-  await page.waitForTimeout(150);
-  ok("settings, from pause, offers the Test Room", await visible(page, "#shell-testroom") &&
-     (await page.evaluate(() => document.querySelector("#shell-testroom .lbl").textContent)) === "Test Room");
-  await page.click("#shell-testroom");
-  ok("it closes the screens and a black card reads <WIP>", await waitIntertitle(page, true, 4000) &&
-     JSON.stringify((await intertitle(page)).lines) === '["<WIP>"]' &&
-     await page.evaluate(() => document.getElementById("shell").classList.contains("hidden") && Shell.state === "playing"));
-  // Until the room is on screen, whenever the card is not black the
-  // scene fade's own black is: the street is never seen between them.
-  const between = await page.evaluate(async () => {
-    const card = document.getElementById("intertitle");
-    const seen = { gaps: 0, reached: false };
-    for (let i = 0; i < 300; i++) {
-      if (currentSceneId === "bantayan") { seen.reached = true; break; }
-      const cardBlack = !card.classList.contains("hidden") && card.classList.contains("visible");
-      if (!cardBlack && !blackout.classList.contains("visible")) seen.gaps += 1;
-      await new Promise((r) => setTimeout(r, 40));
-    }
-    return { gaps: seen.gaps, reached: seen.reached };
-  });
-  ok("the card lifts onto black and the fade takes him to the guards' room, with no street between",
-     between.reached && between.gaps === 0, between);
-  ok("the card lifts onto black and the fade takes him to the guards' room, with no street between",
-     between.reached && between.gaps === 0, between);
-  ok("the room is on screen", await waitForScene(page, "bantayan"));
-  await settle(page);
-  const room = await page.evaluate(() => ({
-    x: posX, facing, cut: cutscenePlaying, hearts: !document.getElementById("hud").classList.contains("hidden"),
-    guards: GUARDS.map((g) => ({
-      id: g.id, shoots: !!g.shoots,
-      art: [g.spriteEl, g.walkSpriteEl, g.shootSpriteEl].every((el) => el && !el.classList.contains("sprite-placeholder")) &&
-        ![g.animation, g.walkAnimation, g.shootAnimation].some((s) => s.failed),
-    })),
-    door: (currentScene.exits || []).map((e) => e.label + ">" + e.toScene),
-    platforms: PLATFORMS.length, hide: HIDE_SPOTS.length, music: currentScene.music,
-  }));
-  ok("he stands at the room's start, free to move, with his hearts showing",
-     room.x === 150 && room.facing === 1 && !room.cut && room.hearts, room);
-  const typed = await page.evaluate(() => GUARDS.map((g) => ({ type: g.type, kind: g.kind,
-    radius: g.detectRadius, src: g.animation.src })));
-  ok("the room's guards are the catalogue's bantay, a placement's own numbers winning (Block 76)",
-     typed.every((g) => g.type === "bantay" && g.kind === "guard" && /bantay.png$/.test(g.src)) &&
-     JSON.stringify(typed.map((g) => g.radius)) === "[260,280,300]", typed);
-  ok("three guards who shoot, each with his own standing, walking and shooting sheets loaded",
-     room.guards.length === 3 && room.guards.every((g) => g.shoots && g.art), room.guards);
-  ok("a platform, a crate to hide behind, and a door back to the street",
-     room.platforms === 1 && room.hide === 1 && JSON.stringify(room.door) === '["Lumabas>tondo"]', room);
-
-  const poses = await page.evaluate(async () => {
-    await new Promise((r) => setTimeout(r, 300));
-    const byId = (id) => GUARDS.find((g) => g.id === id);
-    const walker = byId("bantay-1"), sentry = byId("bantay-2");
-    const frames = new Set();
-    const bg = () => walker.walkSpriteEl.style.backgroundPosition;
-    for (let i = 0; i < 20; i++) { frames.add(bg()); await new Promise((r) => setTimeout(r, 50)); }
-    return {
-      walker: walker.drawnPose, walkShown: walker.walkSpriteEl.style.display !== "none" &&
-        walker.spriteEl.style.display === "none", walkFrames: frames.size,
-      sentry: sentry.drawnPose, sentryShown: sentry.spriteEl.style.display !== "none",
-    };
-  });
-  ok("a guard on patrol shows his walk, stepping through its frames; the sentry stands",
-     poses.walker === "walk" && poses.walkShown && poses.walkFrames >= 4 &&
-     poses.sentry === "idle" && poses.sentryShown, poses);
-
-  // In front of the sentry, who faces right: he fills his meter, turns
-  // hostile, stops, levels his rifle and fires from its muzzle.
-  const shot = await page.evaluate(async () => {
-    const sentry = GUARDS.find((g) => g.id === "bantay-2");
-    posX = sentry.pos + GUARD_WIDTH + 120;
-    const real = window.guardFire;
-    let fired = null;
-    window.guardFire = (g, now) => {
-      const aimedFor = now - g.aimSince;
-      real(g, now);
-      const b = GUARD_BULLETS[GUARD_BULLETS.length - 1];
-      fired = fired || { id: g.id, aiming: g.aiming, aimedFor, raise: guardRaiseMs(g),
-        frame: guardShootFrame(g, now), x: b.x, y: b.y, centre: g.pos + GUARD_WIDTH / 2,
-        floor: floorHeightAt(g.pos), pose: g.drawnPose };
-    };
-    let hostileAt = null, moved = false;
-    const start = sentry.pos;
-    for (let i = 0; i < 120 && !fired; i++) {
-      if (sentry.hostile && hostileAt === null) hostileAt = i;
-      if (sentry.pos !== start) moved = true;
-      await new Promise((r) => setTimeout(r, 50));
-    }
-    window.guardFire = real;
-    return { hostile: sentry.hostile, hostileAt, moved, fired, x: posX };
-  });
-  const s = shot.fired || {};
-  const scale = 134 / 394;
-  const muzzleAhead = (367 - 88) * scale, muzzleUp = (20 + 394 - 226) * scale;
-  ok("seen, the sentry turns hostile and fires without walking, the rifle levelled first",
-     shot.hostile && shot.hostileAt !== null && !shot.moved && s.aiming && s.aimedFor >= s.raise &&
-     s.pose === "shoot", shot);
-  ok("the flash frame is the frame the bullet leaves on", s.frame === 3, s);
-  ok("and the bullet leaves from his muzzle",
-     Math.abs(s.x - (s.centre + muzzleAhead)) < 1 && Math.abs(s.y - (s.floor + muzzleUp - 5)) < 1, s);
-
-  // Block 75. Punched, the sentry reels in his hit sheet and slides away;
-  // shot, he topples the way the shot went.
-  const blows = await page.evaluate(async () => {
-    const g = GUARDS.find((x) => x.id === "bantay-2");
-    const shown = (el) => el && el.style.display !== "none";
-    posX = g.pos + GUARD_WIDTH + 20; facing = -1; invulnUntil = performance.now() + 5000;
-    const x0 = g.pos;
-    meleeAttack();
-    drawGuard(g);
-    const punched = { hp: g.hp, pose: g.drawnPose, hitShown: shown(g.hitSpriteEl), leftward: g.pos < x0 };
-    await new Promise((r) => setTimeout(r, 600));
-    posX = g.pos + 220; facing = -1; destroyProjectile();
-    throwProjectile();
-    for (let i = 0; i < 60 && !g.disabled; i++) await new Promise((r) => setTimeout(r, 25));
-    return { punched, down: g.disabled, left: g.el.classList.contains("guard-fall-left"),
-      pose: g.drawnPose, frame: guardHitFrame(g, performance.now()),
-      art: !g.hitSpriteEl.classList.contains("sprite-placeholder") && !g.hitAnimation.failed };
-  });
-  ok("punched, a bantay reels in his own hit sheet and slides away (Block 75)",
-     blows.punched.hp === 1 && blows.punched.pose === "hit" && blows.punched.hitShown &&
-     blows.punched.leftward && blows.art, blows);
-  ok("shot, he falls the way the shot went, leaning back as he goes",
-     blows.down && blows.left && blows.pose === "hit" && blows.frame === 1, blows);
-
-  ok("settings does not offer the Test Room inside it", await (async () => {
-    await page.keyboard.press("Escape");
-    await page.waitForTimeout(200);
-    await page.click("#shell-pause-settings");
-    await page.waitForTimeout(150);
-    const shown = await visible(page, "#shell-testroom");
-    await page.click("#shell-settings-back");
-    await page.waitForTimeout(100);
-    await page.click("#shell-resume");
-    await page.waitForTimeout(200);
-    return !shown;
-  })());
-
-  // Out through the door, back to where he was. The guards are put down
-  // first so the harness is not shot on the way.
-  await page.evaluate(() => { GUARDS.forEach((g) => { g.disabled = true; drawGuard(g); }); clearGuardBullets(); });
-  await walkTo(page, 4350 - 100);
-  await page.waitForTimeout(300);
-  await page.keyboard.press("e");
-  ok("Lumabas leads back to the street", await waitForScene(page, "tondo"));
-  await settle(page);
-  const back = await page.evaluate(() => ({ x: posX, facing, scene: currentSceneId, ret: state.flags.__returnTo,
-    story: JSON.stringify(Object.keys(state.flags).filter((k) => !k.startsWith("__")).sort().map((k) => [k, state.flags[k]])) }));
-  ok("to the very spot he left, facing the same way", back.x === 2600 && back.facing === -1 && back.ret === undefined, back);
-  ok("and the story is untouched: the same flags, the Kutsero still the task, one step counted",
-     back.story === storyBefore && JSON.stringify((await log(page)).current) === JSON.stringify([STEP.kutsero]) &&
-     await page.evaluate(() => Acts.countDone(1) === 1), { before: storyBefore, after: back.story });
 
   // ---------------------------------------------------------------
   console.log("\nThe Kutsero's job: a horse to groom, again and again (Block 89)");
@@ -1417,28 +1253,31 @@ const artDrift = () => {
   ok("a card: the guardia civil's rounds are over", await waitIntertitle(page, true, 3000) &&
      JSON.stringify((await intertitle(page)).lines) === JSON.stringify(ROUNDS_OVER), await intertitle(page));
   await waitIntertitle(page, false, 15000);
-  const thinkBack = await readConversation(page, 2);
-  ok("then he thinks of the report, and the back door", thinkBack.lines.length === 1 && /mag-ulat/.test(thinkBack.lines[0]), thinkBack.lines);
-  await settle(page);
-  await page.waitForTimeout(300);
-  const after3 = await page.evaluate(() => ({
-    guards: GUARDS.length, crates: document.querySelectorAll("#world .hide-spot").length,
-    night: document.getElementById("skyline").classList.contains("night-tint"),
-    kasama: NPCS.find((n) => n.id === "kasama").hidden, cut: cutscenePlaying,
-    toast: document.getElementById("toast").textContent }));
-  ok("the guards and their crates are gone, the Kasama too, and it is still night",
-     after3.guards === 0 && after3.crates === 0 && after3.night && after3.kasama && !after3.cut, after3);
-  ok("the task is to go back and report, announced", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.report]) &&
-     after3.toast === "Bagong gawain: " + STEP.report, { after3, log: await log(page) });
-  await walkTo(page, 4100);
-  ok("at the back door the button reads Kumatok", await page.evaluate(() =>
-    document.querySelector("#btn-interact .lbl").textContent === "Kumatok"));
-  await page.keyboard.press("e");
-  ok("through it, into the pulungan", await waitForScene(page, "pulungan", 8000));
+  // Block 95. No door to find: the Kasama comes to him, wherever he is.
+  const after3 = await page.evaluate(async () => {
+    const dec = currentScene.decorations.find((d) => d.id === "kasama-kalye");
+    for (let i = 0; i < 80 && !dec.moving; i++) await new Promise((r) => setTimeout(r, 50));
+    const from = dec.currentX, edge = viewEdges().right;
+    return { guards: GUARDS.length, crates: document.querySelectorAll("#world .hide-spot").length,
+      night: document.getElementById("skyline").classList.contains("night-tint"),
+      npcHidden: NPCS.find((n) => n.id === "kasama").hidden, coming: dec.moving, from, edge,
+      exits: (currentScene.exits || []).length };
+  });
+  ok("the guards and their crates are gone, it is still night, and the Kasama walks up from the edge of the screen",
+     after3.guards === 0 && after3.crates === 0 && after3.night && after3.npcHidden && after3.coming &&
+     after3.from >= after3.edge - 30 && after3.exits === 0, after3);
+  const fetch = await readConversation(page, 4);
+  ok("he asks whether the three are done, and takes him back",
+     fetch.lines.length === 3 && /^Kasama: Tapos na ang tatlo/.test(fetch.lines[0]) && /pulungan/.test(fetch.lines[2]), fetch.lines);
+  ok("a card: the Kasama brings him back", await waitIntertitle(page, true, 4000) &&
+     JSON.stringify((await intertitle(page)).lines) === JSON.stringify(BROUGHT_BACK), await intertitle(page));
+  ok("and the fade into the pulungan", await waitForScene(page, "pulungan", 15000));
+  ok("the task is to report", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.report]),
+     await log(page));
 
   console.log("\nThe report, and a year on (Block 94)");
   const r1 = await readConversation(page, 3);
-  ok("the Kasama asks whether he was followed", r1.lines.length === 2 && /sumunod/.test(r1.lines[0]), r1.lines);
+  ok("the Kasama brings him in, and he says it is done", r1.lines.length === 2 && /^Kasama: Narito na siya/.test(r1.lines[0]), r1.lines);
   const r2 = await readConversation(page, 6);
   ok("he reports to the Mabalasig", r2.lines.length === 5 && /^Mabalasig: Lahat\?/.test(r2.lines[0]) &&
      /^Katipunero:/.test(r2.lines[2]), r2.lines);
@@ -1622,14 +1461,19 @@ const artDrift = () => {
     night: document.getElementById("skyline").classList.contains("night-tint"),
     kasama: NPCS.find((n) => n.id === "kasama").hidden, cut: cutscenePlaying }));
   const wl = await log(r.page);
-  ok("a reload on the way back: no guards, still night, and the task is the report",
-     wayBack.guards === 0 && wayBack.night && wayBack.kasama && !wayBack.cut &&
+  ok("a reload on the street before the report: no guards, still night, the Kasama at his spot, the task the report",
+     wayBack.guards === 0 && wayBack.night && !wayBack.kasama && !wayBack.cut &&
      JSON.stringify(wl.current) === JSON.stringify([STEP.report]), { wayBack, wl });
+  await walkTo(r.page, 12380);
+  await r.page.keyboard.press("e");
+  c = await readConversation(r.page, 2);
+  ok("and talking to him takes Macario back to the pulungan (Block 95)",
+     c.lines.length === 1 && /pulungan/.test(c.lines[0]) && await waitForScene(r.page, "pulungan", 15000), c.lines);
   await r.ctx.close();
   r = await resume("pulungan", roundsOver);
   c = await readConversation(r.page, 3);
   ok("a reload in the pulungan before the report plays the report",
-     /^Kasama: Nakabalik ka/.test(c.lines[0] || ""), c.lines);
+     /^Kasama: Narito na siya/.test(c.lines[0] || ""), c.lines);
   await r.ctx.close();
   r = await resume("pulungan", Object.assign({}, roundsOver, { nakapagUlat: true }));
   ok("a reload after the report plays only the year after, from its card",

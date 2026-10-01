@@ -319,9 +319,6 @@ game.js exposes window.Game and nothing else:
     retryAssets()        every waiting picture tried again now; Block 78
     glossary()           the act's Talaan (words and hints found) for
                          the pause screen, or null; Block 68
-    testRoom()           whether the act's test room can be entered
-                         now; Block 74
-    enterTestRoom()      the card, then the fade into it; Block 74
     setHintPool(n, pool) the teacher's papers for act n, from acts.js;
                          Block 70
 
@@ -385,9 +382,6 @@ world belongs to the scene.
                                                  (Block 70)
       keepFlagsOnReplay: ["flag"],               optional; kept by a replay
                                                  (Block 68)
-      testRoom: { scene, card, x, facing },      optional; a scene outside
-                                                 the story, from settings
-                                                 (Block 74)
       startingQuests: [{ id, text }],
       scenes: [ {...}, {...} ]
     }
@@ -603,9 +597,8 @@ reached edge to edge like an NPC. The interact button reads its label
 toFacing }), the same fade every scene change uses. Without toX the new
 scene's startX applies; an arrival dialogue's own x still wins over
 both. An exit may declare requiresFlag, and stays shut (no prompt) until
-that flag is set. An exit with back: true (Block 74) returns to where
-the test room was entered from, and uses its own toScene only when
-that is not known. A building to walk into is a decoration for the picture plus an
+that flag is set. (Block 74's test room, and its exit back: true, were
+removed in Block 95.) A building to walk into is a decoration for the picture plus an
 exit at its door; a decoration with a single still image is an animation
 def with frames: 1. A decoration may also declare hidden: true, for a
 character a script brings on later, and facing: -1 to mirror its art.
@@ -1812,7 +1805,8 @@ look, by system:
       death pose)                         Block 91
     questions, replays, Talaan            Blocks 64, 68, 69, 70
     siga and bantay art                   Blocks 72, 73, 75
-    test room, enemy catalogue            Blocks 74, 76
+    enemy catalogue                       Block 76 (Blocks 73 and 74's
+                                          test room removed in 95)
     these files compacted                 Block 79
     an owed scene backdrop                Block 80
 
@@ -1942,8 +1936,9 @@ url("${assetUrl(sheet.src)}"). Any future asset path with a space, a
 paren, or a comma needs this same quoting; it's cheap enough to always do.
 
 Seeding a save with objective flags already true and then loading it
-against the REAL content/act1.js (rather than through enterTestRoom(),
-which routes to the harness's own fixture) can auto-complete the act
+against the REAL content/act1.js (rather than through the harness's
+enterTestRoom(), which routes to its own fixture act; the name is the
+harness's, older than the game's Test Room, which Block 95 removed) can auto-complete the act
 before the test gets to do anything. checkObjectives() runs on entry and
 compares the seeded flags against whatever objectives the loaded act
 actually declares. When content/act1.js declared exactly one objective

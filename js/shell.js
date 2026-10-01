@@ -102,7 +102,6 @@ const Shell = {
       },
       notebookBtn: document.getElementById("shell-notebook"),
       passwordBtn: document.getElementById("shell-password"),
-      testRoomBtn: document.getElementById("shell-testroom"),
       passwordNew: document.getElementById("shell-password-new"),
       passwordAgain: document.getElementById("shell-password-again"),
       passwordSave: document.getElementById("shell-password-save"),
@@ -225,9 +224,6 @@ const Shell = {
       this.el.passwordBtn.addEventListener("click", () => this._openPassword());
       this.el.passwordBack.addEventListener("click", () => this._closePassword());
       this.el.passwordSave.addEventListener("click", () => this._savePassword());
-    }
-    if (this.el.testRoomBtn) {
-      this.el.testRoomBtn.addEventListener("click", () => this._enterTestRoom());
     }
     this.el.resetCancel.addEventListener("click", () =>
       this._showPanel("settings")
@@ -567,12 +563,6 @@ const Shell = {
     if (this.el.passwordBtn) {
       this.el.passwordBtn.classList.toggle("hidden", !(window.Game && Game.isSignedIn()));
     }
-    // Block 74. Only from pause, where there is a world to leave, and
-    // only when the act has a test room he is not already in.
-    if (this.el.testRoomBtn) {
-      this.el.testRoomBtn.classList.toggle("hidden",
-        !(from === "pause" && window.Game && Game.testRoom && Game.testRoom()));
-    }
     this.settingsReturn = from;
     this.state = "settings";
     this._showPanel("settings");
@@ -730,21 +720,6 @@ const Shell = {
       note.textContent = "Hindi napalitan ang password. Suriin ang koneksyon at subukan ulit.";
     }
     this.el.passwordSave.disabled = false;
-  },
-
-  // Block 74. The screens close and the world runs again first, the
-  // way Bumalik from pause does, and then the engine plays the card and
-  // the fade (game.js, enterTestRoom), which holds the world itself.
-  _enterTestRoom() {
-    if (this.state !== "settings" || this.settingsReturn !== "pause") return;
-    this.state = "playing";
-    this.el.overlay.classList.add("hidden");
-    if (window.Game) {
-      Game.setUiBlocked(false);
-      Game.setPaused(false);
-      Game.enterTestRoom();
-    }
-    this._applyOrientation();
   },
 
   _closeSettings() {

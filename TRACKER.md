@@ -9,7 +9,9 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 94 (a third job, the Barbero,
+Last updated: 1 Oct 2026, after Block 95 (the Kasama comes to Macario
+after the pamphlets and takes him back, instead of a door the proponent
+could not find; the Test Room removed). Before that, Block 94 (a third job, the Barbero,
 with a memory game of his own; a new end, the report and a year on,
 Tondo, 1895, Macario the head of his council and the door shut on
 Nanay; three papers of facts in the Talaan, a teacher's paper replacing
@@ -27,7 +29,7 @@ Tindero removed; nine pictures owed). Before that, Block 90 (the work
 gets harder, sewing is held, each job has a picture), Block 89 (the work
 is there to be done), Block 88 (one combat template), Block 87 (the
 opening fight, busts) and Block 86 (the dash attack).
-test.js 767 passed, 0 failed; verify_new_scene.js 248 passed,
+test.js 767 passed, 0 failed; verify_new_scene.js 230 passed,
 0 failed.
 
 ## Start here
@@ -99,7 +101,8 @@ done again.
                                         guardia civil: the mangingisda,
                                         the tabakera, the karpintero;
                                         after the third the rounds end
-   14  Bumalik sa pulungan at mag-ulat  in by the back door (Kumatok);
+   14  Bumalik sa pulungan at mag-ulat  the Kasama comes to him and
+                                        takes him back (Block 95);
                                         the report, then a year on,
                                         Tondo, 1895: the head of his
                                         council, the lie to Nanay, the
@@ -113,10 +116,8 @@ gives Macario after Principe Baldovino, worn from then on; standing
 still in them, a guard notices him five times more slowly. The harness
 fixture covers every other item path. Acts II to IV are registered stubs.
 
-Outside the story: the Test Room (Mga Setting from pause, then Test
-Room): a "<WIP>" card, three bantay who patrol, see, turn hostile, fire
-from the hip and take blows, a platform, a crate, and a door back to the
-same spot. Enemies are content: content/enemies.js describes each kind
+The Test Room is gone (Block 95, at the proponent's request). Enemies
+are content: content/enemies.js describes each kind
 once (bantay, kawal, and the three siga of the opening) and scenes place
 them by type.
 
@@ -129,7 +130,7 @@ both waiting on the proponent's verdict. What is still owed is ART.md.
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
-for the play's fight and the Test Room, the gunshot, the horse near
+for the fights, the gunshot, the horse near
 Kabayo, and about twenty short effects; Musika and Mga tunog switches in
 settings. The teacher dashboard is a light report page in English.
 
@@ -142,9 +143,9 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v59    js/game.js v92       js/shell.js v20
+    css/style.css v59    js/game.js v93       js/shell.js v21
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v65  content/items.js v13  content/act2-4.js v1
+    content/act1.js v66  content/items.js v13  content/act2-4.js v1
     content/enemies.js v2   content/questions.js v1
     js/asset-manifest.js v4 (bumped by make-asset-manifest.js)
     ASSET_VERSION 32 (in js/game.js)
@@ -171,7 +172,8 @@ look for, and what failure looks like (Blocks 80 to 85 are confirmed):
       rounds of two to five, a wrong tool ending the round; 4 to 7
       barya. After the third pamphlet, a card ("Natapos ang ronda..."),
       no guards or crates after it, still night; the log says "Bumalik
-      sa pulungan at mag-ulat"; Kumatok at the back door (x 4100). The
+      sa pulungan at mag-ulat"; the Kasama walks up to him from the
+      edge of the screen and a card takes him back (Block 95). The
       report, a card "Pagkalipas ng isang taon / Tondo, 1895", the men
       calling him Pangulo, Nanay at the door and his lie, the door shut
       on her with its sound, the last cards, then the post-test. Three
@@ -256,11 +258,7 @@ barbero") are now shown, and the Talaan's first paper says it too. The
 item bank still says Sakay joined in 1894; the story agrees. The post-test now runs, so this
 decides whether the study measures anything; do it before the pilot.
 
-5. Decide whether students should see the Test Room button (Block 74).
-It is in settings for every student, study accounts included. It is
-outside the story and returns to the same spot, so it harms nothing,
-but before the pilot either keep it, hide it (one line in shell.js,
-_openSettings), or remove testRoom from content/act1.js.
+5. (Done, Block 95.) The Test Room is removed, button, room and engine.
 
 6. Art from the artist: ART.md's Owed list, thirteen pictures (the
 Mananahi, the direktor, the Katipunero, the Kasama, the Mabalasig, the
@@ -440,8 +438,8 @@ The paper specifies seventeen.
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest for a quick look. A student can change the password in settings |
 | Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I playable to its end, twelve objectives, completing into its post-test; Acts II to IV are stubs |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
-| Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the Test Room's guards can be punched or shot down |
-| Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. The story's Act I has no stealth section yet; the Test Room shows all of it |
+| Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind |
+| Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; shooting guards are covered by the harness fixture |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game, tutorials that wait for the task, NPCs that open the shop |
 | Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. Act I uses them; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
@@ -590,6 +588,8 @@ machine, the assessment module.
     93  the Act I polish list (TRACKER.md, above; DECISIONS.md)
     94  the Barbero and his own game (playOrderGame); the end a year on,
         the head of his council; the Talaan's own papers of facts
+    95  the Kasama takes him back instead of a door; the Test Room
+        removed
 
 ## Blocks remaining
 
@@ -724,7 +724,7 @@ stays tested whatever Act I ships. Its sections are the inventory of
 what is covered. verify_new_scene.js (216 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
-a guest and the Test Room, and checks that every line of the content is
+a guest, and checks that every line of the content is
 in STORY.md, that ART.md's Owed list matches the disk, and that the
 asset manifest matches assets/ and every picture in it opens. Anything
 other than "0 failed" is a regression, with one caution learned on

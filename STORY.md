@@ -44,7 +44,9 @@ ours. Since Block 93 their spelling and grammar are corrected, at their
 request, with the wording and the meaning kept (po rather than 'ho,
 'Nay, rin and rito after a vowel, 'yung, no "Okay").
 
-Last updated: 1 Oct 2026, Block 94 (a third job, the Barbero, with a
+Last updated: 1 Oct 2026, Block 95 (no door to find after the
+pamphlets: the Kasama comes to Macario and takes him back; the Test
+Room is gone). Before that, Block 94 (a third job, the Barbero, with a
 game of his own; a new end: the report in the pulungan and a year on,
 Tondo, 1895, Macario the head of his council, lying to Nanay at the
 door as it is shut on her; three papers of facts of the game's own in
@@ -101,8 +103,8 @@ He says their password to the one waiting on the street, is taken
 blindfolded to a secret room, and goes through the rite: the warning,
 the Mabalasig, the three questions, the leap over the fire, the oath in
 blood. He is sent out the back with pamphlets for three people, past
-guardia civil on their rounds. When the rounds are over he goes back
-through the back door and reports.
+guardia civil on their rounds. When the rounds are over the Kasama
+comes for him, and he reports.
 
 A year on, in 1895, he is the head of his own council of the Katipunan:
 the men bring him their business and take his orders. Nanay comes to
@@ -127,8 +129,8 @@ Act I lives on it, left to right:
     x 2000     Nanay, where she and Macario walk to in the opening
     x 3300     the Kutsero
     x 3560     his white horse, Kabayo (used with E, not talked to)
-    x 4100     the pulungan's back door (Kumatok), open once the
-               pamphlets are given (Block 94)
+    x 4100     the pulungan's back door, where he comes out onto the
+               street with the pamphlets
     x 4800     the mangingisda (four years on, once Macario is sworn in)
     x 5300     the Barbero (Block 94), and his chair at x 5440 (used
                with E); closed, and gone, from the oath on
@@ -158,8 +160,8 @@ out, Lumabas sa likod, is on the left and stays shut until he is sworn
 in; the Kasama stands by it (x 300), the Mabalasig (x 760) and the
 Katipunero (x 920) at the far end. It is reached only with the Kasama,
 once, and its back way leads onto the street at x 4100, short of the
-mangingisda; since Block 94 he goes back in by that door to report, and
-the act ends there, a year on. Its painting is owed: until it arrives it is a dark wall
+mangingisda; since Block 94 the Kasama brings him back to report
+(Block 95: no door to find), and the act ends there, a year on. Its painting is owed: until it arrives it is a dark wall
 with the file name on it.
 
 ## Cast
@@ -805,20 +807,27 @@ The pamphlets count (n/3). After the third, wherever he is:
   + [BLACK] Natapos ang ronda ng mga guardia civil.
 
     (Block 94. Under the card the guardia civil leave the street and
-    their crates with them; the Kasama is gone from it too. It is still
-    night.)
+    their crates with them. It is still night.)
 
-  + Macario (sa isip): Bago mag-umaga, kailangan kong mag-ulat sa pulungan. Sa likod ako dadaan.
+    (Block 95. The Kasama comes to him, wherever he is, from just past
+    the edge of the screen, and stops a step in front of him.)
+
+  + Kasama: Tapos na ang tatlo?
+  + Macario: Opo. Walang nakakita sa akin.
+  + Kasama: Mabuti. Sumunod ka. Hinihintay ka nila sa pulungan.
+
+  + [BLACK] Ibinalik siya ng Kasama sa lihim na silid.
 
 Completes: Ipamigay ang mga polyeto (3/3).
 
 ### 17. The report
 
-tondo, the back door at x 4100, whose button reads Kumatok, and through
-it into the pulungan. Plays by itself on arrival (Block 94).
+pulungan. Plays by itself on arrival (Block 94). A reload on the street
+before it finds the Kasama at his spot (x 12500), who says his last
+line again and takes him back.
 
-  + Kasama: Nakabalik ka. Walang sumunod sa'yo?
-  + Macario: Wala po. Naiabot ko na po ang tatlo.
+  + Kasama: Narito na siya.
+  + Macario: Naiabot ko na po ang tatlo.
 
     (He walks up to the Mabalasig.)
 
@@ -889,23 +898,6 @@ whose Supremo was Bonifacio, so that is what he becomes.
 
 Completes: Bumalik sa pulungan at mag-ulat, the last task. Act I is
 finished, and the post-test runs.
-
-## The Test Room (not the plot)
-
-Blocks 73 and 74, at the proponent's request. Outside the story: it is
-reached only from the Test Room button in Mga Setting (from pause), and
-nothing in the plot above leads to it or changes because of it.
-
-Pressing it shows a black card:
-
-    [BLACK] <WIP>
-
-and Macario is in the guards' room (bantayan): three paintings of the
-town, 4350 wide, with three bantay (guardia civil, real art walking and
-shooting) who see, turn hostile, level their rifles and fire, a
-platform above their sight with a heart on it, and a crate to hide
-behind. Nobody speaks. The door at the far end (Lumabas) returns him to
-the very spot he left, facing the same way, with the story where it was.
 
 ## Repeat lines
 
@@ -983,8 +975,9 @@ Kasama, on the street:
   + Kasama: Ano pa'ng hinihintay mo? Sumunod ka na.
     (the word said, after a reload before the oath; takes him in)
   + Kasama: Huwag kang tumambay rito. Ipamigay mo na ang mga polyeto.
-    (during the pamphlets; gone from the street when the rounds end,
-    Block 94)
+    (during the pamphlets)
+  + Kasama: Sa pulungan na tayo mag-usap, Pangulo. Maraming mata ang kalye.
+    (after the report, Block 95)
 
 In the pulungan, after the oath:
 
