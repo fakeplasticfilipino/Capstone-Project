@@ -36,10 +36,17 @@
 // (the proponent: "simple but verbose") so they read on a phone where a
 // character is a hundred pixels tall:
 //
-//   idle     8 frames, looped: a deep breath, a sway and a nod.
+//   idle     8 frames at 4, looped: a calm breath, sway and nod (Block
+//            101 took them to a quarter: they were far too much).
 //   breathe  8 frames, looped: the breath and the nod alone, no sway and
 //            no arms, for someone holding something that must stay put
 //            (the direktor's cane on the ground; Block 98).
+//   march    8 frames, looped: the walk of a figure drawn three-quarter
+//            or from the front (legSplit, below), each leg lifted in
+//            turn, the body riding up on each step (Block 101).
+//   thrust   8 frames, once: a strike for a fighter whose hands are full
+//            (the kawal's kris and shield), the whole body thrown
+//            forward behind the blade, timed as attack (Block 101).
 //   walk     8 frames, looped: long strides, the arm swinging against
 //            the near leg, the body riding up over the planted foot.
 //   attack   8 frames, played once per strike (an enemy's
@@ -54,6 +61,12 @@
 //
 // A new motion (a wave, a gesture while talking) is added here once and
 // is then every rig's to use.
+//
+// Two rig fields for figures that are not a man in trousers seen side
+// on (Block 101): stride scales every leg angle (Nanay's long skirt, a
+// third), and legSplit, the x between the legs of a figure drawn
+// three-quarter, cuts each whole leg as its own part for the march
+// instead of copying one leg as the far one.
 //
 // Every sheet a rig writes shares one cell, sized from every frame
 // drawn, so nothing is clipped and all of them take one set of numbers;
@@ -259,7 +272,22 @@ function splitStill(still, rig) {
     }
   }
   dropSpecks(shin, 40);
-  return { arm, sleeve, head, torso, thigh, shin, hasArm: Boolean(outlines.arm), hasSleeve: Boolean(outlines.sleeve) };
+
+  // Block 101. A figure drawn three-quarter or from the front shows both
+  // legs side by side, and copying one leg as the far one would give him
+  // four. legSplit is the x between his legs: each whole leg, from legTop
+  // down, is its own part, lifted in turn by the march.
+  const legL = blankLayer(W, H), legR = blankLayer(W, H);
+  if (rig.legSplit != null) {
+    for (let y = cuts.legTop; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const i = at(x, y);
+        if (legs.d[i + 3]) (x < rig.legSplit ? legL : legR).d.set(legs.d.subarray(i, i + 4), i);
+      }
+    }
+  }
+  return { arm, sleeve, head, torso, thigh, shin, legL, legR, hasArm: Boolean(outlines.arm),
+    hasSleeve: Boolean(outlines.sleeve), split: rig.legSplit != null };
 }
 
 // -------------------------------------------------------------
@@ -299,23 +327,34 @@ function drawPose(parts, rig, pose, W, H) {
   };
 
   const p = Object.assign({ lean: 0, head: 0, breathe: 0, shoulder: 0, arm: 0, push: 0,
-    near: { thigh: 0, knee: 0 }, far: { thigh: 0, knee: 0 } }, pose);
-  const near = legMaps(p.near), far = legMaps(p.far);
-  const drop = rig.ground - Math.max(lowestSole(near), lowestSole(far));
+    bob: 0, liftL: 0, liftR: 0, near: { thigh: 0, knee: 0 }, far: { thigh: 0, knee: 0 } }, pose);
+  // A long skirt cannot stride like trousers: stride scales every leg
+  // angle (Nanay's 0.35, Block 101).
+  const k0 = rig.stride == null ? 1 : rig.stride;
+  const scaled = (leg) => ({ thigh: leg.thigh * k0, knee: leg.knee * k0 });
+  const near = legMaps(scaled(p.near)), far = legMaps(scaled(p.far));
+  const drop = parts.split ? 0 : rig.ground - Math.max(lowestSole(near), lowestSole(far));
   const S = { a: scale, b: 0, c: 0, d: scale, e: 0, f: 0 };
   const ride = compose(S, move(p.push * unit, drop));
+  // bob lifts everything above the legs, in pixels of a 540 still.
+  const up = compose(ride, move(0, -p.bob * unit));
   // The breath stretches the torso up from the waist, and carries the
   // head and the elbow up with it.
   const k = 1 + p.breathe;
   const stretch = { a: 1, b: 0, c: 0, d: k, e: 0, f: cuts.torsoBottom * (1 - k) };
-  const body = compose(ride, compose(turn(joints.hip[0], joints.hip[1], p.lean), stretch));
+  const body = compose(up, compose(turn(joints.hip[0], joints.hip[1], p.lean), stretch));
   const head = compose(body, turn(joints.neck[0], joints.neck[1], p.head));
 
   const cv = new Canvas(W, H);
-  cv.draw(parts.shin, compose(ride, far.shin), FAR_SHADE);
-  cv.draw(parts.thigh, compose(ride, far.thigh), FAR_SHADE);
-  cv.draw(parts.shin, compose(ride, near.shin));
-  cv.draw(parts.thigh, compose(ride, near.thigh));
+  if (parts.split) {
+    cv.draw(parts.legL, compose(ride, move(0, -p.liftL * unit)));
+    cv.draw(parts.legR, compose(ride, move(0, -p.liftR * unit)));
+  } else {
+    cv.draw(parts.shin, compose(ride, far.shin), FAR_SHADE);
+    cv.draw(parts.thigh, compose(ride, far.thigh), FAR_SHADE);
+    cv.draw(parts.shin, compose(ride, near.shin));
+    cv.draw(parts.thigh, compose(ride, near.thigh));
+  }
   cv.draw(parts.head, head);
   cv.draw(parts.torso, body);
   const sleeve = parts.hasSleeve ? compose(body, turn(joints.shoulder[0], joints.shoulder[1], p.shoulder)) : body;
@@ -356,25 +395,58 @@ function stride(phase) {
 const LUNGE = { near: { thigh: 26, knee: 22 }, far: { thigh: -24, knee: 4 } };
 
 const MOTIONS = {
+  // Block 101, at the proponent's word ("way too exaggerated"): the idle
+  // was a 5% breath, a 2.5 degree sway and a 7 degree nod every 1.3
+  // seconds. Now a quarter of that and twice as slow, a person standing.
   idle: {
-    fps: 6, loop: true,
+    fps: 4, loop: true,
     poses: Array.from({ length: 8 }, (_, i) => {
       const t = i / 8;
       return {
-        breathe: 0.05 * (1 + wave(t)) / 2,
-        lean: 2.5 * wave(t, 0.5),
-        head: 7 * wave(t, 0.15),
-        shoulder: 5 * wave(t, 0.3),
-        arm: 8 * wave(t, 0.3),
+        breathe: 0.015 * (1 + wave(t)) / 2,
+        lean: 0.6 * wave(t, 0.5),
+        head: 1.8 * wave(t, 0.15),
+        shoulder: 1.2 * wave(t, 0.3),
+        arm: 2 * wave(t, 0.3),
       };
     }),
   },
   breathe: {
-    fps: 6, loop: true,
+    fps: 4, loop: true,
     poses: Array.from({ length: 8 }, (_, i) => {
       const t = i / 8;
-      return { breathe: 0.05 * (1 + wave(t)) / 2, head: 4 * wave(t, 0.15) };
+      return { breathe: 0.015 * (1 + wave(t)) / 2, head: 1.2 * wave(t, 0.15) };
     }),
+  },
+  // Block 101. The walk of a figure drawn three-quarter (legSplit): each
+  // leg lifted in turn while he is carried along, the body riding up a
+  // little on each step and rocking from side to side.
+  march: {
+    fps: 10, loop: true,
+    poses: Array.from({ length: 8 }, (_, i) => {
+      const t = i / 8, s = Math.sin(2 * Math.PI * t);
+      return {
+        liftL: 16 * Math.max(0, s), liftR: 16 * Math.max(0, -s),
+        bob: 4 * Math.abs(s), lean: 2, head: 1.5 * wave(t * 2, 0.25),
+      };
+    }),
+  },
+  // Block 101. A strike for a fighter whose hands are full (the kawal's
+  // kris and shield), so no arm moves: he rocks back through the red !,
+  // throws his whole body forward with the blade, holds, and comes back.
+  // The same timing as attack, which game.js's tell is written against.
+  thrust: {
+    fps: 10,
+    poses: [
+      { lean: -4, head: -2, push: -3, liftR: 4 },
+      { lean: -7, head: -3, push: -6, liftR: 8 },
+      { lean: -8, head: -4, push: -8, liftR: 10 },
+      { lean: 12, head: 4, push: 26, liftL: 6, bob: 2 },
+      { lean: 13, head: 4, push: 28 },
+      { lean: 12, head: 3, push: 28 },
+      { lean: 5, head: 1, push: 14, liftR: 6 },
+      { lean: 1, head: 0, push: 4 },
+    ],
   },
   walk: {
     fps: 12, loop: true,

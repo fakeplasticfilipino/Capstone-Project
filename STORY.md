@@ -168,8 +168,9 @@ with the file name on it.
 
     Macario        the boy, the player. Real art (idle, walk, jump,
                    punch, shooting).
-    Nanay          his mother. Real art standing; walks as a
-                   placeholder box (nanay-walk.png, owed, Block 93).
+    Nanay          his mother. The proponent's still (Block 101), side
+                   on: long hair, a blue tapis over a long skirt. Stands
+                   and walks, animated from it.
     Mga Siga       three street toughs, the artist's art since Blocks
                    96 and 98, each animated from one still (standing,
                    walking, a punch, a flinch): the leader in a salakot
@@ -178,11 +179,15 @@ with the file name on it.
                    and a small one with a pouch at his belt (siga-3).
                    One speaks alone ("Siga"), all three laugh ("Mga
                    Siga").
-    Kutsero        a carriage driver, Macario's first employer. Real art.
+    Kutsero        a carriage driver, Macario's first employer. The
+                   proponent's still (Block 101), facing the front, a
+                   coil of rope and a whip; standing still.
     Kabayo         the kutsero's horse, a saddled bay. The proponent's
                    still, animated by a tool (Block 100).
-    Barbero        a barber, his third employer (Block 94). Placeholder
-                   box (barbero.png), with his chair (silya-barbero.png).
+    Barbero        a barber, his third employer (Block 94). The
+                   proponent's still (Block 101), facing the front, comb
+                   and scissors in a pouch at his sash; standing still.
+                   His chair is a placeholder box (silya-barbero.png).
     Suki           the barber's customer, heard only in the barber's game,
                    asking for the cut.
     Mananahi       a seamstress, his second employer. Real art, facing
@@ -193,11 +198,14 @@ with the file name on it.
     Julian         the company's lead actor. Never seen: sick with a
                    fever, which is the whole of his part.
     Maryam         the company's leading lady; plays the princess.
-                   Real art.
-    Sultan         in the play, Maryam's father. Real art (the old
-                   moro-moro's walk sheet).
-    Mga Kawal      in the play, the Sultan's four soldiers. Real art
-                   (walk and sword sheets).
+                   The proponent's still (Block 101), facing the front, a
+                   head wrap and a woven skirt; standing still.
+    Sultan         in the play, Maryam's father. The proponent's still
+                   (Block 101): a plumed turban, a red cape, a kampilan.
+                   Stands, and marches on and off, animated from it.
+    Mga Kawal      in the play, the Sultan's soldiers. The proponent's
+                   still (Block 101): a turban, a kris and a shield.
+                   March, strike and flinch, animated from it.
     Mga Manonood   the audience. Heard, never seen.
     Katipunero     the older of two men of the Katipunan who find
                    Macario in the wings, and at his oath. Real art
@@ -209,8 +217,10 @@ with the file name on it.
     Mabalasig      the "terrible brother" who conducted a recruit's
                    rite: he swears Macario in and gives him the
                    pamphlets. A role from the histories, not a named
-                   person. Placeholder box (mabalasig.png). (Block 80's
-                   Pangulo, renamed in Block 81.)
+                   person. The proponent's still (Block 101), side on: a
+                   salakot, a rolled paper in his hand, a bolo at his
+                   back. Stands, animated from it. (Block 80's Pangulo,
+                   renamed in Block 81.)
     Mangingisda,   the three who take the pamphlets: a fisherman, a
     Tabakera,      woman from the cigar factory and a carpenter.
     Karpintero     Placeholder boxes (mangingisda.png, tabakera.png,

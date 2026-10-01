@@ -35,7 +35,11 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 1 Oct 2026, Block 98 (nine owed: the Mananahi, the
+Last updated: 1 Oct 2026, Block 101 (six owed: the proponent's own
+stills of Nanay, the Mabalasig, the Barbero, the Kutsero, Maryam, the
+Sultan and the kawal arrived; the side-on and three-quarter ones are
+animated by animate-still.js, the front ones stand still; Nanay's walk
+is made from her still). Before that, Block 98 (nine owed: the Mananahi, the
 direktor, the Katipunero and the Kasama arrived, and the leader and the
 small siga replaced the ones drawn in code; all but the Mananahi are
 animated from their stills). Before that, Block 97 (no change to what
@@ -58,14 +62,6 @@ pulungan).
 
 Named by the game and missing. Each is a placeholder box today.
 
-    assets/sprites/characters/mabalasig.png
-        The Mabalasig ("terrible brother"), who conducts Macario's rite
-        in the pulungan and gives him the pamphlets (Block 81, replacing
-        Block 80's Pangulo). Talks; an idle sheet is enough. The
-        histories describe members at a rite in hoods; the Katipon's was
-        black with a white triangle, which the proponents may want for
-        him or for the Katipunero and the Kasama too. (NOT STARTED)
-
     assets/sprites/characters/karpintero.png
     assets/sprites/characters/tabakera.png
     assets/sprites/characters/mangingisda.png
@@ -73,20 +69,6 @@ Named by the game and missing. Each is a placeholder box today.
         sworn in: a carpenter (x 10600), a woman from the cigar factory
         (x 6900) and a fisherman (x 4800). Talk and take a pamphlet; an
         idle sheet each is enough. (NOT STARTED)
-
-    assets/sprites/characters/nanay-walk.png
-        Nanay walking, side on, facing right: she walks on in the
-        opening and home with Macario (Block 93). Block 94 also stands
-        her at the door of the pulungan in the last scene, on nanay.png. Her standing sheet
-        (nanay.png) faces the front, so this is a sheet of its own; a
-        placeholder box walks in her place until it arrives.
-        (NOT STARTED)
-
-    assets/sprites/characters/barbero.png
-        The Barbero, Macario's third employer (Block 94). Act I, on the
-        street at x 5300, between the Kutsero and the Mananahi; gone from
-        the oath on. Talks; an idle sheet is enough. A barber of 1890s
-        Tondo: camisa, an apron, scissors or a comb in hand. (NOT STARTED)
 
     assets/sprites/scenery/silya-barbero.png
         The Barbero's chair, beside him (x 5440), where Macario plays the
@@ -118,7 +100,10 @@ forgotten.
     The motion of everyone delivered as one still: the three siga
         (siga-N, -walk, -attack, -hit; Blocks 96, 98), the direktor
         (direktor.png, breathing only, Block 98), the Katipunero and
-        the Kasama (their idle and -walk, Block 98). Made from the
+        the Kasama (their idle and -walk, Block 98), Nanay (her idle and
+        walk), the Mabalasig (idle), the Sultan (idle and a march) and
+        the kawal (march, a thrust and a flinch; Block 101, from the
+        proponent's stills). Made from the
         artist's stills (<name>-still.png) by _dev/tools/animate-still.js
         and a rig each in _dev/rigs/, as the bantay's are by
         animate-bantay.js; the stills themselves are the artist's.
@@ -132,8 +117,6 @@ forgotten.
     The bantay's walk, shot and flinch (bantay-walk, -shoot, -hit).
         Made from the artist's one still by _dev/tools/animate-bantay.js
         (Blocks 73, 75); the still itself (bantay.png) is the artist's.
-    The Sultan. Walks on his soldiers' walk sheet (muslim-walk.png);
-        a sheet of his own would set him apart from them.
     Item tiles. No item ships (content/items.js is empty); each item
         added later names its own tile picture.
 

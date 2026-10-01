@@ -73,10 +73,10 @@ const FPS = 6;
 function pose(i) {
   const t = i / FRAMES;
   return {
-    neck: 2.4 * Math.pow(Math.sin(Math.PI * t), 2),
+    neck: 1.2 * Math.pow(Math.sin(Math.PI * t), 2), // halved in Block 101
     // Only ever in under the body: swung out past where it hangs, the
     // tail's edge leaves a sliver of sky against the rump.
-    tail: -2.2 * (1 - Math.cos(2 * Math.PI * t)),
+    tail: -1.2 * (1 - Math.cos(2 * Math.PI * t)),
   };
 }
 

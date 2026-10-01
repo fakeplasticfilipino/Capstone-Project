@@ -50,10 +50,11 @@
 // is Macario's height, the big one taller, the small one shorter.
 // content/act1.js reads both from here for the opening's walk-on.
 const SIGA_CELLS = {
-  1: { columns: 4, contentTop: 14, contentHeight: 398, footX: 132, headroom: 14 },
-  2: { columns: 4, contentTop: 11, contentHeight: 405, footX: 149, headroom: 11 },
-  3: { columns: 4, contentTop: 14, contentHeight: 401, footX: 136, headroom: 14 },
+  1: { columns: 4, contentTop: 7, contentHeight: 398, footX: 132, headroom: 7 },
+  2: { columns: 4, contentTop: 7, contentHeight: 405, footX: 149, headroom: 7 },
+  3: { columns: 4, contentTop: 8, contentHeight: 401, footX: 136, headroom: 8 },
 };
+const KAWAL_CELL = { columns: 4, contentTop: 6, contentHeight: 366, footX: 113, headroom: 6 };
 const sigaFighter = (n, size, hp) => ({
   kind: "enemy",
   hp,
@@ -106,21 +107,20 @@ window.ENEMY_TYPES = {
     },
   },
 
-  // The Sultan's soldier in the play (Block 59), on the old moro-moro's
-  // walk and sword sheets (Block 40): delivered as JPEGs on black, keyed
-  // to PNGs, the attack sheet grounded by its standing frames, with
-  // headroom for the raised sword. The Sultan himself walks on the same
-  // walk sheet, as a decoration (content/act1.js).
+  // The Sultan's soldier in the play (Block 59). Since Block 101 the
+  // proponent's still (kawal-still.png), a turban, a kris and a shield,
+  // drawn three-quarter, animated by _dev/tools/animate-still.js (rig
+  // _dev/rigs/kawal.js): he marches (each leg lifted in turn), strikes
+  // with the thrust, his whole body behind the blade since both hands are
+  // full (frames 0 to 2 the red !, 3 the blow, as the siga's punch), and
+  // flinches with the hit. One cell for all three.
   kawal: {
     kind: "enemy",
     hp: 2,
-    animation: {
-      src: "assets/sprites/enemies/muslim-walk.png", frames: 12, fps: 10,
-      columns: 4, contentTop: 43, contentHeight: 70, footX: 72,
-    },
-    attackAnimation: {
-      src: "assets/sprites/enemies/muslim-attack.png", frames: 15, fps: 24,
-      columns: 4, contentTop: 30, contentHeight: 97, footX: 88, headroom: 29,
+    animation: { src: "assets/sprites/enemies/kawal-walk.png", frames: 8, fps: 10, ...KAWAL_CELL },
+    attackAnimation: { src: "assets/sprites/enemies/kawal-attack.png", frames: 8, fps: 10, ...KAWAL_CELL },
+    hitAnimation: {
+      src: "assets/sprites/enemies/kawal-hit.png", frames: 4, fps: 12, ...KAWAL_CELL, knockoutFrame: 1,
     },
   },
 };

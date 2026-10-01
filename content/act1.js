@@ -105,15 +105,13 @@ const STREET_SKY = "#51a6ea";
 // with only src, frames 1 and fps 1 names art that does not exist yet
 // and is drawn as the placeholder box (see the header).
 
-// Nanay's real sheet (5 by 3, 14 frames). Block 57: she slid on with
-// it rather than walking. Block 93: a walk sheet is named for her, shown
-// while she moves, and owed (ART.md), so until it arrives she walks as
-// the placeholder box, at the proponent's direction.
-const NANAY = {
-  src: "assets/sprites/characters/nanay.png", frames: 14, fps: 6, columns: 5,
-  contentTop: 45, contentHeight: 166, footX: 127,
-};
-const NANAY_WALK = { src: "assets/sprites/characters/nanay-walk.png", frames: 1, fps: 1 };
+// Nanay (Block 101): the proponent's still of her side on, facing right,
+// animated by _dev/tools/animate-still.js (rig _dev/rigs/nanay.js) to
+// stand with the calm idle and to walk, a short step under the long
+// skirt. One cell for both, so she does not slide when she stops.
+const NANAY_CELL = { columns: 4, contentTop: 13, contentHeight: 396, footX: 67, headroom: 13 };
+const NANAY = { src: "assets/sprites/characters/nanay.png", frames: 8, fps: 4, ...NANAY_CELL };
+const NANAY_WALK = { src: "assets/sprites/characters/nanay-walk.png", frames: 8, fps: 12, ...NANAY_CELL };
 
 // The three siga, all the artist's since Block 98 (the big one since
 // Block 96): the leader in a salakot with a shawl over his shoulders, the
@@ -121,21 +119,24 @@ const NANAY_WALK = { src: "assets/sprites/characters/nanay-walk.png", frames: 1,
 // animated from one still by _dev/tools/animate-still.js (rigs in
 // _dev/rigs/); his walk, his numbers (SIGA_CELLS) and his size are the
 // enemy catalogue's (content/enemies.js), which loads first, so the boy
-// who walks on in the opening is the boy who fights. The idle is a deep
-// breath, a sway and a nod, while the leader taunts; the walk shows only
-// while the opening walks them on (walkAnimation). One cell for both
-// sheets, so a boy does not slide when he stops.
+// who walks on in the opening is the boy who fights. The idle is a calm
+// breath, sway and nod (Block 101: it was far too much), while the
+// leader taunts; the walk shows only while the opening walks them on
+// (walkAnimation). One cell for both sheets, so a boy does not slide
+// when he stops.
 const sigaSheets = (n) => ({
-  idle: { src: `assets/sprites/characters/siga-${n}.png`, frames: 8, fps: 6, ...SIGA_CELLS[n] },
+  idle: { src: `assets/sprites/characters/siga-${n}.png`, frames: 8, fps: 4, ...SIGA_CELLS[n] },
   walk: window.ENEMY_TYPES["siga" + n].animation,
   height: window.ENEMY_TYPES["siga" + n].displayHeight,
 });
 const SIGA = { 1: sigaSheets(1), 2: sigaSheets(2), 3: sigaSheets(3) };
 
-// The Kutsero's real sheet (Block 33). The Mananahi is a placeholder.
+// The Kutsero (Block 101): the proponent's still, facing the front, a
+// coil of rope on his shoulder and a whip in his hand, left still as the
+// Mananahi is: only people drawn side on are animated.
 const KUTSERO = {
-  src: "assets/sprites/characters/kutsero.png", frames: 12, fps: 6, columns: 5,
-  contentTop: 74, contentHeight: 117, footX: 128,
+  src: "assets/sprites/characters/kutsero.png", frames: 1, fps: 1,
+  contentTop: 37, contentHeight: 512, footX: 519,
 };
 // The Mananahi (Block 98): the artist's still, facing the front, and
 // left still at the proponent's direction ("can stay stationary").
@@ -155,19 +156,25 @@ const KABAYO = {
 // _dev/tools/animate-still.js (rig _dev/rigs/direktor.js) to breathe and
 // nod only, so his cane stays on the ground. He never walks.
 const DIREKTOR = {
-  src: "assets/sprites/characters/direktor.png", frames: 8, fps: 6, columns: 4,
+  src: "assets/sprites/characters/direktor.png", frames: 8, fps: 4, columns: 4,
   contentTop: 5, contentHeight: 413, footX: 77, headroom: 5,
 };
 
-// The play's cast, all real art. Maryam (5 by 3, 13 frames, drawn
-// facing right). The Sultan walks on the walk sheet of his soldiers,
-// who are the "kawal" of the enemy catalogue (content/enemies.js,
-// Block 76), where their sheets and numbers are.
+// The play's cast (Block 101, the proponent's stills). Maryam faces the
+// front and stands still. The Sultan is drawn three-quarter, with his
+// kampilan: the calm idle, and the march (each leg lifted in turn) when
+// he walks on and off, from _dev/rigs/sultan.js. His soldiers are the
+// "kawal" of the enemy catalogue (content/enemies.js), where their
+// sheets and numbers are.
 const MARYAM = {
-  src: "assets/sprites/characters/maryam.png", frames: 13, fps: 6, columns: 5,
-  contentTop: 73, contentHeight: 117, footX: 128,
+  src: "assets/sprites/characters/maryam.png", frames: 1, fps: 1,
+  contentTop: 47, contentHeight: 495, footX: 511,
 };
-const MORO_WALK = window.ENEMY_TYPES.kawal.animation;
+const SULTAN_CELL = { columns: 4, contentTop: 8, contentHeight: 383, footX: 87, headroom: 8 };
+const SULTAN = {
+  idle: { src: "assets/sprites/characters/sultan.png", frames: 8, fps: 4, ...SULTAN_CELL },
+  walk: { src: "assets/sprites/characters/sultan-walk.png", frames: 8, fps: 10, ...SULTAN_CELL },
+};
 
 // Block 80. The Katipunan's people and the three who take the pamphlets:
 // the Katipunero who speaks in the wings, the Kasama beside him who then
@@ -178,22 +185,31 @@ const MORO_WALK = window.ENEMY_TYPES.kawal.animation;
 // (rigs _dev/rigs/katipunero.js and kasama.js): standing, a breath, a
 // sway and a nod; walking, when a scene walks them on or off
 // (walkAnimation, with faceMovement so they face the way they go; the
-// art faces right). The rest are owed (ART.md).
+// art faces right). Since Block 101 the Mabalasig is the proponent's
+// still, side on, idle only (rig _dev/rigs/mabalasig.js); the three who
+// take the pamphlets are owed (ART.md).
 const owed = (name) => ({ src: `assets/sprites/characters/${name}.png`, frames: 1, fps: 1 });
 const stillAnimated = (name, cell) => ({
-  idle: { src: `assets/sprites/characters/${name}.png`, frames: 8, fps: 6, ...cell },
+  idle: { src: `assets/sprites/characters/${name}.png`, frames: 8, fps: 4, ...cell },
   walk: { src: `assets/sprites/characters/${name}-walk.png`, frames: 8, fps: 12, ...cell },
 });
 const KATIPUNERO_SHEETS = stillAnimated("katipunero",
-  { columns: 4, contentTop: 12, contentHeight: 403, footX: 131, headroom: 12 });
+  { columns: 4, contentTop: 7, contentHeight: 403, footX: 131, headroom: 7 });
 const KASAMA_SHEETS = stillAnimated("kasama",
-  { columns: 4, contentTop: 12, contentHeight: 404, footX: 119, headroom: 12 });
+  { columns: 4, contentTop: 8, contentHeight: 404, footX: 119, headroom: 8 });
 const KATIPUNERO = KATIPUNERO_SHEETS.idle;
 const KASAMA = KASAMA_SHEETS.idle;
-const MABALASIG = owed("mabalasig");
+const MABALASIG = {
+  src: "assets/sprites/characters/mabalasig.png", frames: 8, fps: 4, columns: 4,
+  contentTop: 7, contentHeight: 394, footX: 73, headroom: 7,
+};
 
-// Block 94. The Barbero and his chair, both owed (ART.md).
-const BARBERO = owed("barbero");
+// Block 94. The Barbero and his chair; since Block 101 the Barbero is the
+// proponent's still, facing the front and left still. The chair is owed.
+const BARBERO = {
+  src: "assets/sprites/characters/barbero.png", frames: 1, fps: 1,
+  contentTop: 19, contentHeight: 529, footX: 514,
+};
 const SILYA = { src: "assets/sprites/scenery/silya-barbero.png", frames: 1, fps: 1 };
 
 // The guardia civil of the pamphlet run are the "bantay" of the enemy
@@ -1377,7 +1393,9 @@ window.ACT_1 = {
         // Nanay while the opening moves her: off to the right, hidden
         // until she comes to call him home. The NPC below takes over
         // once she has stopped.
-        { id: "nanay", x: 1750, hidden: true, animation: NANAY, walkAnimation: NANAY_WALK },
+        // Since Block 101 she is drawn side on and turns the way she walks.
+        { id: "nanay", x: 1750, hidden: true, animation: NANAY, walkAnimation: NANAY_WALK,
+          faceMovement: true },
       ],
       scripts: [
         { unlessFlag: "nakausapSiNanaySaBahay", doneFlag: "nagpasyangMagtrabaho",
@@ -1403,6 +1421,7 @@ window.ACT_1 = {
       npcs: [
         {
           id: "nanay", x: NANAY_X, label: "Nanay", animation: NANAY,
+          facesPlayer: true, // Block 101: drawn side on now
           startsHidden: true, revealedByFlag: "nakausapSiNanaySaBahay",
           // Block 80. With a requiresFlag among them, the set is picked
           // from the flags each time (Block 48), not stepped through.
@@ -1517,7 +1536,6 @@ window.ACT_1 = {
           // from the oath on: his stand is in the first guard's beat, and
           // the run is at night. PLACEHOLDER, every line.
           id: "barbero", x: BARBERO_X, label: "Barbero", animation: BARBERO,
-          facesPlayer: true,
           hiddenByFlag: "tinanggapSaKatipunan",
           // Picked from the flags each time (Block 48).
           dialogueSets: [
@@ -1871,9 +1889,10 @@ window.ACT_1 = {
       ],
       decorations: [
         // The Sultan: off stage in the right wing until he walks on. He
-        // steps only while he walks and turns the way he goes.
+        // marches while he walks, stands with the idle, and turns the
+        // way he goes (Block 101).
         { id: "sultan", x: STAGE_WIDTH + 100, hidden: true,
-          walkOnly: true, faceMovement: true, animation: MORO_WALK },
+          animation: SULTAN.idle, walkAnimation: SULTAN.walk, faceMovement: true },
         // Block 80. The Katipunan's two men, in the right wing until they
         // come to find him after Principe Baldovino.
         { id: "katipunero", x: STAGE_WIDTH + 100, hidden: true, animation: KATIPUNERO,
@@ -1913,7 +1932,6 @@ window.ACT_1 = {
         },
         {
           id: "maryam", x: STAGE_MARYAM_X, label: "Maryam", animation: MARYAM,
-          facesPlayer: true,
           dialogueSets: [
             {
               // PLACEHOLDER.

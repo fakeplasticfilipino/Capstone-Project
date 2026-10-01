@@ -140,7 +140,10 @@ off the repository.
                                (<name>-still.png) by animate-still.js:
                                the three siga, the direktor, the
                                Katipunero and the Kasama (Blocks 96 to
-                               98)
+                               98), Nanay, the Mabalasig and the Sultan
+                               (Block 101); the front-on stills (the
+                               Mananahi, the Kutsero, the Barbero,
+                               Maryam) are used as they are
       sprites/enemies/         guards and fighters; bantay.png is the
                                artist's still (delivered as Guard.png),
                                bantay-walk, bantay-shoot and bantay-hit
@@ -1256,25 +1259,41 @@ write. The tool, its motions and the cut-out puppet (lib/puppet.js) are
 shared; only the rig is per character. _dev/rigs/siga-2.js is the first
 and is the one to copy; its comments say what each number is.
 
-The motions are a library in the tool (MOTIONS), broad on purpose so
-they read on a phone: idle (a breath, a sway, a nod; 8 frames, looped),
-breathe (the breath and the nod alone, for someone holding something
-that must stay put, the direktor's cane; 8, looped), walk (strides and
-an arm swing; 8, looped), attack (the fist drawn back
-through the red ! and thrown on the dash; 8, once; needs the arm) and
-hit (the flinch; 4, knockoutFrame 1). A rig picks the ones it needs: an
-NPC who stands and talks takes idle, one a cutscene walks on idle and
-walk, an enemy all four. A new motion (a wave, a gesture) is added to
-MOTIONS once and is then every rig's.
+The motions are a library in the tool (MOTIONS): idle (a calm breath,
+sway and nod; 8 frames at 4 fps, looped; Block 101 took it to a quarter
+of what it was, at the proponent's word that it was far too much, so
+standing is quiet and only the actions are broad), breathe (the breath
+and the nod alone, for someone holding something that must stay put,
+the direktor's cane; 8, looped), walk (strides and an arm swing; 8,
+looped), attack (the fist drawn back through the red ! and thrown on
+the dash; 8, once; needs the arm), hit (the flinch; 4, knockoutFrame 1),
+and since Block 101 march (the walk of a figure drawn three-quarter,
+each leg lifted in turn; 8, looped) and thrust (a strike with the whole
+body behind a held blade, for full hands; 8, once, timed as attack). A
+rig picks the ones it needs: an NPC who stands and talks takes idle,
+one a cutscene walks on idle and walk, an enemy all four. A new motion
+(a wave, a gesture) is added to MOTIONS once and is then every rig's.
+
+Two rig fields for figures that are not a man in trousers side on
+(Block 101): stride scales every leg angle (a long skirt, Nanay's
+0.35), and legSplit, the x between the legs of a figure drawn
+three-quarter (the Sultan, the kawal), cuts each whole leg as its own
+part for the march, since copying one leg as the far one would give
+him four. A figure drawn facing the front stays a still, as the
+Mananahi, the Kutsero, the Barbero and Maryam do: only people drawn
+side on or three-quarter are animated.
 
 What to ask the artist for: one PNG with transparency, the whole
 figure side on, standing, arms hanging free of the body if he is to
 punch or swing them, the far foot as little hidden as possible, about
 500px tall or more. Facing left or right does not matter (the rig's
-mirror). A figure holding something (the bantay's rifle) or seen from
-the front does not fit the rig as it stands: a held prop needs its own
-part and rules, as animate-bantay.js has, so say so before promising
-it.
+mirror). A prop held still in the hands (the Mabalasig's paper, the
+Sultan's kampilan, the kawal's kris) is fine with no arm parts, the
+blade traced as overLegs where it crosses the legs (filled over the
+trousers, clear beyond them, or the blade breaks off when a leg
+moves). A prop that must move with the arm (the bantay's rifle) needs
+its own part and rules, as animate-bantay.js has, so say so before
+promising it.
 
 The steps:
 
@@ -1932,7 +1951,10 @@ look, by system:
     animating a character from a still    Blocks 97, 98 (animate-still.js,
                                           rigs, the motion library; six
                                           characters), 100 (the horse,
-                                          its own tool)
+                                          its own tool), 101 (seven
+                                          more; march, thrust,
+                                          legSplit, stride; the calm
+                                          idle)
     enemy catalogue                       Block 76 (Blocks 73 and 74's
                                           test room removed in 95)
     these files compacted                 Block 79

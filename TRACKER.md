@@ -9,8 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 100. The day's work, newest
-first: Block 100, the horse is the proponent's own still, animated;
+Last updated: 1 Oct 2026, after Block 101. The day's work, newest
+first: Block 101, the proponent's seven characters replace the old
+art and placeholders, and the idle is calm; Block 100, the horse is
+the proponent's own still, animated;
 Block 99, people drawn side on turn to look at Macario and
 standing loops start at a random frame and speed; Block 98, six of the
 artist's stills in place of placeholders (the leader and the small
@@ -18,9 +20,9 @@ siga, the direktor, the Katipunero, the Kasama, the Mananahi); Block
 97, one tool and a rig per character for animating any still; Block
 96, the big siga from the artist's still, and enemies' hit sheet.
 Blocks 90 to 97 were tested on the phone that day with no fault
-reported; Blocks 98 to 100 have not been seen on a device yet (Next
+reported; Blocks 98 to 101 have not been seen on a device yet (Next
 action 1). Earlier blocks: the Blocks list below, and DECISIONS.md.
-test.js 767 passed, 0 failed; verify_new_scene.js 240 passed, 0
+test.js 767 passed, 0 failed; verify_new_scene.js 241 passed, 0
 failed. Everything is committed and pushed to main.
 
 A new session, on any device: read CLAUDE.md, then this file's Start
@@ -145,12 +147,12 @@ says what to look for.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v59    js/game.js v97       js/shell.js v21
+    css/style.css v59    js/game.js v98       js/shell.js v21
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v71  content/items.js v13  content/act2-4.js v1
-    content/enemies.js v5   content/questions.js v1
-    js/asset-manifest.js v7 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 35 (in js/game.js)
+    content/act1.js v72  content/items.js v13  content/act2-4.js v1
+    content/enemies.js v6   content/questions.js v1
+    js/asset-manifest.js v8 (bumped by make-asset-manifest.js)
+    ASSET_VERSION 36 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v2
@@ -200,7 +202,24 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       second loop. Suklayin opens the grooming game with the same horse
       in its picture. Failure: a dashed box, a white sliver between the
       tail and the rump, a seam at the neck in front of the saddle, or a
-      horse floating or sunk into the road.
+      horse floating or sunk into the road. (Its motion was halved in
+      Block 101.)
+
+    Block 101, the proponent's seven characters and a calm idle. Nanay
+      is side on: she walks on in the opening on her own walk, not a
+      box, turns to face Macario, and walks home with him, the hem
+      swaying. The Kutsero, the Barbero and Maryam are the new front-on
+      stills and stand still. The Mabalasig, in the pulungan and the
+      year on, is side on with his paper and bolo, breathing. On the
+      stage the Sultan marches on and off and has a dialogue bust; the
+      soldiers (turban, kris, shield) march at Macario, rock back on
+      the red !, throw themselves forward with the kris, and flinch.
+      Everyone standing (the siga, the direktor, the Katipunero, the
+      Kasama, Nanay, the Sultan, the horse) barely breathes: you should
+      have to look for it. Failure: anyone sliding, floating or walking
+      backwards, a seam at a leg, a piece of a blade or cape moving with
+      a leg, a dashed box where a character should be, or breathing you
+      can see from across the street.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -410,7 +429,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 240 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 241 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -547,6 +566,10 @@ machine, the assessment module.
     100 Kabayo is the proponent's saddled bay, animated from one still
         by animate-kabayo.js (head and tail); ALWAYS PULL FIRST added to
         CLAUDE.md
+    101 the proponent's seven stills (Nanay, the Mabalasig, the Sultan,
+        the kawal animated; the Kutsero, the Barbero, Maryam still);
+        march, thrust, legSplit and stride in animate-still.js; the idle
+        calmed to a quarter for everyone
 
 ## Blocks remaining
 
@@ -658,7 +681,7 @@ test.js (767 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (240 checks) drives the real
+what is covered. verify_new_scene.js (241 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is

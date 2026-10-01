@@ -643,6 +643,20 @@ const artDrift = () => {
   ok("Kabayo is the proponent's horse, its twelve-frame sheet opening (Block 100)",
      kabayo.open && kabayo.frames === 12 && kabayo.same, kabayo);
 
+  // Block 101. The proponent's seven stills: the side-on ones animated
+  // (Nanay, the Mabalasig), the three-quarter ones marching (the Sultan,
+  // the kawal), the front ones still (the Kutsero, the Barbero, Maryam).
+  const cast = await page.evaluate(async () => {
+    const k = window.ENEMY_TYPES.kawal;
+    const sheets = { NANAY, NANAY_WALK, MABALASIG, sultan: SULTAN.idle, sultanWalk: SULTAN.walk,
+      KUTSERO, BARBERO, MARYAM, kawalWalk: k.animation, kawalAttack: k.attackAnimation, kawalHit: k.hitAnimation };
+    await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
+    return Object.fromEntries(Object.entries(sheets).map(([n, s]) => [n, !s.failed && s.frameHeight > 0 && s.frames]));
+  });
+  ok("the proponent's seven new characters, every sheet opening, side-on ones animated, front ones still (Block 101)",
+     Object.values(cast).every(Boolean) && cast.NANAY === 8 && cast.NANAY_WALK === 8 && cast.MABALASIG === 8 &&
+       cast.sultanWalk === 8 && cast.KUTSERO === 1 && cast.BARBERO === 1 && cast.MARYAM === 1, cast);
+
   const c1 = await readConversation(page, 3);
   ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
   ok("Macario faces the siga, behind him on the left", c1.facings.every((f) => f === -1), c1.facings);
@@ -658,20 +672,21 @@ const artDrift = () => {
 
   // Block 93. She comes from just past the right edge of the screen to a
   // step in front of him, wherever the fight left him, walking on her
-  // owed walk sheet (the placeholder box), and stands on her own sheet.
+  // walk sheet (Block 101: the proponent's, no longer a placeholder),
+  // and stands on her own sheet.
   const slide = await page.evaluate(async () => {
     const dec = currentScene.decorations.find((d) => d.id === "nanay");
     for (let i = 0; i < 80 && !dec.moving; i++) await new Promise((r) => setTimeout(r, 50));
     const moving = dec.moving;
     const from = dec.currentX, edge = viewEdges().right;
     const walkShown = Boolean(dec.walkSpriteEl) && dec.walkSpriteEl.style.display !== "none" &&
-      /nanay-walk\.png/.test(dec.walkSpriteEl.textContent);
+      /nanay-walk\.png/.test(dec.walkSpriteEl.style.backgroundImage);
     for (let i = 0; i < 120 && dec.moving; i++) await new Promise((r) => setTimeout(r, 50));
     const view = viewEdges();
     return { moving, walkShown, from, edge, gap: dec.currentX - posX, at: dec.currentX, view,
              src: dec.spriteEl.style.backgroundImage, shown: dec.spriteEl.style.display !== "none" };
   });
-  ok("Nanay walks on from off the screen as her owed walk's placeholder, and stops a step in front of him (Block 93)",
+  ok("Nanay walks on from off the screen on her walk sheet, and stops a step in front of him (Blocks 93, 101)",
      slide.moving && slide.walkShown && slide.from >= slide.edge - 30 && Math.round(slide.gap) === 190 &&
      slide.at > slide.view.left && slide.at < slide.view.right &&
      /nanay\.png/.test(slide.src) && slide.shown, slide);
@@ -967,19 +982,20 @@ const artDrift = () => {
     walk: e.animation.src, sword: e.attackAnimation && e.attackAnimation.src })));
   ok("they are the catalogue's kawal: its sheets and its hp (Block 76)",
      kawal.every((e) => e.type === "kawal" && e.kind === "enemy" && e.hp === 2 &&
-       /muslim-walk.png$/.test(e.walk) && /muslim-attack.png$/.test(e.sword)), kawal);
+       /kawal-walk.png$/.test(e.walk) && /kawal-attack.png$/.test(e.sword)), kawal);
   // Block 93. The fight leaves him at the stage's edge; he walks back to
   // his mark before the Sultan returns, and stands (not stuck in the walk)
-  // while they talk. The box is at the top on the stage, and the Sultan,
-  // whose borrowed sheet is small, has no blurred bust.
+  // while they talk. The box is at the top on the stage. The Sultan's
+  // bust, missing while he borrowed the soldiers' small sheet, is his own
+  // art since Block 101.
   await page.evaluate(() => { posX = 1000; ENEMIES.forEach((e) => hitEnemy(e, 99)); });
   for (let i = 0; i < 100 && !(await line(page)); i++) await page.waitForTimeout(100);
   await page.waitForTimeout(300);
   const markBack = await page.evaluate(() => ({ x: posX, anim: currentAnim, facing,
     top: document.body.classList.contains("dialogue-top") && dialogueBox.getBoundingClientRect().top < 5,
     bust: document.getElementById("dialogue-portrait-right").classList.contains("shown") }));
-  ok("after the fight he walks back to his mark, faces the Sultan and stands; the box is at the top; no blurred bust (Block 93)",
-     markBack.x === 440 && markBack.anim === "idle" && markBack.facing === 1 && markBack.top && !markBack.bust, markBack);
+  ok("after the fight he walks back to his mark, faces the Sultan and stands; the box is at the top; the Sultan's own bust (Blocks 93, 101)",
+     markBack.x === 440 && markBack.anim === "idle" && markBack.facing === 1 && markBack.top && markBack.bust, markBack);
   const s3 = await readConversation(page, 5);
   ok("the Sultan comes back and gives his blessing, and the crowd cheers",
      s3.lines.length === 5 && /basbas/.test(s3.lines[3]) && /^Mga Manonood:/.test(s3.lines[4]), s3.lines);

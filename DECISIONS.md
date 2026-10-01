@@ -3961,3 +3961,59 @@ rather than changed; the proponent said to drop "puting", and it now
 reads "Alagaan mo 'yung kabayo sa kuwadra."
 
 game.js v97, act1.js v71, ASSET_VERSION 35.
+
+## Block 101: the proponent's seven characters, and a calm idle
+
+The proponent dropped seven stills of their own into assets/ ("New
+sprites. Replace the old ones. Apply animations to side-facing
+characters") and said the idle was "way too exaggerated". Planned first
+and answered item by item: the three-quarter figures try the rig and
+fall back to a glide only if it looks wrong; "balisig (recruiter)" is
+the Mabalasig.
+
+Who got what. Drawn side on, and animated: Nanay (idle and walk; her
+walk sheet, owed since Block 93, is now made from her still) and the
+Mabalasig (idle only: his hands hold a paper and stay put). Drawn
+facing the front, and left still, as the Mananahi was in Block 98:
+the Kutsero, the Barbero and Maryam; the Block 99 facesPlayer came off
+the Barbero and Maryam, since mirroring a front view turns nothing.
+Nanay and the Mabalasig carry it. Drawn three-quarter: the Sultan and
+the kawal.
+
+The three-quarter figures needed one thing the tool did not have. Its
+walk cuts one leg and draws it twice, the far copy darkened, which is
+right side on where one leg hides the other; with both legs side by
+side it would give a man four. legSplit, the x between his legs, cuts
+each whole leg as its own part, and the march lifts them in turn while
+the body rides up a little on each step, which at 120px reads as a man
+walking. The kawal's hands are full (a kris and a shield), so his
+strike is the thrust: the whole body rocks back through the red ! and
+is thrown forward behind the blade, on the attack's timing, which
+game.js's tell is written against. The fallback glide was not needed.
+
+A held blade crossing the legs broke on the first preview: the part of
+it past the trousers was filled into the legs layer and lifted with a
+leg, a blade-coloured scrap. A blade is now traced in two, filled over
+the trousers and clear beyond them (CLAUDE.md, Animating a character
+from one still).
+
+Nanay's legs are under a skirt to her ankles, which cannot stride like
+trousers; stride, a rig field, scales every leg angle, hers 0.35, so
+the hem sways and her feet step.
+
+The idle was a 5% breath, a 2.5 degree sway and a 7 degree nod every
+1.3 seconds: a man hyperventilating. It is now 1.5%, 0.6, 1.8 at 4 fps,
+two seconds a loop, and every rig was run again, so the siga, the
+direktor, the Katipunero and the Kasama are calm too. The cells came out
+a few pixels shorter at the top with less to fit, so their contentTop
+and headroom changed in the content. The horse's nod and tail were
+halved with them. Walks and fights are unchanged: those are actions,
+and actions are what should read across a street.
+
+The old moro-moro sheets (muslim-walk, muslim-attack) were deleted; the
+Sultan no longer borrows his soldiers' walk, and with art of his own
+he has a dialogue bust for the first time (verify_new_scene.js expected
+none). test.js's example of owed art that is never asked for moved from
+the Barbero's, which arrived, to the karpintero's.
+
+game.js v98 (ASSET_VERSION 36), act1.js v72, enemies.js v6.
