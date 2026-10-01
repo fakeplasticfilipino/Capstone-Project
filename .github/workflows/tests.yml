@@ -33,11 +33,11 @@ jobs:
       matrix:
         suite: [test.js, verify_new_scene.js]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: lts/*
-          cache: npm
-      - run: npm ci
+      # package-lock.json is gitignored, so npm install, not npm ci.
+      - run: npm install --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - run: node _dev/tests/${{ matrix.suite }}
