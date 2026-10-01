@@ -11,26 +11,12 @@ Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
 Last updated: 1 Oct 2026, after Block 95 (the Kasama comes to Macario
 after the pamphlets and takes him back, instead of a door the proponent
-could not find; the Test Room removed). Before that, Block 94 (a third job, the Barbero,
-with a memory game of his own; a new end, the report and a year on,
-Tondo, 1895, Macario the head of his council and the door shut on
-Nanay; three papers of facts in the Talaan, a teacher's paper replacing
-its slot; not yet seen on the phone). Before that, Block 93 (the Act I polish list: the
-stuck walk, Nanay coming to Macario and walking as a placeholder, a new
-jump sound, the proponents' early lines corrected, icons by action, the
-trees' roots, the tahian seen, enemies that move between blows and hop
-over him, the first play's walk back to the mark, the way out in the
-log, the stage's dialogue at the top; not yet seen on the phone).
-Before that, Block 92 (enemies dash from further with a red ! first,
-tutorials that stop the world, the savings pinned in the log). Before
-that, Block 91 (the legacy stage
-performance, the night backdrop layer, the death pose and the unused
-Tindero removed; nine pictures owed). Before that, Block 90 (the work
-gets harder, sewing is held, each job has a picture), Block 89 (the work
-is there to be done), Block 88 (one combat template), Block 87 (the
-opening fight, busts) and Block 86 (the dash attack).
+could not find; the Test Room removed). Before that, Block 94 (the
+Barbero and his own memory game; the end a year on, Tondo, 1895,
+Macario the head of his council; three papers of facts in the Talaan).
+Earlier blocks: the Blocks list below, and DECISIONS.md.
 test.js 767 passed, 0 failed; verify_new_scene.js 230 passed,
-0 failed.
+0 failed. Everything is committed and pushed to main.
 
 ## Start here
 
@@ -116,8 +102,7 @@ gives Macario after Principe Baldovino, worn from then on; standing
 still in them, a guard notices him five times more slowly. The harness
 fixture covers every other item path. Acts II to IV are registered stubs.
 
-The Test Room is gone (Block 95, at the proponent's request). Enemies
-are content: content/enemies.js describes each kind
+Enemies are content: content/enemies.js describes each kind
 once (bantay, kawal, and the three siga of the opening) and scenes place
 them by type.
 
@@ -138,7 +123,7 @@ The proponent has confirmed on the phone: Block 36's speed fix (18 Sep
 2026) and Blocks 37 and 38 as functional. Blocks 57 and 58 were accepted
 from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
-Blocks 86 to 89 from the desktop browser the same day; Blocks 90 to 92
+Blocks 86 to 89 from the desktop browser the same day; Blocks 90 to 95
 have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
@@ -157,11 +142,11 @@ Current versions, which index.html must match on every push:
 
 In order.
 
-1. Look at Blocks 90 to 94 on the phone, in landscape, from a private
+1. Look at Blocks 90 to 95 on the phone, in landscape, from a private
 tab, after the push, with the sound on. Play from the start. What to
 look for, and what failure looks like (Blocks 80 to 85 are confirmed):
 
-    Block 94, the barber, the end and the papers. After the horse the
+    Blocks 94 and 95, the barber, the end and the papers. After the horse the
       log says "Magtrabaho sa barberya"; the Barbero (a dashed box,
       barbero.png) stands between the Kutsero and the Mananahi, his
       chair beside him. Before the horse he sends Macario to the
@@ -180,8 +165,9 @@ look for, and what failure looks like (Blocks 80 to 85 are confirmed):
       papers on the road (2500 on the ground, 8200 and 12200 by
       jumping) with facts, with no teacher's papers written. Failure:
       the barber skipped from the log, a game that will not take a
-      press, guards still on the street on the way back, a reload
-      after the report replaying it, or no papers.
+      press, guards still on the street after the card, no one coming
+      for him, a reload after the report replaying it, or no papers.
+      The Test Room button is no longer in settings.
 
     Block 93, the polish list: walk while a scene takes over (the end
       of a fight, a door): he stands, never walks on the spot. After
@@ -234,42 +220,48 @@ look for, and what failure looks like (Blocks 80 to 85 are confirmed):
       and whether students find the Kasama and the three from what they
       are told; beats and crates are PAMPHLET_GUARDS in content/act1.js.
 
-2. The years are settled (Block 83): the opening reads "Tondo, 1890"
-and the four-year cut "Tondo, 1894", the year Sakay joined. Open only:
+2. The years are settled (Block 83): the opening reads "Tondo, 1890",
+the four-year cut "Tondo, 1894", the year Sakay joined, and the end
+"Tondo, 1895" (Block 94). Open: the year he became head of his council,
+and the council's name, against the source book. Also open:
 by the 1870 birth date he is twenty at the opening, older than the boy
 the opening shows (STORY.md, Open questions). The trivia card and the
 item bank should use the same years.
 
-3. The proponents' review of Blocks 80 and 81: every line is ours (+ in
-STORY.md, PLACEHOLDER in content/act1.js), and so are the names
-Katipunero, Kasama, Karpintero, Tabakera and Mangingisda. Block 81
-checked the rite, the password and Principe Baldovino against the
-histories (DECISIONS.md, Block 81, with sources); still for the source
-book: the play's words, the ordeal chosen, and what the pamphlets were.
+3. The proponents' review of our lines: every line marked + in STORY.md
+(PLACEHOLDER in content/act1.js), above all Blocks 80 and 81 (the
+Katipunan, the oath, the pamphlets) and Blocks 94 and 95 (the Barbero,
+the report, the year after, the lie to Nanay, the Kasama coming for
+him), and the names Katipunero, Kasama, Karpintero, Tabakera,
+Mangingisda and Suki. Block 81 checked the rite, the password and
+Principe Baldovino against the histories (DECISIONS.md, Block 81, with
+sources); still for the source book: the play's words, the ordeal
+chosen, what the pamphlets were, and the Talaan's three papers of facts
+(Block 94; STORY.md, The Talaan).
 
 4. The assessment item bank against Act I (db/seeds/macario_items_v3.sql,
 built into content/questions.js, editable on the dashboard). Checked 30
-Sep 2026: eight of ten items per test are now taught by the story; the
-occupation item and one distractor need the proponents' decision (Blocks
-remaining, the feel pass, item 11). Since Block 89 he does groom the
-Kutsero's horse and help the Mananahi sew, and since Block 94 he works
-for the Barbero, so both halves of the occupation item ("Mananahi at
-barbero") are now shown, and the Talaan's first paper says it too. The
-item bank still says Sakay joined in 1894; the story agrees. The post-test now runs, so this
-decides whether the study measures anything; do it before the pilot.
+Sep 2026: eight of ten items per test were taught by the story. Since
+Block 94 the occupation item ("Mananahi at barbero") is taught too: he
+sews for the Mananahi and works the Barbero's chair, and the Talaan's
+first paper says it. Still for the proponents: "Mangingisda at
+magsasaka" is a pre-test distractor while a mangingisda is someone he
+meets, which can pull a student toward the wrong answer; and the rite
+(the three questions, Anak ng Bayan) is taught but tested by no item,
+worth one matched pair. The item bank and the story agree on 1894. The
+post-test runs, so this decides whether the study measures anything; do
+it before the pilot.
 
-5. (Done, Block 95.) The Test Room is removed, button, room and engine.
-
-6. Art from the artist: ART.md's Owed list, thirteen pictures (the
+5. Art from the artist: ART.md's Owed list, thirteen pictures (the
 Mananahi, the direktor, the Katipunero, the Kasama, the Mabalasig, the
 three who take the pamphlets, the pulungan's painting, Nanay's
 side-view walk, the Mananahi's sewing table, and since Block 94 the
 Barbero and his chair). PNGs with transparency; each goes through ART.md's steps.
 
-7. Then the remaining polish, the pilot, and Acts II to IV against the
+6. Then the remaining polish, the pilot, and Acts II to IV against the
 source material, Act II starting from STORY.md, Threads left open.
 
-8. Privacy of the public repository (30 Sep 2026). Done: the names of
+7. Privacy of the public repository (30 Sep 2026). Done: the names of
 the team, the resource person and the school are out of every tracked
 file, docs-private/ and *.pdf and *.docx are gitignored, and the two
 private files were deleted from GitHub. Open: they and the names are
@@ -281,47 +273,10 @@ proponent has not yet decided whether to rewrite the history.
 
 ## Act I polish list (Block 93)
 
-Agreed 30 Sep 2026 after a full playthrough: the proponent's own list
-(1 to 12) and what the playthrough found (13 to 17). Each line says
-what done is. Built and checked by both suites and in headless
-screenshots; not yet seen on the phone (Next action 1). Why each was
-built as it was: DECISIONS.md, Block 93.
-
-    1   Macario stuck in the walk pose when a cutscene starts (and no
-        jump pose in the scripted leap): the loop picks the pose in a
-        cutscene as if nothing were held. (COMPLETE)
-    2   Nanay's walk: a placeholder walk sheet (nanay-walk.png, owed)
-        shown while she moves. (COMPLETE)
-    3   Nanay comes in after the opening fight relative to Macario, from
-        just off the screen, wherever the fight left him. (COMPLETE)
-    4   The jump's sound replaced; the proponent dislikes it. (COMPLETE)
-    5   The proponents' early lines corrected (spelling, po, 'Nay,
-        rin/rito, no "Okay"), meaning kept. (COMPLETE)
-    6   Icons by action: a brush for Suklayin, a needle for Manahi and
-        Hilahin, the door for Lumabas, not the sword or the talk bubble.
-        (COMPLETE)
-    7   The shadow trees' roots cut holes at the base (opposite winding
-        in one path). (COMPLETE)
-    8   The tailor's table shown: a placeholder (tahian.png, owed).
-        (COMPLETE)
-    9   Enemies move between attacks: they back off and shuffle while
-        cooling down, and now and then hop over Macario to strike from
-        behind. (COMPLETE)
-    10  After the first play's fight Macario walks back to his mark in the
-        middle before the Sultan returns. (COMPLETE)
-    11  A line in the log says the way out of the entablado and the
-        pulungan while the student is free there. (COMPLETE)
-    12  Missing sprites: left for the artist (ART.md). (BLOCKED)
-    13  Nanay's "Wag mo pansinin" after the siga are already beaten:
-        reworded to fit the fight. (COMPLETE)
-    14  The dialogue box covers the actors on the stage: the box moves to
-        the top of the screen in the entablado. (COMPLETE)
-    15  The Sultan's portrait is a blurry crop of a small sprite: no
-        portrait from a sheet that low. (COMPLETE)
-    16  Hiding: the crate drawn over Macario, and Macario dimmed while
-        hidden. (COMPLETE)
-    17  The log still says "Umuwi kasama si Nanay" during the walking and
-        jumping lessons: the step is done before them. (COMPLETE)
+Agreed 30 Sep 2026: seventeen items, all (COMPLETE) except the missing
+sprites, which wait on the artist (ART.md; BLOCKED). Not yet seen on the
+phone (Next action 1). The list and why each was built as it was:
+DECISIONS.md, Block 93.
 
 ## The milestone
 
@@ -412,7 +367,7 @@ What the panel assesses against.
 
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS) The
 framework is complete. Act I is playable from the opening to its end,
-twelve objectives on one street, in the entablado and in the
+fourteen objectives on one street, in the entablado and in the
 pulungan, and completes into its post-test (Block 80). Acts II to IV are
 registered stubs.
 
@@ -436,11 +391,11 @@ The paper specifies seventeen.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest for a quick look. A student can change the password in settings |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I playable to its end, twelve objectives, completing into its post-test; Acts II to IV are stubs |
+| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I playable to its end, fourteen objectives, completing into its post-test; Acts II to IV are stubs |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
 | Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; shooting guards are covered by the harness fixture |
-| Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game, tutorials that wait for the task, NPCs that open the shop |
+| Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's memory game, tutorials that wait for the task, NPCs that open the shop |
 | Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. Act I uses them; Acts II to IV have none |
 | Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (fixture; none ships) |
@@ -465,7 +420,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 216 checks) |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 230 checks) |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -486,7 +441,7 @@ machine, the assessment module.
     10  inventory and equipment, granted on act entry
     11  currency by score, the shop, outfits as sprite swaps
     12  polish (IN PROGRESS: what is left is the device pass, Next
-        action 3): --zoom 0.7, icons, 44px targets, the full reset
+        action 1): --zoom 0.7, icons, 44px targets, the full reset
     --  Act I drafted, then reset to Nanay only; the harness fixture
     --  real sprites for Nanay and Macario; spriteFit; measure-sprite.js
     13  corner buttons for inventory and shop
@@ -603,50 +558,11 @@ which is deliberate. (NOT STARTED)
 Real items for Sandata, Anting-anting and Damit, and outfit art,
 decided against the source material. (NOT STARTED)
 
-The feel pass, agreed 30 Sep 2026: all twelve to be done, in this
-order of payoff. Each line says what "done" is.
-
-    4   Night on the pamphlet run: the street darkened while the
-        pamphlets are the task. (COMPLETE, Block 85)
-    7   Detection sounds: a rising note when a guard starts noticing,
-        a sting on a catch. (COMPLETE, Block 85)
-    10  A breath before the post-test: a calm "Handa ka na ba?" card
-        with a button after "Wakas ng Unang Yugto". (COMPLETE, Block 85)
-    1   The long reading stretches (the wings, the Katipunan, the
-        rite) trimmed and broken up with movement. (COMPLETE, Block 85)
-    5   Music on the run: a quieter night sound, not calm.mp3.
-        (COMPLETE, Block 85: crickets, music/gabi.wav)
-    6   The crowd heard: a cheer on the "Mabuhay!" lines. (COMPLETE,
-        Block 85)
-    8   The costume seen: a stand-in tint on Macario while the stage
-        clothes are worn, until the artist draws them. (COMPLETE,
-        Block 85)
-    9   The first guard teaches: a first-time hint to hide or stand
-        still, and the first crate where it is needed. (COMPLETE,
-        Block 85: the hint; the crates stay mid-beat, where hiding works)
-    3   Fast reading: a way to get through lines already read.
-        (COMPLETE, Block 85: hold E, the interact button or the box)
-    2   Less walking: fewer end-to-end trips on the 14500px street.
-        (COMPLETE, Block 85: the Mananahi pays outside the entablado,
-        about 7000px less; the running of Block 82 does the rest)
-    11  The item bank matched to the finished Act I (the post-test now
-        runs); needs the proponents to approve the items. (IN PROGRESS)
-        Checked 30 Sep 2026 against content/questions.js: eight of
-        each test's ten items are now taught by the story (Tondo, the
-        komedya, the stage's use to a leader, 1894 and the Katipunan,
-        its aim, its secrecy, the danger to a messenger, its ordinary
-        workers). Two need the proponents: the occupation item (pre 2,
-        post 2) keys "mananahi at barbero", but the game shows him
-        running a mananahi's errands and tending a kutsero's horse,
-        never barbering; and "Mangingisda at magsasaka" is a pre-test
-        distractor while a mangingisda is now someone he meets, which
-        can pull a student toward the wrong answer for the wrong
-        reason. Either the story shows the trade (a line from the
-        Mananahi taking him on as apprentice) or the item changes.
-        Not covered by any item yet, and worth one pair: the
-        Katipunan's rite (the three questions, Anak ng Bayan).
-    12  The placeholder art: the Mananahi, the direktor and the Kasama
-        first. Needs the artist (ART.md). (BLOCKED)
+The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
+Block 85 except two. The item bank matched to Act I is Next action 4
+(IN PROGRESS), and the placeholder art (the Mananahi, the direktor and
+the Kasama first) waits on the artist (BLOCKED). The list: DECISIONS.md,
+Block 85.
 
 ## Blocked on other people
 
@@ -721,7 +637,7 @@ test.js (767 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (216 checks) drives the real
+what is covered. verify_new_scene.js (230 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is
@@ -732,7 +648,7 @@ other than "0 failed" is a regression, with one caution learned on
 timing check (the pamphlet guard catch) or lost a page ("Page crashed")
 once, and passed on the next run; rerun before believing either. test.js
 has not done it. Both never touch the live
-project. Both are green as of Block 93. The guard-catch flake was
+project. Both are green as of Block 95. The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check

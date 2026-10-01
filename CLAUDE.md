@@ -68,6 +68,14 @@ separate branch.
 Pushing to main publishes, so the full harness (both suites) runs green
 before every push.
 
+NOTHING IS LEFT UNCOMMITTED, in any session, local or cloud. Every
+finished change is committed and pushed to main before the turn ends,
+without asking (the proponent, 30 Sep and again 1 Oct 2026: "ALWAYS
+commit to main, I don't want things uncommitted"). If the suites are
+still running, wait for them in the same turn; never report work as done
+while the working tree is dirty or main is ahead of origin. If a push
+fails, retry it rather than handing the proponent commands.
+
 ## Project
 
 MACARIO, a narrative-driven 2D RPG teaching the life and historical role of
@@ -1384,6 +1392,17 @@ left open and what each person already knows are all there.
 
 Every change ships with a verifiable checkpoint. State what the user should
 see, and what failure looks like, before they test.
+
+Plan first (the proponent, 1 Oct 2026). Before building anything
+approved, write the whole plan into the conversation: the story beats
+and lines, the flags and the objective chain, the engine changes, every
+file touched, the art owed, and how it will be checked. Then build it.
+A list of several problems is first answered with one numbered list,
+each item with its cause and a suggested fix, and built only once the
+proponent has answered item by item; the approved list goes into
+TRACKER.md and is worked until nothing solvable is left. When the
+request leaves a real choice open (what a mini-game should be, how a
+scene should end), ask with the options rather than guess.
 
 Additive work is preferred over refactors when both would work. Refactors
 of working code require a commit first.
