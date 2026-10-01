@@ -53,7 +53,7 @@
 // and prints the numbers for content/enemies.js (bantay). Bump
 // ASSET_VERSION in js/game.js after rerunning it.
 //
-// Depends on nothing outside Node, like draw-siga.js, because the
+// Depends on nothing outside Node, like measure-sprite.js, because the
 // proponent's computer has Node and no Python.
 // =============================================================
 

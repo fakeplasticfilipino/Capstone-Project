@@ -34,53 +34,46 @@
 // which reads the art for the Sultan from here, and before game.js.
 // =============================================================
 
-// The three siga of the opening (Block 87). The small one and the
-// leader walk on the sheets drawn in code (_dev/tools/draw-siga.js) and
-// have no attack sheet: the lit-up warning before a swing is the tell.
-// displayHeight keeps the three sizes the opening gave them
-// (content/act1.js, sigaSheets): size is the boy's height against
-// Macario's 127, whatever his sheet measures.
-const sigaFighter = (n, top, height, hp) => ({
-  kind: "enemy",
-  hp,
-  displayHeight: Math.round(134 * height / 127),
-  animation: {
-    src: `assets/sprites/characters/siga-${n}-walk.png`, frames: 8, fps: 14, columns: 4,
-    contentTop: top, contentHeight: height, footX: 128,
-  },
-});
-
-// The big one (Block 96) is the artist's: one still (siga-2-still.png),
-// cut up and moved by _dev/tools/animate-still.js (rig: _dev/rigs/siga-2.js,
-// Block 97) into a walk, a punch
-// and a flinch, broad on purpose so they read on a phone. All share one
-// cell and one set of numbers. The attack plays once per strike: he
+// The three siga of the opening (Block 87), all the artist's: one still
+// each (siga-N-still.png), cut up and moved by _dev/tools/animate-still.js
+// (rigs: _dev/rigs/siga-1.js, siga-2.js, siga-3.js; Blocks 96 to 98)
+// into a walk, a punch and a flinch, broad on purpose so they read on a
+// phone. A boy's four sheets share one cell and one set of numbers
+// (SIGA_CELLS, from the tool). The attack plays once per strike: he
 // draws the fist back through frames 0 to 2, the red !, and throws it on
 // frame 3, a third of a second in, as the dash starts (game.js,
 // ATTACK_TELL_MS, ENEMY_DASH_MS); 8 frames at 10 last the tell, the dash
 // and the follow-through. The flinch's 4 frames at 12 last his stagger
 // (ENEMY_STAGGER_MS), and frame 1, leaning furthest back, is held as he
-// falls.
-const SIGA_2_CELL = { columns: 4, contentTop: 11, contentHeight: 405, footX: 149, headroom: 11 };
+// falls. size keeps the three heights the opening gave them against
+// Macario's 127 (displayHeight), whatever a sheet measures: the leader
+// is Macario's height, the big one taller, the small one shorter.
+// content/act1.js reads both from here for the opening's walk-on.
+const SIGA_CELLS = {
+  1: { columns: 4, contentTop: 14, contentHeight: 398, footX: 132, headroom: 14 },
+  2: { columns: 4, contentTop: 11, contentHeight: 405, footX: 149, headroom: 11 },
+  3: { columns: 4, contentTop: 14, contentHeight: 401, footX: 136, headroom: 14 },
+};
+const sigaFighter = (n, size, hp) => ({
+  kind: "enemy",
+  hp,
+  displayHeight: Math.round(134 * size / 127),
+  animation: {
+    src: `assets/sprites/characters/siga-${n}-walk.png`, frames: 8, fps: 12, ...SIGA_CELLS[n],
+  },
+  attackAnimation: {
+    src: `assets/sprites/characters/siga-${n}-attack.png`, frames: 8, fps: 10, ...SIGA_CELLS[n],
+  },
+  hitAnimation: {
+    src: `assets/sprites/characters/siga-${n}-hit.png`, frames: 4, fps: 12, ...SIGA_CELLS[n],
+    knockoutFrame: 1,
+  },
+});
 
 window.ENEMY_TYPES = {
-  siga1: sigaFighter(1, 61, 127, 2),
-  siga2: {
-    kind: "enemy",
-    hp: 2,
-    displayHeight: Math.round(134 * 137 / 127),
-    animation: {
-      src: "assets/sprites/characters/siga-2-walk.png", frames: 8, fps: 12, ...SIGA_2_CELL,
-    },
-    attackAnimation: {
-      src: "assets/sprites/characters/siga-2-attack.png", frames: 8, fps: 10, ...SIGA_2_CELL,
-    },
-    hitAnimation: {
-      src: "assets/sprites/characters/siga-2-hit.png", frames: 4, fps: 12, ...SIGA_2_CELL,
-      knockoutFrame: 1,
-    },
-  },
-  siga3: sigaFighter(3, 73, 115, 1),
+  siga1: sigaFighter(1, 127, 2),
+  siga2: sigaFighter(2, 137, 2),
+  siga3: sigaFighter(3, 115, 1),
 
   // The guardia civil (Block 73). The still is the artist's (delivered
   // as Guard.png); the walk, the shot (Block 73) and the flinch (Block

@@ -66,13 +66,13 @@
 // the artist's frames (the siga, the Mananahi, the apple tree, the
 // Block 41 stand-ins) at the proponent's request, so anyone without
 // the artist's own sheet names a file that does not exist and is drawn
-// as the dashed placeholder box with that name on it: mananahi.png,
-// direktor.png, mananahi.png. The siga are the exception since Block
-// 72: drawn from nothing by _dev/tools/draw-siga.js at the proponent's
-// request, not traced or recoloured from anyone's sheet. Real
-// art replaces each by being saved under that name and measured
+// as the dashed placeholder box with that name on it (ART.md, Owed).
+// Real art replaces each by being saved under that name and measured
 // (measure-sprite.js); the def below then gains its columns, frames and
-// the three numbers.
+// the three numbers. A character the artist delivers as one still is
+// animated by _dev/tools/animate-still.js and a rig in _dev/rigs/
+// (Blocks 97, 98; CLAUDE.md, Animating a character from one still), as
+// the three siga, the direktor, the Katipunero and the Kasama are.
 // =============================================================
 
 // Block 49. The paintings of the street, laid along the road in order
@@ -115,49 +115,47 @@ const NANAY = {
 };
 const NANAY_WALK = { src: "assets/sprites/characters/nanay-walk.png", frames: 1, fps: 1 };
 
-// The three siga (Block 72), each an idle sheet and a walk sheet drawn
-// by _dev/tools/draw-siga.js: the leader in the red panyo, the big one
-// in the buri hat, the small one in the ochre shirt. Since Block 96 the
-// big one is the artist's (a camisa, a red sash, sandals), animated from
-// the still by _dev/tools/animate-still.js and its rig, _dev/rigs/siga-2.js
-// (Block 97); his sheets and their numbers
-// are content/enemies.js's (SIGA_2_CELL), which loads first. The walk shows only
-// while the opening walks them on (walkAnimation). footX is the hip, 128,
-// on both sheets, so a boy does not slide when he stops; the walk's own
-// measured stance (124) would move him four pixels. height keeps them
-// three sizes: spriteFit draws every sheet DISPLAY_HEIGHT tall, so a boy
-// taller or shorter than Macario's 127 says so here.
-const sigaSheets = (n, top, height) => ({
-  idle: { src: `assets/sprites/characters/siga-${n}.png`, frames: 12, fps: 7, columns: 4,
-          contentTop: top, contentHeight: height, footX: 128 },
-  walk: { src: `assets/sprites/characters/siga-${n}-walk.png`, frames: 8, fps: 14, columns: 4,
-          contentTop: top, contentHeight: height, footX: 128 },
-  height: Math.round(134 * height / 127),
+// The three siga, all the artist's since Block 98 (the big one since
+// Block 96): the leader in a salakot with a shawl over his shoulders, the
+// big one in a red sash, the small one with a pouch at his belt. Each is
+// animated from one still by _dev/tools/animate-still.js (rigs in
+// _dev/rigs/); his walk, his numbers (SIGA_CELLS) and his size are the
+// enemy catalogue's (content/enemies.js), which loads first, so the boy
+// who walks on in the opening is the boy who fights. The idle is a deep
+// breath, a sway and a nod, while the leader taunts; the walk shows only
+// while the opening walks them on (walkAnimation). One cell for both
+// sheets, so a boy does not slide when he stops.
+const sigaSheets = (n) => ({
+  idle: { src: `assets/sprites/characters/siga-${n}.png`, frames: 8, fps: 6, ...SIGA_CELLS[n] },
+  walk: window.ENEMY_TYPES["siga" + n].animation,
+  height: window.ENEMY_TYPES["siga" + n].displayHeight,
 });
-const SIGA = {
-  1: sigaSheets(1, 61, 127),
-  2: {
-    // A deep breath and a cocky nod, while the leader taunts.
-    idle: { src: "assets/sprites/characters/siga-2.png", frames: 8, fps: 6, ...SIGA_2_CELL },
-    walk: window.ENEMY_TYPES.siga2.animation,
-    height: window.ENEMY_TYPES.siga2.displayHeight,
-  },
-  3: sigaSheets(3, 73, 115),
-};
+const SIGA = { 1: sigaSheets(1), 2: sigaSheets(2), 3: sigaSheets(3) };
 
 // The Kutsero's real sheet (Block 33). The Mananahi is a placeholder.
 const KUTSERO = {
   src: "assets/sprites/characters/kutsero.png", frames: 12, fps: 6, columns: 5,
   contentTop: 74, contentHeight: 117, footX: 128,
 };
-const MANANAHI = { src: "assets/sprites/characters/mananahi.png", frames: 1, fps: 1 };
+// The Mananahi (Block 98): the artist's still, facing the front, and
+// left still at the proponent's direction ("can stay stationary").
+const MANANAHI = {
+  src: "assets/sprites/characters/mananahi.png", frames: 1, fps: 1,
+  contentTop: 32, contentHeight: 515, footX: 521,
+};
 // The white horse: a 22-frame strip of 32px cells.
 const KABAYO = {
   src: "assets/sprites/characters/kabayo.png", frames: 22, fps: 10, columns: 22,
   contentTop: 2, contentHeight: 30, footX: 19,
 };
-// The direktor. A placeholder, on the street and inside alike.
-const DIREKTOR = { src: "assets/sprites/characters/direktor.png", frames: 1, fps: 1 };
+// The direktor (Block 98), on the street and inside alike: the artist's
+// still of an old man with a cane and the play under his arm, animated by
+// _dev/tools/animate-still.js (rig _dev/rigs/direktor.js) to breathe and
+// nod only, so his cane stays on the ground. He never walks.
+const DIREKTOR = {
+  src: "assets/sprites/characters/direktor.png", frames: 8, fps: 6, columns: 4,
+  contentTop: 5, contentHeight: 413, footX: 77, headroom: 5,
+};
 
 // The play's cast, all real art. Maryam (5 by 3, 13 frames, drawn
 // facing right). The Sultan walks on the walk sheet of his soldiers,
@@ -169,14 +167,27 @@ const MARYAM = {
 };
 const MORO_WALK = window.ENEMY_TYPES.kawal.animation;
 
-// Block 80. The Katipunan's people and the three who take the pamphlets,
-// all owed (ART.md): the Katipunero who speaks in the wings, the Kasama
-// beside him who then waits on the street and leads the way in, and
-// (Block 81, after the histories) the Mabalasig, the "terrible brother"
-// who conducted a recruit's rite.
+// Block 80. The Katipunan's people and the three who take the pamphlets:
+// the Katipunero who speaks in the wings, the Kasama beside him who then
+// waits on the street and leads the way in, and (Block 81, after the
+// histories) the Mabalasig, the "terrible brother" who conducted a
+// recruit's rite. Since Block 98 the Katipunero and the Kasama are the
+// artist's, animated from one still each by _dev/tools/animate-still.js
+// (rigs _dev/rigs/katipunero.js and kasama.js): standing, a breath, a
+// sway and a nod; walking, when a scene walks them on or off
+// (walkAnimation, with faceMovement so they face the way they go; the
+// art faces right). The rest are owed (ART.md).
 const owed = (name) => ({ src: `assets/sprites/characters/${name}.png`, frames: 1, fps: 1 });
-const KATIPUNERO = owed("katipunero");
-const KASAMA = owed("kasama");
+const stillAnimated = (name, cell) => ({
+  idle: { src: `assets/sprites/characters/${name}.png`, frames: 8, fps: 6, ...cell },
+  walk: { src: `assets/sprites/characters/${name}-walk.png`, frames: 8, fps: 12, ...cell },
+});
+const KATIPUNERO_SHEETS = stillAnimated("katipunero",
+  { columns: 4, contentTop: 12, contentHeight: 403, footX: 131, headroom: 12 });
+const KASAMA_SHEETS = stillAnimated("kasama",
+  { columns: 4, contentTop: 12, contentHeight: 404, footX: 119, headroom: 12 });
+const KATIPUNERO = KATIPUNERO_SHEETS.idle;
+const KASAMA = KASAMA_SHEETS.idle;
 const MABALASIG = owed("mabalasig");
 
 // Block 94. The Barbero and his chair, both owed (ART.md).
@@ -1352,7 +1363,8 @@ window.ACT_1 = {
       decorations: [
         // Block 95. The Kasama who comes to take him back to the pulungan
         // after the pamphlets (thePamphletsDelivered), hidden until then.
-        { id: "kasama-kalye", x: KASAMA_X, hidden: true, animation: KASAMA },
+        { id: "kasama-kalye", x: KASAMA_X, hidden: true, animation: KASAMA,
+          walkAnimation: KASAMA_SHEETS.walk, faceMovement: true },
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1].idle,
           walkAnimation: SIGA[1].walk, displayHeight: SIGA[1].height },
@@ -1859,8 +1871,10 @@ window.ACT_1 = {
           walkOnly: true, faceMovement: true, animation: MORO_WALK },
         // Block 80. The Katipunan's two men, in the right wing until they
         // come to find him after Principe Baldovino.
-        { id: "katipunero", x: STAGE_WIDTH + 100, hidden: true, animation: KATIPUNERO },
-        { id: "kasama", x: STAGE_WIDTH + 180, hidden: true, animation: KASAMA },
+        { id: "katipunero", x: STAGE_WIDTH + 100, hidden: true, animation: KATIPUNERO,
+          walkAnimation: KATIPUNERO_SHEETS.walk, faceMovement: true },
+        { id: "kasama", x: STAGE_WIDTH + 180, hidden: true, animation: KASAMA,
+          walkAnimation: KASAMA_SHEETS.walk, faceMovement: true },
       ],
       npcs: [
         {
@@ -1952,9 +1966,11 @@ window.ACT_1 = {
       // decorations that can move, and Nanay at the door, all hidden
       // until it plays.
       decorations: [
-        { id: "katipunero-1895", x: BEFORE_HEAD_X, hidden: true, animation: KATIPUNERO },
+        { id: "katipunero-1895", x: BEFORE_HEAD_X, hidden: true, animation: KATIPUNERO,
+          walkAnimation: KATIPUNERO_SHEETS.walk, faceMovement: true },
         { id: "mabalasig-1895", x: PULUNGAN_KATIPUNERO_X, hidden: true, animation: MABALASIG },
-        { id: "kasama-1895", x: -120, hidden: true, animation: KASAMA },
+        { id: "kasama-1895", x: -120, hidden: true, animation: KASAMA,
+          walkAnimation: KASAMA_SHEETS.walk, faceMovement: true },
         { id: "nanay-1895", x: DOOR_X, hidden: true, animation: NANAY },
       ],
       npcs: [

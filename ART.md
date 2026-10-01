@@ -35,8 +35,12 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 1 Oct 2026, Block 97 (no change to what is owed; a
-delivered still is now animated by one tool and a rig, see above).
+Last updated: 1 Oct 2026, Block 98 (nine owed: the Mananahi, the
+direktor, the Katipunero and the Kasama arrived, and the leader and the
+small siga replaced the ones drawn in code; all but the Mananahi are
+animated from their stills). Before that, Block 97 (no change to what
+is owed; a delivered still is now animated by one tool and a rig, see
+above).
 Before that, Block 96 (still thirteen owed: the artist's
 still of the big siga arrived and was animated by a tool, so he moved
 from drawn in code to Stand-ins as the bantay is). Before that, Block 94
@@ -53,28 +57,6 @@ pulungan).
 ## Owed
 
 Named by the game and missing. Each is a placeholder box today.
-
-    assets/sprites/characters/mananahi.png
-        The Mananahi, the seamstress. Act I, on the street at x 6400;
-        Macario's second employer, who sends him with the costumes
-        (Block 89). Talks; an idle sheet is enough. (NOT STARTED)
-
-    assets/sprites/characters/direktor.png
-        The direktor of the theatre company. Act I, at the far end of
-        the street (x 13600) and in the wings of the entablado. Talks;
-        an idle sheet is enough. (NOT STARTED)
-
-    assets/sprites/characters/katipunero.png
-        The Katipunero, the older of the two men who find Macario in the
-        wings after Principe Baldovino (Block 80), and in the pulungan
-        at the oath. Walks on and off the stage, then talks; an idle
-        sheet and a walk sheet. (NOT STARTED)
-
-    assets/sprites/characters/kasama.png
-        The Kasama, the Katipunero's companion: in the wings beside him,
-        then waiting on the street at x 12500, then by the door of the
-        pulungan. Walks on and off the stage, then talks; an idle sheet
-        and a walk sheet. (NOT STARTED)
 
     assets/sprites/characters/mabalasig.png
         The Mabalasig ("terrible brother"), who conducts Macario's rite
@@ -133,16 +115,16 @@ Art that exists and is on screen, but is not the artist's final work
 for that character. Not checked by the harness; kept here so it is not
 forgotten.
 
-    The leader and the small siga (siga-1, siga-3, and -walk.png).
-        Drawn in code by _dev/tools/draw-siga.js (Block 72). The
-        proponent judges them on the phone; the artist's own replaces
-        them under the same names.
-    The big siga's standing breath, walk, punch and flinch (siga-2,
-        -walk, -attack, -hit). Made from the artist's one still
-        (siga-2-still.png, Block 96) by _dev/tools/animate-still.js, as
-        the bantay's are; the still itself is the artist's. Where an
-        arm or the sash moved off something, that is filled in from
-        the colours around it.
+    The motion of everyone delivered as one still: the three siga
+        (siga-N, -walk, -attack, -hit; Blocks 96, 98), the direktor
+        (direktor.png, breathing only, Block 98), the Katipunero and
+        the Kasama (their idle and -walk, Block 98). Made from the
+        artist's stills (<name>-still.png) by _dev/tools/animate-still.js
+        and a rig each in _dev/rigs/, as the bantay's are by
+        animate-bantay.js; the stills themselves are the artist's.
+        Where an arm or a sash moved off something, that is filled in
+        from the colours around it. A sheet drawn by the artist would
+        replace any of them under the same name.
     The bantay's walk, shot and flinch (bantay-walk, -shoot, -hit).
         Made from the artist's one still by _dev/tools/animate-bantay.js
         (Blocks 73, 75); the still itself (bantay.png) is the artist's.

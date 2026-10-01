@@ -240,6 +240,9 @@ const winOpeningFight = (page) => page.evaluate(async () => {
   const loaded = (el, sheet) => !!el && !!sheet && !sheet.failed && !el.classList.contains("sprite-placeholder");
   info.bigSheets = loaded(big.spriteEl, big.animation) && loaded(big.attackSpriteEl, big.attackAnimation) &&
     loaded(big.hitSpriteEl, big.hitAnimation);
+  // Block 98. And so do the other two, the artist's too.
+  info.allSheets = ENEMIES.length === 3 && ENEMIES.every((e) => loaded(e.spriteEl, e.animation) &&
+    loaded(e.attackSpriteEl, e.attackAnimation) && loaded(e.hitSpriteEl, e.hitAnimation));
   cancelTutorial("atake", "tanda");
   hitEnemy(big, 1);
   for (let i = 0; i < 3; i++) await new Promise((r) => requestAnimationFrame(r));
@@ -609,6 +612,26 @@ const artDrift = () => {
          d.animation.contentHeight === 405 && d.displayHeight === Math.round(134 * 137 / 127);
      }));
 
+  // Block 98. The direktor, the Mananahi, the Katipunero and the Kasama
+  // are the artist's: every sheet opens, and the two who walk on have a
+  // walk sheet wherever they are placed, turned the way they walk.
+  const people = await page.evaluate(async () => {
+    const sheets = [DIREKTOR, MANANAHI, KATIPUNERO_SHEETS.idle, KATIPUNERO_SHEETS.walk,
+      KASAMA_SHEETS.idle, KASAMA_SHEETS.walk];
+    await Promise.all(sheets.map((s) => loadSpriteSheet(s)));
+    const walkers = window.ACT_1.scenes.flatMap((s) => s.decorations || [])
+      .filter((d) => /^(katipunero|kasama)/.test(d.id));
+    return {
+      open: sheets.map((s) => !s.failed && s.frameHeight > 0),
+      walkers: walkers.length,
+      walk: walkers.every((d) => d.walkAnimation && d.faceMovement),
+    };
+  });
+  ok("the direktor, the Mananahi, the Katipunero and the Kasama are the artist's, every sheet opening (Block 98)",
+     people.open.every(Boolean), people);
+  ok("and the Katipunero and the Kasama walk on their walk sheets, facing the way they go (Block 98)",
+     people.walkers === 5 && people.walk, people);
+
   const c1 = await readConversation(page, 3);
   ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
   ok("Macario faces the siga, behind him on the left", c1.facings.every((f) => f === -1), c1.facings);
@@ -617,6 +640,7 @@ const artDrift = () => {
   ok("the insult becomes a fight with the three siga, on their own art, hearts showing, Macario free to act",
      brawl.count === 3 && brawl.art && brawl.hearts && !brawl.cutscene, brawl);
   ok("the big siga fights on the artist's walk, punch and flinch, none of them a box (Block 96)", brawl.bigSheets, brawl);
+  ok("all three siga fight on the artist's walk, punch and flinch (Block 98)", brawl.allSheets, brawl);
   ok("a punch that does not drop him shows his flinch, turned on Macario (Block 96)",
      brawl.bigReels && brawl.bigFacesHim, brawl);
   ok("and the blow that drops him leaves him falling in it (Block 96)", brawl.bigFallsInIt, brawl);
@@ -1064,11 +1088,15 @@ const artDrift = () => {
   console.log("\nThe Katipunan asks");
   const kk = await readConversation(page, 20);
   const kk2 = await readConversation(page, 6);
+  // Block 98: the two are the artist's now, no placeholder box.
   const kkPlace = await page.evaluate(() => ({ x: posX, facing,
-    men: ["katipunero", "kasama"].map((id) => document.getElementById("dec-" + id).textContent) }));
-  ok("two men come out of the right wing to him at stage right, both placeholder boxes",
-     kkPlace.x === 700 && kkPlace.facing === 1 &&
-     /katipunero\.png/.test(kkPlace.men[0]) && /kasama\.png/.test(kkPlace.men[1]), kkPlace);
+    men: ["katipunero", "kasama"].map((id) => {
+      const d = currentScene.decorations.find((x) => x.id === id);
+      return { box: d.spriteEl.textContent, art: d.spriteEl.style.backgroundImage };
+    }) }));
+  ok("two men come out of the right wing to him at stage right, on the artist's art (Block 98)",
+     kkPlace.x === 700 && kkPlace.facing === 1 && kkPlace.men.every((m) => m.box === "") &&
+     /katipunero\.png/.test(kkPlace.men[0].art) && /kasama\.png/.test(kkPlace.men[1].art), kkPlace);
   ok("they ask whether he is sure, he gives his reason, says yes, and is given the word",
      kk.lines.length === 13 && kk.lines[0] === "Katipunero: Principe Baldovino." &&
      /Wala 'yon sa komedya/.test(kk.lines[2]) &&

@@ -5855,14 +5855,15 @@ const visible = (page, sel) => page.evaluate((s) => {
     // is in: the inside of the entablado, and every enemy type's sheets,
     // are loading on the title screen, so a scene change and the play's
     // fight do not wait on a download. Art that is owed is never asked
-    // for at all.
+    // for at all (the Barbero's, owed since Block 94; the Mananahi's was
+    // the example until it arrived in Block 98).
     let owedAsks = 0;
-    const whole = await rawPage([["**/mananahi.png*", (route) => { owedAsks++; return route.continue(); }]]);
+    const whole = await rawPage([["**/barbero.png*", (route) => { owedAsks++; return route.continue(); }]]);
     await whole.page.waitForTimeout(400);
     const w1 = await whole.page.evaluate(() => {
       const state = (re) => { const e = [...assetLoads.entries()].find(([u]) => re.test(u)); return e ? e[1].state : null; };
       return { inside: state(/entablado-inside\.jpg/), sword: state(/muslim-attack\.png/),
-        shot: state(/bantay-shoot\.png/), owed: state(/mananahi\.png/), manifest: Array.isArray(window.ASSET_MANIFEST) };
+        shot: state(/bantay-shoot\.png/), owed: state(/barbero\.png/), manifest: Array.isArray(window.ASSET_MANIFEST) };
     });
     ok("the whole act's art is asked for before the street opens: the entablado, the enemies' sheets",
        w1.manifest && w1.inside !== null && w1.sword !== null && w1.shot !== null, w1);

@@ -3856,3 +3856,45 @@ including what to ask the artist for. ART.md points to it.
 
 act1.js v68 and enemies.js v4 (comments naming the tool). No sheet and
 no engine code changed.
+
+## Block 98: six characters from the artist's stills
+
+At the proponent's request, 1 Oct 2026: six pictures delivered to fill
+placeholders, two more siga ("the bullies, just apply them however you
+want, requires animation"), the two men of the Katipunan ("requires it
+too I think"), the direktor ("idk if he moves") and the Mananahi ("can
+stay stationary").
+
+Who is who was read from the pictures and ART.md: the older man with
+the moustache is the Katipunero ("the older of the two"), the young man
+in red with the bolo the Kasama. Of the two boys, the one in the salakot
+and shawl is the leader (siga-1), the one with the pouch the small one
+(siga-3); their heights against Macario are the opening's as before
+(content/enemies.js, sigaFighter size), not the pictures'.
+
+All but the Mananahi went through Block 97's tool, a rig each, which
+was the tool's first use beyond the picture it was made from; it needed
+three things it did not have. overLegs became a list, because the
+leader's shawl and sash both hang past his waist. An entry may be
+marked clear, because the bolo's blade behind the Kasama's hip hangs
+clear of his legs: filling the trousers in under it, as under a sash,
+left a trouser-coloured blade riding on his thigh. And a motion,
+breathe, the breath and the nod with no sway and no arms, because the
+direktor holds a cane on the ground and a book, and the idle's sway
+would lift the cane. The siga-2 sheets came out of the changed tool
+byte for byte as before.
+
+The engine needed nothing. Every new sheet faces right: NPCs never turn
+in this engine and the dialogue bust mirrors right-facing art, so the
+stills drawn facing left (the three siga, the direktor) are mirrored by
+their rigs. The two men walk on decorations with walkAnimation and
+faceMovement (Blocks 40, 53), so they face the way they go. The
+Mananahi faces the front and is the still itself, one frame, measured.
+
+With all three siga the artist's, draw-siga.js had nothing left to draw
+and was removed (git keeps it; Block 72 records how it worked). The
+"Siga" speaker's bust, the leader's, is now the artist's art, which
+settles the question left open on 1 Oct.
+
+game.js v95 (ASSET_VERSION 34), act1.js v69, enemies.js v5,
+asset-manifest.js v6.

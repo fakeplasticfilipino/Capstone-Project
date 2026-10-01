@@ -170,24 +170,25 @@ with the file name on it.
                    punch, shooting).
     Nanay          his mother. Real art standing; walks as a
                    placeholder box (nanay-walk.png, owed, Block 93).
-    Mga Siga       three street toughs, drawn in code (Block 72,
-                   draw-siga.js), each with an idle and a walk: the
-                   leader in a red panyo with a stalk of grass in his
-                   teeth (siga-1, the one who speaks), a big one in a
-                   buri hat and an open white camisa (siga-2), and a
-                   small one in an ochre shirt too big for him
-                   (siga-3). One speaks alone ("Siga"), all three laugh
-                   ("Mga Siga").
+    Mga Siga       three street toughs, the artist's art since Blocks
+                   96 and 98, each animated from one still (standing,
+                   walking, a punch, a flinch): the leader in a salakot
+                   with a checked shawl over his shoulders (siga-1, the
+                   one who speaks), a big one in a red sash (siga-2),
+                   and a small one with a pouch at his belt (siga-3).
+                   One speaks alone ("Siga"), all three laugh ("Mga
+                   Siga").
     Kutsero        a carriage driver, Macario's first employer. Real art.
     Kabayo         the kutsero's white horse. Real art.
     Barbero        a barber, his third employer (Block 94). Placeholder
                    box (barbero.png), with his chair (silya-barbero.png).
     Suki           the barber's customer, heard only in the barber's game,
                    asking for the cut.
-    Mananahi       a seamstress, his second employer. Placeholder box
-                   (mananahi.png).
-    Direktor       head of the theatre company. Placeholder box
-                   (direktor.png), on the street and on the stage.
+    Mananahi       a seamstress, his second employer. Real art, facing
+                   the front, standing still (Block 98).
+    Direktor       head of the theatre company, on the street and on the
+                   stage. Real art (Block 98): an old man with a white
+                   beard, a cane and the play under his arm.
     Julian         the company's lead actor. Never seen: sick with a
                    fever, which is the whole of his part.
     Maryam         the company's leading lady; plays the princess.
@@ -198,11 +199,12 @@ with the file name on it.
                    (walk and sword sheets).
     Mga Manonood   the audience. Heard, never seen.
     Katipunero     the older of two men of the Katipunan who find
-                   Macario in the wings, and at his oath. Placeholder
-                   box (katipunero.png).
+                   Macario in the wings, and at his oath. Real art
+                   (Block 98): a salakot, a moustache, a striped shawl.
     Kasama         his companion, who gives Macario the password, waits
-                   for him on the street and leads him in. Placeholder
-                   box (kasama.png).
+                   for him on the street and leads him in. Real art
+                   (Block 98): young, a red shirt and neckerchief, a
+                   bolo at his belt.
     Mabalasig      the "terrible brother" who conducted a recruit's
                    rite: he swears Macario in and gives him the
                    pamphlets. A role from the histories, not a named

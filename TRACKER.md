@@ -9,17 +9,20 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 97 (any character delivered as
-one still is animated by one tool, animate-still.js, and a rig per
-character in _dev/rigs/; CLAUDE.md has the steps), and after the
-proponent tested Blocks 90 to 97 on the phone the same day, with no
-fault reported. Before that, Block 96 (the big siga is the artist's,
+Last updated: 1 Oct 2026, after Block 98 (six of the artist's stills
+in place of placeholders: the leader and the small siga, the direktor,
+the Katipunero, the Kasama, and the Mananahi; all but the Mananahi
+animated by the tool). Before that, Block 97 (any character delivered
+as one still is animated by one tool, animate-still.js, and a rig per
+character in _dev/rigs/; CLAUDE.md has the steps); the proponent tested
+Blocks 90 to 97 on the phone on 1 Oct, with no fault reported. Before
+that, Block 96 (the big siga is the artist's,
 from one still, with a breath, a swagger, a punch and a flinch; enemies
 take a hit sheet as guards do), Block 95 (the Kasama comes to Macario
 after the pamphlets; the Test Room removed) and Block 94 (the Barbero
 and his memory game; the end a year on, Tondo, 1895; three papers of
 facts in the Talaan). Earlier blocks: the Blocks list below, and
-DECISIONS.md. test.js 767 passed, 0 failed; verify_new_scene.js 234
+DECISIONS.md. test.js 767 passed, 0 failed; verify_new_scene.js 237
 passed, 0 failed. Everything is committed and pushed to main.
 
 A new session, on any device: read CLAUDE.md, then this file's Start
@@ -117,14 +120,14 @@ them by type.
 
 Art: Macario's idle, walk, jump, punch and shot are the artist's; so are
 Nanay, the Kutsero, Kabayo, Maryam,
-the play's soldiers, the bantay's still, the big siga's still, the
-street paintings and the inside of the entablado. The leader and the
-small siga are drawn in code (Block 72). The big siga's motion (Block
-96) and the bantay's (Blocks 73, 75) are made from the artist's stills
-by tools; the proponent accepted the big siga on 1 Oct 2026 ("peak").
-Any further still the artist delivers is animated the same way
-(animate-still.js and a rig; CLAUDE.md, Animating a character from one
-still). What is still owed is ART.md.
+the play's soldiers, the Mananahi, the street paintings and the inside
+of the entablado; and the stills of the bantay, the three siga, the
+direktor, the Katipunero and the Kasama, whose motion is made from them
+by tools (animate-bantay.js; animate-still.js and a rig each, Blocks 96
+to 98). The proponent accepted the big siga on 1 Oct 2026 ("peak").
+Nothing is drawn in code any more. Any further still the artist
+delivers is animated the same way (CLAUDE.md, Animating a character
+from one still). What is still owed is ART.md: nine pictures.
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
@@ -142,12 +145,12 @@ fault: everything built so far has been seen on a device.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v59    js/game.js v94       js/shell.js v21
+    css/style.css v59    js/game.js v95       js/shell.js v21
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v68  content/items.js v13  content/act2-4.js v1
-    content/enemies.js v4   content/questions.js v1
-    js/asset-manifest.js v5 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 33 (in js/game.js)
+    content/act1.js v69  content/items.js v13  content/act2-4.js v1
+    content/enemies.js v5   content/questions.js v1
+    js/asset-manifest.js v6 (bumped by make-asset-manifest.js)
+    ASSET_VERSION 34 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v2
@@ -160,8 +163,27 @@ In order.
 landscape, from a private tab, after the push, with the sound on,
 played from the start. Write the block's own checks here (what to see,
 and what failure looks like) when it ships, and take them out again
-once the proponent reports it working. None are open: Blocks 90 to 97
-were tested on 1 Oct 2026. Still to watch, in the pilot rather than on
+once the proponent reports it working. Blocks 90 to 97 were tested on
+1 Oct 2026. Open:
+
+    Block 98, six characters. The opening: all three siga are the
+      artist's, the leader in a salakot and shawl, the big one in a red
+      sash, the small one with a pouch; three heights, the big one
+      tallest, the small one shortest. They walk on, breathe and nod
+      while the leader taunts, and in the fight each draws his fist back
+      on the red ! and punches, and flinches when hit. The leader's
+      dialogue bust is his new art. The Mananahi stands still, facing
+      the front. The direktor, on the street and in the wings, breathes
+      and nods, his cane staying on the ground. After Principe
+      Baldovino the Katipunero and the Kasama walk on from the wing,
+      facing the way they walk, and stand breathing; the Kasama walks up
+      to Macario after the pamphlets, and the two walk in the year-on
+      scene. Failure: anyone walking backwards, floating or sinking,
+      sliding while standing, a dashed box, a seam or a smudge where an
+      arm moved, the shawl or the bolo moving with a leg, or a cane that
+      lifts.
+
+Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
 stroke, and whether students find the Kasama and the three who take
 the pamphlets from what they are told (beats and crates are
@@ -199,21 +221,16 @@ worth one matched pair. The item bank and the story agree on 1894. The
 post-test runs, so this decides whether the study measures anything; do
 it before the pilot.
 
-5. Art from the artist: ART.md's Owed list, thirteen pictures (the
-Mananahi, the direktor, the Katipunero, the Kasama, the Mabalasig, the
-three who take the pamphlets, the pulungan's painting, Nanay's
-side-view walk, the Mananahi's sewing table, and since Block 94 the
+5. Art from the artist: ART.md's Owed list, nine pictures since Block
+98 (the Mabalasig, the three who take the pamphlets, the pulungan's
+painting, Nanay's side-view walk, the Mananahi's sewing table, and the
 Barbero and his chair). PNGs with transparency; each goes through ART.md's steps.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
 
 6. Then the remaining polish, the pilot, and Acts II to IV against the
-source material, Act II starting from STORY.md, Threads left open. One
-small question left open on 1 Oct 2026: the dialogue bust for "Siga" is
-still the leader's drawn-in-code art (siga-1, game.js,
-portraitSheetFor); it could show the big siga's artist art instead. Not
-answered; ask before changing it.
+source material, Act II starting from STORY.md, Threads left open.
 
 7. Privacy of the public repository (30 Sep 2026). Done: the names of
 the team, the resource person and the school are out of every tracked
@@ -374,7 +391,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 234 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 237 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -503,6 +520,9 @@ machine, the assessment module.
         flinch; enemies take a hit sheet
     97  one tool for any character from one still: animate-still.js,
         a rig per character, a shared library of motions
+    98  six of the artist's stills: the leader and the small siga, the
+        direktor (breathing), the Katipunero, the Kasama, the Mananahi;
+        draw-siga.js removed
 
 ## Blocks remaining
 
@@ -614,7 +634,7 @@ test.js (767 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (234 checks) drives the real
+what is covered. verify_new_scene.js (237 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is
@@ -625,7 +645,7 @@ other than "0 failed" is a regression, with one caution learned on
 timing check (the pamphlet guard catch) or lost a page ("Page crashed")
 once, and passed on the next run; rerun before believing either. test.js
 has not done it. Both never touch the live
-project. Both are green as of Block 97. The guard-catch flake was
+project. Both are green as of Block 98. The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check

@@ -127,12 +127,12 @@ off the repository.
     assets/
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png; the
-                               artist's art (Block 59), the leader and
-                               the small siga drawn by draw-siga.js
-                               (Block 72), and the big siga's sheets
-                               made from the artist's still
-                               (siga-2-still.png) by animate-still.js
-                               (Blocks 96, 97)
+                               artist's art (Block 59), and the sheets
+                               made from the artist's stills
+                               (<name>-still.png) by animate-still.js:
+                               the three siga, the direktor, the
+                               Katipunero and the Kasama (Blocks 96 to
+                               98)
       sprites/enemies/         guards and fighters; bantay.png is the
                                artist's still (delivered as Guard.png),
                                bantay-walk, bantay-shoot and bantay-hit
@@ -150,7 +150,7 @@ off the repository.
     _dev/rigs/                 one rig per character animated from a
                                still by animate-still.js (Block 97)
     _dev/tools/                measure-sprite.js, key-black.py,
-                               make-shadow-tree.py, draw-siga.js,
+                               make-shadow-tree.py,
                                animate-bantay.js, preview-sheet.js,
                                lib/png.js (Block 75), animate-still.js
                                (Block 97) and lib/puppet.js, the cut-out
@@ -1232,7 +1232,9 @@ and is the one to copy; its comments say what each number is.
 
 The motions are a library in the tool (MOTIONS), broad on purpose so
 they read on a phone: idle (a breath, a sway, a nod; 8 frames, looped),
-walk (strides and an arm swing; 8, looped), attack (the fist drawn back
+breathe (the breath and the nod alone, for someone holding something
+that must stay put, the direktor's cane; 8, looped), walk (strides and
+an arm swing; 8, looped), attack (the fist drawn back
 through the red ! and thrown on the dash; 8, once; needs the arm) and
 hit (the flinch; 4, knockoutFrame 1). A rig picks the ones it needs: an
 NPC who stands and talks takes idle, one a cutscene walks on idle and
@@ -1255,8 +1257,10 @@ The steps:
   2. Copy _dev/rigs/siga-2.js to _dev/rigs/<name>.js and set still,
      mirror and the sheet files. Trace the rest on the still: top,
      ground and footX; the joints; the cuts; the outlines (sleeve and
-     arm optional, overLegs for cloth hanging over the legs, farFoot for
-     a far foot that shows); sideColour, the colour of his side behind
+     arm optional, overLegs for cloth hanging over the legs, one
+     outline or a list, an entry { outline, clear: true } for one that
+     hangs clear of them, a bolo's blade behind the hip, farFoot for a
+     far foot that shows); sideColour, the colour of his side behind
      the sleeve. Read them off zoomed crops with a grid, in the mirrored
      still if mirror is true. Never guess.
   3. node _dev/tools/animate-still.js <name> --debug, and look at the
@@ -1899,8 +1903,9 @@ look, by system:
     siga and bantay art                   Blocks 72, 73, 75, 96 (the
                                           big siga from the artist's
                                           still; enemies' hit sheet)
-    animating a character from a still    Block 97 (animate-still.js,
-                                          rigs, the motion library)
+    animating a character from a still    Blocks 97, 98 (animate-still.js,
+                                          rigs, the motion library; six
+                                          characters)
     enemy catalogue                       Block 76 (Blocks 73 and 74's
                                           test room removed in 95)
     these files compacted                 Block 79

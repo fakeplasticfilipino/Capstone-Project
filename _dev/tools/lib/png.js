@@ -12,8 +12,8 @@
 //
 // 8-bit, non-interlaced RGB or RGBA only, which is every sheet in
 // assets/; anything else is refused with what to re-export as.
-// measure-sprite.js and draw-siga.js keep their own copies, written
-// before this file existed, and were left alone.
+// measure-sprite.js keeps its own copy, written before this file
+// existed, and was left alone.
 // =============================================================
 
 "use strict";

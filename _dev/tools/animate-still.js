@@ -19,7 +19,8 @@
 //
 //   head     above the collar, nodded about the neck.
 //   torso    the body from the collar to the waist, and any cloth that
-//            hangs over the legs (overLegs: a sash's end, a coat's tail).
+//            hangs over the legs (overLegs: one outline or a list, a
+//            sash's end, a shawl's hem, a coat's tail).
 //   legs     one leg, split at the knee into a thigh and a shin, each
 //            turned about its own joint. The far leg is the same leg
 //            drawn again half a step later and darkened, so a far foot
@@ -36,6 +37,9 @@
 // character is a hundred pixels tall:
 //
 //   idle     8 frames, looped: a deep breath, a sway and a nod.
+//   breathe  8 frames, looped: the breath and the nod alone, no sway and
+//            no arms, for someone holding something that must stay put
+//            (the direktor's cane on the ground; Block 98).
 //   walk     8 frames, looped: long strides, the arm swinging against
 //            the near leg, the body riding up over the planted foot.
 //   attack   8 frames, played once per strike (an enemy's
@@ -168,7 +172,17 @@ function splitStill(still, rig) {
   const { w: W, h: H, d } = still;
   const at = (x, y) => (y * W + x) * 4;
   const { cuts, outlines } = rig;
-  const overLegs = outlines.overLegs ? (x, y) => inPolygon(outlines.overLegs, x, y) : () => false;
+  // overLegs is one outline or a list of them (a sash's end and a
+  // shawl's hem, say). An entry { outline, clear: true } hangs clear of
+  // the legs (a bolo's blade behind the hip): there is no trouser under
+  // it to fill in, so it is cut from the legs instead.
+  const cloths = (!outlines.overLegs ? []
+    : typeof outlines.overLegs[0][0] === "number" ? [outlines.overLegs] : outlines.overLegs)
+    .map((c) => (Array.isArray(c) ? { outline: c, clear: false } : c));
+  const inCloth = (list) => (x, y) => list.some((c) => inPolygon(c.outline, x, y));
+  const overLegs = cloths.length ? inCloth(cloths) : () => false;
+  const overLegsFilled = inCloth(cloths.filter((c) => !c.clear));
+  const overLegsClear = inCloth(cloths.filter((c) => c.clear));
 
   // The arm: everything inside its traced outline.
   const arm = blankLayer(W, H), body = blankLayer(W, H);
@@ -224,8 +238,14 @@ function splitStill(still, rig) {
       if (y >= cuts.legTop) legs.d.set(p, i);
     }
   }
-  // The legs under the hanging cloth, which stays on the body.
-  if (outlines.overLegs) fillHoles(legs, (x, y) => y >= cuts.torsoBottom && overLegs(x, y));
+  // The legs under the hanging cloth, which stays on the body; and
+  // nothing where the cloth hangs clear of them.
+  if (cloths.some((c) => !c.clear)) fillHoles(legs, (x, y) => y >= cuts.torsoBottom && overLegsFilled(x, y));
+  if (cloths.some((c) => c.clear)) {
+    for (let y = cuts.legTop; y < H; y++) {
+      for (let x = 0; x < W; x++) if (overLegsClear(x, y)) legs.d.fill(0, at(x, y), at(x, y) + 4);
+    }
+  }
 
   const farFoot = outlines.farFoot || (() => false);
   const thigh = blankLayer(W, H), shin = blankLayer(W, H);
@@ -347,6 +367,13 @@ const MOTIONS = {
         shoulder: 5 * wave(t, 0.3),
         arm: 8 * wave(t, 0.3),
       };
+    }),
+  },
+  breathe: {
+    fps: 6, loop: true,
+    poses: Array.from({ length: 8 }, (_, i) => {
+      const t = i / 8;
+      return { breathe: 0.05 * (1 + wave(t)) / 2, head: 4 * wave(t, 0.15) };
     }),
   },
   walk: {
