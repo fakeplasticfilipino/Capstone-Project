@@ -11,17 +11,21 @@ Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
 Last updated: 1 Oct 2026, after Block 97 (any character delivered as
 one still is animated by one tool, animate-still.js, and a rig per
-character in _dev/rigs/; CLAUDE.md has the steps). Before that, Block 96
-(the big siga is the artist's,
+character in _dev/rigs/; CLAUDE.md has the steps), and after the
+proponent tested Blocks 90 to 97 on the phone the same day, with no
+fault reported. Before that, Block 96 (the big siga is the artist's,
 from one still, with a breath, a swagger, a punch and a flinch; enemies
-take a hit sheet as guards do). Before that, Block 95 (the Kasama comes
-to Macario after the pamphlets and takes him back, instead of a door the
-proponent could not find; the Test Room removed). Before that, Block 94 (the
-Barbero and his own memory game; the end a year on, Tondo, 1895,
-Macario the head of his council; three papers of facts in the Talaan).
-Earlier blocks: the Blocks list below, and DECISIONS.md.
-test.js 767 passed, 0 failed; verify_new_scene.js 234 passed,
-0 failed. Everything is committed and pushed to main.
+take a hit sheet as guards do), Block 95 (the Kasama comes to Macario
+after the pamphlets; the Test Room removed) and Block 94 (the Barbero
+and his memory game; the end a year on, Tondo, 1895; three papers of
+facts in the Talaan). Earlier blocks: the Blocks list below, and
+DECISIONS.md. test.js 767 passed, 0 failed; verify_new_scene.js 234
+passed, 0 failed. Everything is committed and pushed to main.
+
+A new session, on any device: read CLAUDE.md, then this file's Start
+here and Next action, then STORY.md before touching content. A
+computer that has never run the suites needs the setup under
+Verification first.
 
 ## Start here
 
@@ -113,11 +117,14 @@ them by type.
 
 Art: Macario's idle, walk, jump, punch and shot are the artist's; so are
 Nanay, the Kutsero, Kabayo, Maryam,
-the play's soldiers, the bantay's still, the street paintings and the
-inside of the entablado. The leader and the small siga are drawn in code
-(Block 72); the big siga (Block 96) and the bantay (Blocks 73, 75) are
-the artist's stills, their walk, blows and flinch made from them by a
-tool, waiting on the proponent's verdict. What is still owed is ART.md.
+the play's soldiers, the bantay's still, the big siga's still, the
+street paintings and the inside of the entablado. The leader and the
+small siga are drawn in code (Block 72). The big siga's motion (Block
+96) and the bantay's (Blocks 73, 75) are made from the artist's stills
+by tools; the proponent accepted the big siga on 1 Oct 2026 ("peak").
+Any further still the artist delivers is animated the same way
+(animate-still.js and a rig; CLAUDE.md, Animating a character from one
+still). What is still owed is ART.md.
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
@@ -129,8 +136,9 @@ The proponent has confirmed on the phone: Block 36's speed fix (18 Sep
 2026) and Blocks 37 and 38 as functional. Blocks 57 and 58 were accepted
 from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
-Blocks 86 to 89 from the desktop browser the same day; Blocks 90 to 95
-have not been seen on the phone.
+Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
+the proponent tested Blocks 90 to 97 on the phone and reported no
+fault: everything built so far has been seen on a device.
 
 Current versions, which index.html must match on every push:
 
@@ -148,94 +156,16 @@ Current versions, which index.html must match on every push:
 
 In order.
 
-1. Look at Blocks 90 to 96 on the phone, in landscape, from a private
-tab, after the push, with the sound on. Play from the start. What to
-look for, and what failure looks like (Blocks 80 to 85 are confirmed):
-
-    Block 96, the big siga. In the opening the middle of the three is
-      the artist's man (camisa, red sash, sandals), facing Macario,
-      breathing deeply and nodding while the leader taunts; he walks
-      on with long strides and a swinging arm. In the fight he draws
-      his fist back while the red ! is up and throws a straight punch,
-      streaks behind it, as he dashes; a punch from Macario snaps his
-      head back, and the second drops him leaning back. The other two
-      are unchanged. Failure: he walks backwards, slides while standing,
-      floats or sinks, is a different height from before, a dashed
-      box, or a seam or a blot where the arm or the legs were cut.
-
-    Blocks 94 and 95, the barber, the end and the papers. After the horse the
-      log says "Magtrabaho sa barberya"; the Barbero (a dashed box,
-      barbero.png) stands between the Kutsero and the Mananahi, his
-      chair beside him. Before the horse he sends Macario to the
-      Kutsero; before the barber the Mananahi sends him to the barber.
-      Gupitin at the chair opens his own game: the Suki's request
-      ("Suklay, Gunting..."), word by word, then "Ikaw na!", and three
-      tool buttons (comb, scissors, razor) to press in that order, four
-      rounds of two to five, a wrong tool ending the round; 4 to 7
-      barya. After the third pamphlet, a card ("Natapos ang ronda..."),
-      no guards or crates after it, still night; the log says "Bumalik
-      sa pulungan at mag-ulat"; the Kasama walks up to him from the
-      edge of the screen and a card takes him back (Block 95). The
-      report, a card "Pagkalipas ng isang taon / Tondo, 1895", the men
-      calling him Pangulo, Nanay at the door and his lie, the door shut
-      on her with its sound, the last cards, then the post-test. Three
-      papers on the road (2500 on the ground, 8200 and 12200 by
-      jumping) with facts, with no teacher's papers written. Failure:
-      the barber skipped from the log, a game that will not take a
-      press, guards still on the street after the card, no one coming
-      for him, a reload after the report replaying it, or no papers.
-      The Test Room button is no longer in settings.
-
-    Block 93, the polish list: walk while a scene takes over (the end
-      of a fight, a door): he stands, never walks on the spot. After
-      the opening fight, fight your way far left: Nanay still walks on
-      from the right edge of the screen, as a dashed box naming
-      nanay-walk.png, and stops a step from him. The jump sounds like a
-      foot on dirt, not a boing. Suklayin shows a brush, Manahi a
-      needle, a door the door icon, never the sword. No tan notches at
-      the bottom of any tree. The tahian is a dashed box beside the
-      Mananahi. In a fight, enemies back off and shuffle between
-      strikes, and now and then one hops over Macario and strikes from
-      behind after a red !. In the first play he walks back beside
-      Maryam before the Sultan returns, and the lines are at the top of
-      the screen on the stage. After the play the log's first line is
-      a green arrow, "Lumabas ng entablado: pumunta sa kanan". Behind a
-      crate on the pamphlet run he is half hidden and dimmed. Failure:
-      any of these not so, or an enemy that hurts him with a hop.
-
-    The opening: the siga's insult, then a fight with the three (fight
-      music, hearts): the world waits, a card asks for Atake with the
-      button pulsing, and goes when he strikes once; the first red !
-      stops it again with a card about the warning; then Nanay walks in.
-      After the thought, cards ask him to walk and to jump, and beside
-      Nanay to talk. Failure: a card that never goes, a lesson that
-      pauses nothing, or two cards on top of each other.
-    Enemies: a red ! over their heads as soon as he is within about
-      230px, then a dash of 220px the way they faced. Standing in front
-      of it costs a heart; sliding through, jumping or backing away does
-      not. Failure: a dash that is easy to miss, or a hit with no sign
-      before it.
-    The log: after the Kutsero, two lines, the step and "Mag-ipon para
-      kay Nanay (n/100)" counting up as he earns.
-    Combat: a tap with an enemy ahead slides Macario through him, a
-      quick eased slide, and he ends on the far side. From far off it
-      stops short and leaves him stumbling for a moment. Failure:
-      spamming Atake in place still wins, or the Atake button dead on
-      the phone.
-    Dialogue: a bust of the speaker with no frame, Macario on the left
-      and anyone else on the right, the text clear of both. Failure:
-      text under a portrait, or a portrait cut off on the phone.
-    The work: E on Kabayo (Suklayin) is the grooming game, E at the
-      tahian beside the Mananahi (Manahi) is the sewing game, played by
-      holding. The green patch gets thinner each stroke; a round pays 4
-      to 7; each job stops at 25. After the second round of sewing the
-      Mananahi stops him and sends him to the direktor. Nanay's button
-      waits until the play is done and he holds 100. Failure: a round
-      that will not open a second time, the sewing table open while he
-      carries the costumes, or no way to reach 100.
-    Watch whether the patch is too thin by the fifth stroke on a phone,
-      and whether students find the Kasama and the three from what they
-      are told; beats and crates are PAMPHLET_GUARDS in content/act1.js.
+1. Every new block is seen on the phone before it is called done: in
+landscape, from a private tab, after the push, with the sound on,
+played from the start. Write the block's own checks here (what to see,
+and what failure looks like) when it ships, and take them out again
+once the proponent reports it working. None are open: Blocks 90 to 97
+were tested on 1 Oct 2026. Still to watch, in the pilot rather than on
+one phone: whether the work game's green patch is too thin by the fifth
+stroke, and whether students find the Kasama and the three who take
+the pamphlets from what they are told (beats and crates are
+PAMPHLET_GUARDS in content/act1.js).
 
 2. The years are settled (Block 83): the opening reads "Tondo, 1890",
 the four-year cut "Tondo, 1894", the year Sakay joined, and the end
@@ -274,9 +204,16 @@ Mananahi, the direktor, the Katipunero, the Kasama, the Mabalasig, the
 three who take the pamphlets, the pulungan's painting, Nanay's
 side-view walk, the Mananahi's sewing table, and since Block 94 the
 Barbero and his chair). PNGs with transparency; each goes through ART.md's steps.
+A character delivered as one still rather than a sheet is animated by
+the tool (CLAUDE.md, Animating a character from one still): ask the
+artist for the whole figure side on, standing, arms free of the body.
 
 6. Then the remaining polish, the pilot, and Acts II to IV against the
-source material, Act II starting from STORY.md, Threads left open.
+source material, Act II starting from STORY.md, Threads left open. One
+small question left open on 1 Oct 2026: the dialogue bust for "Siga" is
+still the leader's drawn-in-code art (siga-1, game.js,
+portraitSheetFor); it could show the big siga's artist art instead. Not
+answered; ask before changing it.
 
 7. Privacy of the public repository (30 Sep 2026). Done: the names of
 the team, the resource person and the school are out of every tracked
@@ -291,9 +228,9 @@ proponent has not yet decided whether to rewrite the history.
 ## Act I polish list (Block 93)
 
 Agreed 30 Sep 2026: seventeen items, all (COMPLETE) except the missing
-sprites, which wait on the artist (ART.md; BLOCKED). Not yet seen on the
-phone (Next action 1). The list and why each was built as it was:
-DECISIONS.md, Block 93.
+sprites, which wait on the artist (ART.md; BLOCKED). Tested on the phone
+1 Oct 2026. The list and why each was built as it was: DECISIONS.md,
+Block 93.
 
 ## The milestone
 
@@ -437,14 +374,14 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 230 checks) |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 234 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
 
 ## Blocks
 
-One line each, all (COMPLETE) except 12. Why: DECISIONS.md, by block
+One line each, all (COMPLETE). Why: DECISIONS.md, by block
 number. Before numbering: schema v2 and v3, role routing and class
 enrollment, the teacher dashboard, the four-act framework and act state
 machine, the assessment module.
@@ -457,8 +394,8 @@ machine, the assessment module.
         feedback
     10  inventory and equipment, granted on act entry
     11  currency by score, the shop, outfits as sprite swaps
-    12  polish (IN PROGRESS: what is left is the device pass, Next
-        action 1): --zoom 0.7, icons, 44px targets, the full reset
+    12  polish: --zoom 0.7, icons, 44px targets, the full reset (its
+        device pass done 1 Oct 2026)
     --  Act I drafted, then reset to Nanay only; the harness fixture
     --  real sprites for Nanay and Macario; spriteFit; measure-sprite.js
     13  corner buttons for inventory and shop
@@ -654,6 +591,25 @@ From the repository root:
     node _dev/tests/test.js
     node _dev/tests/verify_new_scene.js
 
+Setting up a computer that has never run them (done on the proponent's
+Windows computer, 1 Oct 2026): install Git and Node.js LTS (winget
+install Git.Git and OpenJS.NodeJS.LTS, or the installers), sign Git in
+to GitHub on the first push, then npm install and npx playwright install
+chromium from the repository root. Python is not needed for anything
+but the optional art scripts (key-black.py and the like, with Pillow).
+On that computer Playwright's own downloader timed out every time while
+curl fetched the same file at full speed; the fix was to download the
+headless shell by hand and unzip it where Playwright looks:
+
+    https://cdn.playwright.dev/builds/cft/<chrome version>/win64/chrome-headless-shell-win64.zip
+    into %LOCALAPPDATA%\ms-playwright\chromium_headless_shell-<build>\
+
+npx playwright install chromium --dry-run prints both numbers (1243
+and 153.0.8010.12 for Playwright 1.63), and the harness says which path
+it wanted if it is still missing. A Playwright update needs it again.
+The suites take about 7 minutes (verify_new_scene.js) and 10 (test.js)
+there; run them one after the other, not at once.
+
 test.js (767 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
@@ -684,8 +640,8 @@ absent. The harness is not a substitute for a device pass, and cannot
 tell whether a sound is too loud.
 
 In a cloud sandbox, npm install --no-save playwright@1.56 matches its
-preinstalled Chromium; package.json asks for 1.62, which is right for
-the proponent's computer. The pitfalls the suites were built around are
+preinstalled Chromium; package.json asks for ^1.62, which installed
+1.63 on the proponent's computer. The pitfalls the suites were built around are
 in CLAUDE.md, Pitfalls.
 
 ## Documentation debt
