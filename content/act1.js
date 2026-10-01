@@ -117,7 +117,10 @@ const NANAY_WALK = { src: "assets/sprites/characters/nanay-walk.png", frames: 1,
 
 // The three siga (Block 72), each an idle sheet and a walk sheet drawn
 // by _dev/tools/draw-siga.js: the leader in the red panyo, the big one
-// in the buri hat, the small one in the ochre shirt. The walk shows only
+// in the buri hat, the small one in the ochre shirt. Since Block 96 the
+// big one is the artist's (a camisa, a red sash, sandals), animated from
+// the still by _dev/tools/animate-siga.js; his sheets and their numbers
+// are content/enemies.js's (SIGA_2_CELL), which loads first. The walk shows only
 // while the opening walks them on (walkAnimation). footX is the hip, 128,
 // on both sheets, so a boy does not slide when he stops; the walk's own
 // measured stance (124) would move him four pixels. height keeps them
@@ -132,7 +135,12 @@ const sigaSheets = (n, top, height) => ({
 });
 const SIGA = {
   1: sigaSheets(1, 61, 127),
-  2: sigaSheets(2, 51, 137),
+  2: {
+    // A deep breath and a cocky nod, while the leader taunts.
+    idle: { src: "assets/sprites/characters/siga-2.png", frames: 8, fps: 6, ...SIGA_2_CELL },
+    walk: window.ENEMY_TYPES.siga2.animation,
+    height: window.ENEMY_TYPES.siga2.displayHeight,
+  },
   3: sigaSheets(3, 73, 115),
 };
 

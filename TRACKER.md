@@ -9,13 +9,15 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 95 (the Kasama comes to Macario
-after the pamphlets and takes him back, instead of a door the proponent
-could not find; the Test Room removed). Before that, Block 94 (the
+Last updated: 1 Oct 2026, after Block 96 (the big siga is the artist's,
+from one still, with a breath, a swagger, a punch and a flinch; enemies
+take a hit sheet as guards do). Before that, Block 95 (the Kasama comes
+to Macario after the pamphlets and takes him back, instead of a door the
+proponent could not find; the Test Room removed). Before that, Block 94 (the
 Barbero and his own memory game; the end a year on, Tondo, 1895,
 Macario the head of his council; three papers of facts in the Talaan).
 Earlier blocks: the Blocks list below, and DECISIONS.md.
-test.js 767 passed, 0 failed; verify_new_scene.js 230 passed,
+test.js 767 passed, 0 failed; verify_new_scene.js 234 passed,
 0 failed. Everything is committed and pushed to main.
 
 ## Start here
@@ -109,9 +111,10 @@ them by type.
 Art: Macario's idle, walk, jump, punch and shot are the artist's; so are
 Nanay, the Kutsero, Kabayo, Maryam,
 the play's soldiers, the bantay's still, the street paintings and the
-inside of the entablado. The siga are drawn in code (Block 72) and the
-bantay's walk, shot and flinch are made from his still (Blocks 73, 75),
-both waiting on the proponent's verdict. What is still owed is ART.md.
+inside of the entablado. The leader and the small siga are drawn in code
+(Block 72); the big siga (Block 96) and the bantay (Blocks 73, 75) are
+the artist's stills, their walk, blows and flinch made from them by a
+tool, waiting on the proponent's verdict. What is still owed is ART.md.
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
@@ -128,12 +131,12 @@ have not been seen on the phone.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v59    js/game.js v93       js/shell.js v21
+    css/style.css v59    js/game.js v94       js/shell.js v21
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v66  content/items.js v13  content/act2-4.js v1
-    content/enemies.js v2   content/questions.js v1
-    js/asset-manifest.js v4 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 32 (in js/game.js)
+    content/act1.js v67  content/items.js v13  content/act2-4.js v1
+    content/enemies.js v3   content/questions.js v1
+    js/asset-manifest.js v5 (bumped by make-asset-manifest.js)
+    ASSET_VERSION 33 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v2
@@ -142,9 +145,20 @@ Current versions, which index.html must match on every push:
 
 In order.
 
-1. Look at Blocks 90 to 95 on the phone, in landscape, from a private
+1. Look at Blocks 90 to 96 on the phone, in landscape, from a private
 tab, after the push, with the sound on. Play from the start. What to
 look for, and what failure looks like (Blocks 80 to 85 are confirmed):
+
+    Block 96, the big siga. In the opening the middle of the three is
+      the artist's man (camisa, red sash, sandals), facing Macario,
+      breathing deeply and nodding while the leader taunts; he walks
+      on with long strides and a swinging arm. In the fight he draws
+      his fist back while the red ! is up and throws a straight punch,
+      streaks behind it, as he dashes; a punch from Macario snaps his
+      head back, and the second drops him leaning back. The other two
+      are unchanged. Failure: he walks backwards, slides while standing,
+      floats or sinks, is a different height from before, a dashed
+      box, or a seam or a blot where the arm or the legs were cut.
 
     Blocks 94 and 95, the barber, the end and the papers. After the horse the
       log says "Magtrabaho sa barberya"; the Barbero (a dashed box,
@@ -545,6 +559,8 @@ machine, the assessment module.
         the head of his council; the Talaan's own papers of facts
     95  the Kasama takes him back instead of a door; the Test Room
         removed
+    96  the big siga from the artist's still: breath, swagger, punch,
+        flinch (animate-siga.js); enemies take a hit sheet
 
 ## Blocks remaining
 
@@ -637,7 +653,7 @@ test.js (767 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (230 checks) drives the real
+what is covered. verify_new_scene.js (234 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is
@@ -648,7 +664,7 @@ other than "0 failed" is a regression, with one caution learned on
 timing check (the pamphlet guard catch) or lost a page ("Page crashed")
 once, and passed on the next run; rerun before believing either. test.js
 has not done it. Both never touch the live
-project. Both are green as of Block 95. The guard-catch flake was
+project. Both are green as of Block 96. The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check

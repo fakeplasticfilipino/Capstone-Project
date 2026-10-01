@@ -16,9 +16,14 @@
 // two legs touches GROUND), so the walk bobs by itself and the idle
 // never floats.
 //
-// Run:  node _dev/tools/draw-siga.js [1 2 3]
+// Run:  node _dev/tools/draw-siga.js [1 3]
 //
-// Writes, for each boy named (all three by default):
+// Since Block 96 the big one (2) is the artist's, animated from the
+// still by _dev/tools/animate-siga.js under the same file names, so this
+// tool no longer writes him: BOYS[2] stays as the record of how he was
+// drawn, and asking for him is refused rather than overwriting the art.
+//
+// Writes, for each boy named (1 and 3 by default):
 //   assets/sprites/characters/siga-N.png       idle, 12 frames, 4 by 3
 //   assets/sprites/characters/siga-N-walk.png  walk,  8 frames, 4 by 2
 // Then measure both with measure-sprite.js and paste the numbers into
@@ -992,8 +997,12 @@ function sheet(frames, columns) {
 }
 
 function main() {
-  const which = process.argv.slice(2).filter((a) => BOYS[a]);
-  const ids = which.length ? which : Object.keys(BOYS);
+  const DRAWN = ["1", "3"];
+  if (process.argv.slice(2).includes("2")) {
+    console.log("siga 2 is the artist's since Block 96: run _dev/tools/animate-siga.js");
+  }
+  const which = process.argv.slice(2).filter((a) => DRAWN.includes(a));
+  const ids = which.length ? which : DRAWN;
   const outDir = path.join(__dirname, "..", "..", "assets", "sprites", "characters");
   for (const id of ids) {
     const boy = BOYS[id];

@@ -244,7 +244,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 32;
+const ASSET_VERSION = 33;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -2872,7 +2872,7 @@ function mountGuard(guard, token) {
       : null;
     // Block 75. His hit sheet, while he reels and as he falls.
     guard.hitSpriteEl = guard.hitAnimation
-      ? extra(guard.hitAnimation, { frameAt: (now) => guardHitFrame(guard, now) })
+      ? extra(guard.hitAnimation, { frameAt: (now) => hitFrame(guard, now) })
       : null;
   } else {
     const sprite = document.createElement("div");
@@ -3243,11 +3243,12 @@ function hitGuard(guard, damage, dir, message) {
 
 // Block 75. The hit sheet's frame: played once through the stagger from
 // the blow and held on its last; while he topples, held on the frame he
-// leans furthest back (knockoutFrame, else the second).
-function guardHitFrame(guard, now) {
-  const s = guard.hitAnimation;
-  if (guard.disabled) return Math.min(s.frames - 1, s.knockoutFrame != null ? s.knockoutFrame : 1);
-  return Math.min(s.frames - 1, Math.floor((now - (guard.hitAt || 0)) / (1000 / (s.fps || 8))));
+// leans furthest back (knockoutFrame, else the second). Since Block 96
+// for any body that brings a hit sheet, a guard or an enemy.
+function hitFrame(body, now) {
+  const s = body.hitAnimation;
+  if (bodyKindOf(body).isDown(body)) return Math.min(s.frames - 1, s.knockoutFrame != null ? s.knockoutFrame : 1);
+  return Math.min(s.frames - 1, Math.floor((now - (body.hitAt || 0)) / (1000 / (s.fps || 8))));
 }
 
 const GUARD_BULLET_SPEED = 9;       // per 60fps frame; well under a dodge
@@ -5969,6 +5970,15 @@ function spawnEnemies(defs) {
       attackSprite.style.display = "none";
       el.appendChild(attackSprite);
     }
+    // Block 96. And a hit sheet, shown while he reels and as he falls,
+    // its frame chosen the way a guard's is (hitFrame).
+    let hitSprite = null;
+    if (def.animation && def.hitAnimation) {
+      hitSprite = document.createElement("div");
+      hitSprite.className = "sprite npc-sprite npc-anim-sprite enemy-hit-sprite";
+      hitSprite.style.display = "none";
+      el.appendChild(hitSprite);
+    }
     world.appendChild(el);
     if (def.animation) {
       setupNpcAnimation(def.animation, sprite, height, token, ENEMY_WIDTH,
@@ -5976,6 +5986,10 @@ function spawnEnemies(defs) {
       if (attackSprite) {
         setupNpcAnimation(def.attackAnimation, attackSprite, height, token, ENEMY_WIDTH,
           { playing: () => enemy.attacking, loop: false });
+      }
+      if (hitSprite) {
+        setupNpcAnimation(def.hitAnimation, hitSprite, height, token, ENEMY_WIDTH,
+          { frameAt: (now) => hitFrame(enemy, now) });
       }
     } else {
       bodyPlaceholder(sprite, def.img || "Kaaway", height, ENEMY_WIDTH);
@@ -5985,6 +5999,8 @@ function spawnEnemies(defs) {
     enemy.fillEl = fill;
     enemy.spriteEl = sprite;
     enemy.attackSpriteEl = attackSprite;
+    enemy.hitSpriteEl = hitSprite;
+    enemy.drawnPose = "walk";
     enemy.walking = false;
     enemy.attacking = false;
     enemy.attackEnd = 0;
@@ -6142,24 +6158,36 @@ function updateEnemies(step, now) {
     if (enemy.attacking && (now >= enemy.attackEnd || now < enemy.staggerUntil)) {
       enemy.attacking = false;
     }
-    if (enemy.attackSpriteEl && enemy.attacking !== enemy.drawnAttacking) {
-      enemy.attackSpriteEl.style.display = enemy.attacking ? "" : "none";
-      enemy.spriteEl.style.visibility = enemy.attacking ? "hidden" : "";
-      enemy.drawnAttacking = enemy.attacking;
-    }
-
     if (enemy.pos !== enemy.drawnPos) {
       enemy.el.style.left = enemy.pos + "px";
       enemy.drawnPos = enemy.pos;
     }
-    // Facing, written only when it turns (Block 36). The art faces right.
-    if (enemy.animation && enemy.spriteEl && enemy.facing !== enemy.drawnFacing) {
-      const flip = enemy.facing < 0 ? "scaleX(-1)" : "";
-      enemy.spriteEl.style.transform = flip;
-      if (enemy.attackSpriteEl) enemy.attackSpriteEl.style.transform = flip;
-      enemy.drawnFacing = enemy.facing;
-    }
+    drawEnemy(enemy, now);
   });
+}
+
+// Which of his sheets shows, and which way he faces, written only on a
+// change (Block 36): the hit sheet while he reels and once he is down
+// (Block 96), the attack sheet through a swing (Block 40), else the
+// walk. The art faces right. Called by the fall too, since the loop
+// passes over a body that is down.
+function drawEnemy(enemy, now) {
+  const pose = enemy.hitSpriteEl && (enemy.dead || now < enemy.staggerUntil) ? "hit"
+    : enemy.attackSpriteEl && enemy.attacking ? "attack"
+    : "walk";
+  if (pose !== enemy.drawnPose) {
+    enemy.spriteEl.style.visibility = pose === "walk" ? "" : "hidden";
+    if (enemy.attackSpriteEl) enemy.attackSpriteEl.style.display = pose === "attack" ? "" : "none";
+    if (enemy.hitSpriteEl) enemy.hitSpriteEl.style.display = pose === "hit" ? "" : "none";
+    enemy.drawnPose = pose;
+  }
+  if (enemy.animation && enemy.facing !== enemy.drawnFacing) {
+    const flip = enemy.facing < 0 ? "scaleX(-1)" : "";
+    enemy.spriteEl.style.transform = flip;
+    if (enemy.attackSpriteEl) enemy.attackSpriteEl.style.transform = flip;
+    if (enemy.hitSpriteEl) enemy.hitSpriteEl.style.transform = flip;
+    enemy.drawnFacing = enemy.facing;
+  }
 }
 
 // Whether a comrade is nearer Macario and right in front of him: he waits
@@ -6331,12 +6359,20 @@ const BODY_KINDS = {
   enemy: {
     width: ENEMY_WIDTH, cls: "enemy", staggerMs: ENEMY_STAGGER_MS, clamp: false,
     isDown: (e) => e.dead,
-    hit(e) { e.fillEl.style.width = Math.max(0, (e.hp / e.maxHp) * 100) + "%"; },
+    hit(e, away) {
+      e.fillEl.style.width = Math.max(0, (e.hp / e.maxHp) * 100) + "%";
+      // Block 96. One with a hit sheet turns on whoever hit him, as a
+      // guard does, so he reels back from the blow and not into it.
+      if (e.hitSpriteEl) e.facing = -away;
+    },
     staggered(e, now) {
       e.nextSwingAt = 0;
       e.dash = null;
       endEnemyHop(e); // Block 93: a punch knocks him out of a hop
       e.cooldownUntil = Math.max(e.cooldownUntil || 0, now + ENEMY_STAGGER_MS + jitter(ATTACK_TELL_MS, ATTACK_TELL_SPREAD));
+      // Block 96. Drawn now, not by the next frame, so the hit-stop that
+      // follows (impact) freezes him in his flinch.
+      drawEnemy(e, now);
     },
     down(e) {
       e.dead = true;
@@ -6344,13 +6380,10 @@ const BODY_KINDS = {
       endEnemyHop(e);
       setTell(e, false);
       // A swing cut off by the blow is put away, or he would fall with
-      // his sword still raised (Block 60).
+      // his sword still raised (Block 60); one with a hit sheet falls in
+      // it, leaning back (Block 96).
       e.attacking = false;
-      if (e.attackSpriteEl) {
-        e.attackSpriteEl.style.display = "none";
-        e.spriteEl.style.visibility = "";
-        e.drawnAttacking = false;
-      }
+      drawEnemy(e, performance.now());
       e.el.classList.add("enemy-down");
       if (!enemiesAlive()) finishFight();
     },

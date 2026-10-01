@@ -3768,3 +3768,54 @@ atTestRoom() in test.js are its fixture world, older than the feature,
 and keep their names.
 
 game.js v93, shell.js v21, act1.js v66.
+
+## Block 96: the big siga is the artist's, and moves
+
+At the proponent's request, 1 Oct 2026: the artist's first reference
+for a siga (a young man side on, in a rolled-sleeve camisa, a red sash,
+brown trousers and sandals), put on the tallest of the three, with
+animations "simple but verbose", obvious for the viewer.
+
+One still, so the sheets are made from it the way the bantay's were
+(Blocks 73, 75): _dev/tools/animate-siga.js cuts it into a head, a
+torso with the sash, an upper arm in its sleeve, a forearm and hand,
+and a leg split at the knee, and moves the parts. Every pixel of him is
+the artist's. What a moved part uncovers (his side under the sleeve,
+the sash and trousers under the hand) is filled from the solid colours
+around it and smoothed; the faint edge of the export holds junk colour
+under alpha 0 (pure yellow among it), so only solid pixels lend. The
+far sandal is cut away, since the far leg is the near leg drawn again
+half a step later and darkened. The still faces left and is mirrored,
+because the engine's art faces right.
+
+The motion is broad on purpose: standing, a deep breath, a sway and a
+cocky nod (the opening's taunt); walking, long strides with the arm
+swinging against the near leg; the punch, drawn back through the red !
+and thrown from the shoulder on the dash, arm straight, with streaks
+behind the fist; the flinch, head snapped back and body tipped back. A
+first cut kept the elbow at his waist and swung the forearm alone,
+which read as a man holding a cup, not a punch: the upper arm is a part
+of its own for that reason. All four sheets share one cell, sized from
+every frame drawn, so nothing is clipped and one set of numbers serves
+them all; he is drawn at three quarters of the still (about the
+bantay's 394 pixels) to keep the sheets' memory down, and keeps the
+height he had against the other two.
+
+Enemies had no hit sheet; guards had one since Block 75. Rather than a
+second way of reeling, an enemy now takes the guard's: hitFrame (was
+guardHitFrame) serves any body, an enemy with a hit sheet turns on
+whoever hit him as a guard does, and drawEnemy chooses his one sheet
+showing. It is drawn at the blow, so the hit-stop freezes him in the
+flinch rather than in his walk. An enemy without a hit sheet is drawn
+exactly as before.
+
+The drawing code animate-bantay.js had (layers, affine maps, the
+canvas, the sheet) moved unchanged into _dev/tools/lib/puppet.js for
+both tools, checked by the bantay's sheets coming out byte for byte the
+same. draw-siga.js now writes only the leader and the small one, so it
+cannot overwrite the artist's. preview-sheet.js --from loads the enemy
+catalogue first, as the page does, since act1.js reads its fighters
+from it.
+
+game.js v94, act1.js v67, enemies.js v3, asset-manifest.js v5,
+ASSET_VERSION 33.

@@ -66,6 +66,12 @@ function defFromContent(contentFile, src) {
   const context = vm.createContext({
     window, console, Math, Object, Array, JSON, Promise, setTimeout, noop,
   });
+  // The enemy catalogue first, as index.html loads it: an act reads its
+  // fighters' sheets from it (Block 96, and the kawal before that).
+  const catalogue = path.join(__dirname, "..", "..", "content", "enemies.js");
+  if (path.resolve(contentFile) !== catalogue) {
+    vm.runInContext(fs.readFileSync(catalogue, "utf8"), context, { filename: catalogue });
+  }
   vm.runInContext(fs.readFileSync(contentFile, "utf8"), context, { filename: contentFile });
   const want = src.replace(/\\/g, "/").replace(/^.*?(assets\/)/, "$1");
   const seen = new Set();

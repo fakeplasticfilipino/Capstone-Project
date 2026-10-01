@@ -127,8 +127,12 @@ off the repository.
     assets/
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png; the
-                               artist's art (Block 59), and the siga
-                               drawn by draw-siga.js (Block 72)
+                               artist's art (Block 59), the leader and
+                               the small siga drawn by draw-siga.js
+                               (Block 72), and the big siga's sheets
+                               made from the artist's still
+                               (siga-2-still.png) by animate-siga.js
+                               (Block 96)
       sprites/enemies/         guards and fighters; bantay.png is the
                                artist's still (delivered as Guard.png),
                                bantay-walk, bantay-shoot and bantay-hit
@@ -146,7 +150,10 @@ off the repository.
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-shadow-tree.py, draw-siga.js,
                                animate-bantay.js, preview-sheet.js,
-                               lib/png.js (Block 75), missing-art.js
+                               lib/png.js (Block 75), animate-siga.js
+                               and lib/puppet.js, the cut-out puppet
+                               both animate tools share (Block 96),
+                               missing-art.js
                                (Block 77), make-asset-manifest.js
                                (Block 78), make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js,
@@ -853,8 +860,11 @@ count without the story paying anything. The whole performance award
 is then paid on completion instead.
 
 An enemy def is { type, id, x, hp, speed, img | animation,
-attackAnimation }; type (Block 76) names an entry of the enemy
-catalogue, below, whose fields come first.
+attackAnimation, hitAnimation }; type (Block 76) names an entry of the
+enemy catalogue, below, whose fields come first. hitAnimation (Block
+96) is optional and is a guard's (Block 75): shown while he reels and
+as he falls, knockoutFrame held in the fall, and with it he turns on
+whoever hit him.
 attackAnimation (Block 40) is optional: with it, the walk sheet steps
 only while he walks and the attack sheet replaces it for each swing,
 from the start of the telegraph to ENEMY_ATTACK_FOLLOW_MS after the
@@ -887,8 +897,8 @@ its type, in a scene's guards list or in spawnEnemies.
         shoots, detectRadius, ...    enemy def takes (Act data format)
         animation, walkAnimation,    the sheets; a guard's are described
         shootAnimation,              under Act data format, an enemy's
-        hitAnimation,                are animation (its walk) and
-        attackAnimation              attackAnimation
+        hitAnimation,                are animation (its walk),
+        attackAnimation              attackAnimation and hitAnimation
       },
     }
 
@@ -1823,7 +1833,9 @@ look, by system:
     what was removed (stage, night,
       death pose)                         Block 91
     questions, replays, Talaan            Blocks 64, 68, 69, 70
-    siga and bantay art                   Blocks 72, 73, 75
+    siga and bantay art                   Blocks 72, 73, 75, 96 (the
+                                          big siga from the artist's
+                                          still; enemies' hit sheet)
     enemy catalogue                       Block 76 (Blocks 73 and 74's
                                           test room removed in 95)
     these files compacted                 Block 79

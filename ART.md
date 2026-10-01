@@ -28,9 +28,11 @@ Macario's sheets (256px cells).
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 1 Oct 2026, Block 94 (thirteen owed: the Barbero and his
-chair, the third job, and Nanay walking now also at the end, in the
-pulungan). Before that, Block 93 (eleven owed: Nanay's walk and
+Last updated: 1 Oct 2026, Block 96 (still thirteen owed: the artist's
+still of the big siga arrived and was animated by a tool, so he moved
+from drawn in code to Stand-ins as the bantay is). Before that, Block 94
+(thirteen owed: the Barbero and his chair, the third job, and Nanay
+walking now also at the end, in the pulungan). Before that, Block 93 (eleven owed: Nanay's walk and
 the Mananahi's sewing table are named now, so each shows as a
 placeholder box until drawn). Before that, Block 91 (nine pictures owed: the death pose,
 the night backdrop and Aling Rosa are gone with the things that named
@@ -122,10 +124,16 @@ Art that exists and is on screen, but is not the artist's final work
 for that character. Not checked by the harness; kept here so it is not
 forgotten.
 
-    The three siga (siga-1..3.png and -walk.png). Drawn in code by
-        _dev/tools/draw-siga.js (Block 72). The proponent judges them
-        on the phone; the artist's own replaces them under the same
-        names.
+    The leader and the small siga (siga-1, siga-3, and -walk.png).
+        Drawn in code by _dev/tools/draw-siga.js (Block 72). The
+        proponent judges them on the phone; the artist's own replaces
+        them under the same names.
+    The big siga's standing breath, walk, punch and flinch (siga-2,
+        -walk, -attack, -hit). Made from the artist's one still
+        (siga-2-still.png, Block 96) by _dev/tools/animate-siga.js, as
+        the bantay's are; the still itself is the artist's. Where an
+        arm or the sash moved off something, that is filled in from
+        the colours around it.
     The bantay's walk, shot and flinch (bantay-walk, -shoot, -hit).
         Made from the artist's one still by _dev/tools/animate-bantay.js
         (Blocks 73, 75); the still itself (bantay.png) is the artist's.

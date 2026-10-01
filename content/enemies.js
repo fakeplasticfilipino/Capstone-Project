@@ -23,7 +23,8 @@
 //            animation (standing), walkAnimation, shootAnimation,
 //            hitAnimation. See CLAUDE.md, Act data format.
 //   enemy    spawnEnemies, in a script. Walks at Macario and swings.
-//            Sheets: animation (the walk), attackAnimation.
+//            Sheets: animation (the walk), attackAnimation, and since
+//            Block 96 hitAnimation, as a guard's.
 //
 // Both take blows the same way (game.js, takeBlow): a slide, a flash,
 // a stagger, and at no hp the topple and the fade.
@@ -33,10 +34,12 @@
 // which reads the art for the Sultan from here, and before game.js.
 // =============================================================
 
-// The three siga of the opening (Block 87), on the walk sheets drawn in
-// code (_dev/tools/draw-siga.js). They have no attack sheet: the lit-up
-// warning before a swing is the tell. displayHeight keeps the three sizes
-// the opening gave them (content/act1.js, sigaSheets).
+// The three siga of the opening (Block 87). The small one and the
+// leader walk on the sheets drawn in code (_dev/tools/draw-siga.js) and
+// have no attack sheet: the lit-up warning before a swing is the tell.
+// displayHeight keeps the three sizes the opening gave them
+// (content/act1.js, sigaSheets): size is the boy's height against
+// Macario's 127, whatever his sheet measures.
 const sigaFighter = (n, top, height, hp) => ({
   kind: "enemy",
   hp,
@@ -47,9 +50,35 @@ const sigaFighter = (n, top, height, hp) => ({
   },
 });
 
+// The big one (Block 96) is the artist's: one still (siga-2-still.png),
+// cut up and moved by _dev/tools/animate-siga.js into a walk, a punch
+// and a flinch, broad on purpose so they read on a phone. All share one
+// cell and one set of numbers. The attack plays once per strike: he
+// draws the fist back through frames 0 to 2, the red !, and throws it on
+// frame 3, a third of a second in, as the dash starts (game.js,
+// ATTACK_TELL_MS, ENEMY_DASH_MS); 8 frames at 10 last the tell, the dash
+// and the follow-through. The flinch's 4 frames at 12 last his stagger
+// (ENEMY_STAGGER_MS), and frame 1, leaning furthest back, is held as he
+// falls.
+const SIGA_2_CELL = { columns: 4, contentTop: 11, contentHeight: 405, footX: 149, headroom: 11 };
+
 window.ENEMY_TYPES = {
   siga1: sigaFighter(1, 61, 127, 2),
-  siga2: sigaFighter(2, 51, 137, 2),
+  siga2: {
+    kind: "enemy",
+    hp: 2,
+    displayHeight: Math.round(134 * 137 / 127),
+    animation: {
+      src: "assets/sprites/characters/siga-2-walk.png", frames: 8, fps: 12, ...SIGA_2_CELL,
+    },
+    attackAnimation: {
+      src: "assets/sprites/characters/siga-2-attack.png", frames: 8, fps: 10, ...SIGA_2_CELL,
+    },
+    hitAnimation: {
+      src: "assets/sprites/characters/siga-2-hit.png", frames: 4, fps: 12, ...SIGA_2_CELL,
+      knockoutFrame: 1,
+    },
+  },
   siga3: sigaFighter(3, 73, 115, 1),
 
   // The guardia civil (Block 73). The still is the artist's (delivered

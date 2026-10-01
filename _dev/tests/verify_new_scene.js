@@ -231,7 +231,22 @@ const winOpeningFight = (page) => page.evaluate(async () => {
     hearts: !document.getElementById("hud").classList.contains("hidden"),
     cutscene: cutscenePlaying,
   };
+  // Block 96. The big one is the artist's, with a punch and a flinch of
+  // his own: hit once (of two) he shows the flinch, turned on Macario,
+  // and the blow that drops him leaves him falling in it. The lesson
+  // that holds the world for the first strike is put away first, or the
+  // loop would not draw him.
+  const big = ENEMIES.find((e) => e.id === "siga-away-2");
+  const loaded = (el, sheet) => !!el && !!sheet && !sheet.failed && !el.classList.contains("sprite-placeholder");
+  info.bigSheets = loaded(big.spriteEl, big.animation) && loaded(big.attackSpriteEl, big.attackAnimation) &&
+    loaded(big.hitSpriteEl, big.hitAnimation);
+  cancelTutorial("atake", "tanda");
+  hitEnemy(big, 1);
+  for (let i = 0; i < 3; i++) await new Promise((r) => requestAnimationFrame(r));
+  info.bigReels = big.hitSpriteEl.style.display !== "none" && big.spriteEl.style.visibility === "hidden" && !big.dead;
+  info.bigFacesHim = big.facing === (Math.sign(posX + PLAYER_WIDTH / 2 - (big.pos + ENEMY_WIDTH / 2)) || big.facing);
   ENEMIES.forEach((e) => { if (!e.dead) hitEnemy(e, 99); });
+  info.bigFallsInIt = big.dead && big.hitSpriteEl.style.display !== "none" && big.spriteEl.style.visibility === "hidden";
   return info;
 });
 const AT_HOME = [
@@ -587,6 +602,12 @@ const artDrift = () => {
      siga.every((g) => g.idle && g.walk), siga);
   ok("and stand at three heights, the big one tallest",
      siga[1].height > siga[0].height && siga[0].height > siga[2].height, siga);
+  ok("the big one is the artist's, animated from the still, at the height he had (Block 96)",
+     await page.evaluate(() => {
+       const d = currentScene.decorations.find((x) => x.id === "siga-2");
+       return d.animation.src === "assets/sprites/characters/siga-2.png" && d.animation.frames === 8 &&
+         d.animation.contentHeight === 405 && d.displayHeight === Math.round(134 * 137 / 127);
+     }));
 
   const c1 = await readConversation(page, 3);
   ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
@@ -595,6 +616,10 @@ const artDrift = () => {
   const brawl = await winOpeningFight(page);
   ok("the insult becomes a fight with the three siga, on their own art, hearts showing, Macario free to act",
      brawl.count === 3 && brawl.art && brawl.hearts && !brawl.cutscene, brawl);
+  ok("the big siga fights on the artist's walk, punch and flinch, none of them a box (Block 96)", brawl.bigSheets, brawl);
+  ok("a punch that does not drop him shows his flinch, turned on Macario (Block 96)",
+     brawl.bigReels && brawl.bigFacesHim, brawl);
+  ok("and the blow that drops him leaves him falling in it (Block 96)", brawl.bigFallsInIt, brawl);
 
   // Block 93. She comes from just past the right edge of the screen to a
   // step in front of him, wherever the fight left him, walking on her
