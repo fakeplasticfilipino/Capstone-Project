@@ -1515,6 +1515,7 @@ window.ACT_1 = {
           // from the oath on: his stand is in the first guard's beat, and
           // the run is at night. PLACEHOLDER, every line.
           id: "barbero", x: BARBERO_X, label: "Barbero", animation: BARBERO,
+          facesPlayer: true,
           hiddenByFlag: "tinanggapSaKatipunan",
           // Picked from the flags each time (Block 48).
           dialogueSets: [
@@ -1676,6 +1677,7 @@ window.ACT_1 = {
           // delivery, and the story's turn (Block 59). PLACEHOLDER,
           // every line.
           id: "direktor", x: DIREKTOR_X, label: "Direktor", animation: DIREKTOR,
+          facesPlayer: true,
           // With a requiresFlag among them, the set is picked from the
           // flags each time (CLAUDE.md, Block 48), so the one that takes
           // him inside comes first.
@@ -1741,6 +1743,7 @@ window.ACT_1 = {
           // the pulungan; a reload before the oath is over leaves him
           // here to be asked again. PLACEHOLDER, every line.
           id: "kasama", x: KASAMA_X, label: "Kasama", animation: KASAMA,
+          facesPlayer: true,
           startsHidden: true, revealedByFlag: "nilapitanNgKatipunan",
           // Block 95. Away while he comes to Macario after the rounds (a
           // decoration, kasama-kalye, thePamphletsDelivered); back here
@@ -1879,6 +1882,7 @@ window.ACT_1 = {
       npcs: [
         {
           id: "direktor", x: STAGE_DIREKTOR_X, label: "Direktor", animation: DIREKTOR,
+          facesPlayer: true,
           // Block 80. Picked from the flags (Block 48): before the first
           // play, after it, and four years on.
           dialogueSets: [
@@ -1907,6 +1911,7 @@ window.ACT_1 = {
         },
         {
           id: "maryam", x: STAGE_MARYAM_X, label: "Maryam", animation: MARYAM,
+          facesPlayer: true,
           dialogueSets: [
             {
               // PLACEHOLDER.
@@ -1976,6 +1981,7 @@ window.ACT_1 = {
       npcs: [
         {
           id: "kasama", x: PULUNGAN_KASAMA_X, label: "Kasama", animation: KASAMA,
+          facesPlayer: true,
           hiddenWhile: { requiresFlag: "lumipasAngIsangTaon", unlessFlag: "pinunoNgBalangay" },
           dialogueSets: [
             {
@@ -1995,6 +2001,7 @@ window.ACT_1 = {
         },
         {
           id: "mabalasig", x: MABALASIG_X, label: "Mabalasig", animation: MABALASIG,
+          facesPlayer: true,
           hiddenWhile: { requiresFlag: "lumipasAngIsangTaon", unlessFlag: "pinunoNgBalangay" },
           dialogueSets: [
             {
@@ -2014,6 +2021,7 @@ window.ACT_1 = {
         },
         {
           id: "katipunero", x: PULUNGAN_KATIPUNERO_X, label: "Katipunero", animation: KATIPUNERO,
+          facesPlayer: true,
           hiddenWhile: { requiresFlag: "lumipasAngIsangTaon", unlessFlag: "pinunoNgBalangay" },
           dialogueSets: [
             {

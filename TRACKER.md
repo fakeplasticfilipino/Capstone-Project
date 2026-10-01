@@ -9,7 +9,9 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 98 (six of the artist's stills
+Last updated: 1 Oct 2026, after Block 99 (people drawn side on turn to
+look at Macario; standing loops start at a random frame and speed, so
+nobody moves in step). Before that, Block 98 (six of the artist's stills
 in place of placeholders: the leader and the small siga, the direktor,
 the Katipunero, the Kasama, and the Mananahi; all but the Mananahi
 animated by the tool). Before that, Block 97 (any character delivered
@@ -22,7 +24,7 @@ take a hit sheet as guards do), Block 95 (the Kasama comes to Macario
 after the pamphlets; the Test Room removed) and Block 94 (the Barbero
 and his memory game; the end a year on, Tondo, 1895; three papers of
 facts in the Talaan). Earlier blocks: the Blocks list below, and
-DECISIONS.md. test.js 767 passed, 0 failed; verify_new_scene.js 237
+DECISIONS.md. test.js 767 passed, 0 failed; verify_new_scene.js 239
 passed, 0 failed. Everything is committed and pushed to main.
 
 A new session, on any device: read CLAUDE.md, then this file's Start
@@ -145,9 +147,9 @@ fault: everything built so far has been seen on a device.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v59    js/game.js v95       js/shell.js v21
+    css/style.css v59    js/game.js v96       js/shell.js v21
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v69  content/items.js v13  content/act2-4.js v1
+    content/act1.js v70  content/items.js v13  content/act2-4.js v1
     content/enemies.js v5   content/questions.js v1
     js/asset-manifest.js v6 (bumped by make-asset-manifest.js)
     ASSET_VERSION 34 (in js/game.js)
@@ -182,6 +184,17 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       sliding while standing, a dashed box, a seam or a smudge where an
       arm moved, the shawl or the bolo moving with a leg, or a cane that
       lifts.
+
+    Block 99, facing and breathing. On the street the direktor looks
+      left at Macario as he comes, and turns if Macario walks past him;
+      in the wings he looks right, at Macario on his right. In the
+      pulungan the Katipunero, the Kasama and (once drawn) the Mabalasig
+      look at him; so does the Kasama on the street, and Maryam on the
+      stage. The three siga, and anyone else standing together, breathe
+      out of step, each at his own pace. Failure: anyone still looking
+      away, a turn that flickers while Macario stands in front of
+      someone, a placeholder box whose name reads backwards, or
+      breathing in step.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -391,7 +404,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 237 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 239 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -523,6 +536,8 @@ machine, the assessment module.
     98  six of the artist's stills: the leader and the small siga, the
         direktor (breathing), the Katipunero, the Kasama, the Mananahi;
         draw-siga.js removed
+    99  people drawn side on look at Macario (facesPlayer); standing
+        loops start at a random frame and speed
 
 ## Blocks remaining
 
@@ -634,7 +649,7 @@ test.js (767 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (237 checks) drives the real
+what is covered. verify_new_scene.js (239 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is
@@ -645,7 +660,7 @@ other than "0 failed" is a regression, with one caution learned on
 timing check (the pamphlet guard catch) or lost a page ("Page crashed")
 once, and passed on the next run; rerun before believing either. test.js
 has not done it. Both never touch the live
-project. Both are green as of Block 98. The guard-catch flake was
+project. Both are green as of Block 99. The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check

@@ -653,6 +653,9 @@ NPC shape:
                                                  stretch (Block 85)
       opensShop: true,                           optional; see below
       opensShopAfter: "someFlag",                optional; talks, then sells
+      facesPlayer: true,                         optional; side-on art that
+                                                 turns to look at Macario
+                                                 (Block 99)
       nearSound: "assets/audio/sfx/x.mp3",       optional; loops while near
       displayHeight: 120,                        optional; drawn this tall
                                                  (Block 57)
@@ -1213,6 +1216,20 @@ pixelated, set by bodySprite from the fit itself rather than declared
 on the sheet. Horse.png, a 32px cell drawn about four and a half times
 its size, is the case it exists for; every 256px sheet in this project
 is scaled down or barely up and keeps the browser's smoothing.
+
+A loop that runs by itself (an NPC's, a decoration's or a guard's
+standing sheet: no frameAt, no playing, not loop: false) starts on a
+random frame and runs within NPC_RATE_SPREAD (10%) of its fps (Block
+99), so people standing together never move in step. A sheet whose
+frames mean something, a walk, a swing, a shot, a flinch, keeps its
+exact timing. A check that reads a standing sheet's frame cannot assume
+frame 0.
+
+An NPC with facesPlayer (Block 99) turns to whichever side Macario
+stands on, its art assumed to face right, past a deadband of
+NPC_TURN_DEADBAND (12) so it does not flicker while he stands in front
+of it; never while its sheet is unloaded or a placeholder box. Give it
+to every person drawn side on, not to front-facing art or the horse.
 
 Missing images do not break anything. They fall back to a dashed
 placeholder box showing the expected filename. A scene's own backdrop

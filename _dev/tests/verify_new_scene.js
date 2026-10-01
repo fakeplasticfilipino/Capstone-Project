@@ -900,6 +900,14 @@ const artDrift = () => {
   // ---------------------------------------------------------------
   console.log("\nThe direktor's missing actor");
   await walkTo(page, 13480);
+  // Block 99. He looks at Macario, who comes from the left.
+  const dkFace = await page.evaluate(() => {
+    const n = NPCS.find((x) => x.id === "direktor" && !x.hidden);
+    const side = Math.sign(posX + PLAYER_WIDTH / 2 - (n.x + NPC_WIDTH / 2));
+    return { side, drawn: n.drawnFacing, transform: n.spriteEl.style.transform };
+  });
+  ok("the direktor turns to look at Macario, come from the left (Block 99)",
+     dkFace.side === -1 && dkFace.drawn === -1 && dkFace.transform === "scaleX(-1)", dkFace);
   ok("beside him: Iabot ang damit", (await gift(page)) === "Iabot ang damit");
   const d0 = await readConversation(page, 2);
   ok("Macario hands over the costumes", d0.lines.length === 2 && /^Macario:/.test(d0.lines[0]), d0.lines);
@@ -1185,6 +1193,15 @@ const artDrift = () => {
   ok("and the Mabalasig says there was no fire", o3b.lines.length === 2 && /Walang apoy/.test(o3b.lines[1]), o3b.lines);
   const o4 = await readConversation(page, 4);
   ok("the oath", o4.lines.length === 3 && /Katipunan/.test(o4.lines[1]) && o4.lines[2] === "Macario: Isinusumpa ko po.", o4.lines);
+  // Block 99. The Katipunero in the pulungan looks at Macario too.
+  const kpFace = await page.evaluate(() => {
+    const n = NPCS.find((x) => x.id === "katipunero" && !x.hidden);
+    const side = Math.sign(posX + PLAYER_WIDTH / 2 - (n.x + NPC_WIDTH / 2));
+    return { side, drawn: n.drawnFacing, transform: n.spriteEl.style.transform };
+  });
+  ok("the Katipunero in the pulungan looks at Macario (Block 99)",
+     kpFace.side !== 0 && kpFace.drawn === kpFace.side &&
+     kpFace.transform === (kpFace.side < 0 ? "scaleX(-1)" : ""), kpFace);
   ok("signed in blood from his arm, on a black card", await waitIntertitle(page, true, 3000) &&
      /braso/.test((await intertitle(page)).lines[0]));
   await waitIntertitle(page, false, 12000);

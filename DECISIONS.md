@@ -3898,3 +3898,33 @@ settles the question left open on 1 Oct.
 
 game.js v95 (ASSET_VERSION 34), act1.js v69, enemies.js v5,
 asset-manifest.js v6.
+
+## Block 99: people look at Macario, and do not breathe in step
+
+At the proponent's request, 1 Oct 2026, after seeing Block 98: "people
+stare awkwardly to an opposite direction, like the direktor in the main
+scene (should be looking to the left, where macario comes from)", the
+Katipunero "stares blankly in the pulungan", and "randomize their
+animation... so they don't look like zombies moving in sync". Answered
+item by item first; the proponent chose both suggested fixes.
+
+An NPC never turned. Every sheet faces right, so the direktor at x 13600
+looked away from a Macario arriving from the left, and the Katipunero at
+x 920 away from one entering at x 120. A fixed facing per placement was
+the other option and was not taken: the same direktor stands in the
+wings at x 60 with Macario to his right, so no one direction is right
+for him, and every new placement would need its own. facesPlayer turns
+a side-on person to whichever side Macario stands on, written only on
+a change and never on a placeholder box, whose file name would read
+backwards; the Barbero and the Mabalasig carry it already and will turn
+once their art arrives. The Kutsero, Nanay and the Mananahi face the
+front and the horse is a horse, so they do not.
+
+Every free-running loop started on frame 0 the moment a scene loaded,
+at one fps, so three siga breathed as one. setupNpcAnimation now starts
+such a loop on a random frame and runs it within 10% of its fps. A sheet
+whose frames are tied to something (a walk, a swing, a shot, a flinch)
+is left exact. The spread is declared beside NPC_WIDTH, because loadAct
+reaches setupNpcAnimation at parse time.
+
+game.js v96, act1.js v70.

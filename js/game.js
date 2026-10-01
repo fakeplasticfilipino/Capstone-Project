@@ -152,6 +152,10 @@ const INTERACT_DISTANCE = 90;
 // what makes talking to someone forgiving on a touch screen. Exact
 // per-NPC widths are not tracked in content and do not need to be.
 const NPC_WIDTH = 80;
+// Block 99. A free-running loop's speed, spread this far either side of
+// its fps (setupNpcAnimation), so people standing together drift apart.
+// Up here because loadAct reaches setupNpcAnimation at parse time.
+const NPC_RATE_SPREAD = 0.1;
 // A guard's body is the same size as Macario's: guards catch, get hit and
 // get taken down, which are the same kind of contact his body has.
 const GUARD_WIDTH = PLAYER_WIDTH;
@@ -1156,6 +1160,9 @@ function buildNpcs(token) {
       el.appendChild(spriteEl);
       world.appendChild(el);
       setupNpcAnimation(npc.animation, spriteEl, npcHeight, token, NPC_WIDTH);
+      // Block 99. Kept for updateNpcFacing; the art faces right.
+      npc.spriteEl = spriteEl;
+      npc.drawnFacing = 1;
     } else {
       // Static image, falling back to a placeholder box showing the
       // expected filename if the file is missing. An <img> cannot
@@ -1290,6 +1297,13 @@ function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth, opts) {
   let frame = 0;
   let lastTime = 0;
   let wasPlaying = true;
+  // Block 99. A loop that runs by itself (an idle, a breath) starts on a
+  // random frame and runs a little faster or slower than its fps, so
+  // people standing together do not move in step. A sheet whose frame
+  // means something (a walk that starts with the step, a swing, a shot,
+  // a flinch) keeps its exact timing.
+  const free = !opts.frameAt && !opts.playing && opts.loop !== false;
+  const rate = free ? 1 - NPC_RATE_SPREAD + Math.random() * 2 * NPC_RATE_SPREAD : 1;
 
   loadSpriteSheet(sheet).then(() => {
     // The act may have changed while this image was loading.
@@ -1312,6 +1326,10 @@ function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth, opts) {
       el.style.backgroundPositionX = -(column * fit.displayFrameWidth) + "px";
       el.style.backgroundPositionY = -(row * fit.rowStep + fit.topOffset) + "px";
     };
+    if (free && sheet.frames > 1) {
+      frame = Math.floor(Math.random() * sheet.frames);
+      draw();
+    }
 
     npcAnimators.push({
       update(now) {
@@ -1336,7 +1354,7 @@ function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth, opts) {
             return;
           }
         }
-        const frameDuration = 1000 / sheet.fps;
+        const frameDuration = 1000 / (sheet.fps * rate);
         if (now - lastTime >= frameDuration) {
           lastTime = now;
           if (opts.loop === false && frame === sheet.frames - 1) return;
@@ -6700,6 +6718,32 @@ function playSfx(name) {
   tryPlay(el);
 }
 
+// Block 99. A person drawn side on (facesPlayer, in content) looks at
+// Macario: whichever side of him Macario stands on, turning as he walks
+// past. Before this an NPC only ever faced the way his art was drawn,
+// so the direktor on the street looked away from a Macario arriving
+// from the left, and in the wings, where Macario stands to his right,
+// a fixed facing would have been wrong the other way. NPC_TURN_DEADBAND
+// keeps him from flickering while Macario stands right in front of
+// him. Written only when the side changes (Block 36), and never to a
+// placeholder box, whose file name would read backwards: only once the
+// sheet has loaded (naturalWidth) does a sprite turn.
+const NPC_TURN_DEADBAND = 12;
+
+function updateNpcFacing() {
+  const centre = posX + PLAYER_WIDTH / 2;
+  for (const npc of NPCS) {
+    if (!npc.facesPlayer || npc.hidden || !npc.spriteEl) continue;
+    if (!npc.animation || npc.animation.failed || !npc.animation.naturalWidth) continue;
+    const off = centre - (npc.x + NPC_WIDTH / 2);
+    if (Math.abs(off) < NPC_TURN_DEADBAND) continue;
+    const dir = off < 0 ? -1 : 1;
+    if (dir === npc.drawnFacing) continue;
+    npc.spriteEl.style.transform = dir < 0 ? "scaleX(-1)" : "";
+    npc.drawnFacing = dir;
+  }
+}
+
 // Called every frame from the top of gameLoop, paused or not. Decides
 // which NPC ambience should be audible and eases each element's volume
 // toward that, so walking away fades Kabayo out rather than cutting him
@@ -6894,6 +6938,8 @@ function gameLoop(now) {
     requestAnimationFrame(gameLoop);
     return;
   }
+
+  updateNpcFacing();
 
   // Block 60. A hit-stop: nothing moves and no sprite steps a frame, but
   // the camera still shakes, so the blow lands on a held picture. The
