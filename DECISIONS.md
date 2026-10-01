@@ -3928,3 +3928,36 @@ is left exact. The spread is declared beside NPC_WIDTH, because loadAct
 reaches setupNpcAnimation at parse time.
 
 game.js v96, act1.js v70.
+
+## Block 100: the horse is the proponent's own
+
+The proponent dropped a still of their own into assets/ (a saddled bay,
+side on, facing right, 1024 by 559) and asked for it to replace the
+32px white horse, with a simple animation.
+
+animate-still.js was not used. Its rig is a person's (a head nodded at
+the neck, a torso, two legs split at the knee, an arm), and a horse
+fits none of it; bending the rig to four legs would be a second kind of
+character inside one tool. A held prop already set the precedent for a
+tool of its own (animate-bantay.js), so the horse has
+_dev/tools/animate-kabayo.js on the same lib/puppet.js and lib/png.js.
+It moves two parts and leaves the rest the still: the head and neck,
+nodded about the middle of a cut from the front of the saddle to the
+chest (cut 8px long behind the line so the seam stays covered), and the
+tail, swished about its root and drawn under the body. The tail only
+ever tucks in: swung out past where it hangs, its edge left a white
+sliver against the rump, seen on the first preview. Twelve frames at 6
+fps, a two second loop, small on purpose: a horse at rest.
+
+The still was saved as kabayo-still.png (its delivered name had a space,
+which Pages and url() both trip on) and the sheet replaces kabayo.png
+under the same name, so the street and the grooming game, which share
+KABAYO, both changed with no other content edit. Drawn at half the
+still's size: 262px of horse, more than the 120 it is drawn at.
+
+The Kutsero's own line said "puting kabayo" (a white horse), and the
+new horse is a bay. The line is the proponents', so it was asked about
+rather than changed; the proponent said to drop "puting", and it now
+reads "Alagaan mo 'yung kabayo sa kuwadra."
+
+game.js v97, act1.js v71, ASSET_VERSION 35.

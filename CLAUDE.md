@@ -76,6 +76,14 @@ still running, wait for them in the same turn; never report work as done
 while the working tree is dirty or main is ahead of origin. If a push
 fails, retry it rather than handing the proponent commands.
 
+ALWAYS PULL FIRST. Every session, local or cloud, starts with git pull
+on main before reading or editing anything, and pulls again before
+committing (the proponent, 1 Oct 2026). Work is done from more than one
+computer and from cloud sessions, so the local copy is routinely behind
+origin; a change built on a stale copy is a merge conflict or a lost
+block. Untracked files the pull leaves alone (a picture the proponent
+dropped in) are the proponent's: ask before committing or deleting one.
+
 ## Project
 
 MACARIO, a narrative-driven 2D RPG teaching the life and historical role of
@@ -154,8 +162,9 @@ off the repository.
                                animate-bantay.js, preview-sheet.js,
                                lib/png.js (Block 75), animate-still.js
                                (Block 97) and lib/puppet.js, the cut-out
-                               puppet both animate tools share (Block
-                               96), missing-art.js
+                               puppet the animate tools share (Block
+                               96), animate-kabayo.js, the horse
+                               (Block 100), missing-art.js
                                (Block 77), make-asset-manifest.js
                                (Block 78), make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js,
@@ -1922,7 +1931,8 @@ look, by system:
                                           still; enemies' hit sheet)
     animating a character from a still    Blocks 97, 98 (animate-still.js,
                                           rigs, the motion library; six
-                                          characters)
+                                          characters), 100 (the horse,
+                                          its own tool)
     enemy catalogue                       Block 76 (Blocks 73 and 74's
                                           test room removed in 95)
     these files compacted                 Block 79

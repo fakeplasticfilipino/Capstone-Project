@@ -125,6 +125,10 @@ forgotten.
         Where an arm or a sash moved off something, that is filled in
         from the colours around it. A sheet drawn by the artist would
         replace any of them under the same name.
+    Kabayo's head and tail (kabayo.png, Block 100). Made from the
+        proponent's still of a saddled bay (kabayo-still.png) by
+        _dev/tools/animate-kabayo.js: the head dips and the tail tucks
+        in, the rest is the still. It replaced the old 32px white horse.
     The bantay's walk, shot and flinch (bantay-walk, -shoot, -hit).
         Made from the artist's one still by _dev/tools/animate-bantay.js
         (Blocks 73, 75); the still itself (bantay.png) is the artist's.

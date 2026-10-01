@@ -45,6 +45,7 @@ window.ASSET_MANIFEST = [
   "assets/fonts/vt323.woff2",
   "assets/sprites/characters/direktor-still.png",
   "assets/sprites/characters/direktor.png",
+  "assets/sprites/characters/kabayo-still.png",
   "assets/sprites/characters/kabayo.png",
   "assets/sprites/characters/kasama-still.png",
   "assets/sprites/characters/kasama-walk.png",

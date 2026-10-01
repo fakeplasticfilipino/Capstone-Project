@@ -266,7 +266,7 @@ const KUTSERO = [
   "Macario: Kutsero, maaari po ba akong magtrabaho rito?",
   "Kutsero: Macario? Mabuti naman at naisipan mong magtrabaho.",
   "Macario: Kailangan na po, e. Nangangailangan po si Nanay.",
-  "Kutsero: O sige, magsimula ka na agad. Alagaan mo 'yung puting kabayo sa kuwadra.",
+  "Kutsero: O sige, magsimula ka na agad. Alagaan mo 'yung kabayo sa kuwadra.",
 ];
 const MANANAHI = [
   "Macario: Mananahi, tumatanggap po ba kayo ng trabahador?",
@@ -631,6 +631,17 @@ const artDrift = () => {
      people.open.every(Boolean), people);
   ok("and the Katipunero and the Kasama walk on their walk sheets, facing the way they go (Block 98)",
      people.walkers === 5 && people.walk, people);
+
+  // Block 100. Kabayo is the proponent's saddled bay, animated from the
+  // still: the sheet opens and plays its twelve frames on the street.
+  const kabayo = await page.evaluate(async () => {
+    await loadSpriteSheet(KABAYO);
+    const npc = window.ACT_1.scenes.flatMap((s) => s.npcs || []).find((n) => n.id === "kabayo");
+    return { open: !KABAYO.failed && KABAYO.frameHeight > 0, frames: KABAYO.frames,
+             same: npc && npc.animation === KABAYO };
+  });
+  ok("Kabayo is the proponent's horse, its twelve-frame sheet opening (Block 100)",
+     kabayo.open && kabayo.frames === 12 && kabayo.same, kabayo);
 
   const c1 = await readConversation(page, 3);
   ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);

@@ -128,7 +128,7 @@ Act I lives on it, left to right:
     x 900      where Macario stands when the game opens
     x 2000     Nanay, where she and Macario walk to in the opening
     x 3300     the Kutsero
-    x 3560     his white horse, Kabayo (used with E, not talked to)
+    x 3560     his horse, Kabayo (used with E, not talked to)
     x 4100     the pulungan's back door, where he comes out onto the
                street with the pamphlets
     x 4800     the mangingisda (four years on, once Macario is sworn in)
@@ -179,7 +179,8 @@ with the file name on it.
                    One speaks alone ("Siga"), all three laugh ("Mga
                    Siga").
     Kutsero        a carriage driver, Macario's first employer. Real art.
-    Kabayo         the kutsero's white horse. Real art.
+    Kabayo         the kutsero's horse, a saddled bay. The proponent's
+                   still, animated by a tool (Block 100).
     Barbero        a barber, his third employer (Block 94). Placeholder
                    box (barbero.png), with his chair (silya-barbero.png).
     Suki           the barber's customer, heard only in the barber's game,
@@ -287,7 +288,7 @@ tondo, x 3300. Walk up and talk (Usap).
     Macario: Kutsero, maaari po ba akong magtrabaho rito?
     Kutsero: Macario? Mabuti naman at naisipan mong magtrabaho.
     Macario: Kailangan na po, e. Nangangailangan po si Nanay.
-    Kutsero: O sige, magsimula ka na agad. Alagaan mo 'yung puting kabayo sa kuwadra.
+    Kutsero: O sige, magsimula ka na agad. Alagaan mo 'yung kabayo sa kuwadra.
   + Kutsero: Suklayin mo siya. Bawat linis na matapos mo, may bayad ka sa akin.
 
 Completes: Maghanap ng trabaho: kausapin ang Kutsero.

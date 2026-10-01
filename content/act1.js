@@ -143,10 +143,12 @@ const MANANAHI = {
   src: "assets/sprites/characters/mananahi.png", frames: 1, fps: 1,
   contentTop: 32, contentHeight: 515, footX: 521,
 };
-// The white horse: a 22-frame strip of 32px cells.
+// The Kutsero's horse (Block 100): the proponent's still of a saddled
+// bay, animated by _dev/tools/animate-kabayo.js to dip his head and tuck
+// his tail, a horse at rest. The grooming game draws the same sheet.
 const KABAYO = {
-  src: "assets/sprites/characters/kabayo.png", frames: 22, fps: 10, columns: 22,
-  contentTop: 2, contentHeight: 30, footX: 19,
+  src: "assets/sprites/characters/kabayo.png", frames: 12, fps: 6, columns: 4,
+  contentTop: 4, contentHeight: 262, footX: 115, headroom: 4,
 };
 // The direktor (Block 98), on the street and inside alike: the artist's
 // still of an old man with a cane and the play under his arm, animated by
@@ -1464,7 +1466,7 @@ window.ACT_1 = {
                 { speaker: "Macario", text: "Kutsero, maaari po ba akong magtrabaho rito?" },
                 { speaker: "Kutsero", text: "Macario? Mabuti naman at naisipan mong magtrabaho." },
                 { speaker: "Macario", text: "Kailangan na po, e. Nangangailangan po si Nanay." },
-                { speaker: "Kutsero", text: "O sige, magsimula ka na agad. Alagaan mo 'yung puting kabayo sa kuwadra." },
+                { speaker: "Kutsero", text: "O sige, magsimula ka na agad. Alagaan mo 'yung kabayo sa kuwadra." },
                 // PLACEHOLDER. What the work is, and that it pays each time.
                 { speaker: "Kutsero", text: "Suklayin mo siya. Bawat linis na matapos mo, may bayad ka sa akin." },
               ],
@@ -1498,7 +1500,7 @@ window.ACT_1 = {
           ],
         },
         {
-          // The white horse, beside the Kutsero: something to use rather
+          // The horse, beside the Kutsero: something to use rather
           // than someone to talk to (Block 89).
           id: "kabayo", x: KABAYO_X, label: "Kabayo", animation: KABAYO,
           displayHeight: 120,
