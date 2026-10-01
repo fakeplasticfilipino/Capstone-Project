@@ -9,23 +9,18 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 99 (people drawn side on turn to
-look at Macario; standing loops start at a random frame and speed, so
-nobody moves in step). Before that, Block 98 (six of the artist's stills
-in place of placeholders: the leader and the small siga, the direktor,
-the Katipunero, the Kasama, and the Mananahi; all but the Mananahi
-animated by the tool). Before that, Block 97 (any character delivered
-as one still is animated by one tool, animate-still.js, and a rig per
-character in _dev/rigs/; CLAUDE.md has the steps); the proponent tested
-Blocks 90 to 97 on the phone on 1 Oct, with no fault reported. Before
-that, Block 96 (the big siga is the artist's,
-from one still, with a breath, a swagger, a punch and a flinch; enemies
-take a hit sheet as guards do), Block 95 (the Kasama comes to Macario
-after the pamphlets; the Test Room removed) and Block 94 (the Barbero
-and his memory game; the end a year on, Tondo, 1895; three papers of
-facts in the Talaan). Earlier blocks: the Blocks list below, and
-DECISIONS.md. test.js 767 passed, 0 failed; verify_new_scene.js 239
-passed, 0 failed. Everything is committed and pushed to main.
+Last updated: 1 Oct 2026, after Block 99. The day's work, newest
+first: Block 99, people drawn side on turn to look at Macario and
+standing loops start at a random frame and speed; Block 98, six of the
+artist's stills in place of placeholders (the leader and the small
+siga, the direktor, the Katipunero, the Kasama, the Mananahi); Block
+97, one tool and a rig per character for animating any still; Block
+96, the big siga from the artist's still, and enemies' hit sheet.
+Blocks 90 to 97 were tested on the phone that day with no fault
+reported; Blocks 98 and 99 have not been seen on a device yet (Next
+action 1). Earlier blocks: the Blocks list below, and DECISIONS.md.
+test.js 767 passed, 0 failed; verify_new_scene.js 239 passed, 0
+failed. Everything is committed and pushed to main.
 
 A new session, on any device: read CLAUDE.md, then this file's Start
 here and Next action, then STORY.md before touching content. A
@@ -143,7 +138,9 @@ from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
 Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
 the proponent tested Blocks 90 to 97 on the phone and reported no
-fault: everything built so far has been seen on a device.
+fault. Blocks 98 and 99 (the six new characters; facing and breathing
+out of step) are pushed and not yet seen on a device: Next action 1
+says what to look for.
 
 Current versions, which index.html must match on every push:
 
