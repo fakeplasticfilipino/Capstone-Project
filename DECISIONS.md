@@ -4017,3 +4017,40 @@ none). test.js's example of owed art that is never asked for moved from
 the Barbero's, which arrived, to the karpintero's.
 
 game.js v98 (ASSET_VERSION 36), act1.js v72, enemies.js v6.
+
+## Block 102: the three on the night, an easier barber, an empty street
+
+The proponent delivered stills of the three who take the pamphlets
+("they're just stationary"), asked for the barber's game to be easier
+and paid "1 point = 4 to 7 gold, you only need one run to reach 20
+gold (maximum)", and for the night to hold only the three and the
+guards.
+
+The three face the front and are used as they are, as the Kutsero is
+since Block 101 (citizenArt in content/act1.js); the owed list is down
+to the chair, the sewing table and the pulungan.
+
+The barber. Four rounds of two to five words could never make 20 in one
+run at 4 a point. It is five rounds now, the requests two, two, three,
+three and four words long, each word on screen 1.1 seconds instead of
+0.9 and the whole request held a second instead of 0.7: a game a Grade 8
+student finishes rather than fails. Each round right pays 4 to 7 at
+random and he pays 20 in all (BARBER_JOB.cap), so five right is always
+all of it and one good run is the job. The other two jobs keep their 25
+and their pay by the round's quality; the savings stay reachable, since
+the play alone pays 79 to 110. The harness holds Math.random at its
+middle for its one game, so the act's sums it checks later stay fixed.
+
+The night. From the oath to the report (PAMPHLET_NIGHT) Nanay, the
+Kutsero, the Mananahi, the direktor and the Kasama are away, so the
+students meet only the three and the guardia civil, which is also what
+the Kasama tells them to look for. hiddenWhile now takes a list, since
+the Mananahi already had a stretch of her own (away at the play). The
+Kasama's own stretch starts at the oath rather than the end of the
+rounds; he still comes to Macario after the third. The horse, the chair
+and the tahian stay, being no one. Nanay's "Ginagabi ka na naman..."
+could no longer be heard and was removed; the Kasama's "Huwag kang
+tumambay rito" stays as his last resort, the set a conversation falls
+back to, though nothing reaches it now.
+
+game.js v99 (ASSET_VERSION 37), act1.js v73.

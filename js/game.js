@@ -248,7 +248,7 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 36;
+const ASSET_VERSION = 37;
 
 function assetUrl(path) {
   if (!path) return path;
@@ -1387,7 +1387,9 @@ function npcShouldHide(npc) {
   // Block 85. Away for a stretch of the story and back after it
   // ({ requiresFlag, unlessFlag }, read as a guard's duty is): the
   // Mananahi at the play, away from her shop until the years pass.
-  if (npc.hiddenWhile && guardOnDuty(npc.hiddenWhile)) return true;
+  // Block 102: a list of such stretches, any of which hides it (the
+  // Mananahi away at the play, and off the street on the pamphlet night).
+  if (npc.hiddenWhile && [].concat(npc.hiddenWhile).some(guardOnDuty)) return true;
   return Boolean(npc.startsHidden) && !state.flags[npc.revealedByFlag];
 }
 
@@ -5628,8 +5630,9 @@ function playWorkGame(opts) {
 // rounds done right, or -1 if he left before the last. Content names the
 // words and decides what they are worth, as with playWorkGame.
 const ORDER_LENGTHS = [2, 3, 4, 5];
-const ORDER_WORD_MS = 900;   // each word of the request on screen
-const ORDER_HOLD_MS = 700;   // the whole request, before it is taken away
+// Block 102: slower, at the proponent's word that the game was too hard.
+const ORDER_WORD_MS = 1100;  // each word of the request on screen
+const ORDER_HOLD_MS = 1000;  // the whole request, before it is taken away
 const ORDER_NEXT_MS = 1300;  // after a round, before the next request
 
 function playOrderGame(opts) {

@@ -35,7 +35,9 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 1 Oct 2026, Block 101 (six owed: the proponent's own
+Last updated: 1 Oct 2026, Block 102 (three owed: the proponent's
+stills of the three who take the pamphlets arrived, used as they are,
+facing the front). Before that, Block 101 (six owed: the proponent's own
 stills of Nanay, the Mabalasig, the Barbero, the Kutsero, Maryam, the
 Sultan and the kawal arrived; the side-on and three-quarter ones are
 animated by animate-still.js, the front ones stand still; Nanay's walk
@@ -61,14 +63,6 @@ pulungan).
 ## Owed
 
 Named by the game and missing. Each is a placeholder box today.
-
-    assets/sprites/characters/karpintero.png
-    assets/sprites/characters/tabakera.png
-    assets/sprites/characters/mangingisda.png
-        The three who take the pamphlets, on the street once Macario is
-        sworn in: a carpenter (x 10600), a woman from the cigar factory
-        (x 6900) and a fisherman (x 4800). Talk and take a pamphlet; an
-        idle sheet each is enough. (NOT STARTED)
 
     assets/sprites/scenery/silya-barbero.png
         The Barbero's chair, beside him (x 5440), where Macario plays the

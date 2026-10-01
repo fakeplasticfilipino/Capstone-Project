@@ -145,7 +145,10 @@ Act I lives on it, left to right:
 
 The siga are not on the street after the opening: they walk on behind
 Macario at the very start and are gone when he walks off with Nanay.
-Everyone else stays through the four years.
+Everyone else stays through the four years. On the pamphlet night,
+from the oath to the report (Block 102), nobody is out but the three
+and the guardia civil: Nanay, the Kutsero, the Mananahi, the direktor
+and the Kasama are away; the horse, the chair and the tahian stay.
 
 entablado, inside the theatre. One painting of a stage (curtains, a
 painted backdrop of a Moorish city by the sea), one phone screen wide,
@@ -223,8 +226,10 @@ with the file name on it.
                    renamed in Block 81.)
     Mangingisda,   the three who take the pamphlets: a fisherman, a
     Tabakera,      woman from the cigar factory and a carpenter.
-    Karpintero     Placeholder boxes (mangingisda.png, tabakera.png,
-                   karpintero.png).
+    Karpintero     The proponent's stills (Block 102), facing the front,
+                   standing still: a fisherman with a net and a hat on his
+                   back, a woman with a cigar and a bundle of leaves, a
+                   young carpenter with a rule and a hammer.
     Guardia civil  three bantay on the street, on the pamphlet run
                    only. Real art (the bantay of the enemy catalogue).
 
@@ -358,21 +363,22 @@ The chair's button reads Gupitin. Before he has been spoken to:
   + Macario (sa isip): Silya ito ng Barbero. Kausapin ko muna siya.
 
 The barber's game is his own (game.js, playOrderGame), not the work
-game: in each of four rounds the customer asks for the cut as a list of
+game: in each of five rounds the customer asks for the cut as a list of
 tools, said one word at a time and then taken away, two words the first
-round and five the last, and Macario uses the tools in that order (three
-buttons, Suklay, Gunting and Labaha, or the keys 1 to 3). A wrong tool
-ends the round. The same pay as the other jobs: 4 to 7 a round by the
-rounds done right, 25 in all.
+two rounds, three the next two and four the last (Block 102, made
+easier at the proponent's word), and Macario uses the tools in that
+order (three buttons, Suklay, Gunting and Labaha, or the keys 1 to 3).
+A wrong tool ends the round. Each round right pays 4 to 7 barya, 20 in
+all from him, so one good run is all of it.
 
   + (the game) Barberya / Tandaan ang gusto ng suki
   + (the request) Suki: Suklay, Gunting, Labaha.
   + (the request taken away) Ikaw na!
   + (a round right) Tama ang pagkakasunod-sunod!
   + (a wrong tool) Naku, hindi 'yan ang gusto ng suki!
-  + (the end) n/4 ang maayos. +n barya
+  + (the end) n/5 ang maayos. +n barya
   + Barbero: Sapat na ang nagupit mo ngayon, iho. Bukas ulit.
-    (once he has paid his 25)
+    (once he has paid his 20)
 
 Completes, with the first round: Magtrabaho sa barberya.
 
@@ -923,8 +929,6 @@ Nanay:
     (before the savings)
     Nanay: Ituloy mo lang 'yan, 'nak. Malayo ang mararating mo sa buhay.
     (after)
-  + Nanay: Ginagabi ka na naman, anak. Mag-ingat ka sa mga guardia civil sa labas.
-    (once he is sworn in; she does not know)
 
 Kutsero:
 
@@ -988,7 +992,8 @@ Kasama, on the street:
   + Kasama: Ano pa'ng hinihintay mo? Sumunod ka na.
     (the word said, after a reload before the oath; takes him in)
   + Kasama: Huwag kang tumambay rito. Ipamigay mo na ang mga polyeto.
-    (during the pamphlets)
+    (his last resort; since Block 102 he is off the street during the
+    pamphlets, so it is not heard)
   + Kasama: Sa pulungan na tayo mag-usap, Pangulo. Maraming mata ang kalye.
     (after the report, Block 95)
 

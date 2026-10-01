@@ -837,13 +837,25 @@ const artDrift = () => {
     document.querySelector("#btn-interact .lbl").textContent === "Gupitin" &&
     document.querySelector("#btn-interact .ico use").getAttribute("href") === "#i-scissors" &&
     /silya-barbero.png/.test(document.getElementById("npc-silya").textContent)));
+  // Block 102. Each round right pays 4 to 7 at random, up to 20 from him;
+  // a perfect run (five) is always all of it.
+  ok("the barber pays 4 to 7 a round right, and five right is always his 20 (Block 102)", await page.evaluate(() => {
+    for (let i = 0; i < 200; i++) {
+      const one = jobPay(BARBER_JOB, 1, 0, 5);
+      if (one < 4 || one > 7 || jobPay(BARBER_JOB, 5, 0, 5) !== 20 || jobPay(BARBER_JOB, 3, 18, 5) !== 2) return false;
+    }
+    return true;
+  }));
+  // The pay is random; held at its middle for this one game (6 a round)
+  // so the sums the rest of the act is checked against stay fixed.
+  await page.evaluate(() => { window.__random = Math.random; Math.random = () => 0.5; });
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
   const ord0 = await orderState(page);
-  ok("E opens the barber's own game, not the work game: three tools and four rounds, with the world blocked",
+  ok("E opens the barber's own game, not the work game: three tools and five rounds, with the world blocked",
      ord0.up && ord0.title === "Barberya" && !(await workState(page)).up &&
      JSON.stringify(ord0.tools) === '["1 Suklay","2 Gunting","3 Labaha"]' &&
-     JSON.stringify(ord0.icons) === '["#i-comb","#i-scissors","#i-razor"]' && ord0.marks.length === 4 &&
+     JSON.stringify(ord0.icons) === '["#i-comb","#i-scissors","#i-razor"]' && ord0.marks.length === 5 &&
      await page.evaluate(() => uiBlocked), ord0);
   await page.waitForTimeout(500);
   ok("the Suki says what he wants, a word at a time", /^Suki: (Suklay|Gunting|Labaha)/.test((await orderState(page)).ask));
@@ -853,16 +865,20 @@ const artDrift = () => {
      asked.length === 2 && ord1.marks[0] === "order-ok" && /Tama/.test(ord1.result), { asked, ord1 });
   const asked2 = await orderRound(page, false);
   const ord2 = await orderState(page);
-  ok("the second is three, and a wrong tool ends the round", asked2.length === 3 && ord2.marks[1] === "order-bad", ord2);
-  const asked3 = await orderRound(page, true);
-  await orderRound(page, true);
-  const ord4 = await orderState(page);
-  ok("then four and five; three of four right pays 6, and the button says Tapos na",
-     asked3.length === 4 && JSON.stringify(ord4.marks) === '["order-ok","order-bad","order-ok","order-ok"]' &&
-     /3\/4 ang maayos\. \+6 barya/.test(ord4.hint) && ord4.stop === "Tapos na", ord4);
+  ok("the second is two again, and a wrong tool ends the round (Block 102)",
+     asked2.length === 2 && ord2.marks[1] === "order-bad", ord2);
+  const asked3 = await orderRound(page, false);
+  const asked4 = await orderRound(page, false);
+  const asked5 = await orderRound(page, false);
+  const ord5 = await orderState(page);
+  ok("then three, three and four; one of five right pays 6, and the button says Tapos na",
+     asked3.length === 3 && asked4.length === 3 && asked5.length === 4 &&
+     JSON.stringify(ord5.marks) === '["order-ok","order-bad","order-bad","order-bad","order-bad"]' &&
+     /1\/5 ang maayos\. \+6 barya/.test(ord5.hint) && ord5.stop === "Tapos na", ord5);
   ok("the keys the game takes do not move Macario", (await page.evaluate(() => posX)) === 5480);
   await page.click("#order-stop");
   await page.waitForTimeout(250);
+  await page.evaluate(() => { Math.random = window.__random; });
   ok("closing gives him the world back and the pay", await page.evaluate(() =>
     !uiBlocked && Game.currency() === 20 && state.flags.kitaSaBarbero === 6));
   ok("the first game finishes the step, and the log moves on to the Mananahi",
@@ -1254,8 +1270,9 @@ const artDrift = () => {
 
   console.log("\nThe pamphlets, past the guardia civil");
   const street = await page.evaluate(() => NPCS.filter((n) => !n.hidden).map((n) => n.id).join(","));
-  ok("the three are on the street now, and everyone else still is",
-     street === "nanay,kutsero,kabayo,tahian,mananahi,direktor,kasama,mangingisda,tabakera,karpintero", street);
+  // Block 102. The night is theirs and the guards': nobody else is out.
+  ok("the three are on the street now, and the people of the day are gone for the night (Block 102)",
+     street === "kabayo,tahian,mangingisda,tabakera,karpintero", street);
   const p1 = await panels(page);
   ok("nobody stands behind a tree", p1.blocked.length === 0, p1.blocked);
   const night = await page.evaluate(() => ({
@@ -1330,14 +1347,11 @@ const artDrift = () => {
   const all = await doneInSettings(page);
   ok("settings lists the twelve finished tasks", all.length === 12 && all[0] === "Umuwi kasama si Nanay" &&
      all[3] === STEP.barber && all[11] === STEP.join, all);
-  const nanayLine = await page.evaluate(() => {
-    const n = NPCS.find((x) => x.id === "nanay");
-    startDialogue(n);
-    const l = dialogueText.textContent;
-    endDialogue();
-    return l;
-  });
-  ok("Nanay does not know, and worries", /guardia civil/.test(nanayLine), nanayLine);
+  // Block 102. Nanay is home for the night, with the rest of the day's
+  // people: the street is the three's and the guards'.
+  const away = await page.evaluate(() => ["nanay", "kutsero", "mananahi", "direktor", "kasama"]
+    .map((id) => NPCS.find((x) => x.id === id)).every((n) => n.hidden));
+  ok("Nanay and the day's people stay off the street all night (Block 102)", away);
   await handOver(10600, "Karpintero", 3);
 
   ok("a line shown is remembered as read, for fast-forwarding (Block 85)", await page.evaluate(() => {

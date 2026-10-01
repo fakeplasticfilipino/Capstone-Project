@@ -9,8 +9,9 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 101. The day's work, newest
-first: Block 101, the proponent's seven characters replace the old
+Last updated: 1 Oct 2026, after Block 102. The day's work, newest
+first: Block 102, the pamphlet three's art, an easier barber, an empty
+night street; Block 101, the proponent's seven characters replace the old
 art and placeholders, and the idle is calm; Block 100, the horse is
 the proponent's own still, animated;
 Block 99, people drawn side on turn to look at Macario and
@@ -20,9 +21,9 @@ siga, the direktor, the Katipunero, the Kasama, the Mananahi); Block
 97, one tool and a rig per character for animating any still; Block
 96, the big siga from the artist's still, and enemies' hit sheet.
 Blocks 90 to 97 were tested on the phone that day with no fault
-reported; Blocks 98 to 101 have not been seen on a device yet (Next
+reported; Blocks 98 to 102 have not been seen on a device yet (Next
 action 1). Earlier blocks: the Blocks list below, and DECISIONS.md.
-test.js 767 passed, 0 failed; verify_new_scene.js 241 passed, 0
+test.js 767 passed, 0 failed; verify_new_scene.js 242 passed, 0
 failed. Everything is committed and pushed to main.
 
 A new session, on any device: read CLAUDE.md, then this file's Start
@@ -147,12 +148,12 @@ says what to look for.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v59    js/game.js v98       js/shell.js v21
+    css/style.css v59    js/game.js v99       js/shell.js v21
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v72  content/items.js v13  content/act2-4.js v1
+    content/act1.js v73  content/items.js v13  content/act2-4.js v1
     content/enemies.js v6   content/questions.js v1
-    js/asset-manifest.js v8 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 36 (in js/game.js)
+    js/asset-manifest.js v9 (bumped by make-asset-manifest.js)
+    ASSET_VERSION 37 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v2
@@ -221,6 +222,16 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       a leg, a dashed box where a character should be, or breathing you
       can see from across the street.
 
+    Block 102, the night and the barber. The barber's game is five short
+      requests (two, two, three, three, four tools), said more slowly;
+      each round right pays 4 to 7, and one good run reaches his 20.
+      On the pamphlet night the street holds only the mangingisda, the
+      tabakera and the karpintero (now the proponent's art, standing
+      still) and the guards: no Nanay, Kutsero, Mananahi, direktor or
+      Kasama until the Kasama comes for him after the third. Failure:
+      anyone else on the night street, a dashed box for one of the three,
+      or a perfect barber run paying less than 20.
+
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
 stroke, and whether students find the Kasama and the three who take
@@ -259,10 +270,9 @@ worth one matched pair. The item bank and the story agree on 1894. The
 post-test runs, so this decides whether the study measures anything; do
 it before the pilot.
 
-5. Art from the artist: ART.md's Owed list, nine pictures since Block
-98 (the Mabalasig, the three who take the pamphlets, the pulungan's
-painting, Nanay's side-view walk, the Mananahi's sewing table, and the
-Barbero and his chair). PNGs with transparency; each goes through ART.md's steps.
+5. Art from the artist: ART.md's Owed list, three pictures since Block
+102 (the pulungan's painting, the Mananahi's sewing table and the
+Barbero's chair). PNGs with transparency; each goes through ART.md's steps.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
@@ -429,7 +439,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 241 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 242 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -570,6 +580,9 @@ machine, the assessment module.
         the kawal animated; the Kutsero, the Barbero, Maryam still);
         march, thrust, legSplit and stride in animate-still.js; the idle
         calmed to a quarter for everyone
+    102 the three who take the pamphlets (stills); the barber's game
+        easier, 4 to 7 a round right, 20 in one run; the night street
+        empty but for the three and the guards
 
 ## Blocks remaining
 
@@ -681,7 +694,7 @@ test.js (767 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (241 checks) drives the real
+what is covered. verify_new_scene.js (242 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is

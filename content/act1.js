@@ -186,9 +186,7 @@ const SULTAN = {
 // sway and a nod; walking, when a scene walks them on or off
 // (walkAnimation, with faceMovement so they face the way they go; the
 // art faces right). Since Block 101 the Mabalasig is the proponent's
-// still, side on, idle only (rig _dev/rigs/mabalasig.js); the three who
-// take the pamphlets are owed (ART.md).
-const owed = (name) => ({ src: `assets/sprites/characters/${name}.png`, frames: 1, fps: 1 });
+// still, side on, idle only (rig _dev/rigs/mabalasig.js).
 const stillAnimated = (name, cell) => ({
   idle: { src: `assets/sprites/characters/${name}.png`, frames: 8, fps: 4, ...cell },
   walk: { src: `assets/sprites/characters/${name}-walk.png`, frames: 8, fps: 12, ...cell },
@@ -340,7 +338,10 @@ const SEWING_JOB = {
 // Block 94. The third job, the Barbero's chair, with a game of its own at
 // the proponent's request (game.js, playOrderGame): the customer asks
 // for the cut as a list of tools, and Macario uses them in that order.
-// Paid like the other two, and its first round is the step in the log.
+// Its first round is the step in the log. Block 102, at the proponent's
+// word: easier (five short requests, two tools up to four, said more
+// slowly) and paid by the round right, 4 to 7 barya each, up to 20 from
+// him, so one good run is all of it.
 const BARBER_JOB = {
   game: "order",
   earned: "kitaSaBarbero",
@@ -358,8 +359,10 @@ const BARBER_JOB = {
   missText: "Naku, hindi 'yan ang gusto ng suki!",
   giver: "Barbero",
   fullText: "Sapat na ang nagupit mo ngayon, iho. Bukas ulit.",
+  lengths: [2, 2, 3, 3, 4],
+  payPerRound: true,
+  cap: 20,
 };
-const BARBER_ROUNDS = 4;
 // The sewing he does before the Mananahi stops him, counted in the quest
 // line (countFlags) and by the flags below.
 const SEWING_BEFORE_ERRAND = 2;
@@ -375,22 +378,29 @@ const DIREKTOR_FLAG = "naihatidKay_direktor";
 // (Block 81) the order he meets them from the back door: the mangingisda
 // before the apple tree, the tabakera past the Mananahi, the karpintero
 // past the middle of the street. All clear of the joins by 270px or more. Names and
-// lines are PLACEHOLDER; their art is owed.
+// lines are PLACEHOLDER. Their art is the proponent's (Block 102): stills
+// facing the front, standing still, as the Kutsero does.
+const citizenArt = (name, contentTop, contentHeight, footX) =>
+  ({ src: `assets/sprites/characters/${name}.png`, frames: 1, fps: 1, contentTop, contentHeight, footX });
 const CITIZENS = [
-  { id: "mangingisda", label: "Mangingisda", x: 4800, animation: owed("mangingisda"),
+  { id: "mangingisda", label: "Mangingisda", x: 4800, animation: citizenArt("mangingisda", 22, 524, 517),
     waiting: "Maaga pa ako bukas sa laot. Ano'ng kailangan mo?",
     thanks: "Matagal ko nang hinihintay 'to. Sa bangka ko itatago, walang guardia na sumisilip doon.",
     after: "Nabasa ko na. Ipinasa ko na rin sa kapitbahay." },
-  { id: "tabakera", label: "Tabakera", x: 6900, animation: owed("tabakera"),
+  { id: "tabakera", label: "Tabakera", x: 6900, animation: citizenArt("tabakera", 29, 508, 511),
     waiting: "Pagod na ako, iho. Maghapon akong nagbalot ng tabako.",
     thanks: "Isisingit ko 'to sa mga tabako. Maraming babae sa pagawaan ang dapat makabasa nito.",
     after: "Kumakalat na sa pagawaan ang ibinigay mo. Mag-ingat ka, ha." },
-  { id: "karpintero", label: "Karpintero", x: 10600, animation: owed("karpintero"),
+  { id: "karpintero", label: "Karpintero", x: 10600, animation: citizenArt("karpintero", 26, 512, 514),
     waiting: "Gabi na, iho. Sarado na ang talyer.",
     thanks: "Katipunan? ...Itatago ko 'to. Ipapabasa ko sa mga kasama ko sa talyer.",
     after: "Wala akong nakita, wala akong narinig. Ingat ka, iho." },
 ];
 const pamphletFlag = (c) => "naibigayAngPolyetoKay_" + c.id;
+// Block 102, at the proponent's word. The pamphlet night, from the oath
+// to the report: the street holds only the three and the guardia civil,
+// so everyone else is away (hiddenWhile). The horse and the work stay.
+const PAMPHLET_NIGHT = { requiresFlag: "tinanggapSaKatipunan", unlessFlag: "nakapagUlat" };
 const PAMPHLET_FLAGS = CITIZENS.map(pamphletFlag);
 
 // -------------------------------------------------------------
@@ -445,7 +455,7 @@ async function openingOnTheStreet() {
   // Nanay, from the right. Block 93: from just past the edge of the
   // screen to a step in front of him, wherever the fight left him; a
   // fixed spot put her off screen when he had fought his way left. She
-  // walks on the owed walk sheet (a placeholder box until it arrives).
+  // walks on her walk sheet (Block 101).
   const here = playerX();
   placeDecoration("nanay", Math.max(here + NANAY_MEETS, viewEdges().right + 80));
   showDecoration("nanay", true);
@@ -1102,23 +1112,30 @@ async function theYearAfter() {
 // here is a step of the story except the first round, which finishes the
 // quest line's step, and the Mananahi stopping him at the sewing.
 // -------------------------------------------------------------
-function jobPay(good, earned, rounds) {
-  const pay = JOB_PAY_MIN + Math.round((JOB_PAY_MAX - JOB_PAY_MIN) * good / rounds);
-  return Math.max(0, Math.min(pay, JOB_CAP - earned));
+function jobPay(job, good, earned, rounds) {
+  const cap = job.cap || JOB_CAP;
+  // The barber pays by the round right (Block 102); the others by how
+  // good the round was as a whole.
+  const pay = job.payPerRound
+    ? Array.from({ length: good }, () => JOB_PAY_MIN + Math.floor(Math.random() * (JOB_PAY_MAX - JOB_PAY_MIN + 1)))
+      .reduce((a, b) => a + b, 0)
+    : JOB_PAY_MIN + Math.round((JOB_PAY_MAX - JOB_PAY_MIN) * good / rounds);
+  return Math.max(0, Math.min(pay, cap - earned));
 }
 
 // One round. Returns how many barya it paid, or -1 if he left it. The
 // barber's job plays its own game (Block 94); the other two the work game.
 async function workAt(job) {
   const earned = Number(state.flags[job.earned]) || 0;
-  if (earned >= JOB_CAP) {
+  const cap = job.cap || JOB_CAP;
+  if (earned >= cap) {
     await playDialogue([{ speaker: job.giver, text: job.fullText }]);
     return -1;
   }
   let pay = 0;
-  const rounds = job.game === "order" ? BARBER_ROUNDS : JOB_ROUNDS;
+  const rounds = job.lengths ? job.lengths.length : JOB_ROUNDS;
   const doneText = (n) => {
-    pay = jobPay(n, earned, rounds);
+    pay = jobPay(job, n, earned, rounds);
     return n + "/" + rounds + " ang maayos. +" + pay + " barya";
   };
   const good = job.game === "order"
@@ -1127,6 +1144,7 @@ async function workAt(job) {
       hint: job.hint,
       speaker: job.speaker,
       tools: job.tools,
+      lengths: job.lengths,
       hitText: job.hitText,
       missText: job.missText,
       doneText,
@@ -1149,7 +1167,7 @@ async function workAt(job) {
   Game.addCurrency(pay);
   state.flags[job.earned] = earned + pay;
   state.flags[job.first] = true;
-  if (earned + pay >= JOB_CAP) state.flags[job.full] = true;
+  if (earned + pay >= cap) state.flags[job.full] = true;
   markDirty();
   showToast("+" + pay + " barya", 2200);
   return pay;
@@ -1423,6 +1441,7 @@ window.ACT_1 = {
           id: "nanay", x: NANAY_X, label: "Nanay", animation: NANAY,
           facesPlayer: true, // Block 101: drawn side on now
           startsHidden: true, revealedByFlag: "nakausapSiNanaySaBahay",
+          hiddenWhile: PAMPHLET_NIGHT,
           // Block 80. With a requiresFlag among them, the set is picked
           // from the flags each time (Block 48), not stepped through.
           dialogueSets: [
@@ -1437,13 +1456,6 @@ window.ACT_1 = {
               skipIfFlag: "tinanggapSaKatipunan",
               lines: [
                 { speaker: "Nanay", text: "Ituloy mo lang 'yan, 'nak. Malayo ang mararating mo sa buhay." },
-              ],
-            },
-            {
-              // PLACEHOLDER. Sworn in; she does not know, and worries.
-              requiresFlag: "tinanggapSaKatipunan",
-              lines: [
-                { speaker: "Nanay", text: "Ginagabi ka na naman, anak. Mag-ingat ka sa mga guardia civil sa labas." },
               ],
             },
           ],
@@ -1477,6 +1489,7 @@ window.ACT_1 = {
         },
         {
           id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: KUTSERO,
+          hiddenWhile: PAMPHLET_NIGHT,
           // Picked from the flags each time, not stepped through.
           dialogueSets: [
             {
@@ -1664,7 +1677,7 @@ window.ACT_1 = {
           // Block 85. At the play from the night of it until the years
           // pass: she is outside the entablado (below), so being paid is
           // not a 7000px walk back to her shop.
-          hiddenWhile: { requiresFlag: "naitanghalAngDula", unlessFlag: "lumipasAngApatNaTaon" },
+          hiddenWhile: [{ requiresFlag: "naitanghalAngDula", unlessFlag: "lumipasAngApatNaTaon" }, PAMPHLET_NIGHT],
         },
         {
           // Block 85. The Mananahi after the first play, outside the
@@ -1697,6 +1710,7 @@ window.ACT_1 = {
           // delivery, and the story's turn (Block 59). PLACEHOLDER,
           // every line.
           id: "direktor", x: DIREKTOR_X, label: "Direktor", animation: DIREKTOR,
+          hiddenWhile: PAMPHLET_NIGHT,
           facesPlayer: true,
           // With a requiresFlag among them, the set is picked from the
           // flags each time (CLAUDE.md, Block 48), so the one that takes
@@ -1767,8 +1781,9 @@ window.ACT_1 = {
           startsHidden: true, revealedByFlag: "nilapitanNgKatipunan",
           // Block 95. Away while he comes to Macario after the rounds (a
           // decoration, kasama-kalye, thePamphletsDelivered); back here
-          // after, for a reload that lands before the report.
-          hiddenWhile: { requiresFlag: "nataposAngRonda", unlessFlag: "naipamigayAngMgaPolyeto" },
+          // after, for a reload that lands before the report. Block 102:
+          // and off the street the whole run, from the oath.
+          hiddenWhile: { requiresFlag: "tinanggapSaKatipunan", unlessFlag: "naipamigayAngMgaPolyeto" },
           dialogueSets: [
             {
               // PLACEHOLDER. Block 95. Afterwards, a year on.
