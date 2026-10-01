@@ -19,7 +19,8 @@
 // Run:  node _dev/tools/draw-siga.js [1 3]
 //
 // Since Block 96 the big one (2) is the artist's, animated from the
-// still by _dev/tools/animate-siga.js under the same file names, so this
+// still by _dev/tools/animate-still.js (rig: _dev/rigs/siga-2.js) under
+// the same file names, so this
 // tool no longer writes him: BOYS[2] stays as the record of how he was
 // drawn, and asking for him is refused rather than overwriting the art.
 //
@@ -999,7 +1000,7 @@ function sheet(frames, columns) {
 function main() {
   const DRAWN = ["1", "3"];
   if (process.argv.slice(2).includes("2")) {
-    console.log("siga 2 is the artist's since Block 96: run _dev/tools/animate-siga.js");
+    console.log("siga 2 is the artist's since Block 96: run node _dev/tools/animate-still.js siga-2");
   }
   const which = process.argv.slice(2).filter((a) => DRAWN.includes(a));
   const ids = which.length ? which : DRAWN;

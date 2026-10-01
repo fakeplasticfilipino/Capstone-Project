@@ -119,7 +119,8 @@ const NANAY_WALK = { src: "assets/sprites/characters/nanay-walk.png", frames: 1,
 // by _dev/tools/draw-siga.js: the leader in the red panyo, the big one
 // in the buri hat, the small one in the ochre shirt. Since Block 96 the
 // big one is the artist's (a camisa, a red sash, sandals), animated from
-// the still by _dev/tools/animate-siga.js; his sheets and their numbers
+// the still by _dev/tools/animate-still.js and its rig, _dev/rigs/siga-2.js
+// (Block 97); his sheets and their numbers
 // are content/enemies.js's (SIGA_2_CELL), which loads first. The walk shows only
 // while the opening walks them on (walkAnimation). footX is the hip, 128,
 // on both sheets, so a boy does not slide when he stops; the walk's own

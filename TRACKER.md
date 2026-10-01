@@ -9,7 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 96 (the big siga is the artist's,
+Last updated: 1 Oct 2026, after Block 97 (any character delivered as
+one still is animated by one tool, animate-still.js, and a rig per
+character in _dev/rigs/; CLAUDE.md has the steps). Before that, Block 96
+(the big siga is the artist's,
 from one still, with a breath, a swagger, a punch and a flinch; enemies
 take a hit sheet as guards do). Before that, Block 95 (the Kasama comes
 to Macario after the pamphlets and takes him back, instead of a door the
@@ -133,8 +136,8 @@ Current versions, which index.html must match on every push:
 
     css/style.css v59    js/game.js v94       js/shell.js v21
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v67  content/items.js v13  content/act2-4.js v1
-    content/enemies.js v3   content/questions.js v1
+    content/act1.js v68  content/items.js v13  content/act2-4.js v1
+    content/enemies.js v4   content/questions.js v1
     js/asset-manifest.js v5 (bumped by make-asset-manifest.js)
     ASSET_VERSION 33 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
@@ -560,7 +563,9 @@ machine, the assessment module.
     95  the Kasama takes him back instead of a door; the Test Room
         removed
     96  the big siga from the artist's still: breath, swagger, punch,
-        flinch (animate-siga.js); enemies take a hit sheet
+        flinch; enemies take a hit sheet
+    97  one tool for any character from one still: animate-still.js,
+        a rig per character, a shared library of motions
 
 ## Blocks remaining
 
@@ -664,7 +669,7 @@ other than "0 failed" is a regression, with one caution learned on
 timing check (the pamphlet guard catch) or lost a page ("Page crashed")
 once, and passed on the next run; rerun before believing either. test.js
 has not done it. Both never touch the live
-project. Both are green as of Block 96. The guard-catch flake was
+project. Both are green as of Block 97. The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check

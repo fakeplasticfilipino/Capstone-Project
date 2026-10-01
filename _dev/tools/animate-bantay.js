@@ -62,7 +62,7 @@
 const fs = require("fs");
 const path = require("path");
 const { decodePng, encodePng } = require("./lib/png.js");
-// The cut-out puppet itself, shared with animate-siga.js since Block 96.
+// The cut-out puppet itself, shared with animate-still.js (Blocks 96, 97).
 const { blankLayer, dropSpecks, I, compose, move, turn, apply, Canvas, sheet } = require("./lib/puppet.js");
 
 const ROOT = path.join(__dirname, "..", "..");

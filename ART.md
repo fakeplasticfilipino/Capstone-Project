@@ -26,9 +26,18 @@ Ask the artist for PNG exports with transparency, side on, facing
 right, in the same painted style and at about the same size as
 Macario's sheets (256px cells).
 
+When the artist delivers one still rather than a sheet (Block 97), it
+is animated by a tool: save it as <name>-still.png and follow CLAUDE.md,
+Animating a character from one still (a rig per character in
+_dev/rigs/, then node _dev/tools/animate-still.js <name>). The sheets it
+writes are what the content names, and the character goes under
+Stand-ins below, as the big siga is.
+
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 1 Oct 2026, Block 96 (still thirteen owed: the artist's
+Last updated: 1 Oct 2026, Block 97 (no change to what is owed; a
+delivered still is now animated by one tool and a rig, see above).
+Before that, Block 96 (still thirteen owed: the artist's
 still of the big siga arrived and was animated by a tool, so he moved
 from drawn in code to Stand-ins as the bantay is). Before that, Block 94
 (thirteen owed: the Barbero and his chair, the third job, and Nanay
@@ -130,7 +139,7 @@ forgotten.
         them under the same names.
     The big siga's standing breath, walk, punch and flinch (siga-2,
         -walk, -attack, -hit). Made from the artist's one still
-        (siga-2-still.png, Block 96) by _dev/tools/animate-siga.js, as
+        (siga-2-still.png, Block 96) by _dev/tools/animate-still.js, as
         the bantay's are; the still itself is the artist's. Where an
         arm or the sash moved off something, that is filled in from
         the colours around it.

@@ -2,7 +2,7 @@
 // MACARIO — _dev/tools/lib/puppet.js
 //
 // The paper cut-out puppet both animation tools share
-// (animate-bantay.js, Block 73; animate-siga.js, Block 96): a still is
+// (animate-bantay.js, Block 73; animate-still.js, Blocks 96, 97): a still is
 // cut into layers, and each frame draws the layers through affine maps
 // onto a canvas, sampled bilinearly so a turned part keeps its soft
 // edge. Moved here out of animate-bantay.js unchanged, so the bantay's

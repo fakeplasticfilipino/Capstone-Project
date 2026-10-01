@@ -3819,3 +3819,40 @@ from it.
 
 game.js v94, act1.js v67, enemies.js v3, asset-manifest.js v5,
 ASSET_VERSION 33.
+
+## Block 97: one tool for any character from one still
+
+At the proponent's request, 1 Oct 2026, the day the big siga was
+animated (Block 96): the same treatment for other characters without
+working it out each time, and not only for enemies ("this isn't
+limited to just siga but will probably be used in other type of
+npcs"), and established in the repository rather than in anyone's
+memory, since the proponent works from more than one device.
+
+animate-siga.js held two kinds of thing: what is true of any figure
+standing side on (how a part is cut, turned, filled behind and drawn;
+how a breath, a stride, a punch and a flinch move) and what is true of
+one picture (where its elbow is). The first is now
+_dev/tools/animate-still.js, the second a rig, one file per character
+in _dev/rigs/. A rig is a JavaScript module, not JSON, because a far
+foot is most simply a line, and siga-2.js keeps its as a function. The
+motions are a library a rig picks from, so an NPC who only stands and
+talks asks for idle and nothing else; the arm parts are optional, so a
+character whose arms cannot be freed still breathes, sways and walks.
+Distances in the motions (the lunge, the streaks) are written for a
+still 540 tall and scale with the rig's own height.
+
+The proof that the general tool is the old one: siga 2's four sheets
+come out of animate-still.js with his rig byte for byte as they were.
+A rig without arms was tried on a copy of the still, outside the
+repository: idle and walk drawn, the arm riding with the body.
+
+The bantay keeps animate-bantay.js. A rifle is a prop with rules of
+its own (grip, aim, muzzle), and one prop is not yet a pattern; a
+second held thing would be the time to make props a part of the rig.
+
+The procedure is CLAUDE.md, Animating a character from one still,
+including what to ask the artist for. ART.md points to it.
+
+act1.js v68 and enemies.js v4 (comments naming the tool). No sheet and
+no engine code changed.

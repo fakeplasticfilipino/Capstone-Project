@@ -131,8 +131,8 @@ off the repository.
                                the small siga drawn by draw-siga.js
                                (Block 72), and the big siga's sheets
                                made from the artist's still
-                               (siga-2-still.png) by animate-siga.js
-                               (Block 96)
+                               (siga-2-still.png) by animate-still.js
+                               (Blocks 96, 97)
       sprites/enemies/         guards and fighters; bantay.png is the
                                artist's still (delivered as Guard.png),
                                bantay-walk, bantay-shoot and bantay-hit
@@ -147,13 +147,15 @@ off the repository.
       fonts/                   the two woff2 faces and their licences
     db/                        migrations/, seeds/, scripts/ (Database)
     _dev/tests/                the harness and its fixtures
+    _dev/rigs/                 one rig per character animated from a
+                               still by animate-still.js (Block 97)
     _dev/tools/                measure-sprite.js, key-black.py,
                                make-shadow-tree.py, draw-siga.js,
                                animate-bantay.js, preview-sheet.js,
-                               lib/png.js (Block 75), animate-siga.js
-                               and lib/puppet.js, the cut-out puppet
-                               both animate tools share (Block 96),
-                               missing-art.js
+                               lib/png.js (Block 75), animate-still.js
+                               (Block 97) and lib/puppet.js, the cut-out
+                               puppet both animate tools share (Block
+                               96), missing-art.js
                                (Block 77), make-asset-manifest.js
                                (Block 78), make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js,
@@ -1218,6 +1220,67 @@ that is owed (not in the manifest) is drawn the same way, as a dark
 wall with the dashed border and the file name, and is never put into
 --skyline-src, where the browser would ask for it (Block 80).
 
+## Animating a character from one still
+
+Since Block 97, any character the artist delivers as one still, an NPC,
+someone a cutscene walks on or an enemy, is animated by
+_dev/tools/animate-still.js from a rig: one small file per character in
+_dev/rigs/, holding where that picture's joints are and which sheets to
+write. The tool, its motions and the cut-out puppet (lib/puppet.js) are
+shared; only the rig is per character. _dev/rigs/siga-2.js is the first
+and is the one to copy; its comments say what each number is.
+
+The motions are a library in the tool (MOTIONS), broad on purpose so
+they read on a phone: idle (a breath, a sway, a nod; 8 frames, looped),
+walk (strides and an arm swing; 8, looped), attack (the fist drawn back
+through the red ! and thrown on the dash; 8, once; needs the arm) and
+hit (the flinch; 4, knockoutFrame 1). A rig picks the ones it needs: an
+NPC who stands and talks takes idle, one a cutscene walks on idle and
+walk, an enemy all four. A new motion (a wave, a gesture) is added to
+MOTIONS once and is then every rig's.
+
+What to ask the artist for: one PNG with transparency, the whole
+figure side on, standing, arms hanging free of the body if he is to
+punch or swing them, the far foot as little hidden as possible, about
+500px tall or more. Facing left or right does not matter (the rig's
+mirror). A figure holding something (the bantay's rifle) or seen from
+the front does not fit the rig as it stands: a held prop needs its own
+part and rules, as animate-bantay.js has, so say so before promising
+it.
+
+The steps:
+
+  1. Save the still as assets/sprites/<folder>/<name>-still.png
+     (characters/ for anyone who talks, enemies/ for a fighter).
+  2. Copy _dev/rigs/siga-2.js to _dev/rigs/<name>.js and set still,
+     mirror and the sheet files. Trace the rest on the still: top,
+     ground and footX; the joints; the cuts; the outlines (sleeve and
+     arm optional, overLegs for cloth hanging over the legs, farFoot for
+     a far foot that shows); sideColour, the colour of his side behind
+     the sleeve. Read them off zoomed crops with a grid, in the mirrored
+     still if mirror is true. Never guess.
+  3. node _dev/tools/animate-still.js <name> --debug, and look at the
+     parts it wrote to the temp folder: each apart and tinted, so a
+     ragged cut, a missing finger or a hole shows. Fix the rig, repeat.
+  4. node _dev/tools/animate-still.js <name> writes the sheets beside
+     the still and prints one set of numbers for all of them, and each
+     sheet's frames and fps.
+  5. Look at every sheet with preview-sheet.js (the ground, footX, the
+     top), and at each frame for a seam, a smear where a part moved off
+     something, or a foot that slides. Measuring with measure-sprite.js
+     should agree with the printed numbers.
+  6. Put the sheets in the content: an NPC's or a decoration's
+     animation (idle) and walkAnimation; an enemy's animation (walk),
+     attackAnimation and hitAnimation, best in content/enemies.js. The
+     size on screen is the content's displayHeight, not the sheet's.
+  7. node _dev/tools/make-asset-manifest.js, bump ASSET_VERSION and the
+     content file's v=N, move the picture out of ART.md's Owed (or into
+     its Stand-ins), add a check to verify_new_scene.js that the sheets
+     load, and run both suites.
+
+A rig's numbers are its picture's: a still replaced by the artist
+needs its rig traced again, not just the tool rerun.
+
 ## Scenes
 
 Scenes are changed with Acts.gotoScene(id), which is distinct from
@@ -1836,6 +1899,8 @@ look, by system:
     siga and bantay art                   Blocks 72, 73, 75, 96 (the
                                           big siga from the artist's
                                           still; enemies' hit sheet)
+    animating a character from a still    Block 97 (animate-still.js,
+                                          rigs, the motion library)
     enemy catalogue                       Block 76 (Blocks 73 and 74's
                                           test room removed in 95)
     these files compacted                 Block 79

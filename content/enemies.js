@@ -51,7 +51,8 @@ const sigaFighter = (n, top, height, hp) => ({
 });
 
 // The big one (Block 96) is the artist's: one still (siga-2-still.png),
-// cut up and moved by _dev/tools/animate-siga.js into a walk, a punch
+// cut up and moved by _dev/tools/animate-still.js (rig: _dev/rigs/siga-2.js,
+// Block 97) into a walk, a punch
 // and a flinch, broad on purpose so they read on a phone. All share one
 // cell and one set of numbers. The attack plays once per strike: he
 // draws the fist back through frames 0 to 2, the red !, and throws it on
