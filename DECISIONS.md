@@ -4054,3 +4054,14 @@ tumambay rito" stays as his last resort, the set a conversation falls
 back to, though nothing reaches it now.
 
 game.js v99 (ASSET_VERSION 37), act1.js v73.
+
+## Block 103: the street empty at night, the horse and the table too
+
+The proponent: "remove the horse at night too, and other misc stuff".
+Block 102 had kept the horse and the sewing table as being no one; on
+the pamphlet night they are away as well (PAMPHLET_NIGHT on both), so
+the street is the three, the guardia civil and their crates. A hidden
+horse is silent: updateNearSounds already skips a hidden NPC. The
+barber's chair already left at the oath with the Barbero.
+
+act1.js v74.

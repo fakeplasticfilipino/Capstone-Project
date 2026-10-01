@@ -399,7 +399,8 @@ const CITIZENS = [
 const pamphletFlag = (c) => "naibigayAngPolyetoKay_" + c.id;
 // Block 102, at the proponent's word. The pamphlet night, from the oath
 // to the report: the street holds only the three and the guardia civil,
-// so everyone else is away (hiddenWhile). The horse and the work stay.
+// so everyone else is away (hiddenWhile). Block 103: and the horse and
+// the sewing table with them (the barber's chair goes at the oath).
 const PAMPHLET_NIGHT = { requiresFlag: "tinanggapSaKatipunan", unlessFlag: "nakapagUlat" };
 const PAMPHLET_FLAGS = CITIZENS.map(pamphletFlag);
 
@@ -1535,6 +1536,7 @@ window.ACT_1 = {
           // The horse, beside the Kutsero: something to use rather
           // than someone to talk to (Block 89).
           id: "kabayo", x: KABAYO_X, label: "Kabayo", animation: KABAYO,
+          hiddenWhile: PAMPHLET_NIGHT, // Block 103: stabled for the night
           displayHeight: 120,
           nearSound: "assets/audio/sfx/horse.mp3",
           interactLabel: "Suklayin",
@@ -1613,6 +1615,7 @@ window.ACT_1 = {
           // owed (ART.md), so the table is seen: the placeholder box until
           // the artist draws it.
           id: "tahian", x: TAHIAN_X, label: "Tahian", animation: TAHIAN, displayHeight: 90,
+          hiddenWhile: PAMPHLET_NIGHT, // Block 103: taken in for the night
           interactLabel: "Manahi",
           interactIcon: "i-needle", // Block 93
           dialogueSets: [],

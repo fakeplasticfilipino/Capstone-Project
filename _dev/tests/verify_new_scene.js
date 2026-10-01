@@ -1271,8 +1271,8 @@ const artDrift = () => {
   console.log("\nThe pamphlets, past the guardia civil");
   const street = await page.evaluate(() => NPCS.filter((n) => !n.hidden).map((n) => n.id).join(","));
   // Block 102. The night is theirs and the guards': nobody else is out.
-  ok("the three are on the street now, and the people of the day are gone for the night (Block 102)",
-     street === "kabayo,tahian,mangingisda,tabakera,karpintero", street);
+  ok("the three are on the street now, and the people of the day are gone for the night, the horse and the table too (Blocks 102, 103)",
+     street === "mangingisda,tabakera,karpintero", street);
   const p1 = await panels(page);
   ok("nobody stands behind a tree", p1.blocked.length === 0, p1.blocked);
   const night = await page.evaluate(() => ({

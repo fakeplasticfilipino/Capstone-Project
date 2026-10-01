@@ -9,8 +9,8 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 102. The day's work, newest
-first: Block 102, the pamphlet three's art, an easier barber, an empty
+Last updated: 1 Oct 2026, after Block 103. The day's work, newest
+first: Block 103, the horse and the table away at night; Block 102, the pamphlet three's art, an easier barber, an empty
 night street; Block 101, the proponent's seven characters replace the old
 art and placeholders, and the idle is calm; Block 100, the horse is
 the proponent's own still, animated;
@@ -21,7 +21,7 @@ siga, the direktor, the Katipunero, the Kasama, the Mananahi); Block
 97, one tool and a rig per character for animating any still; Block
 96, the big siga from the artist's still, and enemies' hit sheet.
 Blocks 90 to 97 were tested on the phone that day with no fault
-reported; Blocks 98 to 102 have not been seen on a device yet (Next
+reported; Blocks 98 to 103 have not been seen on a device yet (Next
 action 1). Earlier blocks: the Blocks list below, and DECISIONS.md.
 test.js 767 passed, 0 failed; verify_new_scene.js 242 passed, 0
 failed. Everything is committed and pushed to main.
@@ -150,7 +150,7 @@ Current versions, which index.html must match on every push:
 
     css/style.css v59    js/game.js v99       js/shell.js v21
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    content/act1.js v73  content/items.js v13  content/act2-4.js v1
+    content/act1.js v74  content/items.js v13  content/act2-4.js v1
     content/enemies.js v6   content/questions.js v1
     js/asset-manifest.js v9 (bumped by make-asset-manifest.js)
     ASSET_VERSION 37 (in js/game.js)
@@ -228,8 +228,9 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       On the pamphlet night the street holds only the mangingisda, the
       tabakera and the karpintero (now the proponent's art, standing
       still) and the guards: no Nanay, Kutsero, Mananahi, direktor or
-      Kasama until the Kasama comes for him after the third. Failure:
-      anyone else on the night street, a dashed box for one of the three,
+      Kasama until the Kasama comes for him after the third, and since
+      Block 103 no horse and no sewing table either. Failure: anyone or
+      anything else on the night street, a dashed box for one of the three,
       or a perfect barber run paying less than 20.
 
 Still to watch, in the pilot rather than on
@@ -583,6 +584,7 @@ machine, the assessment module.
     102 the three who take the pamphlets (stills); the barber's game
         easier, 4 to 7 a round right, 20 in one run; the night street
         empty but for the three and the guards
+    103 the horse and the sewing table away at night too
 
 ## Blocks remaining
 

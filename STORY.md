@@ -148,7 +148,8 @@ Macario at the very start and are gone when he walks off with Nanay.
 Everyone else stays through the four years. On the pamphlet night,
 from the oath to the report (Block 102), nobody is out but the three
 and the guardia civil: Nanay, the Kutsero, the Mananahi, the direktor
-and the Kasama are away; the horse, the chair and the tahian stay.
+and the Kasama are away, and since Block 103 the horse and the tahian
+too (the chair goes at the oath).
 
 entablado, inside the theatre. One painting of a stage (curtains, a
 painted backdrop of a Moorish city by the sea), one phone screen wide,
