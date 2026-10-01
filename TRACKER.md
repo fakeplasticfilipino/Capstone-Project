@@ -9,22 +9,20 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 103. The day's work, newest
-first: Block 103, the horse and the table away at night; Block 102, the pamphlet three's art, an easier barber, an empty
-night street; Block 101, the proponent's seven characters replace the old
-art and placeholders, and the idle is calm; Block 100, the horse is
-the proponent's own still, animated;
-Block 99, people drawn side on turn to look at Macario and
-standing loops start at a random frame and speed; Block 98, six of the
-artist's stills in place of placeholders (the leader and the small
-siga, the direktor, the Katipunero, the Kasama, the Mananahi); Block
-97, one tool and a rig per character for animating any still; Block
-96, the big siga from the artist's still, and enemies' hit sheet.
-Blocks 90 to 97 were tested on the phone that day with no fault
-reported; Blocks 98 to 103 have not been seen on a device yet (Next
-action 1). Earlier blocks: the Blocks list below, and DECISIONS.md.
-test.js 767 passed, 0 failed; verify_new_scene.js 242 passed, 0
-failed. Everything is committed and pushed to main.
+Last updated: 1 Oct 2026, after Block 103, the end of the session.
+The day's work, newest first: Block 103, the horse and the sewing
+table away at night; Block 102, the pamphlet three's art, an easier
+barber, an empty night street; Block 101, the proponent's seven
+characters in place of old art and placeholders, and a calm idle;
+Block 100, the horse from the proponent's still; Block 99, people drawn
+side on turn to look at Macario; Block 98, six of the artist's stills;
+Block 97, one tool and a rig per character for animating any still;
+Block 96, the big siga from the artist's still. Blocks 90 to 97 were
+tested on the phone that day with no fault reported; Blocks 98 to 103
+have not been seen on a device yet (Next action 1). Earlier blocks:
+the Blocks list below, and DECISIONS.md. test.js 767 passed, 0 failed;
+verify_new_scene.js 242 passed, 0 failed. Everything is committed and
+pushed to main.
 
 A new session, on any device: read CLAUDE.md, then this file's Start
 here and Next action, then STORY.md before touching content. A
@@ -74,7 +72,8 @@ done again.
     4  Magtrabaho sa barberya           the Barbero's first game (Block
                                         94), his own: the customer's
                                         order of tools, from memory;
-                                        4 to 7 a round, 25 in all
+                                        5 rounds, 4 to 7 a round right,
+                                        20 in all (Block 102)
     5  Kausapin ang Mananahi            her first conversation (before
                                         the barber she sends him there)
     6  Tulungan ang Mananahi sa         the same game as grooming, at her
@@ -119,16 +118,18 @@ Enemies are content: content/enemies.js describes each kind
 once (bantay, kawal, and the three siga of the opening) and scenes place
 them by type.
 
-Art: Macario's idle, walk, jump, punch and shot are the artist's; so are
-Nanay, the Kutsero, Kabayo, Maryam,
-the play's soldiers, the Mananahi, the street paintings and the inside
-of the entablado; and the stills of the bantay, the three siga, the
-direktor, the Katipunero and the Kasama, whose motion is made from them
-by tools (animate-bantay.js; animate-still.js and a rig each, Blocks 96
-to 98). The proponent accepted the big siga on 1 Oct 2026 ("peak").
-Nothing is drawn in code any more. Any further still the artist
-delivers is animated the same way (CLAUDE.md, Animating a character
-from one still). What is still owed is ART.md: nine pictures.
+Art: Macario's idle, walk, jump, punch and shot are the artist's; so
+are the street paintings, the inside of the entablado, the Mananahi,
+and the stills of the bantay, the three siga, the direktor, the
+Katipunero and the Kasama. The proponent drew Kabayo, Nanay, the
+Kutsero, the Barbero, Maryam, the Sultan, the kawal, the Mabalasig and
+the three who take the pamphlets (Blocks 100 to 102). Characters drawn
+side on or three-quarter move, their motion made from the one still by
+tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
+rig each); those drawn facing the front stand still. Nothing is drawn
+in code. Still owed (ART.md): three pictures, none of them a person,
+the Barbero's chair, the Mananahi's sewing table and the pulungan's
+painting.
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
@@ -142,9 +143,8 @@ from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
 Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
 the proponent tested Blocks 90 to 97 on the phone and reported no
-fault. Blocks 98 and 99 (the six new characters; facing and breathing
-out of step) are pushed and not yet seen on a device: Next action 1
-says what to look for.
+fault. Blocks 98 to 103 are pushed and not yet seen on a device:
+Next action 1 says what to look for.
 
 Current versions, which index.html must match on every push:
 
@@ -189,9 +189,10 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
     Block 99, facing and breathing. On the street the direktor looks
       left at Macario as he comes, and turns if Macario walks past him;
       in the wings he looks right, at Macario on his right. In the
-      pulungan the Katipunero, the Kasama and (once drawn) the Mabalasig
-      look at him; so does the Kasama on the street, and Maryam on the
-      stage. The three siga, and anyone else standing together, breathe
+      pulungan the Katipunero, the Kasama and the Mabalasig look at
+      him; so does the Kasama on the street, and Nanay (Block 101).
+      Maryam, the Kutsero and the Barbero face the front and do not
+      turn. The three siga, and anyone else standing together, breathe
       out of step, each at his own pace. Failure: anyone still looking
       away, a turn that flickers while Macario stands in front of
       someone, a placeholder box whose name reads backwards, or
@@ -585,6 +586,8 @@ machine, the assessment module.
         easier, 4 to 7 a round right, 20 in one run; the night street
         empty but for the three and the guards
     103 the horse and the sewing table away at night too
+    104 GitHub Actions runs both suites on every push; a full local run
+        only before a release to students
 
 ## Blocks remaining
 
@@ -666,6 +669,13 @@ partial test answers (a reload mid-test asks the questions again;
 nothing is recorded until submission, so nothing is lost).
 
 ## Verification
+
+Since Block 104 GitHub Actions runs both suites on every push to main
+that changes anything but Markdown (.github/workflows/tests.yml), the
+two side by side on a fresh machine; the commit shows a green tick or a
+red cross, and the Actions tab says which check failed. Locally, run
+what a change touches while building, and both in full before a
+release to students (CLAUDE.md, Deployment, Testing a push).
 
 From the repository root:
 

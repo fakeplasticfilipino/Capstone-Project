@@ -65,16 +65,37 @@ branch and do not make a merge: the proponent asked for this on 25 Sep
 2026 and repeated it the same day ("always always always push to
 main"), and it overrides any session instruction to develop on a
 separate branch.
-Pushing to main publishes, so the full harness (both suites) runs green
-before every push.
+
+TESTING A PUSH (Block 104, the proponent's choice, 1 Oct 2026). No
+student has the URL yet, so a push is not yet a release. GitHub Actions
+(.github/workflows/tests.yml) runs both suites on every push to main
+that changes anything but Markdown, side by side on a fresh machine,
+and marks the commit green or red; a red run is fixed in the next push,
+before anything else. So:
+
+    a push of game code      run the suites the change touches, or the
+                             part of one, while building; push; then
+                             check the Actions run before calling the
+                             work done (the Actions tab, or, the repo
+                             being public, curl on api.github.com/repos/
+                             fakeplasticfilipino/Capstone-Project/
+                             actions/runs; gh is not installed on the
+                             proponent's computer)
+    a Markdown-only push     no suites; CI skips it too
+    a release to students    both suites in full on this computer
+    (the pilot, the freeze,  first, green, then push; and CI green
+    the study session)
+
+Once students have the URL, every push is a release again and the full
+local run comes back before every push.
 
 NOTHING IS LEFT UNCOMMITTED, in any session, local or cloud. Every
 finished change is committed and pushed to main before the turn ends,
 without asking (the proponent, 30 Sep and again 1 Oct 2026: "ALWAYS
-commit to main, I don't want things uncommitted"). If the suites are
-still running, wait for them in the same turn; never report work as done
-while the working tree is dirty or main is ahead of origin. If a push
-fails, retry it rather than handing the proponent commands.
+commit to main, I don't want things uncommitted"). Never report work as
+done while the working tree is dirty, main is ahead of origin, or the
+push's CI run is red. If a push fails, retry it rather than handing the
+proponent commands.
 
 ALWAYS PULL FIRST. Every session, local or cloud, starts with git pull
 on main before reading or editing anything, and pulls again before

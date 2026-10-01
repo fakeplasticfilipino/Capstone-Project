@@ -1,0 +1,43 @@
+# MACARIO: both suites on every push to main (Block 104).
+#
+# Pushing to main publishes to GitHub Pages, so this is the check that
+# runs behind every push: GitHub starts a fresh machine, runs the two
+# suites side by side, and marks the commit with a green tick or a red
+# cross (the Actions tab on GitHub says which check failed). A push that
+# changes only Markdown (the context files) cannot break the game and
+# runs nothing. Before a release to students (the pilot, the freeze, the
+# study) the suites are also run in full on the proponent's computer
+# (CLAUDE.md, Deployment).
+
+name: tests
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+  workflow_dispatch:
+
+# A newer push makes an older run of the same branch pointless.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  suite:
+    name: ${{ matrix.suite }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [test.js, verify_new_scene.js]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node _dev/tests/${{ matrix.suite }}

@@ -4065,3 +4065,20 @@ horse is silent: updateNearSounds already skips a hidden NPC. The
 barber's chair already left at the oath with the Barbero.
 
 act1.js v74.
+
+## Block 104: the suites run on GitHub, not before every push
+
+The proponent asked whether there was a more efficient way than running
+both suites, about seventeen minutes, before every push, and pointed
+out that no student has the URL yet: a push publishes to Pages, but it
+is not yet a release. The standard answer is continuous integration.
+.github/workflows/tests.yml runs both suites on GitHub's machines on
+every push to main, side by side (each in its own job, so the wait is
+the longer of the two, not the sum), and marks the commit. A push that
+changes only Markdown cannot break the game and runs nothing
+(paths-ignore). The full local run is kept for a release to students
+(the pilot, the freeze, the study), and comes back for every push once
+students have the URL. Faster suites (parallel checks, fake clocks
+instead of real waits) would save more, and are not worth the work
+before the defense. Chosen by the proponent from three options; the
+rule is CLAUDE.md, Deployment, Testing a push.
