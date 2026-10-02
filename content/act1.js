@@ -1259,10 +1259,55 @@ const HINT_SPOTS = [2500, { x: 8200, y: HINT_HIGH }, { x: 12200, y: HINT_HIGH }]
 // unlockGlossary(id) where each word is earned. CLAUDE.md, Act data
 // format, has the rest.
 
+// Block 108. Points in the story a tester can start from, as a guest,
+// from the title screen opened with ?dev=1 (shell.js), so a block's
+// checks on the phone need not be played to from the start. Each is the
+// flags the story has set by then, built on the one before, and where
+// Macario stands; the beat it leads to plays by itself, as after a
+// reload. task is the step the log should show, and verify_new_scene.js
+// starts from every point and checks it. The flag sets are the ones that
+// suite's reload checks already use. items are handed over and worn, as
+// the story does (the stage clothes, from the direktor after Baldovino).
+const DEV_OPENING_DONE = { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true };
+const DEV_SENT_TO_DIREKTOR = Object.assign({}, DEV_OPENING_DONE, {
+  nakausapAngKutsero: true, [HORSE_JOB.first]: true, [BARBER_JOB.first]: true,
+  nakausapAngMananahi: true, [SEWING_JOB.first]: true, [SEWING_FLAGS[0]]: true, [SEWING_FLAGS[1]]: true,
+  tinawagAngMananahi: true, mayDalangDamit: true });
+const DEV_AT_THE_PLAY = Object.assign({}, DEV_SENT_TO_DIREKTOR, {
+  naihatidKay_direktor: true, naihatidAngMgaDamit: true });
+const DEV_PLAYED = Object.assign({}, DEV_AT_THE_PLAY, { naitanghalAngDula: true, nabayaranNgMananahi: true });
+const DEV_FOUR_YEARS = Object.assign({}, DEV_PLAYED, { naibigayAngIponKayNanay: true, lumipasAngApatNaTaon: true });
+const DEV_ASKED = Object.assign({}, DEV_FOUR_YEARS, { naitanghalAngBaldovino: true, nilapitanNgKatipunan: true });
+const DEV_WORD_SAID = Object.assign({}, DEV_ASKED, { nakausapAngKasama: true });
+const DEV_SWORN = Object.assign({}, DEV_WORD_SAID, { tinanggapSaKatipunan: true });
+const DEV_ROUNDS_OVER = Object.assign({}, DEV_SWORN, Object.fromEntries(PAMPHLET_FLAGS.map((f) => [f, true])), {
+  naipamigayAngTatlongPolyeto: true, nataposAngRonda: true, naipamigayAngMgaPolyeto: true });
+const DEV_JUMPS = [
+  { id: "trabaho", label: "Mga trabaho (pagkatapos ng simula)", scene: "tondo", x: 2150, facing: 1,
+    flags: DEV_OPENING_DONE, task: "Maghanap ng trabaho: kausapin ang Kutsero" },
+  { id: "direktor", label: "Ang mga damit para sa direktor", scene: "tondo", x: 13300, facing: 1,
+    flags: DEV_SENT_TO_DIREKTOR, currency: 40, task: "Ihatid ang mga damit sa direktor" },
+  { id: "dula", label: "Ang dula: Don Rodrigo", scene: "entablado",
+    flags: DEV_AT_THE_PLAY, currency: 40, task: "Gumanap bilang Don Rodrigo sa dula" },
+  { id: "ipon", label: "Ang ipon para kay Nanay", scene: "tondo", x: 1900, facing: 1,
+    flags: DEV_PLAYED, currency: 120, task: "Mag-ipon para kay Nanay" },
+  { id: "baldovino", label: "Apat na taon: Principe Baldovino", scene: "entablado",
+    flags: DEV_FOUR_YEARS, currency: 20, task: "Gumanap bilang Principe Baldovino" },
+  { id: "kasama", items: ["damit-entablado"], label: "Ang Kasama sa kalye", scene: "tondo", x: 12250, facing: 1,
+    flags: DEV_ASKED, currency: 20, task: "Hanapin ang naghihintay sa kalye" },
+  { id: "panunumpa", items: ["damit-entablado"], label: "Ang panunumpa", scene: "pulungan",
+    flags: DEV_WORD_SAID, currency: 20, task: "Sumapi sa Katipunan" },
+  { id: "polyeto", items: ["damit-entablado"], label: "Ang gabi ng mga polyeto", scene: "tondo", x: 4100, facing: 1,
+    flags: DEV_SWORN, currency: 20, task: "Ipamigay ang mga polyeto" },
+  { id: "ulat", items: ["damit-entablado"], label: "Ang ulat at ang wakas", scene: "pulungan",
+    flags: DEV_ROUNDS_OVER, currency: 20, task: "Bumalik sa pulungan at mag-ulat" },
+];
+
 window.ACT_1 = {
   number: 1,
   title: "Origins",
   titleTagalog: "Ang Pinagmulan ni Macario",
+  devJumps: DEV_JUMPS, // Block 108
 
   // One chain, in story order, drawn as the quest log (Block 48): the
   // task in hand is the first step whose flag is not set.

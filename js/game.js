@@ -259,6 +259,12 @@ function assetUrl(path) {
   return path + (path.includes("?") ? "&" : "?") + "v=" + v;
 }
 
+// Block 107. Whether bodies are placed with the CSS translate property
+// (placeBody, below mountBody). Here, near the top, because the player's
+// body is mounted at parse time.
+const BODY_TRANSLATE = typeof CSS !== "undefined" && typeof CSS.supports === "function" &&
+  CSS.supports("translate", "1px 2px");
+
 // Block 105. A picture for a stylesheet to draw, through a custom
 // property: versioned like every other load, so it is the same URL the
 // loader waits for and the service worker keeps, and absolute, because a
@@ -1474,9 +1480,11 @@ function groundHeightAt(x, fromY) {
 
 // --- Player sprite animation ---------------------------------------------
 const playerSpriteEl = player.querySelector(".player-sprite");
-// #player's box is his body. Its left is written every frame in the game
-// loop; its size never changes.
+// #player's box is his body. The game loop moves it through placeBody
+// whenever he moves (Block 107), from the world's bottom edge; its size
+// never changes.
 mountBody(player, 0, PLAYER_WIDTH);
+if (BODY_TRANSLATE) player.style.bottom = "0px";
 
 // columns is how many frames sit across one row of the sheet. Omit it
 // for a plain single-row strip and it defaults to the frame count.
@@ -1704,9 +1712,37 @@ function bodyPlaceholder(el, filename, displayHeight, bodyWidth) {
 // camera, the debugging eye and the harness can trust to be where the
 // logic thinks the character is.
 function mountBody(el, x, bodyWidth, height) {
-  el.style.left = x + "px";
+  placeBody(el, x);
   el.style.width = bodyWidth + "px";
   el.style.height = (height || DISPLAY_HEIGHT) + "px";
+}
+
+// Block 107. Where a body stands, written as the CSS translate property
+// on a box whose left is 0, rather than as left: a left that changes lays
+// out the whole street, every frame something walks (measured with
+// _dev/tools/profile.js: about 40 layouts a second while Macario walked,
+// 60 while the three guards patrolled), and a translate lays out
+// nothing. translate rather than transform because a knocked-down body
+// is rotated by a transform animation (enemy-fall), and the two compose.
+// y, for Macario, is his height above the world's bottom edge. A browser
+// without the translate property (Chrome before 104) gets left and bottom
+// as before. Every body is placed here and read back with bodyX.
+// BODY_TRANSLATE is declared near the top of this file: the player's
+// body is mounted at parse time (the temporal dead zone, CLAUDE.md).
+
+function placeBody(el, x, y) {
+  if (!BODY_TRANSLATE) {
+    el.style.left = x + "px";
+    if (y !== undefined) el.style.bottom = y + "px";
+    return;
+  }
+  if (el.style.left !== "0px") el.style.left = "0px";
+  el.style.translate = y ? x + "px " + -y + "px" : x + "px";
+}
+
+function bodyX(el) {
+  const v = BODY_TRANSLATE ? el.style.translate : el.style.left;
+  return parseFloat(v) || 0;
 }
 
 function loadSpriteSheet(def) {
@@ -3039,7 +3075,7 @@ function updateGuards(step) {
         guard.pos = guard.patrolTo;
         guard.facing = -1;
       }
-      guard.el.style.left = guard.pos + "px";
+      placeBody(guard.el, guard.pos);
       guard.moving = true;
     }
 
@@ -3240,7 +3276,7 @@ function updateHostileGuard(guard, step, now) {
     const move = Math.min(guard.chaseSpeed * step, dist - GUARD_HOLD_DISTANCE);
     guard.pos += move * guard.facing;
     guard.pos = Math.max(0, Math.min(guard.pos, WORLD_WIDTH - GUARD_WIDTH));
-    guard.el.style.left = guard.pos + "px";
+    placeBody(guard.el, guard.pos);
     guard.moving = move > 0;
   }
 
@@ -3342,7 +3378,7 @@ function guardFire(guard, now) {
       x = dir > 0 ? Math.min(x, posX) : Math.max(x, posX + PLAYER_WIDTH - GUARD_BULLET_SIZE);
     }
   }
-  el.style.left = x + "px";
+  placeBody(el, x);
   el.style.bottom = y + "px";
 
   GUARD_BULLETS.push({
@@ -3365,7 +3401,7 @@ function updateGuardBullets(step) {
     const distance = GUARD_BULLET_SPEED * step;
     bullet.x += distance * bullet.dir;
     bullet.left -= distance;
-    bullet.el.style.left = bullet.x + "px";
+    placeBody(bullet.el, bullet.x);
 
     const overlapsX =
       bullet.x + GUARD_BULLET_SIZE > posX && bullet.x < posX + PLAYER_WIDTH;
@@ -3613,7 +3649,7 @@ function respawnInScene() {
     guard.knockVel = 0;
     guard.staggerUntil = 0;
     guard.hp = guard.maxHp || GUARD_HP;
-    if (guard.el) guard.el.style.left = guard.pos + "px";
+    if (guard.el) placeBody(guard.el, guard.pos);
     drawGuard(guard);
   });
 }
@@ -4395,7 +4431,7 @@ function throwProjectile() {
     travelled: 0,
   };
 
-  el.style.left = projectile.x + "px";
+  placeBody(el, projectile.x);
   el.style.bottom = projectile.y + "px";
 }
 
@@ -4408,7 +4444,7 @@ function updateProjectile(step) {
   const distance = PROJECTILE_SPEED * equipEffects.projectileSpeedMult * step;
   projectile.x += distance * projectile.dir;
   projectile.travelled += distance;
-  projectile.el.style.left = projectile.x + "px";
+  placeBody(projectile.el, projectile.x);
 
   for (const enemy of ENEMIES) {
     if (enemy.dead) continue;
@@ -5220,7 +5256,7 @@ function moveDecoration(id, toX, pxPerSecond) {
       const stepPx = (speed * dt) / 1000;
       const next = Math.abs(toX - from) <= stepPx ? toX : from + Math.sign(toX - from) * stepPx;
       dec.currentX = next;
-      el.style.left = next + "px";
+      placeBody(el, next);
       if (next === toX) return done();
       requestAnimationFrame(tick);
     };
@@ -5246,7 +5282,7 @@ function placeDecoration(id, x) {
   const el = decorationEl(id);
   if (!dec || !el) return;
   dec.currentX = x;
-  el.style.left = x + "px";
+  placeBody(el, x);
 }
 
 // ---- Tutorials ----------------------------------------------------
@@ -6209,7 +6245,7 @@ function updateEnemies(step, now) {
       enemy.attacking = false;
     }
     if (enemy.pos !== enemy.drawnPos) {
-      enemy.el.style.left = enemy.pos + "px";
+      placeBody(enemy.el, enemy.pos);
       enemy.drawnPos = enemy.pos;
     }
     drawEnemy(enemy, now);
@@ -6456,7 +6492,7 @@ function moveBody(body, dx) {
   const kind = bodyKindOf(body);
   body.pos += dx;
   if (kind.clamp) body.pos = Math.max(0, Math.min(body.pos, WORLD_WIDTH - kind.width));
-  body.el.style.left = body.pos + "px";
+  placeBody(body.el, body.pos);
   body.drawnPos = body.pos;
 }
 
@@ -6522,7 +6558,7 @@ function resetEnemies() {
     setTell(enemy, false);
     enemy.attacking = false;
     enemy.walking = false;
-    enemy.el.style.left = enemy.pos + "px";
+    placeBody(enemy.el, enemy.pos);
     enemy.drawnPos = enemy.pos;
   });
 }
@@ -7109,16 +7145,12 @@ function gameLoop(now) {
   updateMeleeContact(now, canAct); // Block 71
   npcAnimators.forEach((animator) => animator.update(now));
 
-  // Writing the same pixel back still invalidates the element, so both
-  // are written only when they move (Block 36). Standing still, reading
-  // dialogue or in a shop, this is the difference between a frame that
-  // lays out and one that does not.
-  if (posX !== lastDrawnX) {
-    player.style.left = posX + "px";
+  // Writing the same pixel back still invalidates the element, so it is
+  // written only when he moves (Block 36). Since Block 107 through
+  // placeBody, which lays out nothing.
+  if (posX !== lastDrawnX || posY !== lastDrawnY) {
+    placeBody(player, posX, posY);
     lastDrawnX = posX;
-  }
-  if (posY !== lastDrawnY) {
-    player.style.bottom = posY + "px";
     lastDrawnY = posY;
   }
 
@@ -7386,19 +7418,37 @@ async function enterGameAsUser(userId) {
 // See CLAUDE.md, Decisions on record, Guest mode, for why
 // Acts.syncStart is skipped outright rather than called and trusted
 // to no-op.
-async function enterGameAsGuest() {
+async function enterGameAsGuest(jumpId) {
   if (currentUserId || isGuest) return; // a real login, or already a guest
 
   isGuest = true;
   authOverlay.classList.add("hidden");
   authGated = false;
 
+  // Block 108. A guest may start from a point in the story (the act's
+  // devJumps, offered on the title screen with ?dev=1): the flags the
+  // story has set by then, the barya, and where Macario stands, set
+  // before the scene is built, so what plays next plays as after a
+  // reload. A guest writes nothing, so nobody's save is touched.
+  const act = window.Acts ? Acts.getAct(1) : null;
+  const jump = jumpId && act && (act.devJumps || []).find((j) => j.id === jumpId);
+  if (jump) {
+    Object.assign(state.flags, jump.flags);
+    currency = jump.currency || 0;
+  }
+
   if (window.Acts) {
     Acts.current = 1;
-    loadAct(Acts.getAct(1), "tondo");
+    loadAct(act, jump ? jump.scene : "tondo");
+    if (jump && typeof jump.x === "number") placePlayer(jump.x, jump.facing || 1);
     // The teacher's Talaan papers are for guests too (Block 70): a read
     // of public content, nothing written.
     if (Acts.loadTalaan) Acts.loadTalaan(1);
+  }
+  if (jump && window.Inventory && Inventory.grant) {
+    for (const id of jump.items || []) {
+      if (await Inventory.grant(id)) Inventory.equip(id);
+    }
   }
 
   if (window.Shell) await Shell.awaitEntry();

@@ -103,6 +103,22 @@ look with this before trusting the numbers.
 Both tools, and animate-bantay.js, read and write PNGs through
 _dev/tools/lib/png.js: plain Node, no install.
 
+## Measuring the engine (Block 107)
+
+    node _dev/tools/profile.js            the CPU slowed 6 times
+    node _dev/tools/profile.js --cpu=4    another slowdown; --json
+
+Plays the real game (the fake Supabase client, nothing live) at phone
+landscape and prints, for standing on the street, standing on the
+pamphlet night with the three guards patrolling, and walking: how far
+Macario moved, the frame intervals (median, 95th percentile, share over
+33 ms), and Chrome's own counts per second of style recalculations and
+layouts with the milliseconds spent in script, style and layout. Then
+the street and the entablado eight times over, with the DOM nodes, the
+listeners and the heap after each round trip: a number that climbs is
+a leak. Compare a change against the code before it on the same
+computer; a desktop slowed down is not a phone.
+
 ## Shrinking sheets (Block 105)
 
 Every sheet in assets/ is a 256-colour palette PNG, about a quarter of

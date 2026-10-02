@@ -3628,10 +3628,10 @@ const visible = (page, sel) => page.evaluate((s) => {
       showDecoration("test-tao", true);
       const shown = getComputedStyle(el()).display !== "none";
       await moveDecoration("test-tao", 700, 600);
-      return { hidden, shown, left: el().style.left, placeholder: el().textContent.includes("Missing_Actor.png") };
+      return { hidden, shown, left: bodyX(el()), placeholder: el().textContent.includes("Missing_Actor.png") };
     });
     ok("a decoration can start hidden and be shown by a script", walked.hidden && walked.shown, walked);
-    ok("and walks to where the script sends it", walked.left === "700px", walked);
+    ok("and walks to where the script sends it", walked.left === 700, walked);
     ok("drawing as the placeholder naming its missing file", walked.placeholder, walked);
 
     // ---- Combat, in the fixture's safe scene, so the hearts and the
@@ -3876,8 +3876,10 @@ const visible = (page, sel) => page.evaluate((s) => {
       });
       const styleOf = (el) => {
         const decl = el.style;
-        ["left", "bottom", "transform"].forEach((prop) => {
-          const key = el.id === "player" ? (prop === "left" ? "playerLeft" : "playerBottom") : "camera";
+        ["left", "bottom", "transform", "translate"].forEach((prop) => {
+          // Block 107: the player moves by translate (placeBody); any of
+          // these written while he stands is a needless write.
+          const key = el.id === "player" ? (prop === "bottom" ? "playerBottom" : "playerLeft") : "camera";
           const original = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, prop);
           if (!original) return;
           Object.defineProperty(decl, prop, {
@@ -3909,6 +3911,33 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("and does not move the player element", idle.counts.playerLeft === 0 && idle.counts.playerBottom === 0, idle.counts);
     ok("and does not rewrite the camera", idle.counts.camera === 0, idle.counts);
     ok("and never reads the layout back mid-frame", idle.counts.layoutReads === 0, idle.counts);
+
+    // Block 107. Walking, and a guard on patrol, move their bodies with
+    // the translate property, never with left: a left that changes lays
+    // out the whole street every frame.
+    const moving = await page.evaluate(() => new Promise((resolve) => {
+      const g = GUARDS[0];
+      g.disabled = false; g.patrolFrom = g.pos - 200; g.patrolTo = g.pos + 200;
+      // Sampled each frame: the translate property has no setter on
+      // CSSStyleDeclaration.prototype to spy on in every Chromium.
+      const seen = { playerLeft: new Set(), guardLeft: new Set(), playerT: new Set(), guardT: new Set() };
+      posX = 300; keysPressed["d"] = true;
+      let frames = 0;
+      const tick = () => {
+        seen.playerLeft.add(player.style.left); seen.guardLeft.add(g.el.style.left);
+        seen.playerT.add(player.style.translate); seen.guardT.add(g.el.style.translate);
+        if (++frames < 40) return requestAnimationFrame(tick);
+        keysPressed["d"] = false;
+        g.disabled = true;
+        resolve({ supported: BODY_TRANSLATE, walked: posX - 300,
+          playerLeft: [...seen.playerLeft], guardLeft: [...seen.guardLeft],
+          playerMoves: seen.playerT.size, guardMoves: seen.guardT.size });
+      };
+      requestAnimationFrame(tick);
+    }));
+    ok("walking and patrolling move bodies by translate, never by left",
+       moving.supported && moving.walked > 0 && moving.playerMoves > 1 && moving.guardMoves > 5 &&
+       moving.playerLeft.join() === "0px" && moving.guardLeft.join() === "0px", moving);
 
     // The world element is the scene's width, not a fixed 4400: everything
     // layered on it is painted and held at that width.
@@ -4825,7 +4854,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       loadScene(id);
       const npc = NPCS.find((n) => n.id === "t_puno");
       npc.x = posX + 60;
-      document.getElementById("npc-t_puno").style.left = npc.x + "px";
+      placeBody(document.getElementById("npc-t_puno"), npc.x);
       await new Promise((r) => setTimeout(r, 120));
       return { label: document.querySelector("#btn-interact .lbl").textContent,
                h: document.getElementById("npc-t_puno").style.height };

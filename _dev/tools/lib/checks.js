@@ -43,8 +43,16 @@ function jsFiles() {
   return out;
 }
 
+// A control character (a backspace, an escape) in source compiles and
+// does something nobody wrote: a regex with a backspace in it matched
+// nothing in Block 108, and nothing failed. Tab, CR and LF are allowed.
+const CONTROL = /[\u0000-\u0008\u000B\u000C\u000E-\u001F]/;
+
 function syntax() {
   const errors = [];
+  const text = jsFiles().concat(["index.html", "teacher.html"],
+    fs.readdirSync(path.join(ROOT, "css")).map((f) => "css/" + f),
+    fs.readdirSync(ROOT).filter((f) => /\.md$/.test(f)));
   for (const rel of jsFiles()) {
     try {
       new vm.Script(read(rel), { filename: rel });
@@ -52,7 +60,12 @@ function syntax() {
       errors.push(rel + ": " + err.message);
     }
   }
-  return { name: "every script compiles", ok: errors.length === 0, detail: errors };
+  for (const rel of text) {
+    if (rel.startsWith("js/vendor/")) continue; // another project's minified code
+    const lines = read(rel).split("\n");
+    lines.forEach((l, i) => { if (CONTROL.test(l)) errors.push(rel + ":" + (i + 1) + ": a control character"); });
+  }
+  return { name: "every script compiles, and no text file holds a control character", ok: errors.length === 0, detail: errors };
 }
 
 // STORY.md is the script of content/act1.js, changed with it. Read from

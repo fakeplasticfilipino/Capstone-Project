@@ -79,6 +79,7 @@ const Shell = {
     this._watchOrientation();
     this._watchAssets();
     this._watchOffline();
+    this._offerDevJumps();
 
     this._showPanel("title");
     this.el.overlay.classList.remove("hidden");
@@ -415,6 +416,30 @@ const Shell = {
   // enterAsGuest calls back into awaitEntry, this.entered is already
   // true, so awaitEntry drops straight into _enterWorld() instead of
   // waiting on a Magpatuloy tap that would never come.
+  // Block 108. With ?dev=1 in the address, the title screen offers the
+  // act's devJumps: a guest started at a point in the story, for checking
+  // a block on the phone without playing to it. Never shown otherwise;
+  // a guest writes nothing, so it can touch nobody's save.
+  _offerDevJumps() {
+    const box = document.getElementById("shell-dev");
+    const act = window.Acts && Acts.getAct ? Acts.getAct(1) : null;
+    const jumps = (act && act.devJumps) || [];
+    if (!box || !jumps.length || new URLSearchParams(location.search).get("dev") !== "1") return;
+    const select = document.getElementById("shell-dev-jump");
+    jumps.forEach((j) => {
+      const opt = document.createElement("option");
+      opt.value = j.id;
+      opt.textContent = j.label;
+      select.appendChild(opt);
+    });
+    document.getElementById("shell-dev-go").addEventListener("click", () => {
+      if (this.entered) return;
+      this.entered = true;
+      if (window.Game && window.Game.enterAsGuest) window.Game.enterAsGuest(select.value);
+    });
+    box.classList.remove("hidden");
+  },
+
   _onGuestStart() {
     if (this.entered) return; // already on the way in; ignore a second tap
     this.entered = true;

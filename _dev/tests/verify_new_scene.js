@@ -1728,6 +1728,40 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        !__DB.game_progress.length));
   await gp.ctx.close();
 
+  // ---------------------------------------------------------------
+  // Block 108. The story points a tester can start from (?dev=1).
+  // ---------------------------------------------------------------
+  console.log("\nStarting from a point in the story (?dev=1)");
+  const plain = await newPage(browser, { session: null });
+  ok("without ?dev=1 the title screen offers no story points",
+     await plain.page.evaluate(() => document.getElementById("shell-dev").classList.contains("hidden")));
+  await plain.ctx.close();
+  const jumps = await (async () => {
+    const p = await newPage(browser, { session: null });
+    const list = await p.page.evaluate(() => (ACT_1.devJumps || []).map((j) => ({ id: j.id, scene: j.scene, task: j.task })));
+    await p.ctx.close();
+    return list;
+  })();
+  ok("Act I offers its story points (" + jumps.length + ")", jumps.length >= 8, jumps);
+  for (const j of jumps) {
+    const p = await newPage(browser, { session: null });
+    await p.page.goto("http://localhost:" + PORT + "/index.html?dev=1");
+    await p.page.waitForTimeout(400);
+    await p.page.selectOption("#shell-dev-jump", j.id);
+    await p.page.click("#shell-dev-go");
+    for (let i = 0; i < 80 && (await p.page.evaluate(() => Shell.state)) !== "playing"; i++) await p.page.waitForTimeout(100);
+    await p.page.waitForTimeout(600);
+    const at = await p.page.evaluate(() => ({
+      scene: currentSceneId,
+      guest: Game.isGuest(),
+      log: document.getElementById("quest-list").textContent,
+      written: __DB.game_progress.length,
+    }));
+    ok("starting at " + j.id + " opens " + j.scene + " with \"" + j.task + "\" in hand, writing nothing",
+       at.scene === j.scene && at.guest && at.log.includes(j.task) && at.written === 0, at);
+    await p.ctx.close();
+  }
+
   await browser.close();
   server.close();
 

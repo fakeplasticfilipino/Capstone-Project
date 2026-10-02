@@ -208,7 +208,7 @@ off the repository.
                                (Block 77), make-asset-manifest.js
                                (Block 78), shrink-sprites.js (Block 105),
                                prepare.js and lib/stamp.js, lib/checks.js
-                               (Block 106),
+                               (Block 106), profile.js (Block 107),
                                make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js,
                                make-scene-sfx.js (Block 81), and
@@ -380,7 +380,9 @@ game.js exposes window.Game and nothing else:
     flushSave()          awaitable; logout must await it
     setUiBlocked(bool)   suppresses world input while a screen is open
     isSignedIn()
-    enterAsGuest()       Block 14; see Decisions on record
+    enterAsGuest(jumpId) Block 14; see Decisions on record. With an id
+                         from the act's devJumps (Block 108), starts the
+                         guest at that point in the story
     isGuest()
     stats()              { damageTaken, detections, playMs }, a copy
     resetStats()         called by Acts.enterAct, and by nothing else
@@ -469,6 +471,9 @@ world belongs to the scene.
                                                  (Block 70)
       keepFlagsOnReplay: ["flag"],               optional; kept by a replay
                                                  (Block 68)
+      devJumps: [{ id, label, scene, x, facing,  optional; points a tester
+                   flags, currency, items,       starts a guest from, with
+                   task }],                      ?dev=1 (Block 108)
       startingQuests: [{ id, text }],
       scenes: [ {...}, {...} ]
     }
@@ -614,6 +619,18 @@ them (js/teacher-talaan.js, DEFAULTS), and a paper renamed in content is
 renamed there. The dashboard
 describes the three places in words (js/teacher-talaan.js, PLACES), and
 a spot moved in content is described again there.
+
+devJumps (Block 108) are points in the story a tester can start a guest
+from: the title screen opened with ?dev=1 in the address offers them as
+a list (shell.js), and nothing else ever shows them. Each sets its
+flags and currency before the scene is built, stands Macario at x, and
+hands over its items (granted and worn, as the story does); the beat
+it leads to then plays as after a reload. A guest writes nothing, so
+no save can be touched. Each point's flags are the previous point's
+plus what the story sets in between (content/act1.js, DEV_*), and
+verify_new_scene.js starts from every point and checks the scene and
+the task in hand (task). A beat added, moved or renamed in the act is
+a jump to check: the suite fails when its task no longer matches.
 
 A hazard's reason is the Tagalog toast shown on contact and defaults to
 "Nasugatan ka!". Hazards sit on the base floor and are cleared by jumping;
@@ -2031,6 +2048,9 @@ look, by system:
       sheets shrunk                       shrink-sprites.js)
     fingerprints, prepare.js, the         Block 106
       hook, test.js --only
+    bodies placed by translate,           Block 107
+      profile.js
+    starting from a point in the story    Block 108 (devJumps, ?dev=1)
 
 ## Pitfalls
 
@@ -2216,7 +2236,9 @@ CI job) fails when one is stale, so a push like that is red before it
 can reach a phone.
 
 Any new element that represents a character in the world must be
-built through mountBody and bodySprite (or bodyPlaceholder), and any
+built through mountBody and bodySprite (or bodyPlaceholder), moved
+through placeBody (Block 107: the translate property, never left, which
+lays out the whole street every frame; read back with bodyX), and any
 new rule about touching must read the body. Positioning a sprite
 element directly, or measuring contact against a rendered element's
 size, reintroduces the Block 24 fault silently: nothing errors, the
@@ -2262,7 +2284,10 @@ slow, so anything added to it writes only when the value changes, and
 nothing in it reads a layout property back (clientWidth, offsetWidth,
 getBoundingClientRect). A single read after a write forces a full layout
 of a world thousands of pixels wide, every frame. Measure the viewport
-once per scene load instead, as measureViewport does.
+once per scene load instead, as measureViewport does. Judge a change to
+the loop with node _dev/tools/profile.js (Block 107), against the code
+before it on the same computer: frames, style and layout per second,
+and nodes and listeners across scene changes.
 
 An item's count lives in Inventory.counts, not in a list of ids. Code
 that asks "is it owned" uses Inventory.owns(id); code that needs how

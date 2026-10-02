@@ -4315,3 +4315,33 @@ body.dialogue-top .dialogue-portrait {
 @media (prefers-reduced-motion: reduce) {
   .tutorial-pulse { animation: none; }
 }
+
+/* Block 108. The title screen's story points, only with ?dev=1
+   (shell.js, _offerDevJumps): a list and a button, one row. */
+.shell-dev {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.shell-dev.hidden {
+  display: none;
+}
+
+.shell-dev select {
+  flex: 1;
+  min-width: 0;
+  min-height: 63px;
+  font-family: var(--px-font);
+  font-size: 18px;
+  background: var(--c-wood-deep);
+  color: var(--c-cream);
+  border: 2px solid var(--px-ink);
+  padding: 0 8px;
+}
+
+.shell-dev .shell-btn {
+  flex: 0 0 auto;
+  width: auto;
+  margin: 0;
+}

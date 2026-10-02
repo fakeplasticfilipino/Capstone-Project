@@ -9,7 +9,14 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 2 Oct 2026, after Block 105: the whole game kept on the
+Last updated: 2 Oct 2026, after Block 108. Blocks 106 to 108, the same
+day: every ?v= a fingerprint written by node _dev/tools/prepare.js (run
+it before every commit; a hook and the first CI job check it), the
+animate tools shrink what they write, test.js --only; every moving body
+placed by translate (walking and the guards no longer lay out the
+street every frame; _dev/tools/profile.js measures it); and ?dev=1 on
+the title screen to start a guest from a point in the story. Block 105:
+the whole game kept on the
 phone after one visit (so a reload downloads nothing and a guest plays
 with no internet), the road drawn from the picture the loader waited
 for, the Supabase library in the repository instead of a CDN, and every
@@ -172,7 +179,12 @@ In order.
 
 1. Every new block is seen on the phone before it is called done: in
 landscape, from a private tab, after the push, with the sound on,
-played from the start. Write the block's own checks here (what to see,
+played from the start, or since Block 108 from the nearest point in the
+story: open the game with ?dev=1 after the address
+(https://fakeplasticfilipino.github.io/Capstone-Project/?dev=1), pick
+the point from the list on the title screen and press Simulan dito. It
+plays as a guest and saves nothing. Play from the start before the
+pilot all the same, since a jump skips what comes before it. Write the block's own checks here (what to see,
 and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026. Open:
@@ -633,6 +645,13 @@ machine, the assessment module.
         only what changed); prepare.js, the pre-commit hook and a
         one-minute first CI job; the animate tools shrink what they
         write; test.js --only and --list
+    107 every moving body placed by the translate property, not left:
+        walking 41 layouts a second to 3, the guards' night 60 to 0;
+        profile.js measures the game slowed like a phone
+    108 start a guest from a point in the story: the title screen with
+        ?dev=1 lists nine (the jobs, the direktor, the play, the
+        savings, Baldovino, the Kasama, the oath, the pamphlets, the
+        report), each checked by verify_new_scene.js
 
 ## Blocks remaining
 

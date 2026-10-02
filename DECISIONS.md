@@ -4232,3 +4232,70 @@ through and is not split.
 
 Scrapped on the way: the "Current versions" list in TRACKER.md, which
 existed only because the numbers were typed.
+
+## Block 107: bodies placed by translate; the engine measured
+
+The roadmap's fifth step: audit the engine, by measurement, and fix only
+what is wrong. _dev/tools/profile.js plays the real game at phone
+landscape with the CPU slowed six times: standing on the street,
+standing on the pamphlet night with the three guards patrolling,
+walking (which breaks into a run), and eight round trips between the
+street and the entablado.
+
+What it found. Nothing leaks: after each round trip, garbage collected,
+the page holds the same 1691 nodes and 189 listeners and a heap of
+2.3 MB. Frames held at 60 in every scene on this computer. But every
+moving body was positioned with left (and Macario with bottom too),
+and a left that changes invalidates the layout of a world thousands of
+pixels wide: about 41 layouts a second while Macario walked (23 ms of
+layout a second, slowed), and 60 a second while the guards patrolled,
+even with him standing still. Block 36 had already stopped the writes
+when nothing moved; this is the cost when something does, which on the
+street is most of the time.
+
+The fix. placeBody(el, x, y) writes the CSS translate property on a box
+whose left is 0, and mountBody uses it, so every body is placed one
+way: Macario, guards, enemies, bullets, his shot, and decorations a
+script walks on. translate rather than transform, because a body
+knocked down is rotated by a transform animation (enemy-fall) and the
+two compose, where a transform would be replaced and the body would
+jump to the world's left edge as it fell. bodyX(el) reads a position
+back. A browser without the translate property (Chrome before 104)
+gets left and bottom, as before. Measured after: walking 3.3 layouts a
+second (6 ms), the guards' night 0.2 (0.1 ms). The constant is declared
+near the top of game.js, because the player's body is mounted at parse
+time (the temporal dead zone pitfall; the first attempt hit it).
+
+Left alone, measured and not worth it: the style recalculations while
+walking (about 48 a second, the walk cycle's frames and the camera),
+and the work game's marker, which moves inside its own overlay.
+
+## Block 108: starting from a point in the story
+
+The roadmap's last step, built because the rule for every block is to
+see it on the phone, and reaching the pamphlet night from the start is
+twenty minutes of play before the thing being checked. The title screen
+opened with ?dev=1 offers a list of the act's devJumps (content/act1.js,
+DEV_JUMPS): nine points from the jobs to the report, each the flags the
+story has set by then, the barya, where Macario stands and, from the
+Kasama on, the stage clothes worn. Simulan dito starts a guest there
+(Game.enterAsGuest(jumpId)); the flags are set before the scene is
+built, so the beat that comes next plays as it does after a reload,
+which the reload checks already cover.
+
+Why it is safe: it is a guest, and a guest writes nothing, so no save,
+score or progress row can be touched; without ?dev=1 nothing shows.
+Why it stays right: each point's flags are built on the one before
+(DEV_OPENING_DONE to DEV_ROUNDS_OVER), from the same sets
+verify_new_scene.js's reload checks use, and the suite starts from every
+point and checks the scene and the step in hand (task). A beat moved or
+renamed later fails there rather than in a tester's hands. It does not
+replace playing from the start before the pilot, since a jump skips
+everything before it.
+
+Found on the way: twice in this session an escape typed through the
+shell arrived in a file as the control character itself (a backspace in
+the ?dev=1 regex, so the list never showed and nothing failed). The
+first prepare.js check now also fails on any control character in a
+text file of ours (js/vendor/ excepted, being another project's
+minified code), so that kind of mistake is caught in a second.
