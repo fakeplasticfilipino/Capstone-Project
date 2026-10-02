@@ -33,8 +33,8 @@ Block 97, one tool and a rig per character for animating any still;
 Block 96, the big siga from the artist's still. Blocks 90 to 97 were
 tested on the phone that day with no fault reported; Blocks 98 to 103
 have not been seen on a device yet (Next action 1). Earlier blocks:
-the Blocks list below, and DECISIONS.md. test.js 774 passed, 0 failed;
-verify_new_scene.js 243 passed, 0 failed, locally. Everything
+the Blocks list below, and DECISIONS.md. test.js 776 passed, 0 failed;
+verify_new_scene.js 255 passed, 0 failed, locally and on CI. Everything
 is committed and pushed to main.
 
 A new session, on any device: git pull first; read CLAUDE.md, then
@@ -490,7 +490,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (774 and 243 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (776 and 255 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -777,11 +777,11 @@ it wanted if it is still missing. A Playwright update needs it again.
 The suites take about 7 minutes (verify_new_scene.js) and 10 (test.js)
 there; run them one after the other, not at once.
 
-test.js (774 checks) drives the shipping index.html with a stubbed
+test.js (776 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (243 checks) drives the real
+what is covered. verify_new_scene.js (255 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is
@@ -795,7 +795,7 @@ once, and passed on the next run; rerun before believing either.
 test.js did it once on 1 Oct 2026 ("after lighting up first, so the
 swing is readable": an enemy already mid-dash when the check starts
 watching for its red !), and passed on the rerun. Both never touch the
-live project. Both are green as of Block 105, locally. The guard-catch flake was
+live project. Both are green as of Block 108, locally and on CI (about 8 minutes there). The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check

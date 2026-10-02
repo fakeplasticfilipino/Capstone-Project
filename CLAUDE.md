@@ -94,7 +94,11 @@ before anything else. So:
                              being public, curl on api.github.com/repos/
                              fakeplasticfilipino/Capstone-Project/
                              actions/runs; gh is not installed on the
-                             proponent's computer)
+                             proponent's computer). The API allows 60
+                             requests an hour without a login: poll it
+                             every 30 seconds at most (a run takes about
+                             8 minutes), never in a tight loop, or read
+                             the Actions page itself
     a Markdown-only push     no suites; CI skips it too
     a release to students    both suites in full on this computer
     (the pilot, the freeze,  first, green, then push; and CI green
