@@ -383,6 +383,28 @@ const Inventory = {
     return ok;
   },
 
+  // Scan S7. The other way: an item the story handed over is taken back
+  // when the act is replayed from the start (acts.js, replayAct, for
+  // every item that declares replayRemoves), so the replay is not played
+  // in clothes the direktor has not given yet. Taken off first, then the
+  // row deleted. Resolves true when it is gone.
+  async revoke(id) {
+    const item = this.item(id);
+    if (!item || !this.owns(id)) return true;
+    if (item.slot && this.equipped(item.slot) === id) {
+      if (!(await this.unequip(item.slot))) return false;
+    }
+    const before = this.count(id);
+    this._setCount(id, 0);
+    this._changed();
+    const ok = await this._writeCount(id, 0);
+    if (!ok) {
+      this._setCount(id, before);
+      this._changed();
+    }
+    return ok;
+  },
+
   // -----------------------------------------------------------
   // Equipping
   // -----------------------------------------------------------

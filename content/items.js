@@ -15,7 +15,11 @@
 //   carry `sheets`; a cosmetic carries `sheets` and never an effect.
 //
 //   soldBy (optional) names the NPC whose shop sells it. Without it an
-//   item is general stock (the corner button, Tindero).
+//   item is general stock (the corner shop button).
+//
+//   replayRemoves (optional): the story hands it over, so a replay of
+//   the act after a failed post-test takes it back (Inventory.revoke,
+//   Scan S7) and the story hands it over again.
 //
 //   Consumable: kind "consumable". Stacks up to maxStack (default 5).
 //   Gamitin applies `use` once and spends one.
@@ -24,18 +28,18 @@
 //   (Inventory.consume). Listed in Tindahan only while `forQuest` is
 //   an open quest.
 //
-// Block 52 emptied the catalogue with the Act I rewrite: the two apples
-// and the stage clothes belonged to scenes that are gone (the Tindero's
-// stall, Kabayo, the Mananahi). Their tile pictures stay in
-// assets/items/, and the harness fixture still carries every kind, so
-// the shop, equipment, consumables and quest items stay tested. The ids
-// "mansanas", "mansanas-kabayo" and "damit-entablado" must not be reused
-// for a different item ("damit-entablado" is back since Block 82 as the
-// same stage clothes). A permanent item takes this shape:
+// Block 52 emptied the catalogue with the Act I rewrite, and Block 82
+// brought back the one item Act I ships, the stage clothes. The harness
+// fixture still carries every kind, so the shop, equipment, consumables
+// and quest items stay tested. The ids "mansanas" and "mansanas-kabayo"
+// (the old apples) must not be reused for a different item. There are
+// no item tile pictures; a tile shows the item's symbol (CLAUDE.md,
+// Icons), and one drawn later goes in assets/items/, lowercase. A
+// permanent item takes this shape:
 //
 //   {
 //     id: "sibat", name: "Sibat", kind: "equipment", slot: "weapon",
-//     description: "...", price: 20, img: "assets/Items/Sibat.png",
+//     description: "...", price: 20, img: "assets/items/sibat.png",
 //     effect: { projectileSpeedMult: 1.5 },
 //   },
 //
@@ -61,6 +65,7 @@ window.ITEMS = [
       "Habang nakatayo ka nang tahimik, mas matagal kang mapapansin ng guardia civil.",
     price: 0,
     effect: { stillDetectionMult: 0.2 },
+    replayRemoves: true, // Scan S7: a replay starts without them
     // Block 85. A stand-in until the costume is drawn: Macario warmed
     // toward the gold of a stage costume, so a student can see it is on.
     tint: "sepia(0.55) saturate(1.6) hue-rotate(-12deg) brightness(1.05)",

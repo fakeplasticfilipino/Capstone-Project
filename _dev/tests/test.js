@@ -2375,6 +2375,21 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("still nothing written after time passes (no autosave for a guest)",
        (await page.evaluate(() => __DB.game_progress.length)) === 0);
 
+    // Scan S4. A guest who finishes the act sees its end, with no test.
+    const guestEnd = await page.evaluate(async () => {
+      currentActData.objectives.forEach((o) => { state.flags[o.flag] = true; });
+      markDirty();
+      await new Promise((r) => setTimeout(r, 1800));
+      return { shown: !document.getElementById("act-screen").classList.contains("hidden"),
+        title: document.getElementById("act-screen-title").textContent,
+        btn: document.querySelector("#act-screen-btn .lbl").textContent,
+        quiz: !document.getElementById("quiz").classList.contains("hidden"),
+        rows: __DB.act_progress.length + __DB.assessment_scores.length };
+    });
+    ok("a guest who finishes the act sees its end, no test, nothing written (S4)",
+       guestEnd.shown && guestEnd.title === "Wakas" && guestEnd.btn === "Bumalik sa simula" &&
+       !guestEnd.quiz && guestEnd.rows === 0, guestEnd);
+
     await page.reload();
     await page.waitForTimeout(300);
     ok("reload lands back on the title screen, not resumed as a guest",
@@ -5274,7 +5289,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     // In the page: sits the test on screen, choosing by answer(question,
     // index) the choice to tap, and taps through every message after.
     const DRIVE = `window.__drive = async (pending, answer) => {
-      const seen = { questions: [], screens: [] };
+      const seen = { questions: [], screens: [], backs: [] };
       let done = false; pending.then(() => { done = true; });
       for (let i = 0; i < 80 && !done; i++) {
         await new Promise((r) => setTimeout(r, 40));
@@ -5283,6 +5298,8 @@ const visible = (page, sel) => page.evaluate((s) => {
         const choices = [...document.querySelectorAll(".quiz-choice")];
         if (choices.length) {
           if (seen.questions[seen.questions.length - 1] !== q) seen.questions.push(q);
+          const back = document.getElementById("quiz-back");
+          if (!back.classList.contains("hidden")) seen.backs.push(back.querySelector(".lbl").textContent);
           choices[answer(q, seen.questions.length - 1)].click();
           await new Promise((r) => setTimeout(r, 20));
         } else {
@@ -5345,6 +5362,12 @@ const visible = (page, sel) => page.evaluate((s) => {
       Object.assign(state.flags, { nalamanAngPinagmulan: true, salita_tondo: true, pahiwatig_2: true,
         __startCurrency_1: 5, __hintSeed: 42 });
       Game.addCurrency(35 - Game.currency() + 0);
+      // Scan S7: an item the story handed over, worn, is taken back.
+      ITEMS.push({ id: "kostyum-pagsubok", name: "K", kind: "equipment", slot: "outfit", price: 0,
+        description: "", effect: {}, replayRemoves: true });
+      await Inventory.grant("kostyum-pagsubok");
+      await Inventory.equip("kostyum-pagsubok");
+      const wornBefore = Inventory.isWorn("kostyum-pagsubok");
       const before = Game.currency();
       const p = Acts.finishAct();
       const seen = await __drive(p, () => 1); // "a","b","c": b right for 1, wrong for 2
@@ -5360,6 +5383,8 @@ const visible = (page, sel) => page.evaluate((s) => {
       await new Promise((r) => setTimeout(r, 300));
       const ap = __DB.act_progress.find((r) => r.act_number === 1);
       return { seen, offered, before, titleCard, status: Acts.status, dbStatus: ap && ap.status,
+        wornBefore, ownsAfter: Inventory.owns("kostyum-pagsubok"), wornAfter: Inventory.isWorn("kostyum-pagsubok"),
+        rowAfter: __DB.player_inventory.some((r) => r.item_id === "kostyum-pagsubok"),
         flags: Object.assign({}, state.flags), currency: Game.currency(),
         posts: __DB.assessment_scores.filter((r) => r.test_type === "post").length };
     });
@@ -5370,6 +5395,8 @@ const visible = (page, sel) => page.evaluate((s) => {
        !replay.flags.nalamanAngPinagmulan && replay.flags.salita_tondo && replay.flags.pahiwatig_2 &&
        replay.flags.__hintSeed === 42 && replay.flags.__retakePost_1 === true, replay.flags);
     ok("and the barya go back to what the act began with", replay.before === 35 && replay.currency === 5, replay);
+    ok("and what the story handed over is taken back, off and out of the bag (S7)",
+       replay.wornBefore && !replay.ownsAfter && !replay.wornAfter && !replay.rowAfter, replay);
 
     const pass = await page.evaluate(async () => {
       const p = Acts.finishAct();
@@ -5383,6 +5410,58 @@ const visible = (page, sel) => page.evaluate((s) => {
        pass.posts[1].score === 2, pass);
     ok("passing completes the act and spends the retake", pass.status === "completed" &&
        pass.seen.screens.includes("Pumasa!") && pass.retake === undefined, pass);
+    ok("after the replay's Tapusin na, the questions' Back reads Bumalik again (Scan S2)",
+       pass.seen.backs.length > 0 && pass.seen.backs.every((b) => b === "Bumalik"), pass.seen.backs);
+    await ctx.close();
+  }
+  if (still()) { // the section above, continued
+    // Scan S3. A score that cannot be written (no internet) no longer
+    // holds the student: Ituloy muna keeps it on the phone, it counts as
+    // sat, and the next login sends it.
+    const { ctx, page } = await newPage(Object.assign(atTestRoom(), { realQuestions: true }), fixtureRoutes());
+    await page.waitForTimeout(700);
+    await page.click("#shell-start");
+    await page.waitForTimeout(400);
+    const off = await page.evaluate(async () => {
+      try { localStorage.removeItem(Assessment.PENDING_KEY); } catch (e) {}
+      __TEST.insertError = { assessment_scores: "Failed to fetch" };
+      const p = Assessment.runTest(1, "pre");
+      const screens = [];
+      let done = false; p.then(() => { done = true; });
+      let leftOnce = false;
+      for (let i = 0; i < 120 && !done; i++) {
+        await new Promise((r) => setTimeout(r, 40));
+        if (document.getElementById("quiz").classList.contains("hidden")) continue;
+        const choices = [...document.querySelectorAll(".quiz-choice")];
+        if (choices.length) { choices[0].click(); await new Promise((r) => setTimeout(r, 20)); }
+        else {
+          const title = document.getElementById("quiz-title").textContent;
+          screens.push(title);
+          if (title === "Hindi naipasa" && !leftOnce) {
+            const back = document.querySelector("#quiz-back .lbl").textContent;
+            screens.push("back:" + back);
+            if (screens.filter((s) => s === "Hindi naipasa").length >= 2) {
+              leftOnce = true;
+              document.getElementById("quiz-back").click();
+              continue;
+            }
+          }
+        }
+        document.getElementById("quiz-btn").click();
+      }
+      const result = await p;
+      const kept = JSON.parse(localStorage.getItem(Assessment.PENDING_KEY) || "[]");
+      const again = await Assessment._existingScores(1, "pre");
+      delete __TEST.insertError;
+      await Assessment.flushPending();
+      return { screens, result, kept: kept.length, againN: again.length,
+        rows: __DB.assessment_scores.filter((r) => r.test_type === "pre").length,
+        left: localStorage.getItem(Assessment.PENDING_KEY) };
+    });
+    ok("a score that cannot be saved offers Subukan Ulit and a way on, Ituloy muna (S3)",
+       off.screens.includes("Hindi naipasa") && off.screens.includes("back:Ituloy muna") && off.result.max === 10, off);
+    ok("going on keeps the score on the phone, and it counts as sat", off.kept === 1 && off.againN === 1, off);
+    ok("with the internet back it is sent and no longer kept", off.rows === 1 && off.left === null, off);
     await ctx.close();
   }
   if (still()) { // the section above, continued
@@ -6391,6 +6470,77 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("he lands on Macario's other side, about 90px beyond him, having hurt nobody",
        r.hop && r.side1 === -r.hop.side0 && Math.abs(r.landGap - 90) < 25 && r.healthAfterHop === 3, r);
     ok("and then strikes from there, with the usual red !", r.struckAfter === true, r);
+    await ctx.close();
+  }
+
+  // -------------------------------------------------------------
+  // BR. The Scan list's engine fixes (TRACKER.md, 2 Oct 2026): one save
+  // at a time (S9), a script that throws (S8), the shop button only with
+  // something for sale (S6), and ?dev=1 with a student signed in (S5).
+  // -------------------------------------------------------------
+  if (section("BR", "Scan fixes: saves in order, a failed script, the shop button, ?dev=1")) {
+    const { ctx, page } = await enterTestRoom();
+    const saves = await page.evaluate(async () => {
+      const count = () => __CALLS.filter((c) => c.table === "game_progress" && c.op === "upsert").length;
+      await saveProgress();
+      const before = count();
+      const p1 = saveProgress();
+      await Promise.resolve(); // p1 has started and is in flight
+      const p2 = saveProgress();
+      const p3 = saveProgress();
+      state.flags.__scanS9 = true; // changed while the first is in flight
+      await p3;
+      const row = __DB.game_progress.find((r) => r.student_id === "u1");
+      return { shared: p2 === p3, first: p1 !== p2, writes: count() - before,
+        latest: Boolean(row && row.save_state.flags.__scanS9) };
+    });
+    ok("saves asked for while one is in flight wait, and share one save after it (S9)",
+       saves.shared && saves.first && saves.writes === 2 && saves.latest, saves);
+
+    const script = await page.evaluate(async () => {
+      const orig = console.error;
+      console.error = () => {};
+      currentScene.scripts = [{ doneFlag: "__scanS8", run: async () => {
+        setCutscene(true);
+        await playDialogue([{ speaker: "Pagsubok", text: "Isa." }]).catch(() => {});
+      } }];
+      const p = runSceneScript();
+      await new Promise((r) => setTimeout(r, 100));
+      const frozen = cutscenePlaying && inDialogue;
+      currentScene.scripts[0].run = async () => { setCutscene(true); throw new Error("sinadya"); };
+      inDialogue = false; dialogueBox.classList.add("hidden"); setCutscene(false);
+      await runSceneScript();
+      console.error = orig;
+      return { frozen, cut: cutscenePlaying, open: inDialogue, done: Boolean(state.flags.__scanS8) };
+    });
+    ok("a scene script that throws hands the world back, the beat not counted (S8)",
+       !script.cut && !script.open && !script.done, script);
+
+    const shop = await page.evaluate(async () => {
+      const shown = () => !document.getElementById("btn-shop").classList.contains("hidden");
+      await new Promise((r) => setTimeout(r, 100));
+      const withStock = shown();
+      const prices = ITEMS.map((it) => it.price);
+      ITEMS.forEach((it) => { it.price = 0; });
+      await new Promise((r) => setTimeout(r, 150));
+      const without = shown();
+      ITEMS.forEach((it, i) => { it.price = prices[i]; });
+      await new Promise((r) => setTimeout(r, 150));
+      return { withStock, without, back: shown() };
+    });
+    ok("the shop button shows only while something is for sale (S6)",
+       shop.withStock && !shop.without && shop.back, shop);
+    await ctx.close();
+  }
+  if (still()) { // the section above, continued
+    const { ctx, page } = await newPage({ session: { user: { id: "u1" } } });
+    await page.goto("http://localhost:" + PORT + "/index.html?dev=1");
+    await page.waitForTimeout(2500);
+    const dev = await page.evaluate(() => ({
+      signedIn: Game.isSignedIn(),
+      shown: !document.getElementById("shell-dev").classList.contains("hidden"),
+    }));
+    ok("with a student signed in, ?dev=1 offers no story points (S5)", dev.signedIn && !dev.shown, dev);
     await ctx.close();
   }
 

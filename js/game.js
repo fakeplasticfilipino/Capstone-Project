@@ -2698,6 +2698,15 @@ async function runSceneScript() {
     }
   } catch (err) {
     console.error("Scene script failed:", err);
+    // Scan S8. A script that throws would otherwise leave the world as it
+    // held it: Macario frozen until a reload, which replays the same
+    // script. The world is handed back, and any box it left open closed;
+    // doneFlag stays unset, so the beat is not counted as having played.
+    if (inDialogue) {
+      inDialogue = false;
+      dialogueBox.classList.add("hidden");
+    }
+    setCutscene(false);
   } finally {
     sceneScriptsRunning.delete(entry);
     renderQuests(); // Block 93: the way out, once the student is free
@@ -7172,8 +7181,12 @@ function gameLoop(now) {
     if (btnInventoryMain && window.Inventory) {
       setClass(btnInventoryMain, "hidden", false);
     }
+    // Scan S6: only while something is for sale. Act I sells nothing, and
+    // a coins button that opens "Walang paninda ngayon" teaches nothing.
+    // forSale is a filter over a few items, cheap enough for the loop;
+    // setClass writes only on a change.
     if (btnShopMain && window.Inventory) {
-      setClass(btnShopMain, "hidden", false);
+      setClass(btnShopMain, "hidden", !Inventory.forSale(null).length);
     }
     nearby = findNearby();
     // Block 92. The first person within reach is taught to be talked to.
@@ -7551,6 +7564,10 @@ function markDirty() {
   // Block 48. Flags are set by content directly and then markDirty is
   // called, so this is the one place a change of step is always seen.
   if (currentActData && currentActData.linearObjectives) renderQuests();
+  // Scan S4: a guest has no save, so the act's end is looked for here.
+  // Not by reading isGuest: markDirty runs at parse time (loadAct), before
+  // that let is declared; guestCheck asks Game.isGuest() itself.
+  if (window.Acts && Acts.guestCheck) Acts.guestCheck();
   saveDirty = true;
   clearTimeout(saveDebounceTimer);
   saveDebounceTimer = setTimeout(() => {
@@ -7558,7 +7575,29 @@ function markDirty() {
   }, 800);
 }
 
-async function saveProgress() {
+// Scan S9. One save at a time. The autosave and the debounce could both
+// be sending, and if the earlier payload landed last it overwrote the
+// newer one. Now a save asked for while one is in flight waits for it,
+// and builds its payload only when it starts, from the state as it is
+// then; any number of asks in that window share the one save that
+// follows. The state lives on the function rather than in a let, which
+// loadAct would reach at parse time (CLAUDE.md, Pitfalls).
+function saveProgress() {
+  if (!currentUserId || !saveReady) return Promise.resolve();
+  if (saveProgress.queued) return saveProgress.queued;
+  const before = saveProgress.running || Promise.resolve();
+  const next = before.then(() => {
+    saveProgress.queued = null;
+    saveProgress.running = next;
+    return writeProgress();
+  }).finally(() => {
+    if (saveProgress.running === next) saveProgress.running = null;
+  });
+  saveProgress.queued = next;
+  return next;
+}
+
+async function writeProgress() {
   if (!currentUserId || !saveReady) return;
   saveDirty = false;
 

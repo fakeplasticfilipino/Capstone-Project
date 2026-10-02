@@ -5,8 +5,9 @@
 //
 // LOAD ORDER: after acts.js in index.html. acts.js sequences the
 // act lifecycle and owns every act_progress write; this file owns
-// the interface and the two RPC calls, and reports back by
-// resolving a promise. It never writes act_progress itself.
+// the interface, reads the questions and writes the scores (Block 68;
+// it calls no RPC since), and reports back by resolving a promise. It
+// never writes act_progress itself.
 //
 // This file is OPTIONAL by design. acts.js checks window.Assessment
 // before calling anything here, so the game runs without it, with
@@ -90,10 +91,15 @@ const Assessment = {
     fresh.addEventListener("click", handler);
   },
 
-  _onBack(handler, icon) {
+  // The label is set every time too (Scan S2): cloneNode carries the
+  // last one across, so the replay's "Tapusin na" or the feedback's
+  // "Laktawan" stayed on every later question's Back button.
+  _onBack(handler, icon, label) {
     const back = this.el.back;
     const fresh = back.cloneNode(true);
     setIcon(fresh, icon || "i-back");
+    setLabel(fresh, label || "Bumalik");
+    fresh.classList.remove("feedback-skip");
     back.replaceWith(fresh);
     this.el.back = fresh;
     if (handler) {
@@ -271,6 +277,9 @@ const Assessment = {
   // try that is then refused when written, which _submit reports.
   async _existingScores(actNumber, testType) {
     if (!currentUserId) return [];
+    await this.flushPending();
+    const pending = this._readPending().filter((r) =>
+      r.student_id === currentUserId && r.act_number === actNumber && r.test_type === testType);
 
     try {
       const { data, error } = await sb
@@ -280,10 +289,11 @@ const Assessment = {
         .eq("act_number", actNumber)
         .eq("test_type", testType);
       if (error) throw error;
-      return (data || []).slice().sort((a, b) => (Number(a.attempt) || 1) - (Number(b.attempt) || 1));
+      return (data || []).concat(pending)
+        .sort((a, b) => (Number(a.attempt) || 1) - (Number(b.attempt) || 1));
     } catch (err) {
       console.error("assessment_scores read failed:", err);
-      return [];
+      return pending;
     }
   },
 
@@ -480,18 +490,89 @@ const Assessment = {
       }
 
       // Anything else is probably the network. The answers are still
-      // in memory, so retrying costs the student nothing.
-      let retry = false;
+      // in memory, so retrying costs the student nothing. Since Scan S3
+      // there is a way on as well: the score is kept on the phone and
+      // sent on the next login (flushPending), so a classroom with no
+      // signal does not hold a student on this screen for good.
+      const retry = await new Promise((resolve) => {
+        this.el.eyebrow.textContent = label;
+        this.el.title.textContent = "Hindi naipasa";
+        this.el.progress.textContent = "";
+        this.el.question.textContent = "Hindi maipasa ang iyong sagot. Suriin ang koneksyon at subukan ulit.";
+        this.el.question.className = "centered";
+        this.el.choices.innerHTML = "";
+        this.el.note.textContent = "Nakatago pa ang mga sagot mo. Kung wala talagang internet, " +
+          "ituloy muna: itatala ang iskor mo sa susunod na pag-log in.";
+        this.el.note.className = "error";
+        this._onButton("Subukan Ulit", () => resolve(true), "i-reset");
+        this._onBack(() => resolve(false), "i-right", "Ituloy muna");
+        this._open();
+      });
+      if (retry) continue;
+
+      this._addPending(row);
       await this._message({
-        eyebrow: label,
-        title: "Hindi naipasa",
-        body: "Hindi maipasa ang iyong sagot. Suriin ang koneksyon at subukan ulit.",
-        note: "Nakatago pa ang mga sagot mo.",
-        noteIsError: true,
-        button: "Subukan Ulit",
-      }).then(() => (retry = true));
-      if (!retry) return result;
+        eyebrow: label + (attempt > 1 ? " · Subok " + attempt : ""),
+        title: testType === "pre" ? "Tapos na" : result.passed ? "Pumasa!" : "Hindi pumasa",
+        body: "Iskor mo: " + score + " ng " + max + ".",
+        note: "Itatala ito sa susunod na may internet ka at mag-log in.",
+        button: "Magpatuloy",
+      });
+      return result;
     }
+  },
+
+  // -----------------------------------------------------------
+  // Scores kept on the phone (Scan S3)
+  //
+  // A row that could not be written is kept in localStorage, per
+  // student, and sent on the next login (Acts.syncStart) or before the
+  // next test. A duplicate refused by the database means it already
+  // arrived, so it is dropped too. Until it is sent it counts as sat:
+  // _existingScores reads it, so the same test is not asked again.
+  // -----------------------------------------------------------
+  PENDING_KEY: "macario_pending_scores",
+
+  _readPending() {
+    try {
+      const list = JSON.parse(localStorage.getItem(this.PENDING_KEY) || "[]");
+      return Array.isArray(list) ? list : [];
+    } catch (e) {
+      return [];
+    }
+  },
+
+  _writePending(list) {
+    try {
+      if (list.length) localStorage.setItem(this.PENDING_KEY, JSON.stringify(list));
+      else localStorage.removeItem(this.PENDING_KEY);
+    } catch (e) { /* private window: the score is shown, not kept */ }
+  },
+
+  _addPending(row) {
+    const list = this._readPending();
+    list.push(Object.assign({}, row));
+    this._writePending(list);
+  },
+
+  async flushPending() {
+    if (!currentUserId || this._flushing) return;
+    const list = this._readPending();
+    const mine = list.filter((r) => r.student_id === currentUserId);
+    if (!mine.length) return;
+    this._flushing = true;
+    const left = list.filter((r) => r.student_id !== currentUserId);
+    for (const row of mine) {
+      try {
+        const { error } = await sb.from("assessment_scores").insert(row);
+        if (error && !/duplicate|unique|23505/i.test((error.message || error.code || "") + "")) throw error;
+      } catch (err) {
+        console.error("kept score not sent yet:", err);
+        left.push(row);
+      }
+    }
+    this._writePending(left);
+    this._flushing = false;
   },
 
   // Block 68. After a failed post-test: replay the act and try again,
@@ -512,8 +593,7 @@ const Assessment = {
       this.el.note.textContent = "";
       this.el.note.className = "";
       this._onButton("Ulitin ang Yugto", () => { this._close(); resolve(true); }, "i-reset");
-      this._onBack(() => { this._close(); resolve(false); }, "i-check");
-      setLabel(this.el.back, "Tapusin na");
+      this._onBack(() => { this._close(); resolve(false); }, "i-check", "Tapusin na");
       this._open();
     });
   },
@@ -664,8 +744,7 @@ Assessment._askFeedback = function () {
       // Skip is offered as an equal, not as a way out styled to be
       // avoided. A skip button made deliberately unattractive is a
       // dark pattern, and this is a research instrument.
-      this._onBack(() => resolve(null), "i-cross");
-      setLabel(this.el.back, "Laktawan");
+      this._onBack(() => resolve(null), "i-cross", "Laktawan");
       this.el.back.classList.add("feedback-skip");
     };
 

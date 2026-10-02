@@ -361,6 +361,8 @@ const Acts = {
 
     this.current = this.resolveAct(actNumber);
     this.loadTalaan(this.current);
+    // A score sat offline and kept on the phone is sent now (Scan S3).
+    if (window.Assessment && Assessment.flushPending) Assessment.flushPending();
     await this._ensureRow(this.current);
 
     const row = this.progress[this.current];
@@ -504,6 +506,33 @@ const Acts = {
     } finally {
       this._flowRunning = false;
     }
+  },
+
+  // Scan S4. A guest writes nothing, so checkObjectives and finishAct
+  // never run for one, and a guest who finished Act I was left in the
+  // pulungan with "Wala nang gawain." Called from markDirty (game.js)
+  // for a guest only: once every objective of the act on screen is done,
+  // it shows the act's end, without a test or the next act, and the
+  // button goes back to the title screen.
+  guestCheck() {
+    if (currentUserId || this._guestEnded) return;
+    if (!(window.Game && Game.isGuest && Game.isGuest())) return;
+    const act = (typeof currentActData !== "undefined" && currentActData) || null;
+    const n = act && act.number;
+    if (!n || act.holdOpen) return;
+    const total = this.objectivesFor(n).length;
+    if (!total || this.countDone(n) < total) return;
+    this._guestEnded = true;
+    // After the act's own last card has faded, not over it.
+    setTimeout(() => {
+      this._screen({
+        eyebrow: `Natapos: ${ACT_ORDINALS[n] || "Yugto " + n}`,
+        title: "Wakas",
+        body: "Natapos mo ang yugtong ito bilang bisita. Hindi naitatala ang laro ng bisita, " +
+          "kaya walang pagsusulit. Mag-log in para maitala ang iyong paglalaro.",
+        button: "Bumalik sa simula",
+      }).then(() => location.reload());
+    }, 1500);
   },
 
   // Recounts objectives from state.flags and writes only if the
@@ -678,6 +707,12 @@ const Acts = {
       if (now > target) Game.spendCurrency(now - target);
       else if (now < target) Game.addCurrency(target - now);
       if (Game.resetStats) Game.resetStats();
+    }
+
+    // Scan S7. What the story handed over is given again by the story.
+    if (window.Inventory && Inventory.revoke) {
+      const back = Inventory.catalogue().filter((it) => it.replayRemoves);
+      for (const it of back) await Inventory.revoke(it.id);
     }
 
     this.current = n;

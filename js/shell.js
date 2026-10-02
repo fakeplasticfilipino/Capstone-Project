@@ -434,10 +434,31 @@ const Shell = {
     });
     document.getElementById("shell-dev-go").addEventListener("click", () => {
       if (this.entered) return;
+      // Scan S5. With a student signed in on this phone, enterAsGuest
+      // returns at once and the tap would drop the tester into that
+      // student's real save. Refused, and the list hidden.
+      if (window.Game && Game.isSignedIn && Game.isSignedIn()) {
+        box.classList.add("hidden");
+        return;
+      }
       this.entered = true;
       if (window.Game && window.Game.enterAsGuest) window.Game.enterAsGuest(select.value);
     });
     box.classList.remove("hidden");
+    this._hideDevJumpsIfSignedIn();
+  },
+
+  // The session check resolves after the title screen is drawn, so the
+  // list is hidden again once it is known that someone is signed in.
+  _hideDevJumpsIfSignedIn() {
+    const box = document.getElementById("shell-dev");
+    if (!box) return;
+    const check = () => {
+      if (window.Game && Game.isSignedIn && Game.isSignedIn()) box.classList.add("hidden");
+    };
+    check();
+    setTimeout(check, 500);
+    setTimeout(check, 2000);
   },
 
   _onGuestStart() {
