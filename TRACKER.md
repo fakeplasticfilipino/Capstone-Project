@@ -9,9 +9,7 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 2 Oct 2026, after Block 109 (the sewing table and the
-barber's chair generated as stand-ins; the pulungan still owed). Before
-that, Block 108 and a scan of the whole
+Last updated: 2 Oct 2026, after Block 108 and a scan of the whole
 repository (the Scan list below: 43 findings, none started, to be
 handled later); schema v5 confirmed run by the proponent the same day.
 Blocks 106 to 108, the same
@@ -153,9 +151,9 @@ the three who take the pamphlets (Blocks 100 to 102). Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Since Block 109 the Barbero's chair and the Mananahi's sewing
-table are generated stand-ins (ART.md). Still owed: one picture, the
-pulungan's painting.
+in code. Still owed (ART.md): three pictures, none of them a person,
+the Barbero's chair, the Mananahi's sewing table and the pulungan's
+painting.
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
@@ -266,14 +264,6 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       a leg, a dashed box where a character should be, or breathing you
       can see from across the street.
 
-    Block 109, the table and the chair. With ?dev=1, Ang mga damit para
-      sa direktor, walk back left: beside the Barbero (x 5440) a dark
-      wooden armchair with a rattan seat, beside the Mananahi (x 6540) a
-      wooden table with cloth, scissors and a spool, each about waist
-      high on Macario, feet on the road. Gupitin and Manahi still open
-      their games. Failure: a dashed box, a white fringe or a white
-      block around either, or one floating or sunk into the road.
-
     Block 102, the night and the barber. The barber's game is five short
       requests (two, two, three, three, four tools), said more slowly;
       each round right pays 4 to 7, and one good run reaches his 20.
@@ -323,9 +313,9 @@ worth one matched pair. The item bank and the story agree on 1894. The
 post-test runs, so this decides whether the study measures anything; do
 it before the pilot.
 
-5. Art from the artist: ART.md's Owed list, one picture since Block
-109 (the pulungan's painting; mind the scale ART.md gives), and the
-generated sewing table and chair under Stand-ins. PNGs with transparency; each goes through ART.md's steps.
+5. Art from the artist: ART.md's Owed list, three pictures since Block
+102 (the pulungan's painting, the Mananahi's sewing table and the
+Barbero's chair). PNGs with transparency; each goes through ART.md's steps.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
@@ -940,8 +930,6 @@ machine, the assessment module.
         ?dev=1 lists nine (the jobs, the direktor, the play, the
         savings, Baldovino, the Kasama, the oath, the pamphlets, the
         report), each checked by verify_new_scene.js
-    109 the sewing table and the barber's chair, generated (stand-ins);
-        a generated pulungan tried and dropped, its furniture too big
 
 ## Blocks remaining
 
@@ -958,9 +946,8 @@ decided against the source material. (NOT STARTED)
 The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
 Block 85 except two. The item bank matched to Act I is Next action 4
 (IN PROGRESS). The placeholder art it waited on has arrived: every
-person is drawn since Block 102, the chair and the sewing table are
-generated stand-ins since Block 109; only the pulungan's painting is
-still owed (ART.md; BLOCKED). The list: DECISIONS.md,
+person is drawn since Block 102; only the chair, the sewing table and
+the pulungan's painting are still owed (ART.md; BLOCKED). The list: DECISIONS.md,
 Block 85.
 
 ## Blocked on other people

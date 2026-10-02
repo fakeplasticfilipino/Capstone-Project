@@ -203,8 +203,7 @@ const MABALASIG = {
 };
 
 // Block 94. The Barbero and his chair; since Block 101 the Barbero is the
-// proponent's still, facing the front and left still. The chair is a
-// generated stand-in (Block 109).
+// proponent's still, facing the front and left still. The chair is owed.
 const BARBERO = {
   src: "assets/sprites/characters/barbero.png", frames: 1, fps: 1,
   contentTop: 19, contentHeight: 529, footX: 514,
@@ -1647,8 +1646,7 @@ window.ACT_1 = {
         },
         {
           // Block 94. His chair, used with E, as the tahian is: the
-          // barber's own game (cutHair). Since Block 109 a generated
-          // stand-in (ART.md, Stand-ins) until the artist draws it.
+          // barber's own game (cutHair). Owed (ART.md), a placeholder box.
           id: "silya", x: SILYA_X, label: "Silya", animation: SILYA, displayHeight: 90,
           hiddenByFlag: "tinanggapSaKatipunan",
           interactLabel: "Gupitin",
@@ -1658,8 +1656,8 @@ window.ACT_1 = {
         },
         {
           // The Mananahi's sewing table, beside her, used with E (Block
-          // 89). Scenery with no picture until Block 93, which named one;
-          // since Block 109 a generated stand-in (ART.md, Stand-ins) until
+          // 89). Scenery with no picture until Block 93, which named one,
+          // owed (ART.md), so the table is seen: the placeholder box until
           // the artist draws it.
           id: "tahian", x: TAHIAN_X, label: "Tahian", animation: TAHIAN, displayHeight: 90,
           hiddenWhile: PAMPHLET_NIGHT, // Block 103: taken in for the night
