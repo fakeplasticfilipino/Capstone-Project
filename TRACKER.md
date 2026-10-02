@@ -9,10 +9,11 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 2 Oct 2026, after Block 108 and a scan of the whole
-repository (the Scan list below: 43 findings, none started, to be
-handled later); schema v5 confirmed run by the proponent the same day.
-Blocks 106 to 108, the same
+Last updated: 2 Oct 2026, after Block 109 (generated stand-ins for the
+chair and the sewing table, tried and reverted at the proponent's word)
+and a scan of the whole repository (the Scan list below: 43 findings,
+none started, to be handled later); schema v5 confirmed run by the
+proponent the same day. Blocks 106 to 108, the same
 day: every ?v= a fingerprint written by node _dev/tools/prepare.js (run
 it before every commit; a hook and the first CI job check it), the
 animate tools shrink what they write, test.js --only; every moving body
@@ -167,7 +168,7 @@ from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
 Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
 the proponent tested Blocks 90 to 97 on the phone and reported no
-fault. Blocks 98 to 103 are pushed and not yet seen on a device:
+fault. Blocks 98 to 108 are pushed and not yet seen on a device:
 Next action 1 says what to look for.
 
 Versions: since Block 106 every ?v= is the file's fingerprint, written
@@ -209,6 +210,15 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       still logs in (it uses the same library, now from the repository).
       Note that a phone which never finished the first visit is not
       ready; the line is what tells you.
+
+    Blocks 106 to 108, fingerprints, translate and ?dev=1. Everything
+      looks and moves exactly as before: Macario, the people, the guards
+      and the enemies stand where they did, feet on the road, and turn
+      and walk smoothly (Block 107 moved them by a different property).
+      With ?dev=1 the title screen lists nine points, and Simulan dito
+      opens each with the right task in the log. Failure: anyone drawn
+      to one side of where he stands, a jitter while walking, or a
+      point that opens the wrong scene or task.
 
     Block 98, six characters. The opening: all three siga are the
       artist's, the leader in a salakot and shawl, the big one in a red
@@ -596,6 +606,7 @@ S37. db/scripts/reset_test_accounts.sql is still not recorded as run
 proponent).
 
 S38. Blocks 98 to 108 have not been seen on a phone (Next action 1).
+Block 109 was reverted, so nothing of it is left to see.
 
 S39. The git history still holds the private files and names (Next
 action 8); the decision on a history rewrite is pending.
@@ -930,6 +941,9 @@ machine, the assessment module.
         ?dev=1 lists nine (the jobs, the direktor, the play, the
         savings, Baldovino, the Kasama, the oath, the pamphlets, the
         report), each checked by verify_new_scene.js
+    109 generated stand-ins for the chair and the sewing table (an image
+        model through Hugging Face); reverted the same day at the
+        proponent's word, white edges left and not the game's look
 
 ## Blocks remaining
 
@@ -982,16 +996,18 @@ sheets a quarter of the size, and a crawling connection given three
 seconds before the kept page opens). A presentation failed to load on a
 bad connection before Block 105. Not yet seen on the phone since. One
 limit remains: a picture replaced under the same name and fetched in the
-minute a push is still deploying can be kept under the new ?v=; bumping
-ASSET_VERSION again fixes it. Before a class or a presentation, open the
+minute a push is still deploying can be kept under the new ?v=; any
+change to that file's bytes, then prepare.js and a push, gives it a new
+fingerprint and fixes it (Block 106). Before a class or a presentation, open the
 game once on good wifi on every device and wait for the green line.
 (FIX BUILT, NOT SEEN ON DEVICE)
 
 A phone that kept an old index.html keeps asking for old files. Since
 Block 62 the service worker asks the network for the page first, which
 ends it once a phone has the new page. Test from a private tab, or clear
-the site's data, before suspecting the code, and bump every changed
-file's ?v=N in the same push. (KNOWN, BY DESIGN OF PAGES)
+the site's data, before suspecting the code. Since Block 106 every
+changed file's ?v= is its fingerprint, written by prepare.js and
+checked by the hook and CI. (KNOWN, BY DESIGN OF PAGES)
 
 Only one phone has been tested, a 4GB Android device. The harness covers
 823 by 412 and 740 by 360 in landscape, a floor rather than a survey.
@@ -1013,7 +1029,9 @@ light report page for laptops and projectors. (BY DESIGN)
 The game_progress.is_night column is no longer written (Block 91); it can
 be dropped in a later migration. A student-facing join screen (join_code exists; classes are assigned by
 the administrator). Multiple save slots. Dashboard export and
-per-question item analysis. Offline play and save conflicts. Persisting
+per-question item analysis. An offline queue for a student's saves and
+scores, and save conflicts (a guest plays offline since Block 105; a
+student still needs the internet). Persisting
 partial test answers (a reload mid-test asks the questions again;
 nothing is recorded until submission, so nothing is lost).
 
@@ -1073,7 +1091,9 @@ once, and passed on the next run; rerun before believing either.
 test.js did it once on 1 Oct 2026 ("after lighting up first, so the
 swing is readable": an enemy already mid-dash when the check starts
 watching for its red !), and passed on the rerun. Both never touch the
-live project. Both are green as of Block 108, locally and on CI (about 8 minutes there). The guard-catch flake was
+live project. Both are green as of Block 109's revert, on CI (about 8
+minutes there); locally test.js was last run in full at Block 108. The
+guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check

@@ -4299,3 +4299,23 @@ the ?dev=1 regex, so the list never showed and nothing failed). The
 first prepare.js check now also fails on any control character in a
 text file of ours (js/vendor/ excepted, being another project's
 minified code), so that kind of mistake is caught in a second.
+
+## Block 109: generated art, tried and reverted
+
+On 2 Oct 2026 the proponent asked for the art still owed to be
+generated through the session's new Hugging Face connector, in the
+game's style. The sewing table and the barber's chair were generated
+(FLUX.1 schnell), their white backgrounds keyed out, and shipped as
+stand-ins; a generated pulungan was tried and dropped first, its table
+and skull four times taller than the people in front of them once
+stretched to the screen. The proponent then looked at the two that
+shipped and had them removed the same day: white edges were left, and
+they did not look good beside the painted street. The commit was
+reverted whole, and the proponent's own 32px table, which was not used
+either, was deleted.
+
+What it leaves for next time: the free GPU quota on that connector is a
+few pictures a day, two of its better models failed on this account,
+and a generated prop needs a clean transparent cut-out (a white
+background flooded out leaves a fringe) to sit with the artist's work.
+The three pictures stay owed to the artist (ART.md).
