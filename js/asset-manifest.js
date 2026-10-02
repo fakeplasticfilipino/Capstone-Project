@@ -24,7 +24,6 @@ window.ASSET_MANIFEST = [
   "assets/audio/sfx/gunshot.mp3",
   "assets/audio/sfx/horse.mp3",
   "assets/audio/sfx/hurt.wav",
-  "assets/audio/sfx/intertitle.wav",
   "assets/audio/sfx/jump.wav",
   "assets/audio/sfx/knockout.wav",
   "assets/audio/sfx/miss.wav",
@@ -100,9 +99,9 @@ window.ASSET_MANIFEST = [
 ];
 
 window.ASSET_VERSIONS = {
-  "assets/audio/music/calm.mp3": "4049345214",
+  "assets/audio/music/calm.mp3": "1336995130",
   "assets/audio/music/gabi.wav": "516764873",
-  "assets/audio/music/intense.mp3": "3770080844",
+  "assets/audio/music/intense.mp3": "137592747",
   "assets/audio/sfx/applause.wav": "978787512",
   "assets/audio/sfx/blip.wav": "78205519",
   "assets/audio/sfx/catch.wav": "3743481279",
@@ -115,7 +114,6 @@ window.ASSET_VERSIONS = {
   "assets/audio/sfx/gunshot.mp3": "187103488",
   "assets/audio/sfx/horse.mp3": "3162114031",
   "assets/audio/sfx/hurt.wav": "2677181145",
-  "assets/audio/sfx/intertitle.wav": "1153677211",
   "assets/audio/sfx/jump.wav": "1031491075",
   "assets/audio/sfx/knockout.wav": "2856759965",
   "assets/audio/sfx/miss.wav": "2130558018",

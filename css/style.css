@@ -4345,3 +4345,11 @@ body.dialogue-top .dialogue-portrait {
   width: auto;
   margin: 0;
 }
+
+/* Scan S21. The login box's way back to the title screen, under the
+   form; a ghost button, since logging in is the thing to do here. */
+#auth-back {
+  width: 100%;
+  margin-top: 10px;
+  justify-content: center;
+}

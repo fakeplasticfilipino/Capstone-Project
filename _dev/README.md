@@ -53,7 +53,7 @@ does not try. The suite prints its own count, and the scenario headings in
 test.js are the inventory.
 
 The shape is: a fresh student with no stored session, a returning student
-mid Act I at the outpost, settings persistence across a reload, backward
+mid-act in the fixture's test room, settings persistence across a reload, backward
 compatibility with pre-scene saves, a shell that never receives a world,
 and one block per gameplay system added since Block 6.
 
@@ -153,15 +153,16 @@ black box. key-black.py writes a PNG beside it with the black background
 removed, flooding in from each cell's edges so the character's own dark
 hair and clothes survive:
 
-    python3 _dev/tools/key-black.py assets/sprites/enemies/muslim-walk.jpg --columns=4 --rows=3
+    python3 _dev/tools/key-black.py assets/sprites/enemies/kawal-walk.jpg --columns=4 --rows=3
 
 It needs Pillow and is dev-time only. Measure the PNG with
 measure-sprite.js afterwards, and point the content at the PNG.
 
-## Stand-in art
+## Animating a character from one still
 
-make-placeholder-sprites.py rebuilds the stand-in stills for characters
-the artist has not drawn yet (recoloured frames of the commissioned
-sheets) and the apple and stage-clothes tiles. Pillow, dev-time only:
+    node _dev/tools/animate-still.js <name> --debug
+    node _dev/tools/animate-still.js <name>
 
-    python3 _dev/tools/make-placeholder-sprites.py
+A rig per character in _dev/rigs/; CLAUDE.md, Animating a character
+from one still, has the steps. (The old make-placeholder-sprites.py,
+which recoloured frames into stand-ins, went with them in Block 59.)

@@ -149,6 +149,8 @@ const Shell = {
 
   _bind() {
     this.el.startBtn.addEventListener("click", () => this._onStart());
+    const authBack = document.getElementById("auth-back");
+    if (authBack) authBack.addEventListener("click", () => this._onAuthBack());
     if (this.el.guestBtn) {
       this.el.guestBtn.addEventListener("click", () => this._onGuestStart());
     }
@@ -407,6 +409,16 @@ const Shell = {
     // saying the same thing.
     this.state = "auth";
     this.el.overlay.classList.add("hidden");
+  },
+
+  // Scan S21. The login box's Bumalik: the title screen again, covering
+  // the login box that stays underneath, as before Magsimula.
+  _onAuthBack() {
+    if (this.state !== "auth") return;
+    this.entered = false;
+    this.state = "title";
+    this._showPanel("title");
+    this.el.overlay.classList.remove("hidden");
   },
 
   // Block 14. Guest skips the login box entirely rather than showing

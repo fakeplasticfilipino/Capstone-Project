@@ -41,8 +41,9 @@ In short: every system is built and covered by automated tests, and the
 game runs on a real Android phone. Act I is written and playable from
 its opening to its end, where its post-test runs; its lines are still
 being checked against the resource person's source material. Acts II to
-IV are registered and empty. Several characters, and one room, are
-still placeholder boxes until the artist's drawings arrive (ART.md).
+IV are registered and empty. Every character is drawn; three pictures
+(the barber's chair, the sewing table and one room) are still
+placeholder boxes until the artist's drawings arrive (ART.md).
 
 ## Stack
 
@@ -61,11 +62,12 @@ Deployed on GitHub Pages from the main branch; pushing to main publishes.
 
     https://fakeplasticfilipino.github.io/Capstone-Project/
 
-Every script and stylesheet carries a v=N query string, and images are
-versioned through ASSET_VERSION in js/game.js, because phones cache
-aggressively. A service worker keeps every file on the phone after the
-first visit, and the game waits on a loading screen until every picture
-has arrived.
+Every script, stylesheet, picture and sound is asked for with a ?v= that
+is the file's own fingerprint, because phones cache aggressively; node
+_dev/tools/prepare.js writes them before every commit, and a pre-commit
+hook and CI check them. A service worker keeps every file on the phone
+after the first visit, so a guest can then play with no internet, and
+the game waits on a loading screen until every picture has arrived.
 
 For local development, any static file server works (the Supabase client
 needs an http origin, so opening index.html from the filesystem does
@@ -117,11 +119,13 @@ scores measure learning gain rather than rank students.
 
 ## Tests
 
-    npm install
-    node _dev/tests/test.js
+    npm install                             also turns the pre-commit hook on
+    node _dev/tools/prepare.js              before every commit
+    node _dev/tests/test.js                 --only=BD,BL for some sections
     node _dev/tests/verify_new_scene.js
 
-The first drives the real game in headless Chromium at phone size
+GitHub Actions runs prepare.js --check and both suites on every push.
+The first suite drives the real game in headless Chromium at phone size
 against its own fixture act and a fake in-memory database, covering
 every engine system. The second plays the real Act I content end to end
 and checks the story, the art list and the asset manifest against the

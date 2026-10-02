@@ -937,6 +937,8 @@ Nanay:
     (before the savings)
     Nanay: Ituloy mo lang 'yan, 'nak. Malayo ang mararating mo sa buhay.
     (after)
+  + Nanay: Lagi ka nang ginagabi, 'nak. Saan ka ba nanggagaling?
+    (after he has joined the Katipunan; Scan S22)
 
 Kutsero:
 
@@ -964,8 +966,10 @@ Mananahi:
     (delivered, the play not yet done; only an old save reaches this)
   + Mananahi: Iuwi mo na 'yang naipon mo sa nanay mo. Matutuwa 'yon.
     (after the first talk outside the entablado)
+  + Mananahi: Nariyan pa rin ang tahian, iho, kung may oras ka.
+    (four years on, while her sewing still pays; Scan S22)
   + Mananahi: Kapag may tahi ulit, ipapatawag kita, ha?
-    (afterwards)
+    (afterwards, once the sewing has paid all it will)
 
 Direktor, on the street:
 

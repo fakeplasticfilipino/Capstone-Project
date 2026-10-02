@@ -1,16 +1,11 @@
 // =============================================================
 // MACARIO — game.js
 //
-// Blocks applied:
-//   Block 1   role routing (teachers redirect to teacher.html)
-//   Block 2.1 Act I content extracted to content/act1.js
-//   Block 2.2 world building wrapped in loadAct() / unloadAct()
-//   Block 2.4 act transition replaces the empty-room ending
-//   Block 2.5 resume into the act recorded in game_progress
-//   Block 6   scenes, jump, health, stealth, combat
-//   Block 7   pause state and the shell facade
+// Every block since the first has touched this file; which one built
+// what is in TRACKER.md (Blocks) and DECISIONS.md, by block number, and
+// the comments below name the block beside the code it added.
 //
-// game.js is now the ENGINE only. It knows how to render a world,
+// game.js is the ENGINE only. It knows how to render a world,
 // run dialogue, and animate sprites. It does not know what is in
 // any particular act. Act content lives in content/actN.js.
 //
@@ -825,8 +820,9 @@ function loadScene(sceneId) {
   PICKUPS = (scene.pickups || []).slice(); // Block 68: hints are added per student
   collectedPickups = new Set();
 
-  // Same Tondo.png backdrop, desaturated. Lets content reuse the one
-  // backdrop for a flashback or memory beat instead of needing a second
+  // The scene's own backdrop (its panels, else DEFAULT_SKYLINE_SRC),
+  // desaturated. Lets content reuse it for a flashback or memory beat
+  // instead of needing a second
   // background asset; see CLAUDE.md, Act data format. Toggled rather than
   // only ever added, so leaving the scene (gotoScene back to a scene
   // without the flag) clears it instead of leaving the world permanently
@@ -847,9 +843,11 @@ function loadScene(sceneId) {
   document.body.classList.toggle("dialogue-top", Boolean(scene.dialogueAtTop));
 
   // Block 34. A scene may bring its own backdrop picture (the inside of
-  // the entablado) instead of the shared Tondo.png, and may hide the dirt
-  // strip when the picture already has a floor. Both are set or cleared
-  // on every load, like greyFilter, so leaving the scene restores Tondo.
+  // the entablado) instead of the shared default (DEFAULT_SKYLINE_SRC,
+  // the first street painting since Block 54; Tondo.png before), and may
+  // hide the dirt strip when the picture already has a floor. Both are
+  // set or cleared on every load, like greyFilter, so leaving the scene
+  // restores the default.
   const skylineEl = document.getElementById("skyline");
   // Block 80. A backdrop that is owed art (not in the manifest) is not
   // put into the stylesheet at all, where the browser would ask for it
@@ -926,7 +924,9 @@ function unloadAct() {
 
 // Lays the backdrop out as tiles, every other one mirrored (Block 26).
 //
-// Tondo.png is a painted scene, not a texture drawn to repeat, so plain
+// The default backdrop (Tondo.png when this was written; the first
+// street painting since Block 54, used by any scene without panels or a
+// backdrop of its own) is a painted scene, not a texture drawn to repeat, so plain
 // repeat-x put the image's right edge against its own left edge and left
 // a visible jump in the clouds and the water. Blocks 18 to 25 covered each
 // seam with a dark "tree shadow" band, which hid the jump by putting a
@@ -1016,7 +1016,7 @@ function buildSkylineTiles() {
 //
 // A scene may declare panels: a list of paintings laid side by side along
 // the road, repeated in order if the road is longer than the list. Unlike
-// Tondo.png's mirrored tiles, these are different pictures, and two
+// the default backdrop's mirrored tiles, these are different pictures, and two
 // different paintings never meet cleanly at an edge: a hut is cut in half,
 // the path jumps. So every join gets a shadow tree, a dark silhouette in
 // the foreground that Macario, the NPCs and the guards all pass behind.
@@ -1151,10 +1151,6 @@ const SHADOW_TREE_SVGS = [
 
 const SHADOW_TREE_URLS = SHADOW_TREE_SVGS.map(
   (svg) => 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")');
-
-
-
-
 
 function buildNpcs(token) {
   NPCS.forEach((npc) => {
@@ -1441,11 +1437,12 @@ function refreshNpcVisibility() {
 // =============================================================
 // TERRAIN
 //
-// Two surfaces exist. The stage ramp, which predates all of this and
-// is a continuous height function of x, and scene platforms, which are
-// discrete rectangles. floorHeightAt covers the first; platforms are
-// resolved separately because landing on one depends on falling onto
-// it rather than merely standing at that x.
+// Two surfaces exist: the floor, flat at GROUND_LEVEL everywhere since
+// the stage ramp went with the old stage (Block 91), and scene
+// platforms, which are discrete rectangles. floorHeightAt is kept as the
+// one place a shaped floor would go; platforms are resolved separately
+// because landing on one depends on falling onto it rather than merely
+// standing at that x.
 // =============================================================
 
 function floorHeightAt() {
@@ -1493,8 +1490,9 @@ if (BODY_TRANSLATE) player.style.bottom = "0px";
 // Both are real commissioned art, delivered this session, and live in
 // assets/sprites/player (not assets/ directly) alongside any other sprite that
 // is not specific to one act; see CLAUDE.md, Decisions on record.
-// fps is carried over unchanged from the placeholder sheets these
-// replace; it has not been checked against a phone yet.
+// fps was carried over from the placeholder sheets these replaced; the
+// proponent has played them on the phone since (Block 36 on) without a
+// fault, so it stands.
 //
 // contentTop and contentHeight are measured from each sheet's own alpha
 // channel (the union of every frame's non-transparent bounding box, in
@@ -1545,9 +1543,8 @@ const BASE_SPRITE_SHEETS = {
 
   // Block 27. The one-tap melee swing: a 4 by 3 sheet, 12 frames, played
   // once per tap (playMelee). 24fps puts the whole punch at half a second,
-  // quick enough that a second tap never feels ignored. The file is a PNG
-  // with transparency that happens to carry a .jpg name; browsers read the
-  // bytes, not the extension, so it is referenced as delivered. The punch
+  // quick enough that a second tap never feels ignored. (It was delivered
+  // as a PNG with a .jpg name; Block 44 named it .png.) The punch
   // dips about ten native pixels at full extension (frames 5 to 10), which
   // is the lunge in the art rather than a size error, so one
   // contentTop/contentHeight pair is right for it.
@@ -1676,8 +1673,9 @@ function bodySprite(el, sheet, displayHeight, bodyWidth) {
   el.style.height = fit.boxHeight + "px";
   el.style.left = bodyWidth / 2 - fit.footOffset + "px";
   el.style.transformOrigin = fit.footOffset + "px 100%";
-  // Quoted: an unquoted CSS url() breaks on the first space in the path,
-  // and assets/sprites/characters/nanay.png has one. Without the quotes this silently
+  // Quoted: an unquoted CSS url() breaks on the first space in the path
+  // (Nanay's picture had one before the files were renamed in Block 44,
+  // and a future path might). Without the quotes this silently
   // no-ops (backgroundImage stays "none") even though the preload
   // already succeeded and computed real frame geometry.
   el.style.backgroundImage = `url("${assetUrl(sheet.src)}")`;
@@ -1686,10 +1684,11 @@ function bodySprite(el, sheet, displayHeight, bodyWidth) {
   el.style.backgroundPositionY = -fit.topOffset + "px";
   el.style.backgroundPositionX = "0px";
   // Small pixel art scaled up several times is smeared into a blur by
-  // the browser's default smoothing. Horse.png is a 32px cell drawn at
-  // about four and a half times that. Every other sheet in this project
-  // is painted at 256px and scaled DOWN or barely up (Macario's idle is
-  // 1.26), where nearest-neighbour would only add jagged edges, so the
+  // the browser's default smoothing. The old Horse.png, a 32px cell drawn
+  // at about four and a half times that, was the case this was written
+  // for (the horse is the proponent's large sheet since Block 100). Every
+  // sheet in this project now is scaled DOWN or barely up (Macario's idle
+  // is 1.26), where nearest-neighbour would only add jagged edges, so the
   // switch is made on the scale itself rather than declared per sheet:
   // a new sheet gets the right treatment without anyone remembering a
   // field. 2 is the point where a source pixel is at least two screen
@@ -2235,7 +2234,7 @@ function canGiveGift(npc) {
 
 // Set by shell.js, the only thing that knows how to open the shop
 // screen (Shell._openShop). Content marks an NPC opensShop: true (a
-// Tindero, say) to skip dialogue entirely and ask for the shop
+// seller at a stall, say) to skip dialogue entirely and ask for the shop
 // instead; the engine does not know what a shop is, only that
 // something wants to hear about this, the same shape Inventory.onChange
 // already uses in the other direction.
@@ -2247,9 +2246,10 @@ function requestShop(sellerId) {
   if (shopRequestListener) shopRequestListener(sellerId || null);
 }
 
-// Block 32. An NPC may open the shop from the start (opensShop: true,
-// Tindero) or only once a flag is set (opensShopAfter, the Mananahi,
-// who talks first and sells afterwards).
+// Block 32. An NPC may open the shop from the start (opensShop: true) or
+// only once a flag is set (opensShopAfter: talks first, sells
+// afterwards). No seller in Act I uses either since Block 52; the
+// harness fixture does.
 function npcOpensShop(npc) {
   if (!npc) return false;
   if (npc.opensShop) return true;
@@ -2506,7 +2506,8 @@ function wait(ms) {
 // migrated in applyLoadedState().
 
 // A plain scene-to-scene move under cover of black, for content that
-// wants the fade without the stage's poem/death machinery around it.
+// wants the fade (the stage's old poem and death sequence that once
+// wrapped it went in Block 91).
 // Reuses the one #blackout element rather than inventing a second
 // blackout mechanism. Acts.gotoScene calls this rather than
 // loadScene directly.
@@ -2876,8 +2877,8 @@ function makeGuard(placed, speedScale) {
     facing: def.facing || 1,
     // Kept separately because respawnInScene needs the facing the level
     // gave this guard, not the one it happened to be walking in. Without
-    // it every guard resets to facing right, including the outpost
-    // sentry the content deliberately faces left.
+    // it every guard resets to facing right, including a sentry the
+    // content deliberately faces left.
     facingStart: def.facing || 1,
     alert: 0,
     disabled: false,
@@ -3547,7 +3548,7 @@ function setEffects(next) {
 
 // A raised maximum arrives FULL. A fourth heart that renders empty until
 // the student happens to find a pickup reads as a broken item rather than
-// a reward, and the amulet is the reward for reaching the outpost.
+// a reward. (No item in Act I raises it; the harness fixture's amulet does.)
 //
 // Lowering it clamps, which is the taking-it-off case: a student wearing
 // four hearts who unequips at full health drops to three rather than
@@ -3681,8 +3682,8 @@ function respawnX(scene) {
 // =============================================================
 
 // Contact is tested against the base floor rather than onGround, because
-// onGround is also true on a platform, and the outpost has platforms
-// above and beside the hazards. Using onGround would take a heart from a
+// onGround is also true on a platform, and a scene may put platforms
+// above and beside its hazards. Using onGround would take a heart from a
 // player standing safely on a crate, which is the exact case the
 // platforms were placed to reward.
 function updateHazards() {
@@ -6623,7 +6624,8 @@ const SFX_SOURCES = {
   miss: "assets/audio/sfx/miss.wav",
   jump: "assets/audio/sfx/jump.wav",
   door: "assets/audio/sfx/door.wav",
-  intertitle: "assets/audio/sfx/intertitle.wav",
+  // intertitle.wav is gone (Scan S24): black cards have been silent
+  // since Block 84 and no content named it.
   // Block 60. Combat (_dev/tools/make-combat-sfx.js): every punch
   // swings, a punch that lands thumps, the blow that drops someone
   // thumps harder, and Macario being hit buzzes.
@@ -6636,9 +6638,8 @@ const SFX_SOURCES = {
   page: "assets/audio/sfx/page.wav",
   fanfare: "assets/audio/sfx/fanfare.wav",
   streak: "assets/audio/sfx/streak.wav",
-  // Block 81 (_dev/tools/make-scene-sfx.js, which also remade
-  // intertitle): a crowd clapping, for the black card a content file
-  // names it on (playIntertitle's sfx).
+  // Block 81 (_dev/tools/make-scene-sfx.js): a crowd clapping, for the
+  // black card a content file names it on (playIntertitle's sfx).
   applause: "assets/audio/sfx/applause.wav",
   // Block 85 (make-scene-sfx.js): a guard starting to notice, a guard's
   // catch, and a crowd's cheer for a dialogue line that names it.
@@ -6962,11 +6963,12 @@ function setPaused(value) {
   const next = Boolean(value);
   if (next === paused) return next;
 
-  // Pausing mid-cutscene is refused rather than handled. The stage
-  // sequence is driven by awaited wait() promises, and no flag in
-  // here can suspend a setTimeout that has already been scheduled;
-  // allowing it would desynchronise the poem from the night
-  // transition. A cutscene is short and tapped through, so refusing
+  // Pausing mid-cutscene is refused rather than handled. A scene script
+  // is driven by awaited wait() promises, and no flag in here can
+  // suspend a setTimeout that has already been scheduled; allowing it
+  // would put the script out of step with what is on screen (the old
+  // stage's poem and night, Block 91, were where it was learned). A
+  // cutscene is short and tapped through, so refusing
   // costs little. The caller is told, so it can leave its screen
   // closed rather than opening one over a game that never stopped.
   if (next && cutscenePlaying) return false;
@@ -7254,7 +7256,7 @@ let autosaveTimer = null; // guards against stacking a second interval
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   authSubmit.disabled = true;
-  authStatus.textContent = "Loading...";
+  authStatus.textContent = "Naglo-load...";
   authStatus.className = "";
 
   const email = authEmail.value.trim();
@@ -7265,12 +7267,27 @@ authForm.addEventListener("submit", async (e) => {
     if (error) throw error;
     // On success, onAuthStateChange takes over.
   } catch (err) {
-    authStatus.textContent = err.message || "May error, subukan ulit.";
+    // Scan S18. Supabase's own message is English ("Invalid login
+    // credentials"); the student reads Tagalog, and the raw message is
+    // kept for the console.
+    console.warn("sign-in failed:", err && err.message);
+    authStatus.textContent = authErrorText(err);
     authStatus.className = "";
   } finally {
     authSubmit.disabled = false;
   }
 });
+
+function authErrorText(err) {
+  const m = ((err && (err.message || err.code)) || "") + "";
+  if (/invalid login|credentials|invalid_grant|password/i.test(m)) return "Mali ang email o password. Subukan ulit.";
+  if (/fetch|network|offline|timeout|failed to/i.test(m) || (typeof navigator !== "undefined" && navigator.onLine === false)) {
+    return "Walang koneksyon sa internet. Subukan ulit kapag may internet na.";
+  }
+  if (/confirm/i.test(m)) return "Hindi pa handa ang account na ito. Sabihan ang guro.";
+  if (/rate|too many/i.test(m)) return "Masyadong maraming subok. Maghintay muna sandali.";
+  return "May error, subukan ulit.";
+}
 
 // AUTH BOOTSTRAP RUNS AFTER EVERY SCRIPT TAG HAS PARSED.
 //
@@ -7782,8 +7799,8 @@ window.Game = {
   },
 
   // Called from Acts.enterAct, so the counters are per act. NOT called on
-  // respawn, on a scene change, or on death: being sent back to the start
-  // of the outpost is the cost of being caught, and wiping the record of
+  // respawn, on a scene change, or on death: being sent back to a
+  // checkpoint is the cost of being caught, and wiping the record of
   // it would make the score measure the last attempt rather than the act.
   resetStats() {
     damageTaken = 0;

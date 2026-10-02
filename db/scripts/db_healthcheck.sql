@@ -13,14 +13,15 @@
 -- that lets the teacher dashboard show anything.
 -- =============================================================
 
--- The eleven tables of the revised ERD, as of schema v4.
--- player_actions and player_achievements were DROPPED in v4 and are
--- deliberately absent; section 1b below checks they are really gone.
+-- The twelve tables: the eleven of the revised ERD (schema v4) and
+-- talaan_entries (v7). player_actions and player_achievements were
+-- DROPPED in v4 and are deliberately absent; section 1b below checks
+-- they are really gone. Since Scan S34 it checks v5 to v7 as well.
 with expected_tables(name) as (
   values ('profiles'),('classes'),('game_progress'),('act_progress'),
          ('assessment_items'),('assessment_scores'),('act_trivia'),
          ('player_inventory'),('player_equipment'),('game_sessions'),
-         ('feedback')
+         ('feedback'),('talaan_entries')
 ),
 dropped_tables(name) as (
   values ('player_actions'),('player_achievements')
@@ -29,11 +30,27 @@ expected_columns(tbl, col, added_by) as (
   values ('game_progress','currency','v3'),
          ('act_progress','damage_taken','v4'),
          ('act_progress','detections','v4'),
-         ('act_progress','elapsed_ms','v4')
+         ('act_progress','elapsed_ms','v4'),
+         ('assessment_scores','attempt','v6')
 ),
 expected_funcs(name) as (
   values ('my_role'),('my_class_id'),('is_teacher_of'),
-         ('get_assessment_items'),('submit_assessment')
+         ('get_assessment_items'),('submit_assessment'),
+         ('is_reset_allowed'),('can_reset_my_data'),('reset_my_play_data')
+),
+-- v6 and v7 policies, by name. A MISSING one means that migration has
+-- not been run, or was run only in part.
+expected_policies(tbl, name, added_by) as (
+  values ('assessment_items','Students can read the item bank','v6'),
+         ('assessment_items','Teachers can add items','v6'),
+         ('assessment_items','Teachers can edit items','v6'),
+         ('assessment_items','Teachers can remove items','v6'),
+         ('act_trivia','Teachers can add trivia','v6'),
+         ('act_trivia','Teachers can edit trivia','v6'),
+         ('talaan_entries','Anyone can read the Talaan papers','v7'),
+         ('talaan_entries','Teachers can add Talaan papers','v7'),
+         ('talaan_entries','Teachers can edit Talaan papers','v7'),
+         ('talaan_entries','Teachers can remove Talaan papers','v7')
 )
 
 -- 1. Does every table exist, and is RLS switched on?
@@ -81,6 +98,24 @@ select '3 function', e.name,
 from expected_funcs e
 left join pg_proc p
   on p.proname = e.name and p.pronamespace = 'public'::regnamespace
+
+union all
+
+-- 3b. The v6 and v7 policies, and v6's index that keeps the pre-test
+--     to one try while a post-test may be sat again.
+select '3b policy', e.added_by || ' ' || e.tbl || ': ' || e.name,
+       case when p.policyname is null then 'MISSING' else 'ok' end
+from expected_policies e
+left join pg_policies p
+  on p.schemaname = 'public' and p.tablename = e.tbl and p.policyname = e.name
+
+union all
+
+select '3b index', 'v6 assessment_scores_one_pretest',
+       case when exists (
+         select 1 from pg_indexes
+         where schemaname = 'public' and indexname = 'assessment_scores_one_pretest'
+       ) then 'ok' else 'MISSING' end
 
 union all
 
@@ -136,5 +171,12 @@ union all
 
 select '9 block 9', 'feedback rows', count(*)::text
 from public.feedback
+
+union all
+
+-- 10. The teacher's Talaan papers (v7), per act.
+select '10 talaan', 'act ' || act_number, count(*)::text
+from public.talaan_entries
+group by act_number
 
 order by 1, 2;

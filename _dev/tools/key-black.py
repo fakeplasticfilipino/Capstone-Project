@@ -15,9 +15,9 @@ sword that reaches a cell edge cannot let it leak into a neighbour.
 Usage, from the repository root (needs Pillow, which the game itself never
 does; this runs once per delivered sheet, not at play time):
 
-    python3 _dev/tools/key-black.py "assets/sprites/enemies/muslim-walk.jpg" --columns=4 --rows=3
+    python3 _dev/tools/key-black.py "assets/sprites/enemies/kawal-walk.jpg" --columns=4 --rows=3
 
-writes assets/sprites/enemies/muslim-walk.png beside the original, which is kept.
+writes assets/sprites/enemies/kawal-walk.png beside the original, which is kept.
 Then measure the PNG with measure-sprite.js like any other sheet.
 
 The better fix is a PNG export from the artist with transparency; this

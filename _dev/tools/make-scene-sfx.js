@@ -136,36 +136,8 @@ function normalise(sig) {
   write("applause", normalise(room), 0.5);
 }
 
-// ---- intertitle --------------------------------------------------
-// A soft, low drum (a sine falling from 105 to 62 Hz with a long decay,
-// and a little felt at the front) under a curtain's swish (noise swept
-// from dull to a little brighter and back, over most of a second).
-{
-  const SECONDS = 1.9;
-  const n = len(SECONDS);
-  const r = rng(58);
-  const out = new Float64Array(n);
-  let phase = 0;
-  for (let i = 0; i < n; i++) {
-    const t = i / RATE;
-    const f = 62 + 43 * Math.exp(-t / 0.18);
-    phase += f / RATE;
-    const drum = Math.sin(2 * Math.PI * phase) * Math.exp(-t / 0.55) * Math.min(1, t / 0.006);
-    out[i] = drum;
-  }
-  // The felt: a very short, very dull thump at the start.
-  const felt = lowpass(Float64Array.from({ length: len(0.03) }, () => r() * 2 - 1), 400);
-  felt.forEach((v, i) => { out[i] += v * 1.8 * (1 - i / felt.length); });
-  // The swish, lower than the drum's own loudness.
-  const swishLen = len(1.1);
-  const noiseSig = Float64Array.from({ length: swishLen }, () => r() * 2 - 1);
-  const swish = highpass(lowpass(noiseSig, 1800), 250);
-  for (let i = 0; i < swishLen; i++) {
-    const t = i / swishLen;
-    out[i] += swish[i] * 0.22 * Math.sin(Math.PI * Math.min(1, t * 1.15));
-  }
-  write("intertitle", normalise(out), 0.42);
-}
+// ---- intertitle: removed (Scan S24). Black cards are silent since
+// Block 84, and no content names the sound.
 
 // ---- notice ------------------------------------------------------
 // Two soft triangle notes, the second a fourth above the first, each with

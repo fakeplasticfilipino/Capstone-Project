@@ -154,8 +154,10 @@ const Acts = {
   // The two budgets below are CHOSEN, NOT MEASURED. This project will
   // never collect the playtesting data to justify a different pair, and
   // saying so is better than implying the numbers came from somewhere.
-  // They sit a little above what a careful first run of the Act I
-  // outpost costs, so both terms discriminate without bottoming out.
+  // They were set a little above what a careful first run of the old
+  // Act I outpost cost (before Block 52), so both terms discriminate
+  // without bottoming out; today's Act I (the fights and the guarded
+  // pamphlet run) costs about the same.
   DAMAGE_BUDGET: 6,
   DETECTION_BUDGET: 5,
 
@@ -195,9 +197,9 @@ const Acts = {
   // what you finish, and paid again for how well you did it.
   //
   // Paying during the act rather than only at the end is what makes
-  // the shop reachable inside one class period. Act I has five
-  // objectives, so a student holds 50 before the outpost is over,
-  // which is the price of the cheaper outfit.
+  // the shop reachable inside one class period. (Act I itself turns the
+  // drip off, objectiveCurrency: false, since Block 52: it counts barya
+  // as a story goal, and pays the whole award on completion.)
   //
   // NOTHING NEW IS STORED to make this idempotent. The amount already
   // dripped is the per-objective rate times objectives_done, and

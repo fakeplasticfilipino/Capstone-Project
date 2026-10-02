@@ -1,4 +1,10 @@
 {
+  "private": true,
+  "scripts": {
+    "prepare": "git config core.hooksPath _dev/hooks || true",
+    "check": "node _dev/tools/prepare.js --check",
+    "test": "node _dev/tests/test.js && node _dev/tests/verify_new_scene.js"
+  },
   "devDependencies": {
     "playwright": "^1.62.1"
   }

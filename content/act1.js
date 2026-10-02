@@ -2,59 +2,47 @@
 // MACARIO — content/act1.js
 //
 // Act I, rewritten from the start in Block 52 against the proponents'
-// new script and plot, rebuilt in Block 57 around one street, and given
-// its stage in Block 59: no jump in time, the direktor is the last of
-// the Mananahi's deliveries, and the delivery turns into Macario's first
-// play. What came before is in git history and CLAUDE.md, Decisions on
-// record. None of it should be copied back in without a reason.
+// new script and plot, rebuilt in Block 57 around one street, given its
+// stage in Block 59 and its end in Blocks 80 and 94. What came before is
+// in git history and DECISIONS.md; none of it should be copied back in
+// without a reason. STORY.md is the whole act, beat by beat and line by
+// line; this is the outline.
 //
-// The story so far, all of it on the street (tondo) unless it says:
+// All of it on the street (tondo) unless it says:
 //
 //   "Tondo, 1890" on black (playIntertitle). Macario stands alone;
-//   three siga come up behind him and taunt him about his father.
-//   Nanay comes to call him home and they walk off together, to where
-//   she stays for the rest of the act. There she tells him the money
-//   went on the cedula; he says he will work, and wonders where.
+//   three siga come up behind him and taunt him about his father, and
+//   it ends in a fight. Nanay comes to call him home and they walk off
+//   together, to where she stays for the rest of the act. There she
+//   tells him the money went on the cedula; he says he will work.
 //
-//   Block 89: nothing is staged but the turns. The Kutsero and the
-//   Mananahi each give him work that is simply there afterwards: the
-//   horse to groom, the sewing to help with, each a game he can do again
-//   for four to seven barya a round, up to 25 from each. The one thing
-//   that is scripted is the Mananahi stopping him at the sewing to send
-//   him to the direktor at the far end of the street with the costumes
-//   for tonight's play.
+//   Block 89: nothing is staged but the turns. The Kutsero, the Barbero
+//   (Block 94, a game of his own: the customer's order of tools,
+//   playOrderGame) and the Mananahi each give him work that is simply
+//   there afterwards, a round he can do again for a few barya, up to a
+//   cap from each. The one thing scripted is the Mananahi stopping him
+//   at the sewing to send him to the direktor at the far end of the
+//   street with the costumes for tonight's play.
 //
-//   The direktor's lead actor has not come; he is sick, and the seats
-//   are full. The costume fits Macario, so the direktor begs him to
-//   take the part, promising to whisper every line from the wings. They
-//   go into the entablado (the one scene change): Maryam walks him
-//   through the story backstage, the curtain opens, Macario forgets his
-//   first line and then adds one of his own, the Sultan's soldiers
-//   attack (a real fight, spawnEnemies), the Sultan gives his blessing,
-//   and the curtain closes on a standing crowd. The direktor pays him.
+//   The direktor's lead actor has not come. The costume fits Macario,
+//   so the direktor begs him to take the part. In the entablado Maryam
+//   walks him through it backstage, he forgets his first line and adds
+//   one of his own, the Sultan's soldiers attack (spawnEnemies), and the
+//   curtain closes on a standing crowd. The direktor pays him. The
+//   Mananahi, outside, saw it; he gives Nanay the 100 he has saved.
 //
-//   Back on the street the Mananahi pays him and he gives Nanay the 100.
+//   Block 80: a black card, four years on (Tondo, 1894), and he plays
+//   Principe Baldovino. Two men of the Katipunan find him in the wings;
+//   a password for the one waiting on the street takes him to the
+//   pulungan, where he takes the oath and is sent out the back door at
+//   night with pamphlets for three people, past the guardia civil.
 //
-// Block 80, the end of the act, at the proponent's direction:
-//
-//   A black card, four years on, and Macario is the lead of the
-//   company, playing Principe Baldovino in the entablado. After the
-//   curtain two men of the Katipunan find him in the wings and ask
-//   whether he is sure he wants to join; he is, and is given a password
-//   for the one who will wait on the street. Saying it there takes him
-//   to a secret room (pulungan), where he answers the three questions,
-//   signs in his own blood, and is sent out with pamphlets for three
-//   people on the street. The third handed over ends Act I, and the
-//   post-test runs.
-//
-// Block 94, at the proponent's direction: a third job, the Barbero, with
-// a game of its own (the customer's order of tools, playOrderGame); and
-// a new end. After the third pamphlet the rounds end, he goes back
-// through the back door and reports, and a year on (Tondo, 1895) he is
-// the head of his own council: the men take his orders, he lies to
-// Nanay at the door, and the door is shut on her as they call him
-// Pangulo. That ends Act I, and the post-test runs. The Talaan has three
-// papers of facts of its own, which a teacher's paper replaces.
+//   Block 94: after the third pamphlet the Kasama comes for him (Block
+//   95), he reports, and a year on (Tondo, 1895) he is the head of his
+//   own council: he lies to Nanay at the door, and the door is shut on
+//   her as they call him Pangulo. That ends Act I, and the post-test
+//   runs. The Talaan has three papers of facts of its own, which a
+//   teacher's paper replaces.
 //
 // The lines are the proponents' script as written, apostrophes
 // straightened. Lines marked PLACEHOLDER are ours, to be replaced by
@@ -62,17 +50,13 @@
 // the direktor and the plays say beyond the lines the script gave, and
 // every line of Block 80.
 //
-// Art. Block 59 deleted every picture made in code or recoloured from
-// the artist's frames (the siga, the Mananahi, the apple tree, the
-// Block 41 stand-ins) at the proponent's request, so anyone without
-// the artist's own sheet names a file that does not exist and is drawn
-// as the dashed placeholder box with that name on it (ART.md, Owed).
-// Real art replaces each by being saved under that name and measured
-// (measure-sprite.js); the def below then gains its columns, frames and
-// the three numbers. A character the artist delivers as one still is
-// animated by _dev/tools/animate-still.js and a rig in _dev/rigs/
-// (Blocks 97, 98; CLAUDE.md, Animating a character from one still), as
-// the three siga, the direktor, the Katipunero and the Kasama are.
+// Art. Everyone is drawn since Block 102. A picture still owed (ART.md,
+// Owed: the barber's chair, the sewing table, the pulungan) names a file
+// that does not exist and is drawn as the dashed placeholder box with
+// that name on it. Real art replaces it by being saved under that name
+// and measured (measure-sprite.js). A character delivered as one still
+// is animated by _dev/tools/animate-still.js and a rig in _dev/rigs/
+// (CLAUDE.md, Animating a character from one still).
 // =============================================================
 
 // Block 49. The paintings of the street, laid along the road in order
@@ -376,7 +360,7 @@ const DIREKTOR_FLAG = "naihatidKay_direktor";
 // Block 80. The three who take the Katipunan's pamphlets, on the street
 // once Macario has been sworn in, in the order the Kasama names them and
 // (Block 81) the order he meets them from the back door: the mangingisda
-// before the apple tree, the tabakera past the Mananahi, the karpintero
+// short of the Barbero, the tabakera past the Mananahi, the karpintero
 // past the middle of the street. All clear of the joins by 270px or more. Names and
 // lines are PLACEHOLDER. Their art is the proponent's (Block 102): stills
 // facing the front, standing still, as the Kutsero does.
@@ -1504,6 +1488,14 @@ window.ACT_1 = {
                 { speaker: "Nanay", text: "Ituloy mo lang 'yan, 'nak. Malayo ang mararating mo sa buhay." },
               ],
             },
+            {
+              // PLACEHOLDER. Scan S22. After the oath: she does not know,
+              // and he cannot tell her (the lie a year on starts here).
+              requiresFlag: "tinanggapSaKatipunan",
+              lines: [
+                { speaker: "Nanay", text: "Lagi ka nang ginagabi, 'nak. Saan ka ba nanggagaling?" },
+              ],
+            },
           ],
           gift: {
             buttonLabel: "Ibigay ang ipon",
@@ -1716,7 +1708,16 @@ window.ACT_1 = {
               ],
             },
             {
-              // PLACEHOLDER. Four years on.
+              // PLACEHOLDER. Scan S22. Four years on, while her sewing
+              // still pays.
+              requiresFlag: "lumipasAngApatNaTaon",
+              skipIfFlag: SEWING_JOB.full,
+              lines: [
+                { speaker: "Mananahi", text: "Nariyan pa rin ang tahian, iho, kung may oras ka." },
+              ],
+            },
+            {
+              // PLACEHOLDER. Four years on, once it has paid all it will.
               lines: [
                 { speaker: "Mananahi", text: "Kapag may tahi ulit, ipapatawag kita, ha?" },
               ],

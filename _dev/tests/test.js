@@ -6543,6 +6543,30 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("with a student signed in, ?dev=1 offers no story points (S5)", dev.signedIn && !dev.shown, dev);
     await ctx.close();
   }
+  if (still()) { // the section above, continued
+    // S17, S18, S21: the page's name and language, the login in Tagalog,
+    // and a way back from the login box.
+    const { ctx, page } = await newPage({ session: null });
+    await page.waitForTimeout(400);
+    const head = await page.evaluate(() => ({ title: document.title, lang: document.documentElement.lang }));
+    ok("the page is MACARIO, in Tagalog (S17)", head.title === "MACARIO" && head.lang === "tl", head);
+    await page.click("#shell-start");
+    await page.waitForTimeout(200);
+    ok("the login button reads Mag-log in (S18)",
+       (await page.textContent("#auth-submit")).trim() === "Mag-log in" && await visible(page, "#auth-overlay"));
+    const said = await page.evaluate(() => authErrorText({ message: "Invalid login credentials" }));
+    ok("a wrong password is said in Tagalog (S18)", /Mali ang email o password/.test(said), said);
+    await page.click("#auth-back");
+    await page.waitForTimeout(200);
+    ok("Bumalik in the login box goes back to the title screen (S21)",
+       await visible(page, "#shell-title") && await visible(page, "#shell-guest") &&
+       (await page.evaluate(() => Shell.state)) === "title");
+    await page.click("#shell-guest");
+    await page.waitForTimeout(400);
+    ok("and from there a guest can still go in",
+       await page.evaluate(() => Game.isGuest() && Shell.state === "playing"));
+    await ctx.close();
+  }
 
   await browser.close();
   server.close();
