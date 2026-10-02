@@ -272,6 +272,21 @@ const TeacherQuestions = {
         const checked = this.validate();
         if (checked.error) { this.setStatus(checked.error, "error"); return; }
         const type = this.type();
+        // Scan S14: a test students have already sat is a research
+        // instrument in use. Changing it mid-study makes the scores before
+        // and after the change different tests, so the teacher is told and
+        // must confirm. The count is what RLS lets this teacher see (her
+        // own students), which is the case that matters to her.
+        const sat = await sb.from("assessment_scores").select("student_id", { count: "exact", head: true })
+          .eq("act_number", act).eq("test_type", type);
+        const n = sat && !sat.error ? (sat.count || 0) : 0;
+        if (n > 0 && !window.confirm(n + " test result" + (n === 1 ? " has" : "s have") +
+            " already been recorded for this test. Changing the questions now means students before and" +
+            " after the change sat different tests, and the pre-test and post-test are matched pairs." +
+            " Save anyway?")) {
+          this.setStatus("Not saved.", "");
+          return;
+        }
         const del = await sb.from("assessment_items").delete().eq("act_number", act).eq("test_type", type);
         if (del.error) throw del.error;
         const ins = await sb.from("assessment_items").insert(checked.rows.map((r, i) => ({
@@ -282,7 +297,10 @@ const TeacherQuestions = {
       }
       this.loadedFromDb = true;
       this.render();
-      this.setStatus("Saved. The game will use this from the next test on.", "ok");
+      this.setStatus(this.isTrivia()
+        ? "Saved. The game will use this from the next test on."
+        : "Saved. The game will use this from the next test on. The pre-test and post-test are matched" +
+          " pairs: if you changed a question here, change its partner in the other test too.", "ok");
     } catch (err) {
       console.error("question save failed:", err);
       this.setStatus("Not saved: " + ((err && err.message) || "error") +

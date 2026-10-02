@@ -4228,13 +4228,19 @@ const visible = (page, sel) => page.evaluate((s) => {
           objectives_done: 3, objectives_total: 7, elapsed_ms: 12 * 60000 },
         { student_id: "s3", act_number: 1, status: "completed", performance_score: 64,
           objectives_done: 7, objectives_total: 7, elapsed_ms: 75 * 60000 },
+        // Scan S1: going on to a stub act makes a row worth 0, which must
+        // not pull the student's performance down.
+        { student_id: "s1", act_number: 2, status: "playing", performance_score: 0,
+          objectives_done: 0, objectives_total: 0, elapsed_ms: 0 },
       ],
       assessment_scores: [
         { student_id: "s1", act_number: 1, test_type: "pre", score: 4, max_score: 10 },
         { student_id: "s1", act_number: 1, test_type: "post", score: 9, max_score: 10 },
         { student_id: "s2", act_number: 1, test_type: "pre", score: 6, max_score: 10 },
         { student_id: "s3", act_number: 1, test_type: "pre", score: 5, max_score: 10 },
-        { student_id: "s3", act_number: 1, test_type: "post", score: 7, max_score: 10 },
+        { student_id: "s3", act_number: 1, test_type: "post", score: 7, max_score: 10, attempt: 1 },
+        // Scan S13: a retake. The gain is the first post-test's.
+        { student_id: "s3", act_number: 1, test_type: "post", score: 10, max_score: 10, attempt: 2 },
       ],
     };
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
@@ -4270,8 +4276,13 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the summary counts the class: 4 students, 3 started, 2 finished Act I",
        first.students === "4" && first.started === "3" && first.done === "2", first);
     ok("and averages only who has sat each test, with the n shown",
-       first.pre === "50%" && first.post === "80%" && first.gain === "+35%" &&
-       /n = 2, with pre and post/.test(first.gainSub), first);
+       first.pre === "50%" && first.post === "95%" && first.gain === "+35%" &&
+       /n = 2, pre to first post-test/.test(first.gainSub), first);
+    ok("a retake: the post-test shows the latest, the gain the first, the latest under it (S13)",
+       first.rows[2][5].startsWith("100%") && /2 attempts/.test(first.rows[2][5]) &&
+       first.rows[2][6] === "+20%latest +50%", first.rows[2]);
+    ok("performance counts completed acts only, not a stub act's 0 (S1)",
+       first.rows[0][7] === "82.5", first.rows[0]);
     ok("each row shows status, objectives, scores, gain and play time",
        first.rows[0][1] === "Completed" && first.rows[0][3] === "7/7" &&
        first.rows[0][4].startsWith("40%") && first.rows[0][5].startsWith("90%") &&
@@ -4299,6 +4310,12 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("sorting by gain puts the highest first and the missing last",
        sorted.aria === "descending" && sorted.order[0] === "mag-aaral01" &&
        sorted.order[1] === "mag-aaral03", sorted);
+
+    const [download] = await Promise.all([page.waitForEvent("download"), page.click("#export-btn")]);
+    const csv = require("fs").readFileSync(await download.path(), "utf8").replace(/^﻿/, "").split(/\r\n/);
+    ok("Download CSV saves the roster, a header and a line per student (S15)",
+       /\.csv$/.test(download.suggestedFilename()) && csv.length === 5 && /^student,status_act1/.test(csv[0]) &&
+       csv.some((l) => /^mag-aaral03,completed,.*,20\.0,50\.0,64\.0,/.test(l)), csv);
 
     await page.click("#refresh-btn");
     await page.waitForTimeout(300);
@@ -5477,6 +5494,21 @@ const visible = (page, sel) => page.evaluate((s) => {
        start.items === 10 && /Nothing saved in the database yet/.test(start.source) &&
        /Saan sa Maynila/.test(start.first) && start.correct === true, start);
 
+    // Scan S14: the pre-test has a score against it, so saving asks first.
+    // Refused, nothing is written; accepted, the save goes ahead.
+    const dialogs = [];
+    let acceptDialog = false;
+    page.on("dialog", (d) => { dialogs.push(d.message()); acceptDialog ? d.accept() : d.dismiss(); });
+    const refused = await page.evaluate(async () => {
+      document.getElementById("qe-save").click();
+      await new Promise((r) => setTimeout(r, 300));
+      return { n: __DB.assessment_items.length, status: document.getElementById("qe-status").textContent };
+    });
+    ok("saving a test students have sat asks first, and a no writes nothing (S14)",
+       dialogs.length === 1 && /1 test result has already been recorded/.test(dialogs[0]) &&
+       refused.n === 0 && refused.status === "Not saved.", { dialogs, refused });
+    acceptDialog = true;
+
     const saved = await page.evaluate(async () => {
       const first = document.querySelector("#qe-list .qe-item");
       first.querySelector(".qe-question").value = "Binagong tanong?";
@@ -5492,7 +5524,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("saving writes the edited test, in order, with the new right answer",
        saved.n === 9 && saved.first.question === "Binagong tanong?" && saved.first.correct_index === 2 &&
        JSON.stringify(saved.orders) === "[1,2,3,4,5,6,7,8,9]" && /^Saved/.test(saved.status) &&
-       /From the database/.test(saved.source), saved);
+       /matched pairs/.test(saved.status) && /From the database/.test(saved.source), saved);
 
     const invalid = await page.evaluate(async () => {
       document.querySelector("#qe-list .qe-question").value = "  ";

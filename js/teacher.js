@@ -46,6 +46,7 @@ const classPicker = document.getElementById("class-picker");
 const toolbarEl = document.getElementById("toolbar");
 const classNameEl = document.getElementById("class-name");
 const refreshBtn = document.getElementById("refresh-btn");
+const exportBtn = document.getElementById("export-btn");
 const updatedAtEl = document.getElementById("updated-at");
 
 const summaryEl = document.getElementById("summary");
@@ -271,8 +272,11 @@ function buildRoster(students, progress, acts, scores) {
   // Keyed "studentId|actNumber|testType" for direct lookup. Since
   // Block 68 a failed post-test can be taken again, so a test may have
   // several rows; the latest attempt is the one shown, and the count is
-  // kept for the cell. A row from before schema 006 is attempt 1.
+  // kept for the cell. A row from before schema 006 is attempt 1. The
+  // first attempt is kept too (firstBy): the study's learning gain is the
+  // first post-test against the pre-test, not the retake's (Scan S13).
   const scoresBy = new Map();
+  const firstBy = new Map();
   scores.forEach((s) => {
     const key = `${s.student_id}|${s.act_number}|${s.test_type}`;
     const attempt = Number(s.attempt) || 1;
@@ -283,6 +287,8 @@ function buildRoster(students, progress, acts, scores) {
     } else {
       prev.tries = tries;
     }
+    const first = firstBy.get(key);
+    if (!first || attempt < (Number(first.attempt) || 1)) firstBy.set(key, s);
   });
 
   return students.map((student) => {
@@ -292,15 +298,20 @@ function buildRoster(students, progress, acts, scores) {
     const pre = scoresBy.get(`${student.id}|1|pre`) || null;
     const post = scoresBy.get(`${student.id}|1|post`) || null;
 
+    const firstPost = firstBy.get(`${student.id}|1|post`) || null;
+
     const prePct = pre ? toPercent(pre.score, pre.max_score) : null;
     const postPct = post ? toPercent(post.score, post.max_score) : null;
+    const firstPostPct = firstPost ? toPercent(firstPost.score, firstPost.max_score) : null;
     const gain =
-      prePct !== null && postPct !== null ? postPct - prePct : null;
+      prePct !== null && firstPostPct !== null ? firstPostPct - prePct : null;
+    const gainLatest =
+      prePct !== null && postPct !== null && post.tries > 1 ? postPct - prePct : null;
 
-    // Performance is currently recorded per act. Average whatever
-    // acts have produced a score so far. Blocks 2 and 3 will start
-    // populating this for real.
-    const scored = studentActs.filter((a) => a.performance_score !== null);
+    // Performance is recorded per act. Only completed acts count: going
+    // on to a stub act creates its row with a score of 0, which would
+    // halve a student's figure (Scan S1).
+    const scored = studentActs.filter((a) => a.status === "completed" && a.performance_score !== null);
     const performance = scored.length
       ? scored.reduce((sum, a) => sum + Number(a.performance_score), 0) /
         scored.length
@@ -325,7 +336,9 @@ function buildRoster(students, progress, acts, scores) {
       post,
       prePct,
       postPct,
+      firstPostPct,
       gain,
+      gainLatest,
       performance,
       lastActive: prog ? prog.updated_at : null,
     };
@@ -361,7 +374,7 @@ function renderRoster() {
     tr.appendChild(cell(
       row.post ? Math.round(row.postPct) + "%" : null, "num",
       row.post ? fraction(row.post) + (row.post.tries > 1 ? " · " + row.post.tries + " attempts" : "") : null));
-    tr.appendChild(gainCell(row.gain));
+    tr.appendChild(gainCell(row.gain, row.gainLatest));
     tr.appendChild(cell(row.performance !== null ? row.performance.toFixed(1) : null, "num"));
     tr.appendChild(cell(formatDuration(row.elapsed), "num"));
     tr.appendChild(cell(formatDate(row.lastActive)));
@@ -466,7 +479,7 @@ function renderSummary(rows) {
   } else {
     gainEl.textContent = "—";
   }
-  stat("stat-gain-sub").textContent = `n = ${withGain.length}, with pre and post`;
+  stat("stat-gain-sub").textContent = `n = ${withGain.length}, pre to first post-test`;
 }
 
 function percentOf(part, whole) {
@@ -511,7 +524,9 @@ function statusCell(status) {
   return td;
 }
 
-function gainCell(gain) {
+// The gain shown is the first post-test's; a retake's, when there is
+// one, is the smaller line under it.
+function gainCell(gain, gainLatest) {
   const td = document.createElement("td");
   if (gain === null) {
     td.textContent = "—";
@@ -521,8 +536,57 @@ function gainCell(gain) {
   td.textContent = signed(gain) + "%";
   td.className = "num " +
     (Math.round(gain) > 0 ? "gain-positive" : Math.round(gain) < 0 ? "gain-negative" : "gain-neutral");
+  if (gainLatest !== null && gainLatest !== undefined) {
+    const small = document.createElement("span");
+    small.className = "cell-sub";
+    small.textContent = "latest " + signed(gainLatest) + "%";
+    td.appendChild(small);
+  }
   return td;
 }
+
+// =============================================================
+// Export (Scan S15)
+// =============================================================
+
+// The rows already on screen, as a CSV the proponents can analyse. No
+// new query: it is what RLS already let this teacher read.
+function exportCsv() {
+  if (!currentRows || !currentRows.length) return;
+  const cls = classesById.get(currentClassId);
+  const header = ["student", "status_act1", "current_act", "objectives_done", "objectives_total",
+    "pre_score", "pre_max", "pre_pct", "post_first_pct", "post_latest_score", "post_max",
+    "post_latest_pct", "post_attempts", "gain_first", "gain_latest", "performance",
+    "play_minutes", "last_active"];
+  const num = (v, d) => (v === null || v === undefined ? "" : Number(v).toFixed(d));
+  const lines = [header.join(",")];
+  currentRows.forEach((r) => {
+    lines.push([
+      r.name, r.status, r.currentAct, r.objectivesDone, r.objectivesTotal,
+      r.pre ? r.pre.score : "", r.pre ? r.pre.max_score : "", num(r.prePct, 1),
+      num(r.firstPostPct, 1), r.post ? r.post.score : "", r.post ? r.post.max_score : "",
+      num(r.postPct, 1), r.post ? r.post.tries : "", num(r.gain, 1),
+      num(r.gainLatest !== null ? r.gainLatest : r.gain, 1), num(r.performance, 1),
+      r.elapsed ? (r.elapsed / 60000).toFixed(1) : "", r.lastActive || "",
+    ].map(csvField).join(","));
+  });
+  const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = ((cls && cls.class_name) || "class").replace(/[^A-Za-z0-9-]+/g, "-") +
+    "-" + new Date().toISOString().slice(0, 10) + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function csvField(v) {
+  const s = v === null || v === undefined ? "" : String(v);
+  return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+exportBtn.addEventListener("click", exportCsv);
 
 // =============================================================
 // Utilities

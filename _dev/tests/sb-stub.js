@@ -60,6 +60,11 @@
             });
           }
           const found = match(rows, filters);
+          // { count: "exact", head: true } asks for how many, not the rows
+          // (the question editor's check, Scan S14).
+          if (opts && opts.count) {
+            return Promise.resolve({ data: opts.head ? null : found, count: found.length, error: null });
+          }
           data = m === "maybe" || m === "single" ? found[0] || null : found;
           if (m === "single" && !found[0]) {
             return Promise.resolve({ data: null, error: { message: "no rows" } });
@@ -116,7 +121,7 @@
   window.sb = {
     from(table) {
       return {
-        select() { return builder(table, "select").select(); },
+        select(cols, o) { return builder(table, "select", null, o).select(); },
         insert(p) { return builder(table, "insert", p); },
         upsert(p, o) { return builder(table, "upsert", p, o); },
         update(p) { return builder(table, "update", p); },
