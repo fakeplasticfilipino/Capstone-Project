@@ -149,6 +149,27 @@ const ok = (name, cond, extra) => {
   else { fail++; console.log("  FAIL  " + name + (extra !== undefined ? "  -> " + JSON.stringify(extra) : "")); }
 };
 
+// Block 106. node _dev/tests/test.js --only=BD,BL runs those sections and
+// skips the rest, for the sections a change touches while it is being
+// built (CLAUDE.md, Testing a push); the whole suite is CI's and a
+// release's. Every section is self-contained, so any one runs alone.
+// --list prints the sections and runs nothing.
+const ONLY = (() => {
+  const arg = process.argv.find((a) => a.startsWith("--only="));
+  return arg ? new Set(arg.slice(7).split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)) : null;
+})();
+const LIST = process.argv.includes("--list");
+let sectionOn = true;
+const section = (id, title) => {
+  sectionOn = !LIST && !(ONLY && !ONLY.has(id));
+  if (LIST) console.log("  " + id.padEnd(3) + title);
+  else if (sectionOn) console.log("\n" + id + ". " + title);
+  return sectionOn;
+};
+// A section written as more than one block: the later blocks run when
+// their section does.
+const still = () => sectionOn;
+
 const visible = (page, sel) => page.evaluate((s) => {
   const el = document.querySelector(s);
   if (!el) return null;
@@ -226,8 +247,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     return routes;
   }
 
-  console.log("\nA. Fresh student, no stored session");
-  {
+  if (section("A", "Fresh student, no stored session")) {
     const { ctx, page } = await newPage({ session: null });
     await page.waitForTimeout(300);
     ok("title screen visible", await visible(page, "#shell"));
@@ -269,8 +289,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nB. Returning student, mid Act I in the misyon scene");
-  {
+  if (section("B", "Returning student, mid Act I in the misyon scene")) {
     const state = {
       session: { user: { id: "u1" } },
       game_progress: [{ student_id: "u1", current_act: 1, current_room: "misyon",
@@ -356,8 +375,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nC. Settings persist across a reload");
-  {
+  if (section("C", "Settings persist across a reload")) {
     const { ctx, page } = await newPage({ session: null });
     await page.waitForTimeout(200);
     await page.click("#shell-title-settings");
@@ -374,8 +392,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nD. Backward compatibility");
-  {
+  if (section("D", "Backward compatibility")) {
     const state = {
       session: { user: { id: "u1" } },
       game_progress: [{ student_id: "u1", current_act: 1, current_room: "empty", save_state: {} }],
@@ -392,8 +409,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nE. A shell that never gets a world");
-  {
+  if (section("E", "A shell that never gets a world")) {
     const { ctx, page } = await newPage({ session: { user: { id: "u1" } }, profileError: true });
     await page.waitForTimeout(600);
     ok("title screen still up", await visible(page, "#shell"));
@@ -454,8 +470,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     }), 250));
   });
 
-  console.log("\nF. Hazards");
-  {
+  if (section("F", "Hazards")) {
     const { ctx, page } = await enterTestRoom();
 
     // Guards are switched off for this section. The knockback from the
@@ -515,8 +530,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nG. Pickups");
-  {
+  if (section("G", "Pickups")) {
     const { ctx, page } = await enterTestRoom();
 
     ok("pickup was built", (await page.evaluate(() => PICKUPS.length)) === 1);
@@ -575,8 +589,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nH. Dynamic difficulty and guard reset");
-  {
+  if (section("H", "Dynamic difficulty and guard reset")) {
     const { ctx, page } = await enterTestRoom();
 
     const act1 = await page.evaluate(() => GUARDS.map((g) => ({ speed: g.speed, base: g.baseSpeed })));
@@ -615,8 +628,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // Block 9. Measurement, sessions and feedback.
   // -----------------------------------------------------------------
 
-  console.log("\nI. Counters");
-  {
+  if (section("I", "Counters")) {
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
 
@@ -670,8 +682,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nJ. Counter persistence");
-  {
+  if (section("J", "Counter persistence")) {
     const { ctx, page } = await enterTestRoom();
 
     await page.evaluate(async () => {
@@ -699,7 +710,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // Tested by seeding a save that already holds counters rather than by
   // reloading the page, because the stub reseeds its database on reload
   // and would discard the write the previous section just made.
-  {
+  if (still()) { // the section above, continued
     const seeded = atTestRoom();
     seeded.game_progress[0].save_state.stats = {
       damageTaken: 4, detections: 3, playMs: 91000,
@@ -733,8 +744,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nK. The weighted score");
-  {
+  if (section("K", "The weighted score")) {
     const { ctx, page } = await enterTestRoom();
 
     const perfect = await page.evaluate(() =>
@@ -767,8 +777,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nL. Sessions");
-  {
+  if (section("L", "Sessions")) {
     const { ctx, page } = await enterTestRoom();
 
     const opened = await page.evaluate(() => __DB.game_sessions || []);
@@ -792,8 +801,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nM. Feedback");
-  {
+  if (section("M", "Feedback")) {
     const { ctx, page } = await enterTestRoom();
 
     // Skipping must write nothing and must not block the flow.
@@ -839,8 +847,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nN. Completion is written before feedback is offered");
-  {
+  if (section("N", "Completion is written before feedback is offered")) {
     const { ctx, page } = await enterTestRoom();
 
     // The ordering that protects the study: if the student closes the
@@ -873,8 +880,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nO. Feedback is optional to the flow");
-  {
+  if (section("O", "Feedback is optional to the flow")) {
     const { ctx, page } = await enterTestRoom();
 
     // An assessment.js without runFeedback, or none at all, must still
@@ -897,8 +903,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // Block 10. Inventory and equipment.
   // -----------------------------------------------------------------
 
-  console.log("\nP. The item catalogue");
-  {
+  if (section("P", "The item catalogue")) {
     const { ctx, page } = await enterTestRoom();
 
     const shape = await page.evaluate(() => ({
@@ -954,8 +959,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nQ. Granting");
-  {
+  if (section("Q", "Granting")) {
     const { ctx, page } = await enterTestRoom();
 
     ok("both Act I items were granted on entry",
@@ -978,8 +982,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nR. Equipping");
-  {
+  if (section("R", "Equipping")) {
     const { ctx, page } = await enterTestRoom();
 
     const worn = await page.evaluate(async () => {
@@ -1023,8 +1026,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nS. Equipment effects");
-  {
+  if (section("S", "Equipment effects")) {
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
 
@@ -1109,8 +1111,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nT. The inventory screen");
-  {
+  if (section("T", "The inventory screen")) {
     // Block 25: one way in, its own main-UI button. Selecting a tile and
     // acting on it are two taps, so a student finding out what something
     // is never wears it, eats it or spends it by accident.
@@ -1191,8 +1192,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nT2. Consumables and quest items on the inventory screen");
-  {
+  if (section("T2", "Consumables and quest items on the inventory screen")) {
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
 
@@ -1251,8 +1251,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nU. Inventory is optional to the flow");
-  {
+  if (section("U", "Inventory is optional to the flow")) {
     const { ctx, page } = await enterTestRoom("**/inventory.js*");
 
     ok("the module really is absent",
@@ -1286,8 +1285,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // Block 11. Currency and cosmetics.
   // -----------------------------------------------------------------
 
-  console.log("\nV. The currency award");
-  {
+  if (section("V", "The currency award")) {
     const { ctx, page } = await enterTestRoom();
 
     // The regression this section exists for. This student resumes four
@@ -1366,8 +1364,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nW. The award sums to the score");
-  {
+  if (section("W", "The award sums to the score")) {
     const { ctx, page } = await enterTestRoom();
 
     const totals = await page.evaluate(async () => {
@@ -1411,8 +1408,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nX. Spending");
-  {
+  if (section("X", "Spending")) {
     const { ctx, page } = await enterTestRoom();
 
     const short = await page.evaluate(async () => {
@@ -1474,8 +1470,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nY. Outfits");
-  {
+  if (section("Y", "Outfits")) {
     const { ctx, page } = await enterTestRoom();
 
     // Walk.png is the one sprite sheet that actually exists, so it stands
@@ -1553,8 +1548,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nZ. The shop screen");
-  {
+  if (section("Z", "The shop screen")) {
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => Game.addCurrency(60));
 
@@ -1656,8 +1650,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // Block 12. The device pass findings.
   // -----------------------------------------------------------------
 
-  console.log("\nAA. The touch controls");
-  {
+  if (section("AA", "The touch controls")) {
     const { ctx, page } = await enterTestRoom();
 
     const pe = await page.evaluate(() => {
@@ -1707,8 +1700,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAB. Camera and control fit");
-  {
+  if (section("AB", "Camera and control fit")) {
     // The camera is screen width divided by --zoom, and nothing else.
     const framing = async (viewport) => {
       const { ctx, page } = await newPage(atTestRoom(), fixtureRoutes(), viewport);
@@ -1795,8 +1787,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await Promise.resolve();
   }
 
-  console.log("\nAC. Portrait is a prompt, not a layout");
-  {
+  if (section("AC", "Portrait is a prompt, not a layout")) {
     const { ctx, page } = await enterTestRoom();
 
     ok("no notice while the phone is sideways",
@@ -1829,8 +1820,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAD. Every button carries an icon");
-  {
+  if (section("AD", "Every button carries an icon")) {
     const { ctx, page } = await enterTestRoom();
 
     // The sprite has to be in the document, or every <use> in the page
@@ -1986,8 +1976,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAE. Sizes on the target device, with icons in");
-  {
+  if (section("AE", "Sizes on the target device, with icons in")) {
     const { ctx, page } = await enterTestRoom();
 
     // The diameters must not have moved. These are the same numbers
@@ -2119,8 +2108,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAF. The full reset is offered only to accounts that may use it");
-  {
+  if (section("AF", "The full reset is offered only to accounts that may use it")) {
     // A study account. can_reset_my_data() answers false, so the
     // offer is never drawn. This is the check that matters most on
     // this screen: a student in the study who wipes their own row has
@@ -2149,7 +2137,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  {
+  if (still()) { // the section above, continued
     // An allowlisted account. The offer appears and the wipe runs.
     const seed = atTestRoom();
     seed.canReset = true;
@@ -2242,7 +2230,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  {
+  if (still()) { // the section above, continued
     // A failed call must say so and must leave saving off, because a
     // retry is about to delete whatever a write would have put back.
     const seed = atTestRoom();
@@ -2298,8 +2286,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAG. A wiped student starts the game from the beginning");
-  {
+  if (section("AG", "A wiped student starts the game from the beginning")) {
     // What the reload lands on: no rows anywhere, which is exactly the
     // state a student who has never played is in. Driven as a fresh
     // login rather than asserted about, because "starts over" means
@@ -2332,8 +2319,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAH. Play-as-guest, no save");
-  {
+  if (section("AH", "Play-as-guest, no save")) {
     // Block 14. A guest never authenticates, so this drives the title
     // screen's second button rather than the auth form, and the whole
     // point of the section is to prove nothing lands in __DB anywhere
@@ -2400,8 +2386,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAI. Aim-and-fire shooting animation");
-  {
+  if (section("AI", "Aim-and-fire shooting animation")) {
     // The shooting sheet (25 frames) is played as two named views of the
     // one image rather than two files: shootAim (0-12, held while the
     // button is down) and shootFire (13-15, played once at the instant
@@ -2598,8 +2583,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAJ. A seamless backdrop and player stacking");
-  {
+  if (section("AJ", "A seamless backdrop and player stacking")) {
     // #player must out-stack every NPC/guard/decoration, which are all
     // appended into #world after #player already exists in the static
     // HTML (see loadScene's build*() calls). Without a positive z-index,
@@ -2702,8 +2686,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAK. Shop-opening NPCs, a gift's onComplete, and an item's buyFlag");
-  {
+  if (section("AK", "Shop-opening NPCs, a gift's onComplete, and an item's buyFlag")) {
     const { ctx, page } = await enterTestRoom();
 
     // opensShop: true skips dialogue entirely and opens the same
@@ -2776,8 +2759,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAL. Interaction reach, a clean throw, and a consumable item");
-  {
+  if (section("AL", "Interaction reach, a clean throw, and a consumable item")) {
     const { ctx, page } = await enterTestRoom();
 
     // Interaction reach: the gap between the two bounding boxes, not
@@ -2923,8 +2905,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAM. Bodies: the drawn character stands where the logic does");
-  {
+  if (section("AM", "Bodies: the drawn character stands where the logic does")) {
     // Every check here reads PIXELS, not style properties. Two earlier
     // fixes to the throw passed checks written against numbers the code
     // itself produced and still looked wrong on screen; the only thing
@@ -3081,8 +3062,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAN. The pixel theme");
-  {
+  if (section("AN", "The pixel theme")) {
     // Block 29. The fonts are self-hosted, so they must actually load
     // from assets/fonts rather than silently falling back to Courier,
     // which is the plain look the block replaced. And the chrome is flat:
@@ -3113,8 +3093,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAO. Sound: music, the gunshot, NPC ambience, and the two switches");
-  {
+  if (section("AO", "Sound: music, the gunshot, NPC ambience, and the two switches")) {
     // Block 30. The sounds are real files played by the real engine; what
     // is checked is which element or buffer the engine asked to play and
     // when, since a headless browser has no ears. The two spies below
@@ -3329,8 +3308,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await c2.close();
   }
 
-  console.log("\nAP. Arrival dialogues and skipped dialogue sets");
-  {
+  if (section("AP", "Arrival dialogues and skipped dialogue sets")) {
     // Block 31, against scenes and an NPC added to the fixture at run time,
     // so the mechanism is checked apart from what Act I ships.
     const { ctx, page } = await enterTestRoom();
@@ -3401,8 +3379,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAQ. Standing-still detection, seller stock, and a shop after talking");
-  {
+  if (section("AQ", "Standing-still detection, seller stock, and a shop after talking")) {
     // Block 32, against the fixture guard and catalogue plus an item and
     // NPC added at run time, so none of it depends on Act I's content.
     const { ctx, page } = await enterTestRoom();
@@ -3504,8 +3481,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAR. Scene backdrops, a hidden ground, and doorways between scenes");
-  {
+  if (section("AR", "Scene backdrops, a hidden ground, and doorways between scenes")) {
     // Block 34, against scenes added to the fixture at run time.
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => {
@@ -3573,8 +3549,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAS. The jump poses, scripted scenes, and combat");
-  {
+  if (section("AS", "The jump poses, scripted scenes, and combat")) {
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
 
@@ -3884,8 +3859,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAT. The frame does no work it does not have to (Block 36)");
-  {
+  if (section("AT", "The frame does no work it does not have to (Block 36)")) {
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
 
@@ -3966,8 +3940,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAU. Hostile guards, sight from a platform, no gun, gated exits, checkpoints (Blocks 37 and 38)");
-  {
+  if (section("AU", "Hostile guards, sight from a platform, no gun, gated exits, checkpoints (Blocks 37 and 38)")) {
     // Against the fixture guard with fields switched on at run time, and
     // driven with the loop paused, so none of it depends on Act I's
     // content or on frame timing.
@@ -4199,8 +4172,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAV. The teacher dashboard");
-  {
+  if (section("AV", "The teacher dashboard")) {
     // teacher.html had no coverage before its restyle. Seeded with one
     // class of four students at different points, against the stub, which
     // understands .in() for the dashboard's scoped queries.
@@ -4323,8 +4295,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await sctx.close();
   }
 
-  console.log("\nAW. No guide, and the vision cone (Blocks 42, 69)");
-  {
+  if (section("AW", "No guide, and the vision cone (Blocks 42, 69)")) {
     // Block 69. The guide is gone at the proponent's direction: students
     // find their own way. Nothing of it is left on the page or in the
     // engine.
@@ -4379,8 +4350,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAX. Painted panels and shadow trees (Block 43)");
-  {
+  if (section("AX", "Painted panels and shadow trees (Block 43)")) {
     // The fixture scene given panels at run time, from two pictures that
     // exist, so the engine is tested apart from whatever Act I ships.
     const { ctx, page } = await enterTestRoom();
@@ -4506,8 +4476,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAY. The quest log: the task in hand; done ones in settings (Blocks 48, 57)");
-  {
+  if (section("AY", "The quest log: the task in hand; done ones in settings (Blocks 48, 57)")) {
     const { ctx, page } = await enterTestRoom();
 
     // Old behaviour, for an act without linearObjectives: open quests on
@@ -4606,8 +4575,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nAZ. Scene scripts, a step that counts barya, and an act without the drip (Block 52)");
-  {
+  if (section("AZ", "Scene scripts, a step that counts barya, and an act without the drip (Block 52)")) {
     const { ctx, page } = await enterTestRoom();
 
     // A scene script plays once: placed first, its doneFlag set only when
@@ -4680,8 +4648,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBA. The apple mini-game, the black card, a scripted walk, and an act held open (Blocks 56, 57)");
-  {
+  if (section("BA", "The apple mini-game, the black card, a scripted walk, and an act held open (Blocks 56, 57)")) {
     const { ctx, page } = await enterTestRoom();
 
     const catchState = () => page.evaluate(() => {
@@ -4893,8 +4860,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBB. Sound effects, and people who leave the story (Block 58)");
-  {
+  if (section("BB", "Sound effects, and people who leave the story (Block 58)")) {
     const { ctx, page } = await enterTestRoom();
     // Every effect decoded ahead of time, like the gunshot.
     await page.waitForFunction(() => Object.keys(SFX_SOURCES).every((n) => !!sfxBuffers[n]),
@@ -4988,8 +4954,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBC. The weight of a blow (Block 60)");
-  {
+  if (section("BC", "The weight of a blow (Block 60)")) {
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => {
       window.__asked = [];
@@ -5096,8 +5061,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBE. Takbo, a forgiving jump, and dust (Block 63)");
-  {
+  if (section("BE", "Takbo, a forgiving jump, and dust (Block 63)")) {
     const { ctx, page } = await enterTestRoom();
     const walk = await page.evaluate(async () => {
       loadScene("tondo"); // the fixture's tondo has no guard
@@ -5176,8 +5140,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBF. The apple game, with feeling: a timed round, golden apples, streaks (Block 65)");
-  {
+  if (section("BF", "The apple game, with feeling: a timed round, golden apples, streaks (Block 65)")) {
     const { ctx, page } = await enterTestRoom();
     const round = await page.evaluate(async () => {
       window.__asked = [];
@@ -5235,8 +5198,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBG. The reward pop (Block 67)");
-  {
+  if (section("BG", "The reward pop (Block 67)")) {
     const { ctx, page } = await enterTestRoom();
     const pop = await page.evaluate(async () => {
       posX = 300;
@@ -5262,8 +5224,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // teacher's from the database first, the built-in bank otherwise; a
   // failed post-test offers a replay; a student can change the password.
   // -------------------------------------------------------------
-  console.log("\nBH. Questions in the game, a replay after a failed post-test, and the password (Block 68)");
-  {
+  if (section("BH", "Questions in the game, a replay after a failed post-test, and the password (Block 68)")) {
     // In the page: sits the test on screen, choosing by answer(question,
     // index) the choice to tap, and taps through every message after.
     const DRIVE = `window.__drive = async (pending, answer) => {
@@ -5378,7 +5339,7 @@ const visible = (page, sel) => page.evaluate((s) => {
        pass.seen.screens.includes("Pumasa!") && pass.retake === undefined, pass);
     await ctx.close();
   }
-  {
+  if (still()) { // the section above, continued
     // A student who fails and reloads on the result is offered the
     // choice again, not a free second try.
     const seedFail = Object.assign(atTestRoom(), { realQuestions: true,
@@ -5436,7 +5397,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("Escape goes back to settings", await page.evaluate(() => Shell.state === "settings"));
     await ctx.close();
   }
-  {
+  if (still()) { // the section above, continued
     const { ctx, page } = await newPage({ session: null });
     await page.waitForTimeout(300);
     await page.click("#shell-title-settings");
@@ -5448,8 +5409,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // -------------------------------------------------------------
   // BI. Block 68. The teacher edits the questions and answers.
   // -------------------------------------------------------------
-  console.log("\nBI. The teacher's question editor (Block 68)");
-  {
+  if (section("BI", "The teacher's question editor (Block 68)")) {
     const seed = {
       session: { user: { id: "t1" } },
       profiles: [
@@ -5535,8 +5495,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // and no hints since Block 69, so a glossary and hints are put on the
   // fixture act at run time; and a scenery NPC, the apple tree's kind.
   // -------------------------------------------------------------
-  console.log("\nBJ. The Talaan's engine, and a scenery NPC (Blocks 68, 69)");
-  {
+  if (section("BJ", "The Talaan's engine, and a scenery NPC (Blocks 68, 69)")) {
     const { ctx, page } = await enterTestRoom();
     const t0 = await page.evaluate(() => {
       loadScene("tondo");
@@ -5627,8 +5586,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // the papers say from talaan_entries through Game.setHintPool. Put on
   // the fixture act at run time, then the dashboard's editor.
   // -------------------------------------------------------------
-  console.log("\nBK. The teacher's Talaan papers (Block 70)");
-  {
+  if (section("BK", "The teacher's Talaan papers (Block 70)")) {
     const { ctx, page } = await enterTestRoom();
     const k0 = await page.evaluate(() => {
       loadScene("tondo");
@@ -5705,7 +5663,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  {
+  if (still()) { // the section above, continued
     const seed = {
       session: { user: { id: "t1" } },
       profiles: [{ id: "t1", role: "teacher", full_name: "Gng. Cruz" }],
@@ -5762,8 +5720,7 @@ const visible = (page, sel) => page.evaluate((s) => {
   // the title screen's bar, and holds the world (and every scene change)
   // closed until the art is in. And the service worker keeps it all.
   // -------------------------------------------------------------
-  console.log("\nBD. Pictures that wait, retry and stay (Block 62)");
-  {
+  if (section("BD", "Pictures that wait, retry and stay (Block 62)")) {
     // Its own context, because each check needs its routes in place
     // before the page's first request, which newPage() does not allow.
     const rawPage = async (routes, init, useCtxRoutes) => {
@@ -5999,6 +5956,18 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the road is drawn from the versioned picture, and the stylesheet names no picture of its own",
        /ground-lupa\.jpg\?v=\d+/.test(road.ground) && road.cssPictures.length === 0, road);
 
+    // Block 106. Each file carries its own fingerprint, so a phone asks
+    // again only for what changed; a file the manifest does not list
+    // falls back to ASSET_VERSION.
+    const prints = await sw.page.evaluate(() => {
+      const v = (u) => assetUrl(u).split("v=")[1];
+      return { a: v("assets/backgrounds/act1/street-01.jpg"), b: v("assets/backgrounds/act1/street-02.jpg"),
+               listed: ASSET_VERSIONS["assets/backgrounds/act1/street-01.jpg"],
+               other: v("assets/nobody-drew-this.png"), fallback: String(ASSET_VERSION) };
+    });
+    ok("every file is asked for by its own fingerprint from the manifest",
+       prints.a === prints.listed && prints.a !== prints.b && prints.other === prints.fallback, prints);
+
     // A connection that is up but crawling: the page waits about three
     // seconds for the network and then opens from the phone.
     await sw.ctx.route("**/index.html*", async (route) => {
@@ -6069,8 +6038,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await far.ctx.close();
   }
 
-  console.log("\nBL. Guards take blows the way the enemies do (Block 75)");
-  {
+  if (section("BL", "Guards take blows the way the enemies do (Block 75)")) {
     // Against the fixture guard (no sheets of his own), with the loop
     // paused and every step driven by hand.
     const { ctx, page } = await enterTestRoom();
@@ -6143,8 +6111,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBM. The enemy catalogue, and one way of taking a blow (Block 76)");
-  {
+  if (section("BM", "The enemy catalogue, and one way of taking a blow (Block 76)")) {
     const { ctx, page } = await enterTestRoom();
     const r = await page.evaluate(() => {
       setPaused(true);
@@ -6199,8 +6166,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBN. The dash reaches the Test Room's guards (Block 87)");
-  {
+  if (section("BN", "The dash reaches the Test Room's guards (Block 87)")) {
     const { ctx, page } = await enterTestRoom();
     const r = await page.evaluate(() => new Promise((resolve) => {
       GUARDS.forEach((g) => { g.disabled = true; });
@@ -6242,8 +6208,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBO. The work game and a gift that costs (Block 89)");
-  {
+  if (section("BO", "The work game and a gift that costs (Block 89)")) {
     const { ctx, page } = await enterTestRoom();
     const r = await page.evaluate(async () => {
       const wait = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -6284,8 +6249,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBP. The dash is plain to see, and warned (Block 92)");
-  {
+  if (section("BP", "The dash is plain to see, and warned (Block 92)")) {
     const { ctx, page } = await enterTestRoom();
     const r = await page.evaluate(() => new Promise((resolve) => {
       GUARDS.forEach((g) => { g.disabled = true; });
@@ -6321,8 +6285,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  console.log("\nBQ. Enemies move between blows, and hop over him (Block 93)");
-  {
+  if (section("BQ", "Enemies move between blows, and hop over him (Block 93)")) {
     const { ctx, page } = await enterTestRoom();
     const r = await page.evaluate(() => new Promise((resolve) => {
       GUARDS.forEach((g) => { g.disabled = true; });
@@ -6372,6 +6335,11 @@ const visible = (page, sel) => page.evaluate((s) => {
 
   await browser.close();
   server.close();
+  if (ONLY && !pass && !fail) {
+    console.log("\nno section matched --only=" + [...ONLY].join(",") + "; node _dev/tests/test.js --list names them");
+    process.exit(1);
+  }
+  if (LIST) process.exit(0);
   console.log("\n" + pass + " passed, " + fail + " failed");
   process.exit(fail ? 1 : 0);
 })();

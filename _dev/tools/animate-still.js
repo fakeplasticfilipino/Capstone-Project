@@ -78,8 +78,8 @@
 //                                                        to the temp folder
 //
 // Writes the rig's sheets beside its still and prints the numbers for
-// the content. Then bump ASSET_VERSION in js/game.js and run
-// make-asset-manifest.js.
+// the content. The sheets are shrunk as they are written (lib/png.js,
+// writeSheet). Then node _dev/tools/prepare.js (Block 106).
 // =============================================================
 
 "use strict";
@@ -87,7 +87,7 @@
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const { decodePng, encodePng } = require("./lib/png.js");
+const { decodePng, encodePng, writeSheet } = require("./lib/png.js");
 const { blankLayer, dropSpecks, compose, move, turn, apply, Canvas, sheet } = require("./lib/puppet.js");
 
 const ROOT = path.join(__dirname, "..", "..");
@@ -552,7 +552,7 @@ function main() {
   rig.sheets.forEach((s, n) => {
     const frames = drawn[n].map((cv) => cv.crop(CELL.x, CELL.y, CELL.w, CELL.h));
     const out = sheet(frames, CELL.w, CELL.h, 4);
-    fs.writeFileSync(path.join(dir, s.file), encodePng(out.W, out.H, out.out));
+    writeSheet(path.join(dir, s.file), out.W, out.H, out.out); // shrunk too, Block 106
   });
 
   // The numbers: his height in the still, standing, whatever a frame

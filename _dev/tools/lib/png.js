@@ -14,6 +14,9 @@
 //   encodePng(w, h, rgba, opts)          a Buffer holding an RGBA PNG
 //   encodePalettePng(w, h, idx, pal, opts)  one holding a palette PNG:
 //                            idx one byte per pixel, pal RGBA per entry
+//   writeSheet(file, w, h, rgba)  a sheet for assets/, written and
+//                            shrunk (Block 106); every animate tool
+//                            writes through it
 //
 // opts.text: { keyword: value } written as tEXt chunks; shrink-sprites.js
 // marks what it wrote with one (SHRUNK_KEYWORD), which verify_new_scene.js
@@ -227,4 +230,13 @@ function encodePalettePng(w, h, idx, pal, opts) {
   ]);
 }
 
-module.exports = { decodePng, encodePng, encodePalettePng, SHRUNK_KEYWORD, SHRUNK_VALUE };
+// Block 106. A sheet for the game, written and shrunk in one step
+// (shrink-sprites.js: a palette PNG a quarter of the size, looking and
+// measuring the same), so a tool that writes into assets/ never leaves a
+// full-size sheet for someone to remember. Returns shrink's report.
+function writeSheet(file, w, h, rgba) {
+  fs.writeFileSync(file, encodePng(w, h, rgba));
+  return require("../shrink-sprites.js").shrink(file);
+}
+
+module.exports = { decodePng, encodePng, encodePalettePng, writeSheet, SHRUNK_KEYWORD, SHRUNK_VALUE };

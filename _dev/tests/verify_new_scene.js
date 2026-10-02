@@ -480,66 +480,15 @@ const doneInSettings = async (page) => {
   return items;
 };
 
-// STORY.md is the script of content/act1.js, changed with it. Every line
-// of dialogue (text, and a customer's waiting, thanks and after) and
-// every black card in the content must appear there word for word. Read
-// from the source rather than from the running game, so lines no test
-// walks to (a repeat visit, a reload branch) are held to it too.
-const storyDrift = () => {
-  const src = fs.readFileSync(path.join(ROOT, "content", "act1.js"), "utf8");
-  const story = fs.readFileSync(path.join(ROOT, "STORY.md"), "utf8");
-  const lines = [];
-  for (const m of src.matchAll(/\b(?:text|waiting|thanks|after):\s*("(?:[^"\\]|\\.)*")/g)) lines.push(JSON.parse(m[1]));
-  for (const m of src.matchAll(/playIntertitle\(\[([^\]]*)\]/g)) {
-    for (const s of m[1].matchAll(/"(?:[^"\\]|\\.)*"/g)) lines.push(JSON.parse(s[0]));
-  }
-  return { count: lines.length, missing: lines.filter((l) => !story.includes(l)) };
-};
-
-// Block 77. ART.md's Owed list is every picture the game asks for that
-// is not on disk: nothing missing and unlisted, nothing listed and
-// already arrived. The search is _dev/tools/missing-art.js's own.
-const artDrift = () => {
-  const { findArt } = require(path.join(ROOT, "_dev", "tools", "missing-art.js"));
-  const missing = findArt().filter((a) => !a.exists).map((a) => a.file);
-  const md = fs.readFileSync(path.join(ROOT, "ART.md"), "utf8").replace(/\r\n/g, "\n");
-  const owed = (md.split("\n## Owed")[1] || "").split("\n## ")[0];
-  const listed = [...new Set([...owed.matchAll(/assets\/\S+\.(?:png|jpe?g)/gi)].map((m) => m[0]))];
-  return { missing, listed,
-    unlisted: missing.filter((f) => !listed.includes(f)),
-    arrived: listed.filter((f) => !missing.includes(f)) };
-};
+// The checks that need no browser (STORY.md, ART.md, the manifest and
+// its fingerprints, the stamps, the shrunk sheets) live in
+// _dev/tools/lib/checks.js since Block 106, shared with prepare.js, so
+// the commit-time check and this suite cannot disagree.
+const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"));
 
 (async () => {
-  console.log("\nART.md");
-  const art = artDrift();
-  ok("ART.md lists every picture the game asks for that is missing (" + art.missing.length + ")",
-     art.missing.length > 0 && art.unlisted.length === 0, art.unlisted);
-  ok("and nothing in its Owed list has already arrived", art.arrived.length === 0, art.arrived);
-
-  // Block 78. The loader never gives up on a file the manifest lists and
-  // never asks for one it does not, so the manifest must be exactly
-  // what is in assets/ (node _dev/tools/make-asset-manifest.js).
-  console.log("\nThe asset manifest");
-  const { listAssets, readManifest } = require(path.join(ROOT, "_dev", "tools", "make-asset-manifest.js"));
-  const onDisk = listAssets(), listedAssets = readManifest() || [];
-  ok("js/asset-manifest.js lists exactly the files in assets/ (" + onDisk.length + ")",
-     JSON.stringify(onDisk) === JSON.stringify(listedAssets),
-     { notListed: onDisk.filter((x) => !listedAssets.includes(x)), gone: listedAssets.filter((x) => !onDisk.includes(x)) });
-
-  // Block 105. Every sheet a quarter of its size: a sheet written by an
-  // animate tool, or a picture from the artist, goes through
-  // shrink-sprites.js before it ships. The stills are the rigs' originals
-  // and are left as they came.
-  const { decodePng } = require(path.join(ROOT, "_dev", "tools", "lib", "png.js"));
-  const unshrunk = onDisk.filter((f) => /\.png$/i.test(f) && !/-still\.png$/i.test(f))
-    .filter((f) => !decodePng(path.join(ROOT, f)).shrunk);
-  ok("every sheet in assets/ has been through shrink-sprites.js", unshrunk.length === 0, unshrunk);
-
-  console.log("\nSTORY.md");
-  const drift = storyDrift();
-  ok("every line and black card in content/act1.js is in STORY.md (" + drift.count + ")",
-     drift.count > 100 && drift.missing.length === 0, drift.missing);
+  console.log("\nWithout a browser (prepare.js --check)");
+  for (const r of fastChecks.runAll()) ok(r.name, r.ok, r.detail);
 
   await new Promise((r) => server.listen(PORT, r));
   const browser = await chromium.launch();

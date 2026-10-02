@@ -160,18 +160,11 @@ the proponent tested Blocks 90 to 97 on the phone and reported no
 fault. Blocks 98 to 103 are pushed and not yet seen on a device:
 Next action 1 says what to look for.
 
-Current versions, which index.html must match on every push:
-
-    css/style.css v60    js/game.js v100      js/shell.js v22
-    js/inventory.js v11  js/acts.js v14       js/assessment.js v5
-    js/vendor/supabase.js v1 (supabase-js 2.117.2)  js/supabaseClient.js v1
-    content/act1.js v74  content/items.js v13  content/act2-4.js v1
-    content/enemies.js v6   content/questions.js v1
-    js/asset-manifest.js v9 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 38 (in js/game.js)
-    sw.js carries no version: the browser checks it on every visit
-    teacher.html: css/teacher.css v4, js/teacher.js v5,
-      js/teacher-questions.js v2, js/teacher-talaan.js v2
+Versions: since Block 106 every ?v= is the file's fingerprint, written
+by node _dev/tools/prepare.js before each commit and checked by the
+hook and CI, so there is no list to keep here. The Supabase library is
+supabase-js 2.117.2 (js/vendor/supabase.js). sw.js carries no version:
+the browser checks it on every visit.
 
 ## Next action
 
@@ -636,6 +629,10 @@ machine, the assessment module.
         said on the title screen, music kept, a crawling connection
         given 3 seconds, the road versioned, the Supabase library in the
         repository, the sheets shrunk to a quarter (shrink-sprites.js)
+    106 fingerprints instead of hand-bumped versions (a phone fetches
+        only what changed); prepare.js, the pre-commit hook and a
+        one-minute first CI job; the animate tools shrink what they
+        write; test.js --only and --list
 
 ## Blocks remaining
 
@@ -735,8 +732,12 @@ release to students (CLAUDE.md, Deployment, Testing a push).
 From the repository root:
 
     npm install
-    node _dev/tests/test.js
+    node _dev/tools/prepare.js              before every commit, a second
+    node _dev/tests/test.js                 --only=BD,BL for sections
     node _dev/tests/verify_new_scene.js
+
+CI runs prepare.js --check first, in about a minute, and the two suites
+only once it passes (Block 106).
 
 Setting up a computer that has never run them (done on the proponent's
 Windows computer, 1 Oct 2026): install Git and Node.js LTS (winget

@@ -27,7 +27,7 @@
 //               a faint wind, a loop that joins without a click.
 //
 // No recording was used. A recorded, freely licensed file dropped over
-// either name replaces it; bump ASSET_VERSION in js/game.js.
+// either name replaces it; then node _dev/tools/prepare.js.
 //
 // Usage, from the repository root (no dependencies):
 //

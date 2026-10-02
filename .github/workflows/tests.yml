@@ -24,7 +24,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Block 106. The checks that need no browser (prepare.js --check: every
+  # script compiles, STORY.md, ART.md, the manifest and its fingerprints,
+  # the stamps, the shrunk sheets), in seconds and with nothing to
+  # install, before the suites spend twelve minutes on a push that a
+  # forgotten step has already broken.
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+      - run: node _dev/tools/prepare.js --check
+
   suite:
+    needs: checks
     name: ${{ matrix.suite }}
     runs-on: ubuntu-latest
     timeout-minutes: 30

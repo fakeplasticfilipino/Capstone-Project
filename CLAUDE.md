@@ -55,8 +55,20 @@ is no build step. Student testing runs against the live URL:
 
     https://fakeplasticfilipino.github.io/Capstone-Project/
 
-Every script and stylesheet carries a v=N query string because browser
-caching is aggressive on Pages.
+Every script, stylesheet, picture and sound is asked for with a ?v=,
+because browser caching is aggressive on Pages. Since Block 106 the
+number is the file's own fingerprint, written by a tool, never typed:
+
+BEFORE EVERY COMMIT: node _dev/tools/prepare.js. In about a second it
+shrinks any sheet not yet shrunk, rewrites js/asset-manifest.js with
+every file under assets/ and its fingerprint, stamps every page and
+stylesheet with its files' fingerprints, and runs the checks that need
+no browser (every script compiles, STORY.md, ART.md, the manifest, the
+stamps, the sheets). What it cannot fix it names. The pre-commit hook
+(_dev/hooks/pre-commit, turned on once per computer with git config
+core.hooksPath _dev/hooks; on since 2 Oct 2026 on the proponent's) and
+the first CI job run prepare.js --check, which changes nothing and
+fails on anything stale.
 
 ALWAYS PUSH TO MAIN. When working through a cloud session (Claude Code
 on the web), commit and push straight to the main branch, every time,
@@ -74,7 +86,9 @@ and marks the commit green or red; a red run is fixed in the next push,
 before anything else. So:
 
     a push of game code      run the suites the change touches, or the
-                             part of one, while building; push; then
+                             part of one, while building (test.js
+                             --only=BD,BL runs those sections; --list
+                             names them; Block 106); push; then
                              check the Actions run before calling the
                              work done (the Actions tab, or, the repo
                              being public, curl on api.github.com/repos/
@@ -180,6 +194,7 @@ off the repository.
       fonts/                   the two woff2 faces and their licences
     db/                        migrations/, seeds/, scripts/ (Database)
     _dev/tests/                the harness and its fixtures
+    _dev/hooks/                pre-commit: prepare.js --check (Block 106)
     _dev/rigs/                 one rig per character animated from a
                                still by animate-still.js (Block 97)
     _dev/tools/                measure-sprite.js, key-black.py,
@@ -192,6 +207,8 @@ off the repository.
                                (Block 100), missing-art.js
                                (Block 77), make-asset-manifest.js
                                (Block 78), shrink-sprites.js (Block 105),
+                               prepare.js and lib/stamp.js, lib/checks.js
+                               (Block 106),
                                make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js,
                                make-scene-sfx.js (Block 81), and
@@ -245,7 +262,7 @@ A CDN on another site is one more thing a classroom connection has to
 reach before anything runs, the service worker cannot keep it, and an
 unpinned version changes under the game. Updating it is deliberate:
 download the UMD build of the version wanted into that file, keep its
-header comment, bump its ?v= in index.html and teacher.html.
+header comment, run prepare.js.
 
 Since Block 105 the whole game is kept on the phone after one complete
 visit (sw.js and keepGameOffline in game.js), and the title screen says
@@ -1219,15 +1236,15 @@ Omit it and the sheet is assumed to stand in the middle of its cell.
 A change to footX, like contentTop/contentHeight, is a change to the
 content file that declares it, not to the image.
 
-Every image load goes through assetUrl(), which appends the ASSET_VERSION
-constant in game.js. Images are not covered by the v=N strings in
-index.html, so without this the browser and the Pages CDN serve stale
-sprites indefinitely after a file is replaced. Bump ASSET_VERSION whenever
-anything in assets/ changes, and bump the game.js script version too, since
-the browser must refetch game.js to learn the new asset version. A change
-to contentTop/contentHeight is a change to the CONTENT file that declares
-them (game.js for the player, content/actN.js for an NPC), not to the
-image, so it needs that file's own v=N bumped rather than ASSET_VERSION.
+Every picture and sound load goes through assetUrl(), which appends the
+file's fingerprint from js/asset-manifest.js (window.ASSET_VERSIONS,
+Block 106), so the browser and the Pages CDN never serve a stale sprite
+after a file is replaced, and a phone downloads again only the files
+whose bytes changed. prepare.js writes the fingerprints; nothing is
+bumped by hand. ASSET_VERSION in game.js is only the fallback for a file
+the manifest does not list (the harness's fixture pictures) and is not
+bumped any more. A change to contentTop/contentHeight is a change to the
+CONTENT file that declares them, which prepare.js stamps like any other.
 
 A sheet may also declare startFrame and endFrame, in frame numbers
 rather than pixels, to play only part of itself:
@@ -1365,11 +1382,9 @@ The steps:
      animation (idle) and walkAnimation; an enemy's animation (walk),
      attackAnimation and hitAnimation, best in content/enemies.js. The
      size on screen is the content's displayHeight, not the sheet's.
-  7. node _dev/tools/shrink-sprites.js (Block 105: every sheet a 256-
-     colour palette PNG, a quarter of the size; the still is left
-     alone), then node _dev/tools/make-asset-manifest.js, bump
-     ASSET_VERSION and the
-     content file's v=N, move the picture out of ART.md's Owed (or into
+  7. node _dev/tools/prepare.js (the sheets were shrunk as they were
+     written, Block 106; this fingerprints them and stamps the content
+     file), move the picture out of ART.md's Owed (or into
      its Stand-ins), add a check to verify_new_scene.js that the sheets
      load, and run both suites.
 
@@ -2014,6 +2029,8 @@ look, by system:
     the game kept on the phone, the       Block 105 (sw.js,
       Supabase library in the repo,       keepGameOffline,
       sheets shrunk                       shrink-sprites.js)
+    fingerprints, prepare.js, the         Block 106
+      hook, test.js --only
 
 ## Pitfalls
 
@@ -2033,23 +2050,24 @@ A picture is loaded through loadImage (Block 62), never with a bare new
 Image(). One that is not goes uncounted, so the title bar and the
 scene-change wait do not wait for it, and it is not retried.
 
-Anything added to, renamed in or deleted from assets/ needs
-node _dev/tools/make-asset-manifest.js (Block 78), which rewrites
-js/asset-manifest.js and bumps its ?v= itself. Without it a new picture
-is treated as owed art and never asked for (a placeholder box), and a
-deleted one is waited for forever on the loading screen. The harness
-fails on either, so run it before the suites.
+Anything added to, renamed in, replaced in or deleted from assets/
+needs node _dev/tools/prepare.js (Blocks 78, 106), which rewrites
+js/asset-manifest.js. Without it a new picture is treated as owed art
+and never asked for (a placeholder box), a deleted one is waited for
+forever on the loading screen, and a replaced one keeps its old
+fingerprint, so phones keep the old picture. prepare.js --check, the
+hook and CI fail on all three.
 
 In the harness, never let page.evaluate return Game.enterAsGuest() (or
 anything else that awaits Shell.awaitEntry): it resolves only after the
 title screen is tapped, so a check that awaits it waits forever. Call it
 in braces and wait on something the page shows.
 
-sw.js caches every ?v= URL forever. A file changed without its v=N
-bumped is now invisible on every phone that has played before, not just
-on some; the cache-buster rule below matters more than it did. A file
-without a version (index.html, supabaseClient.js) is always fetched
-fresh while online.
+sw.js caches every ?v= URL forever. A file changed without prepare.js
+run after it keeps its old fingerprint and is invisible on every phone
+that has played before, not just on some. The pages themselves have no
+version and are always fetched fresh while online (after three seconds,
+the kept copy; Block 105).
 
 A CSS animation on something repeated along the road runs, and costs
 style work, even off screen. Hold what is out of view still, as
@@ -2064,8 +2082,9 @@ question for nothing. The unique constraint is still the guarantee.
 Clear the Supabase SQL editor before pasting. Leftover text executes
 alongside the new query.
 
-Increment the v=N cache-buster on any script or stylesheet you change, or
-mobile browsers keep serving the cached copy.
+Run node _dev/tools/prepare.js after changing any script, stylesheet or
+asset, or mobile browsers keep serving the cached copy (Block 106: the
+?v= numbers are fingerprints it writes; never edit one by hand).
 
 Test teacher login in an incognito window. An active student session takes
 precedence otherwise.
@@ -2191,11 +2210,10 @@ but a fresh headless fetch of the same files shows her fine, suspect this
 before suspecting the code: hard refresh, or open the live URL in a
 private window, and confirm the v=N numbers referenced by index.html
 actually match a bump made after the file they reference last changed.
-Each session's edits keep the numbers matched (TRACKER.md, Start here,
-lists the versions currently in effect); nothing here reaches
-outside this environment to commit or push, so keeping index.html and
-the files it names in step is the pushing side's responsibility, not
-something a later Claude session can verify by fetching GitHub alone.
+Since Block 106 the numbers are fingerprints of the files' bytes,
+written by prepare.js, and prepare.js --check (the hook, and the first
+CI job) fails when one is stale, so a push like that is red before it
+can reach a phone.
 
 Any new element that represents a character in the world must be
 built through mountBody and bodySprite (or bodyPlaceholder), and any
@@ -2236,7 +2254,7 @@ or an event listener, all of which run after parsing. That is why
 buildNpcs only resets npc.nearSoundOn and leaves the sound itself to
 the next frame.
 
-A new sound file is an assets/ change like any other: bump ASSET_VERSION,
+A new sound file is an assets/ change like any other: run prepare.js,
 because every audio load goes through assetUrl too.
 
 The game loop runs sixty times a second on a phone chosen for being

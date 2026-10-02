@@ -242,17 +242,21 @@ function difficultyMultiplier(actNumber) {
 // scene at full health. A fail state that ejects a Grade 8 student from the
 // lesson serves nobody, and being caught already costs them the walk back.
 
-// Bump this whenever ANY file in assets/ is replaced.
-//
-// The v=N strings in index.html only cover scripts and stylesheets.
-// Images had no version at all, so browsers and the GitHub Pages CDN
-// kept serving stale sprites indefinitely after a file was swapped.
-// Every image load goes through assetUrl() so one number refreshes them all.
+// Every picture and sound is asked for with a ?v=, because browsers and
+// the GitHub Pages CDN kept serving stale sprites indefinitely after a
+// file was swapped. Since Block 106 the number is each file's own
+// fingerprint, from js/asset-manifest.js (window.ASSET_VERSIONS, written
+// by _dev/tools/make-asset-manifest.js), so a phone downloads again only
+// what changed and there is nothing to bump by hand. ASSET_VERSION is
+// left only for a file the manifest does not list (the harness's own
+// fixture pictures); it is not bumped any more.
 const ASSET_VERSION = 38;
 
 function assetUrl(path) {
   if (!path) return path;
-  return path + (path.includes("?") ? "&" : "?") + "v=" + ASSET_VERSION;
+  const versions = window.ASSET_VERSIONS;
+  const v = (versions && versions[path.split("?")[0]]) || ASSET_VERSION;
+  return path + (path.includes("?") ? "&" : "?") + "v=" + v;
 }
 
 // Block 105. A picture for a stylesheet to draw, through a custom

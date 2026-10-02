@@ -4176,3 +4176,59 @@ the next one an animate tool writes from shipping at full size.
 
 game.js v100 (ASSET_VERSION 38), shell.js v22, style.css v60,
 js/vendor/supabase.js v1, supabaseClient.js v1.
+
+## Block 106: fingerprints, one command before a commit, faster runs
+
+Asked for by the proponent on 2 Oct 2026: improve the engine and the
+way the work is done, with new tools where they are needed ("do we need
+a tool that automatically compresses sprites so we don't have to catch
+the size problem every single time?"). Planned as a roadmap in the
+session; this block is its first three steps and the fourth.
+
+Fingerprints. Every ?v= was a number bumped by hand: one ASSET_VERSION
+for all 88 files under assets/, and a number per script in each page.
+Two costs. A forgotten bump left phones on the old file, which happened
+in Block 13 (CLAUDE.md, Pitfalls, Nanay missing), and every rule that
+says "bump" is a rule a session can forget. And one ASSET_VERSION meant
+a single new sprite sent every phone all 11 MB again, which since Block
+105 is also every phone's whole kept copy of the game. Now each file's
+?v= is a fingerprint of its bytes (eight hex digits of SHA-1, written
+as a decimal number so every check that matches ?v=\d+ still holds):
+make-asset-manifest.js writes them into js/asset-manifest.js
+(window.ASSET_VERSIONS), assetUrl reads them, and lib/stamp.js writes
+them into every page's script and stylesheet tags and every
+stylesheet's url() (the fonts). Text files are fingerprinted with CRLF
+read as LF, since Git checks them out one way on the proponent's
+computer and the other on GitHub's. ASSET_VERSION stays only as the
+fallback for a file the manifest does not list (the harness's fixture
+pictures). The service worker needed nothing: it already dropped an
+older ?v= of the same path.
+
+One command. node _dev/tools/prepare.js fixes what a tool can (the
+sheets not yet shrunk, the manifest, the stamps) and then runs every
+check that needs no browser (lib/checks.js: every script compiles,
+STORY.md, ART.md, the manifest, the stamps, the sheets), in about a
+second. verify_new_scene.js runs the same functions rather than its own
+copies, so the two cannot disagree. --check changes nothing; it is the
+pre-commit hook (_dev/hooks/pre-commit, on through core.hooksPath on the
+proponent's computer) and the first CI job, which takes about a minute
+and gates the two suites, so a forgotten step is red in a minute rather
+than after twelve. A cloud session has no hook, but has CI and the rule
+in CLAUDE.md.
+
+Compression without remembering. The three animate tools write their
+sheets through lib/png.js writeSheet, which shrinks as it writes (the
+horse was rerun to check: byte for byte what was committed), and
+prepare.js shrinks anything else not yet shrunk, a picture from the
+artist above all. So there is no step left to remember, which was the
+proponent's question.
+
+Faster runs. test.js --only=BD,BL runs those sections (every section
+header became if (section(id, title)), and the six sections written as
+more than one block follow their section with still()); --list names
+them in half a second. An --only that matches nothing fails rather than
+passing with nothing run. verify_new_scene.js is one story played
+through and is not split.
+
+Scrapped on the way: the "Current versions" list in TRACKER.md, which
+existed only because the numbers were typed.

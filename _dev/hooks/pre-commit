@@ -1,0 +1,11 @@
+#!/bin/sh
+# MACARIO pre-commit hook (Block 106). Runs the checks that need no
+# browser, in about a second, and refuses the commit when one fails.
+# node _dev/tools/prepare.js fixes the manifest, the stamps and the
+# sheets; anything else it names is fixed by hand.
+#
+# Turned on once per computer, from the repository root:
+#   git config core.hooksPath _dev/hooks
+# git commit --no-verify skips it, for a commit that is meant to be
+# broken (there should be none on main).
+exec node _dev/tools/prepare.js --check

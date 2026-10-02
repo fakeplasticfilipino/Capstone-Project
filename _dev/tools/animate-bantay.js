@@ -50,8 +50,9 @@
 //   assets/sprites/enemies/bantay-walk.png   8 frames, 4 by 2
 //   assets/sprites/enemies/bantay-shoot.png  7 frames, 4 by 2
 //   assets/sprites/enemies/bantay-hit.png    4 frames, 4 by 1
-// and prints the numbers for content/enemies.js (bantay). Bump
-// ASSET_VERSION in js/game.js after rerunning it.
+// and prints the numbers for content/enemies.js (bantay). The sheets are
+// shrunk as they are written (lib/png.js, writeSheet); then
+// node _dev/tools/prepare.js (Block 106).
 //
 // Depends on nothing outside Node, like measure-sprite.js, because the
 // proponent's computer has Node and no Python.
@@ -61,7 +62,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { decodePng, encodePng } = require("./lib/png.js");
+const { decodePng, writeSheet } = require("./lib/png.js");
 // The cut-out puppet itself, shared with animate-still.js (Blocks 96, 97).
 const { blankLayer, dropSpecks, I, compose, move, turn, apply, Canvas, sheet } = require("./lib/puppet.js");
 
@@ -448,7 +449,7 @@ function main() {
     walk.push(walkFrame(parts, i, W, H).crop(WALK_CELL.x, WALK_CELL.y, WALK_CELL.w, WALK_CELL.h));
   }
   const ws = sheet(walk, WALK_CELL.w, WALK_CELL.h, 4);
-  fs.writeFileSync(OUT_WALK, encodePng(ws.W, ws.H, ws.out));
+  writeSheet(OUT_WALK, ws.W, ws.H, ws.out); // shrunk too, Block 106
 
   // Shoot cells: 500 by 420, from (150, 30), wide enough for the rifle
   // and its flash.
@@ -461,13 +462,13 @@ function main() {
     shots.push(f.cv.crop(SHOOT_CELL.x, SHOOT_CELL.y, SHOOT_CELL.w, SHOOT_CELL.h));
   }
   const ss = sheet(shots, SHOOT_CELL.w, SHOOT_CELL.h, 4);
-  fs.writeFileSync(OUT_SHOOT, encodePng(ss.W, ss.H, ss.out));
+  writeSheet(OUT_SHOOT, ss.W, ss.H, ss.out);
 
   // Hit cells: the walk's, so the numbers are the walk's too.
   const hits = HIT.map((step) =>
     hitFrame(parts, step, W, H).crop(WALK_CELL.x, WALK_CELL.y, WALK_CELL.w, WALK_CELL.h));
   const hs = sheet(hits, WALK_CELL.w, WALK_CELL.h, 4);
-  fs.writeFileSync(OUT_HIT, encodePng(hs.W, hs.H, hs.out));
+  writeSheet(OUT_HIT, hs.W, hs.H, hs.out);
 
   // The numbers for content/enemies.js. The soldier is sized by his own
   // height in the still (contentTop 50, 394 tall), whatever the rifle

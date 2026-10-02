@@ -10,9 +10,20 @@ From the repository root:
 
     npm install
     node _dev/tests/test.js
+    node _dev/tests/test.js --only=BD,BL    only those sections (Block 106)
+    node _dev/tests/test.js --list          the sections, by letter
 
 Expected output ends with a count. Anything other than "0 failed" is a
-regression.
+regression. While building, run the sections a change touches; the
+whole of both suites is CI's on every push, and this computer's before
+a release to students (CLAUDE.md, Testing a push).
+
+Before every commit, node _dev/tools/prepare.js: the checks that need no
+browser, in a second, after fixing what a tool can fix (the sheets, the
+manifest and its fingerprints, the ?v= stamps). The pre-commit hook in
+_dev/hooks/ runs it with --check once turned on:
+
+    git config core.hooksPath _dev/hooks
 
 The install is one-time. node_modules/ and package-lock.json are already
 in .gitignore; _dev/ itself is tracked.
@@ -105,7 +116,9 @@ at about the size the game draws it (else the sheet stays full colour),
 and every pixel still clear, faint or solid as it was, so the numbers
 measure-sprite.js gives do not change. The stills (<name>-still.png)
 are left alone. verify_new_scene.js fails while a sheet has not been
-through it. Run make-asset-manifest.js and bump ASSET_VERSION after.
+through it. Since Block 106 the animate tools shrink what they write
+(lib/png.js, writeSheet) and prepare.js shrinks anything else, so this
+is seldom run by hand.
 
 ## Adding checks
 

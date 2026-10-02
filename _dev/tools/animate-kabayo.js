@@ -26,15 +26,15 @@
 // Run:  node _dev/tools/animate-kabayo.js
 //
 // Writes assets/sprites/characters/kabayo.png and prints its numbers for
-// content/act1.js (KABAYO). Then node _dev/tools/make-asset-manifest.js
-// and bump ASSET_VERSION in js/game.js.
+// content/act1.js (KABAYO), shrunk as it is written (lib/png.js,
+// writeSheet). Then node _dev/tools/prepare.js (Block 106).
 // =============================================================
 
 "use strict";
 
 const fs = require("fs");
 const path = require("path");
-const { decodePng, encodePng } = require("./lib/png.js");
+const { decodePng, writeSheet } = require("./lib/png.js");
 const { blankLayer, compose, move, turn, Canvas, sheet } = require("./lib/puppet.js");
 
 const ROOT = path.join(__dirname, "..", "..");
@@ -151,7 +151,7 @@ function main() {
   cell.h = Math.ceil((GROUND + 1) * SCALE) + 2 - cell.y;
   const frames = drawn.map((cv) => cv.crop(cell.x, cell.y, cell.w, cell.h));
   const out = sheet(frames, cell.w, cell.h, 4);
-  fs.writeFileSync(path.join(ROOT, OUT), encodePng(out.W, out.H, out.out));
+  writeSheet(path.join(ROOT, OUT), out.W, out.H, out.out); // shrunk too, Block 106
 
   const top = Math.round(TOP * SCALE) - cell.y;
   console.log("wrote " + OUT);

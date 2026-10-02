@@ -12,10 +12,11 @@
 //   node _dev/tools/shrink-sprites.js --check    say what is not shrunk,
 //                                                change nothing
 //
-// Run it after anything writes a sheet: animate-still.js, animate-bantay.js,
-// animate-kabayo.js, or a picture from the artist. verify_new_scene.js
-// fails while a sheet in assets/ has not been through it, then
-// make-asset-manifest.js and an ASSET_VERSION bump as for any picture.
+// The animate tools shrink what they write (lib/png.js, writeSheet), and
+// node _dev/tools/prepare.js shrinks anything else not yet shrunk (a
+// picture from the artist), so this is seldom run by hand since Block
+// 106. prepare.js --check and verify_new_scene.js fail while a sheet in
+// assets/ has not been through it.
 //
 // What it promises, and checks on every file before keeping the result:
 //
@@ -254,7 +255,7 @@ function main() {
     process.exit(waiting ? 1 : 0);
   }
   console.log(done ? `${done} sheet(s) shrunk, ${(saved / 1048576).toFixed(1)} MB saved. ` +
-    "Now: node _dev/tools/make-asset-manifest.js, and bump ASSET_VERSION in js/game.js."
+    "Now: node _dev/tools/prepare.js."
     : "every sheet is already shrunk");
 }
 

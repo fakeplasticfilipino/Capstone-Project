@@ -15,7 +15,7 @@
 //   hurt      Macario takes a hit: a quick falling buzz
 //
 // A recorded or commissioned effect replaces any of these by dropping a
-// file over the same name (and bumping ASSET_VERSION).
+// file over the same name (then node _dev/tools/prepare.js).
 //
 // Usage, from the repository root (no dependencies):
 //
