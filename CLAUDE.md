@@ -137,8 +137,8 @@ off the repository.
 
     index.html, teacher.html   the two pages; they must stay at the root,
                                because the Pages URL serves index.html
-    sw.js                      the service worker (Block 62); at the root
-                               so its scope is the whole site
+    sw.js                      the service worker (Blocks 62, 105); at the
+                               root so its scope is the whole site
     CLAUDE.md, TRACKER.md,     the three context files (how it is built,
       STORY.md                 where it is, what the story is), with
                                README.md for the public
@@ -149,7 +149,8 @@ off the repository.
                                teacher, teacher-questions,
                                teacher-talaan, supabaseClient), and
                                asset-manifest.js, the list of every file
-                               under assets/, written by a tool (Block 78)
+                               under assets/, written by a tool (Block 78);
+                               js/vendor/ the Supabase library (Block 105)
     content/                   act data, the item catalogue, the enemy
                                catalogue (enemies.js, Block 76), and the
                                built-in test questions (questions.js)
@@ -190,7 +191,8 @@ off the repository.
                                96), animate-kabayo.js, the horse
                                (Block 100), missing-art.js
                                (Block 77), make-asset-manifest.js
-                               (Block 78), make-sfx.py,
+                               (Block 78), shrink-sprites.js (Block 105),
+                               make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js,
                                make-scene-sfx.js (Block 81), and
                                create_accounts.js (gitignored)
@@ -236,6 +238,20 @@ no ES modules. Plain script tags in document order.
 
 Supabase for auth, Postgres, and row level security. Hosted on GitHub Pages.
 Visual Studio Code as the editor.
+
+The Supabase library is a file of this site, js/vendor/supabase.js
+(2.117.2, MIT, its licence beside it), not a CDN script tag (Block 105).
+A CDN on another site is one more thing a classroom connection has to
+reach before anything runs, the service worker cannot keep it, and an
+unpinned version changes under the game. Updating it is deliberate:
+download the UMD build of the version wanted into that file, keep its
+header comment, bump its ?v= in index.html and teacher.html.
+
+Since Block 105 the whole game is kept on the phone after one complete
+visit (sw.js and keepGameOffline in game.js), and the title screen says
+when it is. A guest then plays with no network at all; a student's
+login and save still need one. Before a class or a presentation, open
+the game once on good wifi on each device and wait for the green line.
 
 The proposal document specifies Unity and C#. The implementation uses
 neither, deliberately, and is argued from the study's own literature review:
@@ -309,7 +325,8 @@ label has never been in index.html.
 
 Load order in index.html, which is load bearing:
 
-    supabase CDN
+    js/vendor/supabase.js  the Supabase library, kept in the repository
+                         (Block 105; see Stack)
     supabaseClient.js
     content/enemies.js   before the acts; act1.js reads from it, and
                          game.js merges a placed enemy's type from it
@@ -367,6 +384,9 @@ game.js exposes window.Game and nothing else:
     whenAssetsSettled(ms)  resolves when nothing is pending, or after ms
                          if given (no caller gives one since Block 78)
     retryAssets()        every waiting picture tried again now; Block 78
+    offlineStatus()      { supported, done, total, ready, online }: how
+                         much of the game is kept on the phone; Block 105
+    onOfflineStatus(fn)  called with that whenever it changes
     glossary()           the act's Talaan (words and hints found) for
                          the pause screen, or null; Block 68
     setHintPool(n, pool) the teacher's papers for act n, from acts.js;
@@ -1345,7 +1365,10 @@ The steps:
      animation (idle) and walkAnimation; an enemy's animation (walk),
      attackAnimation and hitAnimation, best in content/enemies.js. The
      size on screen is the content's displayHeight, not the sheet's.
-  7. node _dev/tools/make-asset-manifest.js, bump ASSET_VERSION and the
+  7. node _dev/tools/shrink-sprites.js (Block 105: every sheet a 256-
+     colour palette PNG, a quarter of the size; the still is left
+     alone), then node _dev/tools/make-asset-manifest.js, bump
+     ASSET_VERSION and the
      content file's v=N, move the picture out of ART.md's Owed (or into
      its Stand-ins), add a check to verify_new_scene.js that the sheets
      load, and run both suites.
@@ -1988,8 +2011,23 @@ look, by system:
                                           right, 20 in one run)
     testing: CI and when to run           Block 104 (GitHub Actions;
       the suites                          Deployment, Testing a push)
+    the game kept on the phone, the       Block 105 (sw.js,
+      Supabase library in the repo,       keepGameOffline,
+      sheets shrunk                       shrink-sprites.js)
 
 ## Pitfalls
+
+A picture drawn by the stylesheet is named by game.js, through
+cssAssetUrl and a custom property (--ground-src, --skyline-src), never
+by a url() in css/style.css (Block 105). A url() there has no ?v=, so it
+is a second download that the loader does not wait for and the service
+worker never keeps: the road was missing that way. The fonts are the
+one exception, versioned by hand in the stylesheet (?v=1).
+
+A sheet written by an animate tool, or delivered by the artist, goes
+through node _dev/tools/shrink-sprites.js before it ships (Block 105);
+verify_new_scene.js fails until it has. The tools' own PNG reader and
+measure-sprite.js read the palette PNGs it writes.
 
 A picture is loaded through loadImage (Block 62), never with a bare new
 Image(). One that is not goes uncounted, so the title bar and the

@@ -154,15 +154,19 @@ function decodePng(filePath) {
     );
   }
 
-  const channelsByColorType = { 0: 1, 2: 3, 4: 2, 6: 4 };
+  // Palette images (type 3) since Block 105: shrink-sprites.js writes
+  // every sheet in assets/ that way.
+  const channelsByColorType = { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 };
   const channels = channelsByColorType[colorType];
   if (!channels) {
     throw new Error(
-      `color type ${colorType} is not supported (palette images, ` +
-      `type 3, are the usual cause). Re-export this sheet as a plain ` +
-      `RGBA (32-bit) PNG.`
+      `color type ${colorType} is not supported. Re-export this sheet ` +
+      `as a plain RGBA (32-bit) PNG.`
     );
   }
+  const plte = chunks.find((c) => c.type === "PLTE");
+  const trns = chunks.find((c) => c.type === "tRNS");
+  if (colorType === 3 && !plte) throw new Error("a palette PNG with no PLTE chunk");
 
   const idat = Buffer.concat(
     chunks.filter((c) => c.type === "IDAT").map((c) => c.data)
@@ -175,7 +179,11 @@ function decodePng(filePath) {
   const rgba = Buffer.alloc(width * height * 4);
   for (let i = 0, p = 0; i < width * height; i++, p += channels) {
     let r, g, b, a;
-    if (channels === 4) {
+    if (colorType === 3) {
+      const k = pixels[p];
+      r = plte.data[k * 3]; g = plte.data[k * 3 + 1]; b = plte.data[k * 3 + 2];
+      a = trns && k < trns.data.length ? trns.data[k] : 255;
+    } else if (channels === 4) {
       r = pixels[p]; g = pixels[p + 1]; b = pixels[p + 2]; a = pixels[p + 3];
     } else if (channels === 3) {
       r = pixels[p]; g = pixels[p + 1]; b = pixels[p + 2]; a = 255;

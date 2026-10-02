@@ -4082,3 +4082,97 @@ students have the URL. Faster suites (parallel checks, fake clocks
 instead of real waits) would save more, and are not worth the work
 before the defense. Chosen by the proponent from three options; the
 rule is CLAUDE.md, Deployment, Testing a push.
+
+## Block 105: load once, play anywhere
+
+The proponent, after a presentation where the game would not load on a
+bad connection: why does a reload download everything again, why were
+pictures (the road) missing after the download, and something cleaner,
+more consistent and safe for a presentation. Planned in the session,
+approved whole (A to I).
+
+What was wrong, in the order it mattered:
+
+The Supabase library came from cdn.jsdelivr.net on every visit,
+unpinned (@2, whatever version was newest that day) and from another
+site, so the service worker never kept it. A slow or blocked CDN meant
+no game at all, guest play included, because every script after it
+reads sb. It is now js/vendor/supabase.js, version 2.117.2 (what @2
+served on 2 Oct 2026), with its MIT licence beside it, versioned like
+any script; supabaseClient.js carries a ?v= too. Updating it is a
+download and a version bump, done on purpose, never under us.
+
+The road was two downloads. css/style.css named ground-lupa.jpg, and
+the default backdrop street-01.jpg, without a ?v=, while the loader
+asked for and counted ground-lupa.jpg?v=37: a different URL to the
+browser. The bar reached 100% with the road still on its way, and the
+service worker treated the unversioned one as a page (network first),
+so it was never served from the phone. game.js now sets both through
+custom properties (cssAssetUrl, --ground-src, --skyline-src), and the
+stylesheet names no picture under assets/ at all; the harness reads the
+stylesheet to keep it that way.
+
+One visit did not keep the game. The worker starts after the first
+visit has loaded its pictures, so nothing of the first visit was kept
+and the second downloaded it all again; after that it kept only what a
+visit happened to ask for. keepGameOffline (game.js) asks for every
+file once the worker controls the page and the act's pictures are in:
+the page under both its names, every script and stylesheet on it, the
+fonts its stylesheet names, and every picture and sound in the asset
+manifest except the stills. Three at a time, each tried three times,
+the whole pass again 15 seconds later until nothing is missing. The
+page asks rather than the worker fetching by itself because a browser
+stops a worker that works for minutes and does not stop a page. The
+worker keeps each file by its existing rules, and now awaits the
+cache write, so the count the page takes is true the moment a request
+ends.
+
+Music was never kept: the browser plays audio with Range requests,
+which the worker passed to the network. It now cuts the part asked for
+out of the kept file (206 with Content-Range), and the whole file is
+kept by keepGameOffline, which asks for it without a Range.
+
+A crawling connection held the page. Network first waited for the
+network for as long as the browser cared to; it now waits
+NETWORK_WAIT_MS (3 seconds), then serves the kept page and keeps the
+network's answer for next time when it arrives. A navigation also
+finds the page kept under its other name (the folder or index.html).
+
+The title screen says how far it is (Game.offlineStatus, shell.js):
+"Sine-save ang laro sa telepono para sa offline: n%", then in green
+"Nakahanda na ang laro kahit walang internet." Red when the connection
+is gone before it was all kept. Hidden where there is no worker (the
+harness, http), since nothing can be said there. This is what a
+teacher looks at the day before a class.
+
+Guest play needs no network once the game is kept: it reads only the
+teacher's Talaan papers, without waiting and falling back quietly, so
+nothing was changed; the harness now plays as a guest with the network
+off. A student's login still needs it, since the save is in the
+database, and that is said in TRACKER.md rather than pretended away.
+
+The sheets were 16 MB of 32-bit PNGs written unfiltered (40,000 to
+130,000 colours each). _dev/tools/shrink-sprites.js rewrites each as a
+256-colour palette PNG, chosen per sheet (median cut, then six rounds
+of refinement in premultiplied colour), without dithering, which in
+the trials only added noise and bytes. Lossless refiltering alone saved
+about 14%; the palette saves about 75% (16.2 MB to 4.1 MB). Scored at
+a third of each sheet's size, about the size the game draws it, every
+sheet came out at 46 dB or better (the Sultan the lowest), and the
+Sultan and the horse were compared side by side at twice their size
+with no difference to see. The tool keeps any sheet below 40 dB in
+full colour instead. Edge pixels at or below measure-sprite.js's
+threshold (16) get their own sixteen colours, so a clear pixel stays
+clear, a faint one faint and a solid one solid: measured again, every
+sheet's contentTop, contentHeight, footX and frameBottoms are
+unchanged. The stills are not touched: they are the originals the rigs
+were traced on, and the game never draws them, so keepGameOffline
+leaves them out too. lib/png.js and measure-sprite.js read palette
+PNGs now, and lib/png.js filters the rows it writes. verify_new_scene.js
+fails while a sheet has not been through the tool, which is what keeps
+the next one an animate tool writes from shipping at full size.
+
+.claude/ (this computer's preview setup) is gitignored.
+
+game.js v100 (ASSET_VERSION 38), shell.js v22, style.css v60,
+js/vendor/supabase.js v1, supabaseClient.js v1.

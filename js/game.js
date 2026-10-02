@@ -248,12 +248,28 @@ function difficultyMultiplier(actNumber) {
 // Images had no version at all, so browsers and the GitHub Pages CDN
 // kept serving stale sprites indefinitely after a file was swapped.
 // Every image load goes through assetUrl() so one number refreshes them all.
-const ASSET_VERSION = 37;
+const ASSET_VERSION = 38;
 
 function assetUrl(path) {
   if (!path) return path;
   return path + (path.includes("?") ? "&" : "?") + "v=" + ASSET_VERSION;
 }
+
+// Block 105. A picture for a stylesheet to draw, through a custom
+// property: versioned like every other load, so it is the same URL the
+// loader waits for and the service worker keeps, and absolute, because a
+// url() inside a custom property is resolved against the stylesheet that
+// reads it (css/style.css, one folder down since Block 44), not against
+// this page. Nothing in css/style.css names a picture under assets/ any
+// more; the harness checks that.
+function cssAssetUrl(src) {
+  return `url("${new URL(assetUrl(src), document.baseURI).href}")`;
+}
+
+// The backdrop of a scene that names none of its own (Block 54), and the
+// road under every scene (Block 33).
+const DEFAULT_SKYLINE_SRC = "assets/backgrounds/act1/street-01.jpg";
+const GROUND_SRC = "assets/backgrounds/act1/ground-lupa.jpg";
 
 // --- Asset loader (Block 62) ------------------------------------------
 // Every picture the world draws is asked for through loadImage, which
@@ -828,15 +844,19 @@ function loadScene(sceneId) {
   // Block 80. A backdrop that is owed art (not in the manifest) is not
   // put into the stylesheet at all, where the browser would ask for it
   // and 404; buildSkylineTiles draws its placeholder instead.
-  if (scene.backdrop && scene.backdrop.src && assetExpected(scene.backdrop.src) !== false) {
-    loadImage(scene.backdrop.src); // Block 62, as the panels are
-    // Absolute, because a url() inside a custom property is resolved
-    // against the stylesheet that reads it (css/style.css, one folder
-    // down since Block 44), not against this page.
-    skylineEl.style.setProperty("--skyline-src",
-      `url("${new URL(assetUrl(scene.backdrop.src), document.baseURI).href}")`);
-  } else {
+  // Block 105. The default is set here too rather than left to the
+  // stylesheet, whose url() carried no ?v=: the picture drawn and the
+  // picture the loader waited for were two different downloads.
+  // An owed backdrop leaves the layer with no picture at all (the
+  // stylesheet names none), so nothing is drawn or asked for behind its
+  // placeholder wall.
+  const owed = scene.backdrop && scene.backdrop.src && assetExpected(scene.backdrop.src) === false;
+  const skylineSrc = scene.backdrop && scene.backdrop.src ? scene.backdrop.src : DEFAULT_SKYLINE_SRC;
+  if (owed) {
     skylineEl.style.removeProperty("--skyline-src");
+  } else {
+    loadImage(skylineSrc); // Block 62, as the panels are
+    skylineEl.style.setProperty("--skyline-src", cssAssetUrl(skylineSrc));
   }
   document
     .getElementById("ground-tiles")
@@ -1272,13 +1292,18 @@ function checkBackgroundImage(el, src, label) {
 
 checkBackgroundImage(
   document.getElementById("skyline"),
-  "assets/backgrounds/act1/street-01.jpg",
-  "assets/backgrounds/act1/street-01.jpg"
+  DEFAULT_SKYLINE_SRC,
+  DEFAULT_SKYLINE_SRC
 );
+// Block 105. The road is named here, versioned, rather than in the
+// stylesheet: the stylesheet's own url() was a second, unversioned
+// download that nothing waited for and the service worker never kept,
+// so on a slow connection the world opened with no road.
+document.getElementById("ground-tiles").style.setProperty("--ground-src", cssAssetUrl(GROUND_SRC));
 checkBackgroundImage(
   document.getElementById("ground-tiles"),
-  "assets/backgrounds/act1/ground-lupa.jpg",
-  "assets/backgrounds/act1/ground-lupa.jpg"
+  GROUND_SRC,
+  GROUND_SRC
 );
 
 // opts (Block 40), all optional:
@@ -7626,6 +7651,13 @@ window.Game = {
   whenAssetsSettled,
   retryAssets, // Block 78
 
+  // Block 105. How much of the game is kept on the phone, for the title
+  // screen: { supported, done, total, ready, online }.
+  offlineStatus,
+  onOfflineStatus(fn) {
+    if (typeof fn === "function") offlineListeners.push(fn);
+  },
+
   // Swaps the player's sprite sheets for an outfit's. Awaitable, because
   // the sheets have to load before the swap is visible.
   setOutfit,
@@ -7685,8 +7717,142 @@ window.Game = {
 if ("serviceWorker" in navigator &&
     (window.__SW_TEST || (location.protocol === "https:" && !window.__TEST))) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch((err) => {
+    navigator.serviceWorker.register("sw.js").then(() => {
+      offlineState.supported = true;
+      notifyOffline();
+      startKeepingGameOffline();
+    }).catch((err) => {
       console.warn("Service worker not registered:", err);
     });
   });
 }
+
+// --- The whole game kept on the phone (Block 105) ----------------------
+// The service worker keeps what it is asked for, and before this block it
+// was only ever asked for what a visit happened to load: the first visit
+// loaded everything before the worker was running, so none of it was
+// kept and the second visit downloaded it all again, and the music
+// (fetched in parts) was never kept at all. Now, once the worker controls
+// the page and the act's pictures are in, the page asks for every file
+// the game has, one after another, three at a time, skipping what is
+// already kept: the scripts and stylesheets on this page, the fonts the
+// stylesheet names, and every picture and sound in the asset manifest.
+// Each request passes through the worker, which keeps it by its usual
+// rules (sw.js). One complete visit on a good connection therefore leaves
+// the entire game on the phone, and the title screen says so (shell.js,
+// Game.offlineStatus).
+//
+// The page asks rather than the worker fetching on its own, because a
+// worker that works for minutes is stopped by the browser, and a page is
+// not. A file that fails is tried twice more and then left; the whole
+// pass runs again OFFLINE_RETRY_MS later until nothing is missing.
+const OFFLINE_CACHE = "macario-v1"; // sw.js, CACHE
+const OFFLINE_WORKERS = 3;
+const OFFLINE_RETRY_MS = 15000;
+const OFFLINE_FILE = /\.(png|jpe?g|webp|mp3|wav|ogg|m4a)$/i;
+const offlineState = { supported: false, done: 0, total: 0, ready: false, running: false };
+const offlineListeners = [];
+
+function offlineStatus() {
+  const { supported, done, total, ready } = offlineState;
+  return { supported, done, total, ready, online: navigator.onLine !== false };
+}
+
+function notifyOffline() {
+  const status = offlineStatus();
+  offlineListeners.forEach((fn) => {
+    try { fn(status); } catch (err) { console.error(err); }
+  });
+}
+
+function offlineFileList() {
+  const urls = new Set();
+  const add = (u, base) => {
+    try {
+      const x = new URL(u, base || document.baseURI);
+      if (x.origin !== location.origin) return;
+      x.hash = "";
+      urls.add(x.href);
+    } catch (err) { /* not a URL */ }
+  };
+  // The page under both of its names, for a phone that opens either.
+  add("./");
+  add("index.html");
+  document.querySelectorAll("script[src]").forEach((s) => add(s.src));
+  document.querySelectorAll('link[rel="stylesheet"][href]').forEach((l) => add(l.href));
+  // The fonts, by the URL the stylesheet asks for them with.
+  [...document.styleSheets].forEach((sheet) => {
+    let rules = null;
+    try { rules = sheet.cssRules; } catch (err) { return; }
+    [...(rules || [])].forEach((rule) => {
+      if (!(typeof CSSFontFaceRule !== "undefined" && rule instanceof CSSFontFaceRule)) return;
+      const src = rule.style.getPropertyValue("src") || "";
+      for (const m of src.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/g)) add(m[1], sheet.href);
+    });
+  });
+  // Not the stills (<name>-still.png): the originals the animate tools cut
+  // the sheets from, which the game never draws.
+  (window.ASSET_MANIFEST || []).forEach((f) => {
+    if (OFFLINE_FILE.test(f) && !/-still\.png$/i.test(f)) add(assetUrl(f));
+  });
+  return [...urls];
+}
+
+async function countKept(list) {
+  const cache = await caches.open(OFFLINE_CACHE);
+  const kept = new Set((await cache.keys()).map((r) => r.url));
+  return list.filter((u) => kept.has(u)).length;
+}
+
+async function keepGameOffline() {
+  if (offlineState.running || offlineState.ready) return;
+  if (typeof caches === "undefined" || !navigator.serviceWorker.controller) return;
+  offlineState.running = true;
+  try {
+    const list = offlineFileList();
+    const cache = await caches.open(OFFLINE_CACHE);
+    const kept = new Set((await cache.keys()).map((r) => r.url));
+    const missing = list.filter((u) => !kept.has(u));
+    offlineState.total = list.length;
+    offlineState.done = list.length - missing.length;
+    notifyOffline();
+    let next = 0;
+    const worker = async () => {
+      while (next < missing.length) {
+        const url = missing[next++];
+        for (let tries = 0; tries < 3; tries++) {
+          try {
+            const res = await fetch(url);
+            // Read to the end, so the whole file has passed through the
+            // worker; the bytes themselves are not wanted here.
+            await res.arrayBuffer();
+            if (res.ok) { offlineState.done++; notifyOffline(); break; }
+          } catch (err) { /* the connection; tried again below */ }
+          await new Promise((r) => setTimeout(r, 1500 * (tries + 1)));
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: OFFLINE_WORKERS }, worker));
+    // Counted again from the cache itself, which is the only thing that
+    // matters with the network gone.
+    offlineState.done = await countKept(list);
+    offlineState.ready = offlineState.done >= offlineState.total;
+  } catch (err) {
+    console.warn("Keeping the game on the phone stopped:", err);
+  }
+  offlineState.running = false;
+  notifyOffline();
+  if (!offlineState.ready) setTimeout(keepGameOffline, OFFLINE_RETRY_MS);
+}
+
+// After the worker controls the page (on a first visit, the moment it
+// claims it) and after the act's pictures are in, so the files a student
+// needs to start never queue behind the ones for later.
+function startKeepingGameOffline() {
+  const go = () => whenAssetsSettled().then(keepGameOffline);
+  if (navigator.serviceWorker.controller) { go(); return; }
+  navigator.serviceWorker.addEventListener("controllerchange", go, { once: true });
+}
+
+window.addEventListener("online", () => { notifyOffline(); keepGameOffline(); });
+window.addEventListener("offline", notifyOffline);

@@ -202,7 +202,7 @@ const newPage = async (browser, test) => {
   page.on("response", (res) => { if (res.status() === 404) console.log("  404: " + res.url()); });
   await page.route("**/supabaseClient.js*", (route) =>
     route.fulfill({ body: STUB, contentType: "text/javascript" }));
-  await page.route("**/cdn.jsdelivr.net/**", (route) =>
+  await page.route("**/js/vendor/supabase.js*", (route) =>
     route.fulfill({ body: "", contentType: "text/javascript" }));
   await page.addInitScript((s) => { window.__TEST = s; }, test);
   await page.goto("http://localhost:" + PORT + "/index.html");
@@ -526,6 +526,15 @@ const artDrift = () => {
   ok("js/asset-manifest.js lists exactly the files in assets/ (" + onDisk.length + ")",
      JSON.stringify(onDisk) === JSON.stringify(listedAssets),
      { notListed: onDisk.filter((x) => !listedAssets.includes(x)), gone: listedAssets.filter((x) => !onDisk.includes(x)) });
+
+  // Block 105. Every sheet a quarter of its size: a sheet written by an
+  // animate tool, or a picture from the artist, goes through
+  // shrink-sprites.js before it ships. The stills are the rigs' originals
+  // and are left as they came.
+  const { decodePng } = require(path.join(ROOT, "_dev", "tools", "lib", "png.js"));
+  const unshrunk = onDisk.filter((f) => /\.png$/i.test(f) && !/-still\.png$/i.test(f))
+    .filter((f) => !decodePng(path.join(ROOT, f)).shrunk);
+  ok("every sheet in assets/ has been through shrink-sprites.js", unshrunk.length === 0, unshrunk);
 
   console.log("\nSTORY.md");
   const drift = storyDrift();

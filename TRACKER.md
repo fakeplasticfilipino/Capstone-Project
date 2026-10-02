@@ -9,8 +9,13 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 1 Oct 2026, after Block 104, the end of the session.
-The day's work, newest first: Block 104, the suites run on GitHub
+Last updated: 2 Oct 2026, after Block 105: the whole game kept on the
+phone after one visit (so a reload downloads nothing and a guest plays
+with no internet), the road drawn from the picture the loader waited
+for, the Supabase library in the repository instead of a CDN, and every
+sheet a quarter of its size (25 MB of assets down to about 13, the
+part the game downloads about 11, of which 5 is sound). Not yet seen on a device (Next
+action 1). Before that, 1 Oct 2026: Block 104, the suites run on GitHub
 Actions on every push (first run green, 12 minutes); Block 103, the horse and the sewing
 table away at night; Block 102, the pamphlet three's art, an easier
 barber, an empty night street; Block 101, the proponent's seven
@@ -21,8 +26,8 @@ Block 97, one tool and a rig per character for animating any still;
 Block 96, the big siga from the artist's still. Blocks 90 to 97 were
 tested on the phone that day with no fault reported; Blocks 98 to 103
 have not been seen on a device yet (Next action 1). Earlier blocks:
-the Blocks list below, and DECISIONS.md. test.js 767 passed, 0 failed;
-verify_new_scene.js 242 passed, 0 failed, locally and on CI. Everything
+the Blocks list below, and DECISIONS.md. test.js 774 passed, 0 failed;
+verify_new_scene.js 243 passed, 0 failed, locally. Everything
 is committed and pushed to main.
 
 A new session, on any device: git pull first; read CLAUDE.md, then
@@ -52,7 +57,12 @@ full reset, which needs schema v5); the Talaan (the teacher's papers on
 the road); and the teacher dashboard (roster, questions editor, Talaan
 papers). The loader waits for every picture that exists, fetches the
 whole act on the title screen, and never lets a student in with art
-missing; a service worker keeps every file on the phone.
+missing; a service worker keeps every file on the phone, and since Block
+105 the page hands it the whole game after the first visit, so the next
+opens with no download, a guest can play with no internet, and the
+title screen says when the phone is ready ("Nakahanda na ang laro
+kahit walang internet."). A student's login and save still need the
+internet.
 
 Act I is the only act with content, rewritten in Block 52 against the
 proponents' script and built forward since, and since Block 80 it has
@@ -152,12 +162,13 @@ Next action 1 says what to look for.
 
 Current versions, which index.html must match on every push:
 
-    css/style.css v59    js/game.js v99       js/shell.js v21
+    css/style.css v60    js/game.js v100      js/shell.js v22
     js/inventory.js v11  js/acts.js v14       js/assessment.js v5
+    js/vendor/supabase.js v1 (supabase-js 2.117.2)  js/supabaseClient.js v1
     content/act1.js v74  content/items.js v13  content/act2-4.js v1
     content/enemies.js v6   content/questions.js v1
     js/asset-manifest.js v9 (bumped by make-asset-manifest.js)
-    ASSET_VERSION 37 (in js/game.js)
+    ASSET_VERSION 38 (in js/game.js)
     sw.js carries no version: the browser checks it on every visit
     teacher.html: css/teacher.css v4, js/teacher.js v5,
       js/teacher-questions.js v2, js/teacher-talaan.js v2
@@ -172,6 +183,24 @@ played from the start. Write the block's own checks here (what to see,
 and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026. Open:
+
+    Block 105, loading. On the phone, in a private tab on wifi: the
+      title screen shows "Sine-save ang laro sa telepono para sa
+      offline: n%" climbing, then in green "Nakahanda na ang laro kahit
+      walang internet." (a minute or two on a slow connection). Play a
+      little: the road is there from the first frame, and every
+      character looks exactly as before (the sheets are a quarter of
+      the size; nobody should be able to tell). Then turn on airplane
+      mode, reload: the game opens at once, the line is still green,
+      Maglaro bilang Bisita goes into the street with every picture,
+      the road and the music. Then turn wifi back on and reload: it
+      opens without a download (no loading bar to speak of). Failure:
+      the line stuck below 100% on good wifi, a blank road, a dashed
+      box, a character with blotchy colour or a ragged edge, no music
+      offline, or a blank page in airplane mode. The teacher dashboard
+      still logs in (it uses the same library, now from the repository).
+      Note that a phone which never finished the first visit is not
+      ready; the line is what tells you.
 
     Block 98, six characters. The opening: all three siga are the
       artist's, the leader in a salakot and shawl, the big one in a red
@@ -295,6 +324,17 @@ commits; older README versions), and every commit carries the author
 name and email. Only a history rewrite and a force push purges them, and
 the GitHub username stays in the repository's URL either way. The
 proponent has not yet decided whether to rewrite the history.
+
+## Loading list (Block 105)
+
+Agreed 2 Oct 2026, after a presentation failed to load: nine items, all
+(COMPLETE). A, the Supabase library in the repository; B, the road and
+the default backdrop drawn from the versioned picture; C, the whole game
+kept on the phone after one visit; D, music and sounds served from the
+phone; E, three seconds for a crawling connection; F, the title screen's
+line; G, a guest with no internet (checked, nothing to change); H, the
+sheets shrunk to a quarter; I, .claude/ gitignored. Why: DECISIONS.md,
+Block 105.
 
 ## Act I polish list (Block 93)
 
@@ -439,13 +479,13 @@ The paper specifies ten.
 
 | Requirement | Status |
 |---|---|
-| Performance | (BUILT) No build step, no framework, plain script tags. The loop writes to the page only on a change; the phone was confirmed smooth after Block 36. Pictures are JPEG where they can be; everything is kept on the phone after the first visit |
+| Performance | (BUILT) No build step, no framework, plain script tags. The loop writes to the page only on a change; the phone was confirmed smooth after Block 36. Pictures are JPEG where they can be and sheets 256-colour PNGs; the whole game is kept on the phone after the first visit |
 | Reliability | (BUILT) Debounced save, ten second autosave, beforeunload and logout flushes. A loader that retries every picture until it arrives |
 | Usability | (BUILT) Tagalog throughout the game; the teacher dashboard in English. Touch targets 44px on glass, icons beside every label, a three-step text size, a rotate notice in portrait. No guide arrow, by decision |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
-| Online Functionality | (BUILT) |
+| Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (767 and 242 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (774 and 243 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -592,6 +632,10 @@ machine, the assessment module.
     103 the horse and the sewing table away at night too
     104 GitHub Actions runs both suites on every push; a full local run
         only before a release to students
+    105 load once, play anywhere: the whole game kept on the phone and
+        said on the title screen, music kept, a crawling connection
+        given 3 seconds, the road versioned, the Supabase library in the
+        repository, the sheets shrunk to a quarter (shrink-sprites.js)
 
 ## Blocks remaining
 
@@ -637,11 +681,17 @@ migration) and record it here. Never add a study account. (NOT STARTED)
 Art still owed: ART.md. (KNOWN)
 
 Loading on a slow connection: fixed in Blocks 62 and 78 (a student
-cannot go in with art missing); a tester got in with sprites missing
-before Block 78. Not yet seen on the phone since. One limit remains: a
-picture replaced under the same name and fetched in the minute a push
-is still deploying can be kept under the new ?v=; bumping ASSET_VERSION
-again fixes it. (FIX BUILT, NOT SEEN ON DEVICE)
+cannot go in with art missing), and in Block 105 (the game kept whole on
+the phone after one visit, the road no longer a second download that
+nothing waited for, the Supabase library no longer from a CDN, the
+sheets a quarter of the size, and a crawling connection given three
+seconds before the kept page opens). A presentation failed to load on a
+bad connection before Block 105. Not yet seen on the phone since. One
+limit remains: a picture replaced under the same name and fetched in the
+minute a push is still deploying can be kept under the new ?v=; bumping
+ASSET_VERSION again fixes it. Before a class or a presentation, open the
+game once on good wifi on every device and wait for the green line.
+(FIX BUILT, NOT SEEN ON DEVICE)
 
 A phone that kept an old index.html keeps asking for old files. Since
 Block 62 the service worker asks the network for the page first, which
@@ -707,16 +757,17 @@ it wanted if it is still missing. A Playwright update needs it again.
 The suites take about 7 minutes (verify_new_scene.js) and 10 (test.js)
 there; run them one after the other, not at once.
 
-test.js (767 checks) drives the shipping index.html with a stubbed
+test.js (774 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (242 checks) drives the real
+what is covered. verify_new_scene.js (243 checks) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is
 in STORY.md, that ART.md's Owed list matches the disk, and that the
-asset manifest matches assets/ and every picture in it opens. Anything
+asset manifest matches assets/ and every picture in it opens, and that
+every sheet has been through shrink-sprites.js. Anything
 other than "0 failed" is a regression, with one caution learned on
 30 Sep 2026: on a busy machine verify_new_scene.js has twice failed a
 timing check (the pamphlet guard catch) or lost a page ("Page crashed")
@@ -724,7 +775,7 @@ once, and passed on the next run; rerun before believing either.
 test.js did it once on 1 Oct 2026 ("after lighting up first, so the
 swing is readable": an enemy already mid-dash when the check starts
 watching for its red !), and passed on the rerun. Both never touch the
-live project. Both are green as of Block 104, locally and on CI. The guard-catch flake was
+live project. Both are green as of Block 105, locally. The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check

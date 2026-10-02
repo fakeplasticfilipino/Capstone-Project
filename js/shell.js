@@ -78,6 +78,7 @@ const Shell = {
 
     this._watchOrientation();
     this._watchAssets();
+    this._watchOffline();
 
     this._showPanel("title");
     this.el.overlay.classList.remove("hidden");
@@ -510,6 +511,29 @@ const Shell = {
     };
     Game.onAssetProgress(draw);
     draw(Game.assetProgress());
+  },
+
+  // Block 105. The title screen's line on whether the whole game is kept
+  // on this phone (game.js, keepGameOffline). Hidden where there is no
+  // service worker, since nothing is kept there and nothing can be said.
+  _watchOffline() {
+    const line = document.getElementById("shell-offline");
+    if (!line || !window.Game || !Game.onOfflineStatus) return;
+    const draw = (s) => {
+      line.classList.toggle("hidden", !s.supported);
+      if (!s.supported) return;
+      const pct = s.total ? Math.floor((s.done / s.total) * 100) : 0;
+      let text;
+      if (s.ready) text = "Nakahanda na ang laro kahit walang internet.";
+      else if (!s.online) text = "Walang internet. Hindi pa buo ang laro sa teleponong ito (" + pct + "%).";
+      else if (!s.total) text = "Inihahanda ang laro para sa offline...";
+      else text = "Sine-save ang laro sa telepono para sa offline: " + pct + "%";
+      line.textContent = text;
+      line.classList.toggle("ok", s.ready);
+      line.classList.toggle("warn", !s.ready && !s.online);
+    };
+    Game.onOfflineStatus(draw);
+    draw(Game.offlineStatus());
   },
 
   // -----------------------------------------------------------

@@ -206,7 +206,8 @@ html, body {
    a frame, and checkBackgroundImage() still has a background to replace
    with its labelled placeholder if the file is missing. */
 #skyline {
-  --skyline-src: url("../assets/backgrounds/act1/street-01.jpg"); /* Block 54 */
+  /* --skyline-src is set by game.js, versioned (Block 105): street-01.jpg
+     until a scene names its own picture (Block 54). */
   position: absolute;
   left: 0;
   bottom: 0;
@@ -355,7 +356,7 @@ html, body {
       rgba(0, 0, 0, 0) 45%,
       rgba(0, 0, 0, 0.95) 100%
     ),
-    url("../assets/backgrounds/act1/ground-lupa.jpg");
+    var(--ground-src, none); /* set by game.js, versioned (Block 105) */
   background-repeat: no-repeat, repeat;
   background-size: 100% 100%, 120px 120px;
 }
@@ -3558,6 +3559,27 @@ body.text-lg .intertitle-line { font-size: 36px; }
 
 #shell-loading .shell-loadbar-full {
   opacity: 1;
+}
+
+/* Block 105. Whether the whole game is kept on the phone (shell.js,
+   _watchOffline): cream while it is being saved, green once it is all
+   there, red when the connection is gone before it was. */
+.shell-offline {
+  font-family: var(--px-font);
+  font-size: 15px;
+  line-height: 1.3;
+  color: var(--c-cream-dim, var(--c-cream));
+  text-align: center;
+  margin: 0 auto 8px;
+  max-width: 320px;
+}
+
+.shell-offline.ok {
+  color: #7bc47f;
+}
+
+.shell-offline.warn {
+  color: #e57373;
 }
 
 /* =============================================================

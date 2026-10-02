@@ -183,7 +183,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     // maintaining a parallel copy of the page.
     await page.route("**/supabaseClient.js*", (route) =>
       route.fulfill({ body: STUB, contentType: "text/javascript" }));
-    await page.route("**/cdn.jsdelivr.net/**", (route) =>
+    await page.route("**/js/vendor/supabase.js*", (route) =>
       route.fulfill({ body: "", contentType: "text/javascript" }));
 
     // Block 68. The game now carries its own questions
@@ -3565,7 +3565,10 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("a doorway with toX and toFacing lands there, not at startX",
        back.room === "tondo" && back.posX === 700 && back.facing === -1, back);
-    ok("leaving restores the shared backdrop, tiled again", back.src === "" && back.tiles > 1, back);
+    // Block 105: the shared picture is set, versioned, rather than left
+    // to the stylesheet's unversioned url().
+    ok("leaving restores the shared backdrop, tiled again",
+       /street-01\.jpg\?v=\d+/.test(back.src) && back.tiles > 1, back);
     ok("and the ground", back.ground !== "none", back);
     await ctx.close();
   }
@@ -4238,7 +4241,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
     await page.route("**/supabaseClient.js*", (route) =>
       route.fulfill({ body: STUB, contentType: "text/javascript" }));
-    await page.route("**/cdn.jsdelivr.net/**", (route) =>
+    await page.route("**/js/vendor/supabase.js*", (route) =>
       route.fulfill({ body: "", contentType: "text/javascript" }));
     await page.addInitScript((st) => { window.__TEST = st; }, seed);
     await page.goto("http://localhost:" + PORT + "/teacher.html");
@@ -4308,7 +4311,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     const spage = await sctx.newPage();
     await spage.route("**/supabaseClient.js*", (route) =>
       route.fulfill({ body: STUB, contentType: "text/javascript" }));
-    await spage.route("**/cdn.jsdelivr.net/**", (route) =>
+    await spage.route("**/js/vendor/supabase.js*", (route) =>
       route.fulfill({ body: "", contentType: "text/javascript" }));
     await spage.addInitScript((st) => { window.__TEST = st; },
       Object.assign({}, seed, { session: { user: { id: "s1" } } }));
@@ -5465,7 +5468,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
     await page.route("**/supabaseClient.js*", (route) =>
       route.fulfill({ body: STUB, contentType: "text/javascript" }));
-    await page.route("**/cdn.jsdelivr.net/**", (route) =>
+    await page.route("**/js/vendor/supabase.js*", (route) =>
       route.fulfill({ body: "", contentType: "text/javascript" }));
     await page.addInitScript((st) => { window.__TEST = st; }, seed);
     await page.goto("http://localhost:" + PORT + "/teacher.html");
@@ -5714,7 +5717,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
     await page.route("**/supabaseClient.js*", (route) =>
       route.fulfill({ body: STUB, contentType: "text/javascript" }));
-    await page.route("**/cdn.jsdelivr.net/**", (route) =>
+    await page.route("**/js/vendor/supabase.js*", (route) =>
       route.fulfill({ body: "", contentType: "text/javascript" }));
     await page.addInitScript((st) => { window.__TEST = st; }, seed);
     await page.goto("http://localhost:" + PORT + "/teacher.html");
@@ -5769,7 +5772,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
       const target = useCtxRoutes ? ctx : page;
       await target.route("**/supabaseClient.js*", (r) => r.fulfill({ body: STUB, contentType: "text/javascript" }));
-      await target.route("**/cdn.jsdelivr.net/**", (r) => r.fulfill({ body: "", contentType: "text/javascript" }));
+      await target.route("**/js/vendor/supabase.js*", (r) => r.fulfill({ body: "", contentType: "text/javascript" }));
       for (const [pattern, handler] of routes || []) await target.route(pattern, handler);
       await page.addInitScript((s) => { Object.assign(window, s); }, Object.assign({ __TEST: { session: null } }, init || {}));
       // Not "load", which waits for every picture: the checks below have
@@ -5957,6 +5960,58 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("storing a new version of a file drops the older one",
        c2.length === 1 && /v=\d\d+$/.test(c2[0]), c2);
+
+    // Block 105. The whole game kept after one visit, and said so.
+    for (let i = 0; i < 600 && !(await sw.page.evaluate(() => Game.offlineStatus().ready)); i++) {
+      await sw.page.waitForTimeout(100);
+    }
+    const k1 = await sw.page.evaluate(async () => {
+      const keys = new Set((await (await caches.open("macario-v1")).keys()).map((r) => r.url));
+      const want = (window.ASSET_MANIFEST || []).filter((f) => /\.(png|jpe?g|mp3|wav)$/i.test(f) && !/-still\.png$/.test(f))
+        .map((f) => new URL(assetUrl(f), document.baseURI).href);
+      const scripts = [...document.querySelectorAll("script[src]")].map((s) => s.src);
+      const line = document.getElementById("shell-offline");
+      return {
+        status: Game.offlineStatus(),
+        missing: want.concat(scripts).filter((u) => !keys.has(u)).map((u) => u.replace(location.origin, "")),
+        pictures: want.length,
+        vendor: [...keys].some((u) => /js\/vendor\/supabase\.js\?v=\d+$/.test(u)),
+        fonts: [...keys].filter((u) => /\.woff2\?v=\d+$/.test(u)).length,
+        page: keys.has(new URL("./", location.href).href),
+        line: line && !line.classList.contains("hidden") && line.classList.contains("ok") ? line.textContent : null,
+      };
+    });
+    ok("after one visit every picture, sound, script, font and the page itself are kept on the phone",
+       k1.status.ready && k1.missing.length === 0 && k1.pictures > 50 && k1.vendor && k1.fonts === 2 && k1.page,
+       Object.assign({}, k1, { missing: k1.missing.slice(0, 8) }));
+    ok("the title screen says the game is ready with no internet",
+       k1.line === "Nakahanda na ang laro kahit walang internet.", k1.line);
+
+    // The road and the default backdrop are drawn from the very URL the
+    // loader waited for and the worker kept; the stylesheet names none.
+    const road = await sw.page.evaluate(async () => {
+      const css = await (await fetch(document.querySelector('link[rel="stylesheet"]').href)).text();
+      return {
+        ground: getComputedStyle(document.getElementById("ground-tiles")).backgroundImage,
+        cssPictures: (css.match(/url\(["']?\.\.\/assets\/[^)]*\.(png|jpe?g)/g) || []),
+      };
+    });
+    ok("the road is drawn from the versioned picture, and the stylesheet names no picture of its own",
+       /ground-lupa\.jpg\?v=\d+/.test(road.ground) && road.cssPictures.length === 0, road);
+
+    // A connection that is up but crawling: the page waits about three
+    // seconds for the network and then opens from the phone.
+    await sw.ctx.route("**/index.html*", async (route) => {
+      await new Promise((r) => setTimeout(r, 20000));
+      route.continue().catch(() => {});
+    });
+    const t0 = Date.now();
+    await sw.page.reload({ waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
+    const crawl = { ms: Date.now() - t0, game: await sw.page.evaluate(() => typeof window.Game === "object").catch(() => false) };
+    ok("on a crawling connection the page opens from the phone after a few seconds, not a minute",
+       crawl.game && crawl.ms < 8000, crawl);
+    await sw.ctx.unroute("**/index.html*");
+
     await sw.ctx.setOffline(true);
     await sw.page.reload();
     await sw.page.waitForTimeout(1500);
@@ -5967,7 +6022,51 @@ const visible = (page, sel) => page.evaluate((s) => {
     }));
     ok("with the connection gone, the page, the engine and its pictures still open from the phone",
        off.game && off.title && off.street, off);
+
+    // Music and sounds are played in parts (Range); with the connection
+    // gone, the parts are cut from the kept file.
+    const part = await sw.page.evaluate(async () => {
+      const url = assetUrl("assets/audio/music/calm.mp3");
+      const res = await fetch(url, { headers: { Range: "bytes=100-199" } });
+      const tail = await fetch(url, { headers: { Range: "bytes=-10" } });
+      return { status: res.status, bytes: (await res.arrayBuffer()).byteLength,
+               range: res.headers.get("Content-Range"), tail: tail.status,
+               tailBytes: (await tail.arrayBuffer()).byteLength };
+    });
+    ok("a part of a kept sound is answered from the phone, the part asked for",
+       part.status === 206 && part.bytes === 100 && /^bytes 100-199\/\d+$/.test(part.range) &&
+       part.tail === 206 && part.tailBytes === 10, part);
+
+    // A presentation with no internet: play as a guest, into the world,
+    // every picture there and the road drawn.
+    await sw.page.click("#shell-guest");
+    for (let i = 0; i < 100 && (await sw.page.evaluate(() => Shell.state)) !== "playing"; i++) await sw.page.waitForTimeout(100);
+    const guest = await sw.page.evaluate(() => ({
+      shell: Shell.state,
+      progress: Game.assetProgress(),
+      failed: [...assetLoads.entries()].filter(([, e]) => e.state !== "ok").map(([u, e]) => u + " " + e.state)
+        .filter((s) => !/ missing$/.test(s)),
+      boxes: [...document.querySelectorAll(".sprite-placeholder")].map((el) => el.textContent)
+        .filter((t) => !/silya-barbero|tahian|pulungan/.test(t)),
+      line: document.getElementById("shell-offline").textContent,
+    }));
+    ok("with no internet a guest goes into the world with every picture there",
+       guest.shell === "playing" && guest.progress.done === guest.progress.total &&
+       guest.failed.length === 0 && guest.boxes.length === 0, guest);
     await sw.ctx.close();
+
+    // Block 105. Nothing the game loads comes from another site but
+    // Supabase itself: the library is the site's own file now.
+    const hosts = new Set();
+    const far = await rawPage([]);
+    far.page.on("request", (req) => {
+      const u = new URL(req.url());
+      if (u.hostname !== "localhost" && !/\.supabase\.co$/.test(u.hostname)) hosts.add(u.hostname);
+    });
+    await far.page.reload();
+    await far.page.waitForTimeout(2500);
+    ok("the game asks nothing of any other site", hosts.size === 0, [...hosts]);
+    await far.ctx.close();
   }
 
   console.log("\nBL. Guards take blows the way the enemies do (Block 75)");

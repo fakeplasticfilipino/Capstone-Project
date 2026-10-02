@@ -20,7 +20,9 @@ node _dev/tools/make-asset-manifest.js (until it is in the manifest the
 game treats it as owed and never asks for it), measure it
 (node _dev/tools/measure-sprite.js), look at it with the game's numbers
 (node _dev/tools/preview-sheet.js), put the numbers into the content,
-bump ASSET_VERSION in js/game.js, and move its line out of Owed.
+shrink it (node _dev/tools/shrink-sprites.js, Block 105: a palette PNG
+a quarter of the size, looking and measuring the same), bump
+ASSET_VERSION in js/game.js, and move its line out of Owed.
 
 Ask the artist for PNG exports with transparency, side on, facing
 right, in the same painted style and at about the same size as

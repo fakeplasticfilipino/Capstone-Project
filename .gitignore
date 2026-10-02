@@ -25,3 +25,7 @@ package-lock.json
 # Previews and screenshots produced while working with an AI assistant.
 # Never loaded by the game; the repository is public, so they stay local.
 Claude outputs/
+
+# Claude Code settings for this computer (the preview server it
+# starts, permissions). Machine-local, so not part of the repository.
+.claude/

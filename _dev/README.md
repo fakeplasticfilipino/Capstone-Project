@@ -92,6 +92,21 @@ look with this before trusting the numbers.
 Both tools, and animate-bantay.js, read and write PNGs through
 _dev/tools/lib/png.js: plain Node, no install.
 
+## Shrinking sheets (Block 105)
+
+Every sheet in assets/ is a 256-colour palette PNG, about a quarter of
+the size of the full-colour PNG an animate tool or the artist gives:
+
+    node _dev/tools/shrink-sprites.js           every sheet not yet shrunk
+    node _dev/tools/shrink-sprites.js --check   list them, change nothing
+
+It checks each result before keeping it: within 40 dB of the original
+at about the size the game draws it (else the sheet stays full colour),
+and every pixel still clear, faint or solid as it was, so the numbers
+measure-sprite.js gives do not change. The stills (<name>-still.png)
+are left alone. verify_new_scene.js fails while a sheet has not been
+through it. Run make-asset-manifest.js and bump ASSET_VERSION after.
+
 ## Adding checks
 
 Each block builds a page with newPage(seed), where seed becomes
