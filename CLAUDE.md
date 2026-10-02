@@ -190,7 +190,9 @@ off the repository.
                                made from it by animate-bantay.js
                                (Blocks 73, 75)
       sprites/scenery/         things on the street that are used, not
-                               talked to (empty)
+                               talked to: the sewing table and the
+                               barber's chair (generated stand-ins,
+                               Block 109)
       backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
                                ground-lupa.jpg
       items/                   inventory and shop tile pictures
@@ -2055,6 +2057,8 @@ look, by system:
     bodies placed by translate,           Block 107
       profile.js
     starting from a point in the story    Block 108 (devJumps, ?dev=1)
+    generated stand-in art                Block 109 (the table and the
+                                          chair; why the room was not)
 
 ## Pitfalls
 

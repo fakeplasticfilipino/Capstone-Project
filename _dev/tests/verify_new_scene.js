@@ -1,5 +1,5 @@
-// =============================================================
-// MACARIO — _dev/tests/verify_new_scene.js
+﻿// =============================================================
+// MACARIO â€” _dev/tests/verify_new_scene.js
 //
 // Drives the REAL content/act1.js and content/items.js (no fixture
 // routes), the way _dev/tests/test.js Section A does, through the whole
@@ -794,7 +794,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   ok("beside the chair, the button reads Gupitin, with scissors", await page.evaluate(() =>
     document.querySelector("#btn-interact .lbl").textContent === "Gupitin" &&
     document.querySelector("#btn-interact .ico use").getAttribute("href") === "#i-scissors" &&
-    /silya-barbero.png/.test(document.getElementById("npc-silya").textContent)));
+    [...document.querySelectorAll("#npc-silya, #npc-silya *")].some((e) => /silya-barbero\.png/.test(e.style.backgroundImage)) &&
+    !/silya-barbero\.png/.test(document.getElementById("npc-silya").textContent))); // Block 109: the picture, not the box
   // Block 102. Each round right pays 4 to 7 at random, up to 20 from him;
   // a perfect run (five) is always all of it.
   ok("the barber pays 4 to 7 a round right, and five right is always his 20 (Block 102)", await page.evaluate(() => {
@@ -867,7 +868,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   ok("beside the sewing, the button reads Manahi, with a needle, and the table is seen (Block 93)", await page.evaluate(() =>
     document.querySelector("#btn-interact .lbl").textContent === "Manahi" &&
     document.querySelector("#btn-interact .ico use").getAttribute("href") === "#i-needle" &&
-    /tahian.png/.test(document.getElementById("npc-tahian").textContent)));
+    [...document.querySelectorAll("#npc-tahian, #npc-tahian *")].some((e) => /tahian\.png/.test(e.style.backgroundImage)) &&
+    !/tahian\.png/.test(document.getElementById("npc-tahian").textContent))); // Block 109: the picture, not the box
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
   ok("E opens the same game with the sewing's words, played by holding instead", await page.evaluate(() =>

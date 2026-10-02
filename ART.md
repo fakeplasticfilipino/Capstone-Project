@@ -1,4 +1,4 @@
-# ART.md
+﻿# ART.md
 
 What art the game still needs. A picture the game asks for that does
 not exist is drawn as the dashed placeholder box with its file name on
@@ -37,7 +37,10 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 1 Oct 2026, Block 102 (three owed: the proponent's
+Last updated: 2 Oct 2026, Block 109 (one owed: the sewing table and
+the barber's chair generated as stand-ins; a generated pulungan tried
+and dropped, its furniture far too big beside the people). Before that,
+1 Oct 2026, Block 102 (three owed: the proponent's
 stills of the three who take the pamphlets arrived, used as they are,
 facing the front). Before that, Block 101 (six owed: the proponent's own
 stills of Nanay, the Mabalasig, the Barbero, the Kutsero, Maryam, the
@@ -66,17 +69,6 @@ pulungan).
 
 Named by the game and missing. Each is a placeholder box today.
 
-    assets/sprites/scenery/silya-barbero.png
-        The Barbero's chair, beside him (x 5440), where Macario plays the
-        barber's game (Block 94). A still is enough, drawn about 90px tall
-        in the game (displayHeight), like the tahian. (NOT STARTED)
-
-    assets/sprites/scenery/tahian.png
-        The Mananahi's sewing table (tahian), beside her on the street
-        (x 6540), where Macario sews (Block 89). A still is enough,
-        about 90px tall in the game against Macario's 134; it is drawn
-        at that height (displayHeight). (NOT STARTED)
-
     assets/backgrounds/act1/pulungan.jpg
         The Katipunan's secret room, where the oath is taken (Block 80).
         The histories describe a dim room hung with black curtains, a
@@ -85,7 +77,12 @@ Named by the game and missing. Each is a placeholder box today.
         (entablado-inside.jpg is the model for its shape); a floor of its
         own if the painting has one, and the content then sets
         ground: false. Until it arrives the room is a dark wall with the
-        file name on it. (NOT STARTED)
+        file name on it. Mind the scale: the picture is stretched to the
+        width of the screen, so furniture in it must be drawn small, a
+        table about waist high against people 134px tall on a 360px-high
+        phone screen. Block 109 tried a generated room and dropped it:
+        its table and skull came out four times too big beside the
+        people. (NOT STARTED)
 
 ## Stand-ins
 
@@ -113,6 +110,15 @@ forgotten.
     The bantay's walk, shot and flinch (bantay-walk, -shoot, -hit).
         Made from the artist's one still by _dev/tools/animate-bantay.js
         (Blocks 73, 75); the still itself (bantay.png) is the artist's.
+    The Mananahi's sewing table (assets/sprites/scenery/tahian.png) and
+        the Barbero's chair (assets/sprites/scenery/silya-barbero.png).
+        Block 109: generated with an image model (FLUX.1 schnell, through
+        Hugging Face), the white background keyed out and the picture
+        cropped and scaled by hand, not drawn by the artist. Prompted
+        for the game's pixel style; flatter and more outlined than the
+        street paintings, which shows less at 90px tall in the game.
+        Still wanted from the artist (a still each, about 90px tall in
+        the game); a drawn picture replaces each under the same name.
     Item tiles. No item ships (content/items.js is empty); each item
         added later names its own tile picture.
 
