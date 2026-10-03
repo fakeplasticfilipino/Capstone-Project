@@ -51,6 +51,16 @@
         </div>
         <div class="toolbar-actions">
           <span id="updated-at" class="muted"></span>
+          <!-- Which act the roster's status, objectives, tests, gain and
+               time describe. Defaults to the furthest act with
+               objectives that a student in the class has begun. -->
+          <label for="act-picker" class="sr-only">Act</label>
+          <select id="act-picker">
+            <option value="1">Act I</option>
+            <option value="2">Act II</option>
+            <option value="3">Act III</option>
+            <option value="4">Act IV</option>
+          </select>
           <button id="export-btn" type="button" class="btn-secondary">Download CSV</button>
           <button id="refresh-btn" type="button" class="btn-secondary">Refresh</button>
         </div>
@@ -80,7 +90,7 @@
           <span class="stat-sub" id="stat-started-sub"></span>
         </div>
         <div class="stat">
-          <span class="stat-label">Finished Act I</span>
+          <span class="stat-label">Finished <span class="act-name">Act I</span></span>
           <span class="stat-value" id="stat-done">—</span>
           <span class="stat-sub" id="stat-done-sub"></span>
         </div>
@@ -118,7 +128,7 @@
             <thead>
               <tr>
                 <th data-sort="name" aria-sort="ascending"><button type="button">Student</button></th>
-                <th data-sort="status"><button type="button">Status (Act I)</button></th>
+                <th data-sort="status"><button type="button">Status (<span class="act-name">Act I</span>)</button></th>
                 <th data-sort="currentAct"><button type="button">Act</button></th>
                 <th data-sort="objectives" class="num"><button type="button">Objectives</button></th>
                 <th data-sort="prePct" class="num"><button type="button">Pre-test</button></th>
@@ -134,7 +144,7 @@
           <div id="no-match" class="empty-row hidden">No students match the search.</div>
         </div>
         <div class="table-notes">
-          <p><strong>Gain</strong> is the post-test minus the pre-test, in percent, for Act I. Where a student took the post-test more than once, the latest attempt is shown.</p>
+          <p><strong>Gain</strong> is the first post-test minus the pre-test, in percent, for the act chosen above. Where a student took the post-test more than once, the Post-test column shows the latest attempt and the gain of the latest is the smaller line under the Gain.</p>
           <p><strong>Performance</strong> (0 to 100) = 50 × completion + 25 × survival + 25 × stealth. Time is recorded but not scored.</p>
           <p>A dash (—) means no data yet.</p>
         </div>
@@ -225,7 +235,7 @@
   <script src="js/vendor/supabase.js?v=4202140866"></script>
   <script src="js/supabaseClient.js?v=2770937222"></script>
   <script src="content/questions.js?v=527737549"></script>
-  <script src="js/teacher.js?v=1181236305"></script>
+  <script src="js/teacher.js?v=466673789"></script>
   <script src="js/teacher-questions.js?v=1289474713"></script>
   <script src="js/teacher-talaan.js?v=3548000243"></script>
 </body>

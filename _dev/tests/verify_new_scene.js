@@ -1738,27 +1738,32 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   await plain.ctx.close();
   const jumps = await (async () => {
     const p = await newPage(browser, { session: null });
-    const list = await p.page.evaluate(() => (ACT_1.devJumps || []).map((j) => ({ id: j.id, scene: j.scene, task: j.task })));
+    // Polish list #2: every act's points, so Act II's are checked the day
+    // it declares them. The option's value is "act:id".
+    const list = await p.page.evaluate(() => [1, 2, 3, 4].flatMap((n) =>
+      ((window["ACT_" + n] || {}).devJumps || []).map((j) => ({ n, id: j.id, scene: j.scene, task: j.task }))));
     await p.ctx.close();
     return list;
   })();
-  ok("Act I offers its story points (" + jumps.length + ")", jumps.length >= 8, jumps);
+  ok("Act I offers its story points (" + jumps.filter((j) => j.n === 1).length + ")",
+     jumps.filter((j) => j.n === 1).length >= 8, jumps);
   for (const j of jumps) {
     const p = await newPage(browser, { session: null });
     await p.page.goto("http://localhost:" + PORT + "/index.html?dev=1");
     await p.page.waitForTimeout(400);
-    await p.page.selectOption("#shell-dev-jump", j.id);
+    await p.page.selectOption("#shell-dev-jump", j.n + ":" + j.id);
     await p.page.click("#shell-dev-go");
     for (let i = 0; i < 80 && (await p.page.evaluate(() => Shell.state)) !== "playing"; i++) await p.page.waitForTimeout(100);
     await p.page.waitForTimeout(600);
     const at = await p.page.evaluate(() => ({
       scene: currentSceneId,
+      act: Acts.current,
       guest: Game.isGuest(),
       log: document.getElementById("quest-list").textContent,
       written: __DB.game_progress.length,
     }));
     ok("starting at " + j.id + " opens " + j.scene + " with \"" + j.task + "\" in hand, writing nothing",
-       at.scene === j.scene && at.guest && at.log.includes(j.task) && at.written === 0, at);
+       at.scene === j.scene && at.act === j.n && at.guest && at.log.includes(j.task) && at.written === 0, at);
     await p.ctx.close();
   }
 

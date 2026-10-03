@@ -68,6 +68,12 @@ let teacherProfile = null;
 let classesById = new Map();
 let currentClassId = null;
 let currentRows = [];
+// Polish list #1. The act the roster describes, and the class's data as
+// last fetched, so changing the act redraws without a second query.
+const ACT_NAMES = { 1: "Act I", 2: "Act II", 3: "Act III", 4: "Act IV" };
+const actPicker = document.getElementById("act-picker");
+let currentAct = null;
+let lastFetch = null;
 let sortKey = "name";
 let sortDir = 1; // 1 ascending, -1 descending
 
@@ -238,16 +244,23 @@ async function loadRoster(classId) {
     return;
   }
 
-  const rows = buildRoster(
+  lastFetch = {
     students,
-    progressRes.data || [],
-    actsRes.data || [],
-    scoresRes.data || []
-  );
-
-  currentRows = rows;
-  renderRoster();
-  renderSummary(rows);
+    progress: progressRes.data || [],
+    acts: actsRes.data || [],
+    scores: scoresRes.data || [],
+  };
+  // The furthest act with something to finish (objectives_total above 0)
+  // that anyone in the class has a row for, unless the teacher has
+  // already chosen one. A stub act, which a student who finished Act I
+  // is moved into, has no objectives and would show an empty roster.
+  if (currentAct === null) {
+    const withContent = lastFetch.acts
+      .filter((a) => Number(a.objectives_total) > 0)
+      .map((a) => Number(a.act_number) || 1);
+    currentAct = Math.min(4, Math.max(1, ...withContent));
+  }
+  drawAct();
   updatedAtEl.textContent = "Updated " + new Date().toLocaleTimeString("en-PH", {
     hour: "numeric", minute: "2-digit",
   });
@@ -259,8 +272,29 @@ async function loadRoster(classId) {
   rosterSection.classList.remove("hidden");
 }
 
-// Stitches the four result sets into one row per student.
-function buildRoster(students, progress, acts, scores) {
+// Builds the rows for the act chosen and draws them, with the act's name
+// wherever the page says which act it means.
+function drawAct() {
+  if (!lastFetch) return;
+  actPicker.value = String(currentAct);
+  document.querySelectorAll(".act-name").forEach((el) => {
+    el.textContent = ACT_NAMES[currentAct];
+  });
+  const rows = buildRoster(lastFetch.students, lastFetch.progress, lastFetch.acts,
+    lastFetch.scores, currentAct);
+  currentRows = rows;
+  renderRoster();
+  renderSummary(rows);
+}
+
+actPicker.addEventListener("change", () => {
+  currentAct = Number(actPicker.value) || 1;
+  drawAct();
+});
+
+// Stitches the four result sets into one row per student, for one act.
+function buildRoster(students, progress, acts, scores, actNumber) {
+  const n = actNumber || 1;
   const progressBy = new Map(progress.map((p) => [p.student_id, p]));
 
   const actsBy = new Map();
@@ -295,10 +329,10 @@ function buildRoster(students, progress, acts, scores) {
     const prog = progressBy.get(student.id) || null;
     const studentActs = actsBy.get(student.id) || [];
 
-    const pre = scoresBy.get(`${student.id}|1|pre`) || null;
-    const post = scoresBy.get(`${student.id}|1|post`) || null;
+    const pre = scoresBy.get(`${student.id}|${n}|pre`) || null;
+    const post = scoresBy.get(`${student.id}|${n}|post`) || null;
 
-    const firstPost = firstBy.get(`${student.id}|1|post`) || null;
+    const firstPost = firstBy.get(`${student.id}|${n}|post`) || null;
 
     const prePct = pre ? toPercent(pre.score, pre.max_score) : null;
     const postPct = post ? toPercent(post.score, post.max_score) : null;
@@ -308,27 +342,25 @@ function buildRoster(students, progress, acts, scores) {
     const gainLatest =
       prePct !== null && postPct !== null && post.tries > 1 ? postPct - prePct : null;
 
-    // Performance is recorded per act. Only completed acts count: going
-    // on to a stub act creates its row with a score of 0, which would
-    // halve a student's figure (Scan S1).
-    const scored = studentActs.filter((a) => a.status === "completed" && a.performance_score !== null);
-    const performance = scored.length
-      ? scored.reduce((sum, a) => sum + Number(a.performance_score), 0) /
-        scored.length
-      : null;
+    const row = studentActs.find((a) => Number(a.act_number) === n) || null;
+    const status = row && STATUS[row.status] ? row.status : "none";
 
-    const act1 = studentActs.find((a) => Number(a.act_number) === 1) || null;
-    const status = act1 && STATUS[act1.status] ? act1.status : "none";
+    // Performance is the chosen act's, once it is completed: a row still
+    // being played, or a stub act's, holds a score of 0 that would read as
+    // a result (Scan S1).
+    const performance = row && row.status === "completed" && row.performance_score !== null
+      ? Number(row.performance_score)
+      : null;
 
     return {
       name: student.full_name || "(no name)",
       status,
-      objectivesDone: act1 ? act1.objectives_done : null,
-      objectivesTotal: act1 ? act1.objectives_total : null,
-      objectives: act1 && act1.objectives_total
-        ? Number(act1.objectives_done) / Number(act1.objectives_total)
+      objectivesDone: row ? row.objectives_done : null,
+      objectivesTotal: row ? row.objectives_total : null,
+      objectives: row && row.objectives_total
+        ? Number(row.objectives_done) / Number(row.objectives_total)
         : null,
-      elapsed: act1 && act1.elapsed_ms ? Number(act1.elapsed_ms) : null,
+      elapsed: row && row.elapsed_ms ? Number(row.elapsed_ms) : null,
       currentAct: prog ? prog.current_act : null,
       hasPlayed: Boolean(prog),
       actsCompleted: studentActs.filter((a) => a.status === "completed").length,
@@ -554,7 +586,9 @@ function gainCell(gain, gainLatest) {
 function exportCsv() {
   if (!currentRows || !currentRows.length) return;
   const cls = classesById.get(currentClassId);
-  const header = ["student", "status_act1", "current_act", "objectives_done", "objectives_total",
+  // One act at a time, the act chosen on the page (act), so the file says
+  // which act its columns describe.
+  const header = ["student", "act", "status", "current_act", "objectives_done", "objectives_total",
     "pre_score", "pre_max", "pre_pct", "post_first_pct", "post_latest_score", "post_max",
     "post_latest_pct", "post_attempts", "gain_first", "gain_latest", "performance",
     "play_minutes", "last_active"];
@@ -562,7 +596,7 @@ function exportCsv() {
   const lines = [header.join(",")];
   currentRows.forEach((r) => {
     lines.push([
-      r.name, r.status, r.currentAct, r.objectivesDone, r.objectivesTotal,
+      r.name, currentAct, r.status, r.currentAct, r.objectivesDone, r.objectivesTotal,
       r.pre ? r.pre.score : "", r.pre ? r.pre.max_score : "", num(r.prePct, 1),
       num(r.firstPostPct, 1), r.post ? r.post.score : "", r.post ? r.post.max_score : "",
       num(r.postPct, 1), r.post ? r.post.tries : "", num(r.gain, 1),
@@ -570,7 +604,8 @@ function exportCsv() {
       r.elapsed ? (r.elapsed / 60000).toFixed(1) : "", r.lastActive || "",
     ].map(csvField).join(","));
   });
-  const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  // A byte order mark first, so Excel opens the Tagalog names as UTF-8.
+  const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = ((cls && cls.class_name) || "class").replace(/[^A-Za-z0-9-]+/g, "-") +

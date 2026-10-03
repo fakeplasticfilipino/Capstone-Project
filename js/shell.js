@@ -433,16 +433,25 @@ const Shell = {
   // a block on the phone without playing to it. Never shown otherwise;
   // a guest writes nothing, so it can touch nobody's save.
   _offerDevJumps() {
+    // Polish list #2: every act's story points, grouped by act, so a
+    // later act is reached the same way as Act I. The value is
+    // "act:id"; Game.enterAsGuest also takes a bare id, which is Act I's.
     const box = document.getElementById("shell-dev");
-    const act = window.Acts && Acts.getAct ? Acts.getAct(1) : null;
-    const jumps = (act && act.devJumps) || [];
-    if (!box || !jumps.length || new URLSearchParams(location.search).get("dev") !== "1") return;
+    const groups = [1, 2, 3, 4]
+      .map((n) => ({ n, act: window.Acts && Acts.getAct ? Acts.getAct(n) : null }))
+      .filter((g) => g.act && (g.act.devJumps || []).length);
+    if (!box || !groups.length || new URLSearchParams(location.search).get("dev") !== "1") return;
     const select = document.getElementById("shell-dev-jump");
-    jumps.forEach((j) => {
-      const opt = document.createElement("option");
-      opt.value = j.id;
-      opt.textContent = j.label;
-      select.appendChild(opt);
+    groups.forEach((g) => {
+      const group = document.createElement("optgroup");
+      group.label = g.act.titleTagalog || g.act.title || "Yugto " + g.n;
+      g.act.devJumps.forEach((j) => {
+        const opt = document.createElement("option");
+        opt.value = g.n + ":" + j.id;
+        opt.textContent = j.label;
+        group.appendChild(opt);
+      });
+      select.appendChild(group);
     });
     document.getElementById("shell-dev-go").addEventListener("click", () => {
       if (this.entered) return;

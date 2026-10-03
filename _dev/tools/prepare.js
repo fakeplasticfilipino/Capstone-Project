@@ -12,8 +12,10 @@
 // and its fingerprint (make-asset-manifest.js); every stylesheet and page
 // is stamped with its files' fingerprints (lib/stamp.js). Then it runs
 // the checks that need no browser (lib/checks.js): every script
-// compiles, STORY.md has every line, ART.md's Owed list is right, the
-// manifest, the stamps, the sheets. A few seconds in all.
+// compiles, STORY.md has every act's lines, every act's content holds
+// together (doors, story points, enemy types, ids, objectives, trees),
+// ART.md's Owed list is right, the manifest, the stamps, the sheets. A
+// few seconds in all.
 //
 // So the steps a change used to need by hand (bump a ?v=, bump
 // ASSET_VERSION, run the manifest tool, remember to shrink a new sheet)

@@ -7460,20 +7460,26 @@ async function enterGameAsGuest(jumpId) {
   // story has set by then, the barya, and where Macario stands, set
   // before the scene is built, so what plays next plays as after a
   // reload. A guest writes nothing, so nobody's save is touched.
-  const act = window.Acts ? Acts.getAct(1) : null;
-  const jump = jumpId && act && (act.devJumps || []).find((j) => j.id === jumpId);
+  // Polish list #2: a jump id is "act:id" (any act), or a bare id, which
+  // is Act I's. Without one, a guest plays Act I from its first scene.
+  const parts = String(jumpId || "").split(":");
+  const actNumber = parts.length > 1 ? Number(parts[0]) || 1 : 1;
+  const id = parts.length > 1 ? parts.slice(1).join(":") : parts[0];
+  const act = window.Acts ? Acts.getAct(actNumber) || Acts.getAct(1) : null;
+  const jump = id && act && (act.devJumps || []).find((j) => j.id === id);
   if (jump) {
     Object.assign(state.flags, jump.flags);
     currency = jump.currency || 0;
   }
 
-  if (window.Acts) {
-    Acts.current = 1;
-    loadAct(act, jump ? jump.scene : "tondo");
+  if (window.Acts && act) {
+    Acts.current = act.number || actNumber;
+    // An unknown or missing scene id is the act's first scene.
+    loadAct(act, jump ? jump.scene : null);
     if (jump && typeof jump.x === "number") placePlayer(jump.x, jump.facing || 1);
     // The teacher's Talaan papers are for guests too (Block 70): a read
     // of public content, nothing written.
-    if (Acts.loadTalaan) Acts.loadTalaan(1);
+    if (Acts.loadTalaan) Acts.loadTalaan(Acts.current);
   }
   if (jump && window.Inventory && Inventory.grant) {
     for (const id of jump.items || []) {

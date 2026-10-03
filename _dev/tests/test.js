@@ -4327,10 +4327,37 @@ const visible = (page, sel) => page.evaluate((s) => {
        sorted.order[1] === "mag-aaral03", sorted);
 
     const [download] = await Promise.all([page.waitForEvent("download"), page.click("#export-btn")]);
-    const csv = require("fs").readFileSync(await download.path(), "utf8").replace(/^﻿/, "").split(/\r\n/);
+    const csv = require("fs").readFileSync(await download.path(), "utf8").replace(/^\ufeff/, "").split(/\r\n/);
     ok("Download CSV saves the roster, a header and a line per student (S15)",
-       /\.csv$/.test(download.suggestedFilename()) && csv.length === 5 && /^student,status_act1/.test(csv[0]) &&
-       csv.some((l) => /^mag-aaral03,completed,.*,20\.0,50\.0,64\.0,/.test(l)), csv);
+       /\.csv$/.test(download.suggestedFilename()) && csv.length === 5 && /^student,act,status/.test(csv[0]) &&
+       csv.some((l) => /^mag-aaral03,1,completed,.*,20\.0,50\.0,64\.0,/.test(l)), csv);
+
+    // Polish list #1. The roster describes one act, chosen above it. It
+    // opens on the furthest act with objectives (Act I here: s1's Act II
+    // row is a stub's, with none), and Act II can be chosen.
+    const acts = await page.evaluate(async () => {
+      const read = () => {
+        const s1 = [...document.querySelectorAll("#roster-body tr")].find((tr) => tr.children[0].textContent === "mag-aaral01");
+        return { act: document.getElementById("act-picker").value,
+          names: [...document.querySelectorAll(".act-name")].map((e) => e.textContent),
+          s1: s1 ? [...s1.children].map((td) => td.textContent) : null };
+      };
+      const opened = read();
+      const picker = document.getElementById("act-picker");
+      picker.value = "2";
+      picker.dispatchEvent(new Event("change"));
+      await new Promise((r) => setTimeout(r, 50));
+      const two = read();
+      picker.value = "1";
+      picker.dispatchEvent(new Event("change"));
+      return { opened, two };
+    });
+    ok("the roster opens on the furthest act with objectives, and says which (Polish #1)",
+       acts.opened.act === "1" && acts.opened.names.length === 2 &&
+       acts.opened.names.every((n) => n === "Act I"), acts.opened);
+    ok("choosing Act II shows Act II's status and no Act I scores",
+       acts.two.names.every((n) => n === "Act II") && acts.two.s1[1] === "Playing" &&
+       acts.two.s1[4] === "—" && acts.two.s1[7] === "—", acts.two);
 
     await page.click("#refresh-btn");
     await page.waitForTimeout(300);
@@ -6541,6 +6568,30 @@ const visible = (page, sel) => page.evaluate((s) => {
       shown: !document.getElementById("shell-dev").classList.contains("hidden"),
     }));
     ok("with a student signed in, ?dev=1 offers no story points (S5)", dev.signedIn && !dev.shown, dev);
+    await ctx.close();
+  }
+  if (still()) { // the section above, continued
+    // Polish list #2. A later act's story points are offered too, grouped
+    // by act, and start the guest in that act.
+    const ACT2 = `window.ACT_2 = { number: 2, title: "Two", titleTagalog: "Ikalawa", objectives: [],
+      startingQuests: [], scenes: [{ id: "daan", worldWidth: 2400, startX: 100, npcs: [], decorations: [] }],
+      devJumps: [{ id: "gitna", label: "Sa gitna ng daan", scene: "daan", x: 900, facing: -1,
+        flags: { pagsubok_ikalawa: true } }] };`;
+    const { ctx, page } = await newPage({ session: null }, [{ pattern: "**/content/act2.js*", body: ACT2 }]);
+    await page.goto("http://localhost:" + PORT + "/index.html?dev=1");
+    await page.waitForTimeout(500);
+    const list = await page.evaluate(() => [...document.querySelectorAll("#shell-dev-jump optgroup")].map((g) =>
+      ({ label: g.label, values: [...g.querySelectorAll("option")].map((o) => o.value) })));
+    ok("?dev=1 lists every act's story points, grouped by act (Polish #2)",
+       list.length === 2 && list[1].label === "Ikalawa" && list[1].values[0] === "2:gitna" &&
+       list[0].values.every((v) => v.startsWith("1:")), list);
+    await page.selectOption("#shell-dev-jump", "2:gitna");
+    await page.click("#shell-dev-go");
+    await page.waitForTimeout(800);
+    const at = await page.evaluate(() => ({ act: Acts.current, scene: currentSceneId, x: Math.round(posX),
+      flag: state.flags.pagsubok_ikalawa === true, guest: Game.isGuest(), written: __DB.game_progress.length }));
+    ok("and one starts a guest in that act, at its scene and place",
+       at.act === 2 && at.scene === "daan" && at.x === 900 && at.flag && at.guest && at.written === 0, at);
     await ctx.close();
   }
   if (still()) { // the section above, continued
