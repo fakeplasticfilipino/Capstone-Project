@@ -29,8 +29,11 @@ jobs:
   # the stamps, the shrunk sheets), in seconds and with nothing to
   # install, before the suites spend twelve minutes on a push that a
   # forgotten step has already broken.
+  # The runner is pinned (Polish list #9): ubuntu-latest moves to Ubuntu
+  # 26 from 19 Oct 2026, and a new system under Playwright's browser is
+  # the kind of change to make on purpose, not find in a red run.
   checks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -42,7 +45,7 @@ jobs:
   suite:
     needs: checks
     name: ${{ matrix.suite }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -54,6 +57,18 @@ jobs:
         with:
           node-version: lts/*
       # package-lock.json is gitignored, so npm install, not npm ci.
+      # Playwright's version is pinned exactly in package.json (Polish
+      # list #9), so CI and the proponent's computer run the same browser.
       - run: npm install --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
-      - run: node _dev/tests/${{ matrix.suite }}
+      # Every FAIL line is also an annotation (Polish list #9): GitHub
+      # shows a run's log only to someone signed in, but its annotations
+      # to anyone, through the public API, so a red run says which check
+      # failed without a login.
+      - shell: bash
+        run: |
+          set -o pipefail
+          status=0
+          node _dev/tests/${{ matrix.suite }} 2>&1 | tee suite.log || status=$?
+          grep -E "^\s*FAIL" suite.log | head -n 20 | sed -E 's/^\s*/::error title=${{ matrix.suite }}::/' || true
+          exit $status

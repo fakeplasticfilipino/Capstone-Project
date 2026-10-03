@@ -6,6 +6,6 @@
     "test": "node _dev/tests/test.js && node _dev/tests/verify_new_scene.js"
   },
   "devDependencies": {
-    "playwright": "^1.62.1"
+    "playwright": "1.62.1"
   }
 }
