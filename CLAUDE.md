@@ -508,7 +508,9 @@ Scene shape:
                                                  second one (Block 45)
       panelSky: "#72a8d0",                       colour above the pictures
                                                  (Block 46)
-      ground: false,                             optional; hides the dirt strip
+      ground: false | { src },                   optional; hides the dirt strip,
+                                                 or lays the scene's own road
+                                                 (Polish #6)
       music: "assets/audio/music/x.mp3",         optional; this scene's track
       exits: [{ id, x, width, label, toScene,    optional; doorways
                 toX, toFacing }],
@@ -667,19 +669,24 @@ needing to be left out of the array, which is how Act I was held open
 through Blocks 19 to 36.
 
 greyFilter reuses whatever backdrop #skyline already has (the scene's
-panels since Block 43, else assets/backgrounds/act1/tondo.jpg) rather than needing a second background
+panels since Block 43, else the scene's backdrop, else DEFAULT_SKYLINE_SRC,
+assets/backgrounds/act1/street-01.jpg since Block 54) rather than needing a second background
 asset for a flashback or memory beat. It is read once, in loadScene,
 and toggled rather than only ever added, so a scene without it clears
 whatever the previous scene set. See Decisions on record for the
 scene it was added for and for Acts.gotoScene now fading to black
 around every scene change instead of swapping instantly.
 
-backdrop (Block 34) replaces the shared Tondo.png for one scene with a
-picture of its own, drawn once to cover the visible world and anchored
-at the bottom, never tiled or mirrored, because it is one room rather
-than a street. ground: false hides
-#ground-tiles for a picture that paints its own floor. Both are cleared
-on every load, so a scene without them gets Tondo and the dirt back.
+backdrop (Block 34) replaces the shared default backdrop
+(DEFAULT_SKYLINE_SRC, the first street painting since Block 54) for one
+scene with a picture of its own, drawn once to cover the visible world
+and anchored at the bottom, never tiled or mirrored, because it is one
+room rather than a street. ground: false hides #ground-tiles for a
+picture that paints its own floor, and ground: { src } (Polish list #6)
+lays a road of the scene's own instead of Tondo's dirt (GROUND_SRC,
+assets/backgrounds/act1/ground-lupa.jpg); an owed road picture falls
+back to the dirt. All three are cleared on every load, so a scene
+without them gets the default backdrop and the dirt back.
 
 panels (Block 43) lays a row of different paintings along the road, each
 covering a fixed panelWidth of the world (default PANEL_WIDTH, 1450),
@@ -687,7 +694,7 @@ repeated in order if the road is longer than the list, and stands a
 shadow tree over every join between two of them: a dark silhouette in
 front of everyone (z-index 3, above #player and the shots, below the
 guide's arrow), with a faint shade on the paintings behind it. It
-replaces Tondo.png's mirrored tiles for that scene. Because the width is
+replaces the default backdrop's mirrored tiles for that scene. Because the width is
 fixed rather than following the screen's height, the joins are at the
 same x on every phone: at panelWidth, 2 times it, and so on, never at
 the end of the world. Keep NPCs, exits and checkpoints at least 90px
@@ -755,6 +762,10 @@ NPC shape:
       nearSound: "assets/audio/sfx/x.mp3",       optional; loops while near
       displayHeight: 120,                        optional; drawn this tall
                                                  (Block 57)
+      speakers: ["Siga", "Mga Siga"],            optional; speaker names its
+                                                 bust answers to besides its
+                                                 label (a decoration: its
+                                                 id); Polish #8
       onInteract() {},                           optional; E runs this
       interactLabel: "Pumitas",                  instead of a conversation,
                                                  and the button reads this

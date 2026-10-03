@@ -5157,14 +5157,14 @@ const visible = (page, sel) => page.evaluate((s) => {
       const x0 = posX;
       keysPressed["d"] = true;
       await new Promise((r) => setTimeout(r, 300));
-      const early = { dx: posX - x0, running: isRunning() };
+      const early = { dx: posX - x0, running: (runBlend > 0) };
       await new Promise((r) => setTimeout(r, 900));
       const x1 = posX;
       await new Promise((r) => setTimeout(r, 300));
-      const late = { dx: posX - x1, running: isRunning(), blend: runBlend };
+      const late = { dx: posX - x1, running: (runBlend > 0), blend: runBlend };
       keysPressed["d"] = false;
       await new Promise((r) => setTimeout(r, 60));
-      return { early, late, after: isRunning(),
+      return { early, late, after: (runBlend > 0),
         dust: [...document.querySelectorAll(".dust")].map((d) => d.className) };
     });
     ok("a short hold is a walk", !walk.early.running && walk.early.dx > 0, walk.early);
@@ -5182,7 +5182,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       posX = Math.max(0, g.patrolFrom - 900); posY = floorHeightAt(posX); onGround = true;
       keysPressed["a"] = true;
       await new Promise((r) => setTimeout(r, 900));
-      const farRunning = isRunning();
+      const farRunning = (runBlend > 0);
       keysPressed["a"] = false;
       posX = g.pos + GUARD_WIDTH / 2 - PLAYER_WIDTH / 2 - 150; posY = floorHeightAt(posX);
       const nearAllowed = runAllowed();
@@ -6557,6 +6557,32 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("the shop button shows only while something is for sale (S6)",
        shop.withStock && !shop.without && shop.back, shop);
+
+    // Polish #6: a scene's own road; #8: a speaker name declared in content.
+    const own = await page.evaluate(() => {
+      const ground = () => document.getElementById("ground-tiles").style.getPropertyValue("--ground-src");
+      const scene = SCENES.find((s) => s.id === currentSceneId);
+      const before = ground();
+      scene.ground = { src: "assets/backgrounds/act1/street-02.jpg" };
+      loadScene(scene.id);
+      const mine = ground();
+      scene.ground = { src: "assets/backgrounds/act9/wala.jpg" }; // owed: not asked for
+      loadScene(scene.id);
+      const owed = ground();
+      delete scene.ground;
+      loadScene(scene.id);
+      const back = ground();
+      const sheet = { src: "assets/sprites/characters/kutsero.png", frames: 1, fps: 1 };
+      currentScene.decorations = (currentScene.decorations || []).concat([{ id: "pinuno", animation: sheet, speakers: ["Siga", "Mga Siga"] }]);
+      return { before, mine, owed, back,
+        siga: portraitSheetFor("Mga Siga (pabulong)").sheet === sheet,
+        none: portraitSheetFor("Wala").sheet === null };
+    });
+    ok("a scene may lay its own road, an owed one falls back, and leaving restores the dirt (Polish #6)",
+       /ground-lupa/.test(own.before) && /street-02/.test(own.mine) && /ground-lupa/.test(own.owed) &&
+       /ground-lupa/.test(own.back), own);
+    ok("a speaker name in content finds its portrait, with no name known to the engine (Polish #8)",
+       own.siga && own.none, own);
     await ctx.close();
   }
   if (still()) { // the section above, continued

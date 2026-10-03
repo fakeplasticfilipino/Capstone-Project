@@ -797,12 +797,6 @@ const Acts = {
     );
 
     await this.endSession();
-
-    console.log(
-      `Act ${n} completed: ${done}/${total} objectives, ` +
-        `score ${this.scoreFor(done, total, stats)}, ` +
-        `${stats.damageTaken} damage, ${stats.detections} detections`
-    );
   },
 
   // -----------------------------------------------------------

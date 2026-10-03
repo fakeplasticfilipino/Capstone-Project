@@ -1433,7 +1433,8 @@ window.ACT_1 = {
           walkAnimation: KASAMA_SHEETS.walk, faceMovement: true },
         // Off to the left, hidden until the opening walks them on.
         { id: "siga-1", x: 260, hidden: true, animation: SIGA[1].idle,
-          walkAnimation: SIGA[1].walk, displayHeight: SIGA[1].height },
+          walkAnimation: SIGA[1].walk, displayHeight: SIGA[1].height,
+          speakers: ["Siga", "Mga Siga"] }, // the leader's bust speaks for them
         { id: "siga-2", x: 180, hidden: true, animation: SIGA[2].idle,
           walkAnimation: SIGA[2].walk, displayHeight: SIGA[2].height },
         { id: "siga-3", x: 100, hidden: true, animation: SIGA[3].idle,

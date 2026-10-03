@@ -869,6 +869,16 @@ function loadScene(sceneId) {
   document
     .getElementById("ground-tiles")
     .classList.toggle("ground-hidden", scene.ground === false);
+  // Polish list #6. A scene may lay its own road (ground: { src }), for an
+  // act whose ground is not Tondo's dirt; every other scene gets the
+  // default back. A picture that is owed (not in the manifest) is not
+  // asked for, and the default is drawn instead. Written only on a change.
+  const ownGround = scene.ground && scene.ground.src && assetExpected(scene.ground.src) !== false
+    ? scene.ground.src : GROUND_SRC;
+  if (loadScene.groundSrc !== ownGround) {
+    loadScene.groundSrc = ownGround;
+    document.getElementById("ground-tiles").style.setProperty("--ground-src", cssAssetUrl(ownGround));
+  }
 
   // Block 36. The world element was a fixed 4400px whatever the scene
   // actually was, so the backdrop, the ground strip and every layer over
@@ -1305,7 +1315,10 @@ checkBackgroundImage(
 // stylesheet: the stylesheet's own url() was a second, unversioned
 // download that nothing waited for and the service worker never kept,
 // so on a slow connection the world opened with no road.
-document.getElementById("ground-tiles").style.setProperty("--ground-src", cssAssetUrl(GROUND_SRC));
+if (!loadScene.groundSrc) {
+  loadScene.groundSrc = GROUND_SRC;
+  document.getElementById("ground-tiles").style.setProperty("--ground-src", cssAssetUrl(GROUND_SRC));
+}
 checkBackgroundImage(
   document.getElementById("ground-tiles"),
   GROUND_SRC,
@@ -2338,14 +2351,18 @@ const portraitLeft = document.getElementById("dialogue-portrait-left");
 const portraitRight = document.getElementById("dialogue-portrait-right");
 let drawnPortrait = { sheet: null, side: null };
 
+// A speaker is matched to an NPC by its label, to a decoration by its id,
+// and to either by a name in its speakers list (Polish list #8: "Siga"
+// and "Mga Siga" are the leader's, declared in content rather than known
+// to the engine).
 function portraitSheetFor(speaker) {
   const name = String(speaker || "").replace(/\s*\(.*\)\s*$/, "").trim().toLowerCase();
   if (name === "macario") return { side: "left", sheet: SPRITE_SHEETS.idle };
-  const npc = NPCS.find((n) => n.animation && n.label && n.label.toLowerCase() === name);
+  const answers = (x) => (x.speakers || []).some((s) => String(s).toLowerCase() === name);
+  const npc = NPCS.find((n) => n.animation && ((n.label && n.label.toLowerCase() === name) || answers(n)));
   if (npc) return { side: "right", sheet: npc.animation };
   const decorations = (currentScene && currentScene.decorations) || [];
-  const id = name === "siga" || name === "mga siga" ? "siga-1" : name;
-  const dec = decorations.find((d) => d.animation && d.id === id);
+  const dec = decorations.find((d) => d.animation && (d.id === name || answers(d)));
   return { side: "right", sheet: dec ? dec.animation : null };
 }
 
@@ -4624,10 +4641,6 @@ function floatOverPlayer(text, kind) {
   el.style.bottom = Math.round(posY + DISPLAY_HEIGHT + 8) + "px";
   el.dataset.flip = el.dataset.flip === "a" ? "b" : "a";
   el.className = "float-text float-" + (kind || "plain") + " float-" + el.dataset.flip;
-}
-
-function isRunning() {
-  return runBlend > 0;
 }
 
 // A puff of dust at a point on the ground. kind is start, stride, jump or
