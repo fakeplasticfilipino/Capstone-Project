@@ -9,7 +9,15 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 3 Oct 2026, after Block 110: the Scan list worked (below;
+Last updated: 4 Oct 2026, after Block 112, the polish list for Acts II
+to IV (DECISIONS.md, Block 112): the dashboard, ?dev=1 and the checks
+cover every act; a content check in prepare.js; CLAUDE.md, Writing a
+new act; a scene's own road; speakers and the Talaan's places in
+content; CI annotates failures on a pinned runner; the stylesheet's
+dead declarations removed (computed styles proved identical); schema
+v10. Block 111 (3 Oct): the database's exposed functions closed (v8,
+v9) and guardrails for the live database (CLAUDE.md, Database). Before
+that, 3 Oct 2026, Block 110: the Scan list worked (below;
 everything a session can do is done, the rest waits on the proponent,
 the artist or the phone). The live database checked from the session
 the same day: healthy (Run log). The test questions are the teacher's,
@@ -41,8 +49,8 @@ Block 97, one tool and a rig per character for animating any still;
 Block 96, the big siga from the artist's still. Blocks 90 to 97 were
 tested on the phone that day with no fault reported; Blocks 98 to 103
 have not been seen on a device yet (Next action 1). Earlier blocks:
-the Blocks list below, and DECISIONS.md. test.js 795 passed, 0 failed
-(locally, 3 Oct 2026); both suites green on CI. Everything is committed
+the Blocks list below, and DECISIONS.md. test.js 802 passed, 0 failed
+(locally, 4 Oct 2026); both suites green on CI. Everything is committed
 and pushed to main.
 
 A new session, on any device: git pull first; read CLAUDE.md, then
@@ -172,7 +180,7 @@ from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
 Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
 the proponent tested Blocks 90 to 97 on the phone and reported no
-fault. Blocks 98 to 110 are pushed and not yet seen on a device:
+fault. Blocks 98 to 112 are pushed and not yet seen on a device:
 Next action 1 says what to look for.
 
 Versions: since Block 106 every ?v= is the file's fingerprint, written
@@ -223,6 +231,14 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       opens each with the right task in the log. Failure: anyone drawn
       to one side of where he stands, a jitter while walking, or a
       point that opens the wrong scene or task.
+
+    Block 112, the polish list. Every screen looks exactly as before
+      (the stylesheet lost only declarations that did nothing). The
+      dashboard has an act picker beside Download CSV, on Act I; Act II
+      shows the students who reached it. ?dev=1 groups the story points
+      under the act's name. The Talaan editor still says where each of
+      Act I's papers lies. Failure: any button, card or text that
+      changed look or size, or the Talaan editor without its places.
 
     Block 110, the Scan list. The tab reads MACARIO. Magsimula, then
       Bumalik under the login form goes back to the title screen; a
@@ -352,6 +368,14 @@ commits; older README versions), and every commit carries the author
 name and email. Only a history rewrite and a force push purges them, and
 the GitHub username stays in the repository's URL either way. The
 proponent has not yet decided whether to rewrite the history.
+
+## Polish list (Block 112)
+
+Agreed 4 Oct 2026 ("fix all of them"): fourteen items from a scan of the
+whole repository, for smooth work on Acts II to IV. #1 to #13
+(COMPLETE); #14, leaked password protection, is a switch in the
+Supabase dashboard (Authentication) for the proponent (NOT STARTED).
+Why each was built as it was: DECISIONS.md, Block 112.
 
 ## Loading list (Block 105)
 
@@ -487,6 +511,14 @@ Trust this over any memory of a chat.
                                         student, the teacher and a
                                         visitor can see checked the same
                                         before and after
+    db/migrations/010_macario_schema_v10.sql   RUN, 4 Oct 2026, the same.
+                                        Two foreign-key indexes; 26
+                                        policies read the signed-in user
+                                        once per query. Reads for a
+                                        student, the teacher and a
+                                        visitor, and a student's own and
+                                        refused writes, the same before
+                                        and after
 
     db/seeds/macario_items_v3.sql              RUN, 28 Aug 2026
     db/seeds/enrollment_setup.sql              only for a fresh database
@@ -569,7 +601,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (795 and 255 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (802 and 255 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -737,6 +769,12 @@ machine, the assessment module.
     110 the Scan list: the nine bugs, the dashboard (gain, CSV, a
         warning before editing a sat test), the login in Tagalog and its
         way back, two repeat lines, documents, smaller music, the hook
+    111 the live database: three functions closed to the API (v8), the
+        policy helpers moved to a private schema (v9), guardrails
+    112 the polish list: every act on the dashboard, in ?dev=1 and in
+        the checks; a content check; Writing a new act; a scene's own
+        road; speakers and Talaan places in content; CI annotations and
+        pins; dead CSS removed; policies read faster (v10)
 
 ## Blocks remaining
 
@@ -867,7 +905,7 @@ it wanted if it is still missing. A Playwright update needs it again.
 The suites take about 7 minutes (verify_new_scene.js) and 10 (test.js)
 there; run them one after the other, not at once.
 
-test.js (795 checks) drives the shipping index.html with a stubbed
+test.js (802 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
@@ -885,7 +923,7 @@ once, and passed on the next run; rerun before believing either.
 test.js did it once on 1 Oct 2026 ("after lighting up first, so the
 swing is readable": an enemy already mid-dash when the check starts
 watching for its red !), and passed on the rerun. Both never touch the
-live project. Both are green as of Block 110, on CI (about 8 minutes
+live project. Both are green as of Block 112, on CI (about 8 minutes
 there), and test.js locally. The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of

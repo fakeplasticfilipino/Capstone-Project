@@ -10,7 +10,6 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: var(--c-wood-deep);
-  font-family: sans-serif;
   color: var(--c-cream);
 }
 
@@ -473,25 +472,18 @@ html, body {
 
 #auth-box {
   width: min(90vw, 360px);
-  background: rgba(var(--c-wood-deep-rgb), 0.97);
-  border: 2px solid var(--c-wood-light);
-  border-radius: 10px;
   padding: 24px 22px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
 }
 
 #auth-title {
   color: var(--c-cream);
   text-align: center;
-  font-size: 22px;
-  letter-spacing: 3px;
   margin-bottom: 6px;
 }
 
 #auth-subtitle {
   color: var(--c-cream-faint);
   text-align: center;
-  font-size: 12px;
   margin-bottom: 18px;
 }
 
@@ -504,23 +496,13 @@ html, body {
 #auth-form input[type="text"],
 #auth-form input[type="email"],
 #auth-form input[type="password"] {
-  background: var(--c-wood-deep);
-  border: 1px solid var(--c-border-muted);
-  border-radius: 6px;
   padding: 10px 12px;
   color: var(--c-cream);
-  font-size: 14px;
 }
 
 #auth-submit {
   margin-top: 4px;
-  background: var(--c-green);
-  color: var(--c-cream);
-  border: none;
-  border-radius: 6px;
   padding: 10px 0;
-  font-weight: bold;
-  font-size: 14px;
   cursor: pointer;
 }
 
@@ -531,7 +513,6 @@ html, body {
 
 #auth-status {
   margin-top: 12px;
-  font-size: 12px;
   text-align: center;
   min-height: 16px;
   color: #ff8a80;
@@ -547,26 +528,18 @@ html, body {
   top: 16px;
   left: 16px;
   z-index: 15;
-  background: rgba(var(--c-wood-deep-rgb), 0.75);
-  border: 2px solid var(--c-wood-light);
-  border-radius: 8px;
   padding: 10px 14px;
   max-width: 260px;
 }
 
 #quest-log-title {
   font-weight: bold;
-  color: var(--c-cream);
-  font-size: 13px;
   margin-bottom: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 #quest-list {
   list-style: none;
-  font-size: 13px;
-  line-height: 1.5;
 }
 
 #quest-list li {
@@ -592,15 +565,8 @@ html, body {
   bottom: 180px;
   transform: translateX(-50%);
   z-index: 15;
-  background: var(--c-green);
-  color: var(--c-cream);
-  border: none;
-  border-radius: 20px;
   padding: 10px 18px;
-  font-size: 14px;
-  font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 #gift-btn:active {
@@ -616,11 +582,8 @@ html, body {
   right: 0;
   bottom: 0;
   width: 100%;
-  background: rgba(var(--c-wood-deep-rgb), 0.95);
-  border-top: 3px solid var(--c-wood-light);
   padding: 18px 24px 22px;
   z-index: 25;
-  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
@@ -631,20 +594,12 @@ html, body {
 
 #dialogue-speaker {
   font-weight: bold;
-  color: var(--c-green);
   margin-bottom: 6px;
-  font-size: 15px;
 }
 
-#dialogue-text {
-  font-size: 16px;
-  line-height: 1.5;
-}
 
 #dialogue-continue {
   margin-top: 10px;
-  font-size: 11px;
-  color: var(--c-cream-faint);
   text-align: right;
 }
 
@@ -671,34 +626,22 @@ html, body {
 .touch-btn {
   width: 58px;
   height: 58px;
-  border-radius: 50%;
-  border: 2px solid var(--c-wood-light);
-  background: rgba(var(--c-wood-deep-rgb), 0.55);
   color: var(--c-cream);
   font-size: 18px;
   font-weight: bold;
   touch-action: none;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease,
     box-shadow 0.2s ease;
 }
 
-.touch-btn:active {
-  background: rgba(var(--c-green-rgb), 0.4);
-}
 
 .interact-btn {
   pointer-events: auto;
-  background: rgba(67, 160, 71, 0.55);
   font-size: 13px;
 }
 
 /* Lights up green and grows slightly whenever something interactable
    (an NPC or the stage) is in range. */
 .interact-btn.active {
-  background: var(--c-green);
-  color: var(--c-wood-deep);
-  border-color: #c8e6c9;
-  box-shadow: 0 0 14px rgba(var(--c-green-rgb), 0.85);
   transform: scale(1.1);
 }
 
@@ -761,7 +704,6 @@ html, body {
 #quiz {
   position: fixed;
   inset: 0;
-  background: rgba(var(--c-wood-deep-rgb), 0.94);
   z-index: 90;
   display: flex;
   align-items: center;
@@ -775,20 +717,13 @@ html, body {
   width: min(90vw, 380px);
   max-height: 100%;
   overflow-y: auto;
-  background: rgba(var(--c-wood-deep-rgb), 0.97);
-  border: 2px solid var(--c-wood-light);
-  border-radius: 10px;
   padding: 24px 22px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
   box-sizing: border-box;
 }
 
 #act-screen-eyebrow,
 #quiz-eyebrow {
-  color: var(--c-cream-faint);
   text-align: center;
-  font-size: 11px;
-  letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 8px;
 }
@@ -797,16 +732,12 @@ html, body {
 #quiz-title {
   color: var(--c-cream);
   text-align: center;
-  font-size: 20px;
-  letter-spacing: 1px;
   margin: 0 0 10px;
 }
 
 #act-screen-body {
   color: var(--c-cream-dim);
   text-align: center;
-  font-size: 13px;
-  line-height: 1.6;
   margin: 0 0 20px;
 }
 
@@ -814,22 +745,13 @@ html, body {
    this is the same "the only thing to do here" affordance. */
 #act-screen-btn,
 #quiz-btn {
-  display: block;
   width: 100%;
-  background: var(--c-green);
-  color: var(--c-cream);
-  border: none;
-  border-radius: 6px;
   padding: 12px 0;
-  font-weight: bold;
-  font-size: 14px;
-  font-family: inherit;
   cursor: pointer;
 }
 
 #act-screen-btn:disabled,
 #quiz-btn:disabled {
-  opacity: 0.45;
   cursor: default;
 }
 
@@ -838,14 +760,11 @@ html, body {
 #quiz-progress {
   color: var(--c-green);
   text-align: center;
-  font-size: 12px;
   margin-bottom: 14px;
 }
 
 #quiz-question {
   color: var(--c-cream);
-  font-size: 14px;
-  line-height: 1.6;
   margin: 0 0 16px;
 }
 
@@ -860,30 +779,16 @@ html, body {
    end Android phones this is built for. Choices are full width for
    the same reason: a thumb should not have to aim. */
 .quiz-choice {
-  display: block;
   width: 100%;
   min-height: 44px;
-  text-align: left;
-  background: var(--c-wood-deep);
-  border: 1px solid var(--c-border-muted);
-  border-radius: 6px;
   padding: 11px 12px;
   color: var(--c-cream);
-  font-size: 13px;
-  line-height: 1.5;
-  font-family: inherit;
   cursor: pointer;
 }
 
-.quiz-choice.selected {
-  border-color: var(--c-green);
-  background: rgba(var(--c-green-rgb), 0.18);
-  color: var(--c-green);
-}
 
 #quiz-note {
   color: var(--c-cream-faint);
-  font-size: 12px;
   line-height: 1.6;
   margin-bottom: 14px;
 }
@@ -906,16 +811,9 @@ html, body {
 /* Secondary action. Muted rather than green, because going back is
    never the thing the student is meant to do next. */
 #quiz-back {
-  display: block;
   width: 100%;
   margin-top: 8px;
-  background: transparent;
-  color: var(--c-cream-faint);
-  border: 1px solid var(--c-border-muted);
-  border-radius: 6px;
   padding: 10px 0;
-  font-size: 13px;
-  font-family: inherit;
   cursor: pointer;
 }
 
@@ -934,12 +832,10 @@ html, body {
   flex: 1;
   max-width: 56px;
   padding: 12px 0;
-  font-family: inherit;
   font-size: 16px;
   color: var(--c-cream-dim);
   background: var(--c-wood-deep);
   border: 2px solid var(--c-border-muted);
-  border-radius: 8px;
   cursor: pointer;
 }
 
@@ -952,7 +848,6 @@ html, body {
 .feedback-legend {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
   color: var(--c-cream-faint);
   margin-bottom: 12px;
 }
@@ -962,18 +857,15 @@ html, body {
   width: 100%;
   box-sizing: border-box;
   padding: 10px;
-  font-family: inherit;
   font-size: 13px;
   color: var(--c-cream);
   background: var(--c-wood-deep);
   border: 1px solid var(--c-border-muted);
-  border-radius: 6px;
   resize: none;
 }
 
 .feedback-counter {
   text-align: right;
-  font-size: 11px;
   color: var(--c-cream-faint);
   margin-top: 4px;
 }
@@ -1033,9 +925,6 @@ html, body {
 
 .pickup-heart {
   background: #e53935;
-  border: 2px solid #7f1d1d;
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(229, 57, 53, 0.55);
 }
 
 @keyframes pickup-bob {
@@ -1051,7 +940,6 @@ html, body {
   position: absolute;
   background: #5d4037;
   border-top: 3px solid #8d6e63;
-  border-radius: 2px;
 }
 
 /* Hide spots are drawn as crates. They read as cover rather than as an
@@ -1066,7 +954,6 @@ html, body {
   height: 78px;
   background: #4e342e;
   border: 3px solid #6d4c41;
-  border-radius: 3px;
   box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.25);
 }
 
@@ -1100,7 +987,6 @@ html, body {
   height: 6px;
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid #777;
-  border-radius: 3px;
   overflow: hidden;
 }
 
@@ -1274,8 +1160,6 @@ html, body {
   width: 14px;
   height: 14px;
   background: #f4c542;
-  border-radius: 50%;
-  box-shadow: 0 0 6px rgba(244, 197, 66, 0.8);
   /* One above #player's own explicit z-index (1), so a throw that
      starts overlapping Macario — before game.js's own spawn-point fix
      clears his body, or after, if he steps back into his own throw —
@@ -1316,15 +1200,10 @@ html, body {
 }
 
 .heart {
-  width: 18px;
-  height: 18px;
   background: #e53935;
-  border: 2px solid #7f1d1d;
-  border-radius: 4px;
 }
 
 .heart-empty {
-  background: transparent;
   border-color: var(--c-border-muted);
 }
 
@@ -1334,11 +1213,6 @@ html, body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 40;
-  background: rgba(var(--c-wood-deep-rgb), 0.9);
-  border: 1px solid var(--c-wood-light);
-  border-radius: 6px;
-  color: var(--c-green);
-  font-size: 12px;
   padding: 7px 12px;
   white-space: nowrap;
 }
@@ -1382,7 +1256,6 @@ html, body {
 #shell {
   position: fixed;
   inset: 0;
-  background: rgba(var(--c-wood-deep-rgb), 0.94);
   z-index: 110;
   display: flex;
   align-items: center;
@@ -1399,11 +1272,7 @@ html, body {
   width: min(90vw, 380px);
   max-height: 100%;
   overflow-y: auto;
-  background: rgba(var(--c-wood-deep-rgb), 0.97);
-  border: 2px solid var(--c-wood-light);
-  border-radius: 10px;
   padding: 24px 22px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
   box-sizing: border-box;
 }
 
@@ -1412,10 +1281,7 @@ html, body {
 }
 
 .shell-eyebrow {
-  color: var(--c-cream-faint);
   text-align: center;
-  font-size: 11px;
-  letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 8px;
 }
@@ -1423,35 +1289,18 @@ html, body {
 .shell-heading {
   color: var(--c-cream);
   text-align: center;
-  font-size: 22px;
-  letter-spacing: 3px;
   margin: 0 0 6px;
 }
 
-/* The wide tracking is for MACARIO on the title card. Longer headings
-   wrap at 412px with it, so the h2s take a tighter setting. */
-h2.shell-heading {
-  font-size: 20px;
-  letter-spacing: 1px;
-}
 
 .shell-sub {
   color: var(--c-cream-dim);
   text-align: center;
-  font-size: 13px;
-  line-height: 1.6;
   margin: 0 0 20px;
 }
 
 .shell-btn {
-  display: block;
   width: 100%;
-  border: none;
-  border-radius: 6px;
-  padding: 12px 0;
-  font-weight: bold;
-  font-size: 14px;
-  font-family: inherit;
   cursor: pointer;
   margin-bottom: 8px;
 }
@@ -1460,34 +1309,24 @@ h2.shell-heading {
   margin-bottom: 0;
 }
 
-.shell-btn-primary {
-  background: var(--c-green);
-  color: var(--c-cream);
-}
 
 /* Secondary actions read as available without competing with the
    one green thing the student is meant to tap. */
 .shell-btn-ghost {
-  background: transparent;
-  color: var(--c-cream-dim);
   border: 1px solid var(--c-border-muted);
 }
 
 .shell-btn-danger {
-  background: transparent;
-  color: #e57373;
   border: 1px solid #7f1d1d;
 }
 
 .shell-btn:disabled {
-  opacity: 0.45;
   cursor: default;
 }
 
 .shell-note {
   color: #e57373;
   text-align: center;
-  font-size: 12px;
   line-height: 1.5;
   margin-top: 12px;
   min-height: 1em;
@@ -1498,9 +1337,6 @@ h2.shell-heading {
 }
 
 .shell-label {
-  color: var(--c-cream-faint);
-  font-size: 11px;
-  letter-spacing: 1px;
   text-transform: uppercase;
   margin-bottom: 8px;
 }
@@ -1515,26 +1351,13 @@ h2.shell-heading {
 .shell-choice {
   flex: 1;
   min-height: 44px;
-  background: transparent;
-  color: var(--c-cream-dim);
-  border: 1px solid var(--c-border-muted);
-  border-radius: 6px;
-  font-size: 12px;
-  font-family: inherit;
   cursor: pointer;
 }
 
-.shell-choice.active {
-  border-color: var(--c-green);
-  color: var(--c-green);
-  background: rgba(var(--c-green-rgb), 0.12);
-}
 
 .shell-controls {
   list-style: none;
-  font-size: 12px;
   color: var(--c-cream-dim);
-  line-height: 1.8;
 }
 
 .shell-controls li {
@@ -1599,15 +1422,11 @@ h2.shell-heading {
 
 #rotate-notice h2 {
   color: var(--c-cream);
-  font-size: 20px;
-  letter-spacing: 1px;
   margin: 0 0 10px;
 }
 
 #rotate-notice p {
   color: var(--c-cream-dim);
-  font-size: 14px;
-  line-height: 1.6;
   margin: 0;
 }
 
@@ -1624,13 +1443,9 @@ h2.shell-heading {
   z-index: 40;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
-  border: 2px solid var(--c-wood-light);
-  background: rgba(var(--c-wood-deep-rgb), 0.55);
   color: var(--c-cream);
   font-size: 14px;
   font-weight: bold;
-  font-family: inherit;
   letter-spacing: 1px;
   cursor: pointer;
   touch-action: manipulation;
@@ -1654,34 +1469,9 @@ h2.shell-heading {
   display: none;
 }
 
-/* =============================================================
-   TEXT SIZE
 
-   The one setting in Block 7 that does something the moment it is
-   changed. Audio sliders are deliberately absent until Block 12
-   adds audio, since a volume control over silence is worse than
-   no control at all.
 
-   Scoped to the text a student reads rather than to everything:
-   the world is drawn at a fixed scale and resizing its labels
-   would push sprites around.
-   ============================================================= */
 
-body.text-sm #dialogue-text { font-size: 14px; }
-body.text-sm #dialogue-speaker { font-size: 13px; }
-body.text-sm #quest-list,
-body.text-sm #quest-log-title { font-size: 12px; }
-
-body.text-lg #dialogue-text { font-size: 19px; }
-body.text-lg #dialogue-speaker { font-size: 18px; }
-body.text-lg #quest-list,
-body.text-lg #quest-log-title { font-size: 15px; }
-
-body.text-lg #quiz-question,
-body.text-lg .shell-sub { font-size: 15px; }
-
-body.text-sm #quiz-question,
-body.text-sm .shell-sub { font-size: 12px; }
 
 /* =============================================================
    ICONS AND BUTTON CHROME (Block 12)
@@ -1754,42 +1544,26 @@ body.text-sm .shell-sub { font-size: 12px; }
 .shell-btn {
   justify-content: flex-start;
   padding: 10px 14px;
-  border-radius: 8px;
-  border: 2px solid rgba(var(--c-wood-light-rgb), 0.45);
   text-align: left;
-  letter-spacing: 0.6px;
   /* A highlight on the top edge and a hard shadow under it. Two
      lines of gradient are the whole difference between a plate and
      a form control. */
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
     0 2px 0 rgba(0, 0, 0, 0.45);
 }
 
 .shell-btn .ico {
   width: 32px;
   height: 32px;
-  border-radius: 6px;
-  border: 1px solid rgba(var(--c-wood-light-rgb), 0.5);
-  background: rgba(var(--c-wood-light-rgb), 0.15);
 }
 
-.shell-btn-primary {
-  background: linear-gradient(var(--c-green-light), var(--c-green-deep));
-  border-color: var(--c-green);
-}
 
 .shell-btn-primary .ico {
-  background: rgba(0, 0, 0, 0.22);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
-.shell-btn-danger {
-  border-color: #7f1d1d;
-}
 
 .shell-btn-danger .ico {
   border-color: #a33;
-  background: rgba(229, 115, 115, 0.12);
 }
 
 .shell-btn .ico svg,
@@ -1808,8 +1582,6 @@ body.text-sm .shell-sub { font-size: 12px; }
 #quiz-back,
 #auth-submit {
   justify-content: center;
-  border-radius: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
     0 2px 0 rgba(0, 0, 0, 0.45);
 }
 
@@ -1817,13 +1589,9 @@ body.text-sm .shell-sub { font-size: 12px; }
    changed. */
 #shell-box {
   border-width: 2px;
-  box-shadow: 0 0 0 1px rgba(var(--c-wood-light-rgb), 0.25),
     0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
-.shell-heading {
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
-}
 
 /* ---- Touch controls -----------------------------------------
 
@@ -1844,18 +1612,13 @@ body.text-sm .shell-sub { font-size: 12px; }
   justify-content: center;
   gap: 1px;
   border-width: 3px;
-  background: radial-gradient(
     circle at 50% 32%,
     rgba(var(--c-wood-light-rgb), 0.22),
     rgba(0, 0, 0, 0.62) 70%
   );
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.16),
     0 3px 0 rgba(0, 0, 0, 0.5);
 }
 
-.touch-btn .lbl {
-  letter-spacing: 0.5px;
-}
 
 #btn-pause,
 #btn-inventory,
@@ -1864,7 +1627,6 @@ body.text-sm .shell-sub { font-size: 12px; }
   align-items: center;
   justify-content: center;
   border-width: 3px;
-  background: radial-gradient(
     circle at 50% 32%,
     rgba(var(--c-wood-light-rgb), 0.22),
     rgba(0, 0, 0, 0.62) 70%
@@ -1946,12 +1708,9 @@ body.text-sm .shell-sub { font-size: 12px; }
   flex: none;
   width: 24px;
   height: 24px;
-  border-radius: 5px;
-  border: 2px solid var(--c-border-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
   font-weight: bold;
   color: var(--c-cream-faint);
 }
@@ -1991,7 +1750,6 @@ body.text-sm .shell-sub { font-size: 12px; }
 .shell-wipes {
   list-style: none;
   margin: 0 0 10px;
-  font-size: 12px;
   line-height: 1.5;
   color: var(--c-cream);
 }
@@ -2016,7 +1774,6 @@ body.text-sm .shell-sub { font-size: 12px; }
 .shell-warn {
   color: #e57373;
   text-align: center;
-  font-size: 12px;
   font-weight: bold;
   margin: 0 0 16px;
 }
@@ -2024,7 +1781,6 @@ body.text-sm .shell-sub { font-size: 12px; }
 .shell-keeps {
   list-style: none;
   margin: 0 0 18px;
-  font-size: 12px;
   line-height: 1.5;
   color: var(--c-cream-dim);
 }
@@ -2161,12 +1917,8 @@ body.text-sm .shell-sub { font-size: 12px; }
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(var(--c-wood-light-rgb), 0.6);
-  background: rgba(var(--c-wood-light-rgb), 0.15);
   color: var(--c-cream);
   font-weight: bold;
-  font-size: 15px;
 }
 
 .inv-balance .ico svg {
@@ -2216,18 +1968,13 @@ body.text-sm .shell-sub { font-size: 12px; }
   min-height: 56px;
   padding: 8px 10px;
   text-align: left;
-  font-family: inherit;
   color: var(--c-cream-dim);
-  background: rgba(0, 0, 0, 0.22);
-  border: 1px dashed var(--c-border-muted);
-  border-radius: 8px;
   cursor: pointer;
 }
 
 .inv-slot-filled {
   border-style: solid;
   border-color: rgba(var(--c-green-rgb), 0.7);
-  background: rgba(var(--c-green-rgb), 0.1);
 }
 
 .inv-slot:disabled {
@@ -2241,15 +1988,11 @@ body.text-sm .shell-sub { font-size: 12px; }
 }
 
 .inv-slot-label {
-  font-size: 10px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--c-cream-faint);
 }
 
 .inv-slot-value {
-  font-size: 13px;
-  font-weight: bold;
   color: var(--c-cream);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2282,33 +2025,16 @@ body.text-sm .shell-sub { font-size: 12px; }
   gap: 6px;
   min-height: 104px;
   padding: 22px 6px 8px;
-  font-family: inherit;
   color: var(--c-cream);
-  background: linear-gradient(rgba(var(--c-wood-light-rgb), 0.18), rgba(0, 0, 0, 0.2));
-  border: 2px solid rgba(var(--c-wood-light-rgb), 0.45);
-  border-radius: 10px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 0 rgba(0, 0, 0, 0.4);
   cursor: pointer;
 }
 
 .inv-tile .lbl {
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 1.25;
   text-align: center;
   overflow-wrap: anywhere;
 }
 
-.inv-tile-selected {
-  border-color: var(--c-green);
-  background: linear-gradient(rgba(var(--c-green-rgb), 0.28), rgba(var(--c-green-rgb), 0.08));
-  box-shadow: 0 0 0 2px rgba(var(--c-green-rgb), 0.35), 0 2px 0 rgba(0, 0, 0, 0.4);
-}
 
-.inv-slot.inv-tile-selected {
-  border-style: solid;
-  border-color: var(--c-green);
-}
 
 .inv-tile-worn .inv-art {
   border-color: #43a047;
@@ -2318,9 +2044,6 @@ body.text-sm .shell-sub { font-size: 12px; }
   opacity: 0.7;
 }
 
-.inv-tile-quest {
-  border-color: rgba(244, 197, 66, 0.55);
-}
 
 /* A badge in the tile's corner: a count, a price, worn or quest. */
 .inv-badge {
@@ -2328,10 +2051,7 @@ body.text-sm .shell-sub { font-size: 12px; }
   top: 5px;
   right: 5px;
   padding: 1px 7px;
-  border-radius: 999px;
-  font-size: 11px;
   font-weight: bold;
-  line-height: 1.5;
   background: rgba(0, 0, 0, 0.55);
   color: var(--c-cream);
   pointer-events: none;
@@ -2365,9 +2085,6 @@ body.text-sm .shell-sub { font-size: 12px; }
   flex: none;
   width: 44px;
   height: 44px;
-  border-radius: 10px;
-  border: 1px solid rgba(var(--c-wood-light-rgb), 0.55);
-  background: rgba(0, 0, 0, 0.3);
   color: var(--c-green-light);
   pointer-events: none;
 }
@@ -2409,7 +2126,6 @@ body.text-sm .shell-sub { font-size: 12px; }
 .inv-art-large {
   width: 72px;
   height: 72px;
-  border-radius: 14px;
 }
 
 .inv-art-large .ico svg {
@@ -2424,9 +2140,6 @@ body.text-sm .shell-sub { font-size: 12px; }
   flex-direction: column;
   gap: 10px;
   padding: 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(var(--c-wood-light-rgb), 0.45);
-  background: rgba(0, 0, 0, 0.25);
 }
 
 .inv-detail-top {
@@ -2444,33 +2157,21 @@ body.text-sm .shell-sub { font-size: 12px; }
 }
 
 .inv-detail-name {
-  font-size: 17px;
-  font-weight: bold;
   color: var(--c-cream);
-  line-height: 1.25;
 }
 
 .inv-chip {
   display: inline-block;
   padding: 2px 9px;
-  border-radius: 999px;
-  font-size: 11px;
   letter-spacing: 0.5px;
-  color: var(--c-green-light);
-  border: 1px solid rgba(var(--c-green-rgb), 0.6);
-  background: rgba(var(--c-green-rgb), 0.12);
 }
 
 .inv-chip-quest {
-  color: #f4d27a;
   border-color: rgba(244, 197, 66, 0.6);
-  background: rgba(244, 197, 66, 0.1);
 }
 
 .inv-detail-desc {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.55;
   color: var(--c-cream-dim);
 }
 
@@ -2484,7 +2185,6 @@ body.text-sm .shell-sub { font-size: 12px; }
 }
 
 .inv-effects li {
-  font-size: 12px;
   color: var(--c-green-light);
   padding-left: 14px;
   position: relative;
@@ -2494,22 +2194,18 @@ body.text-sm .shell-sub { font-size: 12px; }
   content: "";
   position: absolute;
   left: 2px;
-  top: 6px;
   width: 6px;
   height: 6px;
-  border-radius: 50%;
   background: currentColor;
 }
 
 .inv-detail-count {
-  font-size: 12px;
   color: var(--c-cream-faint);
 }
 
 .inv-detail-hint,
 .inv-detail-empty {
   margin: 0;
-  font-size: 13px;
   line-height: 1.55;
   color: var(--c-cream-faint);
 }
@@ -2525,7 +2221,6 @@ body.text-sm .shell-sub { font-size: 12px; }
 }
 
 .inv-empty {
-  font-size: 13px;
   color: var(--c-cream-faint);
   line-height: 1.6;
   padding: 18px 4px;

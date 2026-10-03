@@ -252,6 +252,46 @@ covered by the harness's own fixture act and item catalogue
 IV are registered stubs, to be written the same way, one verified
 passage at a time against the resource person's source material.
 
+## Writing a new act (Polish list #5)
+
+The order to bring Act II (or III, IV) to life in, each step's detail in
+the section it names. Plan first (Conventions): the beats, the lines,
+the flags and the objective chain, written out and agreed.
+
+  1. STORY.md: a chapter "Act II, beat by beat" before any content,
+     from the source material and STORY.md, Threads left open. Every
+     line of ours marked + (Writing dialogue).
+  2. content/act2.js in the scene form (Act data format): replace the
+     stub's worldWidth, startX, npcs and decorations with scenes, keep
+     number, title, titleTagalog; drop developmentNotice; objectives
+     with linearObjectives: true and objectiveCurrency as the act
+     needs; hints with fixed, places and a pool if the act has papers
+     (the dashboard offers them by itself, Polish #7).
+  3. Places and art: paintings in assets/backgrounds/act2/, lowercase
+     and hyphenated; a scene's own road with ground: { src } (Polish
+     #6); people in assets/sprites/characters/, animated from one still
+     by animate-still.js where drawn side on; every picture not yet
+     drawn in ART.md, Owed (missing-art.js lists them).
+  4. Fighters as types in content/enemies.js (Enemy data format), never
+     a second kind of behaviour (Consistency).
+  5. Speakers: an NPC is matched by its label; a decoration that speaks
+     under another name declares speakers (Polish #8).
+  6. Story points: devJumps on the act, one per beat a tester would want
+     to start from, each with its task; ?dev=1 lists them under the act
+     (Polish #2), and verify_new_scene.js starts from every one.
+  7. node _dev/tools/prepare.js: STORY.md has every line, and the content
+     check (Polish #4) finds doors to nowhere, story points in no scene,
+     unknown enemy types, repeated ids, objectives nothing sets, and
+     anyone behind a shadow tree, for every act.
+  8. Suites: the fixture act keeps every engine mechanic covered; the
+     act's own story end to end is a new section in verify_new_scene.js
+     (or a sibling file), modelled on Act I's, with reloads mid-beat.
+  9. The dashboard needs nothing: the roster's act picker shows the act
+     once a student has its row with objectives (Polish #1). The
+     questions are the teacher's (Standing decisions).
+ 10. TRACKER.md (the block, Next action's phone checks), DECISIONS.md
+     (why), ART.md, then commit and push as usual.
+
 ## Stack
 
 Vanilla HTML, CSS, and JavaScript. No build step, no bundler, no framework,
@@ -705,7 +745,8 @@ same x on every phone: at panelWidth, 2 times it, and so on, never at
 the end of the world. Keep NPCs, exits and checkpoints at least 90px
 clear of a join (40px before Block 50 thickened the trunks), or the
 trunk stands in front of them;
-verify_new_scene.js checks every Act I scene for this. greyFilter greys
+prepare.js checks every scene of every act for this (Polish #4), and
+verify_new_scene.js Act I's in the browser. greyFilter greys
 the paintings and the trees with them. mirrorPanels (Block 45) flips
 every second panel, so a single picture repeated along the road meets
 itself at the same column at every join, as Block 26's tiles did; Act I
@@ -1602,11 +1643,12 @@ STORY.md is the script of the content files and is changed in the same
 change as they are: a line added, reworded or removed in content/act1.js
 is added, reworded or removed there too, with its + marker if it is
 ours, and a beat, a place or a person that moves is moved there.
-verify_new_scene.js fails if a line of dialogue or a black card in
-content/act1.js is missing from it. The check runs one way only (the
+prepare.js (and so the hook, CI and verify_new_scene.js) fails if a line
+of dialogue or a black card in any act's content is missing from it
+(every act since Polish list #3). The check runs one way only (the
 content into the story), so a line deleted from the content must be
 deleted from STORY.md by hand. When Acts II to IV are written, their
-content joins the check and their beats join the file.
+beats join the file.
 
 Documentation style: plain professional prose. No emoji, no checkboxes, no
 bold, no em dashes, no horizontal rules. Status markers in parentheses:
@@ -2132,6 +2174,10 @@ look, by system:
     generated art, tried and reverted     Block 109
     the database's exposed functions,     Block 111 (schemas v8, v9;
       and working on the live database    Database, above)
+    the polish list for Acts II to IV     Block 112 (every act in the
+                                          dashboard, ?dev=1 and checks;
+                                          the content check; dead CSS
+                                          proved; schema v10)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,
@@ -2369,7 +2415,14 @@ A shadow tree stands at every multiple of a panelled scene's
 panelWidth, and since Block 50 its trunk is about 130 world px wide at
 head height. Moving an NPC, exit or checkpoint within about 90px of
 one of those x values, or changing panelWidth, puts someone behind a
-trunk; move them or run verify_new_scene.js, which fails on it.
+trunk; move them, or run node _dev/tools/prepare.js, which fails on it
+in seconds (Polish #4).
+
+The Edit tool, and some editors, turn an escape typed in a string or
+a regex (\uFEFF) into the character itself, which for an invisible one
+leaves a file that looks right and is not. prepare.js fails on a byte
+order mark anywhere but a file's first character; write such escapes
+with a script, or check the file after.
 
 A url() in css/style.css resolves against css/, so a path to a picture
 there starts ../assets/. A url() that game.js puts into a custom

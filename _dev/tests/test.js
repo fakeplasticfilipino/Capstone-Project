@@ -6583,6 +6583,12 @@ const visible = (page, sel) => page.evaluate((s) => {
        /ground-lupa/.test(own.back), own);
     ok("a speaker name in content finds its portrait, with no name known to the engine (Polish #8)",
        own.siga && own.none, own);
+    const heartIcon = await page.evaluate(() => ({
+      heal: Shell._itemIcon({ id: "x", kind: "consumable", use: { heal: 1 } }),
+      plain: Shell._itemIcon({ id: "y", kind: "consumable" }),
+      symbol: Boolean(document.getElementById("i-heart")) }));
+    ok("an item that heals shows the heart symbol on its tile, any other consumable the bag",
+       heartIcon.heal === "i-heart" && heartIcon.plain === "i-bag" && heartIcon.symbol, heartIcon);
     await ctx.close();
   }
   if (still()) { // the section above, continued

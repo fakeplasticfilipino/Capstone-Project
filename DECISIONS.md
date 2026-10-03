@@ -4429,6 +4429,91 @@ after. The probe met one trap on the way: switching to the visitor's
 role without clearing the request's claims reads as the last user, and
 showed a visitor seeing two profiles that a real visitor cannot see.
 
+## Block 112: the polish list, for Acts II to IV
+
+A scan of the whole repository on 4 Oct 2026, asked for by the
+proponent to make the later acts "smooth as butter", found no bug a
+student meets and fourteen things that would slow the next act down or
+keep the project untidy. The proponent: "FIX ALL OF THEM". Done, each
+with a check, except #14, which is the proponent's switch.
+
+#1 The dashboard described Act I only (status, objectives, tests, gain,
+time, CSV). An act picker above the roster chooses the act; it opens on
+the furthest act with objectives that a student has a row for, not the
+furthest reached, because a student who finishes Act I is moved into a
+stub act with none, and the roster would open empty. Performance is the
+chosen act's, once completed. The CSV names its act.
+
+#2 ?dev=1 offered Act I's story points only, and the guest started in
+"tondo". Every act's points are listed, grouped by act, as "act:id";
+the guest starts in that act, at the act's first scene by default.
+
+#3 The STORY.md check and the story-point suite read Act I only. Both
+read every act now: an empty act passes, and Act II is held to them the
+day it is written.
+
+#4 A content check in prepare.js (seconds, no browser), for every act:
+doors and gotoScene to scenes that exist, story points in real scenes
+and on the road, enemy types in the catalogue, ids unique, every
+objective's flag set by something (as a literal, through a constant, or
+by a field the engine sets: givenFlag, doneFlag, buyFlag, a job's
+first, full, earned), and nobody to reach behind a shadow tree. It was
+proved on planted mistakes in Act II, each caught. It also fails on a
+byte order mark inside a file, which the Edit tool had typed three
+times this block by turning a written \uFEFF escape into the character;
+the check caught the third the moment it was made.
+
+#5 CLAUDE.md, Writing a new act: the order of the steps, each pointing
+to the section that holds its detail.
+
+#6 GROUND_SRC was Act I's dirt for every scene. A scene may lay its own
+road (ground: { src }); an owed picture falls back to the dirt; leaving
+the scene restores it. Written only on a change.
+
+#7 The Talaan editor held a hand copy of Act I's paper places and the
+game's own titles. The dashboard loads the acts' content (pure data,
+enemies.js first, as on the game's page) and reads hints.places (new,
+English sentences for the teacher) and hints.pool.
+
+#8 The engine mapped the speaker "Siga" to the decoration siga-1 by
+name. An NPC or decoration declares the speaker names its bust answers
+to (speakers); the leader declares "Siga" and "Mga Siga".
+
+#9 A test.js failure in Block 109 could not be read: GitHub shows a
+run's log only to someone signed in. Every FAIL line is now also an
+annotation, which the public API returns. The runners are pinned to
+ubuntu-24.04 before ubuntu-latest moves to Ubuntu 26 on 19 Oct, and
+Playwright to 1.62.1 exactly. The first run on the new workflow was
+green.
+
+#10 isRunning (tests only) and a console.log on every act completion
+removed. #11 CLAUDE.md named tondo.jpg as the default backdrop; it is
+street-01.jpg since Block 54, with the other Tondo.png mentions put
+right.
+
+#12 The stylesheet's pixel theme restyles what older rules styled, so
+260 declarations were overridden by a later rule with the same
+selector and did nothing. A tool removed exactly those (249 lines or
+rules, 4,356 lines to 4,051), and a second compared the computed style
+of every element outside the world on twenty screens (title, login,
+settings, world, pause, bag, dialogue, test card, act card, toast; at
+823 by 412 and 1280 by 800) with the old stylesheet and the new:
+identical. Sprites in the world were left out of the comparison, since
+they animate between loads; what was removed there is, like the rest,
+a declaration a later identical selector replaces, which the cascade
+guarantees changes nothing.
+
+#13 Schema v10: two foreign-key indexes, and 26 policies that read the
+signed-in user once per query instead of once per row. Probed before
+and after: the same rows for a student, the teacher and a visitor, a
+student's own write allowed and another's refused, in blocks that
+always rolled back. The advisor's "multiple permissive policies" stay:
+merging each student and teacher pair is a security rewrite for a
+speed forty students would not notice.
+
+#14 Leaked password protection is a switch in the Supabase dashboard,
+which the connector cannot reach.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

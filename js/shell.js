@@ -919,10 +919,12 @@ const Shell = {
 
   // The symbol an item falls back to. An item may name its own
   // (icon: "i-apple"); otherwise its slot's, or a scroll for a quest
-  // item, or the bag.
+  // item, a heart for one that heals (the i-heart symbol, defined and
+  // never used until then), or the bag.
   _itemIcon(item) {
     if (item && item.icon) return item.icon;
     if (item && Inventory.isQuest(item)) return "i-scroll";
+    if (item && item.use && item.use.heal > 0) return "i-heart";
     if (item && this.SLOT_ICONS[item.slot]) return this.SLOT_ICONS[item.slot];
     return "i-bag";
   },
