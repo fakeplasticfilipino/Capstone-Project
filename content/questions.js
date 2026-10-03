@@ -12,11 +12,11 @@
 // database has questions for a test, those are used, and this file is
 // the fallback when it has none or cannot be reached.
 //
-// Act I's items are db/seeds/macario_items_v3.sql with the Scan list's
-// corrections (macario_items_v4.sql, 3 Oct 2026): ten matched pairs,
-// pre-test item n the partner of post-test item n, the key never in the
-// same place in both, and every letter A to D a key two or three times
-// in each test. correct is the 0-based index of the right choice.
+// Act I's items started as db/seeds/macario_items_v3.sql: ten matched
+// pairs, pre-test item n the partner of post-test item n. correct is
+// the 0-based index of the right choice. The questions are the
+// teacher's to write and change, on the dashboard; this file is only
+// the fallback (CLAUDE.md, Standing decisions).
 //
 // passing is the share of a post-test a student must get right to
 // pass. Below it, the student is offered a replay of the act and

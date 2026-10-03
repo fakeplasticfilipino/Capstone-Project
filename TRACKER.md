@@ -11,8 +11,9 @@ Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
 Last updated: 3 Oct 2026, after Block 110: the Scan list worked (below;
 everything a session can do is done, the rest waits on the proponent,
-the artist or the phone), with two things to run in Supabase
-(macario_items_v4.sql and the extended health check; Run log). Before
+the artist or the phone). The live database checked from the session
+the same day: healthy (Run log). The test questions are the teacher's,
+not a task here (CLAUDE.md, Standing decisions). Before
 that, 2 Oct 2026: Block 109 (generated stand-ins for the chair and the
 sewing table, tried and reverted at the proponent's word) and the scan
 of the whole repository; schema v5 confirmed run by the proponent the
@@ -311,8 +312,7 @@ the four-year cut "Tondo, 1894", the year Sakay joined, and the end
 "Tondo, 1895" (Block 94). Open: the year he became head of his council,
 and the council's name, against the source book. Also open:
 by the 1870 birth date he is twenty at the opening, older than the boy
-the opening shows (STORY.md, Open questions). The trivia card and the
-item bank should use the same years.
+the opening shows (STORY.md, Open questions).
 
 3. The proponents' review of our lines: every line marked + in STORY.md
 (PLACEHOLDER in content/act1.js), above all Blocks 80 and 81 (the
@@ -325,21 +325,8 @@ sources); still for the source book: the play's words, the ordeal
 chosen, what the pamphlets were, and the Talaan's three papers of facts
 (Block 94; STORY.md, The Talaan).
 
-4. The assessment item bank against Act I (db/seeds/macario_items_v3.sql,
-built into content/questions.js, editable on the dashboard). Checked 30
-Sep 2026: eight of ten items per test were taught by the story. Since
-Block 94 the occupation item ("Mananahi at barbero") is taught too: he
-sews for the Mananahi and works the Barbero's chair, and the Talaan's
-first paper says it. Block 110 replaced the "Mangingisda at magsasaka"
-distractor, a post-test stem that gave another item's answer away, and
-the keys (every letter now a key, no pair's keys in the same place),
-in content/questions.js and in db/seeds/macario_items_v4.sql, which the
-proponent runs in Supabase before any student sits a test (Run log).
-Still for the proponents: the rite (the three questions, Anak ng Bayan)
-is taught but tested by no item, worth one matched pair written from
-the source book. The item bank and the story agree on 1894. The
-post-test runs, so this decides whether the study measures anything; do
-it before the pilot.
+4. The test questions: not ours. Teachers write and change them on the
+dashboard (CLAUDE.md, Standing decisions); nothing here tracks them.
 
 5. Art from the artist: ART.md's Owed list, three pictures since Block
 102 (the pulungan's painting, the Mananahi's sewing table and the
@@ -351,10 +338,10 @@ artist for the whole figure side on, standing, arms free of the body.
 6. Then the remaining polish, the pilot, and Acts II to IV against the
 source material, Act II starting from STORY.md, Threads left open.
 
-7. The Scan list (2 Oct 2026, below): worked in Block 110. Left for the
-proponent: run db/seeds/macario_items_v4.sql and db/scripts/
-db_healthcheck.sql in Supabase and record both in the Run log; run
-reset_test_accounts.sql (S37); and S38 to S41 as listed there.
+7. The Scan list (2 Oct 2026, below): worked in Block 110. Left: run
+reset_test_accounts.sql before a full-flow test (S37; it deletes the
+test accounts' play, so on the proponent's word), and S38 to S41 as
+listed there.
 
 8. Privacy of the public repository (30 Sep 2026). Done: the names of
 the team, the resource person and the school are out of every tracked
@@ -388,15 +375,12 @@ Block 110. Status:
                  ?dev=1 with a student signed in, the shop button, a
                  replay's stage clothes, a script that throws, saves
                  out of order
-    S10 to S12   the item bank: a stem that gave an answer away, no D   (COMPLETE in the game;
-                 key, a pair's keys in the same place                   NOT RUN in Supabase,
-                                                                        macario_items_v4.sql)
+    S10 to S12   the item bank                                          (DROPPED: the
+                                                                        questions are the
+                                                                        teacher's)
     S13 to S15   the dashboard: first post-test's gain, a warning      (COMPLETE)
                  before editing a test students have sat, CSV
-    S16          the mangingisda distractor replaced (as S10)           (COMPLETE, as S10)
-                 the rite (three questions, Anak ng Bayan) taught but   (BLOCKED: a matched
-                 not tested                                             pair needs the source
-                                                                        book; the proponents)
+    S16          the item bank                                          (DROPPED, as S10)
     S17 to S22   the page's name and language, the login in Tagalog,    (COMPLETE)
                  the controls list, the corner buttons (an exception,
                  recorded), Bumalik from the login, two repeat lines
@@ -494,17 +478,17 @@ Trust this over any memory of a chat.
                                         teacher's Talaan papers
 
     db/seeds/macario_items_v3.sql              RUN, 28 Aug 2026
-    db/seeds/macario_items_v4.sql              NOT RUN (Block 110). The
-                                        Scan list's corrections to eight
-                                        Act I items; changes only items
-                                        still as v3 left them. Run before
-                                        any student sits a test
     db/seeds/enrollment_setup.sql              only for a fresh database
-    db/scripts/db_healthcheck.sql              read-only, run any time;
-                                        since Block 110 it checks the twelve
-                                        tables, the v4 to v7 columns,
-                                        functions, policies and index. Not
-                                        yet run in its new form
+    db/scripts/db_healthcheck.sql              read-only, run any time.
+                                        RUN 3 Oct 2026 from the session
+                                        (Supabase connector): all twelve
+                                        tables with RLS on, the v4 drops
+                                        gone, every v3 to v6 column, the
+                                        eight functions, the v6 and v7
+                                        policies and the pre-test index
+                                        present; 10 + 10 Act I items; one
+                                        teacher, one student (in a class);
+                                        one score, one session row
     db/scripts/reset_test_accounts.sql         run before any full-flow
                                         test. Owed once since Block 25
                                         (the id "mansanas" changed
@@ -740,14 +724,13 @@ machine, the assessment module.
         model through Hugging Face); reverted the same day at the
         proponent's word, white edges left and not the game's look
     110 the Scan list: the nine bugs, the dashboard (gain, CSV, a
-        warning before editing a sat test), the item bank (keys, a
-        giveaway, a distractor; v4 seed), the login in Tagalog and its
+        warning before editing a sat test), the login in Tagalog and its
         way back, two repeat lines, documents, smaller music, the hook
 
 ## Blocks remaining
 
-Act I's lines and history checked by the proponents, and the item bank
-matched to the finished act (Next action, 2 to 4). (IN PROGRESS)
+Act I's lines and history checked by the proponents (Next action, 2
+and 3). (IN PROGRESS)
 
 Acts II to IV written against the source material, with their trivia
 and test items. Until then those acts skip their tests with a notice,
@@ -757,8 +740,8 @@ Real items for Sandata, Anting-anting and Damit, and outfit art,
 decided against the source material. (NOT STARTED)
 
 The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
-Block 85 except two. The item bank matched to Act I is Next action 4
-(IN PROGRESS). The placeholder art it waited on has arrived: every
+Block 85 except two. The item bank, one of them, is the teacher's
+(Block 110). The placeholder art it waited on has arrived: every
 person is drawn since Block 102; only the chair, the sewing table and
 the pulungan's painting are still owed (ART.md; BLOCKED). The list: DECISIONS.md,
 Block 85.

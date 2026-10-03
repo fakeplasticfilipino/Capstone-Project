@@ -4393,6 +4393,8 @@ phone), S39 (the history rewrite), S40 (the art), S41 (the source book,
 the written delegation, the pilot accounts), and now running
 macario_items_v4.sql and the extended health check in Supabase.
 
+Afterwards, the same day, the proponent: the questions are the teacher's. Teachers write and change them on the dashboard, so the item bank is not this project's to audit or fix. db/seeds/macario_items_v4.sql was deleted unrun, S10 to S12 and S16 dropped from the list, and the rule went into CLAUDE.md, Standing decisions. The edits already made to content/questions.js, the fallback, were left as they are.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

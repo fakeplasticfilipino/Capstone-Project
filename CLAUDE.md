@@ -1676,6 +1676,13 @@ be separate. (Block 68 keeps this for the pre-test and changes it for the
 post-test: a student below the pass mark may replay the act and sit it
 again. Pilot and study accounts must still be separate.)
 
+THE QUESTIONS ARE THE TEACHER'S, NOT OURS (the proponent, 3 Oct 2026).
+Teachers write and change the test questions and the trivia card on the
+dashboard. A session does not audit, rewrite, rebalance or seed the
+item bank, and does not put the questions on a to-do list: what the
+items say, where the keys sit and what they test is the teacher's
+call. content/questions.js is only the fallback for an empty database.
+
 Assessment items live in the database because the table holds the answer
 key. Item and cosmetic definitions live in code because they hold no
 secret. Only ownership needs a table.
