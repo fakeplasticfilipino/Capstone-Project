@@ -14,14 +14,12 @@
 // a paper keeps its slot, and a student who found paper 2 still has it
 // found after the teacher rewrites it.
 //
-// PLACES describes where each paper lies, in words, because the
-// dashboard does not load the game's content. An act without places
-// is not offered. A spot moved in content is described again here.
-//
-// Block 94. The game has three papers of its own for Act I (content/
-// act1.js, hints.pool), laid in any slot the teacher leaves empty.
-// DEFAULTS names them, for the same reason PLACES describes the spots;
-// a paper renamed in content is renamed here too.
+// Since Polish list #7 the dashboard loads the acts' content (pure data;
+// teacher.html) and reads each act's papers from it: where each lies
+// (hints.places, in words) and the game's own papers' titles
+// (hints.pool, Block 94), laid in any slot the teacher leaves empty. An
+// act whose content declares fixed hints with places is offered; a new
+// act is offered the day its content declares them, with no change here.
 //
 // Everything a teacher typed is written into inputs as values, never
 // as HTML.
@@ -32,21 +30,25 @@ const TeacherTalaan = {
   TITLE_MAX: 60,
   TEXT_MAX: 400,
 
-  PLACES: {
-    1: [
-      "On the road between Nanay and the Kutsero. Every student walks past it early in the act.",
-      "Past the Mananahi's sewing, at jump height: the student has to jump for it.",
-      "Near the end of the street, before the direktor, at jump height.",
-    ],
-  },
+  PLACES: {},
+  DEFAULTS: {},
 
-  DEFAULTS: {
-    1: ["Si Macario Sakay", "Ang komedya", "Ang Katipunan"],
+  // Reads the papers' places and the game's own titles from the content.
+  readContent() {
+    for (let n = 1; n <= 4; n++) {
+      const hints = (window["ACT_" + n] || {}).hints;
+      if (!hints || !hints.fixed || !Array.isArray(hints.places) || !hints.places.length) continue;
+      this.PLACES[n] = hints.places.slice(0, this.SLOTS);
+      const titles = [];
+      (hints.pool || []).forEach((p, i) => { titles[(Number(p.slot) || i + 1) - 1] = p.title; });
+      this.DEFAULTS[n] = titles;
+    }
   },
 
   init() {
     if (this.started) return;
     this.started = true;
+    this.readContent();
     this.el = {
       act: document.getElementById("tl-act"),
       list: document.getElementById("tl-list"),

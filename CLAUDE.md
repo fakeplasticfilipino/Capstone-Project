@@ -473,9 +473,12 @@ world belongs to the scene.
                completeText,                     laid at random on a
                pool: [{ title, text }],          scene's hintSpots
                fixed: true,                      optional; paper n at
-               listLabel },                      hintSpots[n - 1], its
+               listLabel,                        hintSpots[n - 1], its
                                                  words the teacher's
                                                  (Block 70)
+               places: ["..."] },                with fixed: where each
+                                                 lies, in English, for the
+                                                 dashboard (Polish #7)
       keepFlagsOnReplay: ["flag"],               optional; kept by a replay
                                                  (Block 68)
       devJumps: [{ id, label, scene, x, facing,  optional; points a tester
@@ -623,11 +626,13 @@ title, text }; an empty slot lays nothing, and a paper's flag is
 listLabel names the list on the pause screen, label the card. Act I
 declares fixed hints with three spots (content/act1.js, HINT_SPOTS) and,
 since Block 94, three papers of facts of its own, so three always lie on
-the road and the Talaan button is always there; the dashboard names
-them (js/teacher-talaan.js, DEFAULTS), and a paper renamed in content is
-renamed there. The dashboard
-describes the three places in words (js/teacher-talaan.js, PLACES), and
-a spot moved in content is described again there.
+the road and the Talaan button is always there. Since Polish list #7 the
+dashboard loads the acts' content (teacher.html) and reads both from it:
+the game's own papers' titles from hints.pool, and where each paper lies
+from hints.places, a list of English sentences for the teacher (a spot
+moved in HINT_SPOTS is described again there). An act whose hints are
+fixed and declare places is offered in the editor, with no dashboard
+change.
 
 devJumps (Block 108) are points in the story a tester can start a guest
 from: the title screen opened with ?dev=1 in the address offers them as

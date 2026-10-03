@@ -1373,6 +1373,14 @@ window.ACT_1 = {
     fixed: true,
     label: "Papel",
     listLabel: "Mga Papel",
+    // Polish list #7. Where each paper lies, in English, for the teacher's
+    // Talaan editor, which reads it from here. A spot moved in HINT_SPOTS
+    // is described again here.
+    places: [
+      "On the road between Nanay and the Kutsero. Every student walks past it early in the act.",
+      "Past the Mananahi's sewing, at jump height: the student has to jump for it.",
+      "Near the end of the street, before the direktor, at jump height.",
+    ],
     // PLACEHOLDER: ours, until the proponents word these.
     foundText: "Naitala ito sa Talaan. Buksan ang Talaan sa pause para basahin ulit.",
     completeText: "Nahanap mo na ang lahat ng papel!",
