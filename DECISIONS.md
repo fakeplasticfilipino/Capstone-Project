@@ -4319,3 +4319,144 @@ few pictures a day, two of its better models failed on this account,
 and a generated prop needs a clean transparent cut-out (a white
 background flooded out leaves a fringe) to sit with the artist's work.
 The three pictures stay owed to the artist (ART.md).
+
+## Block 110: the Scan list fixed
+
+At the proponent's word (2 and 3 Oct 2026, "fix all of them, don't ask
+me questions"), the 43 findings of the 2 Oct scan, worked in order.
+Each has a check in test.js (AH, AV, BH, BI and a new BR) unless it is
+words or comments. What was built, and why each way:
+
+The bugs. S1: the dashboard averaged performance over every act row,
+and going on to a stub act makes a row worth 0, so only completed acts
+count now. S2: the quiz's Back button is a clone of itself, which kept
+whatever label the replay or the feedback form had given it; _onBack
+now sets its label every time. S3: a score that cannot be written held
+the student on "Subukan Ulit" for good; a second button, "Ituloy muna",
+keeps the row in localStorage, it counts as sat (so the same test is
+not asked twice), and it is sent on the next login or before the next
+test, a duplicate refused by the database meaning it already arrived.
+S4: a guest writes nothing, so checkObjectives never ran and a guest
+who finished Act I was left with "Wala nang gawain"; markDirty now
+asks Acts.guestCheck, which shows the act's end without a test and goes
+back to the title screen. It reads Game.isGuest() rather than the
+isGuest variable, because markDirty runs at parse time (the temporal
+dead zone pitfall, met again on the way). S5: ?dev=1 with a student
+signed in would have entered that student's save; refused, and the
+list hidden. S6: the corner shop button shows only while something is
+for sale. S7: a replay kept the stage clothes; an item that declares
+replayRemoves is taken back (Inventory.revoke) and the story gives it
+again. S8: a scene script that throws now hands the world back and
+closes any box it left open; its doneFlag stays unset. S9: saves are
+serialised: one in flight, and any number asked for meanwhile share
+the one that follows, its payload built when it starts. Its state is
+on the function, not in a let, for the same parse-time reason as S4.
+
+The study. S10 to S12 and S16: post item 10 no longer names the trades
+that answer post item 2; keys moved (two choices swapped, words kept)
+so each letter is a key two or three times per test and no pair shares
+a position; "Mangingisda at magsasaka" became "Magsasaka at
+mangangalakal". The live database holds its own copy of the items, so
+db/seeds/macario_items_v4.sql makes the same changes there, touching
+only items still exactly as v3 seeded them, so a teacher's own edits
+win. The rite (the three questions, Anak ng Bayan) is still taught and
+untested: a matched pair for it needs the source book, so it is left
+to the proponents. S13: the Gain column is the first post-test's, the
+retake's under it, since the study's gain is defined on the first.
+S14: saving a test students have sat asks first, and the save reminds
+that the tests are matched pairs. S15: Download CSV of the roster
+already fetched, no new query.
+
+The screens. S17 the page is MACARIO, lang tl. S18 the login reads
+"Mag-log in", "Naglo-load...", and Supabase's English errors are said
+in Tagalog (the raw message kept for the console). S19 the controls
+list says run, dash and shoot as they are. S20 the corner buttons stay
+icons only, recorded as the one exception (CLAUDE.md, Icons). S21 a
+Bumalik under the login form. S22 two lines of ours that fit the moment
+(Nanay after the oath, the Mananahi four years on while her sewing still
+pays), marked PLACEHOLDER and + in STORY.md.
+
+Dead weight and documents. S23 the apple game is kept on purpose, a
+tested mechanic for Acts II to IV. S24 intertitle.wav and its generator
+removed; streak.wav stays with the apple game. S25 to S34 stale
+comments and documents brought up to date, the health check extended to
+v5, v6 and v7. S35 was corrected with the scan. S36 history moved out of
+CLAUDE.md (below, Moved from CLAUDE.md); most of its length is the
+formats every session needs, so it stays long. S42 the two music
+tracks re-encoded at 96 kbps mono (3.9 MB to 2.9 MB) with a JavaScript
+encoder, there being none on the computer; gabi.wav stays a WAV, since
+an MP3 cannot loop without a gap and it is a 7.5 second loop of
+crickets. S43 npm install now turns the pre-commit hook on.
+
+Not for a session: S37 (running reset_test_accounts.sql), S38 (the
+phone), S39 (the history rewrite), S40 (the art), S41 (the source book,
+the written delegation, the pilot accounts), and now running
+macario_items_v4.sql and the extended health check in Supabase.
+
+## Moved from CLAUDE.md (Block 110, Scan S36)
+
+History taken out of CLAUDE.md, word for word, so the file every
+session loads keeps rules only. CLAUDE.md now says each in a line or
+two and points here.
+
+A student (or a developer) reporting "I can't see Nanay anywhere" is not
+necessarily a code problem. Driving the actual shipped content/act1.js and
+game.js headlessly (real files, not the _dev/tests/test.js fixture) confirms the
+sprite loads, the CSS is quoted correctly, and the dialogue plays; the
+files themselves are not the fault. Checked against the live GitHub main
+branch during Block 13: raw.githubusercontent.com already served the
+reset, Nanay-only content/act1.js and the quoted-url fix in game.js, but
+the live index.html's own script tags still named OLDER v=N numbers
+(content/act1.js?v=5, game.js?v=14, shell.js?v=4, style.css?v=9,
+content/items.js?v=2) than the content actually sitting behind those same
+URLs. Whatever pushed the newer file bytes to main did not bump the
+matching query strings, which is exactly the failure this file already
+warns about under Pitfalls ("Increment the v=N cache-buster... or mobile
+browsers keep serving the cached copy"): a browser or CDN that fetched,
+say, content/act1.js?v=5 before that push will keep serving what it
+cached at that URL and has no reason to ever ask again, since the URL
+never changed. If Nanay is missing on a real device or in a real browser
+but a fresh headless fetch of the same files shows her fine, suspect this
+before suspecting the code: hard refresh, or open the live URL in a
+private window, and confirm the v=N numbers referenced by index.html
+actually match a bump made after the file they reference last changed.
+Since Block 106 the numbers are fingerprints of the files' bytes,
+written by prepare.js, and prepare.js --check (the hook, and the first
+CI job) fails when one is stale, so a push like that is red before it
+can reach a phone.
+
+(Superseded by Block 25, below: each screen now has exactly one door.)
+The inventory and shop screens were reached from pause and from nowhere
+else through Block 12. Block 13 added a second door: #btn-inventory and
+#btn-shop, next to #btn-pause in the main UI rather than in the mobile
+control cluster (which already overflows the viewport at 412px, a known
+problem, and a further button in that row would make a documented fault
+worse to save one tap). Either door still stops the game for the whole
+visit, so an effect can never change under a running frame; a direct
+open pauses the world itself rather than relying on openPause having
+already done it. See Decisions on record, Block 13, for how shell.js
+tells the two doors apart on the way back out.
+
+(Superseded by Block 68 and schema 006, at the instructor's direction.)
+Assessment items had RLS enabled with no student read policy; questions
+were served by get_assessment_items, which omits correct_index, and
+grading ran in submit_assessment. Since schema 006 a student may read
+the items whole, the game grades a test itself, and teachers may insert,
+update and delete items and trivia. assessment_scores is still select
+and insert only for a student: a score cannot be changed or deleted from
+a browser, but a failed post-test may be followed by another attempt,
+each its own row (attempt), and the pre-test is still one row, by a
+partial unique index.
+
+setupNpcAnimation and setupPlayerAnimation (game.js) used to build their
+CSS background-image with an unquoted url(${...}). That breaks the moment
+an asset path has a space in it — assets/sprites/characters/nanay.png does — and it
+breaks silently in a way that looks like a loading failure but isn't:
+loadSpriteSheet's preload Image() still succeeds (browsers tolerate a
+literal space in an <img>/Image src), so naturalWidth/naturalHeight,
+frameWidth/frameHeight and the computed backgroundSize/backgroundPosition
+are all correct. Only the CSS url() token itself is invalid, so
+backgroundImage silently stays "none" and the sprite is an invisible box
+occupying the right size in the right place. Fixed by quoting both sites:
+url("${assetUrl(sheet.src)}"). Any future asset path with a space, a
+paren, or a comma needs this same quoting; it's cheap enough to always do.

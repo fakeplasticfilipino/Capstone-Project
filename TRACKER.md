@@ -9,11 +9,14 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 2 Oct 2026, after Block 109 (generated stand-ins for the
-chair and the sewing table, tried and reverted at the proponent's word)
-and a scan of the whole repository (the Scan list below: 43 findings,
-none started, to be handled later); schema v5 confirmed run by the
-proponent the same day. Blocks 106 to 108, the same
+Last updated: 3 Oct 2026, after Block 110: the Scan list worked (below;
+everything a session can do is done, the rest waits on the proponent,
+the artist or the phone), with two things to run in Supabase
+(macario_items_v4.sql and the extended health check; Run log). Before
+that, 2 Oct 2026: Block 109 (generated stand-ins for the chair and the
+sewing table, tried and reverted at the proponent's word) and the scan
+of the whole repository; schema v5 confirmed run by the proponent the
+same day. Blocks 106 to 108, the same
 day: every ?v= a fingerprint written by node _dev/tools/prepare.js (run
 it before every commit; a hook and the first CI job check it), the
 animate tools shrink what they write, test.js --only; every moving body
@@ -37,9 +40,9 @@ Block 97, one tool and a rig per character for animating any still;
 Block 96, the big siga from the artist's still. Blocks 90 to 97 were
 tested on the phone that day with no fault reported; Blocks 98 to 103
 have not been seen on a device yet (Next action 1). Earlier blocks:
-the Blocks list below, and DECISIONS.md. test.js 776 passed, 0 failed;
-verify_new_scene.js 255 passed, 0 failed, locally and on CI. Everything
-is committed and pushed to main.
+the Blocks list below, and DECISIONS.md. test.js 795 passed, 0 failed
+(locally, 3 Oct 2026); both suites green on CI. Everything is committed
+and pushed to main.
 
 A new session, on any device: git pull first; read CLAUDE.md, then
 this file's Start here and Next action, then STORY.md before touching
@@ -168,7 +171,7 @@ from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
 Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
 the proponent tested Blocks 90 to 97 on the phone and reported no
-fault. Blocks 98 to 108 are pushed and not yet seen on a device:
+fault. Blocks 98 to 110 are pushed and not yet seen on a device:
 Next action 1 says what to look for.
 
 Versions: since Block 106 every ?v= is the file's fingerprint, written
@@ -219,6 +222,18 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       opens each with the right task in the log. Failure: anyone drawn
       to one side of where he stands, a jitter while walking, or a
       point that opens the wrong scene or task.
+
+    Block 110, the Scan list. The tab reads MACARIO. Magsimula, then
+      Bumalik under the login form goes back to the title screen; a
+      wrong password says "Mali ang email o password". No coins button
+      in the corner (nothing is for sale in Act I). Playing as a guest
+      to the end of Act I (?dev=1, Ang ulat at ang wakas) ends on a
+      "Wakas" screen whose button goes back to the title. Settings
+      lists Takbo and Barilin. The music still sounds right, only
+      smaller (mono now). On the dashboard: Download CSV, and the Gain
+      column. Failure: any of these missing, a "Log In", the music
+      thin or crackling, or a guest left in the pulungan with "Wala
+      nang gawain".
 
     Block 98, six characters. The opening: all three siga are the
       artist's, the leader in a salakot and shawl, the big one in a red
@@ -315,11 +330,14 @@ built into content/questions.js, editable on the dashboard). Checked 30
 Sep 2026: eight of ten items per test were taught by the story. Since
 Block 94 the occupation item ("Mananahi at barbero") is taught too: he
 sews for the Mananahi and works the Barbero's chair, and the Talaan's
-first paper says it. Still for the proponents: "Mangingisda at
-magsasaka" is a pre-test distractor while a mangingisda is someone he
-meets, which can pull a student toward the wrong answer; and the rite
-(the three questions, Anak ng Bayan) is taught but tested by no item,
-worth one matched pair. The item bank and the story agree on 1894. The
+first paper says it. Block 110 replaced the "Mangingisda at magsasaka"
+distractor, a post-test stem that gave another item's answer away, and
+the keys (every letter now a key, no pair's keys in the same place),
+in content/questions.js and in db/seeds/macario_items_v4.sql, which the
+proponent runs in Supabase before any student sits a test (Run log).
+Still for the proponents: the rite (the three questions, Anak ng Bayan)
+is taught but tested by no item, worth one matched pair written from
+the source book. The item bank and the story agree on 1894. The
 post-test runs, so this decides whether the study measures anything; do
 it before the pilot.
 
@@ -333,10 +351,10 @@ artist for the whole figure side on, standing, arms free of the body.
 6. Then the remaining polish, the pilot, and Acts II to IV against the
 source material, Act II starting from STORY.md, Threads left open.
 
-7. The Scan list (2 Oct 2026, below): 43 findings from reading every
-file, none started. Worked as an agreed list once the proponent has
-answered it item by item; the ones that bear on the study (S1, S2, S10
-to S15) before the pilot.
+7. The Scan list (2 Oct 2026, below): worked in Block 110. Left for the
+proponent: run db/seeds/macario_items_v4.sql and db/scripts/
+db_healthcheck.sql in Supabase and record both in the Run log; run
+reset_test_accounts.sql (S37); and S38 to S41 as listed there.
 
 8. Privacy of the public repository (30 Sep 2026). Done: the names of
 the team, the resource person and the school are out of every tracked
@@ -361,275 +379,46 @@ Block 105.
 
 ## Scan list (2 Oct 2026)
 
-A read of every tracked file (the engine, the content, the dashboard,
-the database files, the tools, the tests and the documents), asked for
-by the proponent, who wants it handled later. Each item says where, what
-is wrong, why it matters, and a suggested fix; nothing here is started.
-Per CLAUDE.md (Plan first) the list is answered item by item before any
-of it is built. All (NOT STARTED).
+A read of every tracked file, 43 findings, worked in Block 110 (2 and 3
+Oct 2026) at the proponent's word. What was built and why: DECISIONS.md,
+Block 110. Status:
 
-### Bugs
-
-S1. Dashboard performance is pulled down by empty acts. js/teacher.js,
-buildRoster: the Performance column averages performance_score over
-every act_progress row the student has. Finishing Act I shows the
-transition screen, and "Magpatuloy sa Ikalawang Yugto" runs
-Acts.enterAct(2), whose _ensureRow inserts an Act II row with
-performance_score 0 (Act II is a stub). A student who scored 90 in Act I
-then shows 45. Matters: it is a figure the panel and the teacher read.
-Fix: average only rows with status completed, or only acts with
-objectives_total > 0; or show Act I's score alone while it is the only
-act with content.
-
-S2. The quiz's Back button keeps a borrowed label. js/assessment.js,
-_onBack clones the button and resets only its icon. askReplay labels it
-"Tapusin na" and the feedback form "Laktawan"; every later question
-screen that shows Back (index > 0) keeps that word. A student who fails
-the post-test, replays and sits it again sees "Tapusin na" on the Back
-button of every question. Fix: _onBack takes a label and defaults it to
-"Bumalik"; askReplay and the feedback pass their own.
-
-S3. No way out of a score that cannot be saved. assessment.js, _submit:
-on a failed insert (no internet, a dead connection) the screen offers
-only "Subukan Ulit", and the promise always resolves into another try,
-so a student offline at the end of a test is held there for good. Fix:
-after one or two failed tries offer a second button that keeps the
-answers in localStorage and moves on, sending them on the next login;
-or at least a way back to the world with the score shown.
-
-S4. A guest who finishes Act I gets no ending. The last flag
-(pinunoNgBalangay) is set after "Wakas ng Unang Yugto", but
-Acts.checkObjectives and finishAct return at once without a
-currentUserId, so a guest is left in the pulungan with "Wala nang
-gawain." Matters for a presentation played as a guest. Fix: for a guest,
-show the act's end screen (Acts.showTransition with the "Wakas" text,
-without the next act) when the last objective is done.
-
-S5. ?dev=1 on a phone with a student logged in enters that student.
-game.js, enterGameAsGuest returns at once when currentUserId is set, and
-shell.js has already marked the gate taken, so "Simulan dito" drops the
-tester into the student's real save (which is then written to). Fix:
-hide the story-point list when a session exists, or sign out first with
-a warning.
-
-S6. The corner shop button opens an empty shop. The only item
-(damit-entablado) has price 0, so Inventory.forSale lists nothing and
-the always-visible coins button opens "Walang paninda ngayon." A
-student taps it and learns nothing. Fix: hide #btn-shop while
-Inventory.forSale(null) is empty (one line in the game loop), and show
-it again when items are for sale.
-
-S7. A replay keeps the stage clothes. acts.js, replayAct clears the
-story's flags but not the inventory, so after a failed post-test the
-replayed act is played in the clothes from the start, with their
-slower detection, before the direktor has given them. Fix: unequip and
-remove damit-entablado on a replay (its grant flag is a story event),
-or declare per item whether a replay keeps it.
-
-S8. A scene script that throws leaves the world frozen. game.js,
-runSceneScript catches the error but leaves cutscenePlaying as the
-script set it, so Macario cannot move until a reload, and the doneFlag
-is never set, so the reload plays the same script again. Fix: in the
-catch, clear the cutscene (setCutscene(false)) and close any open
-dialogue; log it so the harness fails on it.
-
-S9. Two saves can arrive out of order. game.js, saveProgress has no
-in-flight guard: the ten-second autosave and the 800 ms debounce can
-both be sending, and if the earlier payload lands last it overwrites
-the newer one (an objective flag lost until the next save). Rare, and
-the next save repairs it, but a logout in that window keeps the stale
-row. Fix: one save at a time; a save asked for while one is in flight
-runs once more after it.
-
-### The study and the assessment
-
-S10. A post-test question gives away another's answer. content/
-questions.js (and the seeded bank): post item 10's stem says "Ang mga
-tulad ni Sakay na mananahi at barbero", which answers post item 2
-("Barbero at mananahi") in the same test. Fix: reword item 10's stem
-without the trades ("mga karaniwang manggagawa tulad ni Sakay"), in the
-database too if the teacher has saved the bank there.
-
-S11. No answer is ever D. The pre-test keys are B,A,C,B,B,A,B,B,C,B
-(B six times) and the post-test's C,C,A,C,C,B,A,C,B,B; neither test
-has a D. A student who notices never picks D, and three of four
-choices become two of three. Fix: move some keys to D (rotating the
-choices of a few items), keeping each pair's keys in different
-positions.
-
-S12. Pair 10 has its key in the same place in both tests (B), against
-the standing rule that matched pairs put the key in a different
-position. Fix: move one of them, with S11.
-
-S13. The dashboard's gain uses the latest post-test try. teacher.js
-keeps the highest attempt per test, so a student who failed, replayed
-and passed shows the gain of the retake. The study's learning gain is
-probably the first post-test against the pre-test (and the retake
-reported separately). Fix: show the first attempt's gain in the Gain
-column and summary, and the latest beside it, so the paper reports
-what it defines.
-
-S14. The instrument can change in the middle of the study. Any teacher
-can edit any act's questions and trivia (schema 006 policies are not
-per class), a pre-test item can be edited without its post-test
-partner, and nothing stops an edit once students have sat a test. Fix:
-a lock (refuse to save a test that has scores against it, or warn and
-require a confirmation), and edit pairs together; at least say it in
-the dashboard and in the study's procedure.
-
-S15. Nothing exports. The proponents receive aggregate figures and
-will analyse them; the dashboard shows tables only (Deferred:
-"Dashboard export"). Fix: a "Download CSV" of the roster rows already
-fetched (no new query), done in the browser.
-
-S16. Already noted (Next action 4) and still open: the "Mangingisda at
-magsasaka" distractor, a person the student meets; and the rite (the
-three questions, "Anak ng Bayan") is taught but not tested.
-
-### Player-facing text and screens
-
-S17. The page title is "Long Road" (index.html, <title>), the name of
-an earlier draft, and the page declares lang="en" though the game is in
-Tagalog. The tab, the home-screen shortcut and a screen reader all say
-it. Fix: <title>MACARIO</title> and lang="tl" (teacher.html stays en).
-
-S18. English on the student's login. index.html: the button reads "Log
-In"; game.js writes "Loading..." while signing in, and shows Supabase's
-own English error ("Invalid login credentials") on a wrong password.
-Fix: "Mag-log in", "Naglo-load...", and a Tagalog line for the common
-errors (wrong email or password, no connection), the raw message kept
-for the console.
-
-S19. Settings' list of controls is out of date (index.html,
-.shell-controls): "Ibato" (throw) is now a gunshot; running (hold a
-direction) and the dash (Atake toward an enemy) are not listed; jump
-also takes the up arrow. Fix: reword to the controls as they are.
-
-S20. The corner buttons have no words. #btn-pause, #btn-inventory and
-#btn-shop are icon-only (aria-label only), against CLAUDE.md's rule
-that every button is an icon and a label. Either give them short
-labels if they fit at 0.7 zoom, or record the exception and why in
-CLAUDE.md, Icons.
-
-S21. No way back from the login box. After Magsimula the login form
-has no button back to the title screen (guest mode, settings); a
-student who tapped the wrong one reloads. Fix: a "Bumalik" under the
-form that shows the title panel again.
-
-S22. Repeat lines that no longer fit the moment (content/act1.js):
-the Mananahi's "Nariyan ang tahian, kung gusto mo pa ng dagdag na
-barya" is still said after her 25 is paid (the tahian then says she is
-done); Nanay's last set ("Ituloy mo lang 'yan...") is what she says on
-the street after he has joined and, a year on, lied to her. Fix: a
-set after SEWING_JOB.full, and one for Nanay after the oath (ours,
-marked PLACEHOLDER and +).
-
-### Dead code and unused files
-
-S23. The apple game is no longer used by the story. game.js,
-playCatchGame (about 300 lines), its screen in index.html and its CSS
-are exercised only by test.js (Blocks 57, 65); no content calls it
-since Block 89. Matters little at run time; it is weight to read and
-keep tested. Fix: remove it and its checks, or keep it on purpose and
-say so in CLAUDE.md (a ready mechanic for Acts II to IV).
-
-S24. Sounds downloaded and never played: intertitle.wav (black cards
-are silent since Block 84) and streak.wav (the apple game only). Every
-phone stores them since Block 105. Fix: remove with S23, or keep if
-the apple game stays.
-
-S25. Five empty lines before buildNpcs in game.js (after
-SHADOW_TREE_URLS). Cosmetic.
-
-### Documents and comments that are out of date
-
-S26. README.md: still says "a v=N query string, and images are
-versioned through ASSET_VERSION" (fingerprints since Block 106); says
-several characters are placeholder boxes (only the chair, the table and
-the pulungan are owed); its Tests section lacks prepare.js and --only.
-
-S27. content/act1.js's header tells earlier stories: the Mananahi
-paying him on the street, the third pamphlet ending the act, "the
-direktor is the last of the Mananahi's deliveries"; CITIZENS' comment
-names the apple tree and "the Mananahi's customers".
-
-S28. game.js comments that describe things gone or changed: the
-"Blocks applied" header stops at Block 7; Tondo.png as the backdrop;
-Horse.png as a 32px sheet (the horse is the proponent's large sheet);
-the melee sheet "a PNG that carries a .jpg name"; nanay.png "has a
-space"; the stage poem, night and death sequence (setPaused, fadeToScene
-comments); the outpost and the amulet; the Tindero; "fps not checked on
-a phone"; the stage ramp in floorHeightAt.
-
-S29. content/items.js and js/inventory.js comments: the Tindero's
-stall, Kabayo's apples, the Mananahi selling the clothes, and
-"assets/items/", a folder that does not exist (the example path
-"assets/Items/Sibat.png" is also capitalised).
-
-S30. js/acts.js comments: "Act I has five objectives", the drip paying
-50 before "the outpost" (Act I has fourteen objectives and no drip,
-objectiveCurrency false); DAMAGE_BUDGET "a careful first run of the
-Act I outpost".
-
-S31. js/assessment.js header: "owns ... the two RPC calls" (none used
-since Block 68).
-
-S32. index.html comments: the page card "showNotebookCard" (now
-showPageCard, the Talaan), "Login / signup gate" (there is no signup).
-
-S33. _dev/README.md names make-placeholder-sprites.py, which no longer
-exists (Stand-in art section). key-black.py's example file name,
-"muslim-walk.jpg", from an early draft, is better replaced with a
-neutral one (the play's soldiers are "kawal").
-
-S34. The database's own description: db/scripts/db_healthcheck.sql
-checks "the eleven tables" of schema v4 and nothing from 006 or 007
-(the attempt column, the partial unique index for the pre-test,
-talaan_entries and its policies); the Run log said the database holds
-eleven tables (twelve since 007). Fix: extend the health check.
-
-S35. This file's requirement tables: Equipment System said "no item
-ships since Block 52" (the stage clothes ship since Block 82), and Data
-Synchronization did not mention play as a guest with no internet
-(Block 105). Corrected in this update; kept here so the paper's own
-tables are checked the same way.
-
-S36. CLAUDE.md is about 133 KB and is loaded by every session. Much of
-it is history (the long "I can't see Nanay" pitfall, old file names,
-superseded paragraphs) that belongs in DECISIONS.md. Fix: a pass that
-moves history out and keeps rules, as Block 79 did.
-
-### Open items and process
-
-S37. db/scripts/reset_test_accounts.sql is still not recorded as run
-(owed since Block 25). Schema v5 itself is run (2 Oct 2026, the
-proponent).
-
-S38. Blocks 98 to 108 have not been seen on a phone (Next action 1).
-Block 109 was reverted, so nothing of it is left to see.
-
-S39. The git history still holds the private files and names (Next
-action 8); the decision on a history rewrite is pending.
-
-S40. Owed art: the barber's chair, the sewing table, the pulungan's
-painting (ART.md).
-
-S41. Waiting on the proponents and the source book (Next actions 2 to
-4): the years, every + line, the Talaan's three papers; and on others
-(Blocked on other people): the resource person's written delegation,
-the pilot accounts.
-
-S42. Sound is now half of what a phone downloads: calm.mp3 and
-intense.mp3 are 1.9 MB each and gabi.wav (the night) is an
-uncompressed 324 KB. Fix: gabi as MP3 or OGG, and the two tracks at a
-lower bitrate (96 kbps mono is plenty for a phone speaker), done with an
-encoder on a computer that has one (nothing in Node encodes MP3).
-
-S43. The pre-commit hook is on the proponent's computer only (git
-config core.hooksPath _dev/hooks); a cloned copy or a cloud session
-relies on CI. package.json has no "test" script. Fix: add "scripts":
-{ "test": ..., "prepare": "git config core.hooksPath _dev/hooks" } so
-npm install turns the hook on everywhere.
+    S1 to S9     the bugs: the dashboard's performance, the quiz's      (COMPLETE)
+                 Back label, a score kept offline, a guest's ending,
+                 ?dev=1 with a student signed in, the shop button, a
+                 replay's stage clothes, a script that throws, saves
+                 out of order
+    S10 to S12   the item bank: a stem that gave an answer away, no D   (COMPLETE in the game;
+                 key, a pair's keys in the same place                   NOT RUN in Supabase,
+                                                                        macario_items_v4.sql)
+    S13 to S15   the dashboard: first post-test's gain, a warning      (COMPLETE)
+                 before editing a test students have sat, CSV
+    S16          the mangingisda distractor replaced (as S10)           (COMPLETE, as S10)
+                 the rite (three questions, Anak ng Bayan) taught but   (BLOCKED: a matched
+                 not tested                                             pair needs the source
+                                                                        book; the proponents)
+    S17 to S22   the page's name and language, the login in Tagalog,    (COMPLETE)
+                 the controls list, the corner buttons (an exception,
+                 recorded), Bumalik from the login, two repeat lines
+                 (ours, + in STORY.md)
+    S23 to S25   the apple game kept on purpose; intertitle.wav gone;   (COMPLETE)
+                 blank lines
+    S26 to S35   documents and comments brought up to date; the         (COMPLETE; the health
+                 health check covers v5 to v7                           check NOT RUN)
+    S36          CLAUDE.md: history moved to DECISIONS.md; the rest     (COMPLETE, a light
+                 is the formats every session needs                     pass)
+    S37          reset_test_accounts.sql not recorded as run            (BLOCKED: the
+                                                                        proponent, Supabase)
+    S38          Blocks 98 to 110 not seen on a phone                   (BLOCKED: the phone;
+                                                                        Next action 1)
+    S39          private files and names in the git history             (BLOCKED: the
+                                                                        proponent's decision)
+    S40          the three owed pictures                                (BLOCKED: the artist)
+    S41          the years, every + line, the Talaan papers, the        (BLOCKED: the
+                 written delegation, the pilot accounts                 proponents)
+    S42          music re-encoded, 3.9 MB to 2.9 MB; gabi.wav kept      (COMPLETE)
+                 (an MP3 loop has a gap)
+    S43          npm install turns the pre-commit hook on               (COMPLETE)
 
 ## Act I polish list (Block 93)
 
@@ -705,11 +494,17 @@ Trust this over any memory of a chat.
                                         teacher's Talaan papers
 
     db/seeds/macario_items_v3.sql              RUN, 28 Aug 2026
+    db/seeds/macario_items_v4.sql              NOT RUN (Block 110). The
+                                        Scan list's corrections to eight
+                                        Act I items; changes only items
+                                        still as v3 left them. Run before
+                                        any student sits a test
     db/seeds/enrollment_setup.sql              only for a fresh database
     db/scripts/db_healthcheck.sql              read-only, run any time;
-                                        checks the eleven tables of v4, the
-                                        two v4 drops and the v4 columns;
-                                        nothing from 006 or 007 yet (S34)
+                                        since Block 110 it checks the twelve
+                                        tables, the v4 to v7 columns,
+                                        functions, policies and index. Not
+                                        yet run in its new form
     db/scripts/reset_test_accounts.sql         run before any full-flow
                                         test. Owed once since Block 25
                                         (the id "mansanas" changed
@@ -779,7 +574,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (776 and 255 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (795 and 255 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -944,6 +739,10 @@ machine, the assessment module.
     109 generated stand-ins for the chair and the sewing table (an image
         model through Hugging Face); reverted the same day at the
         proponent's word, white edges left and not the game's look
+    110 the Scan list: the nine bugs, the dashboard (gain, CSV, a
+        warning before editing a sat test), the item bank (keys, a
+        giveaway, a distractor; v4 seed), the login in Tagalog and its
+        way back, two repeat lines, documents, smaller music, the hook
 
 ## Blocks remaining
 
@@ -1028,10 +827,11 @@ light report page for laptops and projectors. (BY DESIGN)
 
 The game_progress.is_night column is no longer written (Block 91); it can
 be dropped in a later migration. A student-facing join screen (join_code exists; classes are assigned by
-the administrator). Multiple save slots. Dashboard export and
-per-question item analysis. An offline queue for a student's saves and
-scores, and save conflicts (a guest plays offline since Block 105; a
-student still needs the internet). Persisting
+the administrator). Multiple save slots. Per-question item analysis
+(the roster exports as CSV since Block 110). An offline queue for a
+student's saves, and save conflicts (a guest plays offline since Block
+105, and a test score can wait on the phone since Block 110; a
+student's play still needs the internet). Persisting
 partial test answers (a reload mid-test asks the questions again;
 nothing is recorded until submission, so nothing is lost).
 
@@ -1073,7 +873,7 @@ it wanted if it is still missing. A Playwright update needs it again.
 The suites take about 7 minutes (verify_new_scene.js) and 10 (test.js)
 there; run them one after the other, not at once.
 
-test.js (776 checks) drives the shipping index.html with a stubbed
+test.js (795 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
@@ -1091,9 +891,8 @@ once, and passed on the next run; rerun before believing either.
 test.js did it once on 1 Oct 2026 ("after lighting up first, so the
 swing is readable": an enemy already mid-dash when the check starts
 watching for its red !), and passed on the rerun. Both never touch the
-live project. Both are green as of Block 109's revert, on CI (about 8
-minutes there); locally test.js was last run in full at Block 108. The
-guard-catch flake was
+live project. Both are green as of Block 110, on CI (about 8 minutes
+there), and test.js locally. The guard-catch flake was
 traced in Block 93: a siga's blow landing, at random, in the moment
 before the harness knocks the opening fight down left Macario short of
 hearts for the rest of the act, so the catch emptied them. That check

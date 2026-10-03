@@ -307,7 +307,10 @@ Assessment, in assessment.js. Owns the trivia card, both tests, and the
 optional feedback form. Since Block 68 it reads the questions whole
 (assessment_items, else content/questions.js), grades them itself and
 writes assessment_scores; get_assessment_items and submit_assessment
-are no longer called. It reports back by resolving a
+are no longer called. A score that cannot be written (no internet) may
+be kept on the phone (localStorage, macario_pending_scores), counts as
+sat, and is sent on the next login (flushPending, from Acts.syncStart;
+Scan S3). It reports back by resolving a
 promise and never writes act_progress itself. It is optional: acts.js
 checks window.Assessment before calling it, and the flow collapses to
 playing then completed without it.
@@ -895,7 +898,9 @@ of them plain globals in game.js, like addQuest:
                                  doneText(good); resolves with the
                                  rounds right, or -1 if he left
     playCatchGame(opts)          the apple mini-game (no shipped content
-                                 uses it since Block 89; Block 57, replacing
+                                 uses it since Block 89; kept on purpose,
+                                 tested, as a ready mechanic for Acts II
+                                 to IV, Scan S23; Block 57, replacing
                                  Block 56's playTimingGame); resolves with
                                  how many were caught when it closes.
                                  Block 65: timeLimitMs for a round
@@ -1049,6 +1054,10 @@ low-end phone would buy nothing. Only ownership is stored.
       tint: "sepia(0.5)"                         optional; an outfit with no
                                                  sheets tints Macario while
                                                  worn (Block 85)
+      replayRemoves: true                        optional; the story hands it
+                                                 over, so a replay of the act
+                                                 takes it back (Inventory.
+                                                 revoke; Scan S7)
     }
 
 There are three groups, and the inventory screen, the shop and
@@ -1170,6 +1179,13 @@ identical marks would be decoration; the letters are also what lets a
 teacher say "pindutin ang B" out loud. The text size choices get the
 same letter at three sizes, which is the one icon in this game that
 carries its meaning without a word beside it.
+
+The three corner buttons (#btn-pause, #btn-inventory, #btn-shop) are
+the one exception to icon plus label (Scan S20): icons alone, named by
+aria-label. At --zoom 0.7 a label beside each would push them into the
+quest log and the hearts on a 360px-high screen, and the three symbols
+(pause bars, a bag, coins) are the ones every phone game uses. The shop
+button shows only while something is for sale (Scan S6).
 
 An item's picture on the inventory and shop tiles is the one missing
 image that does NOT become the dashed placeholder box. A tile is too small
@@ -1487,16 +1503,15 @@ for is their own erasure, and only if is_reset_allowed() names them.
 The table policies above are unchanged, so nothing else in the client
 gained any new power.
 
-(Superseded by Block 68 and schema 006, at the instructor's direction.)
-Assessment items had RLS enabled with no student read policy; questions
-were served by get_assessment_items, which omits correct_index, and
-grading ran in submit_assessment. Since schema 006 a student may read
-the items whole, the game grades a test itself, and teachers may insert,
-update and delete items and trivia. assessment_scores is still select
-and insert only for a student: a score cannot be changed or deleted from
-a browser, but a failed post-test may be followed by another attempt,
-each its own row (attempt), and the pre-test is still one row, by a
-partial unique index.
+Since schema 006 (Block 68, the instructor's direction) a student may
+read assessment_items whole, the game grades a test itself, and
+teachers may insert, update and delete items and trivia.
+assessment_scores is still select and insert only for a student: a
+score cannot be changed or deleted from a browser, but a failed
+post-test may be followed by another attempt, each its own row
+(attempt), and the pre-test is still one row, by a partial unique
+index. Before 006 the key never left the database
+(get_assessment_items, submit_assessment).
 
 ## Conventions
 
@@ -1826,17 +1841,8 @@ than a reward. Unequipping clamps health down to the new maximum.
 Equipment effects derive from player_equipment and are not written into
 save_state. There is no second copy of the truth to fall out of step.
 
-(Superseded by Block 25, below: each screen now has exactly one door.)
-The inventory and shop screens were reached from pause and from nowhere
-else through Block 12. Block 13 added a second door: #btn-inventory and
-#btn-shop, next to #btn-pause in the main UI rather than in the mobile
-control cluster (which already overflows the viewport at 412px, a known
-problem, and a further button in that row would make a documented fault
-worse to save one tap). Either door still stops the game for the whole
-visit, so an effect can never change under a running frame; a direct
-open pauses the world itself rather than relying on openPause having
-already done it. See Decisions on record, Block 13, for how shell.js
-tells the two doors apart on the way back out.
+Each screen has exactly one door since Block 25; how the inventory and
+shop were reached before is in DECISIONS.md (Blocks 12, 13, 25).
 
 The Agimat's extra heart is not compensated for in the performance score.
 DAMAGE_BUDGET of 6 was chosen against a three-heart run, so a student
@@ -2055,6 +2061,11 @@ look, by system:
     bodies placed by translate,           Block 107
       profile.js
     starting from a point in the story    Block 108 (devJumps, ?dev=1)
+    generated art, tried and reverted     Block 109
+    the Scan list fixed                   Block 110 (S1 to S43; the
+                                          guest's ending, scores kept
+                                          offline, one save at a time,
+                                          the dashboard's gain and CSV)
 
 ## Pitfalls
 
@@ -2182,18 +2193,18 @@ field and are not: give a guard a static image and it stays a box forever,
 silently, with no error. Declare a guard's sprite as animation or accept
 the placeholder.
 
-setupNpcAnimation and setupPlayerAnimation (game.js) used to build their
-CSS background-image with an unquoted url(${...}). That breaks the moment
-an asset path has a space in it — assets/sprites/characters/nanay.png does — and it
-breaks silently in a way that looks like a loading failure but isn't:
-loadSpriteSheet's preload Image() still succeeds (browsers tolerate a
-literal space in an <img>/Image src), so naturalWidth/naturalHeight,
-frameWidth/frameHeight and the computed backgroundSize/backgroundPosition
-are all correct. Only the CSS url() token itself is invalid, so
-backgroundImage silently stays "none" and the sprite is an invisible box
-occupying the right size in the right place. Fixed by quoting both sites:
-url("${assetUrl(sheet.src)}"). Any future asset path with a space, a
-paren, or a comma needs this same quoting; it's cheap enough to always do.
+A CSS url() built in JavaScript is always quoted:
+url("${assetUrl(src)}"). Unquoted, a space, a paren or a comma in the
+path makes the token invalid and backgroundImage silently stays "none"
+while the preload still succeeds, so the sprite is an invisible box of
+the right size (Block 13; the full story in DECISIONS.md, Moved from
+CLAUDE.md).
+
+In PowerShell 5.1, never rewrite a repository file with Get-Content
+-Raw and Set-Content: it reads UTF-8 as the ANSI code page and
+writes the Tagalog and the em dashes back mangled (Block 110, caught
+in test.js before a commit). Use the Edit tool, or a node script with
+fs and "utf8".
 
 Seeding a save with objective flags already true and then loading it
 against the REAL content/act1.js (rather than through the harness's
@@ -2213,31 +2224,10 @@ fixtureRoutes() to newPage() for exactly this reason (see Decisions on
 record); a new call site that skips it and seeds those flags against the
 real content will hang on a `page.click` timeout with no other clue why.
 
-A student (or a developer) reporting "I can't see Nanay anywhere" is not
-necessarily a code problem. Driving the actual shipped content/act1.js and
-game.js headlessly (real files, not the _dev/tests/test.js fixture) confirms the
-sprite loads, the CSS is quoted correctly, and the dialogue plays; the
-files themselves are not the fault. Checked against the live GitHub main
-branch during Block 13: raw.githubusercontent.com already served the
-reset, Nanay-only content/act1.js and the quoted-url fix in game.js, but
-the live index.html's own script tags still named OLDER v=N numbers
-(content/act1.js?v=5, game.js?v=14, shell.js?v=4, style.css?v=9,
-content/items.js?v=2) than the content actually sitting behind those same
-URLs. Whatever pushed the newer file bytes to main did not bump the
-matching query strings, which is exactly the failure this file already
-warns about under Pitfalls ("Increment the v=N cache-buster... or mobile
-browsers keep serving the cached copy"): a browser or CDN that fetched,
-say, content/act1.js?v=5 before that push will keep serving what it
-cached at that URL and has no reason to ever ask again, since the URL
-never changed. If Nanay is missing on a real device or in a real browser
-but a fresh headless fetch of the same files shows her fine, suspect this
-before suspecting the code: hard refresh, or open the live URL in a
-private window, and confirm the v=N numbers referenced by index.html
-actually match a bump made after the file they reference last changed.
-Since Block 106 the numbers are fingerprints of the files' bytes,
-written by prepare.js, and prepare.js --check (the hook, and the first
-CI job) fails when one is stale, so a push like that is red before it
-can reach a phone.
+A character missing on a real phone while a fresh headless run of the
+same files shows it is a stale cached file, not the code (Block 13,
+now in DECISIONS.md, Moved from CLAUDE.md). Test in a private tab
+first. Since Block 106 prepare.js --check fails on a stale ?v=.
 
 Any new element that represents a character in the world must be
 built through mountBody and bodySprite (or bodyPlaceholder), moved
