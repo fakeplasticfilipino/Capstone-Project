@@ -92,12 +92,15 @@ from expected_columns e
 
 union all
 
--- 3. Do the security definer functions exist?
+-- 3. Do the security definer functions exist? Since schema v9 the six
+--    policy helpers live in the schema "private", out of the API's
+--    reach; the rest stay in public. The status says which.
 select '3 function', e.name,
-       case when p.proname is null then 'MISSING' else 'ok' end
+       case when p.proname is null then 'MISSING' else 'ok, ' || n.nspname end
 from expected_funcs e
 left join pg_proc p
-  on p.proname = e.name and p.pronamespace = 'public'::regnamespace
+  on p.proname = e.name and p.pronamespace in ('public'::regnamespace, 'private'::regnamespace)
+left join pg_namespace n on n.oid = p.pronamespace
 
 union all
 

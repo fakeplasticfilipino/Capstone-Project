@@ -4395,6 +4395,40 @@ macario_items_v4.sql and the extended health check in Supabase.
 
 Afterwards, the same day, the proponent: the questions are the teacher's. Teachers write and change them on the dashboard, so the item bank is not this project's to audit or fix. db/seeds/macario_items_v4.sql was deleted unrun, S10 to S12 and S16 dropped from the list, and the rule went into CLAUDE.md, Standing decisions. The edits already made to content/questions.js, the fallback, were left as they are.
 
+## Block 111: the database's exposed functions, and guardrails
+
+The proponent connected the session to Supabase (3 Oct 2026) and asked
+for the security advisor's warnings to be fixed without removing
+anything the game uses, and for guardrails on working with the live
+database.
+
+Schema v8 takes EXECUTE from anyone signed in or not on three security
+definer functions nothing calls by RPC: handle_new_user (the trigger
+that makes a profile for a new account; the auth service keeps it) and
+get_assessment_items and submit_assessment (unused since Block 68).
+Schema v9 moves the six policy helpers (my_role and the rest) into a
+schema "private" that the API does not serve. They could not just lose
+EXECUTE, since every policy that names them runs as the signed-in user;
+a policy refers to a function by identity, not name, so every policy
+kept working, which a probe of what a student, the teacher and a
+signed-out visitor see confirmed before and after. Nothing was dropped
+and no row changed.
+
+Left as they are, on purpose: can_reset_my_data and reset_my_play_data
+are the in-game reset, called by RPC by a signed-in student and guarded
+inside by is_reset_allowed, so the advisor's two remaining function
+warnings describe the feature. Leaked password protection is a switch
+in the Supabase dashboard (Authentication), which the connector cannot
+reach; it is the proponent's to turn on.
+
+The guardrails are in CLAUDE.md, Database: read freely, write only on
+the proponent's yes for that change, never delete student data or touch
+a study account, every change a migration file first, applied with
+apply_migration and recorded in the Run log, and probed before and
+after. The probe met one trap on the way: switching to the visitor's
+role without clearing the request's claims reads as the last user, and
+showed a visitor seeing two profiles that a real visitor cannot see.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -476,6 +476,17 @@ Trust this over any memory of a chat.
     db/migrations/007_macario_schema_v7.sql    RUN, 29 Sep 2026 (the
                                         proponent). talaan_entries, the
                                         teacher's Talaan papers
+    db/migrations/008_macario_schema_v8.sql    RUN, 3 Oct 2026, from the
+                                        session (Supabase connector, at
+                                        the proponent's word). Three
+                                        functions no longer callable
+                                        from the API
+    db/migrations/009_macario_schema_v9.sql    RUN, 3 Oct 2026, the same.
+                                        The six policy helpers moved to
+                                        the schema private; what a
+                                        student, the teacher and a
+                                        visitor can see checked the same
+                                        before and after
 
     db/seeds/macario_items_v3.sql              RUN, 28 Aug 2026
     db/seeds/enrollment_setup.sql              only for a fresh database
