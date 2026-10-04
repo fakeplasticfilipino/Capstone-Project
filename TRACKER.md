@@ -9,8 +9,13 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 4 Oct 2026, after Block 112, the polish list for Acts II
-to IV (DECISIONS.md, Block 112): the dashboard, ?dev=1 and the checks
+Last updated: 4 Oct 2026, after Block 113 (DECISIONS.md, Block 113): Act
+II written, 1896 to 1898, end to end (eight places, fourteen steps,
+fifteen soldiers at San Juan del Monte, its art owed as placeholders);
+the detection meter twice as fast; Act I's lines accepted by the
+proponents; content/people.js. The proponent reported Blocks 98 to 112
+working on the phone the same day. Before that, Block 112, the polish
+list for Acts II to IV (DECISIONS.md, Block 112): the dashboard, ?dev=1 and the checks
 cover every act; a content check in prepare.js; CLAUDE.md, Writing a
 new act; a scene's own road; speakers and the Talaan's places in
 content; CI annotates failures on a pinned runner; the stylesheet's
@@ -87,7 +92,7 @@ title screen says when the phone is ready ("Nakahanda na ang laro
 kahit walang internet."). A student's login and save still need the
 internet.
 
-Act I is the only act with content, rewritten in Block 52 against the
+Act II is written (Block 113), below Act I's list. Act I, rewritten in Block 52 against the
 proponents' script and built forward since, and since Block 80 it has
 an ending. STORY.md has it beat by beat, with every line. It is one
 street ten paintings long (14500px, street-01..04.jpg in order, twice,
@@ -149,7 +154,22 @@ step; the performance award is paid on completion.
 One item ships: the stage clothes (damit-entablado), which the direktor
 gives Macario after Principe Baldovino, worn from then on; standing
 still in them, a guard notices him five times more slowly. The harness
-fixture covers every other item path. Acts II to IV are registered stubs.
+fixture covers every other item path.
+
+Act II, Ang Mahabang Anino ng Digmaan (Block 113), 1896 to 1898: eight
+places joined by black cards (home; Act I's street; the Katipunan's
+press; Pugad Lawin; San Juan del Monte; the Nangka River; Balara at
+night; Laguna), fourteen steps in one chain, every line ours (+ in
+STORY.md, PLACEHOLDER in content/act2.js). The work game prints
+Kalayaan; the raid on the press is stealth past two guards (and one on
+the street); the cedula is torn with Bonifacio's button; San Juan del
+Monte is fifteen soldiers in four waves and then a retreat past three
+riflemen; the Nangka is three scarecrows and six soldiers; it ends with
+Jacinto in Laguna and 1897 and 1898 on black. Its paintings, Isko,
+Jacinto, Bonifacio, the printer, the messenger, the press and the straw
+are owed (ART.md), drawn as placeholders. The soldiers are the bantay's
+art (the sundalo of the enemy catalogue). Acts III and IV are
+registered stubs.
 
 Enemies are content: content/enemies.js describes each kind
 once (bantay, kawal, and the three siga of the opening) and scenes place
@@ -160,13 +180,15 @@ are the street paintings, the inside of the entablado, the Mananahi,
 and the stills of the bantay, the three siga, the direktor, the
 Katipunero and the Kasama. The proponent drew Kabayo, Nanay, the
 Kutsero, the Barbero, Maryam, the Sultan, the kawal, the Mabalasig and
-the three who take the pamphlets (Blocks 100 to 102). Characters drawn
+the three who take the pamphlets (Blocks 100 to 102). Since Block 113
+the people who return in Act II are described once, in
+content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): three pictures, none of them a person,
-the Barbero's chair, the Mananahi's sewing table and the pulungan's
-painting.
+in code. Still owed (ART.md): eighteen pictures, Act I's three (the
+Barbero's chair, the Mananahi's sewing table, the pulungan's painting)
+and Act II's fifteen.
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
@@ -180,8 +202,8 @@ from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
 Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
 the proponent tested Blocks 90 to 97 on the phone and reported no
-fault. Blocks 98 to 112 are pushed and not yet seen on a device:
-Next action 1 says what to look for.
+fault, and on 4 Oct 2026 Blocks 98 to 112. Block 113 is pushed and not
+yet seen on a device: Next action 1 says what to look for.
 
 Versions: since Block 106 every ?v= is the file's fingerprint, written
 by node _dev/tools/prepare.js before each commit and checked by the
@@ -203,119 +225,33 @@ plays as a guest and saves nothing. Play from the start before the
 pilot all the same, since a jump skips what comes before it. Write the block's own checks here (what to see,
 and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
-1 Oct 2026. Open:
+1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026. Open:
 
-    Block 105, loading. On the phone, in a private tab on wifi: the
-      title screen shows "Sine-save ang laro sa telepono para sa
-      offline: n%" climbing, then in green "Nakahanda na ang laro kahit
-      walang internet." (a minute or two on a slow connection). Play a
-      little: the road is there from the first frame, and every
-      character looks exactly as before (the sheets are a quarter of
-      the size; nobody should be able to tell). Then turn on airplane
-      mode, reload: the game opens at once, the line is still green,
-      Maglaro bilang Bisita goes into the street with every picture,
-      the road and the music. Then turn wifi back on and reload: it
-      opens without a download (no loading bar to speak of). Failure:
-      the line stuck below 100% on good wifi, a blank road, a dashed
-      box, a character with blotchy colour or a ragged edge, no music
-      offline, or a blank page in airplane mode. The teacher dashboard
-      still logs in (it uses the same library, now from the repository).
-      Note that a phone which never finished the first visit is not
-      ready; the line is what tells you.
+    Block 113, the meter. ?dev=1, Ang gabi ng mga polyeto (Act I):
+      walking straight past the first guard while he faces you is a
+      catch now; behind his back, or behind the crate, you get through.
+      Standing still in the stage clothes still buys a few seconds
+      (the meter pale blue). Failure: a walk past him in plain sight
+      with no catch, or a catch that comes before you can react at all.
 
-    Blocks 106 to 108, fingerprints, translate and ?dev=1. Everything
-      looks and moves exactly as before: Macario, the people, the guards
-      and the enemies stand where they did, feet on the road, and turn
-      and walk smoothly (Block 107 moved them by a different property).
-      With ?dev=1 the title screen lists nine points, and Simulan dito
-      opens each with the right task in the log. Failure: anyone drawn
-      to one side of where he stands, a jitter while walking, or a
-      point that opens the wrong scene or task.
-
-    Block 112, the polish list. Every screen looks exactly as before
-      (the stylesheet lost only declarations that did nothing). The
-      dashboard has an act picker beside Download CSV, on Act I; Act II
-      shows the students who reached it. ?dev=1 groups the story points
-      under the act's name. The Talaan editor still says where each of
-      Act I's papers lies. Failure: any button, card or text that
-      changed look or size, or the Talaan editor without its places.
-
-    Block 110, the Scan list. The tab reads MACARIO. Magsimula, then
-      Bumalik under the login form goes back to the title screen; a
-      wrong password says "Mali ang email o password". No coins button
-      in the corner (nothing is for sale in Act I). Playing as a guest
-      to the end of Act I (?dev=1, Ang ulat at ang wakas) ends on a
-      "Wakas" screen whose button goes back to the title. Settings
-      lists Takbo and Barilin. The music still sounds right, only
-      smaller (mono now). On the dashboard: Download CSV, and the Gain
-      column. Failure: any of these missing, a "Log In", the music
-      thin or crackling, or a guest left in the pulungan with "Wala
-      nang gawain".
-
-    Block 98, six characters. The opening: all three siga are the
-      artist's, the leader in a salakot and shawl, the big one in a red
-      sash, the small one with a pouch; three heights, the big one
-      tallest, the small one shortest. They walk on, breathe and nod
-      while the leader taunts, and in the fight each draws his fist back
-      on the red ! and punches, and flinches when hit. The leader's
-      dialogue bust is his new art. The Mananahi stands still, facing
-      the front. The direktor, on the street and in the wings, breathes
-      and nods, his cane staying on the ground. After Principe
-      Baldovino the Katipunero and the Kasama walk on from the wing,
-      facing the way they walk, and stand breathing; the Kasama walks up
-      to Macario after the pamphlets, and the two walk in the year-on
-      scene. Failure: anyone walking backwards, floating or sinking,
-      sliding while standing, a dashed box, a seam or a smudge where an
-      arm moved, the shawl or the bolo moving with a leg, or a cane that
-      lifts.
-
-    Block 99, facing and breathing. On the street the direktor looks
-      left at Macario as he comes, and turns if Macario walks past him;
-      in the wings he looks right, at Macario on his right. In the
-      pulungan the Katipunero, the Kasama and the Mabalasig look at
-      him; so does the Kasama on the street, and Nanay (Block 101).
-      Maryam, the Kutsero and the Barbero face the front and do not
-      turn. The three siga, and anyone else standing together, breathe
-      out of step, each at his own pace. Failure: anyone still looking
-      away, a turn that flickers while Macario stands in front of
-      someone, a placeholder box whose name reads backwards, or
-      breathing in step.
-
-    Block 100, the horse. Beside the Kutsero (x 3560) Kabayo is the
-      proponent's saddled bay, not the small white horse: hooves on the
-      road, the head dipping slowly and the tail tucking in, a two
-      second loop. Suklayin opens the grooming game with the same horse
-      in its picture. Failure: a dashed box, a white sliver between the
-      tail and the rump, a seam at the neck in front of the saddle, or a
-      horse floating or sunk into the road. (Its motion was halved in
-      Block 101.)
-
-    Block 101, the proponent's seven characters and a calm idle. Nanay
-      is side on: she walks on in the opening on her own walk, not a
-      box, turns to face Macario, and walks home with him, the hem
-      swaying. The Kutsero, the Barbero and Maryam are the new front-on
-      stills and stand still. The Mabalasig, in the pulungan and the
-      year on, is side on with his paper and bolo, breathing. On the
-      stage the Sultan marches on and off and has a dialogue bust; the
-      soldiers (turban, kris, shield) march at Macario, rock back on
-      the red !, throw themselves forward with the kris, and flinch.
-      Everyone standing (the siga, the direktor, the Katipunero, the
-      Kasama, Nanay, the Sultan, the horse) barely breathes: you should
-      have to look for it. Failure: anyone sliding, floating or walking
-      backwards, a seam at a leg, a piece of a blade or cape moving with
-      a leg, a dashed box where a character should be, or breathing you
-      can see from across the street.
-
-    Block 102, the night and the barber. The barber's game is five short
-      requests (two, two, three, three, four tools), said more slowly;
-      each round right pays 4 to 7, and one good run reaches his 20.
-      On the pamphlet night the street holds only the mangingisda, the
-      tabakera and the karpintero (now the proponent's art, standing
-      still) and the guards: no Nanay, Kutsero, Mananahi, direktor or
-      Kasama until the Kasama comes for him after the third, and since
-      Block 103 no horse and no sewing table either. Failure: anyone or
-      anything else on the night street, a dashed box for one of the three,
-      or a perfect barber run paying less than 20.
+    Block 113, Act II. ?dev=1 lists eleven points under Ang Mahabang
+      Anino ng Digmaan; each opens its place with its task in the log.
+      From Ang simula: "Tondo, Marso 1896", Nanay and the knock, the
+      promise; out of the door, Isko; the press door in the middle of
+      the street; Jacinto and the press game (a sheet printed a line at
+      a time). August: Isko's news; the Kutsero turns you away; the
+      guard before the press; inside, two guards, the list under the
+      press, the window. Pugad Lawin: the Punitin ang sedula button. San
+      Juan del Monte: four waves, fifteen soldiers in all, from both
+      sides, some with rifles that fire; then the run back to the river
+      past three riflemen. The Nangka: three Itayo buttons, scarecrows,
+      shots at straw, six more. Balara at night, Bonifacio by the fire;
+      Laguna, Jacinto twice, and the end on black, "Wakas ng Ikalawang
+      Yugto". Every new person and place is a dashed box or a dark wall
+      with its file name: that is expected. Failure: a point that opens
+      the wrong place or task, a beat that never starts, a fight that
+      never ends, a soldier who fires while lunging (a muzzle flash in
+      the bayonet charge), or anyone frozen after a black card.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -323,40 +259,34 @@ stroke, and whether students find the Kasama and the three who take
 the pamphlets from what they are told (beats and crates are
 PAMPHLET_GUARDS in content/act1.js).
 
-2. The years are settled (Block 83): the opening reads "Tondo, 1890",
-the four-year cut "Tondo, 1894", the year Sakay joined, and the end
-"Tondo, 1895" (Block 94). Open: the year he became head of his council,
-and the council's name, against the source book. Also open:
-by the 1870 birth date he is twenty at the opening, older than the boy
-the opening shows (STORY.md, Open questions).
+2. Act I's lines, years and papers: accepted by the proponents on 4 Oct
+2026 (Block 113). Nothing open in Act I.
 
-3. The proponents' review of our lines: every line marked + in STORY.md
-(PLACEHOLDER in content/act1.js), above all Blocks 80 and 81 (the
-Katipunan, the oath, the pamphlets) and Blocks 94 and 95 (the Barbero,
-the report, the year after, the lie to Nanay, the Kasama coming for
-him), and the names Katipunero, Kasama, Karpintero, Tabakera,
-Mangingisda and Suki. Block 81 checked the rite, the password and
-Principe Baldovino against the histories (DECISIONS.md, Block 81, with
-sources); still for the source book: the play's words, the ordeal
-chosen, what the pamphlets were, and the Talaan's three papers of facts
-(Block 94; STORY.md, The Talaan).
+3. The proponents' review of Act II: every line marked + in STORY.md,
+Act II (PLACEHOLDER in content/act2.js), the names ours gave (Isko, the
+Manlilimbag, the Tagapagbalita), Bonifacio's and Jacinto's words, and
+Act II's three Talaan papers, against the source book (STORY.md, Open
+questions).
 
 4. The test questions: not ours. Teachers write and change them on the
 dashboard (CLAUDE.md, Standing decisions); nothing here tracks them.
 
-5. Art from the artist: ART.md's Owed list, three pictures since Block
-102 (the pulungan's painting, the Mananahi's sewing table and the
-Barbero's chair). PNGs with transparency; each goes through ART.md's steps.
+5. Art from the artist: ART.md's Owed list, eighteen pictures since
+Block 113 (Act I's three: the pulungan's painting, the Mananahi's
+sewing table and the Barbero's chair; Act II's fifteen: seven
+paintings, Isko, Jacinto, Bonifacio, a printer, a messenger, the press,
+the straw and the scarecrow). PNGs with transparency; each goes through ART.md's steps.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
 
-6. Then the remaining polish, the pilot, and Acts II to IV against the
-source material, Act II starting from STORY.md, Threads left open.
+6. Then the remaining polish, the pilot, and Acts III and IV against the
+source material, Act III starting from STORY.md, Threads left open
+(Act II's: the promise to Nanay, the Americans).
 
 7. The Scan list (2 Oct 2026, below): worked in Block 110. Left: run
 reset_test_accounts.sql before a full-flow test (S37; it deletes the
-test accounts' play, so on the proponent's word), and S38 to S41 as
+test accounts' play, so on the proponent's word), and S39 to S41 as
 listed there.
 
 8. Privacy of the public repository (30 Sep 2026). Done: the names of
@@ -417,13 +347,18 @@ Block 110. Status:
                  is the formats every session needs                     pass)
     S37          reset_test_accounts.sql not recorded as run            (BLOCKED: the
                                                                         proponent, Supabase)
-    S38          Blocks 98 to 110 not seen on a phone                   (BLOCKED: the phone;
-                                                                        Next action 1)
+    S38          Blocks 98 to 110 not seen on a phone                   (COMPLETE: reported
+                                                                        working, 4 Oct 2026)
     S39          private files and names in the git history             (BLOCKED: the
                                                                         proponent's decision)
     S40          the three owed pictures                                (BLOCKED: the artist)
-    S41          the years, every + line, the Talaan papers, the        (BLOCKED: the
-                 written delegation, the pilot accounts                 proponents)
+    S41          the years, every + line, the Talaan papers, the        (the years, lines
+                 written delegation, the pilot accounts                 and papers accepted
+                                                                        4 Oct 2026; the
+                                                                        delegation and the
+                                                                        pilot accounts
+                                                                        BLOCKED: the
+                                                                        proponents)
     S42          music re-encoded, 3.9 MB to 2.9 MB; gabi.wav kept      (COMPLETE)
                  (an MP3 loop has a gap)
     S43          npm install turns the pre-commit hook on               (COMPLETE)
@@ -549,8 +484,9 @@ What the panel assesses against.
 Objective 1, a 2D narrative RPG across four acts. (IN PROGRESS) The
 framework is complete. Act I is playable from the opening to its end,
 fourteen objectives on one street, in the entablado and in the
-pulungan, and completes into its post-test (Block 80). Acts II to IV are
-registered stubs.
+pulungan, and completes into its post-test (Block 80). Act II is
+playable end to end, fourteen objectives in eight places (Block 113),
+its art owed. Acts III and IV are registered stubs.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health, equipment,
 cosmetic rewards. (IN PROGRESS) All four are built and tested against
@@ -572,13 +508,13 @@ The paper specifies seventeen.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest for a quick look. A student can change the password in settings |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Act I playable to its end, fourteen objectives, completing into its post-test; Acts II to IV are stubs |
+| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Acts I and II playable to their ends, fourteen objectives each, completing into their post-tests; Acts III and IV are stubs |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
 | Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; shooting guards are covered by the harness fixture |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's memory game, tutorials that wait for the task, NPCs that open the shop |
 | Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. Act I uses them; Acts II to IV have none |
-| Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture |
+| Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113 |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (fixture; none ships) |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one item, the stage clothes (Block 82, worn, slower detection while still); the rest verified against the fixture |
 | Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No outfit ships yet; verified against the fixture |
@@ -601,7 +537,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (802 and 255 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (802 and 314 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -775,15 +711,23 @@ machine, the assessment module.
         the checks; a content check; Writing a new act; a scene's own
         road; speakers and Talaan places in content; CI annotations and
         pins; dead CSS removed; policies read faster (v10)
+    113 Act II, 1896 to 1898, end to end (eight places, fourteen steps,
+        fifteen soldiers at San Juan del Monte, the press game, the
+        scarecrows); the detection meter twice as fast; Act I's lines
+        accepted; content/people.js; the sundalo
 
 ## Blocks remaining
 
-Act I's lines and history checked by the proponents (Next action, 2
-and 3). (IN PROGRESS)
+Act I's lines and history checked by the proponents. (COMPLETE, 4 Oct
+2026)
 
-Acts II to IV written against the source material, with their trivia
-and test items. Until then those acts skip their tests with a notice,
-which is deliberate. (NOT STARTED)
+Act II's lines checked by the proponents (Next action, 3). (NOT
+STARTED)
+
+Act II written (Block 113). (COMPLETE) Acts III and IV against the
+source material. (NOT STARTED) An act without questions skips its
+tests with a notice, which is deliberate; the questions are the
+teacher's.
 
 Real items for Sandata, Anting-anting and Damit, and outfit art,
 decided against the source material. (NOT STARTED)
@@ -844,10 +788,9 @@ Only one phone has been tested, a 4GB Android device. The harness covers
 823 by 412 and 740 by 360 in landscape, a floor rather than a survey.
 (PARTIAL)
 
-Dynamic difficulty cannot be seen in the running game, because Act I is
-the 1.00 multiplier. The formula is documented and the harness proves
-it against a fabricated act; the honest answer to a panel is that the
-lever is built and the acts it scales are not written yet. (BY DESIGN)
+Dynamic difficulty is seen from Act II on (Block 113): its guards and
+soldiers move at 1.15 times Act I's speed. Act I is the 1.00 multiplier;
+the harness proves the formula against a fabricated act too. (BY DESIGN)
 
 On a PC the animation looks slightly uneven; students play on phones,
 where it is smooth. (KNOWN, OUT OF SCOPE)
@@ -909,7 +852,7 @@ test.js (802 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (255 checks) drives the real
+what is covered. verify_new_scene.js (314 checks; Act II since Block 113) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is

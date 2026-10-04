@@ -170,8 +170,10 @@ off the repository.
                                under assets/, written by a tool (Block 78);
                                js/vendor/ the Supabase library (Block 105)
     content/                   act data, the item catalogue, the enemy
-                               catalogue (enemies.js, Block 76), and the
-                               built-in test questions (questions.js)
+                               catalogue (enemies.js, Block 76), the art
+                               of the people who return from act to act
+                               (people.js, Block 113), and the built-in
+                               test questions (questions.js)
     assets/
       sprites/player/          Macario's sheets, macario-<pose>.png
       sprites/characters/      everyone who talks, <name>.png; the
@@ -248,9 +250,17 @@ DECISIONS.md keeps the history of each reset and why. None of the old
 versions should be restored by copying code back from git without a
 reason. The engine never shrank with the content: every mechanic stays
 covered by the harness's own fixture act and item catalogue
-(_dev/tests/test.js, FIXTURE_ACT1_JS and FIXTURE_ITEMS_JS). Acts II to
-IV are registered stubs, to be written the same way, one verified
-passage at a time against the resource person's source material.
+(_dev/tests/test.js, FIXTURE_ACT1_JS and FIXTURE_ITEMS_JS). The
+proponents accepted Act I's lines on 4 Oct 2026 (Block 113).
+
+Act II (Block 113) is written, 1896 to 1898, from the proponent's plot,
+its lines ours and marked PLACEHOLDER until accepted; STORY.md, "Act
+II, beat by beat", is all of it. Its file wraps everything in a
+function, because the act files share one global scope: a constant
+declared at the top of act2.js under a name act1.js already uses blanks
+the game. People who return are window.PEOPLE (content/people.js), and
+every flag of Act II starts with a2_, since flags are kept from act to
+act. Acts III and IV are registered stubs, to be written the same way.
 
 ## Writing a new act (Polish list #5)
 
@@ -394,6 +404,8 @@ Load order in index.html, which is load bearing:
     supabaseClient.js
     content/enemies.js   before the acts; act1.js reads from it, and
                          game.js merges a placed enemy's type from it
+    content/people.js    before the acts, which read their people's
+                         sheets from it (Block 113)
     content/act1.js      before game.js, which reads window.ACT_1 on start
     content/act2.js      through act4.js, before acts.js builds its registry
     content/items.js     before inventory.js, which reads window.ITEMS
@@ -939,7 +951,9 @@ of them plain globals in game.js, like addQuest:
                                  doneText(good), rounds, mode ("tap", or
                                  "hold": hold to fill, let go over the
                                  patch), scene ("horse" with art: the
-                                 horse's sheet, or "cloth"), snapText,
+                                 horse's sheet, "cloth", or "press": a
+                                 sheet printed a line a stroke, Block
+                                 113), snapText,
                                  icon (the button's symbol; Block 93);
                                  resolves with the good strokes, or -1 if
                                  he left before the last. One game for
@@ -1061,6 +1075,12 @@ its type, in a scene's guards list or in spawnEnemies.
         attackAnimation              attackAnimation and hitAnimation
       },
     }
+
+Since Block 113 the catalogue also has sundalo, the Spanish soldier of
+Act II's battles: an enemy made entirely of the bantay's art (his walk,
+his flinch, and the first three frames of his shot as a bayonet lunge),
+so a battle of many costs no new art. A bantay placed in the same
+spawnEnemies is a rifle, already hostile.
 
 A placement's own fields win over its type's, so a sentry can see
 further than the rest of his kind without a second type. A placement
@@ -1357,7 +1377,11 @@ updateAnimFrame steps and (with loop: false) holds within
 frames - 1 when absent, so every sheet before this one is unaffected.
 The two fields describe frame RANGE only; contentTop/contentHeight are
 still measured once for the whole sheet, since every frame in it shares
-the same cell geometry regardless of which named entry plays it.
+the same cell geometry regardless of which named entry plays it. Since
+Block 113 an NPC's, a decoration's or an enemy's sheet played once
+(loop: false, an enemy's attack sheet) also stops at its endFrame,
+which is how the sundalo's lunge is the bantay's shot without the
+flash.
 
 A sheet may declare headroom (Block 40), native pixels above
 contentTop that are still drawn, for a pose that reaches over the head,
@@ -1824,7 +1848,10 @@ calculation.
 
 Detection is a meter rather than a switch. A bar that is visibly filling
 is what teaches the mechanic; an instant catch teaches only that the level
-is unfair.
+is unfair. Since Block 113 it fills at GUARD_ALERT_RATE, 0.024 a 60th of
+a second (twice Block 6's 0.012, at the proponent's word): a walk
+straight past a guard is now a catch, so cover, his back and the stage
+clothes are what get a student through.
 
 A tap with an enemy ahead is a dash through him (Block 86): a hit ends
 Macario behind the enemy, a tap from beyond DASH_HIT_RANGE stops short,
@@ -2178,6 +2205,9 @@ look, by system:
                                           dashboard, ?dev=1 and checks;
                                           the content check; dead CSS
                                           proved; schema v10)
+    Act II; the meter twice as fast;      Block 113 (content/people.js,
+      Act I accepted                      the sundalo, the press
+                                          picture, fifteen enemies)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

@@ -123,4 +123,31 @@ window.ENEMY_TYPES = {
       src: "assets/sprites/enemies/kawal-hit.png", frames: 4, fps: 12, ...KAWAL_CELL, knockoutFrame: 1,
     },
   },
+
+  // Block 113. The Spanish soldier of Act II's battles (San Juan del
+  // Monte, the Nangka River), fighting hand to hand: a bayonet charge.
+  // He is the bantay's art, so nothing is owed: the walk and the flinch
+  // are the bantay's own sheets, and the strike is the first three frames
+  // of the bantay's shot, the rifle brought down to level (startFrame to
+  // endFrame, held there), with no flash, so he lunges with the bayonet
+  // rather than seeming to fire. The battles place many of him; a few
+  // bantay among them, spawned already hostile, are the rifles that do
+  // fire.
+  sundalo: {
+    kind: "enemy",
+    hp: 2,
+    animation: {
+      src: "assets/sprites/enemies/bantay-walk.png", frames: 8, fps: 10, columns: 4,
+      contentTop: 40, contentHeight: 394, footX: 128, headroom: 40,
+    },
+    attackAnimation: {
+      src: "assets/sprites/enemies/bantay-shoot.png", frames: 7, fps: 10, columns: 4,
+      startFrame: 0, endFrame: 2, loop: false,
+      contentTop: 20, contentHeight: 394, footX: 88, headroom: 20,
+    },
+    hitAnimation: {
+      src: "assets/sprites/enemies/bantay-hit.png", frames: 4, fps: 9, columns: 4,
+      contentTop: 40, contentHeight: 394, footX: 128, headroom: 40, knockoutFrame: 1,
+    },
+  },
 };

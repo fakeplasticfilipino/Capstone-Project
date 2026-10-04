@@ -3824,6 +3824,61 @@ body.dialogue-top .dialogue-portrait {
 #work-marks i.work-stitch-ok { border-bottom: 4px solid #fffbe8; }
 #work-marks i.work-stitch-bad { border-bottom: 4px solid #ffb4b4; transform: rotate(-14deg); }
 
+/* Block 113. The press: a sheet on the press bed, a line of print for
+   every stroke (clean or smudged), and the platen that comes down. */
+.work-stage-press {
+  background: linear-gradient(#5b4330, #4a3526 62%, #3a291d 62%, #2f2117) !important;
+}
+
+.work-stage-press #work-prop {
+  left: 50%;
+  bottom: 14px;
+  width: 150px;
+  height: 104px;
+  margin-left: -75px;
+  border: 3px solid var(--px-ink);
+  background: #f3ead2;
+  box-sizing: border-box;
+}
+
+.work-stage-press #work-marks {
+  bottom: 17px;
+  width: 144px;
+  height: 98px;
+  margin-left: -72px;
+}
+
+.work-stage-press #work-marks i {
+  left: 12%;
+  width: 76%;
+  height: 0;
+  margin-left: 0;
+  border-bottom: 2px dotted rgba(42, 30, 20, 0.25);
+}
+
+#work-marks i.work-print-ok { border-bottom: 5px solid #2a1e14; }
+#work-marks i.work-print-bad {
+  border-bottom: 7px solid rgba(42, 30, 20, 0.55);
+  filter: blur(1.5px);
+  transform: skewX(-18deg);
+}
+
+#work-tool.work-platen {
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 170px;
+  height: 18px;
+  margin-left: -85px;
+  border: 2px solid var(--px-ink);
+  background: linear-gradient(#9a9a9a, #5f5f5f);
+}
+
+.work-platen.work-anim-a { animation: work-press-a 0.35s ease-in-out; }
+.work-platen.work-anim-b { animation: work-press-b 0.35s ease-in-out; }
+@keyframes work-press-a { 50% { transform: translateY(24px); } }
+@keyframes work-press-b { 50% { transform: translateY(24px); } }
+
 #work-tool.work-brush {
   position: absolute;
   left: 50%;
@@ -3872,6 +3927,7 @@ body.dialogue-top .dialogue-portrait {
 @media (prefers-reduced-motion: reduce) {
   .work-brush.work-anim-a, .work-brush.work-anim-b,
   .work-needle.work-anim-a, .work-needle.work-anim-b,
+  .work-platen.work-anim-a, .work-platen.work-anim-b,
   #work-prop.work-anim-a, #work-prop.work-anim-b { animation: none; }
 }
 

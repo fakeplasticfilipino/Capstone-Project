@@ -1411,7 +1411,11 @@ function setupNpcAnimation(sheet, el, displayHeight, token, bodyWidth, opts) {
         const frameDuration = 1000 / (sheet.fps * rate);
         if (now - lastTime >= frameDuration) {
           lastTime = now;
-          if (opts.loop === false && frame === sheet.frames - 1) return;
+          // Block 113. A sheet played once may stop short of its last
+          // frame (endFrame, as the player's sheets may): the soldier's
+          // lunge is the bantay's shot without the flash.
+          if (opts.loop === false && frame >= Math.min(sheet.frames - 1,
+            sheet.endFrame != null ? sheet.endFrame : sheet.frames - 1)) return;
           frame = (frame + 1) % sheet.frames;
           draw();
         }
@@ -5432,11 +5436,12 @@ function cancelTutorial(...ids) {
 // is letting go inside the patch, the bar snapping if it is held to the
 // end. The patch is thinner with every stroke, and the marker quicker.
 // Above the bar a small picture shows the work: the horse and a brush
-// that sweeps over it on a good stroke, or a cloth that is stitched.
+// that sweeps over it on a good stroke, a cloth that is stitched, or
+// (Block 113) a sheet under a press that is printed a line at a time.
 // Resolves with how many strokes were good out of opts.rounds, or -1 if
 // he walked away before the last. Content names the words (title, hint,
 // verb, hitText, missText, doneText), the mode and the picture
-// (opts.scene "horse" or "cloth", opts.art the horse's sheet), and
+// (opts.scene "horse", "cloth" or "press", opts.art the horse's sheet), and
 // decides what the strokes are worth; this only plays them.
 const WORK_ROUNDS = 5;
 const WORK_ZONE_FIRST = 0.34;  // the good part of the bar at the first stroke, as a fraction of it
@@ -5524,7 +5529,7 @@ function playWorkGame(opts) {
     const scene = buildWorkScene();
 
     function buildWorkScene() {
-      const kind = o.scene === "cloth" ? "cloth" : "horse";
+      const kind = o.scene === "cloth" || o.scene === "press" ? o.scene : "horse";
       stageEl.className = "work-stage-" + kind;
       propEl.className = "";
       propEl.removeAttribute("style");
@@ -5549,6 +5554,24 @@ function playWorkGame(opts) {
             } else {
               replay(propEl, "work-shy");
             }
+          },
+        };
+      }
+      // Block 113. The press: a sheet under the platen, a line of print
+      // down it for every stroke, clean on a good one and smudged on a
+      // bad one, and the platen coming down each time.
+      if (kind === "press") {
+        for (let i = 0; i < rounds; i++) {
+          const line = document.createElement("i");
+          line.style.top = (14 + (68 * i) / Math.max(1, rounds - 1)) + "%";
+          marksEl.appendChild(line);
+        }
+        toolEl.className = "work-platen";
+        return {
+          stroke(hit, n, k) {
+            const line = marksEl.children[k];
+            if (line) line.className = hit ? "work-print-ok" : "work-print-bad";
+            replay(toolEl, "work-platen");
           },
         };
       }

@@ -37,7 +37,10 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 1 Oct 2026, Block 102 (three owed: the proponent's
+Last updated: 4 Oct 2026, Block 113 (eighteen owed: Act II names
+fifteen pictures, seven rooms and outdoor places, five people and three
+things; none drawn yet, each a placeholder). Before that, 1 Oct 2026,
+Block 102 (three owed: the proponent's
 stills of the three who take the pamphlets arrived, used as they are,
 facing the front). Before that, Block 101 (six owed: the proponent's own
 stills of Nanay, the Mabalasig, the Barbero, the Kutsero, Maryam, the
@@ -87,6 +90,77 @@ Named by the game and missing. Each is a placeholder box today.
         ground: false. Until it arrives the room is a dark wall with the
         file name on it. (NOT STARTED)
 
+Act II (Block 113). The places are one painting each, drawn once and
+not tiled (as entablado-inside.jpg), anchored at the bottom: the indoor
+rooms one phone screen wide (bahay, pugad-lawin, balara, laguna, about
+1180 in the game), the press wider (1800), and the two battlefields
+wide (san-juan 3000, nangka 2400), which the game stretches to cover,
+so a wide panorama suits them. Each is a dark wall with its name until
+it arrives. The people are side on where they will walk, so
+animate-still.js can move them; the things are stills.
+
+    assets/backgrounds/act2/bahay.jpg
+        Macario and Nanay's home in Tondo, 1896: one poor room, a table,
+        the door on the right. (NOT STARTED)
+
+    assets/backgrounds/act2/imprenta.jpg
+        The Katipunan's hidden press: a room behind an ordinary door,
+        stacks of paper, the press on the left, a back window at the
+        left edge. Wide (1800). (NOT STARTED)
+
+    assets/backgrounds/act2/pugad-lawin.jpg
+        Pugad Lawin, Kalookan, 23 August 1896: a clearing in the hills,
+        a yard and a hut, where the cedulas were torn. (NOT STARTED)
+
+    assets/backgrounds/act2/san-juan.jpg
+        San Juan del Monte, 30 August 1896: open ground before the
+        Spanish powder store (El Polvorin), the river behind. Wide
+        (3000). (NOT STARTED)
+
+    assets/backgrounds/act2/nangka.jpg
+        The Nangka River in the hills of Morong, November 1896: the
+        bank, the far side where the Spanish come from. Wide (2400).
+        (NOT STARTED)
+
+    assets/backgrounds/act2/balara.jpg
+        The camp at Balara, at night (the game darkens it): a fire,
+        tents or a hut. (NOT STARTED)
+
+    assets/backgrounds/act2/laguna.jpg
+        Jacinto's camp in Laguna, 1897: by day, among trees.
+        (NOT STARTED)
+
+    assets/sprites/characters/bonifacio.png
+        Andres Bonifacio, the Supremo, 1896: side on, standing; he walks
+        (charges) at San Juan del Monte. (NOT STARTED)
+
+    assets/sprites/characters/jacinto.png
+        Emilio Jacinto, about twenty, the Katipunan's writer: side on,
+        standing. (NOT STARTED)
+
+    assets/sprites/characters/isko.png
+        Isko, a young Katipunero, one of the recruits of Act I's end:
+        side on; he runs on and off. (NOT STARTED)
+
+    assets/sprites/characters/manlilimbag.png
+        A printer, ink on his apron: side on, standing. (NOT STARTED)
+
+    assets/sprites/characters/tagapagbalita.png
+        A messenger from Cavite: side on; he runs in. (NOT STARTED)
+
+    assets/sprites/scenery/palimbagan.png
+        The hand press, used with E: a still, about 110px tall in the
+        game. (NOT STARTED)
+
+    assets/sprites/scenery/dayami.png
+        A bundle of straw on the riverbank: a still, about 70px tall.
+        (NOT STARTED)
+
+    assets/sprites/scenery/panakot.png
+        The bundle raised as a scarecrow in a Katipunan hat (a salakot
+        and a red band), standing like a man: a still at full height.
+        (NOT STARTED)
+
 ## Stand-ins
 
 Art that exists and is on screen, but is not the artist's final work
@@ -113,6 +187,10 @@ forgotten.
     The bantay's walk, shot and flinch (bantay-walk, -shoot, -hit).
         Made from the artist's one still by _dev/tools/animate-bantay.js
         (Blocks 73, 75); the still itself (bantay.png) is the artist's.
+    The Spanish soldier of Act II's battles (the catalogue's sundalo,
+        Block 113) is the bantay's art: his walk, his flinch, and the
+        first frames of his shot as a bayonet lunge. A soldier's own
+        sheets would replace them.
     Item tiles. No item ships (content/items.js is empty); each item
         added later names its own tile picture.
 
@@ -125,7 +203,7 @@ day's paintings, Block 85, so no night painting is owed), platforms,
 crates, hazards, heart pickups, bullets, the guard's sight cone, the
 dust, the Talaan's papers, and every icon (inline SVG in index.html).
 
-## Acts II to IV
+## Acts III and IV
 
 No content yet, so nothing is named and nothing is owed. Their
 characters and backdrops join the Owed list as the acts are written.

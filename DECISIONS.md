@@ -4514,6 +4514,109 @@ speed forty students would not notice.
 #14 Leaked password protection is a switch in the Supabase dashboard,
 which the connector cannot reach.
 
+## Block 113: Act II, the meter twice as fast, Act I accepted
+
+4 Oct 2026. The proponent reported Blocks 98 to 112 working on the
+phone, accepted the review of Act I's lines, asked for the detection
+meter to be twice as fast ("players can just walk through guards"), and
+gave Act II's plot (1896 to 1898) with the beats to open it, asking for
+beats of our own beside them, placeholders for any art not drawn, and
+"a LOT of enemies, like maybe 15". The plan was agreed in the
+conversation and built without further questions, at the proponent's
+word.
+
+The meter. GUARD_ALERT_RATE (game.js) is the default fill, 0.012 to
+0.024 per 60th of a second. No guard in the content sets its own rate,
+so every guard doubles, Act I's pamphlet run included. The arithmetic:
+a guard sees 260px; walking at 5px a frame, a student is seen for about
+52 frames on the way past, which filled 0.62 of the meter at 0.012 and
+fills 1.25 now, a catch. Running (8 a frame) is not allowed near a
+guard (Block 82). Decay is unchanged, so leaving his sight still clears
+it, and the stage clothes still slow the fill fivefold while standing
+still (about 3.5 seconds, against 0.7 without them). The rate is a
+single constant rather than a change to every placement, because the
+content's alertRate stays what it was meant to be: the lever that makes
+one sentry harder than the one beside him.
+
+Act I accepted. The proponents accepted every line of ours, the names
+ours gave, the years and the Talaan's papers. The PLACEHOLDER marks
+came out of content/act1.js and the + out of STORY.md's Act I, and its
+open questions were closed. Act II's lines carry both marks until they
+are accepted the same way.
+
+content/people.js. The act files are plain scripts in one global scope,
+so Act II could not declare const NANAY beside Act I's (a SyntaxError
+that blanks the game), and reading Act I's constants from Act II would
+break whenever the harness swaps Act I for its fixture. The art of the
+people who return (Nanay, the Kutsero, the Mananahi, the Barbero,
+Maryam, the three, the direktor, the Katipunero, the Kasama, the
+Mabalasig) moved to window.PEOPLE, read by both acts; Act I keeps its
+constant names, now pointing there. Act II's own constants live inside
+a function wrapping the file, so no name of it can collide again. Both
+pages, the content check and missing-art.js load the new file; it was
+committed on its own before Act II, as refactors of working code are.
+
+Act II's shape. The plot runs two and a half years, so the act moves
+between eight places by black cards, as Act I's four years do: home,
+the street (Act I's, the same people where they stood), the press,
+Pugad Lawin, San Juan del Monte, the Nangka, Balara and Laguna, with
+1897 and 1898 told on black at the end. Every mechanic is one the
+engine already had (Consistency): scripts and arrival dialogues, a gift
+button for the cedula so that tearing it is the student's own act,
+scenery used with E (the press, the window, the river, the straw),
+guards on duty by flag with crates, spawnEnemies for the battles, and
+the work game for the printing. Every flag starts with a2_, because the
+story's flags are kept from act to act.
+
+The proponent's beats, and ours. The proponent's: the house, Nanay
+hearing "Pangulo" and fearing he will vanish like his father, his
+promise; the subordinate's report that the printers will not hand over
+the papers; the press already being swept; friends who will not talk
+to him. Ours, each tied to something Act I set up: Nanay heard the word
+at the door at the end of Act I; the subordinate is Isko, one of the
+three recruits sworn in then, who still wonders why there was no fire;
+the printers did not refuse, the guards had taken them, and the list of
+members under the press is what Macario must get out; the cedula torn
+at Pugad Lawin is the paper that emptied Nanay's purse in Act I's
+opening, and the act ends setting it against the twenty million;
+Bonifacio heard Macario's Baldovino line from the audience, and by the
+fire at Balara the two find they both acted; Maryam's question from Act
+I is answered ("Mas mabuti nang hindi mo alam"); the scarecrows are
+"the biggest stage you will ever have". The promise to Nanay is left
+open for Act III.
+
+The enemies. Fifteen at San Juan del Monte in four waves, from both
+sides of the screen, and six at the Nangka. A new catalogue type,
+sundalo, charges with the bayonet; it is the bantay's own art (his
+walk, his flinch, and the first three frames of his shot held as a
+lunge, so it costs the artist nothing), and a bantay among the waves is
+a rifle, spawned already hostile. For the lunge to stop before the
+muzzle flash, setupNpcAnimation now honours endFrame on a sheet played
+once, as the player's sheets already did. Running out of hearts
+restarts the wave in hand with the fallen staying down (Block 35's
+rule). After the charge the retreat is the stealth half of the same
+place: three riflemen patrol the field between Macario and the river,
+each with cover, and seen, one turns and fires until punched down.
+Three hearts lie on the field.
+
+The press. The work game gained a third picture (opts.scene "press"):
+a sheet under a platen, a line printed at each stroke, clean or
+smudged. A picture, not a mechanic: the bar, the patch and the strokes
+are the horse's and the cloth's. The press pays nothing; it is the
+Katipunan's work, not a job.
+
+Art. Fifteen pictures are owed (ART.md): seven paintings, five people
+and three things. The engine already draws each as a placeholder (a
+dashed box, or a dark wall for a room), so the act plays whole today.
+
+Checks. prepare.js holds Act II's 163 lines to STORY.md and its content
+together; verify_new_scene.js starts from each of its eleven story
+points and plays the act end to end as a guest (the press game drawn,
+the meter's speed with and without the clothes, fifteen fought and then
+six, the end card and every step done), and a reload mid-charge replays
+the charge. The Act I check that the clothes take "seconds" was moved
+from 4 to 2.5 seconds, the new arithmetic.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

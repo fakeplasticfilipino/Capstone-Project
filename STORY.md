@@ -47,7 +47,9 @@ ours. Since Block 93 their spelling and grammar are corrected, at their
 request, with the wording and the meaning kept (po rather than 'ho,
 'Nay, rin and rito after a vowel, 'yung, no "Okay").
 
-Last updated: 1 Oct 2026, Block 103 (no story change: on the pamphlet
+Last updated: 4 Oct 2026, Block 113 (Act II, 1896 to 1898, beat by beat;
+Act I's lines accepted by the proponents, the + gone from them). Before
+that, 1 Oct 2026, Block 103 (no story change: on the pamphlet
 night the street is the three's and the guards' alone, the horse and
 the tahian too). Before that, Block 102 (the barber's game easier and
 paid by the round right, 20 in all; the night empty of the day's
@@ -123,8 +125,24 @@ asks whether he is one of them. He tells her he is rehearsing a new
 komedya. The Kasama shuts the door on her as the men call him Pangulo,
 and Act I ends; the post-test follows.
 
-Acts II to IV are not written. Their content files are registered stubs
-(content/act2.js to act4.js) and hold no story.
+Act II, Ang Mahabang Anino ng Digmaan. Tondo, 1896 (Block 113). At home,
+a boy at the door calls Macario Pangulo, and Nanay, who heard the word
+once before, begs him not to vanish as his father did; he promises he
+will come back. He prints the Katipunan's paper, Kalayaan, "from
+Yokohama", with Jacinto. In August the press is raided: a member has
+confessed to the parish priest, the neighbours will not be seen with
+him, and he takes the list of members from under the guards' noses and
+goes out the window. In the hills he tears up his cedula with
+Bonifacio's men, charges the powder store at San Juan del Monte and
+falls back to the river, raises straw soldiers at the Nangka, and hears
+by a fire at Balara that Bonifacio acted too. In 1897 Bonifacio is
+killed by his own side; Macario stays with Jacinto in Laguna, loyal to
+the Katipunan. On black: Biak-na-Bato, the Americans, Kawit, and Spain
+selling the country for twenty million dollars, a price he sets against
+the cedula.
+
+Acts III and IV are not written. Their content files are registered
+stubs (content/act3.js, act4.js) and hold no story.
 
 ## Places
 
@@ -1063,6 +1081,456 @@ the game fills all three, so the Talaan button is always there. A found paper op
 and is listed on the pause screen under "Mga Papel". Act I declares no
 words (Block 69).
 
+## Act II, beat by beat
+
+Block 113, from the proponent's plot (1896 to 1898) and the beats the
+proponent asked for: Macario at home with Nanay, called Pangulo at the
+door, her warning and his promise; the press, and the subordinate who
+says the printers will not hand over the papers; the neighbours who
+will not talk to him; the guards already sweeping. Every line is ours,
+marked + here and PLACEHOLDER in content/act2.js, until the proponents
+accept or replace it. Every flag starts with a2_.
+
+Places, in order: bahay (home, one room), tondo (Act I's street, the
+same people where they stood), imprenta (the Katipunan's press, behind
+a door at x 7900, wider than a screen), pugad-lawin, san-juan (the
+field before the powder store, 3000 wide), nangka (the river, 2400),
+balara (a camp at night) and laguna (Jacinto's camp). Every painting of
+Act II is owed (ART.md): until drawn, each room is a dark wall with its
+file name on it.
+
+New people, all owed as placeholder boxes: Isko (one of the three
+recruits sworn in at the end of Act I, now Macario's man), Jacinto,
+Bonifacio (the Supremo), the Manlilimbag (a printer) and the
+Tagapagbalita (a messenger). The Kasama, the Katipunero, Nanay and the
+street are Act I's art. The soldiers are the bantay's art: the sundalo
+of the enemy catalogue charges with the bayonet, and a bantay among them
+fires.
+
+### 1. The morning
+
+bahay. Plays by itself the first time a student enters Act II.
+
+  + [BLACK] Tondo, Marso 1896
+
+  + Nanay: Kumain ka muna bago umalis, anak.
+  + Macario: Busog pa po ako, 'Nay.
+  + Nanay: Busog? E kagabi ka pa hindi kumakain.
+
+    (A knock at the door.)
+
+  + Isko: Pangulo! Pangulo, nandiyan po ba kayo?
+  + Nanay: ...
+  + Nanay: Pangulo.
+  + Nanay: 'Yan din ang tawag nila sa'yo noong gabing 'yon, sa pinto.
+  + Macario: 'Nay...
+  + Nanay: Hindi ako bingi, Macario. Hindi rin bulag ang mga kapitbahay.
+  + Nanay: May hinuli na naman daw sa Trozo. Mga rebelde raw. Hindi na nakauwi sa pamilya nila.
+  + Nanay: Huwag kang makisama sa mga 'yan, anak.
+  + Nanay: Ganyan din ang tatay mo. Lumabas isang gabi, sabi babalik bago mag-umaga.
+  + Nanay: Hindi ko na siya nakita.
+  + Nanay: Hindi kita kayang mawala, Macario. Ikaw na lang ang natitira sa akin.
+  + Macario: Hindi po ako mawawala, 'Nay.
+  + Macario: Babalik po ako. Pangako.
+  + Nanay: ...
+  + Nanay: Mag-ingat ka. Pakiusap.
+
+Completes: Kausapin si Nanay. She heard "Pangulo" at the door at the
+end of Act I; the promise is not paid off in this act (Threads left
+open). The door, on the right, opens: "Lumabas ng bahay: pumunta sa
+kanan".
+
+### 2. Isko at the door
+
+tondo, outside, the first time out (an arrival dialogue).
+
+  + Isko: Pinasusundo po kayo ni Ginoong Jacinto. Sa imprenta raw po.
+  + Macario: Huwag mo akong tatawaging Pangulo sa harap ng bahay namin.
+  + Isko: Ay... opo. Pasensya na po, Pang— Macario.
+  + Isko: Hanggang ngayon po, hindi ko alam kung bakit walang apoy.
+  + Macario: Mabuti nang hindi mo alam.
+  + Isko: Nasa gitna po ng kalye ang imprenta, lampas sa tabakera.
+
+The fire is the ordeal of the rite (Act I, beat 15): Isko leapt over
+nothing too. The press is a door at x 7900, its button "Pumasok sa
+imprenta". Nanay's door, at x 2000, reads "Pumasok sa bahay".
+
+### 3. The press, in March
+
+imprenta. Plays by itself on arrival.
+
+  + Jacinto: Macario. Dumating ka rin.
+  + Jacinto: Heto. Ang unang pahayagan ng Katipunan.
+  + Macario: "Kalayaan"...
+  + Macario: "Inilimbag sa Yokohama"? Nasa Hapon po ba tayo?
+  + Jacinto: Kung ang guardia ang tatanungin, oo.
+  + Jacinto: Hahanapin nila ang imprenta sa kabilang dagat, hindi sa ilalim ng ilong nila.
+  + Manlilimbag: Handa na ang tinta, Ginoo.
+  + Jacinto: Ikaw sa palimbagan, Macario. Diinan mo nang pantay, at huwag kang magmamadali.
+
+Completes: Pumunta sa imprenta. The press (palimbagan, x 210) is used
+with E, the button reading Gamitin: the work game (as the horse in Act
+I), with a sheet under the platen that is printed a line at each
+stroke. No pay; it is the Katipunan's work.
+
+  + (the game) Palimbagan / Diinan ang palimbagan kapag nasa berde ang guhit.
+  + (a good stroke) Malinaw ang limbag!
+  + (a missed one) Kumalat ang tinta!
+  + (the end) n/5 ang malinaw na pahina.
+
+Before Jacinto has spoken: "Kausapin ko muna si Ginoong Jacinto." (a
+thought). After the first round:
+
+  + Jacinto: Sapat na para ngayong gabi.
+  + Jacinto: Ipababasa ito ng Supremo sa bawat balangay. Pati sa mga probinsya.
+  + Macario (sa isip): Dati, polyeto lang ang dala ko. Ngayon, isang buong pahayagan.
+
+  + [BLACK] Kumalat ang Kalayaan sa Maynila at sa mga karatig-bayan.
+  + [BLACK] Libu-libo ang sumapi sa Katipunan.
+  + [BLACK] Agosto 1896
+
+Completes: Maglimbag ng Kalayaan. The card lifts on the street at
+Nanay's door.
+
+### 4. Isko's news
+
+tondo, beside Nanay's door. Plays by itself. Isko runs up from the
+right.
+
+  + Isko: Pangulo! May problema po sa imprenta.
+  + Macario: Hinaan mo ang boses mo. Ano'ng nangyari?
+  + Isko: Ayaw pong ibigay ng mga manlilimbag 'yung mga papel na ipinalimbag natin.
+  + Isko: Kanina pa raw po sarado ang pinto. Walang sumasagot.
+  + Macario: Hindi ganyan ang mga tao roon.
+  + Macario: Pupuntahan ko.
+  + Isko: Sasama po ako—
+  + Macario: Hindi. Bantayan mo si Nanay.
+  + Isko: ...Opo, Pangulo.
+
+    (Isko goes in to Nanay.)
+
+### 5. The street in August
+
+Nothing is staged: the neighbours are where they were, and each says one
+line. In March they are glad to see him; in August nobody will be seen
+with him. A guardia civil walks in front of the press (7330 to 7700), a
+crate in his beat (7520); he catches, not shoots, and a catch puts
+Macario back at the tabakera's corner (x 7000).
+
+  + Kutsero: Macario! Bihira ka nang dumaan dito. Kumusta ang nanay mo?
+    (March)
+  + Kutsero: Hindi kita kilala, iho. Umalis ka na.
+    (August)
+  + Mangingisda: May bago raw na pahayagan? Pabasa naman ako kapag may kopya ka.
+  + Mangingisda: Sinunog ko na 'yung ibinigay mo noon. Pasensya na.
+  + Barbero: Mahaba na ang buhok mo, iho. Dumaan ka minsan, libre na.
+  + Barbero: Sarado kami. May nagtanong tungkol sa'yo kaninang umaga. Hindi ko sinabi kung saan ka nakatira.
+  + Mananahi: Aba, suot mo pa rin ang tinahi ko? Kasya pa rin, ha.
+  + Mananahi (pabulong): May kura raw sa Tondo na may alam na. Umalis ka muna, iho, habang kaya mo pa.
+  + Tabakera: Ikaw 'yung bata ng polyeto, 'di ba? Tahimik lang ako.
+  + Tabakera: Tatlo na ang hinuli sa pagawaan kahapon. Huwag kang lalapit sa akin.
+  + Karpintero: May ginagawa akong mga kahon para sa isang imprenta. Hindi ko tinanong kung ano'ng ilalagay.
+  + Karpintero: Wala akong kilalang Macario. Wala.
+  + Direktor: Iho, may palabas tayo sa Sabado. Sana dumating ka.
+  + Direktor: Sarado ang entablado hanggang sa susunod na abiso. Mag-ingat ka, iho.
+  + Maryam: Macario! Hindi ka na sumisipot sa ensayo. Galit na ang direktor.
+
+August, Maryam (the question she asked in Act I, answered):
+
+  + Maryam: May mga guardia sa entablado kanina. Hinahanap ka.
+  + Maryam: Sino ba talaga 'yung dalawang lalaki noon, Macario?
+  + Macario: Mas mabuti nang hindi mo alam.
+
+And Isko, in March, if talked to again:
+
+  + Isko: Sa imprenta po, Pang— Macario. Lampas sa tabakera, sa gitna ng kalye.
+
+At home, Nanay:
+
+  + Nanay: Mag-ingat ka, anak. Pakiusap.
+    (March)
+  + Nanay: Anak, ang daming guardia sa kalye. Huwag ka nang lumabas.
+    (August)
+
+### 6. The raid
+
+imprenta, August. Plays by itself on arrival. Two guardia civil search
+the room (1050 to 1400 and 450 to 800), each with cover in his beat
+(paper stacked at 1220, crates at 620); they catch, not shoot.
+
+  + Macario (sa isip): Bukas ang pinto...
+  + Macario (sa isip): Mga guardia... nauna na sila.
+  + Manlilimbag (pabulong): Pangulo... dito po.
+  + Manlilimbag: May kapatid na nagtapat sa kura ng Tondo. Alam na nila ang lahat.
+  + Manlilimbag: Kinuha na nila ang mga papel. Pero ang listahan ng mga kasapi... nasa ilalim pa ng palimbagan.
+  + Macario: Kapag nakita nila 'yon...
+  + Manlilimbag: Daan-daang pangalan, Pangulo. Pati ang sa inyo.
+  + Macario: Kukunin ko. Lumabas ka na habang abala sila.
+
+Completes: Alamin ang nangyari sa imprenta. "The printers will not hand
+over the papers" was the guards, not the printers. At the press, past
+the guards:
+
+  + Macario (sa isip): Nandito... ang listahan ng mga kasapi.
+
+Completes: Kunin ang listahan ng mga kasapi ("Nakuha mo ang listahan.
+Tumakas sa bintana sa likod!"). The back window, at the left edge,
+"Tumakas sa bintana":
+
+  + [BLACK] Natuklasan ang Katipunan.
+  + [BLACK] Sa loob ng ilang araw, daan-daan ang hinuli sa Tondo.
+  + [BLACK] Agosto 23, 1896
+  + [BLACK] Pugad Lawin, Kalookan
+
+Completes: Tumakas sa likod ng imprenta. Before the list, the window is
+a thought: "Hindi ako aalis nang wala ang listahan." (in March, "Bintana
+sa likod. Daan palabas, kung sakaling magkagulo.")
+
+Thoughts and lines around the press:
+
+  + Macario (sa isip): Kausapin ko muna si Ginoong Jacinto.
+  + Macario (sa isip): Nasa akin na ang listahan. Sa bintana sa likod ako dadaan.
+  + Macario (sa isip): Hindi ako aalis nang wala ang listahan.
+  + Macario (sa isip): Bintana sa likod. Daan palabas, kung sakaling magkagulo.
+  + Jacinto: Pantay na diin, Macario. Ang malabong letra, hindi mababasa ng bayan.
+  + Manlilimbag: Yokohama, ha. Ni hindi ko alam kung saan 'yon.
+  + Manlilimbag (pabulong): Bilisan n'yo po, Pangulo. Sa ilalim ng palimbagan.
+
+### 7. Pugad Lawin
+
+pugad-lawin. Plays by itself on arrival.
+
+  + Isko: Pangulo! Nakalabas kayo!
+  + Macario: Si Nanay?
+  + Isko: Ligtas po. Dinala ko sa kapatid niya sa Pandacan, bago pa dumating ang mga guardia.
+  + Macario: ...Salamat, Isko.
+  + Bonifacio: Mga kapatid! Alam na ng mga Kastila ang lahat.
+  + Bonifacio: Hinuhuli na nila tayo isa-isa. Kung maghihintay tayo, sa bilangguan tayo mamamatay.
+  + Bonifacio: Kaya ngayon, wala nang atrasan.
+  + Bonifacio: Ilabas ang inyong mga sedula!
+
+    (Paper torn, twice.)
+
+  + Katipunero: Punitin! Punitin!
+
+The cedula is the student's to tear: Bonifacio's button, "Punitin ang
+sedula".
+
+  + Macario (sa isip): Ito ang papel na umubos sa pitaka ni Nanay.
+  + Macario (sa isip): Ang papel na nagsasabing alipin kami sa sarili naming bayan.
+  + Macario: Wala nang sedula. Wala nang alipin.
+  + Mga Katipunero: Mabuhay ang Pilipinas!
+  + Bonifacio: Ikaw si Sakay, 'di ba? 'Yung artista.
+  + Macario: Opo, Supremo.
+  + Bonifacio: Napanood kita bilang Baldovino. "Walang bayang mananatiling alipin..."
+  + Bonifacio: Akala ko, linya lang. Ngayon, nakikita kong hindi.
+  + Bonifacio: Sa makalawa, lulusob tayo sa San Juan del Monte. Sumama ka sa akin.
+  + Macario: Opo.
+
+  + [BLACK] Agosto 30, 1896
+  + [BLACK] San Juan del Monte
+
+Completes: Punitin ang sedula. The cedula is the one that emptied
+Nanay's purse in Act I's opening; the line is the one Bonifacio heard
+from the stage (Act I, beat 12). The others there:
+
+  + Isko: Nasa Pandacan po si Nanay ninyo. Walang nakakaalam.
+  + Katipunero: Wala nang sedula. Wala nang atrasan.
+  + Kasama: Akala ko, nahuli ka na sa Tondo, Pangulo.
+  + Bonifacio: Ilabas mo ang sedula mo, kapatid.
+    (before)
+  + Bonifacio: Sa makalawa, sa San Juan del Monte.
+    (after)
+
+### 8. San Juan del Monte
+
+san-juan. Plays by itself on arrival.
+
+  + Bonifacio: Ang polvorin. Doon nakatago ang pulbura at mga armas ng mga Kastila.
+  + Bonifacio: Kapag nakuha natin 'yan, may baril na tayo.
+  + Kasama: Bolo laban sa riple, Pangulo...
+  + Macario: Mas marami tayo.
+  + Bonifacio: Sugod!
+
+The battle, at the proponent's word a big one: fifteen soldiers in
+four waves, from both sides of the screen, with the fight music and
+three hearts on the field. Most charge with the bayonet (sundalo); one
+in each of the last two waves is a rifle that fires (bantay). Running
+out of hearts starts the wave again, the fallen staying down. Between
+waves:
+
+  + Macario (sa isip): May kasunod pa...
+  + Bonifacio: Huwag kayong titigil! Malapit na tayo sa polvorin!
+  + Macario (sa isip): Ang dami nila...
+
+Then a volley, from the right.
+
+  + Kasama: Pangulo! Dumating ang mga sundalo mula sa Maynila!
+  + Bonifacio: Masyado silang marami! Umatras! Sa ilog!
+  + Kasama: Ah—!
+  + Macario: Kasama!
+  + Kasama: Daplis lang 'to... Tumakbo ka na!
+
+  + [BLACK] Umatras ang mga Katipunero.
+
+Completes: Lumusob sa San Juan del Monte. The Kasama is hit, and lives.
+
+### 9. The retreat
+
+san-juan, from x 2400 back to the river at the left edge ("Umatras sa
+ilog, sa kaliwa! Iwasan ang mga sundalo."). Three riflemen patrol the
+field between (1600 to 1950, 1000 to 1350, 400 to 750), each with
+cover in his beat. Seen, a rifleman turns on Macario and fires until he
+is punched down; out of hearts, Macario starts again at x 2400. The
+river's button reads "Tumawid sa ilog".
+
+  + [BLACK] Mahigit isandaan at limampung Katipunero ang nasawi sa San Juan del Monte.
+  + [BLACK] Nagkawatak-watak ang mga nakaligtas.
+  + [BLACK] Nobyembre 1896
+  + [BLACK] Kabundukan ng Morong
+
+Completes: Umatras sa ilog.
+
+### 10. The Nangka River
+
+nangka. Plays by itself on arrival.
+
+  + Bonifacio: Nakuha natin ang Montalban. Pero babalik sila, at mas marami.
+  + Bonifacio: Kulang tayo sa tao. Kaya gagawa tayo ng tao.
+  + Macario: Po?
+  + Bonifacio: Dayami, Sakay. Dayami at sombrero.
+  + Bonifacio: Artista ka, 'di ba? Ito ang pinakamalaki mong entablado.
+  + Katipunero: Tatlong bigkis ng dayami ang nasa pampang. Itayo mo, at susuotan namin ng sombrero.
+  + Macario (sa isip): Mga artistang hindi humihinga... Sana maniwala ang mga manonood.
+
+Three bundles of straw on the bank (x 1000, 1400, 1800), each with a
+button "Itayo": the bundle becomes a scarecrow in a Katipunan hat
+("Naitayo ang panakot (n/3)"). Talked to, a scarecrow:
+
+  + Macario (sa isip): Mukha talaga siyang Katipunero. Mas matapang pa nga.
+
+Completes, with the third: Itayo ang mga panakot (3/3). Then, by itself:
+
+  + Katipunero: Ayan na sila! Sa kabilang pampang!
+
+    (Shots, four of them, at straw.)
+
+  + Katipunero: Binabaril nila ang dayami!
+  + Bonifacio: Habang abala sila sa mga panakot, sa gilid tayo lulusob. Sugod!
+
+A fight of six, in two waves (the last with a rifle among them).
+
+  + Katipunero: Hindi nila alam kung saan kami nanggaling!
+  + Katipunero: Supremo! May dagdag na hukbo mula sa San Mateo!
+  + Bonifacio: Hindi natin sila kaya ngayon. Umatras! Sa Balara!
+
+  + [BLACK] Dumating ang dagdag na hukbo ng Espanya.
+  + [BLACK] Umatras sina Macario at ang Supremo sa Balara.
+
+Completes: Labanan ang mga Kastila sa ilog. The others there:
+
+  + Katipunero: Tatlong bigkis sa pampang, Pangulo. Itayo mo na.
+  + Katipunero: Mga sundalong hindi kumakain. Gusto ko ang ganyan.
+  + Kasama: Huwag mo akong alalahanin, Pangulo. Gasgas lang 'to.
+
+### 11. Balara
+
+balara, at night. Plays by itself on arrival: a messenger runs in.
+
+  + Tagapagbalita: Supremo! Balita mula sa Cavite!
+  + Tagapagbalita: Itinaboy ng mga tauhan ni Aguinaldo ang mga Kastila!
+  + Katipunero: Sa Cavite, nananalo sila. Tayo rito, umaatras.
+  + Bonifacio: ...
+  + Bonifacio: Mabuti. Iisang Katipunan lang tayo.
+
+Then free. Bonifacio, by the fire:
+
+  + Bonifacio: Hindi ka pa natutulog, Sakay?
+  + Macario: Hindi po ako makatulog, Supremo.
+  + Bonifacio: Saan ka natutong lumaban?
+  + Macario: Sa entablado po. Kahoy na espada.
+  + Bonifacio: Ako rin, alam mo ba? Umarte rin ako sa mga komedya noon.
+  + Bonifacio: Ang pinagkaiba lang, dito, hindi na bumabangon ang namamatay.
+  + Macario: ...
+  + Bonifacio: Pupunta ako sa Cavite. Kailangang magkaisa ang Katipunan.
+  + Bonifacio: Matulog ka na.
+
+Completes: Kausapin ang Supremo. Bonifacio is recorded as having acted
+in amateur theatre; Maryam's "kahoy lang ang mga espada" (Act I, the
+play) and the Katipunero's "dito, hindi kahoy ang mga espada" come back
+in it.
+
+  + [BLACK] Marso 1897, Tejeros.
+  + [BLACK] Nahati ang himagsikan.
+  + [BLACK] Mayo 10, 1897.
+  + [BLACK] Pinatay si Andres Bonifacio ng sarili niyang mga kasama.
+  + [BLACK] Laguna, 1897
+
+The others there:
+
+  + Kasama: Malayo sa puso ang tama, Pangulo. Mabubuhay pa ako.
+  + Katipunero: Kung tutulong lang sana ang Cavite...
+  + Isko: Hindi po ako makatulog. Naririnig ko pa rin ang mga riple.
+  + Bonifacio: Matulog ka na, Sakay.
+
+### 12. Laguna
+
+laguna. Plays by itself on arrival.
+
+  + Macario: Ginoong Jacinto.
+  + Jacinto: Macario. Buhay ka pa.
+  + Macario: Totoo po ba? Ang Supremo...
+  + Jacinto: Totoo.
+  + Jacinto: Nilitis siya ng mga taga-Cavite, at ipinapatay.
+  + Macario: ...
+  + Jacinto: Sa kanila na ang pamahalaan nila. Pero sa atin pa rin ang Katipunan na itinatag niya.
+  + Macario (sa isip): Hindi ako susunod sa pumatay sa Supremo.
+  + Jacinto: Magpahinga ka muna. Mahaba pa ang laban.
+
+Completes: Sumama kay Jacinto sa Laguna. The others there:
+
+  + Kasama: Magaling na ang sugat ko, Pangulo. Hindi pa tapos ang laban natin.
+  + Katipunero: Hindi pa rin ako makapaniwala. Ang Supremo... sa kamay ng kapwa natin.
+  + Isko: Pangulo, may sulat po. Ligtas pa rin daw si Nanay ninyo sa Pandacan.
+
+### 13. The end of Act II
+
+laguna. Jacinto, talked to again:
+
+  + Jacinto: Kakaunti na lang tayo, Macario. Hindi kita pipigilan kung aalis ka.
+  + Macario: Hindi po ako aalis.
+  + Macario: Sa Katipunan ako nanumpa, sa harap ng Mabalasig. Hindi sa kanila.
+  + Jacinto: Kung gayon, dito tayo. Hanggang dulo.
+
+  + [BLACK] Disyembre 1897. Sa Biak-na-Bato, lumagda ng kasunduan ang mga pinuno ng himagsikan,
+  + [BLACK] at naglayag sila patungong Hong Kong.
+  + [BLACK] 1898. Dumating ang mga Amerikano.
+  + [BLACK] Hunyo 12, 1898. Idineklara ang kalayaan sa Kawit.
+  + [BLACK] Disyembre 1898. Ipinagbili ng Espanya ang Pilipinas sa Amerika
+  + [BLACK] sa halagang dalawampung milyong dolyar.
+
+  + Macario (sa isip): Dati, isang sedula ang halaga ko sa mga Kastila.
+  + Macario (sa isip): Ngayon, ipinagbili nila ang buong bayan, na para bang kanila.
+  + Jacinto: Hindi pa tapos, Macario.
+  + Macario: Hindi pa po.
+
+  + [BLACK] Wakas ng Ikalawang Yugto
+
+Completes: Kausapin si Jacinto, the last task. Act II is finished, and
+the post-test runs. Afterwards: "Hanggang dulo, Macario."
+
+  + Jacinto: Hanggang dulo, Macario.
+
+### Act II's Talaan
+
+Three papers of facts of the game's own, on the street (fixed: x 2600 on
+the road; x 4500 and x 6100 at jump height); a teacher's paper replaces
+its own slot.
+
+  + [HINT] Ang Kalayaan: Kalayaan ang pahayagan ng Katipunan. Inilimbag ito noong Marso 1896, at si Emilio Jacinto ang patnugot nito. Nakasulat dito na sa Yokohama, Hapon, ito inilimbag, para linlangin ang mga Kastila. Matapos itong lumabas, libu-libo ang sumapi sa Katipunan.
+  + [HINT] Ang pagkatuklas: Noong Agosto 19, 1896, ipinagtapat ng isang kasapi, si Teodoro Patiño, ang lihim ng Katipunan kay Padre Mariano Gil, ang kura ng Tondo. Hinalughog ng mga Kastila ang isang imprenta, at nagsimula ang malawakang paghuli.
+  + [HINT] Ang Sigaw at ang San Juan del Monte: Noong huling linggo ng Agosto 1896, pinunit ng mga Katipunero ang kanilang mga sedula bilang tanda ng paghihimagsik. Noong Agosto 30, 1896, nilusob nila ang polvorin ng mga Kastila sa San Juan del Monte. Mahigit 150 Katipunero ang nasawi.
+
 ## Threads left open
 
 What the story has set up and not yet paid off, for whoever writes the
@@ -1083,6 +1551,21 @@ next passage. None of these is a promise; they are what is there.
     The barbershop. The Barbero, and the cut done in the order the
       customer asks, are the third job; nothing later returns to them.
 
+    Act II's (Block 113), for Act III:
+
+    The promise. "Babalik po ako. Pangako." Nanay is safe in Pandacan
+      with her sister (Isko), and Macario has not been home since the
+      raid.
+    The father. Nanay names him: he went out one night and never came
+      back. Still never answered.
+    Isko. Macario's man since the raid; he looks after Nanay.
+    The Kasama. Wounded at San Juan del Monte, healed by Laguna.
+    Jacinto. "Hanggang dulo." The Katipunan Bonifacio founded is still
+      theirs, apart from Aguinaldo's government.
+    The Americans. Arrived in 1898; the country sold to them in
+      December. Act III starts from here.
+    The cedula. Torn at Pugad Lawin; set against the twenty million.
+
 ## Open questions for the proponents
 
 Act I. The proponents accepted it on 4 Oct 2026 (Block 113): every line
@@ -1091,3 +1574,18 @@ Katipunero, the Kasama, the three and the Suki), the play and its
 ending, the years (1890, 1894, 1895), the head of his council, the
 barber's tools, the direktor's pay and the Talaan's three papers. Nothing
 is open in Act I.
+
+Act II (Block 113). Every + line: accept, rewrite or replace. Also:
+
+    The names ours gave: Isko, the Manlilimbag, the Tagapagbalita.
+    Bonifacio and Jacinto speak words of ours; check them against the
+      source book, and Bonifacio's having acted (his amateur theatre).
+    The press: the histories put Kalayaan's printing in early 1896 and
+      the lithographic stone found at the Diario de Manila; the game's
+      press is the Katipunan's own room, raided, so the list under it
+      is ours.
+    Pugad Lawin, 23 August, for the cedulas (the official date and
+      place; Balintawak and 26 August are the older tradition).
+    The Kasama wounded at San Juan del Monte, and Isko taking Nanay to
+      Pandacan.
+    The Talaan's three papers of Act II.
