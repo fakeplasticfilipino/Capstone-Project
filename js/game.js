@@ -286,6 +286,85 @@ function cssAssetUrl(src) {
 const DEFAULT_SKYLINE_SRC = "assets/backgrounds/act1/street-01.jpg";
 const GROUND_SRC = "assets/backgrounds/act1/ground-lupa.jpg";
 
+// Block 114. A floor that fits the place: Tondo's dirt under a room was
+// the default and nothing else. ground: { floor } names one of these,
+// each a small tile of pixels built here as an SVG (no file, so nothing
+// to download, version or owe) and drawn at FLOOR_SCALE with the pixels
+// kept sharp. A road of the artist's (ground: { src }) still wins.
+const FLOOR_SCALE = 2;
+const FLOORS = {
+  // Floorboards: rows of planks, a dark seam under each, the joints
+  // staggered, a nail either side, and a little grain.
+  kahoy(px, rnd) {
+    const tones = ["#7a4d2b", "#714626", "#7d512e", "#6c4324"];
+    const joints = [44, 14, 54, 28];
+    for (let r = 0; r < 4; r++) {
+      const y = r * 8, j = joints[r];
+      px(0, y, 64, 8, tones[r]);
+      px(0, y, 64, 1, "#946139");
+      px(0, y + 7, 64, 1, "#2a160a");
+      for (let g = 0; g < 4; g++) px(Math.floor(rnd() * 56), y + 2 + Math.floor(rnd() * 4), 4 + Math.floor(rnd() * 7), 1, "#5e3a1e");
+      px(j, y + 1, 1, 6, "#2a160a");
+      px(j + 1, y + 1, 1, 6, "#8a5a34");
+      px(j - 3, y + 3, 1, 1, "#1a0e06");
+      px(j + 4, y + 3, 1, 1, "#1a0e06");
+    }
+    return [64, 32];
+  },
+  // A nipa house's floor: split bamboo laid side by side, each slat
+  // lit along its top, shadowed under it, with a node here and there.
+  kawayan(px, rnd) {
+    for (let r = 0; r < 8; r++) {
+      const y = r * 4;
+      px(0, y, 64, 4, r % 2 ? "#ad8740" : "#b8933f");
+      px(0, y, 64, 1, "#dcc074");
+      px(0, y + 3, 64, 1, "#5e4519");
+      for (let n = 0; n < 2; n++) {
+        const x = (r * 23 + 11 + n * 31 + Math.floor(rnd() * 6)) % 62;
+        px(x, y, 2, 3, "#7d6029");
+        px(x, y, 2, 1, "#c9a85a");
+      }
+    }
+    return [64, 32];
+  },
+  // Grass over earth: a ragged green edge where the feet are, then the
+  // soil with stones and the odd tuft.
+  damo(px, rnd) {
+    px(0, 0, 32, 32, "#5d4a2c");
+    for (let i = 0; i < 40; i++) px(Math.floor(rnd() * 32), 6 + Math.floor(rnd() * 26), 1, 1, rnd() < 0.5 ? "#4b3b22" : "#6e5a37");
+    for (let x = 0; x < 32; x++) {
+      const h = 3 + Math.floor(rnd() * 5);
+      px(x, 0, 1, h, x % 3 ? "#4f7d2f" : "#436c27");
+      if (rnd() < 0.4) px(x, 0, 1, 1, "#78a84a");
+    }
+    for (let i = 0; i < 5; i++) {
+      const x = Math.floor(rnd() * 31), y = 12 + Math.floor(rnd() * 16);
+      px(x, y, 1, 2, "#4f7d2f");
+      px(x + 1, y + 1, 1, 1, "#436c27");
+    }
+    return [32, 32];
+  },
+};
+
+// The CSS for a floor: { image, size }, built once each. The seeded
+// random keeps a floor the same on every load and every phone.
+function floorStyle(name) {
+  const cache = floorStyle.cache || (floorStyle.cache = {});
+  if (cache[name]) return cache[name];
+  const draw = FLOORS[name];
+  if (!draw) return null;
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  let rects = "";
+  const px = (x, y, w, h, c) => { rects += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`; };
+  const [w, h] = draw(px, rnd);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" shape-rendering="crispEdges">${rects}</svg>`;
+  return (cache[name] = {
+    image: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
+    size: `${w * FLOOR_SCALE}px ${h * FLOOR_SCALE}px`,
+  });
+}
+
 // --- Asset loader (Block 62) ------------------------------------------
 // Every picture the world draws is asked for through loadImage, which
 // does three things a bare new Image() did not.
@@ -883,11 +962,19 @@ function loadScene(sceneId) {
   // act whose ground is not Tondo's dirt; every other scene gets the
   // default back. A picture that is owed (not in the manifest) is not
   // asked for, and the default is drawn instead. Written only on a change.
+  // Block 114: else a floor of the scene's own (ground: { floor }).
+  const groundEl = document.getElementById("ground-tiles");
   const ownGround = scene.ground && scene.ground.src && assetExpected(scene.ground.src) !== false
-    ? scene.ground.src : GROUND_SRC;
-  if (loadScene.groundSrc !== ownGround) {
-    loadScene.groundSrc = ownGround;
-    document.getElementById("ground-tiles").style.setProperty("--ground-src", cssAssetUrl(ownGround));
+    ? scene.ground.src : null;
+  const floor = !ownGround && scene.ground && scene.ground.floor ? floorStyle(scene.ground.floor) : null;
+  const groundKey = ownGround || (floor ? "floor:" + scene.ground.floor : GROUND_SRC);
+  if (loadScene.groundSrc !== groundKey) {
+    loadScene.groundSrc = groundKey;
+    groundEl.style.setProperty("--ground-src", floor ? floor.image : cssAssetUrl(ownGround || GROUND_SRC));
+    if (floor) groundEl.style.setProperty("--ground-size", floor.size);
+    else groundEl.style.removeProperty("--ground-size");
+    groundEl.classList.toggle("ground-floor", Boolean(floor));
+    groundEl.dataset.floor = floor ? scene.ground.floor : "";
   }
 
   // Block 36. The world element was a fixed 4400px whatever the scene
@@ -5791,161 +5878,366 @@ function playWorkGame(opts) {
   });
 }
 
-// Block 94. The barber's own game, at the proponent's request: a memory
-// game rather than a second timing one. Each round the customer asks for
-// the cut as a list of tools (opts.tools, [{ label, icon }]), said one
-// word at a time and then taken away; the student presses the tools in
-// that order (the buttons, or the keys 1 to 3). A wrong press ends the
-// round. The lists grow (opts.lengths, default 2 to 5). Resolves with the
-// rounds done right, or -1 if he left before the last. Content names the
-// words and decides what they are worth, as with playWorkGame.
-const ORDER_LENGTHS = [2, 3, 4, 5];
-// Block 102: slower, at the proponent's word that the game was too hard.
-const ORDER_WORD_MS = 1100;  // each word of the request on screen
-const ORDER_HOLD_MS = 1000;  // the whole request, before it is taken away
-const ORDER_NEXT_MS = 1300;  // after a round, before the next request
+// Block 114. The barber's own game, at the proponent's word (Block 94's
+// memory game of tools was replaced): a haircut. A customer drawn in
+// pixels on a canvas (CUT_W by CUT_H, scaled up with the pixels kept
+// sharp), his hair grown out over his ears and forehead, and a dashed
+// line where he wants it cut. Scissors follow the finger (held a little
+// above it, so the finger does not hide them), the mouse while its
+// button is down, or the arrow keys; hair past the line falls onto the
+// cape, and hair inside it is cut too short ("Aray!"). Once nearly all
+// the extra is gone the rest falls by itself and the game is over.
+// Resolves with how clean the cut was, 0 to 1, or -1 if he left first.
+// Content names the words and decides what they are worth, as with
+// playWorkGame. Nothing is owed to the artist: the customer is built
+// here, from shapes, a pixel at a time.
+const CUT_W = 64;
+const CUT_H = 56;
+const CUT_RADIUS = 2.3;        // the scissors' reach, in the picture's pixels
+const CUT_FINGER_LIFT = 8;     // a finger holds them this many pixels above it
+const CUT_DONE_SHARE = 0.05;   // the extra hair left when the rest falls
+const CUT_SHORT_BUDGET = 0.12; // cutting this share of the kept hair is a clean of 0
+const CUT_OUCH_MS = 900;       // between two "Aray!"s
+const CUT_KEY_MS = 28;         // the keys move the scissors a pixel this often
 
-function playOrderGame(opts) {
+const CUT_COLOURS = {
+  wall: [233, 214, 176], wallLine: [222, 200, 158], panel: [140, 96, 58], panelTop: [168, 120, 76],
+  skin: [214, 160, 112], skinShade: [186, 132, 90],
+  ink: [40, 26, 18], eyeWhite: [244, 238, 226], mouth: [146, 76, 60],
+  hair: [43, 29, 20], hairLight: [74, 51, 36], hairShine: [96, 70, 50],
+  cape: [242, 239, 230], capeStripe: [91, 127, 179], capeShade: [214, 210, 198],
+  guide: [255, 230, 128], blade: [223, 230, 234], bladeShade: [150, 160, 168],
+  pivot: [60, 64, 70], handle: [176, 58, 46],
+};
+
+// The scissors, upright, the point at the top; o blade, x pivot, r handle.
+const CUT_SCISSORS = {
+  open: ["o.......o", ".o.....o.", "..o...o..", "...o.o...", "....x....",
+         "...o.o...", "rrr...rrr", "r.r...r.r", "rrr...rrr"],
+  shut: ["....o....", "....o....", "...ooo...", "...ooo...", "....x....",
+         "...o.o...", "rrr...rrr", "r.r...r.r", "rrr...rrr"],
+};
+const CUT_TIP = { x: 4, y: 2 }; // the part of the sprite that cuts
+
+// The customer, front on: what lies under the hair (base), and the hair
+// (0 none, 1 the cut he wants, 2 the extra). Built once; a game copies
+// the hair.
+function cutModel() {
+  if (cutModel.made) return cutModel.made;
+  const C = CUT_COLOURS;
+  const base = new Array(CUT_W * CUT_H);
+  const hair = new Uint8Array(CUT_W * CUT_H);
+  const cx = 32;
+  const inEllipse = (x, y, ex, ey, rx, ry) => ((x - ex) / rx) ** 2 + ((y - ey) / ry) ** 2 <= 1;
+  // The strands' ragged ends: a fixed wobble, so the mop is the same on
+  // every phone.
+  const wobble = (x) => Math.sin(x * 1.7) * 1.2 + Math.sin(x * 0.63 + 1) * 1.4;
+  for (let y = 0; y < CUT_H; y++) {
+    for (let x = 0; x < CUT_W; x++) {
+      const i = y * CUT_W + x;
+      // The shop's wall, and its wooden panel behind the chair.
+      let c = y > 40 ? (y === 41 ? C.panelTop : C.panel) : (x % 8 === 0 ? C.wallLine : C.wall);
+      const face = inEllipse(x, y, cx, 26, 11.5, 14);
+      const ear = inEllipse(x, y, cx - 12.6, 27, 2.2, 3.4) || inEllipse(x, y, cx + 12.6, 27, 2.2, 3.4);
+      const neck = x >= cx - 5 && x <= cx + 5 && y >= 36 && y <= 44;
+      if (neck) c = y < 39 ? C.skinShade : C.skin;
+      if (ear) c = x === cx - 14 || x === cx + 14 ? C.skinShade : C.skin;
+      if (face) c = x < cx - 8 || x > cx + 8 ? C.skinShade : C.skin;
+      // The cape, tied at the neck and spreading over the shoulders.
+      if (y >= 43 && Math.abs(x - cx) <= 7 + (y - 43) * 2.2) {
+        c = y === 43 ? C.capeShade : ((x - cx + 64) % 6 < 2 ? C.capeStripe : C.cape);
+      }
+      base[i] = c;
+
+      // The cut he wants: close over the crown, short at the sides,
+      // stopping above the ears.
+      const keep = inEllipse(x, y, cx, 23, 14.5, 15.5) && y <= 21 && !(face && y >= 16);
+      // The extra: a mop over the ears to the jaw, and a fringe on the
+      // forehead.
+      const outer = inEllipse(x, y, cx, 24, 20 + wobble(y) * 0.5, 22 + wobble(x)) &&
+        y <= 34 + Math.round(wobble(x + 9));
+      const fringe = face && y >= 16 && y <= 20 + Math.round(Math.abs(wobble(x * 2)) * 0.8);
+      if (keep) hair[i] = 1;
+      else if ((outer && !face && !neck) || fringe) hair[i] = 2;
+    }
+  }
+  // The face itself, over the skin: brows, eyes, nose, moustache, mouth.
+  const put = (x, y, c) => { base[y * CUT_W + x] = c; };
+  for (const s of [-1, 1]) {
+    for (let k = 0; k < 4; k++) put(cx + s * (3 + k), 23, C.hair);
+    put(cx + s * 4, 25, C.eyeWhite);
+    put(cx + s * 5, 25, C.ink);
+  }
+  put(cx, 27, C.skinShade); put(cx, 28, C.skinShade); put(cx - 1, 29, C.skinShade); put(cx + 1, 29, C.skinShade);
+  for (let x = cx - 4; x <= cx + 4; x++) put(x, 31, C.hair);
+  put(cx - 5, 32, C.hair); put(cx + 5, 32, C.hair);
+  for (let x = cx - 2; x <= cx + 2; x++) put(x, 33, C.mouth);
+  cutModel.made = { base, hair };
+  return cutModel.made;
+}
+
+function playCutGame(opts) {
   const o = opts || {};
-  const screen = document.getElementById("order-screen");
+  const screen = document.getElementById("cut-screen");
   if (!screen || !screen.classList.contains("hidden")) return Promise.resolve(-1);
-  const titleEl = document.getElementById("order-title");
-  const hintEl = document.getElementById("order-hint");
-  const askEl = document.getElementById("order-ask");
-  const marksEl = document.getElementById("order-marks");
-  const toolsEl = document.getElementById("order-tools");
-  const resultEl = document.getElementById("order-result");
-  const stopBtn = document.getElementById("order-stop");
-  const tools = (o.tools || []).slice(0, 3);
-  const lengths = Array.isArray(o.lengths) && o.lengths.length ? o.lengths : ORDER_LENGTHS;
-  const rounds = lengths.length;
+  const titleEl = document.getElementById("cut-title");
+  const hintEl = document.getElementById("cut-hint");
+  const askEl = document.getElementById("cut-ask");
+  const canvas = document.getElementById("cut-canvas");
+  const resultEl = document.getElementById("cut-result");
+  const stopBtn = document.getElementById("cut-stop");
+  const ctx2d = canvas.getContext("2d");
+  const C = CUT_COLOURS;
+  const model = cutModel();
   const who = o.speaker ? o.speaker + ": " : "";
 
   return new Promise((resolve) => {
     const openedAt = performance.now();
-    const timers = [];
-    const marks = [];
-    let round = 0;
-    let good = 0;
-    let want = [];
-    let at = 0;
-    let listening = false;
+    const hair = model.hair.slice();
+    let extraLeft = 0;
+    let keptTotal = 0;
+    for (const h of hair) { if (h === 2) extraLeft++; else if (h === 1) keptTotal++; }
+    const extraTotal = extraLeft;
+    let tooShort = 0;
+    let lastOuch = 0;
+    let clean = 0;
+    let sx = CUT_W - 8;
+    let sy = 10;
+    let last = null;      // where the scissors were at the last cut, while cutting
+    let cutting = false;  // a finger or the mouse button is down
+    let shut = false;     // the blades, snapping as they cut
+    let snipAt = 0;
+    const falling = [];   // hair in the air
+    const fallen = [];    // hair on the cape
+    const held = new Set();
+    let keyAt = 0;
     let over = false;
     let closed = false;
-
-    function later(fn, ms) { timers.push(setTimeout(() => { if (!closed) fn(); }, ms)); }
+    let raf = 0;
+    let lastTick = 0;
+    let dirty = true;
+    const image = ctx2d.createImageData(CUT_W, CUT_H);
+    const px = image.data;
 
     function setResult(text, cls) {
       resultEl.textContent = text || "";
       resultEl.className = "shell-sub" + (cls ? " " + cls : "");
     }
 
-    function drawMarks() {
-      marksEl.textContent = "";
-      for (let i = 0; i < rounds; i++) {
-        const m = document.createElement("i");
-        m.className = i < marks.length ? (marks[i] ? "order-ok" : "order-bad") : "";
-        marksEl.appendChild(m);
+    function showProgress() {
+      if (!over) {
+        const done = Math.round(100 * (1 - extraLeft / Math.max(1, extraTotal)));
+        hintEl.textContent = (o.hint || "") + "  ·  " + done + "%";
       }
+      screen.dataset.left = String(extraLeft);
+      screen.dataset.short = String(tooShort);
     }
 
-    // The tool buttons, built once per game from what content asked for.
-    toolsEl.textContent = "";
-    const buttons = tools.map((t, i) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "shell-btn order-tool";
-      b.appendChild(makeIcon(t.icon || "i-hand"));
-      const lbl = document.createElement("span");
-      lbl.className = "lbl";
-      b.appendChild(lbl);
-      setLabel(b, (i + 1) + " " + t.label);
-      b.onclick = () => press(i);
-      toolsEl.appendChild(b);
-      return b;
-    });
-
-    function setListening(on) {
-      listening = on;
-      screen.dataset.listening = on ? "1" : "";
-      buttons.forEach((b) => { b.disabled = !on; });
+    // Strands: a lighter one every few columns, stepped every few rows so
+    // the hair hangs rather than checkers, and a little shine on top.
+    function hairColour(x, y) {
+      if (y < 10 && (x + 2 * y) % 9 === 0) return C.hairShine;
+      return (x + Math.floor(y / 4)) % 4 === 0 ? C.hairLight : C.hair;
     }
 
-    // A new request, never the same tool three times in a row.
-    function ask() {
-      setListening(false);
-      setResult("", "");
-      const n = lengths[round];
-      want = [];
-      for (let k = 0; k < n; k++) {
-        let pick = Math.floor(Math.random() * tools.length);
-        if (k >= 2 && pick === want[k - 1] && pick === want[k - 2]) pick = (pick + 1) % tools.length;
-        want.push(pick);
+    function drop(x, y) {
+      falling.push({ x, y, vx: (Math.random() - 0.5) * 0.3, vy: 0, c: hairColour(x, y),
+        rest: 46 + Math.floor(Math.random() * 9) });
+    }
+
+    // Cuts what the scissors' tip reaches at (x, y).
+    function cutAt(x, y, now) {
+      let short = 0;
+      const r = Math.ceil(CUT_RADIUS);
+      for (let dy = -r; dy <= r; dy++) {
+        for (let dx = -r; dx <= r; dx++) {
+          if (dx * dx + dy * dy > CUT_RADIUS * CUT_RADIUS) continue;
+          const gx = Math.round(x + dx), gy = Math.round(y + dy);
+          if (gx < 0 || gy < 0 || gx >= CUT_W || gy >= CUT_H) continue;
+          const i = gy * CUT_W + gx;
+          if (!hair[i]) continue;
+          // The kept hair is cut only by the point itself, so the blades
+          // can run along the outside of the line without biting it.
+          if (hair[i] === 1 && (dx || dy)) continue;
+          if (hair[i] === 2) extraLeft--;
+          else { tooShort++; short++; }
+          hair[i] = 0;
+          drop(gx, gy);
+        }
       }
-      at = 0;
-      screen.dataset.want = want.join(",");
-      hintEl.textContent = (o.hint || "") + "  ·  " + (round + 1) + "/" + rounds;
-      askEl.className = "";
-      askEl.textContent = who + "...";
-      want.forEach((w, k) => later(() => {
-        askEl.textContent = who + want.slice(0, k + 1).map((x) => tools[x].label).join(", ") +
-          (k === n - 1 ? "." : "...");
-        playSfx("blip");
-      }, 400 + k * ORDER_WORD_MS));
-      later(() => {
-        askEl.className = "order-your-turn";
-        askEl.textContent = o.yourTurn || "Ikaw na!";
-        setListening(true);
-      }, 400 + n * ORDER_WORD_MS + ORDER_HOLD_MS);
-    }
-
-    function press(i) {
-      if (!listening || over) return;
-      if (i === want[at]) {
-        at++;
-        playSfx("catch");
-        setResult(tools[i].label + " " + "✓".repeat(at), "work-hit");
-        if (at >= want.length) endRound(true);
-      } else {
+      if (short && now - lastOuch > CUT_OUCH_MS) {
+        lastOuch = now;
         playSfx("miss");
-        endRound(false);
+        setResult(who + (o.tooShortText || "Aray!"), "work-miss");
       }
+      if (now - snipAt > 110) {
+        snipAt = now;
+        shut = !shut;
+        playSfx("gupit");
+      }
+      dirty = true;
+      showProgress();
+      if (!over && extraLeft <= extraTotal * CUT_DONE_SHARE) finish();
     }
 
-    function endRound(ok) {
-      setListening(false);
-      if (ok) good++;
-      marks.push(ok);
-      drawMarks();
-      askEl.className = "";
-      askEl.textContent = who + want.map((x) => tools[x].label).join(", ") + ".";
-      setResult(ok ? (o.hitText || "Tama!") : (o.missText || "Mali!"), ok ? "work-hit" : "work-miss");
-      round++;
-      if (round >= rounds) {
-        over = true;
-        const done = typeof o.doneText === "function" ? o.doneText(good, rounds) : o.doneText;
-        hintEl.textContent = done || "Tapos na!";
-        setLabel(stopBtn, "Tapos na");
-        setIcon(stopBtn, "i-check");
-        stopBtn.className = "shell-btn shell-btn-primary";
-        return;
+    // From where the scissors were to where they are, a pixel at a time,
+    // so a quick swipe leaves no gaps.
+    function sweepTo(x, y, now) {
+      const from = last || { x, y };
+      const steps = Math.max(1, Math.ceil(Math.hypot(x - from.x, y - from.y)));
+      for (let k = 1; k <= steps && !over; k++) {
+        cutAt(from.x + ((x - from.x) * k) / steps, from.y + ((y - from.y) * k) / steps, now);
       }
-      later(ask, ORDER_NEXT_MS);
+      last = { x, y };
     }
 
-    function close() {
+    function finish() {
+      over = true;
+      // The last strands fall by themselves.
+      for (let i = 0; i < hair.length; i++) {
+        if (hair[i] === 2) { hair[i] = 0; drop(i % CUT_W, Math.floor(i / CUT_W)); }
+      }
+      extraLeft = 0;
+      cutting = false;
+      last = null;
+      clean = Math.max(0, 1 - tooShort / Math.max(1, keptTotal * CUT_SHORT_BUDGET));
+      const done = typeof o.doneText === "function" ? o.doneText(clean) : o.doneText;
+      askEl.textContent = who + (done || "Tapos na!");
+      hintEl.textContent = o.title || "";
+      setResult("", "");
+      playSfx(clean >= 0.8 ? "streak" : "catch");
+      setLabel(stopBtn, "Tapos na");
+      setIcon(stopBtn, "i-check");
+      stopBtn.className = "shell-btn shell-btn-primary";
+      showProgress();
+      screen.dataset.clean = clean.toFixed(2);
+      screen.dataset.over = "1";
+      dirty = true;
+    }
+
+    function paint(c, x, y) {
+      if (x < 0 || y < 0 || x >= CUT_W || y >= CUT_H) return;
+      const k = (y * CUT_W + x) * 4;
+      px[k] = c[0]; px[k + 1] = c[1]; px[k + 2] = c[2]; px[k + 3] = 255;
+    }
+
+    // The customer as he is now, the guide around the cut he wants, the
+    // clippings, and the scissors on top.
+    function draw() {
+      for (let y = 0; y < CUT_H; y++) {
+        for (let x = 0; x < CUT_W; x++) {
+          const i = y * CUT_W + x;
+          paint(hair[i] ? hairColour(x, y) : model.base[i], x, y);
+        }
+      }
+      if (!over) {
+        for (let y = 1; y < CUT_H - 1; y++) {
+          for (let x = 1; x < CUT_W - 1; x++) {
+            const i = y * CUT_W + x;
+            if (model.hair[i] === 1) continue;
+            const edge = model.hair[i - 1] === 1 || model.hair[i + 1] === 1 ||
+              model.hair[i - CUT_W] === 1 || model.hair[i + CUT_W] === 1;
+            if (edge && (x + y) % 3 !== 0) paint(C.guide, x, y);
+          }
+        }
+      }
+      for (const f of fallen) paint(f.c, f.x, f.y);
+      for (const f of falling) paint(f.c, Math.round(f.x), Math.round(f.y));
+      if (!over) {
+        const rows = shut ? CUT_SCISSORS.shut : CUT_SCISSORS.open;
+        const ox = Math.round(sx) - CUT_TIP.x, oy = Math.round(sy) - CUT_TIP.y;
+        rows.forEach((row, ry) => {
+          for (let rx = 0; rx < row.length; rx++) {
+            const ch = row[rx];
+            if (ch === ".") continue;
+            paint(ch === "x" ? C.pivot : ch === "r" ? C.handle : rx > 4 ? C.bladeShade : C.blade, ox + rx, oy + ry);
+          }
+        });
+      }
+      ctx2d.putImageData(image, 0, 0);
+    }
+
+    // Runs only while the screen is up, and draws only on a change.
+    function tick(now) {
       if (closed) return;
-      closed = true;
-      timers.forEach(clearTimeout);
-      window.removeEventListener("keydown", onKeyDown, true);
-      stopBtn.onclick = null;
-      buttons.forEach((b) => { b.onclick = null; });
-      screen.classList.add("hidden");
-      screen.dataset.want = "";
-      screen.dataset.listening = "";
-      setUiBlocked(false);
-      resolve(over ? good : -1);
+      raf = requestAnimationFrame(tick);
+      // The keys: a pixel a step, cutting as they go.
+      if (held.size && !over && now - keyAt >= CUT_KEY_MS) {
+        keyAt = now;
+        let dx = 0, dy = 0;
+        if (held.has("left")) dx--;
+        if (held.has("right")) dx++;
+        if (held.has("up")) dy--;
+        if (held.has("down")) dy++;
+        if (dx || dy) {
+          sx = Math.max(0, Math.min(CUT_W - 1, sx + dx));
+          sy = Math.max(0, Math.min(CUT_H - 1, sy + dy));
+          sweepTo(sx, sy, now);
+        }
+      }
+      // The clippings fall by the time passed, in 60ths of a second, not
+      // by frames: a slow phone draws fewer of them.
+      const step = lastTick ? Math.min(8, (now - lastTick) / (1000 / 60)) : 1;
+      lastTick = now;
+      if (falling.length) {
+        for (let k = falling.length - 1; k >= 0; k--) {
+          const f = falling[k];
+          f.vy = Math.min(1.2, f.vy + 0.08 * step);
+          f.x += f.vx * step;
+          f.y += f.vy * step;
+          if (f.y >= f.rest) {
+            f.x = Math.round(f.x);
+            f.y = Math.round(Math.min(f.y, CUT_H - 1));
+            // On the cape, or on the floor of the picture.
+            if (fallen.length < 900) fallen.push(f);
+            falling.splice(k, 1);
+          }
+        }
+        dirty = true;
+      }
+      if (dirty) {
+        dirty = false;
+        draw();
+      }
     }
+
+    // A pointer's place in the picture's pixels, measured from their
+    // middles (so rounding names the pixel under it); a finger lifts them.
+    function at(e) {
+      const r = canvas.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / Math.max(1, r.width)) * CUT_W - 0.5;
+      const y = ((e.clientY - r.top) / Math.max(1, r.height)) * CUT_H - 0.5 -
+        (e.pointerType === "touch" ? CUT_FINGER_LIFT : 0);
+      return { x: Math.max(0, Math.min(CUT_W - 1, x)), y: Math.max(0, Math.min(CUT_H - 1, y)) };
+    }
+
+    function onDown(e) {
+      if (over) return;
+      e.preventDefault();
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* already released */ }
+      const p = at(e);
+      sx = p.x; sy = p.y;
+      cutting = true;
+      last = null;
+      sweepTo(sx, sy, performance.now());
+    }
+
+    // A mouse shows the scissors where it is, and cuts only held down.
+    function onMove(e) {
+      if (over || (!cutting && e.pointerType !== "mouse")) return;
+      const p = at(e);
+      sx = p.x; sy = p.y;
+      if (cutting) sweepTo(sx, sy, performance.now());
+      dirty = true;
+    }
+
+    function onUp() {
+      cutting = false;
+      last = null;
+    }
+
+    const KEYS = { arrowleft: "left", a: "left", arrowright: "right", d: "right",
+      arrowup: "up", w: "up", arrowdown: "down", s: "down" };
 
     // Captured and stopped, as the work game's keys are. The E that
     // opened the game is older than openedAt; once it is over, E, Space
@@ -5957,31 +6249,62 @@ function playOrderGame(opts) {
         close();
         return;
       }
-      if (e.repeat || e.timeStamp < openedAt) { e.stopPropagation(); return; }
-      const n = Number(key);
-      if (n >= 1 && n <= tools.length) {
+      if (KEYS[key]) {
         e.preventDefault(); e.stopPropagation();
-        press(n - 1);
-      } else if (key === "e" || key === " " || key === "enter") {
+        if (!held.size) last = null;
+        held.add(KEYS[key]);
+        return;
+      }
+      if (e.repeat || e.timeStamp < openedAt) { e.stopPropagation(); return; }
+      if (key === "e" || key === " " || key === "enter") {
         e.preventDefault(); e.stopPropagation();
         if (over) close();
-      } else if (key === "a" || key === "d" || key === "arrowleft" || key === "arrowright") {
-        e.stopPropagation();
       }
     }
 
+    function onKeyUp(e) {
+      const k = KEYS[(e.key || "").toLowerCase()];
+      if (k) { held.delete(k); e.stopPropagation(); }
+    }
+
+    function close() {
+      if (closed) return;
+      closed = true;
+      cancelAnimationFrame(raf);
+      window.removeEventListener("keydown", onKeyDown, true);
+      window.removeEventListener("keyup", onKeyUp, true);
+      canvas.onpointerdown = canvas.onpointermove = canvas.onpointerup = canvas.onpointercancel = null;
+      stopBtn.onclick = null;
+      screen.classList.add("hidden");
+      screen.dataset.over = "";
+      setUiBlocked(false);
+      resolve(over ? clean : -1);
+    }
+
+    canvas.width = CUT_W;
+    canvas.height = CUT_H;
     titleEl.textContent = o.title || "";
+    askEl.textContent = who + (o.askText || "");
+    setResult("", "");
+    screen.dataset.over = "";
+    screen.dataset.clean = "";
     setLabel(stopBtn, "Bumalik");
     setIcon(stopBtn, "i-back");
     stopBtn.className = "shell-btn shell-btn-ghost";
     stopBtn.onclick = close;
+    canvas.onpointerdown = onDown;
+    canvas.onpointermove = onMove;
+    canvas.onpointerup = onUp;
+    canvas.onpointercancel = onUp;
     window.addEventListener("keydown", onKeyDown, true);
+    window.addEventListener("keyup", onKeyUp, true);
     setUiBlocked(true);
     keysPressed["a"] = false;
     keysPressed["d"] = false;
-    drawMarks();
+    showProgress();
     screen.classList.remove("hidden");
-    ask();
+    playSfx("blip");
+    raf = requestAnimationFrame(tick);
   });
 }
 
@@ -6733,6 +7056,8 @@ const SFX_SOURCES = {
   page: "assets/audio/sfx/page.wav",
   fanfare: "assets/audio/sfx/fanfare.wav",
   streak: "assets/audio/sfx/streak.wav",
+  // Block 114 (make-fun-sfx.js): the barber's scissors, a snip.
+  gupit: "assets/audio/sfx/gupit.wav",
   // Block 81 (_dev/tools/make-scene-sfx.js): a crowd clapping, for the
   // black card a content file names it on (playIntertitle's sfx).
   applause: "assets/audio/sfx/applause.wav",

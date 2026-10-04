@@ -357,7 +357,13 @@ html, body {
     ),
     var(--ground-src, none); /* set by game.js, versioned (Block 105) */
   background-repeat: no-repeat, repeat;
-  background-size: 100% 100%, 120px 120px;
+  background-size: 100% 100%, var(--ground-size, 120px 120px);
+}
+
+/* Block 114. A floor of pixels (game.js, FLOORS) drawn at twice its
+   size: kept sharp rather than smoothed into a blur. */
+#ground-tiles.ground-floor {
+  image-rendering: pixelated;
 }
 
 /* An .entity's own box is the character's BODY: game.js's mountBody sets
@@ -3007,7 +3013,7 @@ body.text-lg #dialogue-text { font-size: 27px; }
    change them together with their constants in game.js. */
 #catch-screen,
 #work-screen,
-#order-screen {
+#cut-screen {
   position: fixed;
   inset: 0;
   z-index: 90;
@@ -3021,13 +3027,13 @@ body.text-lg #dialogue-text { font-size: 27px; }
 
 #catch-screen.hidden,
 #work-screen.hidden,
-#order-screen.hidden {
+#cut-screen.hidden {
   display: none;
 }
 
 #catch-box,
 #work-box,
-#order-box {
+#cut-box {
   width: min(92vw, 560px);
   background: var(--px-panel);
   border: 3px solid var(--px-edge);
@@ -3039,7 +3045,7 @@ body.text-lg #dialogue-text { font-size: 27px; }
 
 #catch-title,
 #work-title,
-#order-title {
+#cut-title {
   margin: 0 0 4px;
 }
 
@@ -3134,14 +3140,14 @@ body.text-lg #dialogue-text { font-size: 27px; }
 
 #catch-actions,
 #work-actions,
-#order-actions {
+#cut-actions {
   display: flex;
   gap: 10px;
 }
 
 #catch-actions .shell-btn,
 #work-actions .shell-btn,
-#order-actions .shell-btn {
+#cut-actions .shell-btn {
   flex: 1;
 }
 
@@ -3940,63 +3946,42 @@ body.dialogue-top .dialogue-portrait {
   opacity: 0.9;
 }
 
-/* Block 94. The barber's game (game.js, playOrderGame): the customer's
-   request in a speech strip, a row of marks for the rounds, and the three
-   tools as buttons. Drawn in CSS and the inline icons, so nothing is owed
-   to the artist. The tool buttons are shell buttons, and keep the shell's
-   touch sizes. */
-#order-stage {
-  margin: 0 0 8px;
-  padding: 10px 8px 8px;
-  background: linear-gradient(#f3e3c3, #d9c49c);
-  border: 3px solid var(--px-ink);
-  color: var(--px-ink);
-}
-
-#order-ask {
-  margin: 0 0 8px;
-  min-height: 2.6em;
-  font-size: 1.35em;
-  line-height: 1.3;
-}
-
-#order-ask.order-your-turn {
-  color: #2e6b1f;
-}
-
-#order-marks {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
-#order-marks i {
-  width: 16px;
-  height: 16px;
-  border: 3px solid var(--px-ink);
-  background: #fffbe8;
-}
-
-#order-marks i.order-ok { background: var(--px-green-hi); }
-#order-marks i.order-bad { background: #e05a4f; }
-
-#order-tools {
-  display: flex;
-  gap: 10px;
+/* Block 114. The barber's game (game.js, playCutGame): the customer's
+   words over a canvas of 64 by 56 pixels that game.js draws, scaled up
+   three and a half times with the pixels kept sharp. The canvas takes every touch
+   (no scrolling, no zoom) and hides the pointer, since the scissors
+   drawn in it are the pointer. */
+#cut-hint,
+#cut-result {
+  color: var(--c-cream);
   margin: 0 0 6px;
+  min-height: 1.25em;
 }
 
-#order-tools .order-tool {
-  flex: 1;
-  margin: 0; /* a shell button's bottom margin would make the last one taller */
+#cut-ask {
+  margin: 0 0 6px;
+  min-height: 1.3em;
+  color: var(--c-cream);
+  font-size: 1.2em;
 }
 
-#order-tools .order-tool:disabled {
-  opacity: 0.55;
+#cut-stage {
+  margin: 0 auto 6px;
+  width: 224px;
+  max-width: 100%;
+  border: 3px solid var(--px-ink);
+  line-height: 0;
 }
 
-#order-result.work-hit { color: var(--px-green-hi); }
-#order-result.work-miss { color: #ffb4b4; }
+#cut-canvas {
+  width: 100%;
+  aspect-ratio: 64 / 56;
+  image-rendering: pixelated;
+  touch-action: none;
+  cursor: none;
+}
+
+#cut-result.work-miss { color: #ffb4b4; }
 
 /* Block 92. The warning before a blow, for a guard or an enemy alike: a
    red "!" over the head for as long as the tell lasts (game.js, setTell).

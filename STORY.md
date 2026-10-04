@@ -342,7 +342,10 @@ tondo, x 3300. Walk up and talk (Usap).
     Kutsero: Macario? Mabuti naman at naisipan mong magtrabaho.
     Macario: Kailangan na po, e. Nangangailangan po si Nanay.
     Kutsero: O sige, magsimula ka na agad. Alagaan mo 'yung kabayo sa kuwadra.
-    Kutsero: Suklayin mo siya. Bawat linis na matapos mo, may bayad ka sa akin.
+  + Kutsero: Suklayin mo siya, at may bayad ka sa akin.
+
+The last line was the proponents' "Bawat linis na matapos mo, may bayad
+ka sa akin", reworded in Block 114 when the jobs became one round each.
 
 Completes: Maghanap ng trabaho: kausapin ang Kutsero.
 
@@ -358,24 +361,26 @@ Grooming is a small game (Block 89, game.js, playWorkGame): a marker
 sweeps a bar, a green patch waits at a new place, and five strokes,
 pressed with the button or E, are a round. The patch is thinner with
 each stroke (Block 90), and over the horse a brush sweeps on a good
-one while he shies from a bad one. Each good stroke is worth
-more: a round pays 4 to 7 barya (5 good strokes pay 7, none pay 4), it
-can be done again as often as he likes, and the Kutsero stops paying at
-25 from this job. A round cut short pays nothing.
+one while he shies from a bad one. Since Block 114 it is played once,
+at the proponent's word: the round pays 8 to 12 barya by the good
+strokes (5 pay 12, none pay 8), and afterwards the horse gives a
+thought instead of a game. A round cut short pays nothing and can be
+started again.
 
     (the game) Kabayo / Suklayin siya kapag nasa berde ang guhit.
     (a good stroke) Hiiiii!
     (a missed one) Umiwas ang kabayo!
     (the end) n/5 ang maayos. +n barya
+  + Macario (sa isip): Malinis na si Kabayo. Wala na akong gagawin dito.
+    (the horse, afterwards)
 
-Completes, with the first round: Alagaan ang kabayo ng Kutsero. Nothing
-else waits on the horse; the job stays there.
+Completes: Alagaan ang kabayo ng Kutsero.
 
 ### 4. The Kutsero, afterwards
 
     Kutsero: Sapat na 'yan sa ngayon, Macario. Malinis na malinis na si Kabayo.
 
-Said, with no game, once the horse has paid its 25. Before that, see
+Said, with no game, once the horse has been groomed. Before that, see
 Repeat lines.
 
 ### 5. The Barbero
@@ -393,36 +398,45 @@ After it, talk:
     Macario: Nakapagsuklay na po ako ng kabayo.
     Barbero: ...
     Barbero: Hindi kabayo ang mga suki ko, iho.
-    Barbero: Pero sige. Makinig kang mabuti sa gusto ng suki, at sundin mo nang tama ang pagkakasunod-sunod.
-    Barbero: Nariyan ang silya. May bayad ang bawat gupit na matapos mo.
+  + Barbero: O, siya. May suki sa silya, kanina pa naghihintay.
+  + Barbero: Sundan mo lang ang guhit. Huwag mong lalampasan.
+  + Macario: Opo.
+  + Macario (sa isip): Gunting lang 'yan. Kaya ko 'to... siguro.
 
 The chair's button reads Gupitin. Before he has been spoken to:
 
     Macario (sa isip): Silya ito ng Barbero. Kausapin ko muna siya.
 
-The barber's game is his own (game.js, playOrderGame), not the work
-game: in each of five rounds the customer asks for the cut as a list of
-tools, said one word at a time and then taken away, two words the first
-two rounds, three the next two and four the last (Block 102, made
-easier at the proponent's word), and Macario uses the tools in that
-order (three buttons, Suklay, Gunting and Labaha, or the keys 1 to 3).
-A wrong tool ends the round. Each round right pays 4 to 7 barya, 20 in
-all from him, so one good run is all of it.
+The barber's game is his own (Block 114, game.js, playCutGame,
+replacing Block 94's memory game of tools at the proponent's word): a
+haircut. The customer sits in the chair, drawn in pixels, front on,
+his hair grown out over his ears and down his forehead, a barber's
+striped cape at his neck, and a dashed yellow line around the cut he
+wants: close on top, short at the sides. Scissors follow the finger
+(held a little above it), the mouse with its button down, or the arrow
+keys. Hair past the line falls onto the cape; hair inside it is cut too
+short. Once nearly all of it is gone the last strands fall by
+themselves and the customer looks at himself. It cannot be failed: it
+pays 8 to 12 barya by how little was cut too short. Leaving first pays
+nothing, and the chair waits.
 
-    (the game) Barberya / Tandaan ang gusto ng suki
-    (the request) Suki: Suklay, Gunting, Labaha.
-    (the request taken away) Ikaw na!
-    (a round right) Tama ang pagkakasunod-sunod!
-    (a wrong tool) Naku, hindi 'yan ang gusto ng suki!
-    (the end) n/5 ang maayos. +n barya
-    Barbero: Sapat na ang nagupit mo ngayon, iho. Bukas ulit.
-    (once he has paid his 20)
+  + (the game) Barberya / Gupitin ang buhok na lampas sa guhit.
+  + Suki: Maikli sa gilid, iho. Huwag mong uubusin sa ibabaw.
+  + Suki: Aray! Ang ikli!
+    (a cut inside the line)
+  + Suki: Aba, parang bagong tao ako! +n barya
+    (a clean cut)
+  + Suki: Hmm... puwede na. +n barya
+    (a rough one)
+  + Barbero: Hindi masama para sa tagasuklay ng kabayo. Heto ang bayad mo.
+  + Macario (sa isip): Wala nang nakaupo. Tapos na ako rito.
+    (the chair, afterwards)
 
-Completes, with the first round: Magtrabaho sa barberya.
+Completes: Magtrabaho sa barberya.
 
 ### 6. The Mananahi
 
-tondo, x 6400. Talk. Before the barber's first game she sends him there
+tondo, x 6400. Talk. Before the barber's game she sends him there
 (Block 94), so the jobs are met in the order the log gives them:
 
     Mananahi: Wala pa akong maipapatahi sa'yo ngayon, iho. Pero balita ko, naghahanap ng katulong ang Barbero. Puntahan mo muna siya.
@@ -433,7 +447,10 @@ After it:
     Mananahi: Oo naman, Macario. Kumusta na ang inay mo?
     Macario: Ayos lang po. Nangangailangan lang po kami ng pera ngayon.
     Mananahi: O, sige, sige. Tara rito.
-    Mananahi: Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ang bawat matapos mo.
+  + Mananahi: Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ka pagkatapos.
+
+The last line was the proponents' "...may bayad ang bawat matapos mo",
+reworded in Block 114.
 
 Completes: Kausapin ang Mananahi.
 
@@ -443,8 +460,8 @@ tondo, x 6540, beside her, at her table (tahian.png, owed: a
 placeholder box until it is drawn, Block 93). The same game as the horse with the sewing's
 words, the button reading Manahi, played by holding the button to fill
 the bar and letting go over the green (Block 90), a cloth that gains a
-stitch at each stroke; the same pay (4 to 7 a round, 25 in
-all). Before she has been spoken to:
+stitch at each stroke; the same pay, 8 to 12, once. Before she has
+been spoken to:
 
     Macario (sa isip): Tahian ito ng Mananahi. Kausapin ko muna siya.
 
@@ -452,8 +469,8 @@ all). Before she has been spoken to:
     (a good stroke) Diretso ang tahi!
     (a missed one, or held too long) Baluktot ang tahi! / Napatid ang sinulid!
 
-The quest line counts the first two rounds (n/2). When the second is done
-she stops him, the one thing here that is scripted:
+When the round is done she stops him, the one thing here that is
+scripted (Block 114: after one round; it was two):
 
     Mananahi: Macario, teka! Ihinto mo muna 'yan.
     Macario: Po? May mali po ba sa tahi ko?
@@ -463,10 +480,14 @@ she stops him, the one thing here that is scripted:
     Macario: Sige po, ihahatid ko na ngayon.
     Mananahi: Bilisan mo, ha. Huwag mong ibababa sa daan 'yan.
 
-Completes: Tulungan ang Mananahi sa pananahi (2/2). With the costumes on
+Completes: Tulungan ang Mananahi sa pananahi. With the costumes on
 him the sewing waits:
 
     Macario (sa isip): May dala akong damit para sa direktor. Ihahatid ko muna.
+
+and afterwards the table gives a thought instead of a game:
+
+  + Macario (sa isip): Tapos na ang tahi ko rito.
 
 The direktor, at the far end, x 13600. The button reads Iabot ang damit,
 offered once she has sent him:
@@ -981,34 +1002,33 @@ Nanay:
 
 Kutsero:
 
-    Kutsero: Nariyan lang si Kabayo. Suklayin mo, may barya ka sa bawat linis.
-    (before the first grooming)
-    Kutsero: Ang ganda ng trabaho mo. Balik ka lang kung gusto mo pa ng dagdag na barya.
-    (while there is more to earn)
+  + Kutsero: Nariyan lang si Kabayo. Suklayin mo, at babayaran kita.
+    (before the grooming; the proponents' "...may barya ka sa bawat
+    linis", reworded in Block 114)
     Kutsero: Sapat na 'yan sa ngayon, Macario. Malinis na malinis na si Kabayo.
-    (paid all he will pay)
+    (after it)
 
 Barbero (Block 94):
 
     Barbero: Artista ka na raw, Macario. Pero hindi mo pa rin nakakalimutan ang gunting, ha?
     (four years on)
-    Barbero: Nariyan ang silya, iho. Tandaan mo lang ang gusto ng suki.
-    (while there is more to earn)
+  + Barbero: Nariyan ang suki, iho. Sundan mo lang ang guhit.
+    (before the haircut)
+  + Barbero: Wala nang suki ngayon, iho. Salamat sa tulong mo.
+    (after it)
 
 Mananahi:
 
     Mananahi: Ihatid mo na 'yung damit ng direktor, baka hinahanap na nila.
     (sent with the costumes, not yet delivered)
-    Mananahi: Nariyan ang tahian, kung gusto mo pa ng dagdag na barya.
-    (while there is sewing to do)
+  + Mananahi: Nariyan ang tahian, iho. Simulan mo na.
+    (before the sewing)
     Mananahi: Hinahanap ka raw ng direktor sa entablado. Bilisan mo!
     (delivered, the play not yet done; only an old save reaches this)
     Mananahi: Iuwi mo na 'yang naipon mo sa nanay mo. Matutuwa 'yon.
     (after the first talk outside the entablado)
-    Mananahi: Nariyan pa rin ang tahian, iho, kung may oras ka.
-    (four years on, while her sewing still pays; Scan S22)
     Mananahi: Kapag may tahi ulit, ipapatawag kita, ha?
-    (afterwards, once the sewing has paid all it will)
+    (four years on)
 
 Direktor, on the street:
 
@@ -1156,6 +1176,10 @@ Katipunan was found out.
   + (a good stroke) Malinaw ang limbag!
   + (a missed one) Kumalat ang tinta!
   + (the end) n/5 ang malinaw na pahina.
+
+Played once (Block 114); the press afterwards, until the sweep:
+
+  + Macario (sa isip): Tapos na ang limbag ko. Sa iba na ang susunod na pahina.
 
 Completes: Maglimbag ng Kalayaan. Then, by itself:
 

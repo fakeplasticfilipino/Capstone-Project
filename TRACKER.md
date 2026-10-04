@@ -108,24 +108,22 @@ entablado, which only the direktor (and later the four-year card) takes
 Macario into, and the pulungan, the Katipunan's secret room, which only
 the Kasama takes him into. Fourteen objectives, one chain, shown one at
 a time in the quest log (finished ones in Mga Setting). Since Block 89
-nothing but the turns is staged: the work is simply there, and can be
-done again.
+nothing but the turns is staged: the work is simply there; since Block
+114 each job is played once, paid 8 to 12 by how well it went.
 
     1  Umuwi kasama si Nanay            the thought after the opening
     2  Maghanap ng trabaho: kausapin    the Kutsero's first conversation
        ang Kutsero
-    3  Alagaan ang kabayo ng Kutsero    the first grooming round; the
-                                        horse stays there: 4 to 7 barya
-                                        a round, 25 in all
-    4  Magtrabaho sa barberya           the Barbero's first game (Block
-                                        94), his own: the customer's
-                                        order of tools, from memory;
-                                        5 rounds, 4 to 7 a round right,
-                                        20 in all (Block 102)
+    3  Alagaan ang kabayo ng Kutsero    the grooming round, once
+                                        (Block 114): 8 to 12 barya
+    4  Magtrabaho sa barberya           the Barbero's own game (Block
+                                        114): a haircut on a customer
+                                        drawn in pixels, scissors over
+                                        his hair; 8 to 12 by how clean
     5  Kausapin ang Mananahi            her first conversation (before
                                         the barber she sends him there)
     6  Tulungan ang Mananahi sa         the same game as grooming, at her
-       pananahi (n/2)                   tahian; after the second round
+       pananahi                         tahian, once (8 to 12); after it
                                         she stops him and sends him
                                         with the costumes
     7  Ihatid ang mga damit sa          the direktor's gift button; done
@@ -212,8 +210,9 @@ from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
 Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
 the proponent tested Blocks 90 to 97 on the phone and reported no
-fault, and on 4 Oct 2026 Blocks 98 to 112. Block 113 is pushed and not
-yet seen on a device: Next action 1 says what to look for.
+fault, and on 4 Oct 2026 Blocks 98 to 112. Blocks 113 and 114 are
+pushed and not yet seen on a device: Next action 1 says what to look
+for.
 
 Versions: since Block 106 every ?v= is the file's fingerprint, written
 by node _dev/tools/prepare.js before each commit and checked by the
@@ -268,6 +267,28 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       happening, anyone at home knowing about the sweep, a card or a
       pause between her plea and the knock, a catch that sends you to
       the start of a long run, or anyone frozen after a black card.
+
+    Block 114, the floors. ?dev=1, Act II: Sa bahay is bamboo slats,
+      Ang simula (the press) floorboards, Pugad Lawin grass; Act I's
+      Ang panunumpa (the pulungan) floorboards; the street still dirt.
+      Sharp pixels, no seam you can see along the road. Failure: dirt
+      in a room, a blurred floor, or no floor at all.
+
+    Block 114, the jobs once. ?dev=1, Mga trabaho: groom the horse
+      once (8 to 12 barya), then E again is a thought, no game; the
+      Kutsero says "Sapat na". The sewing is one round, then she stops
+      him. Failure: a second game anywhere, or a quest line still
+      counting (n/2).
+
+    Block 114, the haircut. The Barbero's talk ends "Sundan mo lang ang
+      guhit"; the chair opens the customer in pixels with a dashed
+      yellow line; drag a finger over his hair: the scissors sit a
+      little above the finger, the hair past the line falls onto the
+      cape with a snip, crossing the line says "Aray! Ang ikli!"; near
+      the end the rest falls by itself, he says how it looks, and the
+      Barbero pays. Failure: scissors under the finger, hair that does
+      not fall, a cut that never finishes, the screen too tall for the
+      phone, or the page scrolling while cutting.
 
     Block 113, Act I's play. ?dev=1, Ang dula: Don Rodrigo. After the
       fight the Sultan drops his kampilan, his kingdom falls, Maryam
@@ -739,6 +760,10 @@ machine, the assessment module.
         themselves; Act I's play ends in the kingdom's fall; the
         detection meter twice as fast; Act I's lines accepted;
         content/people.js; the sundalo; no watered-down narratives
+    114 a floor for each place (floorboards, bamboo, grass, drawn by
+        the engine); each job played once, 8 to 12 barya; the barber's
+        game a haircut on a customer drawn in pixels, its lines
+        rewritten; the order game removed
 
 ## Blocks remaining
 

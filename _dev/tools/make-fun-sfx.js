@@ -172,3 +172,16 @@ const C6 = 1046.5, E6 = 1318.5, G6 = 1568.0, C7 = 2093.0, A5 = 880.0, D6 = 1174.
   }
   write("jump", add(scale(scuff, 1.6), scale(mul(thump, env(n, 0.003, 2.5)), 0.55)), 0.5);
 }
+
+// A snip of the barber's scissors (Block 114, playCutGame): two blades
+// meeting, a bright metal tick on a breath of noise, then the second
+// half of the same tick a moment later. Very short and quiet, since it
+// plays every tenth of a second while the scissors cut.
+{
+  const tick = (seed) => {
+    const n = len(0.03);
+    const hiss = noise(0.03, seed).map((v, i, a) => (i ? v - a[i - 1] : v)); // the bright half of noise
+    return mul(add(scale(hiss, 0.5), scale(tone(3400, 0.03, 3), 0.6)), env(n, 0.001, 3));
+  };
+  write("gupit", add(tick(114), scale(tick(115), 0.6), len(0.035)), 0.4);
+}

@@ -125,6 +125,9 @@ function content() {
     if (fs.existsSync(path.join(ROOT, rel))) vm.runInContext(read(rel), ctx, { filename: rel });
   }
   const types = ctx.ENEMY_TYPES || {};
+  // Block 114. The floors game.js can draw: the keys of its FLOORS.
+  const floorsSrc = (read("js/game.js").match(/const FLOORS = \{([\s\S]*?)\n\};/) || [])[1] || "";
+  const floors = new Set([...floorsSrc.matchAll(/^  (\w+)\(/gm)].map((m) => m[1]));
   const problems = [];
   ACT_FILES.forEach((rel, i) => {
     const act = ctx["ACT_" + (i + 1)];
@@ -137,6 +140,7 @@ function content() {
 
     for (const s of scenes) {
       const at = tag + ", " + s.id;
+      if (s.ground && s.ground.floor && !floors.has(s.ground.floor)) problems.push(at + ": no floor \"" + s.ground.floor + "\" in game.js, FLOORS");
       for (const e of s.exits || []) {
         if (e.toScene && !ids.has(e.toScene)) problems.push(at + ": exit " + e.id + " leads to no scene \"" + e.toScene + "\"");
       }

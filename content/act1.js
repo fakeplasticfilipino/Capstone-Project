@@ -17,10 +17,10 @@
 //   tells him the money went on the cedula; he says he will work.
 //
 //   Block 89: nothing is staged but the turns. The Kutsero, the Barbero
-//   (Block 94, a game of his own: the customer's order of tools,
-//   playOrderGame) and the Mananahi each give him work that is simply
-//   there afterwards, a round he can do again for a few barya, up to a
-//   cap from each. The one thing scripted is the Mananahi stopping him
+//   (Block 114, a game of his own: a haircut, playCutGame) and the
+//   Mananahi each give him a job, done once and paid once (Block 114,
+//   at the proponent's word; it was a round to repeat up to a cap).
+//   The one thing scripted is the Mananahi stopping him
 //   at the sewing to send him to the direktor at the far end of the
 //   street with the costumes for tonight's play.
 //
@@ -255,19 +255,17 @@ const PAMPHLET_GUARDS = [
 
 const SAVINGS_GOAL = 100;
 
-// Block 89. The two jobs are things that are there, not steps: the horse
-// to groom and the sewing to help with, each a round of the work game
-// (game.js, playWorkGame) that pays JOB_PAY_MIN to JOB_PAY_MAX by how
-// many strokes were good, and stops paying at JOB_CAP from that job. With
-// the play's 79 to 110 the savings are reached by anyone who has done
-// three or four rounds.
-const JOB_PAY_MIN = 4;
-const JOB_PAY_MAX = 7;
-const JOB_CAP = 25;
+// Block 89. The jobs are things that are there, not steps: the horse to
+// groom, the barber's chair and the sewing. Since Block 114, at the
+// proponent's word (the rounds again and again were boring), each is
+// done once: one round of its game, paid JOB_PAY_MIN to JOB_PAY_MAX by
+// how well it went, and after it a thought line instead of a game. The
+// three pay at least 24, and with the play's 79 to 110 everyone reaches
+// SAVINGS_GOAL; nothing in Act I is for sale, so it cannot be spent first.
+const JOB_PAY_MIN = 8;
+const JOB_PAY_MAX = 12;
 const JOB_ROUNDS = 5;
 const HORSE_JOB = {
-  earned: "kitaSaKutsero",
-  full: "punoNaAngKutsero",
   first: "naalagaanAngKabayo",
   title: "Kabayo",
   hint: "Suklayin siya kapag nasa berde ang guhit.",
@@ -277,12 +275,9 @@ const HORSE_JOB = {
   art: KABAYO,
   hitText: "Hiiiii!",
   missText: "Umiwas ang kabayo!",
-  giver: "Kutsero",
-  fullText: "Sapat na 'yan sa ngayon, Macario. Malinis na malinis na si Kabayo.",
+  doneThought: "Malinis na si Kabayo. Wala na akong gagawin dito.", // PLACEHOLDER
 };
 const SEWING_JOB = {
-  earned: "kitaSaMananahi",
-  full: "punoNaAngMananahi",
   first: "natulungangMananahi",
   title: "Pananahi",
   hint: "Hawakan ang pindutan, bitawan kapag nasa berde.",
@@ -293,41 +288,28 @@ const SEWING_JOB = {
   snapText: "Napatid ang sinulid!",
   hitText: "Diretso ang tahi!",
   missText: "Baluktot ang tahi!",
-  giver: "Mananahi",
-  fullText: "Sapat na ang natahi mo ngayon, iho. Bukas na ulit.",
+  doneThought: "Tapos na ang tahi ko rito.", // PLACEHOLDER
 };
-// Block 94. The third job, the Barbero's chair, with a game of its own at
-// the proponent's request (game.js, playOrderGame): the customer asks
-// for the cut as a list of tools, and Macario uses them in that order.
-// Its first round is the step in the log. Block 102, at the proponent's
-// word: easier (five short requests, two tools up to four, said more
-// slowly) and paid by the round right, 4 to 7 barya each, up to 20 from
-// him, so one good run is all of it.
+// Block 94. The third job, the Barbero's chair, with a game of its own.
+// Since Block 114 a haircut (game.js, playCutGame): a customer drawn in
+// pixels, a dashed line where he wants it, and scissors moved over the
+// hair; what lies past the line falls, and what is cut inside it is too
+// short. Paid by how clean the cut was. Every line PLACEHOLDER.
 const BARBER_JOB = {
-  game: "order",
-  earned: "kitaSaBarbero",
-  full: "punoNaAngBarbero",
+  game: "cut",
   first: "nakapaggupit",
   title: "Barberya",
-  hint: "Tandaan ang gusto ng suki",
+  hint: "Gupitin ang buhok na lampas sa guhit.",
   speaker: "Suki",
-  tools: [
-    { label: "Suklay", icon: "i-comb" },
-    { label: "Gunting", icon: "i-scissors" },
-    { label: "Labaha", icon: "i-razor" },
+  askText: "Maikli sa gilid, iho. Huwag mong uubusin sa ibabaw.",
+  tooShortText: "Aray! Ang ikli!",
+  cleanText: "Aba, parang bagong tao ako!",
+  roughText: "Hmm... puwede na.",
+  paidLines: [
+    { speaker: "Barbero", text: "Hindi masama para sa tagasuklay ng kabayo. Heto ang bayad mo." },
   ],
-  hitText: "Tama ang pagkakasunod-sunod!",
-  missText: "Naku, hindi 'yan ang gusto ng suki!",
-  giver: "Barbero",
-  fullText: "Sapat na ang nagupit mo ngayon, iho. Bukas ulit.",
-  lengths: [2, 2, 3, 3, 4],
-  payPerRound: true,
-  cap: 20,
+  doneThought: "Wala nang nakaupo. Tapos na ako rito.",
 };
-// The sewing he does before the Mananahi stops him, counted in the quest
-// line (countFlags) and by the flags below.
-const SEWING_BEFORE_ERRAND = 2;
-const SEWING_FLAGS = ["natapusanNgTahi1", "natapusanNgTahi2"];
 const TAHIAN_X = 6400 + 140; // the sewing table, beside the Mananahi
 const TAHIAN = { src: "assets/sprites/scenery/tahian.png", frames: 1, fps: 1 };
 
@@ -1081,49 +1063,42 @@ async function theYearAfter() {
 }
 
 // -------------------------------------------------------------
-// Block 89. The jobs. Both are the same activity with different words
-// (playWorkGame), repeatable until the giver has paid JOB_CAP. Nothing
-// here is a step of the story except the first round, which finishes the
-// quest line's step, and the Mananahi stopping him at the sewing.
+// Block 89. The jobs. Since Block 114 each is played once (one round of
+// the work game, or the barber's haircut) and paid once; the round
+// finishes the quest line's step, and afterwards the place gives a
+// thought line instead of a game. The one scripted turn is the Mananahi
+// stopping him after the sewing.
 // -------------------------------------------------------------
-function jobPay(job, good, earned, rounds) {
-  const cap = job.cap || JOB_CAP;
-  // The barber pays by the round right (Block 102); the others by how
-  // good the round was as a whole.
-  const pay = job.payPerRound
-    ? Array.from({ length: good }, () => JOB_PAY_MIN + Math.floor(Math.random() * (JOB_PAY_MAX - JOB_PAY_MIN + 1)))
-      .reduce((a, b) => a + b, 0)
-    : JOB_PAY_MIN + Math.round((JOB_PAY_MAX - JOB_PAY_MIN) * good / rounds);
-  return Math.max(0, Math.min(pay, cap - earned));
+// quality is 0 to 1: the good strokes over the round, or the cut's
+// cleanness.
+function jobPay(quality) {
+  const q = Math.max(0, Math.min(1, Number(quality) || 0));
+  return JOB_PAY_MIN + Math.round((JOB_PAY_MAX - JOB_PAY_MIN) * q);
 }
 
-// One round. Returns how many barya it paid, or -1 if he left it. The
-// barber's job plays its own game (Block 94); the other two the work game.
+// The job's one round. Returns how many barya it paid, or -1 if he left
+// it or has done it already.
 async function workAt(job) {
-  const earned = Number(state.flags[job.earned]) || 0;
-  const cap = job.cap || JOB_CAP;
-  if (earned >= cap) {
-    await playDialogue([{ speaker: job.giver, text: job.fullText }]);
+  if (state.flags[job.first]) {
+    await thinkAloud(job.doneThought);
     return -1;
   }
   let pay = 0;
-  const rounds = job.lengths ? job.lengths.length : JOB_ROUNDS;
-  const doneText = (n) => {
-    pay = jobPay(job, n, earned, rounds);
-    return n + "/" + rounds + " ang maayos. +" + pay + " barya";
-  };
-  const good = job.game === "order"
-    ? await playOrderGame({
+  let result;
+  if (job.game === "cut") {
+    result = await playCutGame({
       title: job.title,
       hint: job.hint,
       speaker: job.speaker,
-      tools: job.tools,
-      lengths: job.lengths,
-      hitText: job.hitText,
-      missText: job.missText,
-      doneText,
-    })
-    : await playWorkGame({
+      askText: job.askText,
+      tooShortText: job.tooShortText,
+      doneText(clean) {
+        pay = jobPay(clean);
+        return (clean >= 0.8 ? job.cleanText : job.roughText) + " +" + pay + " barya";
+      },
+    });
+  } else {
+    result = await playWorkGame({
       title: job.title,
       hint: job.hint,
       verb: job.verb,
@@ -1134,16 +1109,19 @@ async function workAt(job) {
       snapText: job.snapText,
       hitText: job.hitText,
       missText: job.missText,
-      rounds,
-      doneText,
+      rounds: JOB_ROUNDS,
+      doneText(n) {
+        pay = jobPay(n / JOB_ROUNDS);
+        return n + "/" + JOB_ROUNDS + " ang maayos. +" + pay + " barya";
+      },
     });
-  if (good < 0) return -1;
+  }
+  if (result < 0) return -1;
   Game.addCurrency(pay);
-  state.flags[job.earned] = earned + pay;
   state.flags[job.first] = true;
-  if (earned + pay >= cap) state.flags[job.full] = true;
   markDirty();
   showToast("+" + pay + " barya", 2200);
+  if (job.paidLines) await playDialogue(job.paidLines);
   return pay;
 }
 
@@ -1159,7 +1137,7 @@ function groomHorse() {
   workAt(HORSE_JOB);
 }
 
-// Block 94. The barber's chair. His first round is the log's step.
+// Block 94. The barber's chair; the haircut is the log's step.
 function cutHair() {
   if (!state.flags.nakausapAngBarbero) {
     thinkAloud("Silya ito ng Barbero. Kausapin ko muna siya.");
@@ -1179,17 +1157,12 @@ async function sew() {
   }
   const pay = await workAt(SEWING_JOB);
   if (pay < 0) return;
-  // Counted, so the first two rounds are the quest line's (n/2) and the
-  // second is when she stops him.
-  const rounds = (Number(state.flags.bilangNgTahi) || 0) + 1;
-  state.flags.bilangNgTahi = rounds;
-  if (rounds <= SEWING_FLAGS.length) state.flags[SEWING_FLAGS[rounds - 1]] = true;
-  if (rounds >= SEWING_BEFORE_ERRAND && !state.flags.tinawagAngMananahi) {
+  // The round done, she stops him (mananahiStopsHim).
+  if (!state.flags.tinawagAngMananahi) {
     state.flags.tinawagAngMananahi = true;
     markDirty();
     setTimeout(() => runSceneScript(), 0);
   }
-  markDirty();
 }
 
 // The one thing scripted about the work: she stops him at the sewing,
@@ -1243,7 +1216,7 @@ const HINT_SPOTS = [2500, { x: 8200, y: HINT_HIGH }, { x: 12200, y: HINT_HIGH }]
 const DEV_OPENING_DONE = { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true };
 const DEV_SENT_TO_DIREKTOR = Object.assign({}, DEV_OPENING_DONE, {
   nakausapAngKutsero: true, [HORSE_JOB.first]: true, [BARBER_JOB.first]: true,
-  nakausapAngMananahi: true, [SEWING_JOB.first]: true, [SEWING_FLAGS[0]]: true, [SEWING_FLAGS[1]]: true,
+  nakausapAngMananahi: true, [SEWING_JOB.first]: true,
   tinawagAngMananahi: true, mayDalangDamit: true });
 const DEV_AT_THE_PLAY = Object.assign({}, DEV_SENT_TO_DIREKTOR, {
   naihatidKay_direktor: true, naihatidAngMgaDamit: true });
@@ -1317,7 +1290,7 @@ window.ACT_1 = {
     { id: "kausapin_mananahi", label: "Kausapin ang Mananahi",
       flag: "nakausapAngMananahi" },
     { id: "tulungan_mananahi", label: "Tulungan ang Mananahi sa pananahi",
-      flag: "tinawagAngMananahi", countFlags: SEWING_FLAGS },
+      flag: "tinawagAngMananahi" },
     { id: "ihatid_damit", label: "Ihatid ang mga damit sa direktor",
       flag: "naihatidAngMgaDamit" },
     { id: "gumanap_sa_dula", label: "Gumanap bilang Don Rodrigo sa dula",
@@ -1533,8 +1506,8 @@ window.ACT_1 = {
                 { speaker: "Kutsero", text: "Macario? Mabuti naman at naisipan mong magtrabaho." },
                 { speaker: "Macario", text: "Kailangan na po, e. Nangangailangan po si Nanay." },
                 { speaker: "Kutsero", text: "O sige, magsimula ka na agad. Alagaan mo 'yung kabayo sa kuwadra." },
-                // What the work is, and that it pays each time.
-                { speaker: "Kutsero", text: "Suklayin mo siya. Bawat linis na matapos mo, may bayad ka sa akin." },
+                // What the work is, and that it pays. Block 114: once.
+                { speaker: "Kutsero", text: "Suklayin mo siya, at may bayad ka sa akin." },
               ],
               onComplete() {
                 state.flags.nakausapAngKutsero = true;
@@ -1546,21 +1519,13 @@ window.ACT_1 = {
               requiresFlag: "nakausapAngKutsero",
               skipIfFlag: "naalagaanAngKabayo",
               lines: [
-                { speaker: "Kutsero", text: "Nariyan lang si Kabayo. Suklayin mo, may barya ka sa bawat linis." },
+                { speaker: "Kutsero", text: "Nariyan lang si Kabayo. Suklayin mo, at babayaran kita." },
               ],
             },
             {
-              // While there is more to earn.
-              requiresFlag: "nakausapAngKutsero",
-              skipIfFlag: HORSE_JOB.full,
+              // The horse groomed and paid for (Block 114: once).
               lines: [
-                { speaker: "Kutsero", text: "Ang ganda ng trabaho mo. Balik ka lang kung gusto mo pa ng dagdag na barya." },
-              ],
-            },
-            {
-              // Paid all he will pay.
-              lines: [
-                { speaker: "Kutsero", text: HORSE_JOB.fullText },
+                { speaker: "Kutsero", text: "Sapat na 'yan sa ngayon, Macario. Malinis na malinis na si Kabayo." },
               ],
             },
           ],
@@ -1602,8 +1567,11 @@ window.ACT_1 = {
                 { speaker: "Macario", text: "Nakapagsuklay na po ako ng kabayo." },
                 { speaker: "Barbero", text: "..." },
                 { speaker: "Barbero", text: "Hindi kabayo ang mga suki ko, iho." },
-                { speaker: "Barbero", text: "Pero sige. Makinig kang mabuti sa gusto ng suki, at sundin mo nang tama ang pagkakasunod-sunod." },
-                { speaker: "Barbero", text: "Nariyan ang silya. May bayad ang bawat gupit na matapos mo." },
+                // Block 114: the haircut. PLACEHOLDER, these four.
+                { speaker: "Barbero", text: "O, siya. May suki sa silya, kanina pa naghihintay." },
+                { speaker: "Barbero", text: "Sundan mo lang ang guhit. Huwag mong lalampasan." },
+                { speaker: "Macario", text: "Opo." },
+                { speaker: "Macario (sa isip)", text: "Gunting lang 'yan. Kaya ko 'to... siguro." },
               ],
               onComplete() {
                 state.flags.nakausapAngBarbero = true;
@@ -1618,16 +1586,17 @@ window.ACT_1 = {
               ],
             },
             {
-              // Before the first cut, and while there is more to earn.
+              // Before the cut. PLACEHOLDER.
               requiresFlag: "nakausapAngBarbero",
-              skipIfFlag: BARBER_JOB.full,
+              skipIfFlag: BARBER_JOB.first,
               lines: [
-                { speaker: "Barbero", text: "Nariyan ang silya, iho. Tandaan mo lang ang gusto ng suki." },
+                { speaker: "Barbero", text: "Nariyan ang suki, iho. Sundan mo lang ang guhit." },
               ],
             },
             {
+              // After it (Block 114: once). PLACEHOLDER.
               lines: [
-                { speaker: "Barbero", text: BARBER_JOB.fullText },
+                { speaker: "Barbero", text: "Wala nang suki ngayon, iho. Salamat sa tulong mo." },
               ],
             },
           ],
@@ -1672,8 +1641,8 @@ window.ACT_1 = {
                 { speaker: "Mananahi", text: "Oo naman, Macario. Kumusta na ang inay mo?" },
                 { speaker: "Macario", text: "Ayos lang po. Nangangailangan lang po kami ng pera ngayon." },
                 { speaker: "Mananahi", text: "O, sige, sige. Tara rito." },
-                // What the work is, and that it pays each time.
-                { speaker: "Mananahi", text: "Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ang bawat matapos mo." },
+                // What the work is, and that it pays. Block 114: once.
+                { speaker: "Mananahi", text: "Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ka pagkatapos." },
               ],
               onComplete() {
                 state.flags.nakausapAngMananahi = true;
@@ -1689,10 +1658,10 @@ window.ACT_1 = {
               ],
             },
             {
-              // While there is sewing to do.
+              // Before the sewing. PLACEHOLDER.
               skipIfFlag: "mayDalangDamit",
               lines: [
-                { speaker: "Mananahi", text: "Nariyan ang tahian, kung gusto mo pa ng dagdag na barya." },
+                { speaker: "Mananahi", text: "Nariyan ang tahian, iho. Simulan mo na." },
               ],
             },
             {
@@ -1704,16 +1673,7 @@ window.ACT_1 = {
               ],
             },
             {
-              // Scan S22. Four years on, while her sewing
-              // still pays.
-              requiresFlag: "lumipasAngApatNaTaon",
-              skipIfFlag: SEWING_JOB.full,
-              lines: [
-                { speaker: "Mananahi", text: "Nariyan pa rin ang tahian, iho, kung may oras ka." },
-              ],
-            },
-            {
-              // Four years on, once it has paid all it will.
+              // Four years on.
               lines: [
                 { speaker: "Mananahi", text: "Kapag may tahi ulit, ipapatawag kita, ha?" },
               ],
@@ -2017,14 +1977,14 @@ window.ACT_1 = {
       // Block 80. The Katipunan's secret room, reached only with the
       // Kasama, once, through a black card (intoThePulungan). One screen
       // wide. Its picture is owed (ART.md), so the engine draws a dark
-      // room with the file name on it until it arrives; the dirt strip
-      // stays until then, and a painting with its own floor sets ground:
-      // false. The way out stays shut until he is sworn in. Since Block 81
+      // room with the file name on it until it arrives, over floorboards
+      // (Block 114); a painting with its own floor sets ground: false. The way out stays shut until he is sworn in. Since Block 81
       // it is the back way ("Sa likod ka dadaan"), onto the street short
       // of the mangingisda, facing the three and the guardia civil.
       id: "pulungan",
       worldWidth: PULUNGAN_WIDTH,
       backdrop: { src: "assets/backgrounds/act1/pulungan.jpg" },
+      ground: { floor: "kahoy" }, // Block 114
       noRanged: true,
       startX: PULUNGAN_ENTER_X,
       wayOut: "Lumabas sa likod: pumunta sa kaliwa", // Block 93

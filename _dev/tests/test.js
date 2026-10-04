@@ -6572,18 +6572,31 @@ const visible = (page, sel) => page.evaluate((s) => {
       scene.ground = { src: "assets/backgrounds/act9/wala.jpg" }; // owed: not asked for
       loadScene(scene.id);
       const owed = ground();
+      // Block 114: a floor the engine draws, kept sharp; an unknown one
+      // is the dirt.
+      const tiles = document.getElementById("ground-tiles");
+      scene.ground = { floor: "kahoy" };
+      loadScene(scene.id);
+      const floor = { src: ground(), sharp: tiles.classList.contains("ground-floor"), size: tiles.style.getPropertyValue("--ground-size") };
+      scene.ground = { floor: "wala" };
+      loadScene(scene.id);
+      const noFloor = { src: ground(), sharp: tiles.classList.contains("ground-floor") };
       delete scene.ground;
       loadScene(scene.id);
       const back = ground();
+      const backSharp = tiles.classList.contains("ground-floor");
       const sheet = { src: "assets/sprites/characters/kutsero.png", frames: 1, fps: 1 };
       currentScene.decorations = (currentScene.decorations || []).concat([{ id: "pinuno", animation: sheet, speakers: ["Siga", "Mga Siga"] }]);
-      return { before, mine, owed, back,
+      return { before, mine, owed, back, floor, noFloor, backSharp,
         siga: portraitSheetFor("Mga Siga (pabulong)").sheet === sheet,
         none: portraitSheetFor("Wala").sheet === null };
     });
     ok("a scene may lay its own road, an owed one falls back, and leaving restores the dirt (Polish #6)",
        /ground-lupa/.test(own.before) && /street-02/.test(own.mine) && /ground-lupa/.test(own.owed) &&
        /ground-lupa/.test(own.back), own);
+    ok("a scene may name a floor the engine draws, sharp and twice its size; an unknown one is the dirt (Block 114)",
+       /^url\("data:image\/svg\+xml,/.test(own.floor.src) && own.floor.sharp && own.floor.size === "128px 64px" &&
+       /ground-lupa/.test(own.noFloor.src) && !own.noFloor.sharp && !own.backSharp, own);
     ok("a speaker name in content finds its portrait, with no name known to the engine (Polish #8)",
        own.siga && own.none, own);
     const heartIcon = await page.evaluate(() => ({

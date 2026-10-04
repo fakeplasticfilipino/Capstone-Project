@@ -4731,6 +4731,89 @@ what the characters do not know, they do not say. Dramatic irony (her
 "Kapapangako mo lang", his "Sandali lang") is worth more than any line
 that explains the danger.
 
+## Block 114: a floor for each place; each job once; the haircut
+
+On 4 Oct 2026 the proponent asked for three things, planned in the
+session and approved whole ("Go."): a ground that makes sense for each
+place, the jobs played once rather than again and again ("I found them
+boring"), and the barber's game replaced by a haircut on a pixel
+model of a customer, with its lines rewritten.
+
+The floors. Every scene without ground: false stood on Tondo's dirt,
+the inside of a house included. A scene may now name a floor,
+ground: { floor }, one of three that game.js draws itself (FLOORS):
+kahoy, floorboards, for the pulungan and the press; kawayan, split
+bamboo, for Nanay's nipa house; damo, grass over earth, for Pugad
+Lawin, San Juan del Monte, the Nangka and Laguna. Tondo's street and
+Balara's night camp keep the dirt; the entablado keeps its painting's
+own floor. They are drawn rather than owed because a floor is a small
+repeating texture that no painting of a room or a field needs to
+match closely, and a picture owed would have left the dirt in place
+until the artist got to it. Each is a tile of rectangles built as an
+SVG and handed to the stylesheet as a data: URL through --ground-src,
+the property the road already used (Block 105): nothing is downloaded,
+so nothing needs a fingerprint, the service worker or the loader, and
+the url() rule in the Pitfalls (no picture named by the stylesheet) is
+not broken, since the stylesheet names none. The tile is drawn at
+twice its size with image-rendering: pixelated, in the game's pixel
+look. A seeded random gives the grain and the stones, so the floor is
+the same on every phone. ground: { src } still wins when the picture
+exists, so a floor the artist paints later replaces the drawn one with
+a line of content. The content check fails on a floor name FLOORS lacks,
+and verify_new_scene.js checks every story point's ground.
+
+Each job once. Since Block 89 the horse, the sewing and the barber's
+chair were rounds to repeat for 4 to 7 barya up to a cap from each.
+Now each is one round, paid 8 to 12 by how well it went (jobPay, from a
+share of 0 to 1: the good strokes over five, or the cut's cleanness),
+after which the place gives a thought line and no game. The sum was set
+against SAVINGS_GOAL: the three pay at least 24, the play at least 79,
+so every student reaches Nanay's 100 without repeating anything, and
+Act I sells nothing, so the savings cannot be spent first. The sewing
+before the Mananahi stops him is one round, not two, so its step lost
+its (n/2). The caps, their flags (kitaSa..., punoNa...) and their
+"full" lines went with them. A save made before this block may hold
+those flags; nothing reads them. A test account that earned under the
+old pay could in principle sit below 100 with every job done; no
+student has the URL, so it was left rather than guarded. Act II's
+press is played once too. The proponents' lines that promised pay
+"bawat linis" or "bawat matapos mo" were reworded in place, marked +
+in STORY.md with the old wording beside them, and the lines that
+invited him back for more barya were removed.
+
+The haircut. Block 94's barber game was a memory game of tools, Block
+102 made it easier, and the proponent still did not enjoy it; the
+haircut asked for is to look at and simple to play: move the scissors
+over the hair. playCutGame draws a customer front on, 64 by 56 pixels
+on a canvas scaled up with the pixels kept sharp: the shop's wall, his
+face (brows, eyes, nose, moustache, mouth), ears, a striped barber's
+cape, and black hair grown into a mop over his ears and a fringe over
+his forehead. The hair is two kinds, the cut he wants (close on top,
+short at the sides, Suki: "Maikli sa gilid...") and the extra, and a
+dashed yellow line runs round the first. The model is built from
+ellipses and a fixed wobble, once (cutModel), rather than typed as a
+pixel map, which kept it easy to adjust while looking at it; the
+strands are a lighter column every few pixels stepped every few rows.
+Scissors, a nine by nine sprite that snaps open and shut as it cuts,
+follow the pointer: a finger holds them eight picture pixels above it
+so the finger does not hide what is being cut, a mouse cuts only with
+its button down (hovering shows them), and the arrow keys or WASD move
+them a pixel a step for a desktop without a mouse. A move is cut along
+its whole length, a pixel at a time, so a quick swipe leaves no gaps.
+Extra hair is cut within the blades' reach; the kept hair only by the
+point itself, so running the blades along the outside of the line is
+safe and only crossing it is a mistake ("Aray! Ang ikli!", at most
+once in CUT_OUCH_MS). When 5% of the extra is left the rest falls by
+itself, so nobody hunts for the last pixel. The clippings fall by the
+time passed rather than by frames and settle on the cape. It cannot be
+failed: the cleanness, 1 less the share of the kept hair cut against a
+budget of 12% of it, is the pay. The canvas is drawn into one
+ImageData only when something changed, and the loop runs only while
+the screen is up. The snip is a new sound, gupit.wav, made by
+make-fun-sfx.js like the others. playOrderGame, its screen, its styles
+and the comb and razor icons were removed: nothing else used them, and
+one way of doing a thing is the rule (Consistency).
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

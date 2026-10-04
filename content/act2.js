@@ -256,6 +256,11 @@
       return;
     }
     if (!f.a2_simula) return;
+    // Block 114: one round, as every job is now.
+    if (f.a2_nakalimbag) {
+      thinkAloud("Tapos na ang limbag ko. Sa iba na ang susunod na pahina."); // PLACEHOLDER
+      return;
+    }
     const good = await playWorkGame({
       title: "Palimbagan",
       hint: "Diinan ang palimbagan kapag nasa berde ang guhit.",
@@ -896,6 +901,7 @@
         id: "imprenta",
         worldWidth: PRESS_WIDTH,
         backdrop: { src: "assets/backgrounds/act2/imprenta.jpg" },
+        ground: { floor: "kahoy" }, // Block 114
         noRanged: true,
         startX: PRESS_ENTER_X,
         exits: [
@@ -1136,6 +1142,7 @@
         id: "bahay",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/bahay.jpg" },
+        ground: { floor: "kawayan" }, // Block 114
         noRanged: true,
         startX: ROOM - 160,
         wayOut: "Lumabas ng bahay: pumunta sa kanan",
@@ -1166,6 +1173,7 @@
         id: "pugad-lawin",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/pugad-lawin.jpg" },
+        ground: { floor: "damo" }, // Block 114
         noRanged: true,
         startX: 330,
         scripts: [
@@ -1226,6 +1234,7 @@
         id: "san-juan",
         worldWidth: BATTLE_WIDTH,
         backdrop: { src: "assets/backgrounds/act2/san-juan.jpg" },
+        ground: { floor: "damo" }, // Block 114
         dangerous: true,
         startX: RETREAT_START,
         scripts: [
@@ -1273,6 +1282,7 @@
         id: "nangka",
         worldWidth: RIVER_WIDTH,
         backdrop: { src: "assets/backgrounds/act2/nangka.jpg" },
+        ground: { floor: "damo" }, // Block 114
         dangerous: true,
         startX: 500,
         scripts: [
@@ -1373,6 +1383,7 @@
         id: "laguna",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/laguna.jpg" },
+        ground: { floor: "damo" }, // Block 114
         noRanged: true,
         startX: 450,
         scripts: [

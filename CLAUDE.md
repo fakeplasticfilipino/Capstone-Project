@@ -279,7 +279,8 @@ the flags and the objective chain, written out and agreed.
      (the dashboard offers them by itself, Polish #7).
   3. Places and art: paintings in assets/backgrounds/act2/, lowercase
      and hyphenated; a scene's own road with ground: { src } (Polish
-     #6); people in assets/sprites/characters/, animated from one still
+     #6), or a floor drawn by the engine, ground: { floor } (kahoy,
+     kawayan, damo; Block 114), for a room or a field; people in assets/sprites/characters/, animated from one still
      by animate-still.js where drawn side on; every picture not yet
      drawn in ART.md, Owed (missing-art.js lists them).
   4. Fighters as types in content/enemies.js (Enemy data format), never
@@ -563,9 +564,10 @@ Scene shape:
                                                  second one (Block 45)
       panelSky: "#72a8d0",                       colour above the pictures
                                                  (Block 46)
-      ground: false | { src },                   optional; hides the dirt strip,
+      ground: false | { src } | { floor },       optional; hides the dirt strip,
                                                  or lays the scene's own road
-                                                 (Polish #6)
+                                                 (Polish #6), or a floor of
+                                                 game.js's FLOORS (Block 114)
       music: "assets/audio/music/x.mp3",         optional; this scene's track
       exits: [{ id, x, width, label, toScene,    optional; doorways
                 toX, toFacing }],
@@ -757,8 +759,16 @@ room rather than a street. ground: false hides #ground-tiles for a
 picture that paints its own floor, and ground: { src } (Polish list #6)
 lays a road of the scene's own instead of Tondo's dirt (GROUND_SRC,
 assets/backgrounds/act1/ground-lupa.jpg); an owed road picture falls
-back to the dirt. All three are cleared on every load, so a scene
-without them gets the default backdrop and the dirt back.
+back to the dirt. ground: { floor } (Block 114) lays one of the floors
+game.js draws itself, FLOORS: kahoy (floorboards: the pulungan, the
+press), kawayan (split bamboo: a nipa house) and damo (grass over
+earth: a field, a camp). Each is a small tile of pixels built as an SVG
+in a data: URL, so it is never downloaded, versioned or owed, drawn at
+FLOOR_SCALE with the pixels kept sharp (.ground-floor). A scene that
+is not Tondo's street names one; prepare.js fails on a floor name
+FLOORS does not have. A picture (src) wins over a floor when both are
+given and the picture exists. All of these are cleared on every load,
+so a scene without them gets the default backdrop and the dirt back.
 
 panels (Block 43) lays a row of different paintings along the road, each
 covering a fixed panelWidth of the world (default PANEL_WIDTH, 1450),
@@ -972,17 +982,21 @@ of them plain globals in game.js, like addQuest:
                                  icon (the button's symbol; Block 93);
                                  resolves with the good strokes, or -1 if
                                  he left before the last. One game for
-                                 every repeatable job
-    playOrderGame(opts)          the barber's game (Block 94): each
-                                 round the customer (opts.speaker) asks
-                                 for a list of opts.tools ([{ label,
-                                 icon }], three), shown a word at a time
-                                 and taken away, pressed back in order
-                                 (buttons or 1 to 3); a wrong one ends
-                                 the round; opts.lengths (default 2 to
-                                 5), hint, hitText, missText,
-                                 doneText(good); resolves with the
-                                 rounds right, or -1 if he left
+                                 every job but the barber's
+    playCutGame(opts)            the barber's game (Block 114, replacing
+                                 Block 94's playOrderGame): a customer
+                                 drawn in pixels on a canvas (cutModel,
+                                 64 by 56), a dashed line round the cut
+                                 he wants, and scissors moved over his
+                                 hair by finger (held above it), mouse
+                                 (button down) or arrow keys; hair past
+                                 the line falls onto the cape, the line
+                                 is cut only by the point itself, and
+                                 near the end the rest falls by itself.
+                                 opts title, hint, speaker, askText,
+                                 tooShortText, doneText(clean);
+                                 resolves with how clean the cut was,
+                                 0 to 1, or -1 if he left
     playCatchGame(opts)          the apple mini-game (no shipped content
                                  uses it since Block 89; kept on purpose,
                                  tested, as a ready mechanic for Acts II
@@ -1787,12 +1801,15 @@ of working code require a commit first.
 
 Autonomy (Block 89). Act I is things that are there, not steps that are
 staged. A quest names something to find; the person, the animal or the
-work is simply on the street, usable at any time and as often as it
-makes sense, and content gates it only on what the story needs (the
-Kutsero has been spoken to). The work is one game with different words
-(playWorkGame), paying a small bounded sum a round up to a cap; the
-scripts that remain are the turns the story cannot leave to the student.
-A new activity is a NPC with onInteract, not a new mechanic.
+work is simply on the street, usable at any time, and content gates it
+only on what the story needs (the Kutsero has been spoken to). A job
+is played once and paid once (Block 114, the proponent: the rounds
+done again and again were boring): one round of its game, paid by how
+well it went, then a thought line instead of a game. The work is one
+game with different words (playWorkGame), the barber's haircut its one
+exception (playCutGame); the scripts that remain are the turns the
+story cannot leave to the student. A new activity is a NPC with
+onInteract, not a new mechanic.
 
 Privacy. The repository is public. No file in it names the team, the
 adviser, the resource person or the school, and nothing private is
@@ -2194,7 +2211,9 @@ look, by system:
     loading, retries, service worker      Blocks 62, 78
     run, jump, dust, apple game, rewards  Blocks 57, 63, 65, 67
     the work game and the jobs            Blocks 89, 90, 94 (the
-                                          barber's own game)
+                                          barber's own game), 114 (each
+                                          job once; the haircut)
+    floors drawn by the engine            Block 114 (FLOORS)
     the end of Act I, a year on           Block 94
     dialogue portraits                    Blocks 87, 88
     tutorials                             Block 92

@@ -320,33 +320,51 @@ const BROUGHT_BACK = ["Ibinalik siya ng Kasama sa lihim na silid."];
 const A_YEAR_ON = ["Pagkalipas ng isang taon", "Tondo, 1895"];
 const THE_LIE = "Macario: Hindi po, 'Nay. Nag-eensayo lang po kami ng bagong komedya.";
 
-// Block 94. The barber's game as drawn, and one round of it: waits for
-// the request to be taken away, then presses the tools by their keys,
-// in the order asked (right) or a wrong one first.
-const orderState = (page) => page.evaluate(() => {
-  const s = document.getElementById("order-screen");
+// Block 114. The barber's game as drawn, and cutting with the real
+// mouse: along the rows of hair past the line (a clean cut, that only
+// ever puts the point on the extra), or straight across whole rows,
+// line and all (a rough one).
+const cutState = (page) => page.evaluate(() => {
+  const s = document.getElementById("cut-screen");
+  const c = document.getElementById("cut-canvas");
   return { up: !s.classList.contains("hidden"),
-    title: document.getElementById("order-title").textContent,
-    hint: document.getElementById("order-hint").textContent,
-    ask: document.getElementById("order-ask").textContent,
-    result: document.getElementById("order-result").textContent,
-    tools: [...document.querySelectorAll("#order-tools .order-tool .lbl")].map((l) => l.textContent),
-    icons: [...document.querySelectorAll("#order-tools .order-tool use")].map((u) => u.getAttribute("href")),
-    marks: [...document.querySelectorAll("#order-marks i")].map((i) => i.className),
-    stop: document.querySelector("#order-stop .lbl").textContent };
+    title: document.getElementById("cut-title").textContent,
+    hint: document.getElementById("cut-hint").textContent,
+    ask: document.getElementById("cut-ask").textContent,
+    result: document.getElementById("cut-result").textContent,
+    stop: document.querySelector("#cut-stop .lbl").textContent,
+    size: c.width + "x" + c.height, pixelated: getComputedStyle(c).imageRendering === "pixelated",
+    left: Number(s.dataset.left), short: Number(s.dataset.short), over: s.dataset.over === "1",
+    clean: s.dataset.clean };
 });
-const orderRound = async (page, right) => {
-  for (let i = 0; i < 120 && (await page.evaluate(() =>
-    document.getElementById("order-screen").dataset.listening !== "1")); i++) await page.waitForTimeout(100);
-  const want = await page.evaluate(() => document.getElementById("order-screen").dataset.want.split(",").map(Number));
-  if (right) {
-    for (const w of want) { await page.keyboard.press(String(w + 1)); await page.waitForTimeout(60); }
-  } else {
-    await page.keyboard.press(String(((want[0] + 1) % 3) + 1));
+const cutDrag = async (page, runs) => {
+  const r = await page.evaluate(() => {
+    const b = document.getElementById("cut-canvas").getBoundingClientRect();
+    return { x: b.left, y: b.top, w: b.width, h: b.height };
+  });
+  const at = (gx, gy) => [r.x + ((gx + 0.5) / 64) * r.w, r.y + ((gy + 0.5) / 56) * r.h];
+  for (const [y, x0, x1] of runs) {
+    await page.mouse.move(...at(x0, y));
+    await page.mouse.down();
+    await page.mouse.move(...at(x1, y), { steps: Math.max(1, x1 - x0) });
+    await page.mouse.up();
   }
   await page.waitForTimeout(150);
-  return want;
 };
+// Each row's runs of extra hair, from the picture's own model.
+const extraRuns = (page) => page.evaluate(() => {
+  const m = cutModel();
+  const runs = [];
+  for (let y = 0; y < 56; y++) {
+    let start = -1;
+    for (let x = 0; x <= 64; x++) {
+      const extra = x < 64 && m.hair[y * 64 + x] === 2;
+      if (extra && start < 0) start = x;
+      if (!extra && start >= 0) { runs.push([y, start, x - 1]); start = -1; }
+    }
+  }
+  return runs;
+});
 const PANIC_FIRST = "Direktor: Teka... nasaan na ba si Julian?";
 const PANIC_YES = "Macario: Sige po. Susubukan ko.";
 const BACKSTAGE_FIRST = "Maryam: Ikaw ba 'yung papalit kay Julian?";
@@ -711,12 +729,13 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     __DB.game_progress[0].save_state.flags.nagpasyangMagtrabaho === true && Acts.countDone(1) === 1));
 
   // ---------------------------------------------------------------
-  console.log("\nThe Kutsero's job: a horse to groom, again and again (Block 89)");
+  console.log("\nThe Kutsero's job: a horse to groom, once (Blocks 89, 114)");
   await walkTo(page, 3200);
   await page.keyboard.press("e");
   const k1 = await readConversation(page, 5);
   ok("the Kutsero's lines as written, then what the job is",
-     JSON.stringify(k1.lines.slice(0, 4)) === JSON.stringify(KUTSERO) && /Bawat linis/.test(k1.lines[4] || ""), k1.lines);
+     JSON.stringify(k1.lines.slice(0, 4)) === JSON.stringify(KUTSERO) &&
+     k1.lines[4] === "Kutsero: Suklayin mo siya, at may bayad ka sa akin.", k1.lines);
   await page.waitForTimeout(200);
   ok("the task is the horse", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.groom]));
   const twoLines = await log(page);
@@ -736,10 +755,17 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   // Block 93. The grooming's buttons show a brush, never the sword.
   const icons = await page.evaluate(() => document.querySelector("#work-hit .ico use").getAttribute("href"));
   ok("the grooming button shows a brush, not the sword (Block 93)", icons === "#i-brush", icons);
+  await workStroke(page, true);
+  await page.click("#work-stop");
+  await page.waitForTimeout(200);
+  ok("leaving before the last stroke pays nothing, and the job waits", await page.evaluate(() =>
+    Game.currency() === 0 && !uiBlocked && !state.flags.naalagaanAngKabayo));
+  await page.keyboard.press("e");
+  await page.waitForTimeout(250);
   const x0 = await page.evaluate(() => posX);
   const w2 = await workRound(page, true);
-  ok("five good strokes pay the most, 7 barya, and the button said Tapos na",
-     /\+7 barya/.test(w2.hint) && w2.hitLabel === "Tapos na", w2);
+  ok("five good strokes pay the most, 12 barya, and the button said Tapos na (Block 114)",
+     /5\/5 ang maayos\. \+12 barya/.test(w2.hint) && w2.hitLabel === "Tapos na", w2);
   ok("the patch gets thinner with every stroke (Block 90)",
      w2.widths.every((w, i) => i === 0 || w < w2.widths[i - 1]) && w2.widths[0] >= 30 && w2.widths[4] <= 14, w2.widths);
   const horse = await page.evaluate(() => ({
@@ -749,37 +775,26 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   ok("the picture is the horse from his own sheet, and the brush swept over him on a good stroke",
      horse.sprite && /work-brush/.test(horse.brush) && /work-anim/.test(horse.brush) && horse.stage === "work-stage-horse", horse);
   ok("closing gives him the world back and the pay", await page.evaluate(() =>
-    !uiBlocked && Game.currency() === 7 && state.flags.kitaSaKutsero === 7));
+    !uiBlocked && Game.currency() === 12 && state.flags.naalagaanAngKabayo === true));
   ok("the keys the game takes do not move Macario", (await page.evaluate(() => posX)) === x0);
-  ok("the first round finishes the step, and the log moves on to the barber (Block 94)",
+  ok("the round finishes the step, and the log moves on to the barber (Block 94)",
      JSON.stringify((await log(page)).current) === JSON.stringify([STEP.barber]));
-  ok("and the savings line counts the 7 he earned", (await log(page)).pinned[0] === "Mag-ipon para kay Nanay (7/100)");
+  ok("and the savings line counts the 12 he earned", (await log(page)).pinned[0] === "Mag-ipon para kay Nanay (12/100)");
+  ok("a round of five bad strokes would pay 8, the least (Block 114)", await page.evaluate(() =>
+    jobPay(0) === 8 && jobPay(1) === 12 && jobPay(0.6) === 10));
   await page.keyboard.press("e");
-  await page.waitForTimeout(250);
-  await workRound(page, false);
-  ok("five bad strokes still pay 4: the job is there to be done again", await page.evaluate(() =>
-    Game.currency() === 11 && state.flags.kitaSaKutsero === 11));
-  await page.keyboard.press("e");
-  await page.waitForTimeout(250);
-  await workStroke(page, true);
-  await page.click("#work-stop");
-  await page.waitForTimeout(200);
-  ok("leaving before the last stroke pays nothing", await page.evaluate(() =>
-    Game.currency() === 11 && !uiBlocked));
-  await page.evaluate(() => { state.flags.kitaSaKutsero = 22; });
-  await page.keyboard.press("e");
-  await page.waitForTimeout(250);
-  const w3 = await workRound(page, true);
-  ok("near the 25 barya a job will pay, a round is cut to what is left (3)",
-     /\+3 barya/.test(w3.hint) && await page.evaluate(() =>
-       Game.currency() === 14 && state.flags.kitaSaKutsero === 25 && state.flags.punoNaAngKutsero === true), w3);
+  const again = await readConversation(page, 1);
+  ok("done once: the horse gives a thought, not a second game (Block 114)",
+     again.lines[0] === "Macario (sa isip): Malinis na si Kabayo. Wala na akong gagawin dito." &&
+     !(await workState(page)).up && (await page.evaluate(() => Game.currency())) === 12, again.lines);
+  await walkTo(page, 3200);
   await page.keyboard.press("e");
   const full = await readConversation(page, 1);
-  ok("after that the Kutsero says that is enough, and there is no game",
+  ok("afterwards the Kutsero says that is enough, and there is no game",
      /^Kutsero: Sapat na/.test(full.lines[0] || "") && !(await workState(page)).up, full.lines);
 
   // ---------------------------------------------------------------
-  console.log("\nThe Barbero's job: a game of his own (Block 94)");
+  console.log("\nThe Barbero's job: a haircut (Blocks 94, 114)");
   await walkTo(page, 6300);
   await page.keyboard.press("e");
   const gate = await readConversation(page, 2);
@@ -790,84 +805,98 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   await page.keyboard.press("e");
   await page.waitForTimeout(200);
   ok("his chair waits until he has been spoken to", /^Macario \(sa isip\): Silya/.test(await line(page) || "") &&
-     !(await orderState(page)).up);
+     !(await cutState(page)).up);
   await readConversation(page, 1);
   await walkTo(page, 5200);
   await page.keyboard.press("e");
-  const br1 = await readConversation(page, 8);
-  ok("the Barbero's first talk, with the horse remembered",
-     br1.lines.length === 7 && /kabayo/.test(br1.lines[2]) && br1.lines[4] === "Barbero: Hindi kabayo ang mga suki ko, iho." &&
+  const br1 = await readConversation(page, 10);
+  ok("the Barbero's first talk, with the horse remembered, sending him to the customer (Block 114)",
+     br1.lines.length === 9 && /kabayo/.test(br1.lines[2]) && br1.lines[4] === "Barbero: Hindi kabayo ang mga suki ko, iho." &&
+     br1.lines[6] === "Barbero: Sundan mo lang ang guhit. Huwag mong lalampasan." &&
      await page.evaluate(() => state.flags.nakausapAngBarbero === true), br1.lines);
   await walkTo(page, 5480);
   ok("beside the chair, the button reads Gupitin, with scissors", await page.evaluate(() =>
     document.querySelector("#btn-interact .lbl").textContent === "Gupitin" &&
     document.querySelector("#btn-interact .ico use").getAttribute("href") === "#i-scissors" &&
     /silya-barbero.png/.test(document.getElementById("npc-silya").textContent)));
-  // Block 102. Each round right pays 4 to 7 at random, up to 20 from him;
-  // a perfect run (five) is always all of it.
-  ok("the barber pays 4 to 7 a round right, and five right is always his 20 (Block 102)", await page.evaluate(() => {
-    for (let i = 0; i < 200; i++) {
-      const one = jobPay(BARBER_JOB, 1, 0, 5);
-      if (one < 4 || one > 7 || jobPay(BARBER_JOB, 5, 0, 5) !== 20 || jobPay(BARBER_JOB, 3, 18, 5) !== 2) return false;
-    }
-    return true;
-  }));
-  // The pay is random; held at its middle for this one game (6 a round)
-  // so the sums the rest of the act is checked against stay fixed.
-  await page.evaluate(() => { window.__random = Math.random; Math.random = () => 0.5; });
   await page.keyboard.press("e");
   await page.waitForTimeout(250);
-  const ord0 = await orderState(page);
-  ok("E opens the barber's own game, not the work game: three tools and five rounds, with the world blocked",
-     ord0.up && ord0.title === "Barberya" && !(await workState(page)).up &&
-     JSON.stringify(ord0.tools) === '["1 Suklay","2 Gunting","3 Labaha"]' &&
-     JSON.stringify(ord0.icons) === '["#i-comb","#i-scissors","#i-razor"]' && ord0.marks.length === 5 &&
-     await page.evaluate(() => uiBlocked), ord0);
-  await page.waitForTimeout(500);
-  ok("the Suki says what he wants, a word at a time", /^Suki: (Suklay|Gunting|Labaha)/.test((await orderState(page)).ask));
-  const asked = await orderRound(page, true);
-  const ord1 = await orderState(page);
-  ok("the first request is two tools, and pressed in order the round is right",
-     asked.length === 2 && ord1.marks[0] === "order-ok" && /Tama/.test(ord1.result), { asked, ord1 });
-  const asked2 = await orderRound(page, false);
-  const ord2 = await orderState(page);
-  ok("the second is two again, and a wrong tool ends the round (Block 102)",
-     asked2.length === 2 && ord2.marks[1] === "order-bad", ord2);
-  const asked3 = await orderRound(page, false);
-  const asked4 = await orderRound(page, false);
-  const asked5 = await orderRound(page, false);
-  const ord5 = await orderState(page);
-  ok("then three, three and four; one of five right pays 6, and the button says Tapos na",
-     asked3.length === 3 && asked4.length === 3 && asked5.length === 4 &&
-     JSON.stringify(ord5.marks) === '["order-ok","order-bad","order-bad","order-bad","order-bad"]' &&
-     /1\/5 ang maayos\. \+6 barya/.test(ord5.hint) && ord5.stop === "Tapos na", ord5);
-  ok("the keys the game takes do not move Macario", (await page.evaluate(() => posX)) === 5480);
-  await page.click("#order-stop");
+  const cut0 = await cutState(page);
+  ok("E opens the barber's own game, not the work game: the customer in pixels, the world blocked",
+     cut0.up && cut0.title === "Barberya" && !(await workState(page)).up && cut0.size === "64x56" && cut0.pixelated &&
+     cut0.ask === "Suki: Maikli sa gilid, iho. Huwag mong uubusin sa ibabaw." && /0%$/.test(cut0.hint) &&
+     cut0.left > 300 && cut0.stop === "Bumalik" && await page.evaluate(() => uiBlocked), cut0);
+  const drawn = await page.evaluate(() => {
+    const c = document.getElementById("cut-canvas").getContext("2d").getImageData(0, 0, 64, 56).data;
+    const at = (x, y) => [c[(y * 64 + x) * 4], c[(y * 64 + x) * 4 + 1], c[(y * 64 + x) * 4 + 2]].join(",");
+    return { hair: at(32, 4), face: at(32, 28), cape: at(32, 50) };
+  });
+  ok("drawn: hair on top, the face below it, the cape at his neck", drawn.hair !== drawn.face && drawn.face !== drawn.cape &&
+     drawn.face.split(",").map(Number)[0] > 150, drawn);
+  const runs = await extraRuns(page);
+  await cutDrag(page, runs.slice(0, 6));
+  const cut1 = await cutState(page);
+  ok("the scissors cut the hair past the line, and the count goes up", cut1.left < cut0.left && cut1.short === 0 &&
+     !/ 0%$/.test(cut1.hint), cut1);
+  await page.click("#cut-stop");
+  await page.waitForTimeout(200);
+  ok("leaving before it is done pays nothing, and the chair waits", await page.evaluate(() =>
+    Game.currency() === 12 && !uiBlocked && !state.flags.nakapaggupit &&
+    document.getElementById("cut-screen").classList.contains("hidden")));
+  await page.keyboard.press("e");
   await page.waitForTimeout(250);
-  await page.evaluate(() => { Math.random = window.__random; });
-  ok("closing gives him the world back and the pay", await page.evaluate(() =>
-    !uiBlocked && Game.currency() === 20 && state.flags.kitaSaBarbero === 6));
-  ok("the first game finishes the step, and the log moves on to the Mananahi",
+  ok("opened again, he starts with all his hair", (await cutState(page)).left === cut0.left);
+  await cutDrag(page, runs);
+  const cut2 = await cutState(page);
+  ok("cut along the outside of the line: the rest falls by itself, a clean cut, 12 barya, and Tapos na",
+     cut2.over && cut2.left === 0 && cut2.short === 0 && cut2.clean === "1.00" &&
+     cut2.ask === "Suki: Aba, parang bagong tao ako! +12 barya" && cut2.stop === "Tapos na", cut2);
+  ok("the keys and the mouse the game takes do not move Macario", (await page.evaluate(() => posX)) === 5480);
+  await page.click("#cut-stop");
+  const paid = await readConversation(page, 2);
+  ok("closing: the Barbero pays him, with the horse remembered",
+     paid.lines[0] === "Barbero: Hindi masama para sa tagasuklay ng kabayo. Heto ang bayad mo.", paid.lines);
+  ok("the world back and the pay", await page.evaluate(() =>
+    !uiBlocked && Game.currency() === 24 && state.flags.nakapaggupit === true));
+  ok("the haircut finishes the step, and the log moves on to the Mananahi",
      JSON.stringify((await log(page)).current) === JSON.stringify([STEP.mananahi]));
   await page.keyboard.press("e");
+  const chair = await readConversation(page, 1);
+  ok("done once: the chair gives a thought, not a second haircut",
+     chair.lines[0] === "Macario (sa isip): Wala nang nakaupo. Tapos na ako rito." && !(await cutState(page)).up, chair.lines);
+  await walkTo(page, 5200);
+  await page.keyboard.press("e");
+  const brAfter = await readConversation(page, 1);
+  ok("and the Barbero has no more customers", brAfter.lines[0] === "Barbero: Wala nang suki ngayon, iho. Salamat sa tulong mo.", brAfter.lines);
+  // A rough cut, on a game opened straight from the page (it pays
+  // nothing by itself): straight across the rows, line and all.
+  await page.evaluate(() => {
+    window.__rough = playCutGame({ title: "Barberya", speaker: "Suki", tooShortText: "Aray! Ang ikli!",
+      doneText: (c) => (c >= 0.8 ? "malinis" : "magaspang") });
+  });
   await page.waitForTimeout(250);
-  await page.waitForTimeout(600);
-  await page.click("#order-stop");
+  await cutDrag(page, Array.from({ length: 42 }, (_, i) => [i, 0, 63]));
+  const rough = await cutState(page);
+  ok("cut across the line: Aray!, and a rough cut is worth 0",
+     rough.over && rough.short > 0 && rough.clean === "0.00" && rough.ask === "Suki: magaspang" &&
+     await page.evaluate(() => /Aray/.test(document.getElementById("cut-result").textContent) ||
+       Number(document.getElementById("cut-screen").dataset.short) > 0), rough);
+  await page.click("#cut-stop");
+  ok("its promise resolves with the cleanness", (await page.evaluate(() => window.__rough)) === 0);
   await page.waitForTimeout(200);
-  ok("leaving before the last round pays nothing", await page.evaluate(() =>
-    Game.currency() === 20 && !uiBlocked && document.getElementById("order-screen").classList.contains("hidden")));
 
   // ---------------------------------------------------------------
-  console.log("\nThe Mananahi's job: sewing, and being stopped (Block 89)");
+  console.log("\nThe Mananahi's job: sewing once, and being stopped (Blocks 89, 114)");
   ok("the next task is the Mananahi", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.mananahi]));
   await walkTo(page, 6300);
   await page.keyboard.press("e");
   const m1 = await readConversation(page, 5);
-  ok("the Mananahi's lines as written, then the sewing, which pays each time",
-     JSON.stringify(m1.lines.slice(0, 4)) === JSON.stringify(MANANAHI) && /tahian/i.test(m1.lines[4] || "") &&
+  ok("the Mananahi's lines as written, then the sewing, which pays",
+     JSON.stringify(m1.lines.slice(0, 4)) === JSON.stringify(MANANAHI) &&
+     m1.lines[4] === "Mananahi: Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ka pagkatapos." &&
      m1.lines.length === 5, m1.lines);
   await page.waitForTimeout(200);
-  ok("the task counts the sewing (0/2)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.sew + " (0/2)"]));
+  ok("the task is the sewing, with no count (Block 114)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.sew]));
   ok("the direktor cannot take a delivery yet", await page.evaluate(() =>
     !canGiveGift(NPCS.find((n) => n.id === "direktor"))));
 
@@ -883,15 +912,11 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     document.getElementById("work-bar").classList.contains("work-fill") &&
     document.getElementById("work-stage").className === "work-stage-cloth"));
   const sew1 = await workRound(page, true, true);
-  ok("letting go over the patch five times pays 7, and the seam is five stitches", /\+7 barya/.test(sew1.hint) &&
+  ok("letting go over the patch five times pays 12, and the seam is five stitches", /\+12 barya/.test(sew1.hint) &&
      await page.evaluate(() => document.querySelectorAll("#work-marks i.work-stitch-ok").length === 5), sew1);
   ok("its patch thins too", sew1.widths.every((w, i) => i === 0 || w < sew1.widths[i - 1]), sew1.widths);
-  ok("the first round counts (1/2)", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.sew + " (1/2)"]));
-  await page.keyboard.press("e");
-  await page.waitForTimeout(250);
-  await workRound(page, true, true);
   const stop = await readConversation(page, 7);
-  ok("after the second round she stops him: the costumes for the direktor, forgotten",
+  ok("after the one round she stops him: the costumes for the direktor, forgotten",
      stop.lines.length === 7 && stop.lines[0] === "Mananahi: Macario, teka! Ihinto mo muna 'yan." &&
      /direktor/.test(stop.lines[3]), stop.lines);
   await page.waitForTimeout(300);
@@ -903,7 +928,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   ok("with the costumes on him the sewing waits", /^Macario \(sa isip\):/.test(held.lines[0] || "") &&
      !(await workState(page)).up, held.lines);
   const jobMoney = await page.evaluate(() => Game.currency());
-  ok("the three jobs have paid 34 in all", jobMoney === 34, jobMoney);
+  ok("the three jobs have paid 36 in all", jobMoney === 36, jobMoney);
 
   // ---------------------------------------------------------------
   console.log("\nThe direktor's missing actor");
@@ -1566,7 +1591,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   await r.ctx.close();
 
   r = await resume("tondo", { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true,
-    nakausapAngKutsero: true, kitaSaKutsero: 12 }, 12);
+    nakausapAngKutsero: true }, 12);
   await r.page.waitForTimeout(400);
   const rj = await r.page.evaluate(() => ({ cut: cutscenePlaying, box: !dialogueBox.classList.contains("hidden"),
     title: !document.getElementById("intertitle").classList.contains("hidden"),
@@ -2116,9 +2141,15 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       guest: Game.isGuest(),
       log: document.getElementById("quest-list").textContent,
       written: __DB.game_progress.length,
+      // Block 114: the floor the scene names, drawn, or the dirt.
+      floorWanted: (currentScene.ground && currentScene.ground.floor) || "",
+      floor: document.getElementById("ground-tiles").dataset.floor || "",
+      floorDrawn: /^url\("data:image\/svg/.test(document.getElementById("ground-tiles").style.getPropertyValue("--ground-src")),
     }));
     ok("starting at " + j.id + " opens " + j.scene + " with \"" + j.task + "\" in hand, writing nothing",
        at.scene === j.scene && at.act === j.n && at.guest && at.log.includes(j.task) && at.written === 0, at);
+    ok("  and its ground is " + (at.floorWanted || "the dirt") + " (Block 114)",
+       at.floor === at.floorWanted && at.floorDrawn === Boolean(at.floorWanted), at);
     await p.ctx.close();
   }
 
