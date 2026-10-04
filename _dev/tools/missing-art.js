@@ -35,7 +35,7 @@ const path = require("path");
 const vm = require("vm");
 
 const ROOT = path.join(__dirname, "..", "..");
-const CONTENT = ["content/enemies.js", "content/act1.js", "content/act2.js",
+const CONTENT = ["content/enemies.js", "content/people.js", "content/act1.js", "content/act2.js",
   "content/act3.js", "content/act4.js", "content/items.js"];
 const PICTURE = /^assets\/.+\.(png|jpe?g)$/i;
 

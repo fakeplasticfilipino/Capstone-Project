@@ -93,9 +93,10 @@ const STREET_SKY = "#51a6ea";
 // animated by _dev/tools/animate-still.js (rig _dev/rigs/nanay.js) to
 // stand with the calm idle and to walk, a short step under the long
 // skirt. One cell for both, so she does not slide when she stops.
-const NANAY_CELL = { columns: 4, contentTop: 13, contentHeight: 396, footX: 67, headroom: 13 };
-const NANAY = { src: "assets/sprites/characters/nanay.png", frames: 8, fps: 4, ...NANAY_CELL };
-const NANAY_WALK = { src: "assets/sprites/characters/nanay-walk.png", frames: 8, fps: 12, ...NANAY_CELL };
+// Block 113: her sheets, and those of everyone who returns in Act II,
+// are in content/people.js (window.PEOPLE), described once for both acts.
+const NANAY = window.PEOPLE.nanay;
+const NANAY_WALK = window.PEOPLE.nanayWalk;
 
 // The three siga, all the artist's since Block 98 (the big one since
 // Block 96): the leader in a salakot with a shawl over his shoulders, the
@@ -118,16 +119,10 @@ const SIGA = { 1: sigaSheets(1), 2: sigaSheets(2), 3: sigaSheets(3) };
 // The Kutsero (Block 101): the proponent's still, facing the front, a
 // coil of rope on his shoulder and a whip in his hand, left still as the
 // Mananahi is: only people drawn side on are animated.
-const KUTSERO = {
-  src: "assets/sprites/characters/kutsero.png", frames: 1, fps: 1,
-  contentTop: 37, contentHeight: 512, footX: 519,
-};
+const KUTSERO = window.PEOPLE.kutsero;
 // The Mananahi (Block 98): the artist's still, facing the front, and
 // left still at the proponent's direction ("can stay stationary").
-const MANANAHI = {
-  src: "assets/sprites/characters/mananahi.png", frames: 1, fps: 1,
-  contentTop: 32, contentHeight: 515, footX: 521,
-};
+const MANANAHI = window.PEOPLE.mananahi;
 // The Kutsero's horse (Block 100): the proponent's still of a saddled
 // bay, animated by _dev/tools/animate-kabayo.js to dip his head and tuck
 // his tail, a horse at rest. The grooming game draws the same sheet.
@@ -139,10 +134,7 @@ const KABAYO = {
 // still of an old man with a cane and the play under his arm, animated by
 // _dev/tools/animate-still.js (rig _dev/rigs/direktor.js) to breathe and
 // nod only, so his cane stays on the ground. He never walks.
-const DIREKTOR = {
-  src: "assets/sprites/characters/direktor.png", frames: 8, fps: 4, columns: 4,
-  contentTop: 5, contentHeight: 413, footX: 77, headroom: 5,
-};
+const DIREKTOR = window.PEOPLE.direktor;
 
 // The play's cast (Block 101, the proponent's stills). Maryam faces the
 // front and stands still. The Sultan is drawn three-quarter, with his
@@ -150,10 +142,7 @@ const DIREKTOR = {
 // he walks on and off, from _dev/rigs/sultan.js. His soldiers are the
 // "kawal" of the enemy catalogue (content/enemies.js), where their
 // sheets and numbers are.
-const MARYAM = {
-  src: "assets/sprites/characters/maryam.png", frames: 1, fps: 1,
-  contentTop: 47, contentHeight: 495, footX: 511,
-};
+const MARYAM = window.PEOPLE.maryam;
 const SULTAN_CELL = { columns: 4, contentTop: 8, contentHeight: 383, footX: 87, headroom: 8 };
 const SULTAN = {
   idle: { src: "assets/sprites/characters/sultan.png", frames: 8, fps: 4, ...SULTAN_CELL },
@@ -171,27 +160,15 @@ const SULTAN = {
 // (walkAnimation, with faceMovement so they face the way they go; the
 // art faces right). Since Block 101 the Mabalasig is the proponent's
 // still, side on, idle only (rig _dev/rigs/mabalasig.js).
-const stillAnimated = (name, cell) => ({
-  idle: { src: `assets/sprites/characters/${name}.png`, frames: 8, fps: 4, ...cell },
-  walk: { src: `assets/sprites/characters/${name}-walk.png`, frames: 8, fps: 12, ...cell },
-});
-const KATIPUNERO_SHEETS = stillAnimated("katipunero",
-  { columns: 4, contentTop: 7, contentHeight: 403, footX: 131, headroom: 7 });
-const KASAMA_SHEETS = stillAnimated("kasama",
-  { columns: 4, contentTop: 8, contentHeight: 404, footX: 119, headroom: 8 });
+const KATIPUNERO_SHEETS = window.PEOPLE.katipunero;
+const KASAMA_SHEETS = window.PEOPLE.kasama;
 const KATIPUNERO = KATIPUNERO_SHEETS.idle;
 const KASAMA = KASAMA_SHEETS.idle;
-const MABALASIG = {
-  src: "assets/sprites/characters/mabalasig.png", frames: 8, fps: 4, columns: 4,
-  contentTop: 7, contentHeight: 394, footX: 73, headroom: 7,
-};
+const MABALASIG = window.PEOPLE.mabalasig;
 
 // Block 94. The Barbero and his chair; since Block 101 the Barbero is the
 // proponent's still, facing the front and left still. The chair is owed.
-const BARBERO = {
-  src: "assets/sprites/characters/barbero.png", frames: 1, fps: 1,
-  contentTop: 19, contentHeight: 529, footX: 514,
-};
+const BARBERO = window.PEOPLE.barbero;
 const SILYA = { src: "assets/sprites/scenery/silya-barbero.png", frames: 1, fps: 1 };
 
 // The guardia civil of the pamphlet run are the "bantay" of the enemy
@@ -364,18 +341,16 @@ const DIREKTOR_FLAG = "naihatidKay_direktor";
 // past the middle of the street. All clear of the joins by 270px or more. Names and
 // lines are ours. Their art is the proponent's (Block 102): stills
 // facing the front, standing still, as the Kutsero does.
-const citizenArt = (name, contentTop, contentHeight, footX) =>
-  ({ src: `assets/sprites/characters/${name}.png`, frames: 1, fps: 1, contentTop, contentHeight, footX });
 const CITIZENS = [
-  { id: "mangingisda", label: "Mangingisda", x: 4800, animation: citizenArt("mangingisda", 22, 524, 517),
+  { id: "mangingisda", label: "Mangingisda", x: 4800, animation: window.PEOPLE.mangingisda,
     waiting: "Maaga pa ako bukas sa laot. Ano'ng kailangan mo?",
     thanks: "Matagal ko nang hinihintay 'to. Sa bangka ko itatago, walang guardia na sumisilip doon.",
     after: "Nabasa ko na. Ipinasa ko na rin sa kapitbahay." },
-  { id: "tabakera", label: "Tabakera", x: 6900, animation: citizenArt("tabakera", 29, 508, 511),
+  { id: "tabakera", label: "Tabakera", x: 6900, animation: window.PEOPLE.tabakera,
     waiting: "Pagod na ako, iho. Maghapon akong nagbalot ng tabako.",
     thanks: "Isisingit ko 'to sa mga tabako. Maraming babae sa pagawaan ang dapat makabasa nito.",
     after: "Kumakalat na sa pagawaan ang ibinigay mo. Mag-ingat ka, ha." },
-  { id: "karpintero", label: "Karpintero", x: 10600, animation: citizenArt("karpintero", 26, 512, 514),
+  { id: "karpintero", label: "Karpintero", x: 10600, animation: window.PEOPLE.karpintero,
     waiting: "Gabi na, iho. Sarado na ang talyer.",
     thanks: "Katipunan? ...Itatago ko 'to. Ipapabasa ko sa mga kasama ko sa talyer.",
     after: "Wala akong nakita, wala akong narinig. Ingat ka, iho." },

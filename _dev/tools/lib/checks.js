@@ -121,7 +121,7 @@ const TRUNK = 90;          // half a trunk at head height, and a margin (Block 5
 function content() {
   const ctx = vm.createContext({ console });
   ctx.window = ctx;
-  for (const rel of ["content/enemies.js", "content/items.js"].concat(ACT_FILES)) {
+  for (const rel of ["content/enemies.js", "content/people.js", "content/items.js"].concat(ACT_FILES)) {
     if (fs.existsSync(path.join(ROOT, rel))) vm.runInContext(read(rel), ctx, { filename: rel });
   }
   const types = ctx.ENEMY_TYPES || {};

@@ -601,6 +601,9 @@
        content/enemies.js (Block 76), the enemy catalogue, loads before
        the acts: act1.js reads the Sultan's sheet from it, and game.js
        merges a placed enemy's type from it when it builds a scene.
+       content/people.js (Block 113), the art of the people who return
+       from act to act (window.PEOPLE), loads before the acts too: each
+       act reads its people's sheets from it as it loads.
 
        assessment.js is optional: with it absent the act flow
        collapses to playing then completed and the game still runs,
@@ -619,7 +622,8 @@
   <script src="js/vendor/supabase.js?v=4202140866"></script>
   <script src="js/supabaseClient.js?v=2770937222"></script>
   <script src="content/enemies.js?v=2279926731"></script>
-  <script src="content/act1.js?v=4247897129"></script>
+  <script src="content/people.js?v=1467098803"></script>
+  <script src="content/act1.js?v=2556964028"></script>
   <script src="content/act2.js?v=4250160474"></script>
   <script src="content/act3.js?v=4046274361"></script>
   <script src="content/act4.js?v=327586304"></script>
