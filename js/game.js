@@ -233,6 +233,16 @@ function difficultyMultiplier(actNumber) {
   return 1 + (n - 1) * DIFFICULTY_STEP;
 }
 
+// How fast a guard's meter fills while he sees Macario, per 60th of a
+// second, for a guard whose content gives no alertRate of its own.
+// Block 113 doubled it from 0.012, at the proponent's word: at 0.012 a
+// walk straight past a guard's 260px of sight filled the meter to about
+// 0.6 and he never noticed, so stealth asked nothing. At 0.024 the same
+// walk is a catch; crates, his back and the stage clothes standing still
+// (stillDetectionMult) are what get a student through. Decay is
+// unchanged, so stepping out of sight clears the meter as before.
+const GUARD_ALERT_RATE = 0.024;
+
 // There is no game over. Reaching zero returns Macario to the start of the
 // scene at full health. A fail state that ejects a Grade 8 student from the
 // lesson serves nobody, and being caught already costs them the walk back.
@@ -3138,7 +3148,7 @@ function updateGuards(step) {
             : "May nakapansin! Lumayo sa tingin niya.", 3600);
         }
       }
-      guard.alert = Math.min(1, guard.alert + (guard.alertRate || 0.012) * stillMult * step);
+      guard.alert = Math.min(1, guard.alert + (guard.alertRate || GUARD_ALERT_RATE) * stillMult * step);
       // Block 38. The first time the clothes are what is holding a guard
       // back in a scene, say so. The meter turning blue (drawGuard) says
       // it every time after.

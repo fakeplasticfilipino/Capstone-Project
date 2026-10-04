@@ -45,10 +45,10 @@
 //   teacher's paper replaces.
 //
 // The lines are the proponents' script as written, apostrophes
-// straightened. Lines marked PLACEHOLDER are ours, to be replaced by
-// the proponents: everything the job-givers, the horse, the customers,
-// the direktor and the plays say beyond the lines the script gave, and
-// every line of Block 80.
+// straightened. The lines of ours (everything the job-givers, the horse,
+// the customers, the direktor and the plays say beyond the lines the
+// script gave, and every line from Block 80 on) were accepted by the
+// proponents on 4 Oct 2026 (Block 113).
 //
 // Art. Everyone is drawn since Block 102. A picture still owed (ART.md,
 // Owed: the barber's chair, the sewing table, the pulungan) names a file
@@ -362,7 +362,7 @@ const DIREKTOR_FLAG = "naihatidKay_direktor";
 // (Block 81) the order he meets them from the back door: the mangingisda
 // short of the Barbero, the tabakera past the Mananahi, the karpintero
 // past the middle of the street. All clear of the joins by 270px or more. Names and
-// lines are PLACEHOLDER. Their art is the proponent's (Block 102): stills
+// lines are ours. Their art is the proponent's (Block 102): stills
 // facing the front, standing still, as the Kutsero does.
 const citizenArt = (name, contentTop, contentHeight, footX) =>
   ({ src: `assets/sprites/characters/${name}.png`, frames: 1, fps: 1, contentTop, contentHeight, footX });
@@ -511,7 +511,7 @@ async function thinkingAboutWork(alreadyHeld) {
 // runSceneScript; a reload before Macario says yes plays it again from
 // the top. It ends by going inside, without awaiting the fade, and its
 // doneFlag is the delivery step's own flag, so "Bagong gawain" names
-// the play as they go in. PLACEHOLDER, every line.
+// the play as they go in.
 // -------------------------------------------------------------
 async function theMissingActor() {
   setCutscene(true);
@@ -546,7 +546,7 @@ async function theMissingActor() {
 // them. A scene script, run after the fade in; the fight is not saved,
 // so a reload in the middle of it plays the whole thing again, while a
 // reload after the pay does not (the flag is set before the pay).
-// PLACEHOLDER, every line.
+//
 // -------------------------------------------------------------
 const CURTAIN_OPENS = [
   { speaker: "Maryam", text: "O Don Rodrigo! Bakit ka naparito? Kapag nakita ka ng aking ama, tiyak ang iyong kamatayan!" },
@@ -665,7 +665,7 @@ async function thePlay() {
 
 // -------------------------------------------------------------
 // Block 80, and Block 81 against the histories. The end of Act I.
-// PLACEHOLDER, every line.
+//
 //
 // What the histories say, and this follows (DECISIONS.md, Block 81):
 // Sakay acted in Principe Baldovino, a komedya attributed to Huseng
@@ -973,7 +973,7 @@ async function toThePulunganAgain() {
 // whose Supremo was Bonifacio). Men take his orders; his mother comes to
 // the door and asks whether he is one of them; he lies to her, the way
 // the actor he is would; and the door is shut on her as they call him
-// Pangulo. PLACEHOLDER, every line.
+// Pangulo.
 //
 // The report, on arrival (the Kasama brings him, Block 95).
 // Its flag is saved before the year passes, so a reload from there plays
@@ -1204,8 +1204,7 @@ async function sew() {
 }
 
 // The one thing scripted about the work: she stops him at the sewing,
-// because the costumes for tonight were forgotten. PLACEHOLDER, every
-// line. The flag it sets is what lets the direktor take his delivery.
+// because the costumes for tonight were forgotten. The flag it sets is what lets the direktor take his delivery.
 async function mananahiStopsHim() {
   setCutscene(true);
   turnPlayer(-1);
@@ -1366,8 +1365,8 @@ window.ACT_1 = {
   // Block 70. The teacher's Talaan papers. Block 94: the three below are
   // the game's own, facts from the general histories, laid when the
   // teacher has written nothing; a paper she writes on the dashboard
-  // replaces its own slot only (game.js, hintsDef). PLACEHOLDER, all
-  // three, to be checked against the source book.
+  // replaces its own slot only (game.js, hintsDef). Ours, accepted
+  // by the proponents on 4 Oct 2026 (Block 113).
   hints: {
     count: 3,
     fixed: true,
@@ -1381,7 +1380,6 @@ window.ACT_1 = {
       "Past the Mananahi's sewing, at jump height: the student has to jump for it.",
       "Near the end of the street, before the direktor, at jump height.",
     ],
-    // PLACEHOLDER: ours, until the proponents word these.
     foundText: "Naitala ito sa Talaan. Buksan ang Talaan sa pause para basahin ulit.",
     completeText: "Nahanap mo na ang lahat ng papel!",
     pool: [
@@ -1485,7 +1483,7 @@ window.ACT_1 = {
           // from the flags each time (Block 48), not stepped through.
           dialogueSets: [
             {
-              // PLACEHOLDER. Before the savings.
+              // Before the savings.
               skipIfFlag: "naibigayAngIponKayNanay",
               lines: [
                 { speaker: "Nanay", text: "Mag-iingat ka sa trabaho, anak. At umuwi ka bago dumilim." },
@@ -1498,7 +1496,7 @@ window.ACT_1 = {
               ],
             },
             {
-              // PLACEHOLDER. Scan S22. After the oath: she does not know,
+              // Scan S22. After the oath: she does not know,
               // and he cannot tell her (the lie a year on starts here).
               requiresFlag: "tinanggapSaKatipunan",
               lines: [
@@ -1511,13 +1509,13 @@ window.ACT_1 = {
             requiresFlag: "naitanghalAngDula",
             requiresCurrency: SAVINGS_GOAL,
             givenFlag: "naibigayAngIponKayNanay",
-            // The proponents' lines, with four of ours (PLACEHOLDER) after
+            // The proponents' lines, with four of ours after
             // the third, for the play Block 59 added.
             responseLines: [
               { speaker: "Macario", text: "'Nay, nakapag-ipon na po ako ng pera para makatulong." },
               { speaker: "Nanay", text: "Maraming salamat, anak ko! Napakahusay mo! Ginalingan mo ba sa trabaho?" },
               { speaker: "Macario", text: "Opo, 'Nay. Nagtrabaho po ako sa Kutsero at sa Mananahi." },
-              // PLACEHOLDER. Block 94, the third job.
+              // Block 94, the third job.
               { speaker: "Macario", text: "Pati po sa Barbero." },
               { speaker: "Macario", text: "Tapos, Nay... umarte pa po ako sa entablado." },
               { speaker: "Nanay", text: "Ikaw? Sa entablado?" },
@@ -1546,7 +1544,7 @@ window.ACT_1 = {
                 { speaker: "Kutsero", text: "Macario? Mabuti naman at naisipan mong magtrabaho." },
                 { speaker: "Macario", text: "Kailangan na po, e. Nangangailangan po si Nanay." },
                 { speaker: "Kutsero", text: "O sige, magsimula ka na agad. Alagaan mo 'yung kabayo sa kuwadra." },
-                // PLACEHOLDER. What the work is, and that it pays each time.
+                // What the work is, and that it pays each time.
                 { speaker: "Kutsero", text: "Suklayin mo siya. Bawat linis na matapos mo, may bayad ka sa akin." },
               ],
               onComplete() {
@@ -1555,7 +1553,7 @@ window.ACT_1 = {
               },
             },
             {
-              // PLACEHOLDER. Before the first grooming.
+              // Before the first grooming.
               requiresFlag: "nakausapAngKutsero",
               skipIfFlag: "naalagaanAngKabayo",
               lines: [
@@ -1563,7 +1561,7 @@ window.ACT_1 = {
               ],
             },
             {
-              // PLACEHOLDER. While there is more to earn.
+              // While there is more to earn.
               requiresFlag: "nakausapAngKutsero",
               skipIfFlag: HORSE_JOB.full,
               lines: [
@@ -1571,7 +1569,7 @@ window.ACT_1 = {
               ],
             },
             {
-              // PLACEHOLDER. Paid all he will pay.
+              // Paid all he will pay.
               lines: [
                 { speaker: "Kutsero", text: HORSE_JOB.fullText },
               ],
@@ -1595,7 +1593,7 @@ window.ACT_1 = {
           // Macario to the Kutsero, as the Mananahi sends him here, so the
           // jobs are met in the log's order and none is passed by. Closed
           // from the oath on: his stand is in the first guard's beat, and
-          // the run is at night. PLACEHOLDER, every line.
+          // the run is at night.
           id: "barbero", x: BARBERO_X, label: "Barbero", animation: BARBERO,
           hiddenByFlag: "tinanggapSaKatipunan",
           // Picked from the flags each time (Block 48).
@@ -1671,7 +1669,7 @@ window.ACT_1 = {
           id: "mananahi", x: MANANAHI_X, label: "Mananahi", animation: MANANAHI,
           dialogueSets: [
             {
-              // PLACEHOLDER. Block 94. Before the barber: she sends him
+              // Block 94. Before the barber: she sends him
               // there first, so the jobs are met in the log's order.
               skipIfFlag: BARBER_JOB.first,
               lines: [
@@ -1685,7 +1683,7 @@ window.ACT_1 = {
                 { speaker: "Mananahi", text: "Oo naman, Macario. Kumusta na ang inay mo?" },
                 { speaker: "Macario", text: "Ayos lang po. Nangangailangan lang po kami ng pera ngayon." },
                 { speaker: "Mananahi", text: "O, sige, sige. Tara rito." },
-                // PLACEHOLDER. What the work is, and that it pays each time.
+                // What the work is, and that it pays each time.
                 { speaker: "Mananahi", text: "Nariyan ang tahian. Tulungan mo akong magtahi, may bayad ang bawat matapos mo." },
               ],
               onComplete() {
@@ -1694,7 +1692,7 @@ window.ACT_1 = {
               },
             },
             {
-              // PLACEHOLDER. Sent with the costumes, not yet delivered.
+              // Sent with the costumes, not yet delivered.
               requiresFlag: "mayDalangDamit",
               skipIfFlag: "naihatidAngMgaDamit",
               lines: [
@@ -1702,14 +1700,14 @@ window.ACT_1 = {
               ],
             },
             {
-              // PLACEHOLDER. While there is sewing to do.
+              // While there is sewing to do.
               skipIfFlag: "mayDalangDamit",
               lines: [
                 { speaker: "Mananahi", text: "Nariyan ang tahian, kung gusto mo pa ng dagdag na barya." },
               ],
             },
             {
-              // PLACEHOLDER. Delivered, and the play not yet done: only an
+              // Delivered, and the play not yet done: only an
               // old save or a reload mid-fade reaches this.
               skipIfFlag: "naitanghalAngDula",
               lines: [
@@ -1717,7 +1715,7 @@ window.ACT_1 = {
               ],
             },
             {
-              // PLACEHOLDER. Scan S22. Four years on, while her sewing
+              // Scan S22. Four years on, while her sewing
               // still pays.
               requiresFlag: "lumipasAngApatNaTaon",
               skipIfFlag: SEWING_JOB.full,
@@ -1726,7 +1724,7 @@ window.ACT_1 = {
               ],
             },
             {
-              // PLACEHOLDER. Four years on, once it has paid all it will.
+              // Four years on, once it has paid all it will.
               lines: [
                 { speaker: "Mananahi", text: "Kapag may tahi ulit, ipapatawag kita, ha?" },
               ],
@@ -1746,7 +1744,7 @@ window.ACT_1 = {
           startsHidden: true, revealedByFlag: "naitanghalAngDula", hiddenByFlag: "lumipasAngApatNaTaon",
           dialogueSets: [
             {
-              // PLACEHOLDER. After the play.
+              // After the play.
               lines: [
                 { speaker: "Mananahi", text: "Macario! Nanood ako sa likod. Ikaw pala ang bumida!" },
                 { speaker: "Macario", text: "Nawala po kasi 'yung artista nila. Ako na lang po ang pinagsuot ng damit." },
@@ -1756,7 +1754,7 @@ window.ACT_1 = {
               ],
             },
             {
-              // PLACEHOLDER. Afterwards, before the savings are given.
+              // Afterwards, before the savings are given.
               lines: [
                 { speaker: "Mananahi", text: "Iuwi mo na 'yang naipon mo sa nanay mo. Matutuwa 'yon." },
               ],
@@ -1765,8 +1763,7 @@ window.ACT_1 = {
         },
         {
           // The direktor, on the street by the entablado: the one
-          // delivery, and the story's turn (Block 59). PLACEHOLDER,
-          // every line.
+          // delivery, and the story's turn (Block 59).
           id: "direktor", x: DIREKTOR_X, label: "Direktor", animation: DIREKTOR,
           hiddenWhile: PAMPHLET_NIGHT,
           facesPlayer: true,
@@ -1833,7 +1830,7 @@ window.ACT_1 = {
           // Block 80. The Kasama, on the street once the Katipunan has
           // found Macario in the wings. The word said, he takes him to
           // the pulungan; a reload before the oath is over leaves him
-          // here to be asked again. PLACEHOLDER, every line.
+          // here to be asked again.
           id: "kasama", x: KASAMA_X, label: "Kasama", animation: KASAMA,
           facesPlayer: true,
           startsHidden: true, revealedByFlag: "nilapitanNgKatipunan",
@@ -1844,14 +1841,14 @@ window.ACT_1 = {
           hiddenWhile: { requiresFlag: "tinanggapSaKatipunan", unlessFlag: "naipamigayAngMgaPolyeto" },
           dialogueSets: [
             {
-              // PLACEHOLDER. Block 95. Afterwards, a year on.
+              // Block 95. Afterwards, a year on.
               requiresFlag: "nakapagUlat",
               lines: [
                 { speaker: "Kasama", text: "Sa pulungan na tayo mag-usap, Pangulo. Maraming mata ang kalye." },
               ],
             },
             {
-              // PLACEHOLDER. Block 95. The pamphlets given, the report not
+              // Block 95. The pamphlets given, the report not
               // yet made (a reload): he takes him back.
               requiresFlag: "naipamigayAngMgaPolyeto",
               skipIfFlag: "nakapagUlat",
@@ -1981,21 +1978,19 @@ window.ACT_1 = {
           // play, after it, and four years on.
           dialogueSets: [
             {
-              // PLACEHOLDER.
               skipIfFlag: "naitanghalAngDula",
               lines: [
                 { speaker: "Direktor", text: "Huminga ka nang malalim, iho. Nandito lang ako sa gilid." },
               ],
             },
             {
-              // PLACEHOLDER.
               skipIfFlag: "lumipasAngApatNaTaon",
               lines: [
                 { speaker: "Direktor", text: "Bumalik ka rito kahit kailan mo gusto. May puwesto ka sa amin." },
               ],
             },
             {
-              // PLACEHOLDER. Block 80.
+              // Block 80.
               requiresFlag: "lumipasAngApatNaTaon",
               lines: [
                 { speaker: "Direktor", text: "Magpahinga ka na, iho. May palabas ulit tayo sa Sabado." },
@@ -2007,21 +2002,19 @@ window.ACT_1 = {
           id: "maryam", x: STAGE_MARYAM_X, label: "Maryam", animation: MARYAM,
           dialogueSets: [
             {
-              // PLACEHOLDER.
               skipIfFlag: "naitanghalAngDula",
               lines: [
                 { speaker: "Maryam", text: "Kaya mo 'yan. Tumingin ka lang sa akin kapag nalito ka." },
               ],
             },
             {
-              // PLACEHOLDER.
               skipIfFlag: "lumipasAngApatNaTaon",
               lines: [
                 { speaker: "Maryam", text: "Alam mo, mas bagay sa'yo si Don Rodrigo kaysa kay Julian. Huwag mo lang sasabihin sa kanya." },
               ],
             },
             {
-              // PLACEHOLDER. Block 80. She saw the two men.
+              // Block 80. She saw the two men.
               requiresFlag: "lumipasAngApatNaTaon",
               lines: [
                 { speaker: "Maryam", text: "Sino 'yung dalawang lalaking kausap mo kanina? Ang seryoso ng mga mukha." },
@@ -2078,14 +2071,13 @@ window.ACT_1 = {
           hiddenWhile: { requiresFlag: "lumipasAngIsangTaon", unlessFlag: "pinunoNgBalangay" },
           dialogueSets: [
             {
-              // PLACEHOLDER. Block 94, a year on.
+              // Block 94, a year on.
               requiresFlag: "pinunoNgBalangay",
               lines: [
                 { speaker: "Kasama", text: "Umuwi na ang nanay mo, Pangulo. Hindi ko siya pinapasok." },
               ],
             },
             {
-              // PLACEHOLDER.
               lines: [
                 { speaker: "Kasama", text: "Lumabas ka nang mag-isa. Hindi tayo dapat makitang magkasama." },
               ],
@@ -2098,14 +2090,13 @@ window.ACT_1 = {
           hiddenWhile: { requiresFlag: "lumipasAngIsangTaon", unlessFlag: "pinunoNgBalangay" },
           dialogueSets: [
             {
-              // PLACEHOLDER. Block 94, a year on.
+              // Block 94, a year on.
               requiresFlag: "pinunoNgBalangay",
               lines: [
                 { speaker: "Mabalasig", text: "Nakapiring na ang tatlo sa kabilang silid, Pangulo." },
               ],
             },
             {
-              // PLACEHOLDER.
               lines: [
                 { speaker: "Mabalasig", text: "Humayo ka na, kapatid. Naghihintay ang tatlo." },
               ],
@@ -2118,14 +2109,13 @@ window.ACT_1 = {
           hiddenWhile: { requiresFlag: "lumipasAngIsangTaon", unlessFlag: "pinunoNgBalangay" },
           dialogueSets: [
             {
-              // PLACEHOLDER. Block 94, a year on.
+              // Block 94, a year on.
               requiresFlag: "pinunoNgBalangay",
               lines: [
                 { speaker: "Katipunero", text: "Naipadala na ang mga polyeto, Pangulo. Tatlong daan, gaya ng utos mo." },
               ],
             },
             {
-              // PLACEHOLDER.
               lines: [
                 { speaker: "Katipunero", text: "Sa susunod na palabas mo, manonood ulit ako. Sa likod, gaya ng dati." },
               ],
