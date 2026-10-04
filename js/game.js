@@ -2238,6 +2238,8 @@ function findNearby() {
     // Block 37. An exit may wait on a story flag: the road out of tondo
     // opens only once the Katipunan has given Macario somewhere to go.
     if (exit.requiresFlag && !state.flags[exit.requiresFlag]) continue;
+    // Block 113. And shut again by one (Nanay's door, the night of the raid).
+    if (exit.unlessFlag && state.flags[exit.unlessFlag]) continue;
     const dist = edgeGap(posX, PLAYER_WIDTH, exit.x, exit.width || 80);
     if (dist < INTERACT_DISTANCE && dist < closestDist) {
       closest = exit;
@@ -2633,6 +2635,7 @@ async function fadeToScene(sceneId, placement) {
 
   await wait(400); // hold black briefly
   blackout.classList.remove("visible");
+  delete blackout.dataset.byCard; // Block 113: this fade cleared it
 
   // Each scene's own music, or Calm (Block 35), so a fight's track never
   // follows him out of the room it was fought in.
@@ -2911,13 +2914,18 @@ function makeGuard(placed, speedScale) {
     // it every guard resets to facing right, including a sentry the
     // content deliberately faces left.
     facingStart: def.facing || 1,
-    alert: 0,
+    // Block 113. A guard placed hostile: true is on Macario from the
+    // moment he is on duty, as a fight's guards are, but is not a fight:
+    // no exit closes and nobody stops talking while he is up. Act II's
+    // guards at Nanay's door, who chase him off.
+    alert: def.hostile ? 1 : 0,
+    startsHostile: Boolean(def.hostile),
     disabled: false,
     // Block 37. A guard that shoots fires once its meter fills instead
     // of catching, and then waits this long before it can fire again.
     nextShotAt: 0,
     // Block 38. A shooting guard who has seen Macario stays on him.
-    hostile: false,
+    hostile: Boolean(def.hostile),
     hp: def.hp || GUARD_HP,
     maxHp: def.hp || GUARD_HP,
     chaseSpeed: GUARD_CHASE_SPEED * speedScale,
@@ -3678,7 +3686,7 @@ function respawnInScene() {
     guard.disguised = false;
     guard.turnAt = 0;
     setTell(guard, false);
-    if (guard.fight) {
+    if (guard.fight || guard.startsHostile) {
       guard.hostile = true;
       guard.alert = 1;
       guard.nextShotAt = performance.now() + GUARD_AIM_MS;
@@ -3695,18 +3703,42 @@ function respawnInScene() {
   });
 }
 
-// Block 37. Where a respawn puts Macario: the furthest checkpoint whose
-// flag is set, else the scene's startX. A scene declares checkpoints as
-// [{ x, flag }], and the flags are story flags already being set for
-// another reason (a pamphlet handed over), so a long road does not send a
-// student who ran out of hearts all the way back for work already done.
+// Block 37. Where a respawn puts Macario: a checkpoint whose flag is set,
+// else the scene's startX. A scene declares checkpoints as [{ x, flag }],
+// and the flags are story flags already being set for another reason (a
+// pamphlet handed over), so a long road does not send a student who ran
+// out of hearts all the way back for work already done.
+//
+// Block 113. The last one in the list whose flag is set, rather than the
+// furthest to the right: the list is the route in order, so a run that
+// goes left (Act II's night street, its retreat) restarts at the last
+// place reached too. For a list in order of x, as Act I's is, the two
+// are the same point. A checkpoint with reach: true sets its own flag
+// the moment Macario passes it (updateCheckpoints), with requiresFlag
+// to count only on the run it belongs to.
 function respawnX(scene) {
   let x = scene && typeof scene.startX === "number" ? scene.startX : 0;
   ((scene && scene.checkpoints) || []).forEach((cp) => {
-    if (cp.flag && state.flags[cp.flag] && cp.x > x) x = cp.x;
+    if (cp.flag && state.flags[cp.flag]) x = cp.x;
   });
   return x;
 }
+
+// Block 113. Reached checkpoints, read every frame but written only when
+// one is first passed.
+function updateCheckpoints() {
+  const list = currentScene && currentScene.checkpoints;
+  if (!list) return;
+  for (const cp of list) {
+    if (!cp.reach || !cp.flag || state.flags[cp.flag]) continue;
+    if (cp.requiresFlag && !state.flags[cp.requiresFlag]) continue;
+    if (Math.abs(posX + PLAYER_WIDTH / 2 - cp.x) < CHECKPOINT_REACH) {
+      state.flags[cp.flag] = true;
+      markDirty();
+    }
+  }
+}
+const CHECKPOINT_REACH = 60;
 
 // =============================================================
 // HAZARDS AND PICKUPS
@@ -5131,6 +5163,18 @@ function playIntertitle(lines, opts) {
       blackout.classList.add("visible");
       void blackout.offsetWidth;
       blackout.style.transition = "";
+      blackout.dataset.byCard = "1";
+    } else if (blackout.dataset.byCard) {
+      // Block 113. A black left up by an earlier card (keepBlack) that no
+      // scene change came to clear: lifted under this card, so the card
+      // fades onto the scene and not onto black. Without it, Act II's
+      // ending (cards for the years, then his last thoughts) played its
+      // last lines behind the black and looked frozen.
+      blackout.style.transition = "none";
+      blackout.classList.remove("visible");
+      void blackout.offsetWidth;
+      blackout.style.transition = "";
+      delete blackout.dataset.byCard;
     }
     el.classList.remove("visible");
     await wait(INTERTITLE_FADE_MS);
@@ -7174,6 +7218,7 @@ function gameLoop(now) {
   // mid-fall.
   updateHazards();
   updatePickups();
+  if (canAct) updateCheckpoints(); // Block 113
 
   updateProjectile(step);
 

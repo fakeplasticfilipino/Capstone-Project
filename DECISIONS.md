@@ -4617,6 +4617,82 @@ six, the end card and every step done), and a reload mid-charge replays
 the charge. The Act I check that the clothes take "seconds" was moved
 from 4 to 2.5 seconds, the new arithmetic.
 
+## Block 113, continued: Act II rebuilt as a tragedy; the frozen end
+
+The same day, the proponent played Act II to its end and found it stuck
+on black before "Wakas ng Ikalawang Yugto", and found the story safe:
+"the emotional beats simply aren't there ... I want it to be tragic,
+not safe, we're presenting historical shit, not wrapping children in a
+bubble". The plan for both was agreed and built, and the proponent
+made it a standing rule: no watered-down narratives (CLAUDE.md, Writing
+dialogue), with Act I's play to end in the Moorish kingdom's fall
+rather than the Sultan's blessing.
+
+The frozen end. A black card with keepBlack leaves the scene fade's
+black up behind it, for a scene change to take over. Act I only ever
+followed one with Acts.gotoScene, whose fade clears it. Act II's ending
+is cards for 1897 and 1898 and then his last thoughts, with no scene
+change, so the black stayed up and the thoughts played behind it,
+unseen, and the game looked frozen. The suite pressed through the lines
+without looking and passed. The fix is in the engine, not the act: a
+card that does not keep the black lifts a black an earlier card left
+(blackout.dataset.byCard, cleared by fadeToScene too), so any chain of
+cards ends on the scene. The suite now watches the whole of Act II for
+a line on screen while the black is up, the check that would have
+caught it.
+
+The story. The act opens at the press: the first thing the student
+does is print Kalayaan, and the list of members, with where each lives,
+is set under the press in the same scene. Home is second, and sharper:
+Nanay finds ink on his hands, hears "Pangulo", names the father who
+never came back, and asks him home for Sunday's sinigang; a card says
+he did not come. In August Isko asks "Paano po si Nanay ninyo?" and
+Macario sends him to warn the other councils, "Babalikan ko siya
+mamaya": nobody is sent to her, by his own choice, which is the
+proponent's beat. At the press he finds his own name in the list and
+understands that the receipts the guards took give her address; he
+runs home through the night, sees guards at her open, dark door, is
+seen, and has to jump into the estero. He never gets back to her, the
+game never shows what became of her, and the act ends with her still
+not found and the promise unkept. Isko's earlier rescue of her (to
+Pandacan) is gone, and so is "Bantayan mo si Nanay". Our own addition,
+in the same spirit: the Kasama, who led him to the oath in Act I saying
+"Huwag kang lilingon", dies at San Juan del Monte saying it again, and
+is gone from the later camps. Bonifacio, by the fire, asks whom he left.
+
+Act I's play. The moro-moro ended with the Moorish kingdom's fall, and
+usually the princess's conversion; Block 59 had softened it to a
+blessing "for a Grade 8 classroom". Now the Sultan, his soldiers down,
+drops his kampilan; his kingdom falls; Maryam leaves him for Don
+Rodrigo and his faith; and the crowd cheers. The cheer is left as the
+genre had it: the period's stage telling its audience who wins.
+
+Longer stealth, at the proponent's word ("I enjoy them"). Four
+stretches: the day's walk from home to the press (four guards), the
+press itself (2600 wide, three guards, two high shelves above their
+sight), the night's walk back toward home (four patrols and two at the
+door), and San Juan del Monte's retreat (4200 wide, five riflemen). For
+long runs to be fair, a catch must put the student back where they got
+to, so checkpoints gained reach: true, setting their own flag when
+passed (only while requiresFlag), and respawnX takes the last listed
+checkpoint whose flag is set rather than the furthest to the right,
+because the night run and the retreat go left. Act I's list is in order
+of x, so for Act I the two rules pick the same point.
+
+Two more small options, each general: a guard placed hostile: true
+(the guards at Nanay's door once he is seen) is after Macario from the
+moment he is on duty, as a fight's guards are, but is not a fight, so
+the estero can still be used while he shoots; and an exit's unlessFlag
+shuts a door again (the press and Nanay's door, the night of the raid).
+
+Checks. verify_new_scene.js plays the rebuilt act end to end from its
+first story point (62 checks in the Act II section): the order, every
+emotional line that carries the plan, a catch restarting at the last
+point passed, the guards at the door hostile, fifteen and then six
+fought, the Kasama's death and absence, the end's thoughts seen and not
+behind black, and no line of the act behind black. Act I's play check
+reads the new ending.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

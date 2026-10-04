@@ -60,10 +60,10 @@ const INTERACT_DISTANCE_FOR_TEST = 90; // game.js INTERACT_DISTANCE
 
 // Block 113. Act II's flags up to the charge at San Juan del Monte, for
 // the reload check (content/act2.js, DEV_CHARGE).
-const ACT2_CHARGE_FLAGS = { a2_nangako: true, a2_sinundoNiIsko: true, a2_saImprenta: true,
-  a2_nakalimbag: true, a2_agosto: true, a2_nagulatSiIsko: true, a2_nakitaAngRonda: true,
-  a2_nakuhaAngListahan: true, a2_nakatakas: true, a2_nagtalumpati: true, a2_pinunit: true,
-  a2_papuntangSanJuan: true };
+const ACT2_CHARGE_FLAGS = { a2_simula: true, a2_nakalimbag: true, a2_umuwiNa: true,
+  a2_nangako: true, a2_agosto: true, a2_nagulatSiIsko: true, a2_nakitaAngRonda: true,
+  a2_nakuhaAngListahan: true, a2_gabiNa: true, a2_nakita: true, a2_nakatakas: true,
+  a2_nagtalumpati: true, a2_pinunit: true, a2_papuntangSanJuan: true };
 
 const walkTo = async (page, x) => {
   await page.evaluate((tx) => { posX = tx; }, x);
@@ -978,9 +978,14 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     bust: document.getElementById("dialogue-portrait-right").classList.contains("shown") }));
   ok("after the fight he walks back to his mark, faces the Sultan and stands; the box is at the top; the Sultan's own bust (Blocks 93, 101)",
      markBack.x === 440 && markBack.anim === "idle" && markBack.facing === 1 && markBack.top && markBack.bust, markBack);
-  const s3 = await readConversation(page, 5);
-  ok("the Sultan comes back and gives his blessing, and the crowd cheers",
-     s3.lines.length === 5 && /basbas/.test(s3.lines[3]) && /^Mga Manonood:/.test(s3.lines[4]), s3.lines);
+  // Block 113: the kingdom falls (the moro-moro's own ending), in two
+  // parts with the kampilan dropped between them.
+  const s3a = await readConversation(page, 3);
+  const s3b = await readConversation(page, 5);
+  const s3 = { lines: s3a.lines.concat(s3b.lines) };
+  ok("the Sultan comes back to his fallen soldiers, his kingdom falls, Maryam leaves him, and the crowd cheers (Block 113)",
+     s3.lines.length === 8 && /Bumagsak na ang iyong kaharian/.test(s3.lines[1]) &&
+     /tatanggapin ko ang kanyang pananampalataya/.test(s3.lines[5]) && /^Mga Manonood:/.test(s3.lines[7]), s3.lines);
   ok("the curtain closes", await waitIntertitle(page, true, 3000) &&
      (await intertitle(page)).lines[0] === "Nagsara ang telon.");
   await waitIntertitle(page, false, 12000);
@@ -1740,9 +1745,11 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
 
   // ---------------------------------------------------------------
   // Block 113. Act II, end to end, as a guest from its first story
-  // point: the morning, the press, August, the raid, the cedula, San
-  // Juan del Monte (fifteen soldiers), the retreat, the scarecrows,
-  // Balara, Laguna and the end. Then a reload in the middle of a beat.
+  // point: the press, home, August, the raid and the list, the night run
+  // to Nanay's door and the estero, the cedula, San Juan del Monte
+  // (fifteen soldiers, the Kasama), the retreat, the scarecrows, Balara,
+  // Laguna and the end. Throughout, no line is ever said behind black
+  // (the bug that froze the end). Then a reload in the middle of a beat.
   // ---------------------------------------------------------------
   console.log("\nAct II (Block 113)");
   {
@@ -1753,6 +1760,17 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       await p.click("#shell-dev-go");
       for (let i = 0; i < 80 && (await p.evaluate(() => Shell.state)) !== "playing"; i++) await p.waitForTimeout(100);
     };
+    // A line on screen while the scene's black is up is a line nobody
+    // can read: counted for the whole act (window.__unseen).
+    const watchBlack = (p) => p.evaluate(() => {
+      window.__unseen = [];
+      setInterval(() => {
+        if (!dialogueBox.classList.contains("hidden") && blackout.classList.contains("visible")) {
+          const l = dialogueSpeaker.textContent + ": " + dialogueText.textContent;
+          if (!window.__unseen.includes(l)) window.__unseen.push(l);
+        }
+      }, 100);
+    });
     // Plays on until cond() is true in the page: lines are pressed
     // through, black cards waited out, and anyone fighting is knocked
     // down; every body that fought is counted (window.__fought).
@@ -1788,35 +1806,19 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const stepIs = async (p, text) => (await log(p)).current.join(" | ").includes(text);
     const press = async (p, x) => { await walkTo(p, x); await p.keyboard.press("e"); await p.waitForTimeout(200); };
     const quiet = (p) => p.evaluate(() => GUARDS.forEach((g) => { g.disabled = true; }));
+    const on = (p, prefix) => p.evaluate((pre) => GUARDS.filter((g) => g.id.startsWith(pre) && !g.disabled).length, prefix);
 
     const { ctx, page } = await newPage(browser, { session: null });
-    await startAt(page, "umaga");
-    ok("Act II opens at home on Tondo, Marso 1896", await waitIntertitle(page, true, 5000) &&
-       (await intertitle(page)).lines[0] === "Tondo, Marso 1896" && await page.evaluate(() => currentSceneId === "bahay"));
+    await startAt(page, "simula");
+    await watchBlack(page);
+    ok("Act II opens at the press on Tondo, Marso 1896", await waitIntertitle(page, true, 5000) &&
+       (await intertitle(page)).lines[0] === "Tondo, Marso 1896" && await page.evaluate(() => currentSceneId === "imprenta"));
     await waitIntertitle(page, false, 15000);
-    let c = await readLines(page, 25);
-    ok("Nanay hears Pangulo at the door, and he promises to come back",
-       c.lines[0] === "Nanay: Kumain ka muna bago umalis, anak." && c.lines.includes("Isko: Pangulo! Pangulo, nandiyan po ba kayo?") &&
-       c.lines.includes("Macario: Babalik po ako. Pangako.") && c.lines[c.lines.length - 1] === "Nanay: Mag-ingat ka. Pakiusap.", c.lines);
+    let c = await readLines(page, 3);
     await settle(page);
-    ok("the task is the press, and the way out is said", await stepIs(page, "Pumunta sa imprenta") &&
-       (await log(page)).way === "Lumabas ng bahay: pumunta sa kanan", await log(page));
-
-    await press(page, 1120);
-    ok("the door leads onto the street", await waitForScene(page, "tondo"));
-    c = await readLines(page, 8);
-    ok("where Isko is waiting, and says where the press is",
-       c.lines[0] === "Isko: Pinasusundo po kayo ni Ginoong Jacinto. Sa imprenta raw po." && c.lines.length === 6, c.lines);
-    ok("the street has Act II's three papers", await page.evaluate(() =>
-      PICKUPS.filter((p) => p.type === "hint").length === 3 && hintList()[0].title === "Ang Kalayaan"));
-
-    await press(page, 7910);
-    ok("the press door leads into the press", await waitForScene(page, "imprenta"));
-    c = await readLines(page, 10);
-    ok("where Jacinto shows him Kalayaan, printed \"in Yokohama\"",
-       c.lines[0] === "Jacinto: Macario. Dumating ka rin." && c.lines.includes("Macario: \"Inilimbag sa Yokohama\"? Nasa Hapon po ba tayo?"), c.lines);
-    await settle(page);
-    ok("the task is to print", await stepIs(page, "Maglimbag ng Kalayaan"));
+    ok("Jacinto, and the first thing to do is print",
+       c.lines[0] === "Jacinto: Dahan-dahan sa diin, Macario. Ang unang pahina ang pinakamahalaga." &&
+       await stepIs(page, "Maglimbag ng Kalayaan"), c.lines);
     await press(page, 330);
     const pw = await workState(page);
     const stage = await page.evaluate(() => ({ cls: document.getElementById("work-stage").className,
@@ -1830,27 +1832,59 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("each stroke prints a line, clean or smudged",
        JSON.stringify(printed) === JSON.stringify(["work-print-ok", "work-print-bad", "work-print-ok", "work-print-bad", "work-print-ok"]), printed);
     await page.click("#work-hit");
-    ok("then the months pass on black, into August on the street",
-       await playOn(page, "currentSceneId === 'tondo' && state.flags.a2_agosto && !document.getElementById('blackout').classList.contains('visible')", 40000));
     c = await readLines(page, 12);
-    ok("where Isko brings the news from the press",
-       c.lines[0] === "Isko: Pangulo! May problema po sa imprenta." && c.lines.includes("Macario: Hindi. Bantayan mo si Nanay."), c.lines);
+    ok("Kalayaan \"from Yokohama\", and the list kept with where everyone lives",
+       c.lines.includes("Macario: \"Inilimbag sa Yokohama\"? Nasa Hapon po ba tayo?") &&
+       c.lines.includes("Macario (sa isip): Pati ang pangalan ko. Pati ang bahay namin."), c.lines);
     await settle(page);
-    ok("the task: find out what happened", await stepIs(page, "Alamin ang nangyari sa imprenta"));
+    ok("the task: home", await stepIs(page, "Umuwi sa bahay"));
 
+    await press(page, 2520);
+    ok("the press door leads onto the street", await waitForScene(page, "tondo"));
+    await settle(page);
     await walkTo(page, 3220);
+    await page.waitForTimeout(150);
     await page.keyboard.press("e");
     let l = await line(page);
     await page.keyboard.press("e");
-    ok("the Kutsero will not know him in August", l === "Kutsero: Hindi kita kilala, iho. Umalis ka na.", l);
-    await walkTo(page, 6320);
+    ok("in March the Kutsero is glad to see him", /Bihira ka nang dumaan dito/.test(l || ""), l);
+    await page.waitForTimeout(300);
+    await press(page, 1990);
+    ok("Nanay's door leads home", await waitForScene(page, "bahay"));
+    c = await readLines(page, 30, 6000); // he walks the room to her mid-beat
+    ok("the ink, the knock, Pangulo, the father, the promise, and Sunday",
+       c.lines[0] === "Nanay: Anak! Akala ko kung napaano ka na." && c.lines.includes("Nanay: Ano 'to? Tinta?") &&
+       c.lines.includes("Isko: Pangulo! Pangulo, nandiyan po ba kayo?") && c.lines.includes("Macario: Babalik po ako. Pangako.") &&
+       c.lines[c.lines.length - 1] === "Macario: Opo, 'Nay. Uuwi po ako.", c.lines);
+    ok("he does not come home that Sunday, and it is August, on the street",
+       await playOn(page, "currentSceneId === 'tondo' && state.flags.a2_agosto && inDialogue", 40000));
+    c = await readLines(page, 14);
+    ok("Isko's news; Isko is sent to the others, and nobody to Nanay",
+       c.lines[0] === "Isko: Pangulo! May problema po sa imprenta." && c.lines.includes("Isko: Paano po si Nanay ninyo?") &&
+       c.lines.includes("Macario: Babalikan ko siya mamaya.") && !c.lines.some((x) => /Bantayan mo si Nanay/.test(x)), c.lines);
+    await settle(page);
+    ok("the task: find out what happened", await stepIs(page, "Alamin ang nangyari sa imprenta"));
+    ok("four guards walk between home and the press by day", (await on(page, "guardia-araw-")) === 4);
+    await quiet(page);
+    await walkTo(page, 3220);
+    await page.waitForTimeout(150);
     await page.keyboard.press("e");
     l = await line(page);
     await page.keyboard.press("e");
-    ok("and the Mananahi whispers a warning", /^Mananahi \(pabulong\): May kura raw sa Tondo/.test(l || ""), l);
-    ok("a guardia civil walks in front of the press", await page.evaluate(() =>
-      GUARDS.some((g) => g.id === "guardia-imprenta" && !g.disabled)));
-
+    ok("and the Kutsero will not know him", l === "Kutsero: Hindi kita kilala, iho. Umalis ka na.", l);
+    // A catch on the way puts him back at the last point he passed
+    // (reached checkpoints, Block 113).
+    const back = await page.evaluate(async () => {
+      posX = 4620; await new Promise((r) => setTimeout(r, 300));
+      const reached = state.flags.a2_araw2 === true;
+      const g = GUARDS.find((x) => x.id === "guardia-araw-3");
+      g.disabled = false;
+      g.patrolFrom = g.patrolTo = g.pos = 6200; g.facing = -1; g.alert = 0;
+      posX = 6000; posY = floorHeightAt(posX); velY = 0; onGround = true;
+      for (let i = 0; i < 80 && posX > 5500; i++) await new Promise((r) => setTimeout(r, 50));
+      return { reached, x: Math.round(posX) };
+    });
+    ok("a catch on the way to the press puts him back at the last point he passed", back.reached && back.x === 4600, back);
     await quiet(page);
     await press(page, 7910);
     ok("inside, the raid", await waitForScene(page, "imprenta"));
@@ -1858,6 +1892,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("the guards got there first, and a printer says why",
        c.lines[0] === "Macario (sa isip): Bukas ang pinto..." && c.lines.includes("Manlilimbag: Daan-daang pangalan, Pangulo. Pati ang sa inyo."), c.lines);
     await settle(page);
+    ok("three guards search the press, with two shelves above their sight",
+       (await on(page, "guardia-loob-")) === 3 && await page.evaluate(() => PLATFORMS.length === 2));
     // The meter at twice its old speed (Block 113): a guard who sees him
     // on the move fills it in well under a second and a half. Standing
     // still in the stage clothes (worn since Act I) still slows it
@@ -1875,7 +1911,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
           const r = { ms: Math.round(performance.now() - start), alert: Math.round(g.alert * 100) / 100, rate: GUARD_ALERT_RATE };
           g.alert = 0;
           equipEffects.stillDetectionMult = keep;
-          posX = 1650;
+          posX = 2450;
           resolve(r);
           return;
         }
@@ -1884,51 +1920,97 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       tick();
     }), still);
     const seen = await meter(false);
-    ok("two guards search the press, and one who sees him fills his meter in about 0.7 s (Block 113)",
-       seen.rate === 0.024 && seen.alert >= 0.95 && seen.ms < 1100 &&
-       await page.evaluate(() => GUARDS.filter((g) => g.id.startsWith("guardia-loob")).length === 2), seen);
+    ok("one who sees him fills his meter in about 0.7 s (Block 113)",
+       seen.rate === 0.024 && seen.alert >= 0.95 && seen.ms < 1100, seen);
     const disguised = await meter(true);
     ok("standing still in the stage clothes he is still noticed far more slowly",
        disguised.alert < 0.5 && disguised.ms >= 1300, disguised);
     await settle(page);
     await quiet(page);
-    ok("the task: the list", await stepIs(page, "Kunin ang listahan ng mga kasapi"));
+    ok("the task: the list", await stepIs(page, "Kunin ang talaan ng mga kasapi"));
     await press(page, 330);
-    c = await readLines(page, 2);
+    c = await readLines(page, 6);
     await settle(page);
-    ok("under the press, the list; the task is the window",
-       c.lines[0] === "Macario (sa isip): Nandito... ang listahan ng mga kasapi." && await stepIs(page, "Tumakas sa likod ng imprenta"), c.lines);
+    ok("his own name in the list, and the receipts have Nanay's door",
+       c.lines.includes("Macario (sa isip): \"Macario Sakay. Tondo. Kasama ang ina.\"") &&
+       c.lines[c.lines.length - 1] === "Macario (sa isip): Si Nanay!" && await stepIs(page, "Balikan si Nanay"), c.lines);
+    ok("the front door is shut to him now", await page.evaluate(() => { posX = 2500; return true; }) &&
+       await page.evaluate(() => new Promise((r) => setTimeout(() => r(btnInteract.classList.contains("hidden") ||
+         !/Lumabas/.test(btnInteract.textContent)), 200))));
     await press(page, 100);
-    ok("out of the window, on black, to Pugad Lawin", await playOn(page, "currentSceneId === 'pugad-lawin' && inDialogue", 40000));
-    c = await readLines(page, 12);
-    ok("Isko says Nanay is safe, and Bonifacio calls for the cedulas",
-       c.lines.includes("Macario: Si Nanay?") && c.lines.includes("Bonifacio: Ilabas ang inyong mga sedula!"), c.lines);
+    ok("out of the window, into the night street", await playOn(page, "currentSceneId === 'tondo' && inDialogue", 30000));
+    c = await readLines(page, 3);
+    const night = await page.evaluate(() => ({ night: document.getElementById("skyline").classList.contains("night-tint"),
+      x: Math.round(posX), out: NPCS.filter((n) => !n.hidden && !n.scenery).map((n) => n.id) }));
+    ok("he set nobody to watch her; the street is dark and nobody is out",
+       c.lines[1] === "Macario (sa isip): Wala akong pinabantay sa kanya. Wala ni isa." && night.night && night.out.length === 0 && night.x === 8050,
+       { lines: c.lines, night });
+    await settle(page);
+    ok("four night patrols and two guards at Nanay's door",
+       (await on(page, "guardia-gabi-")) === 4 && (await on(page, "guardia-pinto-")) === 2);
+    await quiet(page);
+    await walkTo(page, 4600);
+    await walkTo(page, 3400);
+    await press(page, 2700);
+    c = await readLines(page, 5);
+    ok("within sight of home: guards at her open, dark door, and he is seen",
+       c.lines.includes("Macario (sa isip): Bukas ang pinto. Walang ilaw.") && c.lines[c.lines.length - 1] === "Bantay: Ayun si Sakay! Hulihin!", c.lines);
+    await settle(page);
+    const chase = await page.evaluate(() => GUARDS.filter((g) => /^guardia-habol-/.test(g.id)).map((g) => g.hostile));
+    ok("the two at the door come after him with rifles; the task is the estero",
+       JSON.stringify(chase) === "[true,true]" && await stepIs(page, "Tumakas sa estero"), chase);
+    await quiet(page);
+    await press(page, 3480);
+    ok("into the estero; he never gets back to her; on black to Pugad Lawin",
+       await playOn(page, "currentSceneId === 'pugad-lawin' && inDialogue", 50000));
+    c = await readLines(page, 16);
+    ok("Isko went to the house: empty, the door broken, nobody knows",
+       c.lines.includes("Isko: Walang nakakaalam kung saan siya dinala. O kung... dinala man.") &&
+       c.lines.includes("Macario: Hindi ko siya pinabantayan.") && c.lines.includes("Bonifacio: Ilabas ang inyong mga sedula!"), c.lines);
     await settle(page);
     await walkTo(page, 690);
     ok("the cedula is his to tear: Punitin ang sedula", (await gift(page)) === "Punitin ang sedula");
     c = await readLines(page, 12);
-    ok("the paper that emptied Nanay's purse, and Bonifacio heard his line from the stage",
-       c.lines[0] === "Macario (sa isip): Ito ang papel na umubos sa pitaka ni Nanay." &&
+    ok("for her, wherever she is; and Bonifacio heard his line from the stage",
+       c.lines[1] === "Macario (sa isip): Kung nasaan ka man ngayon, 'Nay... para sa'yo ito." &&
        c.lines.includes("Bonifacio: Napanood kita bilang Baldovino. \"Walang bayang mananatiling alipin...\""), c.lines);
 
     ok("on black to San Juan del Monte", await playOn(page, "currentSceneId === 'san-juan' && inDialogue", 40000));
     await page.evaluate(() => { window.__fought = new Set(); });
-    ok("the charge, and fifteen soldiers fought, and the retreat",
-       await playOn(page, "state.flags.a2_lumusob && !cutscenePlaying && document.getElementById('intertitle').classList.contains('hidden')", 90000));
-    const sj = await page.evaluate(() => ({ fought: window.__fought.size,
-      sundalo: [...window.__fought].length, x: Math.round(posX),
+    const kasama = [];
+    for (let t = 0; t < 600 && !(await page.evaluate(() => state.flags.a2_lumusob === true)); t++) {
+      const l2 = await line(page);
+      if (l2 && /^Kasama:/.test(l2) && !kasama.includes(l2)) kasama.push(l2);
+      await playOn(page, "!dialogueBox.classList.contains('hidden') || state.flags.a2_lumusob === true", 3000);
+      const l3 = await line(page);
+      if (l3 && /^Kasama:/.test(l3) && !kasama.includes(l3)) kasama.push(l3);
+      if (l3) await page.keyboard.press("e");
+      await page.waitForTimeout(120);
+    }
+    await playOn(page, "!cutscenePlaying && document.getElementById('intertitle').classList.contains('hidden')", 20000);
+    const sj = await page.evaluate(() => ({ fought: window.__fought.size, x: Math.round(posX),
       rifles: GUARDS.filter((g) => /^riple-/.test(g.id) && !g.disabled).length,
-      river: NPCS.some((n) => n.id === "ilog" && !n.hidden) }));
-    ok("fifteen fought at San Juan del Monte; three rifles stand between him and the river",
-       sj.fought === 15 && sj.rifles === 3 && sj.river && sj.x === 2400, sj);
+      river: NPCS.some((n) => n.id === "ilog" && !n.hidden), kasama: decorationEl("kasama-sj").style.display !== "none" }));
+    ok("fifteen fought at San Juan del Monte; five rifles stand between him and the river",
+       sj.fought === 15 && sj.rifles === 5 && sj.river && sj.x === 3600 && !sj.kasama, sj);
+    ok("the Kasama falls: \"Huwag kang lilingon\", as on the night he led him in",
+       kasama.includes("Kasama: Gaya ng una nating lakad. Huwag kang lilingon.") && kasama.includes("Kasama: Tumakbo ka na!"), kasama);
     ok("the task: back to the river", await stepIs(page, "Umatras sa ilog"));
     await quiet(page);
     await press(page, 110);
-    ok("across the river, on black, to the Nangka", await playOn(page, "currentSceneId === 'nangka' && inDialogue", 40000));
+    const cards = [];
+    for (let t = 0; t < 300 && !(await page.evaluate(() => currentSceneId === "nangka" && inDialogue)); t++) {
+      const it = await intertitle(page);
+      if (it.up && it.lines.length && !cards.includes(it.lines.join(" | "))) cards.push(it.lines.join(" | "));
+      await page.waitForTimeout(150);
+    }
+    ok("across the river: a hundred and fifty dead at San Juan del Monte, the Kasama among them",
+       cards.some((x) => /Isa sa kanila ang Kasama\./.test(x)), cards);
     c = await readLines(page, 9);
     ok("Bonifacio's plan of straw", c.lines.includes("Bonifacio: Dayami, Sakay. Dayami at sombrero."), c.lines);
     await settle(page);
     ok("the task counts the scarecrows", await stepIs(page, "Itayo ang mga panakot (0/3)"), await log(page));
+    ok("the Kasama is gone from the camp", await page.evaluate(() => !NPCS.some((n) => n.id === "kasama")));
     for (const x of [1000, 1400, 1800]) await press(page, x - 60);
     const raised = await page.evaluate(() => ({ up: NPCS.filter((n) => /^panakot-/.test(n.id) && !n.hidden).length,
       straw: NPCS.filter((n) => /^dayami-/.test(n.id) && !n.hidden).length }));
@@ -1938,29 +2020,36 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        await playOn(page, "currentSceneId === 'balara' && inDialogue", 60000));
     ok("six fought at the river", await page.evaluate(() => window.__fought.size === 6));
     c = await readLines(page, 6);
-    ok("at Balara, the news from Cavite",
-       c.lines[0] === "Tagapagbalita: Supremo! Balita mula sa Cavite!", c.lines);
+    ok("at Balara, the news from Cavite", c.lines[0] === "Tagapagbalita: Supremo! Balita mula sa Cavite!", c.lines);
     await settle(page);
     ok("the task: talk to the Supremo", await stepIs(page, "Kausapin ang Supremo"));
     await walkTo(page, 520);
     await page.keyboard.press("e");
-    c = await readLines(page, 10);
-    ok("by the fire, Bonifacio acted too",
-       c.lines.includes("Bonifacio: Ako rin, alam mo ba? Umarte rin ako sa mga komedya noon."), c.lines);
+    c = await readLines(page, 14);
+    ok("by the fire: he acted too, and everyone left someone",
+       c.lines.includes("Bonifacio: Ako rin, alam mo ba? Umarte rin ako sa mga komedya noon.") &&
+       c.lines.includes("Macario: Ang nanay ko po. Hindi ko alam kung buhay pa siya."), c.lines);
     ok("1897 on black, and Laguna", await playOn(page, "currentSceneId === 'laguna' && inDialogue", 40000));
     c = await readLines(page, 10);
-    ok("Jacinto: the Supremo is dead",
-       c.lines.includes("Jacinto: Nilitis siya ng mga taga-Cavite, at ipinapatay."), c.lines);
+    ok("Jacinto: the Supremo is dead", c.lines.includes("Jacinto: Nilitis siya ng mga taga-Cavite, at ipinapatay."), c.lines);
     await settle(page);
     ok("the task: talk to Jacinto", await stepIs(page, "Kausapin si Jacinto"));
     await walkTo(page, 700);
     await page.keyboard.press("e");
     c = await readLines(page, 5);
     ok("he stays", c.lines.includes("Macario: Hindi po ako aalis."), c.lines);
-    ok("the years after on black, and Wakas ng Ikalawang Yugto",
-       await playOn(page, "(document.getElementById('intertitle').textContent || '').includes('Wakas ng Ikalawang Yugto')", 60000));
-    ok("and every step of Act II is done", await playOn(page, "state.flags.a2_wakas === true", 15000) &&
+    // The end: the years on black, then his thoughts on the camp, seen.
+    for (let t = 0; t < 400 && !(await line(page)); t++) await page.waitForTimeout(150);
+    const endSeen = await page.evaluate(() => ({ black: blackout.classList.contains("visible"),
+      line: dialogueText.textContent }));
+    c = await readLines(page, 8);
+    ok("after the years on black, his last thoughts are said on the camp, not behind black (the frozen end)",
+       !endSeen.black && c.lines.includes("Macario (sa isip): At si Nanay... hindi ko pa rin alam kung nasaan siya."), { endSeen, lines: c.lines });
+    ok("then Wakas ng Ikalawang Yugto, and every step of Act II is done",
+       await playOn(page, "state.flags.a2_wakas === true", 20000) &&
        await page.evaluate(() => Acts.countDone(2) === ACT_2.objectives.length));
+    const unseen = await page.evaluate(() => window.__unseen);
+    ok("no line of Act II was ever said behind black", unseen.length === 0, unseen);
     await ctx.close();
 
     // A reload in the middle of the charge plays it again from the top.

@@ -125,21 +125,25 @@ asks whether he is one of them. He tells her he is rehearsing a new
 komedya. The Kasama shuts the door on her as the men call him Pangulo,
 and Act I ends; the post-test follows.
 
-Act II, Ang Mahabang Anino ng Digmaan. Tondo, 1896 (Block 113). At home,
-a boy at the door calls Macario Pangulo, and Nanay, who heard the word
-once before, begs him not to vanish as his father did; he promises he
-will come back. He prints the Katipunan's paper, Kalayaan, "from
-Yokohama", with Jacinto. In August the press is raided: a member has
-confessed to the parish priest, the neighbours will not be seen with
-him, and he takes the list of members from under the guards' noses and
-goes out the window. In the hills he tears up his cedula with
-Bonifacio's men, charges the powder store at San Juan del Monte and
-falls back to the river, raises straw soldiers at the Nangka, and hears
-by a fire at Balara that Bonifacio acted too. In 1897 Bonifacio is
-killed by his own side; Macario stays with Jacinto in Laguna, loyal to
-the Katipunan. On black: Biak-na-Bato, the Americans, Kawit, and Spain
-selling the country for twenty million dollars, a price he sets against
-the cedula.
+Act II, Ang Mahabang Anino ng Digmaan. Tondo, 1896 (Block 113). He
+prints the Katipunan's paper, Kalayaan, "from Yokohama", with Jacinto,
+and sees where the list of members, with where each lives, is kept.
+At home Nanay finds ink on his hands, hears a boy at the door call him
+Pangulo, and begs him not to vanish as his father did; he promises to
+come home on Sunday, and does not. In August the press is raided: a
+member has confessed to the parish priest. He sends Isko to warn the
+others and nobody to his mother, slips past the guards for the list,
+and finds his own name in it, and knows the receipts they took give
+his address. He runs home through the night and finds guards at her
+open, dark door; seen, he flees into the estero and never gets back to
+her. Nobody learns what became of her. In the hills he tears up his
+cedula for her, charges the powder store at San Juan del Monte, where
+the Kasama dies telling him not to look back, raises straw soldiers at
+the Nangka, and hears by a fire at Balara that Bonifacio, too, left
+someone. In 1897 Bonifacio is killed by his own side; Macario stays
+with Jacinto in Laguna. On black: Biak-na-Bato, the Americans, Kawit,
+and Spain selling the country for twenty million dollars, a price he
+sets against the cedula, and his promise to Nanay still unkept.
 
 Acts III and IV are not written. Their content files are registered
 stubs (content/act3.js, act4.js) and hold no story.
@@ -545,9 +549,15 @@ last one falls.
     back to a stage of fallen soldiers; Block 93.)
 
     Sultan: Natalo... ang lahat ng aking kawal?
-    Sultan: Kung ganyan katapang ang pag-ibig mo sa aking anak, sino ako para humadlang?
-    Maryam: Ama!
-    Sultan: Sa inyo na ang aking basbas.
+  + Macario: Bumagsak na ang iyong kaharian, Sultan. Ibaba mo ang iyong kampilan.
+  + Sultan: ...
+
+    (The kampilan falls on the boards.)
+
+  + Sultan: Ang kaharian ng aking mga ninuno... bumagsak sa iisang gabi.
+  + Maryam: Ama...
+  + Maryam: Patawarin mo ako. Sasama ako kay Don Rodrigo, at tatanggapin ko ang kanyang pananampalataya.
+  + Sultan: Kung gayon, wala na akong kaharian... at wala na rin akong anak.
     Mga Manonood: Mabuhay! Mabuhay!
 
     (A crowd's cheer is heard with the line, since Block 85.)
@@ -577,10 +587,13 @@ Lumabas at the right edge leads back to the street, and the log says so
 at the top: "Lumabas ng entablado: pumunta sa kanan" (Block 93). A reload before the
 pay plays the play again from backstage.
 
-The play's ending is a blessing, not the moro-moro's traditional
-conversion of the princess, and its kingdoms are not named by
-religion: a choice made for a Grade 8 classroom that the proponents
-may reverse.
+Block 113, at the proponent's word: the play ends as the moro-moro
+did, the Moorish kingdom fallen to the Christian knight and the
+princess leaving her father for the knight's faith, the crowd cheering
+the fall. It replaced a father's blessing, which softened the genre (a
+Spanish-era stage play about who wins) for a Grade 8 room; no
+narrative here is softened that way (CLAUDE.md, Writing dialogue). The
+four new lines are ours (+).
 
 ### 10. The Mananahi at the play
 
@@ -1083,21 +1096,23 @@ words (Block 69).
 
 ## Act II, beat by beat
 
-Block 113, from the proponent's plot (1896 to 1898) and the beats the
-proponent asked for: Macario at home with Nanay, called Pangulo at the
-door, her warning and his promise; the press, and the subordinate who
-says the printers will not hand over the papers; the neighbours who
-will not talk to him; the guards already sweeping. Every line is ours,
-marked + here and PLACEHOLDER in content/act2.js, until the proponents
-accept or replace it. Every flag starts with a2_.
+Block 113, from the proponent's plot (1896 to 1898), rebuilt the same
+day at the proponent's word: it opens at the press, home comes second,
+and it is a tragedy, not a safe story ("we're presenting historical
+shit, not wrapping children in a bubble"; CLAUDE.md, Writing dialogue).
+Macario chooses the Katipunan's list over his mother, sets nobody to
+watch her, and never gets back to her; nobody learns what became of
+her. The Kasama dies at San Juan del Monte. Every line is ours, marked
++ here and PLACEHOLDER in content/act2.js, until the proponents accept
+or replace it. Every flag starts with a2_.
 
-Places, in order: bahay (home, one room), tondo (Act I's street, the
-same people where they stood), imprenta (the Katipunan's press, behind
-a door at x 7900, wider than a screen), pugad-lawin, san-juan (the
-field before the powder store, 3000 wide), nangka (the river, 2400),
+Places, in order: imprenta (the Katipunan's press, behind a door at x
+7900 of the street, 2600 wide), tondo (Act I's street, the same people
+where they stood), bahay (home, one room), pugad-lawin, san-juan (the
+field before the powder store, 4200 wide), nangka (the river, 2400),
 balara (a camp at night) and laguna (Jacinto's camp). Every painting of
-Act II is owed (ART.md): until drawn, each room is a dark wall with its
-file name on it.
+Act II is owed (ART.md): until drawn, each place is a dark wall with
+its file name on it.
 
 New people, all owed as placeholder boxes: Isko (one of the three
 recruits sworn in at the end of Act I, now Macario's man), Jacinto,
@@ -1107,15 +1122,67 @@ street are Act I's art. The soldiers are the bantay's art: the sundalo
 of the enemy catalogue charges with the bayonet, and a bantay among them
 fires.
 
-### 1. The morning
+Stealth is long in this act, at the proponent's word: four stretches
+(the day's walk to the press, the press itself, the night's walk back,
+the retreat from San Juan del Monte), each a line of guards with cover,
+and on each a catch puts Macario back at the last point he passed
+(checkpoints that mark themselves, Block 113).
 
-bahay. Plays by itself the first time a student enters Act II.
+### 1. The first page
+
+imprenta. Plays by itself the first time a student enters Act II.
 
   + [BLACK] Tondo, Marso 1896
 
-  + Nanay: Kumain ka muna bago umalis, anak.
-  + Macario: Busog pa po ako, 'Nay.
-  + Nanay: Busog? E kagabi ka pa hindi kumakain.
+    (Macario walks to the press.)
+
+  + Jacinto: Dahan-dahan sa diin, Macario. Ang unang pahina ang pinakamahalaga.
+
+The press (palimbagan, x 210), its button "Gamitin": the work game (as
+the horse in Act I), a sheet under the platen printed a line at each
+stroke. The first thing a student does in Act II is print.
+
+  + (the game) Palimbagan / Diinan ang palimbagan kapag nasa berde ang guhit.
+  + (a good stroke) Malinaw ang limbag!
+  + (a missed one) Kumalat ang tinta!
+  + (the end) n/5 ang malinaw na pahina.
+
+Completes: Maglimbag ng Kalayaan. Then, by itself:
+
+  + Jacinto: Heto. Ang unang pahayagan ng Katipunan.
+  + Macario: "Kalayaan"...
+  + Macario: "Inilimbag sa Yokohama"? Nasa Hapon po ba tayo?
+  + Jacinto: Kung ang guardia ang tatanungin, oo.
+  + Jacinto: Hahanapin nila ang imprenta sa kabilang dagat, hindi sa ilalim ng ilong nila.
+  + Manlilimbag: Ginoo, saan ko itatago ang talaan?
+  + Jacinto: Sa ilalim ng palimbagan. Ang mga pangalan ng kasapi, at kung saan sila nakatira.
+  + Macario (sa isip): Pati ang pangalan ko. Pati ang bahay namin.
+  + Jacinto: Umuwi ka muna, Macario. Ilang gabi ka nang hindi umuuwi.
+
+The list, and that it says where everyone lives, is set up here for
+beat 5. The others, talked to:
+
+  + Jacinto: Pantay na diin, Macario. Ang malabong letra, hindi mababasa ng bayan.
+    (before the first page)
+  + Jacinto: Umuwi ka na. Hinihintay ka ng nanay mo.
+    (after)
+  + Manlilimbag: Yokohama, ha. Ni hindi ko alam kung saan 'yon.
+
+### 2. Home
+
+The way home is the street in March, the neighbours glad to see him
+(beat 4 has their lines). Nanay's door is at x 2000, its button
+"Pumasok sa bahay". bahay, plays by itself.
+
+  + Nanay: Anak! Akala ko kung napaano ka na.
+
+    (He goes to her.)
+
+  + Nanay: Halika, kumain ka.
+  + Nanay: ...
+  + Nanay: Ano 'to? Tinta?
+  + Macario: Sa entablado po, 'Nay. Pinta sa—
+  + Nanay: Hindi ganyang kulay ang pinta sa entablado, Macario.
 
     (A knock at the door.)
 
@@ -1124,8 +1191,8 @@ bahay. Plays by itself the first time a student enters Act II.
   + Nanay: Pangulo.
   + Nanay: 'Yan din ang tawag nila sa'yo noong gabing 'yon, sa pinto.
   + Macario: 'Nay...
-  + Nanay: Hindi ako bingi, Macario. Hindi rin bulag ang mga kapitbahay.
-  + Nanay: May hinuli na naman daw sa Trozo. Mga rebelde raw. Hindi na nakauwi sa pamilya nila.
+  + Nanay: Hindi ako bingi, anak. Hindi rin bulag ang mga kapitbahay.
+  + Nanay: May hinuli na naman daw sa Trozo. Hindi na nakauwi sa pamilya nila.
   + Nanay: Huwag kang makisama sa mga 'yan, anak.
   + Nanay: Ganyan din ang tatay mo. Lumabas isang gabi, sabi babalik bago mag-umaga.
   + Nanay: Hindi ko na siya nakita.
@@ -1133,66 +1200,19 @@ bahay. Plays by itself the first time a student enters Act II.
   + Macario: Hindi po ako mawawala, 'Nay.
   + Macario: Babalik po ako. Pangako.
   + Nanay: ...
-  + Nanay: Mag-ingat ka. Pakiusap.
+  + Nanay: Magluluto ako ng sinigang sa Linggo. Umuwi ka.
+  + Macario: Opo, 'Nay. Uuwi po ako.
 
-Completes: Kausapin si Nanay. She heard "Pangulo" at the door at the
-end of Act I; the promise is not paid off in this act (Threads left
-open). The door, on the right, opens: "Lumabas ng bahay: pumunta sa
-kanan".
-
-### 2. Isko at the door
-
-tondo, outside, the first time out (an arrival dialogue).
-
-  + Isko: Pinasusundo po kayo ni Ginoong Jacinto. Sa imprenta raw po.
-  + Macario: Huwag mo akong tatawaging Pangulo sa harap ng bahay namin.
-  + Isko: Ay... opo. Pasensya na po, Pang— Macario.
-  + Isko: Hanggang ngayon po, hindi ko alam kung bakit walang apoy.
-  + Macario: Mabuti nang hindi mo alam.
-  + Isko: Nasa gitna po ng kalye ang imprenta, lampas sa tabakera.
-
-The fire is the ordeal of the rite (Act I, beat 15): Isko leapt over
-nothing too. The press is a door at x 7900, its button "Pumasok sa
-imprenta". Nanay's door, at x 2000, reads "Pumasok sa bahay".
-
-### 3. The press, in March
-
-imprenta. Plays by itself on arrival.
-
-  + Jacinto: Macario. Dumating ka rin.
-  + Jacinto: Heto. Ang unang pahayagan ng Katipunan.
-  + Macario: "Kalayaan"...
-  + Macario: "Inilimbag sa Yokohama"? Nasa Hapon po ba tayo?
-  + Jacinto: Kung ang guardia ang tatanungin, oo.
-  + Jacinto: Hahanapin nila ang imprenta sa kabilang dagat, hindi sa ilalim ng ilong nila.
-  + Manlilimbag: Handa na ang tinta, Ginoo.
-  + Jacinto: Ikaw sa palimbagan, Macario. Diinan mo nang pantay, at huwag kang magmamadali.
-
-Completes: Pumunta sa imprenta. The press (palimbagan, x 210) is used
-with E, the button reading Gamitin: the work game (as the horse in Act
-I), with a sheet under the platen that is printed a line at each
-stroke. No pay; it is the Katipunan's work.
-
-  + (the game) Palimbagan / Diinan ang palimbagan kapag nasa berde ang guhit.
-  + (a good stroke) Malinaw ang limbag!
-  + (a missed one) Kumalat ang tinta!
-  + (the end) n/5 ang malinaw na pahina.
-
-Before Jacinto has spoken: "Kausapin ko muna si Ginoong Jacinto." (a
-thought). After the first round:
-
-  + Jacinto: Sapat na para ngayong gabi.
-  + Jacinto: Ipababasa ito ng Supremo sa bawat balangay. Pati sa mga probinsya.
-  + Macario (sa isip): Dati, polyeto lang ang dala ko. Ngayon, isang buong pahayagan.
-
-  + [BLACK] Kumalat ang Kalayaan sa Maynila at sa mga karatig-bayan.
-  + [BLACK] Libu-libo ang sumapi sa Katipunan.
+  + [BLACK] Hindi siya umuwi noong Linggong iyon.
   + [BLACK] Agosto 1896
 
-Completes: Maglimbag ng Kalayaan. The card lifts on the street at
-Nanay's door.
+Completes: Umuwi sa bahay. She heard "Pangulo" at the door at the end
+of Act I. The card lifts on the street outside her door. If he goes back
+in before the raid:
 
-### 4. Isko's news
+  + Nanay: Anak, ang daming guardia sa kalye. Dito ka na lang.
+
+### 3. Isko's news
 
 tondo, beside Nanay's door. Plays by itself. Isko runs up from the
 right.
@@ -1204,18 +1224,21 @@ right.
   + Macario: Hindi ganyan ang mga tao roon.
   + Macario: Pupuntahan ko.
   + Isko: Sasama po ako—
-  + Macario: Hindi. Bantayan mo si Nanay.
+  + Macario: Hindi. Ikalat mo ang balita sa ibang balangay. Kailangan nilang malaman.
+  + Isko: Paano po si Nanay ninyo?
+  + Macario: ...
+  + Macario: Babalikan ko siya mamaya.
   + Isko: ...Opo, Pangulo.
 
-    (Isko goes in to Nanay.)
+    (Isko runs off. Nobody is sent to her.)
 
-### 5. The street in August
+### 4. The street in August
 
 Nothing is staged: the neighbours are where they were, and each says one
 line. In March they are glad to see him; in August nobody will be seen
-with him. A guardia civil walks in front of the press (7330 to 7700), a
-crate in his beat (7520); he catches, not shoots, and a catch puts
-Macario back at the tabakera's corner (x 7000).
+with him. Four guardia civil walk between Nanay's door and the press
+(2600 to 3000, 3700 to 4150, 5950 to 6300, 7330 to 7700), each with a
+crate in his beat; they catch, not shoot.
 
   + Kutsero: Macario! Bihira ka nang dumaan dito. Kumusta ang nanay mo?
     (March)
@@ -1241,28 +1264,18 @@ August, Maryam (the question she asked in Act I, answered):
   + Maryam: Sino ba talaga 'yung dalawang lalaki noon, Macario?
   + Macario: Mas mabuti nang hindi mo alam.
 
-And Isko, in March, if talked to again:
+### 5. The raid, and the list
 
-  + Isko: Sa imprenta po, Pang— Macario. Lampas sa tabakera, sa gitna ng kalye.
-
-At home, Nanay:
-
-  + Nanay: Mag-ingat ka, anak. Pakiusap.
-    (March)
-  + Nanay: Anak, ang daming guardia sa kalye. Huwag ka nang lumabas.
-    (August)
-
-### 6. The raid
-
-imprenta, August. Plays by itself on arrival. Two guardia civil search
-the room (1050 to 1400 and 450 to 800), each with cover in his beat
-(paper stacked at 1220, crates at 620); they catch, not shoot.
+imprenta, August. Plays by itself on arrival. Three guardia civil
+search the room (1850 to 2200, 1100 to 1500, 400 to 800), each with
+cover in his beat, and two high shelves (1580 and 860) stand above
+their sight; they catch, not shoot.
 
   + Macario (sa isip): Bukas ang pinto...
   + Macario (sa isip): Mga guardia... nauna na sila.
   + Manlilimbag (pabulong): Pangulo... dito po.
   + Manlilimbag: May kapatid na nagtapat sa kura ng Tondo. Alam na nila ang lahat.
-  + Manlilimbag: Kinuha na nila ang mga papel. Pero ang listahan ng mga kasapi... nasa ilalim pa ng palimbagan.
+  + Manlilimbag: Kinuha na nila ang mga resibo at ang mga sulat. Pero ang talaan... nasa ilalim pa ng palimbagan.
   + Macario: Kapag nakita nila 'yon...
   + Manlilimbag: Daan-daang pangalan, Pangulo. Pati ang sa inyo.
   + Macario: Kukunin ko. Lumabas ka na habang abala sila.
@@ -1271,39 +1284,70 @@ Completes: Alamin ang nangyari sa imprenta. "The printers will not hand
 over the papers" was the guards, not the printers. At the press, past
 the guards:
 
-  + Macario (sa isip): Nandito... ang listahan ng mga kasapi.
+  + Macario (sa isip): Nandito... ang talaan ng mga kasapi.
+  + Macario (sa isip): ...
+  + Macario (sa isip): "Macario Sakay. Tondo. Kasama ang ina."
+  + Macario (sa isip): Ang mga resibong kinuha nila... nakasulat din doon ang tirahan namin.
+  + Macario (sa isip): Si Nanay!
 
-Completes: Kunin ang listahan ng mga kasapi ("Nakuha mo ang listahan.
-Tumakas sa bintana sa likod!"). The back window, at the left edge,
-"Tumakas sa bintana":
+Completes: Kunin ang talaan ng mga kasapi ("Tumakas sa bintana at
+balikan si Nanay!"). The front door is shut to him now; the back
+window, at the left edge, "Tumakas sa bintana":
 
+  + [BLACK] Gabi na nang makalabas siya sa imprenta.
+
+Thoughts and lines around the press:
+
+  + Macario (sa isip): Nasa akin na ang talaan. Sa bintana sa likod ako dadaan.
+  + Macario (sa isip): Hindi ako aalis nang wala ang talaan.
+  + Macario (sa isip): Bintana sa likod. Daan palabas, kung sakaling magkagulo.
+  + Manlilimbag (pabulong): Bilisan n'yo po, Pangulo. Sa ilalim ng palimbagan.
+
+### 6. The night: Nanay's door
+
+tondo, at night, behind the press (x 8050). The street is dark and
+nobody is out. On arrival:
+
+  + Macario (sa isip): Kailangan kong maunahan sila sa bahay.
+  + Macario (sa isip): Wala akong pinabantay sa kanya. Wala ni isa.
+
+The way home is past four more guards (6500 to 6950, 5000 to 5450, 3650
+to 4050, 2900 to 3200), each with cover, and two standing at Nanay's
+door, facing up the street. Within sight of it (x 2600), "Silipin ang
+bahay":
+
+  + Macario (sa isip): May mga guardia sa pinto namin...
+  + Macario (sa isip): Bukas ang pinto. Walang ilaw.
+  + Macario (sa isip): 'Nay...
+  + Bantay: Ayun si Sakay! Hulihin!
+
+Completes: Balikan si Nanay. The two at the door raise their rifles and
+come after him, firing ("Tumakas! Sa estero, sa kanan!"); the estero
+(x 3550), "Tumalon sa estero":
+
+  + [BLACK] Tumalon si Macario sa estero, at hindi na lumingon.
+  + [BLACK] Hindi na siya nakabalik kay Nanay.
   + [BLACK] Natuklasan ang Katipunan.
   + [BLACK] Sa loob ng ilang araw, daan-daan ang hinuli sa Tondo.
   + [BLACK] Agosto 23, 1896
   + [BLACK] Pugad Lawin, Kalookan
 
-Completes: Tumakas sa likod ng imprenta. Before the list, the window is
-a thought: "Hindi ako aalis nang wala ang listahan." (in March, "Bintana
-sa likod. Daan palabas, kung sakaling magkagulo.")
-
-Thoughts and lines around the press:
-
-  + Macario (sa isip): Kausapin ko muna si Ginoong Jacinto.
-  + Macario (sa isip): Nasa akin na ang listahan. Sa bintana sa likod ako dadaan.
-  + Macario (sa isip): Hindi ako aalis nang wala ang listahan.
-  + Macario (sa isip): Bintana sa likod. Daan palabas, kung sakaling magkagulo.
-  + Jacinto: Pantay na diin, Macario. Ang malabong letra, hindi mababasa ng bayan.
-  + Manlilimbag: Yokohama, ha. Ni hindi ko alam kung saan 'yon.
-  + Manlilimbag (pabulong): Bilisan n'yo po, Pangulo. Sa ilalim ng palimbagan.
+Completes: Tumakas sa estero. He never reaches her, and the game never
+shows what happened to her.
 
 ### 7. Pugad Lawin
 
 pugad-lawin. Plays by itself on arrival.
 
-  + Isko: Pangulo! Nakalabas kayo!
-  + Macario: Si Nanay?
-  + Isko: Ligtas po. Dinala ko sa kapatid niya sa Pandacan, bago pa dumating ang mga guardia.
-  + Macario: ...Salamat, Isko.
+  + Isko: Pangulo! Buhay kayo!
+  + Macario: Isko. Si Nanay?
+  + Isko: ...
+  + Isko: Pumunta po ako sa bahay ninyo kinaumagahan. Wala nang tao. Sira ang pinto.
+  + Isko: Walang nakakaalam kung saan siya dinala. O kung... dinala man.
+  + Macario: ...
+  + Macario: Hindi ko siya pinabantayan.
+  + Macario: Inuna ko ang talaan. Ang pangalan ng iba.
+  + Isko: Pangulo...
   + Bonifacio: Mga kapatid! Alam na ng mga Kastila ang lahat.
   + Bonifacio: Hinuhuli na nila tayo isa-isa. Kung maghihintay tayo, sa bilangguan tayo mamamatay.
   + Bonifacio: Kaya ngayon, wala nang atrasan.
@@ -1317,7 +1361,7 @@ The cedula is the student's to tear: Bonifacio's button, "Punitin ang
 sedula".
 
   + Macario (sa isip): Ito ang papel na umubos sa pitaka ni Nanay.
-  + Macario (sa isip): Ang papel na nagsasabing alipin kami sa sarili naming bayan.
+  + Macario (sa isip): Kung nasaan ka man ngayon, 'Nay... para sa'yo ito.
   + Macario: Wala nang sedula. Wala nang alipin.
   + Mga Katipunero: Mabuhay ang Pilipinas!
   + Bonifacio: Ikaw si Sakay, 'di ba? 'Yung artista.
@@ -1334,7 +1378,7 @@ Completes: Punitin ang sedula. The cedula is the one that emptied
 Nanay's purse in Act I's opening; the line is the one Bonifacio heard
 from the stage (Act I, beat 12). The others there:
 
-  + Isko: Nasa Pandacan po si Nanay ninyo. Walang nakakaalam.
+  + Isko: Magtatanong-tanong po ako, Pangulo. May makakaalam din kung nasaan siya.
   + Katipunero: Wala nang sedula. Wala nang atrasan.
   + Kasama: Akala ko, nahuli ka na sa Tondo, Pangulo.
   + Bonifacio: Ilabas mo ang sedula mo, kapatid.
@@ -1354,7 +1398,7 @@ san-juan. Plays by itself on arrival.
 
 The battle, at the proponent's word a big one: fifteen soldiers in
 four waves, from both sides of the screen, with the fight music and
-three hearts on the field. Most charge with the bayonet (sundalo); one
+four hearts on the field. Most charge with the bayonet (sundalo); one
 in each of the last two waves is a rifle that fires (bantay). Running
 out of hearts starts the wave again, the fallen staying down. Between
 waves:
@@ -1363,28 +1407,38 @@ waves:
   + Bonifacio: Huwag kayong titigil! Malapit na tayo sa polvorin!
   + Macario (sa isip): Ang dami nila...
 
-Then a volley, from the right.
+Then a volley, from the right. The Kasama is beside him.
 
   + Kasama: Pangulo! Dumating ang mga sundalo mula sa Maynila!
   + Bonifacio: Masyado silang marami! Umatras! Sa ilog!
+
+    (A shot. The Kasama is hit.)
+
   + Kasama: Ah—!
   + Macario: Kasama!
-  + Kasama: Daplis lang 'to... Tumakbo ka na!
+  + Kasama: Huwag kang lilingon, Pangulo.
+  + Kasama: Gaya ng una nating lakad. Huwag kang lilingon.
+  + Macario: Hindi kita iiwan—
+  + Kasama: Tumakbo ka na!
 
   + [BLACK] Umatras ang mga Katipunero.
 
-Completes: Lumusob sa San Juan del Monte. The Kasama is hit, and lives.
+Completes: Lumusob sa San Juan del Monte. "Huwag kang lilingon" is what
+the Kasama told him the night he led him in to the oath (Act I, beat
+14).
 
 ### 9. The retreat
 
-san-juan, from x 2400 back to the river at the left edge ("Umatras sa
-ilog, sa kaliwa! Iwasan ang mga sundalo."). Three riflemen patrol the
-field between (1600 to 1950, 1000 to 1350, 400 to 750), each with
-cover in his beat. Seen, a rifleman turns on Macario and fires until he
-is punched down; out of hearts, Macario starts again at x 2400. The
-river's button reads "Tumawid sa ilog".
+san-juan, from x 3600 back to the river at the left edge ("Umatras sa
+ilog, sa kaliwa! Iwasan ang mga sundalo."). Five riflemen patrol the
+field between (3000 to 3350, 2300 to 2650, 1600 to 1950, 1000 to 1350,
+400 to 750), each with cover in his beat. Seen, a rifleman turns on
+Macario and fires until he is punched down; out of hearts, Macario
+starts again at the last line he passed. The river's button reads
+"Tumawid sa ilog".
 
   + [BLACK] Mahigit isandaan at limampung Katipunero ang nasawi sa San Juan del Monte.
+  + [BLACK] Isa sa kanila ang Kasama.
   + [BLACK] Nagkawatak-watak ang mga nakaligtas.
   + [BLACK] Nobyembre 1896
   + [BLACK] Kabundukan ng Morong
@@ -1431,7 +1485,7 @@ Completes: Labanan ang mga Kastila sa ilog. The others there:
 
   + Katipunero: Tatlong bigkis sa pampang, Pangulo. Itayo mo na.
   + Katipunero: Mga sundalong hindi kumakain. Gusto ko ang ganyan.
-  + Kasama: Huwag mo akong alalahanin, Pangulo. Gasgas lang 'to.
+  + Isko: Hindi ko pa rin matanggap, Pangulo. Ang Kasama...
 
 ### 11. Balara
 
@@ -1452,13 +1506,17 @@ Then free. Bonifacio, by the fire:
   + Bonifacio: Ako rin, alam mo ba? Umarte rin ako sa mga komedya noon.
   + Bonifacio: Ang pinagkaiba lang, dito, hindi na bumabangon ang namamatay.
   + Macario: ...
+  + Bonifacio: May naiwan ka ba sa Tondo, Sakay?
+  + Macario: Ang nanay ko po. Hindi ko alam kung buhay pa siya.
+  + Bonifacio: ...
+  + Bonifacio: Lahat tayo may iniwan. Ang tanong lang, may babalikan pa ba tayo.
   + Bonifacio: Pupunta ako sa Cavite. Kailangang magkaisa ang Katipunan.
   + Bonifacio: Matulog ka na.
 
 Completes: Kausapin ang Supremo. Bonifacio is recorded as having acted
 in amateur theatre; Maryam's "kahoy lang ang mga espada" (Act I, the
 play) and the Katipunero's "dito, hindi kahoy ang mga espada" come back
-in it.
+in it. He goes to Cavite, and does not come back.
 
   + [BLACK] Marso 1897, Tejeros.
   + [BLACK] Nahati ang himagsikan.
@@ -1468,7 +1526,6 @@ in it.
 
 The others there:
 
-  + Kasama: Malayo sa puso ang tama, Pangulo. Mabubuhay pa ako.
   + Katipunero: Kung tutulong lang sana ang Cavite...
   + Isko: Hindi po ako makatulog. Naririnig ko pa rin ang mga riple.
   + Bonifacio: Matulog ka na, Sakay.
@@ -1489,9 +1546,8 @@ laguna. Plays by itself on arrival.
 
 Completes: Sumama kay Jacinto sa Laguna. The others there:
 
-  + Kasama: Magaling na ang sugat ko, Pangulo. Hindi pa tapos ang laban natin.
   + Katipunero: Hindi pa rin ako makapaniwala. Ang Supremo... sa kamay ng kapwa natin.
-  + Isko: Pangulo, may sulat po. Ligtas pa rin daw si Nanay ninyo sa Pandacan.
+  + Isko: Nagtanong-tanong po ako sa mga galing Tondo. Wala pa ring nakakita kay Nanay ninyo.
 
 ### 13. The end of Act II
 
@@ -1509,15 +1565,19 @@ laguna. Jacinto, talked to again:
   + [BLACK] Disyembre 1898. Ipinagbili ng Espanya ang Pilipinas sa Amerika
   + [BLACK] sa halagang dalawampung milyong dolyar.
 
+    (The last card lifts on the camp.)
+
   + Macario (sa isip): Dati, isang sedula ang halaga ko sa mga Kastila.
   + Macario (sa isip): Ngayon, ipinagbili nila ang buong bayan, na para bang kanila.
+  + Macario (sa isip): At si Nanay... hindi ko pa rin alam kung nasaan siya.
+  + Macario (sa isip): Babalik po ako, 'Nay. Pangako.
   + Jacinto: Hindi pa tapos, Macario.
   + Macario: Hindi pa po.
 
   + [BLACK] Wakas ng Ikalawang Yugto
 
 Completes: Kausapin si Jacinto, the last task. Act II is finished, and
-the post-test runs. Afterwards: "Hanggang dulo, Macario."
+the post-test runs. Afterwards:
 
   + Jacinto: Hanggang dulo, Macario.
 
@@ -1553,18 +1613,19 @@ next passage. None of these is a promise; they are what is there.
 
     Act II's (Block 113), for Act III:
 
-    The promise. "Babalik po ako. Pangako." Nanay is safe in Pandacan
-      with her sister (Isko), and Macario has not been home since the
-      raid.
+    Nanay. Her fate unknown: the door broken, the house empty, nobody
+      in Tondo has seen her. "Babalik po ako, 'Nay. Pangako." He set
+      nobody to watch her, and he knows it.
     The father. Nanay names him: he went out one night and never came
-      back. Still never answered.
-    Isko. Macario's man since the raid; he looks after Nanay.
-    The Kasama. Wounded at San Juan del Monte, healed by Laguna.
+      back. Still never answered; now the son has done the same.
+    Isko. Macario's man since the raid; still asking after Nanay.
+    The Kasama. Dead at San Juan del Monte.
     Jacinto. "Hanggang dulo." The Katipunan Bonifacio founded is still
       theirs, apart from Aguinaldo's government.
     The Americans. Arrived in 1898; the country sold to them in
       December. Act III starts from here.
-    The cedula. Torn at Pugad Lawin; set against the twenty million.
+    The cedula. Torn at Pugad Lawin, for her; set against the twenty
+      million.
 
 ## Open questions for the proponents
 
@@ -1583,9 +1644,14 @@ Act II (Block 113). Every + line: accept, rewrite or replace. Also:
     The press: the histories put Kalayaan's printing in early 1896 and
       the lithographic stone found at the Diario de Manila; the game's
       press is the Katipunan's own room, raided, so the list under it
-      is ours.
+      is ours, and so are the receipts with addresses.
     Pugad Lawin, 23 August, for the cedulas (the official date and
       place; Balintawak and 26 August are the older tradition).
-    The Kasama wounded at San Juan del Monte, and Isko taking Nanay to
-      Pandacan.
+    Nanay's fate, the Kasama's death at San Juan del Monte, and the
+      night at her door: ours, the proponent's direction (a tragedy,
+      not a safe story).
     The Talaan's three papers of Act II.
+
+Act I's play (Block 113, the proponent's direction): the moro-moro now
+ends with the Moorish kingdom's fall and the princess taking the
+knight's faith; the four new lines are ours.

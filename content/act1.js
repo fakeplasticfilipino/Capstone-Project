@@ -595,11 +595,25 @@ async function thePlay() {
   showDecoration("sultan", true);
   turnPlayer(1);
   await moveDecoration("sultan", SULTAN_MARK, 200);
+  // Block 113, at the proponent's word ("include the part where the
+  // muslim kingdom fell"): the moro-moro ends as the plays of the
+  // period ended, not with a father's blessing. The Moorish kingdom
+  // falls to the Christian knight, and the princess leaves her father
+  // and takes the knight's faith; the crowd cheers the fall. That cheer
+  // is the genre, a Spanish-era stage teaching who wins. PLACEHOLDER,
+  // every line from here to the crowd.
   await playDialogue([
     { speaker: "Sultan", text: "Natalo... ang lahat ng aking kawal?" },
-    { speaker: "Sultan", text: "Kung ganyan katapang ang pag-ibig mo sa aking anak, sino ako para humadlang?" },
-    { speaker: "Maryam", text: "Ama!" },
-    { speaker: "Sultan", text: "Sa inyo na ang aking basbas." },
+    { speaker: "Macario", text: "Bumagsak na ang iyong kaharian, Sultan. Ibaba mo ang iyong kampilan." },
+    { speaker: "Sultan", text: "..." },
+  ]);
+  playSfx("knockout"); // the kampilan on the boards
+  await wait(700);
+  await playDialogue([
+    { speaker: "Sultan", text: "Ang kaharian ng aking mga ninuno... bumagsak sa iisang gabi." },
+    { speaker: "Maryam", text: "Ama..." },
+    { speaker: "Maryam", text: "Patawarin mo ako. Sasama ako kay Don Rodrigo, at tatanggapin ko ang kanyang pananampalataya." },
+    { speaker: "Sultan", text: "Kung gayon, wala na akong kaharian... at wala na rin akong anak." },
     { speaker: "Mga Manonood", text: "Mabuhay! Mabuhay!", sfx: "cheer" },
   ]);
 

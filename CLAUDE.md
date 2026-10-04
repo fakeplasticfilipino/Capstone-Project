@@ -597,11 +597,18 @@ Scene shape:
                                                  (Block 73)
                  hitAnimation,                   optional; knockoutFrame
                                                  (Block 75)
-                 requiresFlag, unlessFlag }],    optional; on duty only
+                 requiresFlag, unlessFlag,       optional; on duty only
                                                  then, read when the scene
                                                  is built (Block 81)
+                 hostile: true }],               optional; after Macario
+                                                 from the moment he is on
+                                                 duty, but not a fight
+                                                 (Block 113)
       noRanged: true,                            optional; no shot here
-      checkpoints: [{ x, flag }],                optional; respawn points
+      checkpoints: [{ x, flag,                   optional; respawn points
+                      reach, requiresFlag }],    reach: sets its own flag
+                                                 when passed, only while
+                                                 requiresFlag (Block 113)
       scripts: [{ requiresFlag, unlessFlag,      optional; cutscenes that
                   doneFlag, x, facing, run }]    play by themselves (Block 52)
     }
@@ -646,9 +653,14 @@ from it and fades him. hitAnimation, optional, is shown while he reels
 and as he falls; knockoutFrame is the frame held during the fall.
 
 noRanged: true takes Macario's shot away in that scene: a long hold on
-Atake punches and says why. checkpoints are where a respawn puts him: the
-furthest x whose flag is set, else startX. Both are read at the moment
-they are needed, not stored.
+Atake punches and says why. checkpoints are where a respawn puts him:
+since Block 113 the last one in the list whose flag is set (the list is
+the route in order, so a run that goes left restarts where it got to;
+for a list in order of x, as Act I's, that is the furthest), else
+startX. A checkpoint with reach: true sets its own flag the moment
+Macario passes it (updateCheckpoints), only while its requiresFlag is
+set, so a long stealth run needs no story flag per crate. Both are read
+at the moment they are needed, not stored.
 
 The Talaan (Block 68, replacing Block 64's notebook of fact pages). A
 glossary entry is earned when content calls unlockGlossary(id) (flag
@@ -773,7 +785,7 @@ reached edge to edge like an NPC. The interact button reads its label
 toFacing }), the same fade every scene change uses. Without toX the new
 scene's startX applies; an arrival dialogue's own x still wins over
 both. An exit may declare requiresFlag, and stays shut (no prompt) until
-that flag is set. (Block 74's test room, and its exit back: true, were
+that flag is set, and (Block 113) unlessFlag, shut again once it is. (Block 74's test room, and its exit back: true, were
 removed in Block 95.) A building to walk into is a decoration for the picture plus an
 exit at its door; a decoration with a single still image is an animation
 def with frames: 1. A decoration may also declare hidden: true, for a
@@ -982,7 +994,11 @@ of them plain globals in game.js, like addQuest:
                                  whileBlack(), holdMs, keepBlack (the
                                  scene fade's black left up behind it,
                                  for a card that leads into
-                                 Acts.gotoScene; Block 73), sfx (an
+                                 Acts.gotoScene; Block 73; since Block
+                                 113 the next card without keepBlack
+                                 lifts it, so a chain of cards with no
+                                 scene change after it ends on the
+                                 scene, not on black), sfx (an
                                  SFX_SOURCES name played with it; a
                                  card is otherwise silent; Blocks 81, 84)
     movePlayer(x, pxPerSecond)   walks Macario there with his walk cycle
@@ -1730,6 +1746,19 @@ practice, each one taken from those scenes:
   narrator sentences in someone's mouth, instructions phrased like a
   game ("Kumuha ka ng tatlo..." with nothing around it), and more than
   two lines in a row of pure information.
+
+NO WATERED-DOWN NARRATIVES (the proponent, 4 Oct 2026: "I'm building a
+historical game, I don't care how safe it is"). The history is told as
+it happened and the story is allowed to hurt: people die, are lost,
+are betrayed and are not found again; a choice can cost the person the
+student cares about most; a play of the period ends the way plays of the
+period ended (the moro-moro's Moorish kingdom falls). Do not soften an
+event, add a rescue, make a fate safe, or swap a historical outcome for
+a gentler one for the sake of a Grade 8 audience, and do not propose
+doing so. When the record is uncertain, leave the uncertainty in rather
+than resolving it kindly. Block 113 is the example: Nanay left
+unprotected and her fate unknown, the Kasama killed at San Juan del
+Monte, Act I's play ending with the kingdom's fall.
 
 Every line of ours is marked PLACEHOLDER in the content file, and with
 a + in STORY.md, until the proponents accept or replace it, however

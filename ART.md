@@ -93,8 +93,8 @@ Named by the game and missing. Each is a placeholder box today.
 Act II (Block 113). The places are one painting each, drawn once and
 not tiled (as entablado-inside.jpg), anchored at the bottom: the indoor
 rooms one phone screen wide (bahay, pugad-lawin, balara, laguna, about
-1180 in the game), the press wider (1800), and the two battlefields
-wide (san-juan 3000, nangka 2400), which the game stretches to cover,
+1180 in the game), the press wider (2600), and the two battlefields
+wide (san-juan 4200, nangka 2400), which the game stretches to cover,
 so a wide panorama suits them. Each is a dark wall with its name until
 it arrives. The people are side on where they will walk, so
 animate-still.js can move them; the things are stills.
@@ -106,7 +106,7 @@ animate-still.js can move them; the things are stills.
     assets/backgrounds/act2/imprenta.jpg
         The Katipunan's hidden press: a room behind an ordinary door,
         stacks of paper, the press on the left, a back window at the
-        left edge. Wide (1800). (NOT STARTED)
+        left edge, and high shelves. Wide (2600). (NOT STARTED)
 
     assets/backgrounds/act2/pugad-lawin.jpg
         Pugad Lawin, Kalookan, 23 August 1896: a clearing in the hills,
@@ -115,7 +115,7 @@ animate-still.js can move them; the things are stills.
     assets/backgrounds/act2/san-juan.jpg
         San Juan del Monte, 30 August 1896: open ground before the
         Spanish powder store (El Polvorin), the river behind. Wide
-        (3000). (NOT STARTED)
+        (4200). (NOT STARTED)
 
     assets/backgrounds/act2/nangka.jpg
         The Nangka River in the hills of Morong, November 1896: the

@@ -9,8 +9,14 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 4 Oct 2026, after Block 113 (DECISIONS.md, Block 113): Act
-II written, 1896 to 1898, end to end (eight places, fourteen steps,
+Last updated: 4 Oct 2026, after Block 113 and its continuation
+(DECISIONS.md, both entries): Act II rebuilt at the proponent's word as
+a tragedy (the press first, then home; Nanay left unprotected and never
+found; the Kasama killed at San Juan del Monte), its stealth four
+stretches long, the frozen black end fixed in the engine, Act I's play
+ending in the Moorish kingdom's fall, and no watered-down narratives a
+standing rule (CLAUDE.md). Before that, the same day: Act II written,
+1896 to 1898, end to end (eight places, fourteen steps,
 fifteen soldiers at San Juan del Monte, its art owed as placeholders);
 the detection meter twice as fast; Act I's lines accepted by the
 proponents; content/people.js. The proponent reported Blocks 98 to 112
@@ -157,15 +163,19 @@ still in them, a guard notices him five times more slowly. The harness
 fixture covers every other item path.
 
 Act II, Ang Mahabang Anino ng Digmaan (Block 113), 1896 to 1898: eight
-places joined by black cards (home; Act I's street; the Katipunan's
-press; Pugad Lawin; San Juan del Monte; the Nangka River; Balara at
-night; Laguna), fourteen steps in one chain, every line ours (+ in
-STORY.md, PLACEHOLDER in content/act2.js). The work game prints
-Kalayaan; the raid on the press is stealth past two guards (and one on
-the street); the cedula is torn with Bonifacio's button; San Juan del
-Monte is fifteen soldiers in four waves and then a retreat past three
-riflemen; the Nangka is three scarecrows and six soldiers; it ends with
-Jacinto in Laguna and 1897 and 1898 on black. Its paintings, Isko,
+places joined by black cards (the Katipunan's press, where it opens;
+Act I's street; home; Pugad Lawin; San Juan del Monte; the Nangka
+River; Balara at night; Laguna), fourteen steps in one chain, every
+line ours (+ in STORY.md, PLACEHOLDER in content/act2.js). A tragedy,
+at the proponent's word: Macario sends nobody to protect Nanay, is
+chased from her guarded door, and never learns her fate; the Kasama
+dies at San Juan del Monte. The work game prints Kalayaan; four long
+stealth stretches (the day's walk to the press, the press, the night's
+walk back, the retreat), each restarting a catch at the last point
+passed; the cedula is torn with Bonifacio's button; San Juan del Monte
+is fifteen soldiers in four waves; the Nangka is three scarecrows and
+six soldiers; it ends with Jacinto in Laguna and 1897 and 1898 on
+black. Its paintings, Isko,
 Jacinto, Bonifacio, the printer, the messenger, the press and the straw
 are owed (ART.md), drawn as placeholders. The soldiers are the bantay's
 art (the sundalo of the enemy catalogue). Acts III and IV are
@@ -234,24 +244,30 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       (the meter pale blue). Failure: a walk past him in plain sight
       with no catch, or a catch that comes before you can react at all.
 
-    Block 113, Act II. ?dev=1 lists eleven points under Ang Mahabang
-      Anino ng Digmaan; each opens its place with its task in the log.
-      From Ang simula: "Tondo, Marso 1896", Nanay and the knock, the
-      promise; out of the door, Isko; the press door in the middle of
-      the street; Jacinto and the press game (a sheet printed a line at
-      a time). August: Isko's news; the Kutsero turns you away; the
-      guard before the press; inside, two guards, the list under the
-      press, the window. Pugad Lawin: the Punitin ang sedula button. San
-      Juan del Monte: four waves, fifteen soldiers in all, from both
-      sides, some with rifles that fire; then the run back to the river
-      past three riflemen. The Nangka: three Itayo buttons, scarecrows,
-      shots at straw, six more. Balara at night, Bonifacio by the fire;
-      Laguna, Jacinto twice, and the end on black, "Wakas ng Ikalawang
-      Yugto". Every new person and place is a dashed box or a dark wall
-      with its file name: that is expected. Failure: a point that opens
-      the wrong place or task, a beat that never starts, a fight that
-      never ends, a soldier who fires while lunging (a muzzle flash in
-      the bayonet charge), or anyone frozen after a black card.
+    Block 113, Act II (rebuilt). ?dev=1 lists thirteen points under Ang
+      Mahabang Anino ng Digmaan; each opens its place with its task in
+      the log. From Ang simula: "Tondo, Marso 1896" at the press; print
+      (a sheet printed a line at a time); Jacinto and the list; walk home
+      (the neighbours glad); Nanay, the ink, the knock, the promise,
+      "Hindi siya umuwi noong Linggong iyon". August: Isko is sent away,
+      nobody to Nanay; four guards on the way to the press, a catch
+      putting you back at the last crate passed; inside, three guards and
+      two shelves to climb; his name in the list; out the window into a
+      dark street, four patrols, two guards at Nanay's door; "Silipin ang
+      bahay", seen, shot at, into the estero. Pugad Lawin: Isko found the
+      house empty. San Juan del Monte: fifteen soldiers, the Kasama's
+      death, five riflemen on the run back. The Nangka, Balara, Laguna,
+      and the end: his last thoughts on screen, then "Wakas ng Ikalawang
+      Yugto". Every new person and place is a dashed box or a dark wall:
+      expected. Failure: a black screen with nothing happening (the bug
+      this fixes), a catch that sends you to the start of a long run, a
+      point that opens the wrong place or task, or anyone frozen after a
+      black card.
+
+    Block 113, Act I's play. ?dev=1, Ang dula: Don Rodrigo. After the
+      fight the Sultan drops his kampilan, his kingdom falls, Maryam
+      leaves him, the crowd cheers. Failure: the old blessing, or the
+      scene stuck after the kampilan falls.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -537,7 +553,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (802 and 314 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (802 and 324 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -711,10 +727,13 @@ machine, the assessment module.
         the checks; a content check; Writing a new act; a scene's own
         road; speakers and Talaan places in content; CI annotations and
         pins; dead CSS removed; policies read faster (v10)
-    113 Act II, 1896 to 1898, end to end (eight places, fourteen steps,
-        fifteen soldiers at San Juan del Monte, the press game, the
-        scarecrows); the detection meter twice as fast; Act I's lines
-        accepted; content/people.js; the sundalo
+    113 Act II, 1896 to 1898, end to end, rebuilt the same day as a
+        tragedy (Nanay unprotected and never found, the Kasama killed,
+        four long stealth stretches, fifteen soldiers at San Juan del
+        Monte); the frozen black end fixed; checkpoints that mark
+        themselves; Act I's play ends in the kingdom's fall; the
+        detection meter twice as fast; Act I's lines accepted;
+        content/people.js; the sundalo; no watered-down narratives
 
 ## Blocks remaining
 
@@ -852,7 +871,7 @@ test.js (802 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (314 checks; Act II since Block 113) drives the real
+what is covered. verify_new_scene.js (324 checks; Act II since Block 113) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is
