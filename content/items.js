@@ -76,8 +76,10 @@ window.ITEMS = [
   // him. Standing still in them he is all but invisible to a sentry
   // (0.1): nobody looks twice at a vendor. Worn in the outfit slot, in
   // place of the stage clothes, until he swears never to cut his hair at
-  // Morong and puts his own clothes back on. Not for sale; no tile
-  // picture and no sheets (a tint until drawn), so no art is owed.
+  // Morong and puts his own clothes back on. Not for sale. No tile
+  // picture, no sheets and, since Block 118, no tint: at the proponent's
+  // word nothing stands in for art not drawn, so Macario looks himself
+  // in it until the clothes are drawn.
   {
     id: "balatkayo", name: "Balatkayo ng Magtataho", kind: "equipment", slot: "outfit",
     description: "Damit ng magtataho mula sa baul ng entablado. Walang tumitingin nang dalawang " +
@@ -85,6 +87,5 @@ window.ITEMS = [
     price: 0,
     effect: { stillDetectionMult: 0.1 },
     replayRemoves: true,
-    tint: "sepia(0.35) saturate(0.7) brightness(0.92)",
   },
 ];

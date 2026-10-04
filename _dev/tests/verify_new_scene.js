@@ -2245,7 +2245,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   if (part("act3", "Act III end to end")) {
     // ---------------------------------------------------------------
     // Block 117. Act III, end to end, as a guest from its first story
-    // point: Santa Mesa and the war, Tondo under guard (the letter,
+    // point (Block 118: revised against the proponent's labelled
+    // sources; Macario is never at a [CONTEXT] event): the news of Santa
+    // Mesa and a patrol in the hills, Tondo under guard (the letter,
     // Maryam's trunk, the sentries), the haircut on the American, the
     // creed, the proclamation and Isko, the petition and the Sedition
     // Law, three doors at night, the oath broken in on, Morong, the vow,
@@ -2256,25 +2258,25 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const sceneIs = (id) => page.evaluate((s) => currentSceneId === s, id);
     await jumpTo(page, "3:simula");
     await watchBlack(page);
-    ok("Act III opens at Santa Mesa, 4 February 1899, at night",
-       await waitIntertitle(page, true, 5000) && (await intertitle(page)).lines[0] === "Pebrero 4, 1899" &&
-       await page.evaluate(() => currentSceneId === "santa-mesa" && document.getElementById("skyline").classList.contains("night-tint")));
+    ok("Act III opens in the hills outside Manila, not at Santa Mesa (Block 118)",
+       await waitIntertitle(page, true, 5000) &&
+       JSON.stringify((await intertitle(page)).lines) === '["Pebrero 5, 1899","Sa kabundukan, sa labas ng Maynila"]' &&
+       await page.evaluate(() => currentSceneId === "burol"));
     await waitIntertitle(page, false, 15000);
-    let c = await readLines(page, 6);
+    let c = await readLines(page, 10, 3000);
     await settle(page);
-    ok("Isko on the quiet line, the twenty million remembered, and the lookout to watch",
-       c.lines[0] === "Isko: Pangulo, ang tahimik ng gabi." &&
+    ok("Santa Mesa reaches him as news from a runner; the twenty million remembered; the camp to watch",
+       c.lines[0] === "Tagapagbalita: Pangulo! Balita mula sa Maynila!" &&
+       c.lines.some((x) => /Santa Mesa/.test(x) && /^Tagapagbalita:/.test(x)) &&
        c.lines.includes("Macario: Kakampi na bumili sa atin ng dalawampung milyong dolyar.") &&
-       await stepIs(page, "Bantayan ang hangganan"), c.lines);
+       await stepIs(page, "Bantayan ang kampo"), c.lines);
     await press(page, 2230);
-    c = await readLines(page, 12, 3000);
-    ok("the sentry's Halt in English, given in Tagalog, the mocking Halto, the shot, and war",
-       c.lines.includes("Bantay na Amerikano: Halt! Who goes there?") &&
-       c.lines.includes("Macario (sa isip): \"Tigil! Sino 'yan?\"") && c.lines.includes("Sundalong Pilipino: Halto!") &&
-       c.lines.includes("Macario: Hindi na 'yan babala. Digmaan na 'yan."), c.lines);
-    ok("the battle at Santa Mesa", await playOn(page, "state.flags.a3_lumaban === true && currentSceneId === 'tondo'", 90000));
-    const sm = await page.evaluate(() => ({ fought: [...window.__fought].filter((id) => id.startsWith("sm-")).length,
-      tinted: true }));
+    c = await readLines(page, 6, 3000);
+    ok("at the lookout, an American patrol coming up the hill",
+       c.lines.includes("Macario (sa isip): Mga Amerikano. Paakyat dito.") &&
+       c.lines.includes("Macario: Hindi tayo tatakbo nang hindi lumalaban."), c.lines);
+    ok("the battle in the hills", await playOn(page, "state.flags.a3_lumaban === true && currentSceneId === 'tondo'", 90000));
+    const sm = await page.evaluate(() => ({ fought: [...window.__fought].filter((id) => id.startsWith("sm-")).length }));
     ok("fifteen Americans in four waves (Block 117)", sm.fought === 15, sm);
 
     // Tondo under American guard.
@@ -2283,9 +2285,11 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("on arrival: Americans on every corner", c.lines[0] === "Macario (sa isip): Mga Amerikano sa bawat kanto.", c.lines);
     ok("Tondo, May 1899: the task is Isko's letter, and four American sentries walk the street",
        await stepIs(page, "Basahin ang sulat ni Isko") && (await on(page, "sentinela-araw-")) === 4 &&
+       // Block 118: their picture is owed, so each is the placeholder box
+       // naming it; no art borrowed.
        await page.evaluate(() => {
          const g = GUARDS.find((x) => x.id === "sentinela-araw-1");
-         return Boolean(g && g.el.classList.contains("body-tinted") && /sepia/.test(g.el.style.getPropertyValue("--body-tint")));
+         return Boolean(g && /amerikano\.png/.test(g.el.textContent) && !g.el.style.getPropertyValue("--body-tint"));
        }));
     await quiet(page);
     await walkTo(page, 12320);
@@ -2344,11 +2348,11 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       await walkTo(page, x);
       const label = await gift(page);
       const read = await readLines(page, 6, 1200);
-      taught.push({ label, last: read.lines[read.lines.length - 1] });
+      taught.push({ label, lines: read.lines });
     }
     ok("each of the three is taught a precept of Bonifacio's creed (n/3)",
        taught.every((t) => t.label === "Ituro ang aral") &&
-       /Pag-asa/.test(taught[2].last || ""), taught);
+       taught[2].lines.some((x) => /Pag-asa/.test(x)), taught);
     ok("their oath, the years on the move, Aguinaldo taken, and a town in April 1901",
        await playOn(page, "currentSceneId === 'bayan'", 30000));
     c = await readLines(page, 3);
@@ -2360,20 +2364,21 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        c.lines.includes("Macario: Huwag kang mangako, Isko. Mabigat dalhin.") &&
        c.lines.includes("Opisyal: Raise your right hand."), c.lines);
     ok("Calle Gunao, Quiapo", await waitForScene(page, "calle-gunao", 20000));
-    c = await readLines(page, 8);
+    c = await readLines(page, 12);
     await settle(page);
-    ok("Álvarez and the peaceful road", c.lines.includes("Macario: Papel laban sa riple.") &&
-       await stepIs(page, "Papirmahin ang petisyon"), c.lines);
+    ok("the founding: Álvarez and Poblete, and Macario its Secretary-General (Block 118)",
+       c.lines.includes("Macario: Papel laban sa riple.") && c.lines.includes("Álvarez: Ikaw, Sakay.") &&
+       c.lines.includes("Macario: Tinatanggap ko.") && await stepIs(page, "Papirmahin ang petisyon"), c.lines);
     for (const x of [420, 870, 1070]) { // just right of each signer
       await walkTo(page, x);
       await gift(page);
       await readLines(page, 5, 1200);
     }
     c = await readLines(page, 16, 4000);
-    ok("three sign; then the Sedition Law, read in English and given in Tagalog, the petition torn",
-       c.lines.includes("Opisyal: By order of the Philippine Commission. Act Number 292.") &&
-       c.lines.includes("Tagasalin: Krimen na ang pagsapi sa lihim na samahan.") &&
-       c.lines.includes("Macario (sa isip): Ngayon, sila ang pumunit sa papel namin."), c.lines);
+    ok("three sign; the Sedition Law reaches him as a notice Poblete brings, its English then the Tagalog",
+       c.lines[0] === "Poblete: Sakay. Heneral. Basahin ninyo ito. Nakapaskil na sa buong Maynila." &&
+       c.lines.includes("Macario (sa isip): At krimen na rin ang pagsapi sa lihim na samahan.") &&
+       !c.lines.some((x) => /^(Opisyal|Tagasalin):/.test(x)), c.lines);
     ok("January 1902: Tondo at night", await waitForScene(page, "tondo", 20000) &&
        await page.evaluate(() => document.getElementById("skyline").classList.contains("night-tint")));
     await readLines(page, 2);
@@ -2401,8 +2406,15 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await settle(page);
     await press(page, 1190); // just right of Carreón
     c = await readLines(page, 20, 4000);
-    ok("the Republika ng Katagalugan, and the vow not to cut their hair",
+    ok("the Republika ng Katagalugan, Macario its President and Generalissimo (Block 118)",
        c.lines.includes("Macario: Republika ng Katagalugan.") &&
+       c.lines.includes("Carreón: Kung gayon, ikaw ang Pangulo at Heneralisimo. Ako ang Ikalawang Pangulo."), c.lines);
+    await settle(page);
+    await walkTo(page, 1590); // just right of the flag
+    await page.keyboard.press("e");
+    c = await readLines(page, 20, 4000);
+    ok("its own flag raised, then the vow not to cut their hair",
+       c.lines.includes("Mga Kawal: Mabuhay ang Republika ng Katagalugan!") &&
        c.lines.includes("Macario: Hindi tayo magpapagupit hangga't hindi malaya ang bayan."), c.lines);
     const ownClothes = await page.evaluate(() => Inventory.equipped("outfit"));
     ok("the disguise off: his own clothes again", ownClothes === "damit-entablado", ownClothes);

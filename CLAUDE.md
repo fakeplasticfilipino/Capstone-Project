@@ -280,11 +280,12 @@ every flag of Act II starts with a2_, since flags are kept from act to
 act.
 
 Act III (Block 117) is written the same way, 1899 to 1902, from the
-proponent's plot: STORY.md, "Act III, beat by beat", every line ours
-and marked PLACEHOLDER, flags a3_. The Americans speak short, plain
-English (the proponent's choice, true to the history), and every such
-line is followed by its Tagalog, in Macario's thought or from an
-interpreter, so no student is left out; this is the one exception to
+proponent's plot, revised in Block 118 against the proponent's
+labelled sources: STORY.md, "Act III, beat by beat", every line ours
+and marked PLACEHOLDER, every beat tagged, flags a3_. The Americans
+speak short, plain English (the proponent's choice, true to the
+history), and every such line is followed by its Tagalog, in Macario's
+thought, so no student is left out; this is the one exception to
 Tagalog for all player-facing text, and a new English line keeps the
 rule of being given in Tagalog right after. Act IV is a registered
 stub, to be written the same way.
@@ -1145,14 +1146,11 @@ Since Block 113 the catalogue also has sundalo, the Spanish soldier of
 Act II's battles: an enemy made entirely of the bantay's art (his walk,
 his flinch, and the first three frames of his shot as a bayonet lunge),
 so a battle of many costs no new art. A bantay placed in the same
-spawnEnemies is a rifle, already hostile. Since Block 117, Act III's
-amerikano (hand to hand), sentinela (a rifle; a guard) and konstable
-(the Philippine Constabulary, hand to hand) are the sundalo and the
-bantay with a tint: any body, a guard, an enemy, an NPC or a
-decoration, may declare tint, a CSS filter drawn under the flash of a
-blow and the red ! (game.js, applyBodyTint; style.css, .body-tinted),
-so a fighter who shares another's art is still told apart until his
-own is drawn.
+spawnEnemies is a rifle, already hostile. Act III's amerikano (hand
+to hand), sentinela (a rifle; a guard) and konstable (the Philippine
+Constabulary, hand to hand; Block 117) have their own pictures, owed:
+the placeholder box until drawn (Block 118, the art rule under
+Conventions).
 
 A placement's own fields win over its type's, so a sentry can see
 further than the rest of his kind without a second type. A placement
@@ -1815,6 +1813,31 @@ practice, each one taken from those scenes:
   game ("Kumuha ka ng tatlo..." with nothing around it), and more than
   two lines in a row of pure information.
 
+THE PROPONENT'S SOURCES ARE THE SOURCE OF TRUTH (5 Oct 2026, Block
+118). A plot the proponent sends may label each sentence: [CONTEXT] (it
+happened in the world; Macario was not there), [MACARIO] (he did or
+lived it; the sources support it, or report it) and [INSERT] (invented,
+plausible, not in the sources). Sentences marked [CONTEXT] are
+background only: Macario is never present at those events and never
+appears in them; he may only learn of them secondhand, through news, a
+letter, a notice, rumour, someone telling him, or a black card. A beat
+in STORY.md carries its labels, and an insert of ours is labelled
+[INSERT] too, so a reader can tell what is sourced from what is not.
+What the labelled sources say wins over any earlier plot.
+
+NO ART THAT IS NOT THE ARTIST'S (5 Oct 2026, Block 118). Do not make,
+generate, recolour, tint or borrow a picture for a character, a thing
+or a place that has not been drawn: if the art is absent, the content
+names the picture it wants and the engine draws the placeholder (the
+dashed box with the file name, or the dark wall for a room), and ART.md
+lists it as owed. A stand-in of ours would be mistaken later for the
+real thing. What the game draws by design (the floors, the haircut's
+customer, the shadow trees, the work game's props) is not art in this
+sense and stays. Two stand-ins made before the rule, which the proponent saw and
+kept, stay until the proponent says otherwise: the stage clothes' gold
+tint (Block 85) and Act II's sundalo, made of the bantay's art (Block
+113).
+
 NO WATERED-DOWN NARRATIVES (the proponent, 4 Oct 2026: "I'm building a
 historical game, I don't care how safe it is"). The history is told as
 it happened and the story is allowed to hurt: people die, are lost,
@@ -2314,8 +2337,11 @@ look, by system:
     Act II; the meter twice as fast;      Block 113 (content/people.js,
       Act I accepted                      the sundalo, the press
                                           picture, fifteen enemies)
-    Act III; English for the Americans;   Block 117 (tint, the
-      the disguise                        customer, balatkayo)
+    Act III; English for the Americans;   Block 117 (the customer,
+      the disguise                        balatkayo)
+    the sources' labels; no borrowed art  Block 118 ([CONTEXT],
+                                          [MACARIO], [INSERT]; the
+                                          tint removed)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

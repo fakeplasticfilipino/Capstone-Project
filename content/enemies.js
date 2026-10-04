@@ -152,24 +152,24 @@ window.ENEMY_TYPES = {
   },
 };
 
-// Block 117. Act III's fighters, 1899 to 1902, until their own art is
-// drawn: the bantay's sheets in another colour (tint, game.js,
-// applyBodyTint), so a student can tell them from the Spanish of Act II
-// and from each other. ART.md, Stand-ins.
+// Block 117. Act III's fighters, 1899 to 1902. Their art is owed (ART.md),
+// so each is the dashed placeholder box with its file name until it is
+// drawn: at the proponent's word (Block 118) no fighter borrows another's
+// art, which would only be mistaken later for the real thing. They take
+// a blow and fight as every body does; sheets for a walk, a strike and a
+// flinch join them when the artist delivers.
 //
-//   amerikano   an American soldier hand to hand, the sundalo's lunge;
-//               the battles at Santa Mesa.
-//   sentinela   an American sentry with a rifle: on patrol in Manila (as
-//               the guardia civil were, catching rather than shooting
-//               where a scene says shoots: false), and the rifles in a
-//               battle.
+//   amerikano   an American soldier hand to hand; the battle in the hills.
+//   sentinela   an American sentry with a rifle: on patrol in Manila
+//               (catching rather than shooting where a scene says
+//               shoots: false), and the rifles in a battle. The same
+//               soldier's picture.
 //   konstable   the Philippine Constabulary, Filipinos in the Americans'
 //               uniform, hand to hand: the attack on the camp at Morong.
 (function () {
   const T = window.ENEMY_TYPES;
-  const AMERICAN = "sepia(1) saturate(1.7) brightness(1.45) hue-rotate(-8deg)";       // khaki
-  const CONSTABULARY = "sepia(1) hue-rotate(55deg) saturate(1.3) brightness(1.3)"; // olive
-  T.amerikano = Object.assign({}, T.sundalo, { tint: AMERICAN });
-  T.sentinela = Object.assign({}, T.bantay, { tint: AMERICAN });
-  T.konstable = Object.assign({}, T.sundalo, { tint: CONSTABULARY });
+  const owed = (name) => ({ src: "assets/sprites/enemies/" + name + ".png", frames: 1, fps: 1 });
+  T.amerikano = { kind: "enemy", hp: 2, animation: owed("amerikano") };
+  T.sentinela = { kind: "guard", shoots: true, hp: 2, speed: 1.3, detectRadius: 260, animation: owed("amerikano") };
+  T.konstable = { kind: "enemy", hp: 2, animation: owed("konstable") };
 })();

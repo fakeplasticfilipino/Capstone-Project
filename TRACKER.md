@@ -9,7 +9,15 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 5 Oct 2026, after Block 117. Block 117: Act III written,
+Last updated: 5 Oct 2026, after Block 118. Block 118: Act III revised
+against the proponent's labelled sources (the source of truth): Santa
+Mesa heard of from a runner, not shown, the opening fight a patrol in
+the hills; Macario at the Partido Nacionalista's founding and its
+Secretary-General, with Álvarez and Poblete; the Sedition Law read from
+a notice; President and Generalissimo, and the Republic's own flag;
+every beat tagged [CONTEXT], [MACARIO] or [INSERT]. No art borrowed or
+made for anyone not drawn: the tinted stand-ins removed, the fighters
+placeholders. Block 117: Act III written,
 1899 to 1902, end to end (Santa Mesa and the war, Manila under guard,
 the haircut on an American, the creed, Isko's surrender, the Sedition
 Law, the capture, the Republika ng Katagalugan and the vow, the
@@ -17,14 +25,14 @@ Brigandage Act; two battles of fifteen; the Americans in English, each
 line given in Tagalog). Block 116 (4 Oct): a guest who
 finishes Act I plays on into Act II, with no tests and nothing saved.
 Block 115: the suites in pieces, the story fast-forwarded under test and
-run side by side (both suites, 1,216 checks since Block 117, in about two minutes; CI
+run side by side (both suites, 1,217 checks since Block 118, in about two minutes; CI
 in four shards, about two and a half). Block 114: a floor drawn for each
 place, each job played once, the barber's game a haircut on a customer
 drawn in pixels. Block 113: Act II written, 1896 to 1898, as a tragedy;
 the detection meter twice as fast; Act I's lines accepted by the
 proponents. The proponent reported Blocks 98 to 112 working on the
-phone on 4 Oct 2026; Blocks 113, 114, 116 and 117 are not yet seen on
-a device (Next action 1). Earlier blocks: the Blocks list below, and
+phone on 4 Oct 2026; Blocks 113, 114, 116, 117 and 118 are not yet
+seen on a device (Next action 1). Earlier blocks: the Blocks list below, and
 DECISIONS.md. Both suites green locally and on CI. Everything is
 committed and pushed to main.
 
@@ -142,21 +150,26 @@ Jacinto, Bonifacio, the printer, the messenger, the press and the straw
 are owed (ART.md), drawn as placeholders. The soldiers are the bantay's
 art (the sundalo of the enemy catalogue).
 
-Act III, Ang Republika sa Lilim (Block 117), 1899 to 1902: six places
-(Santa Mesa at night; Act I's street under American guard, by day in
+Act III, Ang Republika sa Lilim (Blocks 117, 118), 1899 to 1902, from
+the proponent's labelled sources: six places (his band's camp in the
+hills outside Manila, where the news of Santa Mesa reaches him; Act I's
+street under American guard, by day in
 1899 and at night in 1902; the barbershop; a town plaza; Calle Gunao in
 Quiapo; the camp at Morong), fourteen steps in one chain, every line
-ours (+ in STORY.md, PLACEHOLDER in content/act3.js). The Americans
-speak English, every line given in Tagalog after it. Two battles of
-fifteen (Americans at Santa Mesa, the Constabulary at Morong), two
+ours (+ in STORY.md, PLACEHOLDER in content/act3.js), every beat
+tagged [CONTEXT], [MACARIO] or [INSERT]. Macario is never at a [CONTEXT]
+event. The Americans speak English, every line given in Tagalog after
+it. Two battles of fifteen (an American patrol in the hills, the
+Constabulary at Morong), two
 stealth runs past American sentries (the first in Maryam's disguise,
 the balatkayo), the haircut once more on an American, three counted
-steps (the creed taught, the petition signed, three doors), Isko's
-surrender, the Sedition Law read out, the capture at an oath, the
-Republika ng Katagalugan and the vow not to cut their hair. Nanay's
-fate stays unknown. Its five paintings and eight new people are owed
-(ART.md); its fighters are the bantay's art tinted khaki (the
-Americans) and olive (the Constabulary). Act IV is a registered stub.
+steps (the creed taught, the petition signed as the Partido
+Nacionalista's Secretary-General, three doors), Isko's surrender, the
+Sedition Law read from a notice, the capture at an oath, the Republika
+ng Katagalugan with its flag, Macario its President and Generalissimo,
+and the vow not to cut their hair. Nanay's fate stays unknown. Its
+paintings, its new people, its flag and its fighters are owed (ART.md):
+placeholders until drawn. Act IV is a registered stub.
 
 Enemies are content: content/enemies.js describes each kind
 once (bantay, kawal, the three siga of the opening, Act II's sundalo and
@@ -174,9 +187,10 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): thirty-one pictures, Act I's three (the
+in code. Still owed (ART.md): thirty-four pictures, Act I's three (the
 Barbero's chair, the Mananahi's sewing table, the pulungan's painting),
-Act II's fifteen and Act III's thirteen.
+Act II's fifteen and Act III's sixteen. No picture is made or borrowed
+for what is not drawn (CLAUDE.md, Conventions).
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
@@ -280,21 +294,24 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 
     Block 117, Act III. ?dev=1 lists thirteen points under Ang
       Republika sa Lilim; each opens its place with its task in the
-      log. From Ang simula: "Pebrero 4, 1899" at night; the lookout, the
-      sentry's "Halt!", "Halto!", the shot; fifteen Americans in khaki.
+      log. From Ang simula: "Pebrero 5, 1899" in the hills; a runner
+      with the news of Santa Mesa (Macario is never shown there); the
+      lookout, a patrol coming up; fifteen Americans (placeholder boxes).
       Tondo by day: Isko's letter (Jacinto dead), Maryam's trunk (the
-      disguise, Macario a little greyer), the sentries, the Mananahi and
+      disguise, in the bag; he looks the same), the sentries, the Mananahi and
       the stranger in Nanay's house. The barbershop: the haircut on a
       sandy-haired American who speaks English, the Tagalog after each
       line; that night the three from the pamphlets taught the creed.
       The town: the proclamation, Isko's surrender ("Raise your right
-      hand"). Calle Gunao: three signatures, the Sedition Law in English
-      and Tagalog. Tondo at night: three doors. The oath broken in on.
-      Morong: the vow, the Constabulary in olive, "Wakas ng Ikatlong
-      Yugto". New people and places are dashed boxes or dark walls:
-      expected. Failure: an English line with no Tagalog after it, a
-      black screen with nothing happening, a fighter who looks Spanish,
-      or the haircut's customer with Act I's black hair.
+      hand"). Calle Gunao: the founding, Macario named Secretary-
+      General, three signatures; months later Poblete brings the
+      printed Sedition Law. Tondo at night: three doors. The oath broken
+      in on. Morong: President and Generalissimo, the flag raised, the
+      vow, the Constabulary, "Wakas ng Ikatlong Yugto". New people,
+      places and fighters are dashed boxes or dark walls: expected.
+      Failure: Macario anywhere a [CONTEXT] event happens, an English
+      line with no Tagalog after it, a black screen with nothing
+      happening, or any fighter drawn with borrowed art.
 
     Block 113, Act I's play. ?dev=1, Ang dula: Don Rodrigo. After the
       fight the Sultan drops his kampilan, his kingdom falls, Maryam
@@ -322,15 +339,14 @@ the Talaan's papers (STORY.md, Open questions).
 4. The test questions: not ours. Teachers write and change them on the
 dashboard (CLAUDE.md, Standing decisions); nothing here tracks them.
 
-5. Art from the artist: ART.md's Owed list, thirty-one pictures since
-Block 117 (Act I's three: the pulungan's painting, the Mananahi's
+5. Art from the artist: ART.md's Owed list, thirty-four pictures since
+Block 118 (Act I's three: the pulungan's painting, the Mananahi's
 sewing table and the Barbero's chair; Act II's fifteen: seven
 paintings, Isko, Jacinto, Bonifacio, a printer, a messenger, the press,
 the straw and the scarecrow; Act III's thirteen: five paintings,
-Álvarez, Carreón, Montalan, a teacher, an interpreter, an American
-officer, the American in the barber's chair and the stranger in
-Nanay's house). Act III's fighters would also want their own sheets
-(ART.md, Stand-ins). PNGs with transparency; each goes through ART.md's steps.
+Álvarez, Poblete, Carreón, Montalan, a teacher, an American officer,
+the American in the barber's chair, the stranger in Nanay's house, the
+Katagalugan's flag, the American soldier and the Constabulary). PNGs with transparency; each goes through ART.md's steps.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
@@ -595,7 +611,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (803 and 413 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (803 and 414 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -793,7 +809,12 @@ machine, the assessment module.
         an American, the creed taught, Isko's surrender, the Sedition Law,
         the capture at an oath, the Republika ng Katagalugan and the vow,
         the Constabulary; the Americans in English with the Tagalog after;
-        tint for bodies sharing art; the haircut's customer
+        the haircut's customer
+    118 Act III revised against the proponent's labelled sources: Santa
+        Mesa only heard of, the founding of the Partido Nacionalista and
+        Macario its Secretary-General, the Sedition Law from a notice,
+        President and Generalissimo and the flag; beats tagged; no
+        borrowed or made art (the tint removed, fighters placeholders)
 
 ## Blocks remaining
 
@@ -935,7 +956,7 @@ test.js (803 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (413 checks, nine parts) drives
+what is covered. verify_new_scene.js (414 checks, nine parts) drives
 the real content: Act I end to end as a student, to the post-test
 opening; Acts II and III end to end as a guest; reloads mid-beat, old saves, a
 guest going on from Act I into Act II, every story point of ?dev=1 and

@@ -37,9 +37,12 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 5 Oct 2026, Block 117 (thirty-one owed: Act III names
-thirteen more, five places and eight people; its fighters are the
-bantay's art in another colour, under Stand-ins). Before that, 4 Oct
+Last updated: 5 Oct 2026, Block 118 (thirty-four owed: Act III revised
+against the proponent's sources names the hills instead of Santa Mesa,
+Pascual Poblete, the Katagalugan's flag, and its fighters' own pictures,
+the American soldier and the Constabulary, each a placeholder; no art is
+borrowed or made for what is not drawn). Before that, Block 117
+(thirty-one owed: Act III named thirteen more). Before that, 4 Oct
 2026, Block 113 (eighteen owed: Act II names
 fifteen pictures, seven rooms and outdoor places, five people and three
 things; none drawn yet, each a placeholder). Before that, 1 Oct 2026,
@@ -167,14 +170,15 @@ animate-still.js can move them; the things are stills.
 Act III (Block 117). As Act II's: the places one painting each, drawn
 once and not tiled, anchored at the bottom; the rooms one phone screen
 wide (barberya, bayan, calle-gunao, about 1180 in the game) and the two
-battlefields wide (santa-mesa and morong, 3200). The people side on
+battlefields wide (burol and morong, 3200). The people side on
 where they walk on. Each is a dark wall or a dashed box until it
 arrives.
 
-    assets/backgrounds/act3/santa-mesa.jpg
-        Santa Mesa, Manila, the night of 4 February 1899: the Filipino
-        line by a small bridge, an American blockhouse across it. The
-        game darkens it for night. Wide (3200). (NOT STARTED)
+    assets/backgrounds/act3/burol.jpg
+        Macario's band's camp in the hills outside Manila, February 1899:
+        a slope, a lookout, the city far below. Wide (3200). The game
+        does not show Santa Mesa itself: Macario was not there.
+        (NOT STARTED)
 
     assets/backgrounds/act3/barberya.jpg
         The Barbero's shop in Tondo, 1899: one room, a barber's chair, a
@@ -212,13 +216,30 @@ arrives.
         A Filipino teacher, 1901, a man in a barong: standing.
         (NOT STARTED)
 
-    assets/sprites/characters/tagasalin.png
-        A Filipino interpreter in American service, in a suit: side on;
-        he walks in. (NOT STARTED)
-
     assets/sprites/characters/opisyal.png
-        An American officer, 1901, in khaki with a campaign hat: side on;
-        he walks in, and sits at a table. (NOT STARTED)
+        An American officer, 1901, in khaki with a campaign hat, seated at
+        a table where men surrender. (NOT STARTED)
+
+    assets/sprites/characters/poblete.png
+        Pascual Poblete, writer and founder of the Partido Nacionalista,
+        1901, an older man in a coat: side on; he walks in.
+        (NOT STARTED)
+
+    assets/sprites/scenery/watawat-katagalugan.png
+        The flag of the Republika ng Katagalugan on its pole, raised at
+        Morong: a still at full height. (NOT STARTED)
+
+    assets/sprites/enemies/amerikano.png
+        An American soldier, 1899 to 1902: campaign hat, blue shirt,
+        khaki trousers, a Krag rifle with a bayonet. Side on. He fights
+        hand to hand and stands sentry with the rifle, so a walk, a
+        strike, a shot and a flinch are wanted in time (as the bantay
+        has); one still is a start. (NOT STARTED)
+
+    assets/sprites/enemies/konstable.png
+        A man of the Philippine Constabulary, 1902: a Filipino in the
+        Americans' khaki uniform and hat. Side on; he fights hand to
+        hand. (NOT STARTED)
 
     assets/sprites/characters/sundalong-amerikano.png
         An American private in a barber's chair, sandy hair, no hat, a
@@ -259,15 +280,6 @@ forgotten.
         Block 113) is the bantay's art: his walk, his flinch, and the
         first frames of his shot as a bayonet lunge. A soldier's own
         sheets would replace them.
-    Act III's fighters (Block 117): the American soldier (amerikano),
-        the American sentry with a rifle (sentinela) and the Philippine
-        Constabulary (konstable) of the enemy catalogue are the bantay's
-        sheets drawn in another colour (tint, game.js applyBodyTint),
-        and so are the two soldiers at the barbershop's doors. Their own
-        sheets would replace them: an American of 1899 to 1902 in a
-        campaign hat, and a Constabulary man in his khaki.
-    The disguise (balatkayo, Block 117) is a tint over Macario's own
-        sheets until a taho seller's clothes are drawn.
     Item tiles. No item ships (content/items.js is empty); each item
         added later names its own tile picture.
 

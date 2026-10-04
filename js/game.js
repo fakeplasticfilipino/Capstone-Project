@@ -1292,7 +1292,6 @@ function buildNpcs(token) {
     // NPC_WIDTH wide; only the picture changes size.
     const npcHeight = npc.displayHeight || DISPLAY_HEIGHT;
     mountBody(el, npc.x, NPC_WIDTH, npcHeight);
-    applyBodyTint(el, npc); // Block 117
     if (npc.hidden) el.style.display = "none";
 
     if (npc.scenery) {
@@ -1349,7 +1348,6 @@ function buildDecorations(token) {
     // A decoration has no body, so its x is simply where it stands: a
     // zero-width box, with the art's feet on it.
     mountBody(el, dec.x, 0, dec.displayHeight || DISPLAY_HEIGHT);
-    applyBodyTint(el, dec); // Block 117
     // Block 35. A decoration may start hidden, for a character who walks on
     // later in a scripted scene (showDecoration), and may be mirrored.
     dec.currentX = dec.x;
@@ -1839,17 +1837,6 @@ function bodyPlaceholder(el, filename, displayHeight, bodyWidth) {
 // relative to this box and may overhang it freely; the box is what the
 // camera, the debugging eye and the harness can trust to be where the
 // logic thinks the character is.
-// Block 117. A body drawn in another colour (def.tint, a CSS filter):
-// for a fighter who shares another's art until his own is drawn, the
-// Americans and the Constabulary in the bantay's (Act III). On the body,
-// as a custom property its sprites read (style.css, .body-tinted), so
-// the flash of a blow and the red ! of a tell still show over it.
-function applyBodyTint(el, def) {
-  if (!def || !def.tint) return;
-  el.classList.add("body-tinted");
-  el.style.setProperty("--body-tint", def.tint);
-}
-
 function mountBody(el, x, bodyWidth, height) {
   placeBody(el, x);
   el.style.width = bodyWidth + "px";
@@ -3069,7 +3056,6 @@ function mountGuard(guard, token) {
   el.className = "entity guard";
   el.id = "guard-" + guard.id;
   mountBody(el, guard.pos, GUARD_WIDTH);
-  applyBodyTint(el, guard); // Block 117
 
   const meter = document.createElement("div");
   meter.className = "guard-meter";
@@ -6499,7 +6485,6 @@ function spawnEnemies(defs) {
     el.className = "entity enemy";
     el.id = "enemy-" + def.id;
     mountBody(el, enemy.pos, ENEMY_WIDTH);
-    applyBodyTint(el, def); // Block 117
     const height = def.displayHeight || DISPLAY_HEIGHT;
 
     const meter = document.createElement("div");

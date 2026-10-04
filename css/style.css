@@ -4098,17 +4098,3 @@ body.dialogue-top .dialogue-portrait {
 .test-fast .intertitle-line {
   transition-duration: 0s !important;
 }
-
-/* Block 117. A body drawn in another colour (game.js, applyBodyTint): the
-   tint under the flash of a blow and the red ! of a tell, which are
-   added to it rather than replacing it. */
-.body-tinted .sprite {
-  filter: var(--body-tint);
-}
-.body-tinted.enemy-windup .sprite {
-  filter: var(--body-tint) brightness(1.7) saturate(3);
-}
-.body-tinted.enemy-hit .sprite,
-.body-tinted.guard-hit .sprite {
-  filter: var(--body-tint) brightness(2.2);
-}

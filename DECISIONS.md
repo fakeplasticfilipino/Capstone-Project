@@ -4978,6 +4978,59 @@ owed), every story point (thirteen more), and Act III end to end as a
 guest (verify_new_scene.js --only=act3), with no line ever said behind
 black.
 
+## Block 118: Act III against the proponent's labelled sources
+
+On 5 Oct 2026 the proponent sent Act III's sources again, each sentence
+labelled: [CONTEXT] (it happened in the world; Macario was not there,
+and may only learn of it secondhand), [MACARIO] (his, supported or
+reported by the sources) and [INSERT] (invented, plausible, not in the
+sources), with the note that the labels exist to stop events being
+mixed up again, and said that what was sent is the source of truth. The
+proponent also asked that no sprite be made for anyone not drawn: an
+absent picture is the placeholder, since a version of ours would only
+confuse later. The proponent had no energy to decide the open points,
+so they were decided here, on the sources.
+
+What Block 117 got wrong against them. Macario stood at Santa Mesa and
+saw the shot: [CONTEXT]. He watched an American officer read the
+Sedition Law out in the room: too close to placing him at a [CONTEXT]
+event. And two [MACARIO] facts were missing: he was at the founding of
+the Partido Nacionalista on Calle Gunao and became its
+Secretary-General, with Santiago Álvarez and Pascual Poblete; and he was
+the Katagalugan's President and Generalissimo, and it had its own flag.
+
+What was changed. The act opens in his band's camp in the hills outside
+Manila (an insert: the sources do not say where he was), where a runner
+(Act II's messenger) brings the news of Santa Mesa; the opening battle
+is kept, as an American patrol finding the band (an insert, consistent
+with his fighting on, and the proponent wants the fights). At Calle
+Gunao the scene is the founding: Poblete and Álvarez name him
+Secretary-General, and it is as Secretary-General that he gathers the
+petition's names. The Sedition Law reaches him months later as a
+printed notice Poblete brings, read in his own thought, the law's sense
+in English and then in Tagalog; the officer, the interpreter and the
+torn petition are gone. At Morong, Carreón names him President and
+Generalissimo, and a new step raises the Republic's flag before the vow.
+The Brigandage Act's card says, as the sources do, that the punishment
+is death. Every Act III beat in STORY.md now carries its labels, ours
+marked [INSERT] too, so the next reader sees what is sourced. The rule
+is in CLAUDE.md, Conventions, for every act.
+
+The art. Block 117 had drawn the Americans and the Constabulary as the
+bantay's sheets with a colour filter, and the disguise as a tint on
+Macario. That is a version of art nobody drew, which is what the
+proponent asked not to have. The tint was removed from the engine
+(applyBodyTint and its styles) and from the disguise; amerikano,
+sentinela and konstable name their own pictures, owed, and are the
+placeholder box until drawn, as are the two soldiers at the
+barbershop's doors. ART.md owes thirty-four. The rule is in CLAUDE.md
+too; the stage clothes' tint (Block 85) and the sundalo (Block 113),
+made before it and seen by the proponent, are left as they are until
+the proponent says otherwise.
+
+Checked: the content check, STORY.md, ART.md, every story point, and
+Act III end to end as a guest; both suites in full (1,217 checks).
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -1,8 +1,12 @@
 // =============================================================
 // MACARIO — content/act3.js
 //
-// ACT III, 1899 to 1902 (Block 117), from the proponent's plot. STORY.md,
-// "Act III, beat by beat", is every line. Every line here is ours, marked
+// ACT III, 1899 to 1902 (Block 117), from the proponent's plot, revised
+// in Block 118 against the proponent's labelled sources, which are the
+// source of truth: what is [CONTEXT] happened in the world without
+// Macario, and he only hears of it (news, a letter, a notice, a black
+// card); [MACARIO] is his, from the sources; [INSERT] is ours. STORY.md,
+// "Act III, beat by beat", is every line, each beat tagged. Every line here is ours, marked
 // PLACEHOLDER below each block of them, until the proponents accept or
 // replace it. The Americans speak short, plain English (the proponent's
 // choice), and what they say is given in Tagalog right after, by an
@@ -16,9 +20,10 @@
 // motif: the Barbero comes back, the haircut is played once more (on an
 // American), and the vow pays it off.
 //
-//   santa-mesa   4 February 1899, at night: the American sentry's
-//                "Halt!", the shot, and by morning war. Fifteen Americans
-//                in four waves, then the retreat, on black.
+//   burol        February 1899, his band in the hills outside Manila. A
+//                runner brings the news of Santa Mesa [CONTEXT]: war. An
+//                American patrol finds the band [INSERT]: fifteen in four
+//                waves, then the retreat, on black.
 //   tondo        May 1899, Act I's street under American guard. Isko's
 //                letter: Jacinto is dead. Maryam, at the shut theatre,
 //                dresses him from the costume trunk; past the sentries in
@@ -30,22 +35,27 @@
 //                to be sworn; he teaches them Bonifacio's creed.
 //   bayan        April 1901. Aguinaldo has sworn to America. Isko, with a
 //                child he has never seen, surrenders; Macario lets him go.
-//   calle-gunao  August 1901, Quiapo. The Partido Nacionalista: the
-//                peaceful road, a petition signed. November: the Sedition
-//                Law, read out in English and in Tagalog, the petition torn.
+//   calle-gunao  August 1901, Quiapo. The founding of the Partido
+//                Nacionalista with Álvarez and Poblete [MACARIO]; he is
+//                its Secretary-General, and gathers the petition's names.
+//                November: Poblete brings the printed Sedition Law
+//                [CONTEXT, read secondhand].
 //   tondo        January 1902, at night: word to three houses past the
 //                patrols.
 //   barberya     The oath, and at its height the door broken in: someone
 //                informed. Prison, the amnesty of 4 July 1902, on black.
 //   morong       The mountains: Carreón and Montalan, the Republika ng
-//                Katagalugan, the vow not to cut their hair. November: the
-//                Brigandage Act, and the Constabulary come shouting
-//                "bandido". The end.
+//                Katagalugan, Macario its President and Generalissimo, its
+//                flag raised, the vow not to cut their hair. November: the
+//                Brigandage Act, on black [CONTEXT], and the Constabulary
+//                come shouting "bandido" [INSERT]. The end.
 //
 // Wrapped in a function, as Act II is: the act files share one global
 // scope. The people who return are window.PEOPLE (content/people.js);
 // the fighters are the enemy catalogue's amerikano, sentinela and
-// konstable (content/enemies.js, the bantay's art tinted until drawn).
+// konstable (content/enemies.js), owed: placeholders until drawn. At the
+// proponent's word (Block 118) no picture is made or borrowed for anyone
+// not drawn: absent art is the placeholder, nothing else.
 // Every flag starts with a3_.
 //
 // Art. Every picture this act names and nobody has drawn yet (ART.md,
@@ -62,17 +72,16 @@
   const CARREON = owed("characters", "carreon");
   const MONTALAN = owed("characters", "montalan");
   const GURO = owed("characters", "guro");
-  const TAGASALIN = owed("characters", "tagasalin");
   const OPISYAL = owed("characters", "opisyal");
+  const POBLETE = owed("characters", "poblete");
+  const TAGAPAGBALITA = owed("characters", "tagapagbalita"); // Act II's, owed
+  const WATAWAT = owed("scenery", "watawat-katagalugan");
+  const AMERIKANO = owed("enemies", "amerikano");
+  const KONSTABLE = owed("enemies", "konstable");
   const SUKI_AMERIKANO = owed("characters", "sundalong-amerikano");
   const BAGONG_NAKATIRA = owed("characters", "bagong-nakatira");
   const MANLILIMBAG = owed("characters", "manlilimbag"); // Act II's, owed
   const SILYA = owed("scenery", "silya-barbero"); // Act I's chair, owed
-  // The bantay's standing still, in the Americans' colour, for a soldier
-  // who stands in a doorway rather than fights (ART.md, Stand-ins).
-  const BANTAY_STILL = window.ENEMY_TYPES.bantay.animation;
-  const AMERICAN_TINT = window.ENEMY_TYPES.sentinela.tint;
-  const CONSTABLE_TINT = window.ENEMY_TYPES.konstable.tint;
 
   // ---- The street ---------------------------------------------------
   // Act I's street. Joins at every multiple of 1450 (5800, 7250, 8700,
@@ -116,7 +125,8 @@
   const RECRUITS_X = [700, 850, 1000];
   const TABLE_X = 620;          // where the oath is sworn
   const MESA_X = 1000;          // the officer's table at the town hall
-  const BATTLE_WIDTH = 3200;    // Santa Mesa, and the camp at Morong
+  const BATTLE_WIDTH = 3200;    // the hills in 1899, and the camp at Morong
+  const FLAG_X = 1500;          // the Katagalugan's flag, at Morong
   const LOOKOUT_X = 2300;
 
   const BESIDE = 120;
@@ -193,50 +203,42 @@
   }
 
   // =============================================================
-  // Beat 1. Santa Mesa, 4 February 1899, at night. The Filipino line,
-  // the quiet, and the Americans "allies" who bought the country.
-  // PLACEHOLDER, every line.
+  // Beat 1. February 1899, his band in the hills outside Manila [INSERT:
+  // the sources do not say where he was]. Santa Mesa is [CONTEXT]: he is
+  // not there, and hears of it from a runner. PLACEHOLDER, every line.
   // =============================================================
-  async function theLine() {
+  async function theNews() {
     setCutscene(true);
-    await playIntertitle(["Pebrero 4, 1899", "Santa Mesa, Maynila"], { startBlack: true });
+    await playIntertitle(["Pebrero 5, 1899", "Sa kabundukan, sa labas ng Maynila"], { startBlack: true });
     await wait(300);
-    turnPlayer(-1);
+    placeDecoration("tagapagbalita", viewEdges().right + 80);
+    showDecoration("tagapagbalita", true);
+    await moveDecoration("tagapagbalita", playerX() + MEETS, 280);
     await playDialogue([
-      { speaker: "Isko", text: "Pangulo, ang tahimik ng gabi." },
-      { speaker: "Macario", text: "Tahimik ang Amerikano kapag may binabalak." },
-      { speaker: "Isko", text: "Kakampi raw natin sila, sabi ng mga heneral." },
+      { speaker: "Tagapagbalita", text: "Pangulo! Balita mula sa Maynila!" },
+      { speaker: "Tagapagbalita", text: "Kagabi, sa Santa Mesa, pinaputukan ng isang bantay na Amerikano ang ating mga sundalo." },
+      { speaker: "Tagapagbalita", text: "Sa buong paligid ng Maynila, naglalaban na tayo at ang mga Amerikano." },
+      { speaker: "Isko", text: "Pero kakampi raw natin sila, sabi ng mga heneral." },
       { speaker: "Macario", text: "Kakampi na bumili sa atin ng dalawampung milyong dolyar." },
-      { speaker: "Isko", text: "..." },
-      { speaker: "Macario", text: "Bantayan natin ang tulay. Ako ang sisilip." },
+      { speaker: "Macario", text: "..." },
+      { speaker: "Macario", text: "Digmaan na naman, Isko. Bantayan natin ang kampo." },
     ]);
-    turnPlayer(1);
+    await moveDecoration("tagapagbalita", -140, 280);
+    showDecoration("tagapagbalita", false);
     setCutscene(false);
   }
 
-  // At the lookout: the sentry's "Halt!", the mocking "Halto!", the shot
-  // (the histories' Private Grayson). PLACEHOLDER, every line.
-  async function theShot() {
+  // At the lookout: an American patrol below, coming for the band
+  // [INSERT]. PLACEHOLDER, every line.
+  async function thePatrol() {
     if (state.flags.a3_putok) return;
     setCutscene(true);
     await playDialogue([
-      { speaker: "Macario (sa isip)", text: "May gumagalaw sa kabila ng tulay..." },
-      { speaker: "Bantay na Amerikano", text: "Halt! Who goes there?" },
-      { speaker: "Macario (sa isip)", text: "\"Tigil! Sino 'yan?\"" },
-      { speaker: "Sundalong Pilipino", text: "Halto!" },
-      { speaker: "Bantay na Amerikano", text: "Halt!" },
+      { speaker: "Macario (sa isip)", text: "May gumagalaw sa ibaba ng burol..." },
+      { speaker: "Macario (sa isip)", text: "Mga Amerikano. Paakyat dito." },
+      { speaker: "Isko", text: "Pangulo! Natagpuan nila tayo!" },
+      { speaker: "Macario", text: "Hindi tayo tatakbo nang hindi lumalaban." },
     ]);
-    playSfx("gunShot");
-    await wait(260);
-    playSfx("gunShot");
-    await wait(300);
-    playSfx("hurt");
-    await playDialogue([
-      { speaker: "Sundalong Pilipino", text: "Ah—!" },
-      { speaker: "Isko", text: "Pangulo! Binaril nila tayo!" },
-      { speaker: "Macario", text: "Hindi na 'yan babala. Digmaan na 'yan." },
-    ]);
-    showDecoration("sundalong-pilipino", false);
     state.flags.a3_putok = true;
     markDirty();
     refreshNpcVisibility();
@@ -244,9 +246,9 @@
     setTimeout(() => runSceneScript(), 0);
   }
 
-  // Beat 2. The Americans come over the line: fifteen in four waves, then
-  // the retreat, and Manila under American guard, on black.
-  // PLACEHOLDER, every line.
+  // Beat 2. The patrol, and more behind it [INSERT]: fifteen in four
+  // waves, then the retreat, and Manila under American guard, on black
+  // [CONTEXT]. PLACEHOLDER, every line.
   async function theWar() {
     setCutscene(true);
     await wait(300);
@@ -266,12 +268,12 @@
     setCutscene(true);
     await wait(400);
     await playDialogue([
-      { speaker: "Isko", text: "Bumagsak na ang linya sa kabila, Pangulo!" },
-      { speaker: "Macario", text: "Umatras tayo. Mas kailangan ng bayan ang buhay natin kaysa sa lupang ito." },
+      { speaker: "Isko", text: "May dumarating pa sa ibaba, Pangulo!" },
+      { speaker: "Macario", text: "Umatras tayo. Mas kailangan ng bayan ang buhay natin kaysa sa burol na ito." },
     ]);
     state.flags.a3_lumaban = true;
     markDirty();
-    await playIntertitle(["Pebrero 5, 1899", "Bumagsak ang mga linya ng mga Pilipino sa paligid ng Maynila."],
+    await playIntertitle(["Sa mga sumunod na buwan, bumagsak ang mga linya ng mga Pilipino sa paligid ng Maynila."],
       { keepBlack: true });
     await playIntertitle(["Napasailalim sa bantay ng mga Amerikano ang Maynila.", "Nagtago si Macario."],
       { startBlack: true, keepBlack: true });
@@ -491,59 +493,57 @@
   }
 
   // =============================================================
-  // Beat 9. Calle Gunao: Santiago Álvarez and the Partido Nacionalista,
-  // the peaceful road. PLACEHOLDER, every line.
+  // Beat 9. Calle Gunao, August 1901: the founding of the Partido
+  // Nacionalista, Macario its Secretary-General, with Santiago Álvarez
+  // and Pascual Poblete [MACARIO]. A house on the street [INSERT: the
+  // sources give only the street]. PLACEHOLDER, every line.
   // =============================================================
-  async function thePeacefulRoad() {
+  async function theFounding() {
     setCutscene(true);
     await wait(400);
     await movePlayer(560 - BESIDE, 170);
     await playDialogue([
       { speaker: "Álvarez", text: "Sakay. Ang sabi nila, ikaw ang huling Katipunerong ayaw bumaba ng bundok." },
       { speaker: "Macario", text: "At kayo, Heneral Álvarez? Bumaba na kayo?" },
-      { speaker: "Álvarez", text: "Sa ibang daan na kami lalaban. Partido Nacionalista." },
-      { speaker: "Álvarez", text: "Hihingin natin sa mga Amerikano ang kalayaan. Nang hayagan. Nang mapayapa." },
+      { speaker: "Álvarez", text: "Sa ibang daan na kami lalaban." },
+      { speaker: "Poblete", text: "Isang partido, nang hayagan. Hihingin natin sa mga Amerikano ang kalayaan, ayon sa sarili nilang batas." },
       { speaker: "Macario", text: "Papel laban sa riple." },
       { speaker: "Álvarez", text: "Papel din ang Kalayaan, 'di ba? Ilang libo ang sumapi dahil doon." },
+      { speaker: "Poblete", text: "Partido Nacionalista. At kailangan namin ng Kalihim-Heneral na kilala ng taga-Tondo." },
+      { speaker: "Álvarez", text: "Ikaw, Sakay." },
+      { speaker: "Macario", text: "..." },
       { speaker: "Macario (sa isip)", text: "Kung may daang walang mamamatay... susubukan ko." },
-      { speaker: "Álvarez", text: "Kailangan natin ng mga pirma. Kausapin mo sila." },
+      { speaker: "Macario", text: "Tinatanggap ko." },
+      { speaker: "Poblete", text: "Kung gayon, Kalihim-Heneral, kailangan ng petisyon ang mga pirma." },
     ]);
     setCutscene(false);
   }
 
-  // Beat 10. November 1901: the Sedition Law, read in English and given
-  // in Tagalog by the interpreter; the petition torn. PLACEHOLDER.
+  // Beat 10. November 1901: the Sedition Law. Passed without him
+  // [CONTEXT]; Poblete brings the printed notice, and he reads it. The
+  // law's own words in English, then in Tagalog. PLACEHOLDER.
   async function theSeditionLaw() {
     setCutscene(true);
     await wait(300);
-    await playIntertitle(["Nobyembre 4, 1901"]);
-    placeDecoration("opisyal-gunao", ROOM + 80);
-    placeDecoration("tagasalin", ROOM + 180);
-    showDecoration("opisyal-gunao", true);
-    showDecoration("tagasalin", true);
+    await playIntertitle(["Nobyembre 1901"], { whileBlack: () => showDecoration("poblete", false) });
+    placeDecoration("poblete-pinto", ROOM + 80);
+    showDecoration("poblete-pinto", true);
     playSfx("door");
-    await Promise.all([
-      moveDecoration("opisyal-gunao", 820, 220),
-      moveDecoration("tagasalin", 960, 220),
-    ]);
+    await moveDecoration("poblete-pinto", playerX() + MEETS, 240);
     turnPlayer(1);
     await playDialogue([
-      { speaker: "Opisyal", text: "By order of the Philippine Commission. Act Number 292." },
-      { speaker: "Tagasalin", text: "Sa utos ng Komisyon ng Pilipinas. Batas Bilang 292." },
-      { speaker: "Opisyal", text: "Any person who advocates independence, by word or in writing, even by peaceful means, shall be punished." },
-      { speaker: "Tagasalin", text: "Ang sinumang magsulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, ay paparusahan." },
-      { speaker: "Opisyal", text: "Any person who joins a secret society commits a crime." },
-      { speaker: "Tagasalin", text: "Krimen na ang pagsapi sa lihim na samahan." },
-      { speaker: "Opisyal", text: "This petition is seditious." },
+      { speaker: "Poblete", text: "Sakay. Heneral. Basahin ninyo ito. Nakapaskil na sa buong Maynila." },
     ]);
     playSfx("page");
-    await wait(220);
-    playSfx("page");
     await playDialogue([
-      { speaker: "Tagasalin", text: "...Mapanghimagsik daw ang petisyon." },
+      { speaker: "Macario (sa isip)", text: "\"Act Number 292. November 4, 1901.\"" },
+      { speaker: "Macario (sa isip)", text: "\"Any person who advocates independence, by word or in writing, even by peaceful means, shall be punished.\"" },
+      { speaker: "Macario (sa isip)", text: "Ang sinumang magsulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, ay paparusahan." },
+      { speaker: "Macario (sa isip)", text: "At krimen na rin ang pagsapi sa lihim na samahan." },
       { speaker: "Álvarez", text: "Kahit ang paghingi." },
+      { speaker: "Poblete", text: "Ang petisyon natin... krimen na." },
       { speaker: "Macario (sa isip)", text: "Noon, sedula ang pinunit namin." },
-      { speaker: "Macario (sa isip)", text: "Ngayon, sila ang pumunit sa papel namin." },
+      { speaker: "Macario (sa isip)", text: "Ngayon, krimen na ang bawat papel namin." },
       { speaker: "Macario", text: "Wala nang ibang daan, Heneral." },
     ]);
     state.flags.a3_batas = true;
@@ -665,7 +665,32 @@
     setCutscene(false);
   }
 
-  // The vow: a young fighter offers to cut his hair. PLACEHOLDER.
+  // The Republic's own flag [MACARIO], raised with E once it is named.
+  // PLACEHOLDER.
+  async function raiseTheFlag() {
+    const f = state.flags;
+    if (!f.a3_itinatag) {
+      thinkAloud("Wala pang republikang magtataas nito.");
+      return;
+    }
+    if (f.a3_watawat) {
+      thinkAloud("Nakataas na. Sa amin.");
+      return;
+    }
+    setCutscene(true);
+    playSfx("fanfare");
+    await playDialogue([
+      { speaker: "Macario (sa isip)", text: "Hindi watawat ng Kastila. Hindi ng Amerika." },
+      { speaker: "Mga Kawal", text: "Mabuhay ang Republika ng Katagalugan!" },
+    ]);
+    f.a3_watawat = true;
+    markDirty();
+    setCutscene(false);
+    setTimeout(() => runSceneScript(), 0);
+  }
+
+  // The vow [MACARIO, reported]: a young fighter offers to cut his hair.
+  // PLACEHOLDER.
   async function theVow() {
     setCutscene(true);
     await wait(300);
@@ -694,15 +719,16 @@
     setTimeout(() => runSceneScript(), 0);
   }
 
-  // Beat 14. November 1902: the Brigandage Act, and the Constabulary at
-  // the camp. Then the end. PLACEHOLDER, every line.
+  // Beat 14. November 1902: the Brigandage Act, passed without him, on
+  // black [CONTEXT]; the Constabulary at the camp [INSERT]. Then the end.
+  // PLACEHOLDER, every line.
   async function theBandits() {
     setCutscene(true);
     await wait(300);
     await playIntertitle(["Nobyembre 12, 1902", "Ipinasa ng mga Amerikano ang Batas sa Bandolerismo."],
       { keepBlack: true });
-    await playIntertitle(["Ang sinumang patuloy na lumalaban ay hindi na sundalo.", "Isa na siyang bandido."],
-      { startBlack: true });
+    await playIntertitle(["Ang sinumang patuloy na lumalaban ay hindi na sundalo.",
+      "Isa na siyang bandido, at kamatayan ang parusa."], { startBlack: true });
     await wait(300);
     await playDialogue([
       { speaker: "Konstable", text: "Mga bandido! Sumuko kayo!" },
@@ -760,13 +786,13 @@
   const DEV_OATH = Object.assign({}, DEV_STREET_NIGHT, { a3_naipaalam: true },
     Object.fromEntries(PINTO_FLAGS.map((k) => [k, true])));
   const DEV_MORONG = Object.assign({}, DEV_OATH, { a3_handaNa: true, a3_nahuli: true, a3_saMorong: true });
-  const DEV_REPUBLIC = Object.assign({}, DEV_MORONG, { a3_itinatag: true, a3_republika: true });
+  const DEV_REPUBLIC = Object.assign({}, DEV_MORONG, { a3_itinatag: true, a3_watawat: true, a3_republika: true });
   const CLOTHES = ["damit-entablado"];
   const DISGUISE = ["damit-entablado", "balatkayo"];
   const DEV_JUMPS = [
-    { id: "simula", items: CLOTHES, label: "Ang simula: Santa Mesa (Pebrero 1899)", scene: "santa-mesa",
-      flags: {}, task: "Bantayan ang hangganan" },
-    { id: "labanan", items: CLOTHES, label: "Santa Mesa: ang labanan", scene: "santa-mesa",
+    { id: "simula", items: CLOTHES, label: "Ang simula: ang balita (Pebrero 1899)", scene: "burol",
+      flags: {}, task: "Bantayan ang kampo" },
+    { id: "labanan", items: CLOTHES, label: "Ang burol: ang labanan", scene: "burol",
       x: LOOKOUT_X - 100, facing: 1, flags: DEV_SHOT, task: "Labanan ang mga Amerikano" },
     { id: "tondo", items: CLOTHES, label: "Tondo, 1899: ang sulat", scene: "tondo",
       x: ARRIVE_X, facing: -1, flags: DEV_TONDO, task: "Basahin ang sulat ni Isko" },
@@ -824,7 +850,7 @@
 
     // One chain, in story order, the quest log (Block 48).
     //
-    //   1  the shot at Santa Mesa (theShot, at the lookout).
+    //   1  the news of Santa Mesa, the lookout, the patrol (thePatrol).
     //   2  the battle and the retreat (theWar, fifteen Americans).
     //   3  Isko's letter: Jacinto is dead (his gift button).
     //   4  Maryam's trunk: the disguise (her conversation).
@@ -832,15 +858,15 @@
     //   6  the haircut on the American (cutTheAmerican).
     //   7  the creed taught to three (n/3) and their oath.
     //   8  Aguinaldo's proclamation, and Isko goes home (iskoGoesHome).
-    //   9  the petition signed by three (n/3).
-    //  10  the Sedition Law (theSeditionLaw).
+    //   9  the founding, Secretary-General; the petition signed by three.
+    //  10  the Sedition Law, a printed notice (theSeditionLaw).
     //  11  word to three houses at night (n/3).
     //  12  the oath broken in on (theRaidOnTheOath): caught.
-    //  13  the Republika ng Katagalugan and the vow (theVow).
+    //  13  the Republika ng Katagalugan, its flag, and the vow (theVow).
     //  14  the Brigandage Act and the camp defended (theBandits): the end.
     linearObjectives: true,
     objectives: [
-      { id: "bantayan", label: "Bantayan ang hangganan", flag: "a3_putok" },
+      { id: "bantayan", label: "Bantayan ang kampo", flag: "a3_putok" },
       { id: "labanan", label: "Labanan ang mga Amerikano", flag: "a3_lumaban" },
       { id: "sulat", label: "Basahin ang sulat ni Isko", flag: "a3_nabasaAngSulat" },
       { id: "maryam", label: "Humingi ng tulong kay Maryam", flag: "a3_nagbihis" },
@@ -849,7 +875,7 @@
       { id: "aral", label: "Ituro ang aral ng Supremo", flag: "a3_balangay", countFlags: ARAL_FLAGS },
       { id: "proklama", label: "Basahin ang proklama", flag: "a3_umalisSiIsko" },
       { id: "petisyon", label: "Papirmahin ang petisyon", flag: "a3_pumirma", countFlags: PIRMA_FLAGS },
-      { id: "batas", label: "Pakinggan ang batas", flag: "a3_batas" },
+      { id: "batas", label: "Basahin ang batas", flag: "a3_batas" },
       { id: "tatlong_bahay", label: "Ipaalam sa tatlong bahay", flag: "a3_naipaalam", countFlags: PINTO_FLAGS },
       { id: "panunumpa", label: "Panumpain ang mga bagong kasapi", flag: "a3_nahuli" },
       { id: "republika", label: "Itatag ang Republika", flag: "a3_republika" },
@@ -881,18 +907,18 @@
 
     scenes: [
       {
-        // Beats 1 and 2. Santa Mesa, at night: the Filipino line, the
-        // lookout over the bridge, and the battle. Its painting is owed.
-        id: "santa-mesa",
+        // Beats 1 and 2. His band's camp in the hills outside Manila,
+        // February 1899 [INSERT]: the news of Santa Mesa, the lookout,
+        // and the battle. Its painting is owed.
+        id: "burol",
         worldWidth: BATTLE_WIDTH,
-        backdrop: { src: "assets/backgrounds/act3/santa-mesa.jpg" },
+        backdrop: { src: "assets/backgrounds/act3/burol.jpg" },
         ground: { floor: "damo" },
-        night: { music: NIGHT },
         dangerous: true,
         startX: 400,
         scripts: [
           { requiresFlag: "a3_putok", doneFlag: "a3_lumaban", run: theWar },
-          { doneFlag: "a3_simula", x: 400, facing: 1, run: theLine },
+          { doneFlag: "a3_simula", x: 400, facing: 1, run: theNews },
         ],
         pickups: [
           { id: "puso-sm-1", x: 900, type: "heart" },
@@ -900,7 +926,8 @@
           { id: "puso-sm-3", x: 2600, type: "heart" },
         ],
         decorations: [
-          { id: "sundalong-pilipino", x: 1900, animation: P.katipunero.idle, speakers: ["Sundalong Pilipino"] },
+          { id: "tagapagbalita", x: BATTLE_WIDTH + 80, hidden: true, animation: TAGAPAGBALITA,
+            faceMovement: true, speakers: ["Tagapagbalita"] },
         ],
         npcs: [
           {
@@ -908,13 +935,13 @@
             dialogueSets: [oneLine("Isko", "Ikaw ang sumilip, Pangulo. Dito lang ako.")],
           },
           {
-            // The lookout over the bridge: no picture, a body to reach.
+            // The lookout over the slope: no picture, a body to reach.
             id: "bantayan", x: LOOKOUT_X, label: "Bantayan", scenery: true,
             hiddenByFlag: "a3_putok",
             interactLabel: "Sumilip",
             interactIcon: "i-hand",
             dialogueSets: [],
-            onInteract: theShot,
+            onInteract: thePatrol,
           },
         ],
       },
@@ -1126,10 +1153,9 @@
         decorations: [
           { id: "suki", x: SILYA_X + 10, animation: SUKI_AMERIKANO, faceMovement: true,
             hidden: true, speakers: ["Sundalong Amerikano"] },
-          { id: "sundalo-likod", x: -100, hidden: true, animation: BANTAY_STILL, tint: AMERICAN_TINT,
-            speakers: ["Sundalong Amerikano"] },
-          { id: "konstable-pinto", x: ROOM + 60, hidden: true, animation: BANTAY_STILL, tint: CONSTABLE_TINT,
-            facing: -1, speakers: ["Konstable"] },
+          { id: "sundalo-likod", x: -100, hidden: true, animation: AMERIKANO, speakers: ["Sundalong Amerikano"] },
+          { id: "konstable-pinto", x: ROOM + 60, hidden: true, animation: KONSTABLE, facing: -1,
+            speakers: ["Konstable"] },
         ],
         npcs: [
           {
@@ -1245,7 +1271,7 @@
       },
       {
         // Beats 9 and 10. Calle Gunao, Quiapo: a house where the Partido
-        // Nacionalista meets. Its painting is owed.
+        // Nacionalista is founded [INSERT: the house]. Its painting is owed.
         id: "calle-gunao",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act3/calle-gunao.jpg" },
@@ -1254,20 +1280,19 @@
         startX: 150,
         scripts: [
           { requiresFlag: "a3_pumirma", doneFlag: "a3_batas", run: theSeditionLaw },
-          { requiresFlag: "a3_umalisSiIsko", doneFlag: "a3_saGunao", x: 150, facing: 1, run: thePeacefulRoad },
+          { requiresFlag: "a3_umalisSiIsko", doneFlag: "a3_saGunao", x: 150, facing: 1, run: theFounding },
         ],
         decorations: [
-          { id: "opisyal-gunao", x: ROOM + 80, hidden: true, animation: OPISYAL, faceMovement: true,
-            speakers: ["Opisyal"] },
-          { id: "tagasalin", x: ROOM + 180, hidden: true, animation: TAGASALIN, faceMovement: true,
-            speakers: ["Tagasalin"] },
+          // Poblete, standing at the meeting, and coming in in November.
+          { id: "poblete", x: 680, animation: POBLETE, facing: -1, speakers: ["Poblete"] },
+          { id: "poblete-pinto", x: ROOM + 80, hidden: true, animation: POBLETE, faceMovement: true },
         ],
         npcs: [
           {
             id: "alvarez", x: 560, label: "Álvarez", animation: ALVAREZ,
             // PLACEHOLDER.
             dialogueSets: [
-              oneLine("Álvarez", "Kailangan natin ng mga pirma, Sakay.", { skipIfFlag: "a3_pumirma" }),
+              oneLine("Álvarez", "Kailangan natin ng mga pirma, Kalihim-Heneral.", { skipIfFlag: "a3_pumirma" }),
               oneLine("Álvarez", "Kahit ang paghingi, Sakay. Kahit ang paghingi."),
             ],
           },
@@ -1305,8 +1330,8 @@
       },
       {
         // Beats 13 and 14. The camp in the mountains of Morong, 1902.
-        // Its painting is owed. Carreón and Montalan; the vow; the
-        // Constabulary's attack.
+        // Its painting is owed. Carreón and Montalan; the Republic and its
+        // flag; the vow; the Constabulary's attack.
         id: "morong",
         worldWidth: BATTLE_WIDTH,
         backdrop: { src: "assets/backgrounds/act3/morong.jpg" },
@@ -1315,7 +1340,7 @@
         startX: 400,
         scripts: [
           { requiresFlag: "a3_republika", doneFlag: "a3_wakas", run: theBandits },
-          { requiresFlag: "a3_itinatag", doneFlag: "a3_republika", run: theVow },
+          { requiresFlag: "a3_watawat", doneFlag: "a3_republika", run: theVow },
           { requiresFlag: "a3_nahuli", doneFlag: "a3_saMorong", x: 400, facing: 1, run: theMountains },
         ],
         pickups: [
@@ -1338,6 +1363,14 @@
             ],
           },
           {
+            // The Republic's flag, raised with E (raiseTheFlag). Owed.
+            id: "watawat", x: FLAG_X, label: "Watawat", animation: WATAWAT,
+            interactLabel: "Itaas ang watawat",
+            interactIcon: "i-hand",
+            dialogueSets: [],
+            onInteract: raiseTheFlag,
+          },
+          {
             id: "carreon", x: 1100, label: "Carreón", animation: CARREON,
             // PLACEHOLDER, every line.
             dialogueSets: [
@@ -1350,13 +1383,15 @@
                   { speaker: "Carreón", text: "At ng pangalan." },
                   { speaker: "Macario", text: "Republika ng Katagalugan." },
                   { speaker: "Macario", text: "Hindi ng Amerika. Hindi ng Cavite. Atin." },
-                  { speaker: "Carreón", text: "Kung gayon, ikaw ang Pangulo. Ako ang Ikalawang Pangulo." },
+                  { speaker: "Carreón", text: "Kung gayon, ikaw ang Pangulo at Heneralisimo. Ako ang Ikalawang Pangulo." },
                   { speaker: "Montalan", text: "At ako ang hahawak sa hukbo." },
+                  { speaker: "Carreón", text: "May sarili na rin tayong watawat. Itaas mo, Pangulo." },
                 ],
                 onComplete() {
                   state.flags.a3_itinatag = true;
                   markDirty();
-                  setTimeout(() => runSceneScript(), 0);
+                  refreshNpcVisibility();
+                  showToast("Itaas ang watawat ng Republika.", 3000);
                 },
               },
               oneLine("Carreón", "Republika ng Katagalugan. Maganda pakinggan, Pangulo."),
