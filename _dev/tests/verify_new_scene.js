@@ -2355,16 +2355,20 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        taught[2].lines.some((x) => /Pag-asa/.test(x)), taught);
     ok("their oath, the years on the move, Aguinaldo taken, and a town in April 1901",
        await playOn(page, "currentSceneId === 'bayan'", 30000));
-    c = await readLines(page, 3);
+    // Block 118: each arrival's script is played out (pressed through)
+    // before anything is used, however slow the machine (CI).
+    await playOn(page, "state.flags.a3_saBayan === true && !cutscenePlaying", 20000);
     await settle(page);
     await press(page, 420);
-    c = await readLines(page, 30, 4000);
+    // Exactly the wall (4) and Isko (17): not on into the next scene.
+    c = await readLines(page, 21, 6000);
     ok("the proclamation, and Isko goes home to a child he has never seen",
        c.lines.includes("Isko: May anak na po ako, Pangulo. Dalawang taon na. Hindi pa niya ako nakikilala.") &&
        c.lines.includes("Macario: Huwag kang mangako, Isko. Mabigat dalhin.") &&
        c.lines.includes("Opisyal: Raise your right hand."), c.lines);
     ok("Calle Gunao, Quiapo", await waitForScene(page, "calle-gunao", 20000));
-    c = await readLines(page, 12);
+    c = await readLines(page, 12, 6000);
+    await playOn(page, "state.flags.a3_saGunao === true && !cutscenePlaying", 20000);
     await settle(page);
     ok("the founding: Álvarez and Poblete, and Macario its Secretary-General (Block 118)",
        c.lines.includes("Macario: Papel laban sa riple.") && c.lines.includes("Álvarez: Ikaw, Sakay.") &&
@@ -2382,6 +2386,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("January 1902: Tondo at night", await waitForScene(page, "tondo", 20000) &&
        await page.evaluate(() => document.getElementById("skyline").classList.contains("night-tint")));
     await readLines(page, 2);
+    await playOn(page, "state.flags.a3_saGabi === true && !cutscenePlaying", 20000);
     await settle(page);
     ok("four patrols at night, and the task: three houses", (await on(page, "sentinela-gabi-")) === 4 &&
        await stepIs(page, "Ipaalam sa tatlong bahay"));
@@ -2394,6 +2399,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await press(page, 5300);
     ok("back to the barbershop", await waitForScene(page, "barberya"));
     await readLines(page, 2);
+    await playOn(page, "state.flags.a3_handaNa === true && !cutscenePlaying", 20000);
     await settle(page);
     await press(page, 560); // just left of the table
     c = await readLines(page, 30, 4000);
@@ -2403,6 +2409,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        c.lines.includes("Macario (sa isip): May nagturo."), c.lines);
     ok("prison, the amnesty, and the mountains of Morong", await waitForScene(page, "morong", 30000));
     c = await readLines(page, 5);
+    await playOn(page, "state.flags.a3_saMorong === true && !cutscenePlaying", 20000);
     await settle(page);
     await press(page, 1190); // just right of Carreón
     c = await readLines(page, 20, 4000);

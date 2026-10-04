@@ -3229,13 +3229,22 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("stepping just past reach does not cut it (the release band)",
        band.has && Math.abs(band.volume - 0.7) < 0.01, band);
 
+    // Block 118: watched until it has gone, up to three seconds, not
+    // read after a fixed 900 ms: the fade runs on the game's frames, and
+    // a busy machine (CI, two suites side by side) gives fewer of them.
     const left = await page.evaluate(() => new Promise((resolve) => {
       const e = nearSoundEls.get("assets/audio/sfx/horse.mp3");
       posX = 200;
-      setTimeout(() => resolve({
-        gone: !nearSoundEls.has("assets/audio/sfx/horse.mp3"),
-        paused: e.el.paused, rewound: e.el.currentTime === 0,
-      }), 900);
+      const t0 = performance.now();
+      const check = () => {
+        const gone = !nearSoundEls.has("assets/audio/sfx/horse.mp3");
+        if ((gone && e.el.paused) || performance.now() - t0 > 3000) {
+          resolve({ gone, paused: e.el.paused, rewound: e.el.currentTime === 0 });
+          return;
+        }
+        setTimeout(check, 50);
+      };
+      setTimeout(check, 300);
     }));
     ok("walking away fades it out and stops it", left.gone && left.paused, left);
     ok("rewound, so the next approach starts from the top", left.rewound, left);
