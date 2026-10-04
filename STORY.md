@@ -47,8 +47,13 @@ ours. Since Block 93 their spelling and grammar are corrected, at their
 request, with the wording and the meaning kept (po rather than 'ho,
 'Nay, rin and rito after a vowel, 'yung, no "Okay").
 
-Last updated: 4 Oct 2026, Block 113 (Act II, 1896 to 1898, beat by beat;
-Act I's lines accepted by the proponents, the + gone from them). Before
+Last updated: 4 Oct 2026, Block 114 (each job done once; the barber's
+game a haircut, with new lines for the Barbero and the customer, +; the
+proponents' lines that promised pay for every round reworded, +, the
+old wording beside them). Block 116 changes no story: a guest plays on
+from Act I into Act II. Before that, Block 113 (Act II, 1896 to 1898,
+beat by beat; Act I's lines accepted by the proponents, the + gone from
+them). Before
 that, 1 Oct 2026, Block 103 (no story change: on the pamphlet
 night the street is the three's and the guards' alone, the horse and
 the tahian too). Before that, Block 102 (the barber's game easier and
@@ -97,8 +102,8 @@ the teacher's, at three fixed places on the street).
 Act I, Ang Pinagmulan ni Macario. Tondo, 1890. A boy teased about the
 father who never came back learns that his mother spent the last of
 their money on her cedula, and goes out to earn. He takes work where it
-is, grooming a kutsero's horse, working a barber's chair and helping a
-mananahi sew, as often as he likes for a few barya a time, until she stops him and sends him with the
+is, grooming a kutsero's horse, cutting a customer's hair at a barber's
+chair and helping a mananahi sew, a few barya each, until she stops him and sends him with the
 theatre company's costumes, and he walks
 into their crisis: their lead actor is sick and the
 house is full. The costume he carried fits him. He goes on, forgets his

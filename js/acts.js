@@ -514,8 +514,11 @@ const Acts = {
   // never run for one, and a guest who finished Act I was left in the
   // pulungan with "Wala nang gawain." Called from markDirty (game.js)
   // for a guest only: once every objective of the act on screen is done,
-  // it shows the act's end, without a test or the next act, and the
-  // button goes back to the title screen.
+  // it shows the act's end, without a test. Since Block 116 (the
+  // proponent: a guest plays on, without tests and without saving) the
+  // button goes on into the next act when that act is written
+  // (enterActAsGuest); after the last written act it goes back to the
+  // title screen, as it always did.
   guestCheck() {
     if (currentUserId || this._guestEnded) return;
     if (!(window.Game && Game.isGuest && Game.isGuest())) return;
@@ -525,8 +528,21 @@ const Acts = {
     const total = this.objectivesFor(n).length;
     if (!total || this.countDone(n) < total) return;
     this._guestEnded = true;
+    const next = n + 1;
+    const nextAct = this.getAct(next);
+    const goesOn = Boolean(nextAct && this.objectivesFor(next).length);
     // After the act's own last card has faded, not over it.
     setTimeout(() => {
+      if (goesOn) {
+        this._screen({
+          eyebrow: `Natapos: ${ACT_ORDINALS[n] || "Yugto " + n}`,
+          title: "Magaling!",
+          body: "Natapos mo ang yugtong ito bilang bisita. Walang pagsusulit ang bisita, at hindi " +
+            `naitatala ang laro. Susunod: ${nextAct.titleTagalog || nextAct.title}`,
+          button: `Magpatuloy sa ${ACT_ORDINALS[next] || "Yugto " + next}`,
+        }).then(() => this.enterActAsGuest(next));
+        return;
+      }
       this._screen({
         eyebrow: `Natapos: ${ACT_ORDINALS[n] || "Yugto " + n}`,
         title: "Wakas",
@@ -534,7 +550,29 @@ const Acts = {
           "kaya walang pagsusulit. Mag-log in para maitala ang iyong paglalaro.",
         button: "Bumalik sa simula",
       }).then(() => location.reload());
-    }, 1500);
+    }, storyMs(1500));
+  },
+
+  // Block 116. The next act for a guest: enterAct without anything a
+  // guest does not have, no lock (that reads act_progress, which a guest
+  // never writes), no save, no session, no row, no trivia card and no
+  // tests. Flags, barya and what he carries stay in memory from the act
+  // before, as they would in a save, and the act opens the way a replay
+  // does (replayAct): its title card, then its first scene's script.
+  async enterActAsGuest(n) {
+    if (currentUserId || !(window.Game && Game.isGuest && Game.isGuest())) return false;
+    const act = this.getAct(n);
+    if (!act) return false;
+    if (window.Game && Game.resetStats) Game.resetStats();
+    this.current = n;
+    this.status = "playing";
+    this.loadTalaan(n);
+    clearQuests();
+    loadAct(act);
+    this._guestEnded = false;
+    await this.showActTitle(n);
+    enterWorldScripts();
+    return true;
   },
 
   // Recounts objectives from state.flags and writes only if the

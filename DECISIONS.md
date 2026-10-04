@@ -4870,6 +4870,43 @@ the whole of both suites, 1,154 checks, ran in 108 seconds against
 about fifteen minutes before; Act I's part, the longest, in 108
 seconds against 300 at a student's speed.
 
+## Block 116: a guest plays on into Act II; the trackers checked
+
+On 4 Oct 2026 the proponent asked for two things: that the tracker
+files be checked for being up to date, and that a guest be able to play
+Act II after finishing Act I, the only differences from a student being
+that nothing is saved and there are no tests.
+
+A guest who finished Act I met "Wakas" and a button back to the title
+(Scan S4, Block 110), because a guest has no act_progress and
+Acts.enterAct is a student's: it checks the lock against act_progress,
+saves, opens a session, makes the act's row, grants items to the
+database and runs the trivia card and the pre-test. Rather than guard
+each of those for a guest inside enterAct, a guest has a door of its
+own, enterActAsGuest, which does only what is left: the counters reset,
+the act made current, the Talaan papers read, the quest log cleared,
+the act loaded, its title card, and its first scene's script, the same
+two steps a replay ends with (replayAct). guestCheck offers it when the
+next act is written, meaning it declares objectives, so Acts III and IV,
+still stubs, are never offered and the end after Act II is the old
+"Wakas". Flags, barya and items stay in memory, as they would in a save,
+so Act II finds the stage clothes on him as a student's save would. The
+guest is never assessed, which keeps the study's data a student's only.
+
+The trackers. TRACKER.md's header still described Block 113 and older
+blocks as unseen on a device when the proponent had reported them
+working; its requirements table still named the barber's memory game,
+said only Act I used the story's scripts and that Acts II to IV had no
+questions "written" (they are the teacher's); the milestone said Acts II
+to IV had no content; the counts (802, 326) and the Verification section
+(seven and ten minutes, run one after the other, CI about eight minutes)
+were from before Block 115; and the art still owed was given as Act I's
+three. All of it was brought to the present, compressed, as the file
+asks. STORY.md said the jobs could be done as often as he liked; README
+said nothing of a guest's Act II; CLAUDE.md said resetStats had one
+caller. ART.md and its Owed list agree with the disk (prepare.js checks
+it).
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

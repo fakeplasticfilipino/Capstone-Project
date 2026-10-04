@@ -2394,8 +2394,9 @@ const visible = (page, sel) => page.evaluate((s) => {
         quiz: !document.getElementById("quiz").classList.contains("hidden"),
         rows: __DB.act_progress.length + __DB.assessment_scores.length };
     });
-    ok("a guest who finishes the act sees its end, no test, nothing written (S4)",
-       guestEnd.shown && guestEnd.title === "Wakas" && guestEnd.btn === "Bumalik sa simula" &&
+    // Block 116: with Act II written, the end offers it, not the title.
+    ok("a guest who finishes the act sees its end, no test, nothing written, and is offered the next act (S4, Block 116)",
+       guestEnd.shown && guestEnd.title === "Magaling!" && guestEnd.btn === "Magpatuloy sa Ikalawang Yugto" &&
        !guestEnd.quiz && guestEnd.rows === 0, guestEnd);
 
     await page.reload();

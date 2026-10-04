@@ -9,60 +9,19 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 4 Oct 2026, after Block 113 and its continuation
-(DECISIONS.md, both entries): Act II rebuilt at the proponent's word as
-a tragedy (the press first, then home; Nanay left unprotected and never
-found; the Kasama killed at San Juan del Monte), its stealth four
-stretches long, the frozen black end fixed in the engine, Act I's play
-ending in the Moorish kingdom's fall, and no watered-down narratives a
-standing rule (CLAUDE.md). Before that, the same day: Act II written,
-1896 to 1898, end to end (eight places, fourteen steps,
-fifteen soldiers at San Juan del Monte, its art owed as placeholders);
+Last updated: 4 Oct 2026, after Block 116. Block 116: a guest who
+finishes Act I plays on into Act II, with no tests and nothing saved.
+Block 115: the suites in pieces, the story fast-forwarded under test and
+run side by side (both suites, 1,157 checks, in about two minutes; CI
+in four shards, about two and a half). Block 114: a floor drawn for each
+place, each job played once, the barber's game a haircut on a customer
+drawn in pixels. Block 113: Act II written, 1896 to 1898, as a tragedy;
 the detection meter twice as fast; Act I's lines accepted by the
-proponents; content/people.js. The proponent reported Blocks 98 to 112
-working on the phone the same day. Before that, Block 112, the polish
-list for Acts II to IV (DECISIONS.md, Block 112): the dashboard, ?dev=1 and the checks
-cover every act; a content check in prepare.js; CLAUDE.md, Writing a
-new act; a scene's own road; speakers and the Talaan's places in
-content; CI annotates failures on a pinned runner; the stylesheet's
-dead declarations removed (computed styles proved identical); schema
-v10. Block 111 (3 Oct): the database's exposed functions closed (v8,
-v9) and guardrails for the live database (CLAUDE.md, Database). Before
-that, 3 Oct 2026, Block 110: the Scan list worked (below;
-everything a session can do is done, the rest waits on the proponent,
-the artist or the phone). The live database checked from the session
-the same day: healthy (Run log). The test questions are the teacher's,
-not a task here (CLAUDE.md, Standing decisions). Before
-that, 2 Oct 2026: Block 109 (generated stand-ins for the chair and the
-sewing table, tried and reverted at the proponent's word) and the scan
-of the whole repository; schema v5 confirmed run by the proponent the
-same day. Blocks 106 to 108, the same
-day: every ?v= a fingerprint written by node _dev/tools/prepare.js (run
-it before every commit; a hook and the first CI job check it), the
-animate tools shrink what they write, test.js --only; every moving body
-placed by translate (walking and the guards no longer lay out the
-street every frame; _dev/tools/profile.js measures it); and ?dev=1 on
-the title screen to start a guest from a point in the story. Block 105:
-the whole game kept on the
-phone after one visit (so a reload downloads nothing and a guest plays
-with no internet), the road drawn from the picture the loader waited
-for, the Supabase library in the repository instead of a CDN, and every
-sheet a quarter of its size (25 MB of assets down to about 13, the
-part the game downloads about 11, of which 5 is sound). Not yet seen on a device (Next
-action 1). Before that, 1 Oct 2026: Block 104, the suites run on GitHub
-Actions on every push (first run green, 12 minutes); Block 103, the horse and the sewing
-table away at night; Block 102, the pamphlet three's art, an easier
-barber, an empty night street; Block 101, the proponent's seven
-characters in place of old art and placeholders, and a calm idle;
-Block 100, the horse from the proponent's still; Block 99, people drawn
-side on turn to look at Macario; Block 98, six of the artist's stills;
-Block 97, one tool and a rig per character for animating any still;
-Block 96, the big siga from the artist's still. Blocks 90 to 97 were
-tested on the phone that day with no fault reported; Blocks 98 to 103
-have not been seen on a device yet (Next action 1). Earlier blocks:
-the Blocks list below, and DECISIONS.md. test.js 802 passed, 0 failed
-(locally, 4 Oct 2026); both suites green on CI. Everything is committed
-and pushed to main.
+proponents. The proponent reported Blocks 98 to 112 working on the
+phone on 4 Oct 2026; Blocks 113, 114 and 116 are not yet seen on a
+device (Next action 1). Earlier blocks: the Blocks list below, and
+DECISIONS.md. Both suites green locally and on CI. Everything is
+committed and pushed to main.
 
 A new session, on any device: git pull first; read CLAUDE.md, then
 this file's Start here and Next action, then STORY.md before touching
@@ -290,6 +249,14 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       not fall, a cut that never finishes, the screen too tall for the
       phone, or the page scrolling while cutting.
 
+    Block 116, a guest on into Act II. ?dev=1, Ang ulat at ang wakas
+      (or play Act I through as a guest): after "Wakas ng Unang Yugto" a
+      card says Magaling!, no test, and offers Magpatuloy sa Ikalawang
+      Yugto; it opens Act II's title and then the press, in the stage
+      clothes. At Act II's end, Wakas and back to the title. Failure: a
+      quiz or trivia card for a guest, Act II not offered, or Act II
+      opening on a black screen.
+
     Block 113, Act I's play. ?dev=1, Ang dula: Don Rodrigo. After the
       fight the Sultan drops his kampilan, his kingdom falls, Maryam
       leaves him, the crowd cheers. Failure: the old blessing, or the
@@ -425,9 +392,10 @@ only aggregate figures. Get that waiver in writing and keep it with the
 validation form. A panel asking about consent wants a document, not a
 recollection.
 
-Data collection covers Act I, since Acts II through IV have no content
-yet. Act I quality and the assessment instrument therefore outrank Act
-II content entirely.
+Data collection covers Act I. Act II is written (Block 113), but its
+lines wait on the proponents and it has no questions of its own yet (the
+teacher's), and Acts III and IV are stubs. Act I quality and the
+assessment instrument therefore outrank Act II content entirely.
 
 Freeze the software roughly ten days before the defense, to leave room
 for scheduling the session, running it, and analysing what comes back.
@@ -549,19 +517,19 @@ The paper specifies seventeen.
 
 | Requirement | Status |
 |---|---|
-| User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest for a quick look. A student can change the password in settings |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Acts I and II playable to their ends, fourteen objectives each, completing into their post-tests; Acts III and IV are stubs |
+| User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest: Acts I and II with nothing saved and no tests (Block 116). A student can change the password in settings |
+| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Acts I and II playable to their ends, fourteen objectives each, completing into their post-tests (an act with no questions skips its tests with a notice); a guest plays on from Act I into Act II; Acts III and IV are stubs |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
 | Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; shooting guards are covered by the harness fixture |
-| Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's memory game, tutorials that wait for the task, NPCs that open the shop |
-| Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. Act I uses them; Acts II to IV have none |
+| Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's haircut (Block 114), tutorials that wait for the task, NPCs that open the shop |
+| Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. Acts I and II use them; Acts III and IV have none |
 | Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113 |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (fixture; none ships) |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one item, the stage clothes (Block 82, worn, slower detection while still); the rest verified against the fixture |
 | Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No outfit ships yet; verified against the fixture |
-| Trivia | (BUILT) Act I built in and editable; Acts II to IV not written |
-| Act Assessment | (BUILT) Act I built in and editable; a 75% pass mark and a replay before another post-test try. Acts II to IV not written |
+| Trivia | (BUILT) Act I built in and editable; Acts II to IV have none yet (the teacher's, on the dashboard) |
+| Act Assessment | (BUILT) Act I built in and editable; a 75% pass mark and a replay before another post-test try. Acts II to IV have none yet (the teacher's) |
 | Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded, not scored |
 | Progress Tracking | (BUILT) Completion, scores and attempts, damage taken, detections, play time |
 | Teacher Monitoring | (BUILT) Class roster and summary per class, scoped by RLS, searchable and sortable; basic summaries, no charts, by decision. Also the questions editor and the Talaan papers |
@@ -579,7 +547,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (802 and 326 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (803 and 354 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -770,6 +738,8 @@ machine, the assessment module.
         fixed pauses, run.js running both suites in pieces side by side
         (about two minutes for all 1,154 checks, from about fifteen),
         CI in four parallel shards
+    116 a guest who finishes an act plays on into the next written one
+        (Act I into Act II), with no tests and nothing saved
 
 ## Blocks remaining
 
@@ -789,9 +759,9 @@ decided against the source material. (NOT STARTED)
 
 The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
 Block 85 except two. The item bank, one of them, is the teacher's
-(Block 110). The placeholder art it waited on has arrived: every
-person is drawn since Block 102; only the chair, the sewing table and
-the pulungan's painting are still owed (ART.md; BLOCKED). The list: DECISIONS.md,
+(Block 110). Act I's people are all drawn since Block 102; what is still owed,
+Act I's chair, sewing table and pulungan painting and Act II's fifteen,
+is ART.md's list (BLOCKED, the artist). The list: DECISIONS.md,
 Block 85.
 
 ## Blocked on other people
@@ -868,21 +838,25 @@ nothing is recorded until submission, so nothing is lost).
 ## Verification
 
 Since Block 104 GitHub Actions runs both suites on every push to main
-that changes anything but Markdown (.github/workflows/tests.yml), the
-two side by side on a fresh machine; the commit shows a green tick or a
-red cross, and the Actions tab says which check failed. Locally, run
-what a change touches while building, and both in full before a
-release to students (CLAUDE.md, Deployment, Testing a push).
+that changes anything but Markdown (.github/workflows/tests.yml); since
+Block 115 in pieces over four machines, about two and a half minutes.
+The commit shows a green tick or a red cross, and the Actions tab says
+which check failed. Locally, run the pieces a change touches while
+building, and both in full at a student's speed before a release to
+students (CLAUDE.md, Deployment, Testing a push).
 
 From the repository root:
 
     npm install
     node _dev/tools/prepare.js              before every commit, a second
-    node _dev/tests/test.js                 --only=BD,BL for sections
-    node _dev/tests/verify_new_scene.js
+    node _dev/tests/run.js                  both suites, in pieces, side by side
+    node _dev/tests/run.js verify:act2 test:BR    only those pieces
+    node _dev/tests/run.js --real           at a student's speed (a release)
+    node _dev/tests/test.js --only=BD,BL    one suite's sections; --list
+    node _dev/tests/verify_new_scene.js --only=act1   its parts; --list
 
-CI runs prepare.js --check first, in about a minute, and the two suites
-only once it passes (Block 106).
+CI runs prepare.js --check first, in seconds, and the suites only once
+it passes (Block 106).
 
 Setting up a computer that has never run them (done on the proponent's
 Windows computer, 1 Oct 2026): install Git and Node.js LTS (winget
@@ -900,33 +874,27 @@ headless shell by hand and unzip it where Playwright looks:
 npx playwright install chromium --dry-run prints both numbers (1243
 and 153.0.8010.12 for Playwright 1.63), and the harness says which path
 it wanted if it is still missing. A Playwright update needs it again.
-The suites take about 7 minutes (verify_new_scene.js) and 10 (test.js)
-there; run them one after the other, not at once.
+There run.js runs everything in about two minutes, and at a student's
+speed (--real) in about four and a half.
 
-test.js (802 checks) drives the shipping index.html with a stubbed
+test.js (803 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (326 checks; Act II since Block 113) drives the real
-content through Act I end to end, to the post-test opening, including
-reloads mid-beat, old saves,
-a guest, and checks that every line of the content is
-in STORY.md, that ART.md's Owed list matches the disk, and that the
-asset manifest matches assets/ and every picture in it opens, and that
-every sheet has been through shrink-sprites.js. Anything
-other than "0 failed" is a regression, with one caution learned on
-30 Sep 2026: on a busy machine verify_new_scene.js has twice failed a
-timing check (the pamphlet guard catch) or lost a page ("Page crashed")
-once, and passed on the next run; rerun before believing either.
-test.js did it once on 1 Oct 2026 ("after lighting up first, so the
-swing is readable": an enemy already mid-dash when the check starts
-watching for its red !), and passed on the rerun. Both never touch the
-live project. Both are green as of Block 112, on CI (about 8 minutes
-there), and test.js locally. The guard-catch flake was
-traced in Block 93: a siga's blow landing, at random, in the moment
-before the harness knocks the opening fight down left Macario short of
-hearts for the rest of the act, so the catch emptied them. That check
-now starts from full health.
+what is covered. verify_new_scene.js (354 checks, eight parts) drives
+the real content: Act I end to end as a student, to the post-test
+opening; Act II end to end as a guest; reloads mid-beat, old saves, a
+guest going on from Act I into Act II, every story point of ?dev=1 and
+its floor; and checks that every line of the content is in STORY.md,
+that ART.md's Owed list matches the disk, that the asset manifest
+matches assets/ and every picture in it opens, and that every sheet has
+been through shrink-sprites.js. Anything other than "0 failed" is a
+regression. Under test the story runs ten times faster (Block 115);
+the world a student plays against does not. Two old flakes are fixed:
+the pamphlet guard catch (Block 93: the check starts from full health)
+and the enemy's red ! (Block 115: watched by every class change, not a
+poll a busy machine can starve). A failure that passes on a rerun is
+still worth a look. Neither suite ever touches the live project.
 
 A check that clicks, or reads pixels, is worth more than one that reads
 a style (the dead Atake button would have passed any style assertion).

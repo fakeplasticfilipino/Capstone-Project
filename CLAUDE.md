@@ -462,7 +462,9 @@ game.js exposes window.Game and nothing else:
                          guest at that point in the story
     isGuest()
     stats()              { damageTaken, detections, playMs }, a copy
-    resetStats()         called by Acts.enterAct, and by nothing else
+    resetStats()         called by Acts.enterAct and, for a guest,
+                         Acts.enterActAsGuest (Block 116), and by
+                         nothing else
     setEffects(obj)      { maxHealthBonus, projectileSpeedMult,
                            stillDetectionMult }
     health()             { health, max }, a copy; Block 25
@@ -1561,6 +1563,16 @@ needs its rig traced again, not just the tool rerun.
 
 ## Scenes
 
+A guest (Block 14) plays the same story and writes nothing. Since
+Block 116 a guest who finishes an act goes on into the next one when it
+is written (it has objectives): Acts.guestCheck shows the act's end
+with no test and offers the next act, and Acts.enterActAsGuest opens it
+the way a replay does (its title card, then its first scene's script),
+with no lock, save, session, act_progress row, trivia card or test.
+Flags, barya and what he carries stay in memory. After the last
+written act the end screen goes back to the title. The tests stay a
+student's: a guest is never assessed.
+
 Scenes are changed with Acts.gotoScene(id), which is distinct from
 Acts.enterAct: the act, its objectives and its act_progress row are
 unchanged, only the location moves. The scene id is persisted in
@@ -2200,7 +2212,8 @@ look, by system:
       the reset, zoom, touch targets      DECISIONS.md (Blocks 1 to 12)
     sprite fitting and measuring          Blocks 15 to 17 (spriteFit,
                                           measure-sprite.js), 28, 35, 40
-    play as guest                         Block 14
+    play as guest                         Blocks 14, 116 (on into the
+                                          next act, no tests)
     palette and pixel theme               Blocks 15, 16, 29
     backdrops, panels and shadow trees    Blocks 18, 26, 43, 45, 46, 49,
                                           50, 51, 53, 54, 70

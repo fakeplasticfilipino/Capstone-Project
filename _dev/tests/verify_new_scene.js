@@ -1827,7 +1827,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     }
   }
 
-  if (part("guest", "a guest gets the same opening")) {
+  if (part("guest", "a guest: the same opening, and on into Act II")) {
     // ---------------------------------------------------------------
     console.log("\nGuest");
     const g = await newPage(browser, { session: null });
@@ -1846,6 +1846,48 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        await gp.page.evaluate(() => PICKUPS.filter((p) => p.type === "hint").length === 3 && hintList()[0].title === "Unang papel" &&
          !__DB.game_progress.length));
     await gp.ctx.close();
+
+    // Block 116. A guest who finishes Act I goes on into Act II: no
+    // trivia card, no tests, nothing written. From the last story point
+    // (the report), played out to the act's end.
+    console.log("\nA guest plays on into Act II (Block 116)");
+    const ga = await newPage(browser, { session: null });
+    const gpage = ga.page;
+    await gpage.goto("http://localhost:" + PORT + "/index.html?dev=1");
+    await gpage.waitForTimeout(400);
+    await gpage.selectOption("#shell-dev-jump", "1:ulat");
+    await gpage.click("#shell-dev-go");
+    const actScreen = () => gpage.evaluate(() => {
+      const up = !document.getElementById("act-screen").classList.contains("hidden");
+      return up ? { title: document.getElementById("act-screen-title").textContent,
+        body: document.getElementById("act-screen-body").textContent,
+        btn: document.querySelector("#act-screen-btn .lbl").textContent } : null;
+    });
+    // Through the report, the year after and its cards, pressing on
+    // through every line, until the act's end is on screen.
+    let end = null;
+    for (let t = 0; t < 60000 && !(end = await actScreen()); t += 60) {
+      if (await line(gpage)) await gpage.keyboard.press("e");
+      await gpage.waitForTimeout(60);
+    }
+    ok("at Act I's end the guest is offered Act II, with no test and nothing written",
+       end && end.title === "Magaling!" && end.btn === "Magpatuloy sa Ikalawang Yugto" && /Susunod:/.test(end.body) &&
+       await gpage.evaluate(() => !(__DB.game_progress || []).length && !(__DB.act_progress || []).length &&
+         !(__DB.assessment_scores || []).length && document.getElementById("quiz").classList.contains("hidden")), end);
+    await gpage.click("#act-screen-btn");
+    await gpage.waitForTimeout(200);
+    const title2 = await actScreen();
+    ok("Act II's title card", title2 && title2.title === "Ang Mahabang Anino ng Digmaan" && title2.btn === "Simulan", title2);
+    await gpage.click("#act-screen-btn");
+    for (let t = 0; t < 8000 && !(await line(gpage)); t += 100) await gpage.waitForTimeout(100);
+    const into = await gpage.evaluate(() => ({ act: Acts.current, scene: currentSceneId, guest: Game.isGuest(),
+      clothes: Inventory.owns("damit-entablado"), quiz: !document.getElementById("quiz").classList.contains("hidden"),
+      trivia: !document.getElementById("act-screen").classList.contains("hidden"),
+      written: ["game_progress", "act_progress", "assessment_scores", "game_sessions"].reduce((a, t) => a + (__DB[t] || []).length, 0) }));
+    ok("then straight into Act II's opening at the press, still a guest, the stage clothes kept, no test, nothing written",
+       into.act === 2 && into.scene === "imprenta" && into.guest && into.clothes && !into.quiz && !into.trivia &&
+       into.written === 0 && Boolean(await line(gpage)), into);
+    await ga.ctx.close();
   }
 
   if (part("act2", "Act II end to end, and a reload mid-charge")) {

@@ -79,7 +79,8 @@ Accounts cannot be self-registered. They are created by an
 administrator, through the Supabase dashboard or create_accounts.js, and
 students must be assigned to a class or the dashboard shows nothing. The
 title screen also offers Maglaro bilang Bisita, play as a guest: nothing
-about a guest session is saved.
+about a guest session is saved, there are no tests, and a guest who
+finishes Act I plays on into Act II.
 
 ## Layout
 
