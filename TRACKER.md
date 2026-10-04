@@ -9,17 +9,22 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 4 Oct 2026, after Block 116. Block 116: a guest who
+Last updated: 5 Oct 2026, after Block 117. Block 117: Act III written,
+1899 to 1902, end to end (Santa Mesa and the war, Manila under guard,
+the haircut on an American, the creed, Isko's surrender, the Sedition
+Law, the capture, the Republika ng Katagalugan and the vow, the
+Brigandage Act; two battles of fifteen; the Americans in English, each
+line given in Tagalog). Block 116 (4 Oct): a guest who
 finishes Act I plays on into Act II, with no tests and nothing saved.
 Block 115: the suites in pieces, the story fast-forwarded under test and
-run side by side (both suites, 1,157 checks, in about two minutes; CI
+run side by side (both suites, 1,216 checks since Block 117, in about two minutes; CI
 in four shards, about two and a half). Block 114: a floor drawn for each
 place, each job played once, the barber's game a haircut on a customer
 drawn in pixels. Block 113: Act II written, 1896 to 1898, as a tragedy;
 the detection meter twice as fast; Act I's lines accepted by the
 proponents. The proponent reported Blocks 98 to 112 working on the
-phone on 4 Oct 2026; Blocks 113, 114 and 116 are not yet seen on a
-device (Next action 1). Earlier blocks: the Blocks list below, and
+phone on 4 Oct 2026; Blocks 113, 114, 116 and 117 are not yet seen on
+a device (Next action 1). Earlier blocks: the Blocks list below, and
 DECISIONS.md. Both suites green locally and on CI. Everything is
 committed and pushed to main.
 
@@ -135,12 +140,28 @@ six soldiers; it ends with Jacinto in Laguna and 1897 and 1898 on
 black. Its paintings, Isko,
 Jacinto, Bonifacio, the printer, the messenger, the press and the straw
 are owed (ART.md), drawn as placeholders. The soldiers are the bantay's
-art (the sundalo of the enemy catalogue). Acts III and IV are
-registered stubs.
+art (the sundalo of the enemy catalogue).
+
+Act III, Ang Republika sa Lilim (Block 117), 1899 to 1902: six places
+(Santa Mesa at night; Act I's street under American guard, by day in
+1899 and at night in 1902; the barbershop; a town plaza; Calle Gunao in
+Quiapo; the camp at Morong), fourteen steps in one chain, every line
+ours (+ in STORY.md, PLACEHOLDER in content/act3.js). The Americans
+speak English, every line given in Tagalog after it. Two battles of
+fifteen (Americans at Santa Mesa, the Constabulary at Morong), two
+stealth runs past American sentries (the first in Maryam's disguise,
+the balatkayo), the haircut once more on an American, three counted
+steps (the creed taught, the petition signed, three doors), Isko's
+surrender, the Sedition Law read out, the capture at an oath, the
+Republika ng Katagalugan and the vow not to cut their hair. Nanay's
+fate stays unknown. Its five paintings and eight new people are owed
+(ART.md); its fighters are the bantay's art tinted khaki (the
+Americans) and olive (the Constabulary). Act IV is a registered stub.
 
 Enemies are content: content/enemies.js describes each kind
-once (bantay, kawal, and the three siga of the opening) and scenes place
-them by type.
+once (bantay, kawal, the three siga of the opening, Act II's sundalo and
+Act III's amerikano, sentinela and konstable) and scenes place them by
+type.
 
 Art: Macario's idle, walk, jump, punch and shot are the artist's; so
 are the street paintings, the inside of the entablado, the Mananahi,
@@ -153,9 +174,9 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): eighteen pictures, Act I's three (the
-Barbero's chair, the Mananahi's sewing table, the pulungan's painting)
-and Act II's fifteen.
+in code. Still owed (ART.md): thirty-one pictures, Act I's three (the
+Barbero's chair, the Mananahi's sewing table, the pulungan's painting),
+Act II's fifteen and Act III's thirteen.
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
 everything read, self-hosted. Sound: calm.mp3 as the music, intense.mp3
@@ -257,6 +278,24 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
       quiz or trivia card for a guest, Act II not offered, or Act II
       opening on a black screen.
 
+    Block 117, Act III. ?dev=1 lists thirteen points under Ang
+      Republika sa Lilim; each opens its place with its task in the
+      log. From Ang simula: "Pebrero 4, 1899" at night; the lookout, the
+      sentry's "Halt!", "Halto!", the shot; fifteen Americans in khaki.
+      Tondo by day: Isko's letter (Jacinto dead), Maryam's trunk (the
+      disguise, Macario a little greyer), the sentries, the Mananahi and
+      the stranger in Nanay's house. The barbershop: the haircut on a
+      sandy-haired American who speaks English, the Tagalog after each
+      line; that night the three from the pamphlets taught the creed.
+      The town: the proclamation, Isko's surrender ("Raise your right
+      hand"). Calle Gunao: three signatures, the Sedition Law in English
+      and Tagalog. Tondo at night: three doors. The oath broken in on.
+      Morong: the vow, the Constabulary in olive, "Wakas ng Ikatlong
+      Yugto". New people and places are dashed boxes or dark walls:
+      expected. Failure: an English line with no Tagalog after it, a
+      black screen with nothing happening, a fighter who looks Spanish,
+      or the haircut's customer with Act I's black hair.
+
     Block 113, Act I's play. ?dev=1, Ang dula: Don Rodrigo. After the
       fight the Sultan drops his kampilan, his kingdom falls, Maryam
       leaves him, the crowd cheers. Failure: the old blessing, or the
@@ -275,23 +314,30 @@ PAMPHLET_GUARDS in content/act1.js).
 Act II (PLACEHOLDER in content/act2.js), the names ours gave (Isko, the
 Manlilimbag, the Tagapagbalita), Bonifacio's and Jacinto's words, and
 Act II's three Talaan papers, against the source book (STORY.md, Open
-questions).
+questions). And Act III's (Block 117) the same way: every + line, the
+Americans' English, Bonifacio's three precepts as taught, Aguinaldo's
+proclamation and the Sedition Law in our words, the names ours gave and
+the Talaan's papers (STORY.md, Open questions).
 
 4. The test questions: not ours. Teachers write and change them on the
 dashboard (CLAUDE.md, Standing decisions); nothing here tracks them.
 
-5. Art from the artist: ART.md's Owed list, eighteen pictures since
-Block 113 (Act I's three: the pulungan's painting, the Mananahi's
+5. Art from the artist: ART.md's Owed list, thirty-one pictures since
+Block 117 (Act I's three: the pulungan's painting, the Mananahi's
 sewing table and the Barbero's chair; Act II's fifteen: seven
 paintings, Isko, Jacinto, Bonifacio, a printer, a messenger, the press,
-the straw and the scarecrow). PNGs with transparency; each goes through ART.md's steps.
+the straw and the scarecrow; Act III's thirteen: five paintings,
+Álvarez, Carreón, Montalan, a teacher, an interpreter, an American
+officer, the American in the barber's chair and the stranger in
+Nanay's house). Act III's fighters would also want their own sheets
+(ART.md, Stand-ins). PNGs with transparency; each goes through ART.md's steps.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
 
-6. Then the remaining polish, the pilot, and Acts III and IV against the
-source material, Act III starting from STORY.md, Threads left open
-(Act II's: the promise to Nanay, the Americans).
+6. Then the remaining polish, the pilot, and Act IV against the source
+material, starting from STORY.md, Threads left open (Act III's: the
+hair, Nanay, Isko, the Barbero, the informer, "bandido").
 
 7. The Scan list (2 Oct 2026, below): worked in Block 110. Left: run
 reset_test_accounts.sql before a full-flow test (S37; it deletes the
@@ -394,7 +440,8 @@ recollection.
 
 Data collection covers Act I. Act II is written (Block 113), but its
 lines wait on the proponents and it has no questions of its own yet (the
-teacher's), and Acts III and IV are stubs. Act I quality and the
+teacher's); Act III is written the same way (Block 117); Act IV is a
+stub. Act I quality and the
 assessment instrument therefore outrank Act II content entirely.
 
 Freeze the software roughly ten days before the defense, to leave room
@@ -496,7 +543,8 @@ framework is complete. Act I is playable from the opening to its end,
 fourteen objectives on one street, in the entablado and in the
 pulungan, and completes into its post-test (Block 80). Act II is
 playable end to end, fourteen objectives in eight places (Block 113),
-its art owed. Acts III and IV are registered stubs.
+its art owed. Act III is playable end to end, fourteen objectives in
+six places (Block 117), its art owed. Act IV is a registered stub.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health, equipment,
 cosmetic rewards. (IN PROGRESS) All four are built and tested against
@@ -518,12 +566,12 @@ The paper specifies seventeen.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest: Acts I and II with nothing saved and no tests (Block 116). A student can change the password in settings |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Acts I and II playable to their ends, fourteen objectives each, completing into their post-tests (an act with no questions skips its tests with a notice); a guest plays on from Act I into Act II; Acts III and IV are stubs |
+| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Acts I, II and III playable to their ends, fourteen objectives each, completing into their post-tests (an act with no questions skips its tests with a notice); a guest plays on from act to act, as far as Act III; Act IV is a stub |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
 | Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; shooting guards are covered by the harness fixture |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's haircut (Block 114), tutorials that wait for the task, NPCs that open the shop |
-| Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. Acts I and II use them; Acts III and IV have none |
+| Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. Acts I to III use them; Act IV has none |
 | Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113 |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (fixture; none ships) |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one item, the stage clothes (Block 82, worn, slower detection while still); the rest verified against the fixture |
@@ -547,7 +595,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (803 and 354 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (803 and 413 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -740,17 +788,23 @@ machine, the assessment module.
         CI in four parallel shards
     116 a guest who finishes an act plays on into the next written one
         (Act I into Act II), with no tests and nothing saved
+    117 Act III, 1899 to 1902, end to end: Santa Mesa and fifteen
+        Americans, Tondo under guard in Maryam's disguise, the haircut on
+        an American, the creed taught, Isko's surrender, the Sedition Law,
+        the capture at an oath, the Republika ng Katagalugan and the vow,
+        the Constabulary; the Americans in English with the Tagalog after;
+        tint for bodies sharing art; the haircut's customer
 
 ## Blocks remaining
 
 Act I's lines and history checked by the proponents. (COMPLETE, 4 Oct
 2026)
 
-Act II's lines checked by the proponents (Next action, 3). (NOT
-STARTED)
+Act II's and Act III's lines checked by the proponents (Next action,
+3). (NOT STARTED)
 
-Act II written (Block 113). (COMPLETE) Acts III and IV against the
-source material. (NOT STARTED) An act without questions skips its
+Act II written (Block 113). (COMPLETE) Act III written (Block 117).
+(COMPLETE) Act IV against the source material. (NOT STARTED) An act without questions skips its
 tests with a notice, which is deliberate; the questions are the
 teacher's.
 
@@ -881,9 +935,9 @@ test.js (803 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (354 checks, eight parts) drives
+what is covered. verify_new_scene.js (413 checks, nine parts) drives
 the real content: Act I end to end as a student, to the post-test
-opening; Act II end to end as a guest; reloads mid-beat, old saves, a
+opening; Acts II and III end to end as a guest; reloads mid-beat, old saves, a
 guest going on from Act I into Act II, every story point of ?dev=1 and
 its floor; and checks that every line of the content is in STORY.md,
 that ART.md's Owed list matches the disk, that the asset manifest

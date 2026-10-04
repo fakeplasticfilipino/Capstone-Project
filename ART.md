@@ -37,7 +37,10 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 4 Oct 2026, Block 113 (eighteen owed: Act II names
+Last updated: 5 Oct 2026, Block 117 (thirty-one owed: Act III names
+thirteen more, five places and eight people; its fighters are the
+bantay's art in another colour, under Stand-ins). Before that, 4 Oct
+2026, Block 113 (eighteen owed: Act II names
 fifteen pictures, seven rooms and outdoor places, five people and three
 things; none drawn yet, each a placeholder). Before that, 1 Oct 2026,
 Block 102 (three owed: the proponent's
@@ -161,6 +164,71 @@ animate-still.js can move them; the things are stills.
         and a red band), standing like a man: a still at full height.
         (NOT STARTED)
 
+Act III (Block 117). As Act II's: the places one painting each, drawn
+once and not tiled, anchored at the bottom; the rooms one phone screen
+wide (barberya, bayan, calle-gunao, about 1180 in the game) and the two
+battlefields wide (santa-mesa and morong, 3200). The people side on
+where they walk on. Each is a dark wall or a dashed box until it
+arrives.
+
+    assets/backgrounds/act3/santa-mesa.jpg
+        Santa Mesa, Manila, the night of 4 February 1899: the Filipino
+        line by a small bridge, an American blockhouse across it. The
+        game darkens it for night. Wide (3200). (NOT STARTED)
+
+    assets/backgrounds/act3/barberya.jpg
+        The Barbero's shop in Tondo, 1899: one room, a barber's chair, a
+        mirror, the door on the right; by night (the game darkens it) a
+        meeting place. (NOT STARTED)
+
+    assets/backgrounds/act3/bayan.jpg
+        A town plaza, April 1901: a wall with a printed proclamation, and
+        on the right an American officer's table where men queue to
+        surrender. (NOT STARTED)
+
+    assets/backgrounds/act3/calle-gunao.jpg
+        A house on Calle Gunao, Quiapo, August 1901: a sala where the
+        Partido Nacionalista meets, papers on a table. (NOT STARTED)
+
+    assets/backgrounds/act3/morong.jpg
+        The camp in the mountains of Morong, 1902: huts among trees on a
+        slope, the Republika ng Katagalugan's flag. Wide (3200).
+        (NOT STARTED)
+
+    assets/sprites/characters/alvarez.png
+        Santiago Álvarez, a Katipunan general turned to the Partido
+        Nacionalista, about thirty, in a coat: side on, standing.
+        (NOT STARTED)
+
+    assets/sprites/characters/carreon.png
+        Francisco Carreón, an old Katipunero, Vice President of the
+        Katagalugan: side on, standing, long hair. (NOT STARTED)
+
+    assets/sprites/characters/montalan.png
+        Julian Montalan, the Katagalugan's general: side on, standing,
+        long hair, a bolo. (NOT STARTED)
+
+    assets/sprites/characters/guro.png
+        A Filipino teacher, 1901, a man in a barong: standing.
+        (NOT STARTED)
+
+    assets/sprites/characters/tagasalin.png
+        A Filipino interpreter in American service, in a suit: side on;
+        he walks in. (NOT STARTED)
+
+    assets/sprites/characters/opisyal.png
+        An American officer, 1901, in khaki with a campaign hat: side on;
+        he walks in, and sits at a table. (NOT STARTED)
+
+    assets/sprites/characters/sundalong-amerikano.png
+        An American private in a barber's chair, sandy hair, no hat, a
+        barber's cape: side on, seated, and he walks out after. (NOT
+        STARTED)
+
+    assets/sprites/characters/bagong-nakatira.png
+        A woman living now in Nanay's house, a stranger: standing.
+        (NOT STARTED)
+
 ## Stand-ins
 
 Art that exists and is on screen, but is not the artist's final work
@@ -191,6 +259,15 @@ forgotten.
         Block 113) is the bantay's art: his walk, his flinch, and the
         first frames of his shot as a bayonet lunge. A soldier's own
         sheets would replace them.
+    Act III's fighters (Block 117): the American soldier (amerikano),
+        the American sentry with a rifle (sentinela) and the Philippine
+        Constabulary (konstable) of the enemy catalogue are the bantay's
+        sheets drawn in another colour (tint, game.js applyBodyTint),
+        and so are the two soldiers at the barbershop's doors. Their own
+        sheets would replace them: an American of 1899 to 1902 in a
+        campaign hat, and a Constabulary man in his khaki.
+    The disguise (balatkayo, Block 117) is a tint over Macario's own
+        sheets until a taho seller's clothes are drawn.
     Item tiles. No item ships (content/items.js is empty); each item
         added later names its own tile picture.
 
@@ -198,12 +275,13 @@ forgotten.
 
 Drawn by the game itself, not owed by anyone: the shadow trees over
 every join (_dev/tools/make-shadow-tree.py), the work game's brush, cloth and
-needle (CSS, Block 90), the barber's game (CSS and its icons, Block 94), the night on the pamphlet run (a tint over the
+needle (CSS, Block 90), the barber's haircut and its customers (pixels
+drawn by game.js, Block 114; the American's hair, Block 117), the night on the pamphlet run (a tint over the
 day's paintings, Block 85, so no night painting is owed), platforms,
 crates, hazards, heart pickups, bullets, the guard's sight cone, the
 dust, the Talaan's papers, and every icon (inline SVG in index.html).
 
-## Acts III and IV
+## Act IV
 
-No content yet, so nothing is named and nothing is owed. Their
-characters and backdrops join the Owed list as the acts are written.
+No content yet, so nothing is named and nothing is owed. Its
+characters and backdrops join the Owed list as the act is written.

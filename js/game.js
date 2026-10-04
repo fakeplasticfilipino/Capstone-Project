@@ -1292,6 +1292,7 @@ function buildNpcs(token) {
     // NPC_WIDTH wide; only the picture changes size.
     const npcHeight = npc.displayHeight || DISPLAY_HEIGHT;
     mountBody(el, npc.x, NPC_WIDTH, npcHeight);
+    applyBodyTint(el, npc); // Block 117
     if (npc.hidden) el.style.display = "none";
 
     if (npc.scenery) {
@@ -1348,6 +1349,7 @@ function buildDecorations(token) {
     // A decoration has no body, so its x is simply where it stands: a
     // zero-width box, with the art's feet on it.
     mountBody(el, dec.x, 0, dec.displayHeight || DISPLAY_HEIGHT);
+    applyBodyTint(el, dec); // Block 117
     // Block 35. A decoration may start hidden, for a character who walks on
     // later in a scripted scene (showDecoration), and may be mirrored.
     dec.currentX = dec.x;
@@ -1837,6 +1839,17 @@ function bodyPlaceholder(el, filename, displayHeight, bodyWidth) {
 // relative to this box and may overhang it freely; the box is what the
 // camera, the debugging eye and the harness can trust to be where the
 // logic thinks the character is.
+// Block 117. A body drawn in another colour (def.tint, a CSS filter):
+// for a fighter who shares another's art until his own is drawn, the
+// Americans and the Constabulary in the bantay's (Act III). On the body,
+// as a custom property its sprites read (style.css, .body-tinted), so
+// the flash of a blow and the red ! of a tell still show over it.
+function applyBodyTint(el, def) {
+  if (!def || !def.tint) return;
+  el.classList.add("body-tinted");
+  el.style.setProperty("--body-tint", def.tint);
+}
+
 function mountBody(el, x, bodyWidth, height) {
   placeBody(el, x);
   el.style.width = bodyWidth + "px";
@@ -3056,6 +3069,7 @@ function mountGuard(guard, token) {
   el.className = "entity guard";
   el.id = "guard-" + guard.id;
   mountBody(el, guard.pos, GUARD_WIDTH);
+  applyBodyTint(el, guard); // Block 117
 
   const meter = document.createElement("div");
   meter.className = "guard-meter";
@@ -5933,11 +5947,22 @@ const CUT_SCISSORS = {
 const CUT_TIP = { x: 4, y: 2 }; // the part of the sprite that cuts
 
 // The customer, front on: what lies under the hair (base), and the hair
-// (0 none, 1 the cut he wants, 2 the extra). Built once; a game copies
-// the hair.
-function cutModel() {
-  if (cutModel.made) return cutModel.made;
-  const C = CUT_COLOURS;
+// (0 none, 1 the cut he wants, 2 the extra). Built once for each kind of
+// customer; a game copies the hair. customer (Block 117), optional:
+// { hair, hairLight, hairShine } colours and moustache: false.
+function cutColours(customer) {
+  const c = customer || {};
+  return Object.assign({}, CUT_COLOURS,
+    c.hair ? { hair: c.hair } : {}, c.hairLight ? { hairLight: c.hairLight } : {},
+    c.hairShine ? { hairShine: c.hairShine } : {});
+}
+
+function cutModel(customer) {
+  const key = JSON.stringify(customer || {});
+  const made = cutModel.made || (cutModel.made = {});
+  if (made[key]) return made[key];
+  const C = cutColours(customer);
+  const moustache = !(customer && customer.moustache === false);
   const base = new Array(CUT_W * CUT_H);
   const hair = new Uint8Array(CUT_W * CUT_H);
   const cx = 32;
@@ -5982,11 +6007,13 @@ function cutModel() {
     put(cx + s * 5, 25, C.ink);
   }
   put(cx, 27, C.skinShade); put(cx, 28, C.skinShade); put(cx - 1, 29, C.skinShade); put(cx + 1, 29, C.skinShade);
-  for (let x = cx - 4; x <= cx + 4; x++) put(x, 31, C.hair);
-  put(cx - 5, 32, C.hair); put(cx + 5, 32, C.hair);
+  if (moustache) {
+    for (let x = cx - 4; x <= cx + 4; x++) put(x, 31, C.hair);
+    put(cx - 5, 32, C.hair); put(cx + 5, 32, C.hair);
+  }
   for (let x = cx - 2; x <= cx + 2; x++) put(x, 33, C.mouth);
-  cutModel.made = { base, hair };
-  return cutModel.made;
+  made[key] = { base, hair };
+  return made[key];
 }
 
 function playCutGame(opts) {
@@ -6000,8 +6027,8 @@ function playCutGame(opts) {
   const resultEl = document.getElementById("cut-result");
   const stopBtn = document.getElementById("cut-stop");
   const ctx2d = canvas.getContext("2d");
-  const C = CUT_COLOURS;
-  const model = cutModel();
+  const C = cutColours(o.customer); // Block 117
+  const model = cutModel(o.customer);
   const who = o.speaker ? o.speaker + ": " : "";
 
   return new Promise((resolve) => {
@@ -6472,6 +6499,7 @@ function spawnEnemies(defs) {
     el.className = "entity enemy";
     el.id = "enemy-" + def.id;
     mountBody(el, enemy.pos, ENEMY_WIDTH);
+    applyBodyTint(el, def); // Block 117
     const height = def.displayHeight || DISPLAY_HEIGHT;
 
     const meter = document.createElement("div");

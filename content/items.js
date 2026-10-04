@@ -70,4 +70,21 @@ window.ITEMS = [
     // toward the gold of a stage costume, so a student can see it is on.
     tint: "sepia(0.55) saturate(1.6) hue-rotate(-12deg) brightness(1.05)",
   },
+  // Block 117. Act III: a taho seller's clothes from the theatre's trunk,
+  // which Maryam gives him in 1899 (Inventory.grant, then equip, from
+  // content/act3.js), so the American sentries in Manila do not know
+  // him. Standing still in them he is all but invisible to a sentry
+  // (0.1): nobody looks twice at a vendor. Worn in the outfit slot, in
+  // place of the stage clothes, until he swears never to cut his hair at
+  // Morong and puts his own clothes back on. Not for sale; no tile
+  // picture and no sheets (a tint until drawn), so no art is owed.
+  {
+    id: "balatkayo", name: "Balatkayo ng Magtataho", kind: "equipment", slot: "outfit",
+    description: "Damit ng magtataho mula sa baul ng entablado. Walang tumitingin nang dalawang " +
+      "beses sa isang tindero: habang nakatayo ka nang tahimik, halos hindi ka mapansin ng mga bantay.",
+    price: 0,
+    effect: { stillDetectionMult: 0.1 },
+    replayRemoves: true,
+    tint: "sepia(0.35) saturate(0.7) brightness(0.92)",
+  },
 ];

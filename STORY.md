@@ -47,7 +47,8 @@ ours. Since Block 93 their spelling and grammar are corrected, at their
 request, with the wording and the meaning kept (po rather than 'ho,
 'Nay, rin and rito after a vowel, 'yung, no "Okay").
 
-Last updated: 4 Oct 2026, Block 114 (each job done once; the barber's
+Last updated: 5 Oct 2026, Block 117 (Act III, 1899 to 1902, beat by
+beat, every line +). Before that, 4 Oct 2026, Block 114 (each job done once; the barber's
 game a haircut, with new lines for the Barbero and the customer, +; the
 proponents' lines that promised pay for every round reworded, +, the
 old wording beside them). Block 116 changes no story: a guest plays on
@@ -1641,6 +1642,609 @@ its own slot.
   + [HINT] Ang pagkatuklas: Noong Agosto 19, 1896, ipinagtapat ng isang kasapi, si Teodoro Patiño, ang lihim ng Katipunan kay Padre Mariano Gil, ang kura ng Tondo. Hinalughog ng mga Kastila ang isang imprenta, at nagsimula ang malawakang paghuli.
   + [HINT] Ang Sigaw at ang San Juan del Monte: Noong huling linggo ng Agosto 1896, pinunit ng mga Katipunero ang kanilang mga sedula bilang tanda ng paghihimagsik. Noong Agosto 30, 1896, nilusob nila ang polvorin ng mga Kastila sa San Juan del Monte. Mahigit 150 Katipunero ang nasawi.
 
+## Act III, beat by beat
+
+Block 117, from the proponent's plot (1899 to 1902). Every line is ours,
+marked + here and PLACEHOLDER in content/act3.js, until the proponents
+accept or replace it. Every flag starts with a3_. At the proponent's
+word: the Americans speak short, plain English, true to the history, and
+what they say is given in Tagalog right after (Macario's thought, or an
+interpreter), so no student is left out; Isko surrenders in 1901 to go
+home to a child he has never seen; the informer in 1902 is unnamed, as
+the record leaves him; all fourteen beats, with two big fights.
+
+The spine: whoever controls the words controls the war. A law calls
+asking for freedom sedition and a soldier a bandit; Macario answers by
+naming his own republic. He begins the act hiding in a disguise, the
+actor's trade turned to survival, and ends it swearing never to cut his
+hair until the country is free, where anyone can see him. Hair is the
+motif: the Barbero comes back, the haircut is played once more (on an
+American), and the vow pays it off.
+
+Places, in order: santa-mesa (the Filipino line, at night, 3200 wide),
+tondo (Act I's street, under American guard), barberya (the Barbero's
+shop, one room), bayan (a town plaza, April 1901), calle-gunao (a house
+in Quiapo), tondo again (January 1902, at night), barberya again, and
+morong (the camp in the mountains, 3200). Every painting of Act III is
+owed (ART.md): until drawn, each is a dark wall with its file name on it.
+
+New people, owed as placeholder boxes: Santiago Álvarez, Francisco
+Carreón, Julian Montalan, a teacher (Guro), an interpreter (Tagasalin),
+an American officer (Opisyal), an American private in the barber's
+chair, and the stranger in Nanay's house. Isko, the Barbero, Maryam, the
+Mananahi, the direktor, the Manlilimbag and the three who took the
+pamphlets return. The fighters are the enemy catalogue's amerikano,
+sentinela and konstable, the bantay's art drawn in another colour until
+their own is drawn.
+
+### 1. Santa Mesa
+
+santa-mesa, at night. Plays by itself the first time a student enters
+Act III.
+
+  + [BLACK] Pebrero 4, 1899
+  + [BLACK] Santa Mesa, Maynila
+
+  + Isko: Pangulo, ang tahimik ng gabi.
+  + Macario: Tahimik ang Amerikano kapag may binabalak.
+  + Isko: Kakampi raw natin sila, sabi ng mga heneral.
+  + Macario: Kakampi na bumili sa atin ng dalawampung milyong dolyar.
+  + Isko: ...
+  + Macario: Bantayan natin ang tulay. Ako ang sisilip.
+
+The lookout over the bridge (x 2300), "Sumilip". The shot is the
+histories' (an American sentry, Private Grayson, firing on Filipino
+soldiers who answered his "Halt" with a mocking "Halto"):
+
+  + Macario (sa isip): May gumagalaw sa kabila ng tulay...
+  + Bantay na Amerikano: Halt! Who goes there?
+  + Macario (sa isip): "Tigil! Sino 'yan?"
+  + Sundalong Pilipino: Halto!
+  + Bantay na Amerikano: Halt!
+
+    (Two shots. The Filipino soldier falls.)
+
+  + Sundalong Pilipino: Ah—!
+  + Isko: Pangulo! Binaril nila tayo!
+  + Macario: Hindi na 'yan babala. Digmaan na 'yan.
+
+Completes: Bantayan ang hangganan. Before it, Isko:
+
+  + Isko: Ikaw ang sumilip, Pangulo. Dito lang ako.
+
+### 2. The war
+
+santa-mesa, straight on.
+
+  + Isko: Ayan na sila!
+
+The battle, at the proponent's word a big one: fifteen Americans in four
+waves, from both sides of the screen (amerikano, hand to hand; a
+sentinela, a rifle, in each of the last two), three hearts on the field.
+Between waves:
+
+  + Macario (sa isip): Hindi sila tumitigil...
+  + Isko: May mga kanyon sila, Pangulo!
+  + Macario (sa isip): Mas marami pa sila kaysa sa mga Kastila...
+
+Then:
+
+  + Isko: Bumagsak na ang linya sa kabila, Pangulo!
+  + Macario: Umatras tayo. Mas kailangan ng bayan ang buhay natin kaysa sa lupang ito.
+
+  + [BLACK] Pebrero 5, 1899
+  + [BLACK] Bumagsak ang mga linya ng mga Pilipino sa paligid ng Maynila.
+  + [BLACK] Napasailalim sa bantay ng mga Amerikano ang Maynila.
+  + [BLACK] Nagtago si Macario.
+  + [BLACK] Mayo 1899
+  + [BLACK] Tondo
+
+Completes: Labanan ang mga Amerikano.
+
+### 3. Tondo under guard: the letter
+
+tondo, from the east end (x 12500), by day. American sentries at the
+corners. On arrival:
+
+  + Macario (sa isip): Mga Amerikano sa bawat kanto.
+  + Macario (sa isip): Dito ako lumaki. Ngayon, kailangan kong magtago rito.
+
+Isko (x 12200) has a letter from Laguna: his button, "Basahin ang
+sulat". Emilio Jacinto died at Majayjay, Laguna, on 16 April 1899, of
+malaria, aged twenty-three; "Hanggang dulo" is what he said to Macario
+at the end of Act II.
+
+  + Isko: Pangulo... may sulat po. Galing Laguna.
+  + Macario (sa isip): "Abril 16, 1899. Majayjay, Laguna."
+  + Macario (sa isip): "Pumanaw si Ginoong Emilio Jacinto. Malarya ang kumuha sa kanya."
+  + Macario (sa isip): "Dalawampu't tatlong taong gulang."
+  + Macario: ...
+  + Macario (sa isip): "Hanggang dulo," sabi niya.
+  + Isko: Pangulo...
+  + Macario: Hindi pa tapos, Isko. Hindi pa.
+
+Completes: Basahin ang sulat ni Isko. Afterwards:
+
+  + Isko: Mag-ingat kayo, Pangulo. Hihintayin ko kayo.
+
+### 4. Maryam's trunk
+
+tondo, at the shut entablado (x 13250). Her question from Act I ("Sino
+ba talaga 'yung dalawang lalaki noon?") is answered by the years.
+Before the letter:
+
+  + Maryam: Macario? Buhay ka!
+
+After it:
+
+  + Maryam: Macario? ...Ikaw nga!
+  + Maryam: Tatlong taon. Wala man lang sulat.
+  + Macario: Walang sulat na ligtas, Maryam.
+  + Maryam: Alam ko na ngayon kung sino 'yung dalawang lalaki noon.
+  + Maryam: Sarado na ang entablado. Binabantayan ng mga Amerikano ang bawat dula.
+  + Macario: Kailangan kong makarating sa barberya nang hindi nila ako nakikilala.
+  + Maryam: ...
+  + Maryam: Artista ka, 'di ba?
+  + Maryam: Nasa akin pa ang baul ng mga damit.
+  + Maryam: Ayan. Magtataho. Walang tumitingin nang dalawang beses sa tindero.
+  + Maryam: Yumuko ka, at huwag kang magmadali. Ang nagmamadali, may itinatago.
+  + Macario: Salamat, Maryam.
+  + Maryam: Huwag kang magpapahuli, ha. Wala na akong ibang kapareha sa entablado.
+
+He puts on the disguise (the balatkayo, a taho seller's clothes from the
+theatre's trunk, worn in place of the stage clothes): standing still in
+it a sentry all but never notices him.
+
+  + (a notice) Suot mo ang balatkayo. Tumigil kapag nakatingin ang bantay.
+
+Completes: Humingi ng tulong kay Maryam. Afterwards:
+
+  + Maryam: Yumuko ka, Macario. Huwag kang magmadali.
+
+### 5. Past the sentries
+
+tondo, west to the barbershop's door (x 5260), "Pumasok sa barberya".
+Four American sentries walk the street between (11300 to 11750, 9300 to
+9750, 7500 to 7950, 5900 to 6300), each with cover in his beat; they
+catch, not shoot, and a catch puts him back at the last point he passed.
+On the way, not on the task's path but there to be found:
+
+The Mananahi (x 6400), once:
+
+  + Mananahi: Macario? Iho...
+  + Mananahi: Hinintay ka ng nanay mo. Araw-araw, sa pinto.
+  + Mananahi: Isang umaga, wala na siya. Bukas ang pinto. Walang nakakita.
+  + Macario: ...
+  + Mananahi: Patawarin mo ako. Wala akong nagawa.
+
+and then:
+
+  + Mananahi: Mag-ingat ka, iho. Marami nang nagbago rito.
+
+Past the barbershop, at Nanay's house (x 2000), a stranger, once:
+
+  + Bagong Nakatira: Sino'ng hinahanap mo?
+  + Macario: 'Yung dating nakatira rito. Isang babae, mag-isa.
+  + Bagong Nakatira: Wala nang tao rito nang lumipat kami. Sira pa ang pinto noon.
+  + Macario: ...
+  + Macario (sa isip): Babalik po ako, 'Nay. 'Yon ang sabi ko.
+
+and then:
+
+  + Bagong Nakatira: Wala na siya rito, ginoo. Pasensya na.
+
+Nanay's fate is not told, as Act II left it.
+
+### 6. The barbershop
+
+barberya, plays by itself on arrival.
+
+  + Barbero: Bukas pa kami, ginoo. Upo ka lang at—
+  + Barbero: ...Macario?
+  + Macario: Magandang araw po.
+  + Barbero: Tatlong taon. Akala ko, patay ka na.
+  + Macario: Muntik na po.
+  + Barbero: Hindi bagay sa'yo ang maging magtataho.
+  + Barbero: Kung magtatago ka, dito ka magtago. Walang naghahanap ng rebelde sa likod ng gunting.
+  + Sundalong Amerikano: Hey, old man. I've been waiting.
+  + Barbero (pabulong): Amerikano. Linggo-linggo siyang pumupunta rito.
+  + Barbero: Marunong ka pang humawak ng gunting?
+  + Macario: Hindi kabayo ang mga suki n'yo, 'di po ba?
+  + Barbero: ...Naaalala mo pa.
+
+"Hindi kabayo ang mga suki ko" is the Barbero's own line from Act I.
+
+Completes: Makarating sa barberya nang hindi nakikilala. The chair
+(x 470), "Gupitin": the barber's haircut once more (Block 114's game),
+on the American, sandy-haired and clean-shaven.
+
+  + Sundalong Amerikano: Just a trim. Short on the sides.
+  + Macario (sa isip): Maikli raw sa gilid.
+  + (the game) Barberya / Gupitin ang buhok na lampas sa guhit.
+  + (a cut inside the line) Sundalong Amerikano: Hey! Easy there, pal!
+  + (a clean cut) Sundalong Amerikano: Not bad, kid. Not bad at all.
+  + (a rough one) Sundalong Amerikano: Huh. It'll grow back.
+  + Sundalong Amerikano: Say. They tell me the insurrectos are hiding right here in Tondo.
+  + Macario (sa isip): Nagtatago raw ang mga rebelde rito mismo sa Tondo.
+  + Macario: Dito po sa Tondo, ser?
+  + Sundalong Amerikano: Bandits, all of 'em. Here. Keep the change.
+  + Macario (sa isip): Mga bandido raw kaming lahat.
+
+    (He pays, +10 barya, and goes.)
+
+  + Barbero: Ginupitan mo ang kaaway, at nag-iwan pa siya ng sukli.
+  + Macario: Mamayang gabi po, may darating na iba. Hindi para magpagupit.
+  + Barbero: Alam ko. Ikakandado ko ang pinto.
+
+Completes: Gupitan ang suki. "Bandits" is the word the Brigandage Act
+will make law at the end of the act. The chair afterwards:
+
+  + Macario (sa isip): Wala nang nakaupo. Tapos na ako rito.
+
+The Barbero, talked to:
+
+  + Barbero: Nandiyan ang silya, Macario. Huwag mo siyang sugatan.
+    (before the cut)
+  + Barbero: Ingatan mo sila, Macario.
+    (that night)
+
+### 7. That night: the creed
+
+barberya, by itself.
+
+  + [BLACK] Nang gabing iyon.
+
+  + Macario (sa isip): Tatlong mukhang kilala ko.
+  + Macario (sa isip): Ang tatlong tumanggap ng polyeto noon. At tumanggi sa akin pagkatapos.
+
+The mangingisda, the tabakera and the karpintero: in Act I they took the
+pamphlets, in Act II they would not know him. Each has a button, "Ituro
+ang aral": a precept of Bonifacio's creed (Katungkulang Gagawin ng mga
+Z.LL.B.), in today's spelling ("Naituro ang aral (n/3)").
+
+  + Mangingisda: Noon, sinunog ko ang polyetong ibinigay mo. Natakot ako.
+  + Macario: At ngayon?
+  + Mangingisda: Kinuha ng mga Amerikano ang bangka ko. Wala na akong ikatatakot.
+  + Macario: Ito ang unang aral ng Supremo.
+  + Macario: "Ang tunay na pag-ibig sa Diyos ay siya ring pag-ibig sa Tinubuang Lupa, at siya ring pag-ibig sa kapwa."
+
+  + Tabakera: Tatlo ang hinuli sa pagawaan noon. Ako ang hindi lumapit sa'yo.
+  + Tabakera: Ngayon, ako na ang lalapit.
+  + Macario: "Ang tunay na kapurihan at kaginhawahan ay ang mamatay sa pagliligtas at pagtatanggol sa Inang Bayan."
+  + Tabakera: ...Mabigat.
+  + Macario: Mabigat talaga.
+
+  + Karpintero: "Wala akong kilalang Macario," sabi ko noon.
+  + Karpintero: Patawarin mo ako.
+  + Macario: Ito ang huli. "Magtatagumpay ang lahat ng mabuting nais kung may hinahon, tiyaga, katuwiran at pag-asa."
+  + Karpintero: Pag-asa. Matagal ko nang hindi naririnig 'yan.
+
+Talked to, before and after:
+
+  + Mangingisda: Handa na ako, Pangulo.
+  + Tabakera: Hindi na ako lalayo ngayon.
+  + Karpintero: Kilala na kita ngayon, Macario.
+
+With the third, the oath, by itself. Now Macario is the one who swears
+them in, as the Mabalasig swore him in Act I:
+
+  + Macario: Itaas ang inyong kanang kamay.
+  + Macario: Isinusumpa ba ninyong ipagtatanggol ang Inang Bayan, hanggang sa huling hininga?
+  + Mga Bagong Kasapi: Isinusumpa namin.
+  + Macario: Mula ngayon, mga kapatid na kayo.
+  + Barbero: Ang batang nagsuklay noon ng kabayo. Tingnan mo ngayon.
+
+  + [BLACK] Sa sumunod na dalawang taon, palipat-lipat si Macario ng bayan, nakabalatkayo.
+  + [BLACK] Nagtatag siya ng mga bagong balangay ng Katipunan.
+  + [BLACK] Marso 23, 1901. Nahuli si Heneral Emilio Aguinaldo sa Palanan, Isabela.
+  + [BLACK] Nagpanggap na mga rebolusyonaryo ang mga sundalong humuli sa kanya.
+  + [BLACK] Abril 1901
+
+Completes: Ituro ang aral ng Supremo (3/3). The soldiers who took
+Aguinaldo (Macabebe scouts) came disguised as revolutionaries: the
+disguise Macario lives by, turned on the Republic.
+
+### 8. The proclamation, and Isko
+
+bayan, a town plaza. Men queue at an American officer's table. Plays by
+itself:
+
+  + Macario (sa isip): Bakit nakapila ang mga kawal sa harap ng mga Amerikano?
+
+    (Isko comes up behind him.)
+
+  + Isko: Pangulo... basahin n'yo po. Sa pader.
+
+The proclamation on the wall (x 480), "Basahin": Aguinaldo's of 19 April
+1901, after his oath of allegiance on 1 April, in our words.
+
+  + Macario (sa isip): "Ako, si Emilio Aguinaldo..."
+  + Macario (sa isip): "...ay tumatanggap at kumikilala sa kapangyarihan ng Estados Unidos sa buong Pilipinas."
+  + Macario (sa isip): "...Hinihikayat ko ang lahat na ibaba na ang kanilang mga sandata."
+  + Macario: ...
+
+Then, by itself:
+
+  + Isko: Totoo pala, Pangulo. Sumuko na ang Heneral.
+  + Isko: Sabi nila, ang manunumpa sa Amerika, makauuwi na. Walang kulong.
+  + Macario: At ikaw?
+  + Isko: ...
+  + Isko: May anak na po ako, Pangulo. Dalawang taon na. Hindi pa niya ako nakikilala.
+  + Macario: ...
+  + Macario: Umuwi ka.
+  + Isko: Sumama na po kayo. Tapos na.
+  + Macario: Tapos na para kay Aguinaldo. Hindi ako sa kanya nanumpa.
+  + Macario: Ilang beses na tayong pinangakuan ng kapayapaan. Ilang beses na tayong ipinagbili.
+  + Isko: Hahanapin ko pa rin po si Nanay ninyo. Pangako.
+  + Macario: Huwag kang mangako, Isko. Mabigat dalhin.
+
+    (Isko walks to the officer's table.)
+
+  + Opisyal: Name?
+  + Isko: Francisco... Francisco Reyes.
+  + Opisyal: Raise your right hand.
+  + Macario (sa isip): Itaas daw ang kanang kamay.
+  + Macario (sa isip): Ang kamay na itinaas niya sa Katipunan.
+
+  + [BLACK] Libu-libo ang sumuko at nanumpa ng katapatan sa Amerika.
+  + [BLACK] Tumanggi si Macario.
+  + [BLACK] Agosto 1901
+  + [BLACK] Calle Gunao, Quiapo
+
+Completes: Basahin ang proklama. Macario's own promise to Nanay ("Babalik
+po ako. Pangako.", Act II) is the one he could not keep, which is why he
+will not take Isko's. Read again:
+
+  + Macario (sa isip): Nabasa ko na. Ayoko nang basahin ulit.
+
+### 9. Calle Gunao: the peaceful road
+
+calle-gunao, plays by itself. Santiago Álvarez and the Partido
+Nacionalista (founded there in August 1901) ask the Americans for
+independence by petition.
+
+  + Álvarez: Sakay. Ang sabi nila, ikaw ang huling Katipunerong ayaw bumaba ng bundok.
+  + Macario: At kayo, Heneral Álvarez? Bumaba na kayo?
+  + Álvarez: Sa ibang daan na kami lalaban. Partido Nacionalista.
+  + Álvarez: Hihingin natin sa mga Amerikano ang kalayaan. Nang hayagan. Nang mapayapa.
+  + Macario: Papel laban sa riple.
+  + Álvarez: Papel din ang Kalayaan, 'di ba? Ilang libo ang sumapi dahil doon.
+  + Macario (sa isip): Kung may daang walang mamamatay... susubukan ko.
+  + Álvarez: Kailangan natin ng mga pirma. Kausapin mo sila.
+
+Three to sign, each a button, "Papirmahin" ("Pumirma (n/3)"):
+
+The Manlilimbag, from Act II's press:
+
+  + Manlilimbag: Pangulo? ...Buhay pa pala tayong dalawa.
+  + Manlilimbag: Nakalabas ako noong gabi ng paghuli. Hindi lahat.
+  + Macario: Pipirma ka?
+  + Manlilimbag: Ako pa ang maglilimbag ng petisyon, kung papayagan nila.
+
+The direktor, his theatre shut:
+
+  + Direktor: Isinara nila ang entablado ko. Bawal daw ang dulang may watawat.
+  + Direktor: Pipirma ako. Matanda na ako para matakot.
+  + Macario: Salamat po, Direktor.
+  + Direktor: "Walang bayang mananatiling alipin." Sa entablado ko mo 'yan unang sinabi.
+
+A teacher (the Thomasites, American teachers, arrived on the transport
+Thomas in August 1901):
+
+  + Guro: Ingles na raw ang ituturo sa mga bata. May mga gurong Amerikanong dumating sa barkong Thomas.
+  + Guro: Sa sariling bayan, dayuhan na ang wika natin.
+  + Guro: Pipirma ako.
+
+Talked to, before and after:
+
+  + Álvarez: Kailangan natin ng mga pirma, Sakay.
+  + Álvarez: Kahit ang paghingi, Sakay. Kahit ang paghingi.
+  + Manlilimbag: Ako na ang maglilimbag nito, Pangulo, kung papayagan nila.
+  + Direktor: Matanda na ako para matakot, iho.
+  + Guro: Sa sariling bayan, dayuhan na ang wika natin.
+
+Completes: Papirmahin ang petisyon (3/3).
+
+### 10. The Sedition Law
+
+calle-gunao, by itself.
+
+  + [BLACK] Nobyembre 4, 1901
+
+    (An American officer and an interpreter come in.)
+
+  + Opisyal: By order of the Philippine Commission. Act Number 292.
+  + Tagasalin: Sa utos ng Komisyon ng Pilipinas. Batas Bilang 292.
+  + Opisyal: Any person who advocates independence, by word or in writing, even by peaceful means, shall be punished.
+  + Tagasalin: Ang sinumang magsulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, ay paparusahan.
+  + Opisyal: Any person who joins a secret society commits a crime.
+  + Tagasalin: Krimen na ang pagsapi sa lihim na samahan.
+  + Opisyal: This petition is seditious.
+
+    (Paper torn, twice.)
+
+  + Tagasalin: ...Mapanghimagsik daw ang petisyon.
+  + Álvarez: Kahit ang paghingi.
+  + Macario (sa isip): Noon, sedula ang pinunit namin.
+  + Macario (sa isip): Ngayon, sila ang pumunit sa papel namin.
+  + Macario: Wala nang ibang daan, Heneral.
+
+  + [BLACK] Enero 1902
+  + [BLACK] Tondo
+
+Completes: Pakinggan ang batas. The law is the Philippine Commission's
+Act No. 292, 4 November 1901: advocating independence, by peaceful
+means or not, and joining a secret society were made crimes. The torn
+petition is ours.
+
+### 11. January 1902: three houses
+
+tondo, at night, from the east end (x 12600). On arrival:
+
+  + Macario (sa isip): Tatlong bahay. Tatlong pamilyang naghihintay ng balita.
+  + Macario (sa isip): Bawal na ang humingi. Bawal na ang magtipon. Kaya sa gabi kami magtitipon.
+
+Four American patrols walk where the sentries stood, each with cover;
+they catch, not shoot. Three doors (x 10900, 8300, 6700), "Kumatok"
+("Naipaalam (n/3)"). "Anak ng Bayan" is Act I's password.
+
+  + Macario (pabulong): Anak ng Bayan.
+  + Tinig sa Loob: ...Pasok ang hudyat.
+  + Macario (pabulong): Bukas ng gabi, sa barberya. Tatlo kayo.
+  + Tinig sa Loob: Darating kami.
+
+  + Tinig sa Loob: Sino 'yan?
+  + Macario (pabulong): Anak ng Bayan. Bukas ng gabi, sa barberya.
+  + Tinig sa Loob: May nagbabantay sa kanto. Mag-ingat ka.
+
+  + Tinig sa Loob: Akala ko, hindi ka na darating.
+  + Macario (pabulong): Bukas ng gabi. Sa barberya.
+  + Tinig sa Loob: May nagtanong tungkol sa'yo kanina. Isang lalaking hindi taga-rito.
+
+A door knocked on again:
+
+  + Macario (sa isip): Naipaalam ko na rito. Sa susunod na bahay.
+
+  + (a notice) Pumunta sa barberya.
+
+Completes: Ipaalam sa tatlong bahay (3/3).
+
+### 12. The oath, broken in on
+
+barberya, at night. On arrival:
+
+  + Barbero: Nandito na sila. Tatlo, may piring na.
+  + Barbero: Ikinandado ko ang pinto. Bilisan mo.
+
+Three new members, blindfolded, talked to:
+
+  + Bagong Kasapi: Handa na po kami.
+
+The table (x 620), "Simulan ang panunumpa". At the oath's height, as the
+knock broke in on his promise to Nanay in Act II (the proponent's word:
+the blow lands at the peak):
+
+  + Macario: Alisin ang piring.
+  + Macario: Sa labas ng pintong ito, krimen na ang pumasok dito.
+  + Macario: Kapag nahuli kayo, kulong. O higit pa.
+  + Macario: May aatras ba?
+  + Mga Bagong Kasapi: ...
+  + Macario: Itaas ang inyong kanang kamay.
+  + Macario: Isinusumpa ba ninyong—
+
+    (The door, hammered, three times.)
+
+  + Sundalong Amerikano: Open up! U.S. Army!
+  + Konstable: Buksan n'yo! Konstabularya!
+  + Barbero: Sa likod, Macario! Tumakbo ka!
+
+    (A soldier at the back door, too.)
+
+  + Sundalong Amerikano: Hands up! Don't move!
+  + Macario (sa isip): Pati ang likod.
+  + Macario (sa isip): May nagturo.
+  + Barbero: Walang kinalaman dito ang mga batang 'yan!
+  + Konstable: Tumahimik ka, matanda.
+  + Macario: ...
+
+  + [BLACK] Enero 1902. Nahuli si Macario Sakay habang nagtatatag ng mga balangay ng Katipunan.
+  + [BLACK] Ikinulong siya sa Bilibid.
+  + [BLACK] Hulyo 4, 1902. Idineklara ng mga Amerikano na tapos na ang digmaan.
+  + [BLACK] Pinalaya ang mga bilanggong pulitikal sa bisa ng amnestiya.
+  + [BLACK] Lumabas si Macario sa bilangguan,
+  + [BLACK] at tumuloy sa kabundukan ng Morong.
+
+Completes: Panumpain ang mga bagong kasapi. Who informed is not said:
+the record does not say how he was found, and neither does the game.
+What became of the Barbero is not said either.
+
+### 13. Morong: the Republika ng Katagalugan
+
+morong, plays by itself.
+
+  + Montalan: Sakay! Akala namin, nasa Bilibid ka pa.
+  + Macario: Pinalaya nila ako. Tapos na raw ang digmaan.
+  + Carreón: Tapos na raw. Pero nasa lupa pa rin natin sila.
+  + Montalan: May mga tauhan kami rito sa Morong. Kulang lang kami ng pinuno.
+  + Macario (sa isip): Isang Katipunang walang Supremo. Isang republikang walang pangalan.
+
+Carreón, talked to:
+
+  + Carreón: Kung magtatayo tayo ng pamahalaan, kailangan natin ng saligang batas.
+  + Macario: Mayroon na tayo. Ang mga aral ng Supremo.
+  + Carreón: At ng pangalan.
+  + Macario: Republika ng Katagalugan.
+  + Macario: Hindi ng Amerika. Hindi ng Cavite. Atin.
+  + Carreón: Kung gayon, ikaw ang Pangulo. Ako ang Ikalawang Pangulo.
+  + Montalan: At ako ang hahawak sa hukbo.
+
+Then, by itself: a young fighter comes up to him.
+
+  + Batang Kawal: Pangulo, ang haba na ng buhok n'yo. Gugupitan ko po kayo?
+  + Macario: Barbero ako dati, iho.
+  + Macario: Pero ito, hindi ko na gugupitin.
+  + Batang Kawal: Po?
+  + Macario: Hindi tayo magpapagupit hangga't hindi malaya ang bayan.
+  + Montalan: Hanggang sa paglaya!
+  + Mga Kawal: Hanggang sa paglaya!
+  + Macario (sa isip): Tatlong taon akong nagtago sa balatkayo.
+  + Macario (sa isip): Ngayon, makikilala nila ako kahit sa malayo.
+
+He takes off the disguise and wears his own clothes again. Completes:
+Itatag ang Republika. Talked to:
+
+  + Montalan: Kausapin mo si Carreón. Siya ang marunong sa mga papel.
+    (before)
+  + Montalan: Hanggang sa paglaya, Pangulo.
+  + Carreón: Republika ng Katagalugan. Maganda pakinggan, Pangulo.
+
+### 14. The bandits, and the end of Act III
+
+morong, by itself.
+
+  + [BLACK] Nobyembre 12, 1902
+  + [BLACK] Ipinasa ng mga Amerikano ang Batas sa Bandolerismo.
+  + [BLACK] Ang sinumang patuloy na lumalaban ay hindi na sundalo.
+  + [BLACK] Isa na siyang bandido.
+
+  + Konstable: Mga bandido! Sumuko kayo!
+  + Montalan: Konstabularya. Mga Pilipino rin sila, Pangulo.
+  + Macario: Pilipinong naka-uniporme ng Amerikano.
+  + Macario: Ipagtanggol ang kampo!
+
+The second big fight: fifteen of the Philippine Constabulary in four
+waves (konstable, hand to hand; a sentinela, a rifle, in three of
+them), three hearts on the field. Between waves:
+
+  + Carreón: Marami pa sa ibaba!
+  + Macario (sa isip): Kapwa Pilipino ang sinusuntok ko...
+  + Montalan: Huwag kayong aatras!
+
+Then:
+
+  + Montalan: Umatras sila!
+  + Carreón: Babalik sila. Sa susunod, mas marami.
+  + Macario: Hayaan mo silang bumalik.
+  + Macario (sa isip): Noon, tinawag kaming insurekto.
+  + Macario (sa isip): Ngayon, bandido.
+  + Macario (sa isip): Pero kami ang nagbigay ng pangalan sa republikang ito. Hindi nila 'yon mababago.
+  + Macario (sa isip): 'Nay... humahaba na ang buhok ko. Kung makita mo ako, makikilala mo pa kaya ako?
+
+  + [BLACK] Wakas ng Ikatlong Yugto
+
+Completes: Ipagtanggol ang kampo, the last task. Act III is finished,
+and the post-test runs.
+
+### Act III's Talaan
+
+Three papers of facts of the game's own, on the street by day in 1899
+(fixed: x 11200 on the road; x 9100 and x 7700 at jump height); a
+teacher's paper replaces its own slot.
+
+  + [HINT] Ang Santa Mesa: Noong gabi ng Pebrero 4, 1899, pinaputukan ng isang bantay na Amerikano ang mga sundalong Pilipino sa Santa Mesa, Maynila. Kinabukasan, nagsimula ang Digmaang Pilipino-Amerikano. Napasailalim ang Maynila sa mga Amerikano.
+  + [HINT] Ang Batas sa Sedisyon: Noong Nobyembre 4, 1901, ipinasa ng Komisyon ng Pilipinas ang Batas Bilang 292. Ginawa nitong krimen ang pagsusulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, at ang pagsapi sa mga lihim na samahan.
+  + [HINT] Ang Republika ng Katagalugan: Noong 1902, itinatag ni Macario Sakay ang Republika ng Katagalugan sa kabundukan ng Morong, at ginawang saligang batas ang mga aral ni Andres Bonifacio. Noong Nobyembre 12, 1902, ipinasa ng mga Amerikano ang Batas sa Bandolerismo: tinawag nilang bandido ang sinumang patuloy na lumalaban.
+
 ## Threads left open
 
 What the story has set up and not yet paid off, for whoever writes the
@@ -1677,6 +2281,22 @@ next passage. None of these is a promise; they are what is there.
     The cedula. Torn at Pugad Lawin, for her; set against the twenty
       million.
 
+    Act III's (Block 117), for Act IV:
+
+    The hair. Sworn at Morong not to be cut until the country is free;
+      he was a barber. "Kung makita mo ako, makikilala mo pa kaya ako?"
+    Nanay. Still unknown. The Mananahi: she waited at the door every
+      day, and one morning was gone; strangers live in the house.
+    Isko. Surrendered in April 1901 as Francisco Reyes, to go home to a
+      child he had never seen; promised to keep looking for Nanay.
+    The Barbero. Taken in the raid of January 1902; his fate unknown.
+    The informer. Someone told the Americans of the oath; a stranger had
+      asked after Macario at the third door. Not named.
+    The name. "Bandido" by law since November 1902; the Republika ng
+      Katagalugan named by Macario. Carreón and Montalan with him.
+    Maryam. Knows now who the two men were; the theatre shut; "Wala na
+      akong ibang kapareha sa entablado."
+
 ## Open questions for the proponents
 
 Act I. The proponents accepted it on 4 Oct 2026 (Block 113): every line
@@ -1701,6 +2321,23 @@ Act II (Block 113). Every + line: accept, rewrite or replace. Also:
       chase short of her door: ours and the proponent's (a tragedy, not
       a safe story).
     The Talaan's three papers of Act II.
+
+Act III (Block 117). Every + line: accept, rewrite or replace. Also:
+
+    The Americans' English lines (the proponent's choice), each given
+      in Tagalog after it.
+    Bonifacio's three precepts as Macario teaches them (Katungkulang
+      Gagawin ng mga Z.LL.B.): check the wording against the source.
+    Aguinaldo's proclamation of 19 April 1901, in our words.
+    The Sedition Law's lines (Act No. 292), the officer's reading and
+      the torn petition (ours).
+    Jacinto's death: Majayjay, 16 April 1899, malaria, aged twenty-three.
+    The names ours gave: Francisco Reyes (Isko), the Guro, the
+      Tagasalin, the Opisyal, the Batang Kawal, the Bagong Nakatira.
+    The capture in January 1902 at an oath in the barbershop, the
+      informer unnamed: ours, as the record does not say how.
+    Carreón, Montalan and Álvarez speak words of ours; check them.
+    The Talaan's three papers of Act III.
 
 Act I's play (Block 113, the proponent's direction): the moro-moro now
 ends with the Moorish kingdom's fall and the princess taking the

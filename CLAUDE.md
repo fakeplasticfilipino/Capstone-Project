@@ -277,7 +277,17 @@ function, because the act files share one global scope: a constant
 declared at the top of act2.js under a name act1.js already uses blanks
 the game. People who return are window.PEOPLE (content/people.js), and
 every flag of Act II starts with a2_, since flags are kept from act to
-act. Acts III and IV are registered stubs, to be written the same way.
+act.
+
+Act III (Block 117) is written the same way, 1899 to 1902, from the
+proponent's plot: STORY.md, "Act III, beat by beat", every line ours
+and marked PLACEHOLDER, flags a3_. The Americans speak short, plain
+English (the proponent's choice, true to the history), and every such
+line is followed by its Tagalog, in Macario's thought or from an
+interpreter, so no student is left out; this is the one exception to
+Tagalog for all player-facing text, and a new English line keeps the
+rule of being given in Tagalog right after. Act IV is a registered
+stub, to be written the same way.
 
 ## Writing a new act (Polish list #5)
 
@@ -1013,7 +1023,10 @@ of them plain globals in game.js, like addQuest:
                                  is cut only by the point itself, and
                                  near the end the rest falls by itself.
                                  opts title, hint, speaker, askText,
-                                 tooShortText, doneText(clean);
+                                 tooShortText, doneText(clean),
+                                 customer (Block 117: { hair,
+                                 hairLight, hairShine } colours,
+                                 moustache: false);
                                  resolves with how clean the cut was,
                                  0 to 1, or -1 if he left
     playCatchGame(opts)          the apple mini-game (no shipped content
@@ -1132,7 +1145,14 @@ Since Block 113 the catalogue also has sundalo, the Spanish soldier of
 Act II's battles: an enemy made entirely of the bantay's art (his walk,
 his flinch, and the first three frames of his shot as a bayonet lunge),
 so a battle of many costs no new art. A bantay placed in the same
-spawnEnemies is a rifle, already hostile.
+spawnEnemies is a rifle, already hostile. Since Block 117, Act III's
+amerikano (hand to hand), sentinela (a rifle; a guard) and konstable
+(the Philippine Constabulary, hand to hand) are the sundalo and the
+bantay with a tint: any body, a guard, an enemy, an NPC or a
+decoration, may declare tint, a CSS filter drawn under the flash of a
+blow and the red ! (game.js, applyBodyTint; style.css, .body-tinted),
+so a fighter who shares another's art is still told apart until his
+own is drawn.
 
 A placement's own fields win over its type's, so a sentry can see
 further than the rest of his kind without a second type. A placement
@@ -1740,7 +1760,9 @@ Documentation style: plain professional prose. No emoji, no checkboxes, no
 bold, no em dashes, no horizontal rules. Status markers in parentheses:
 (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Tagalog for all player-facing text. English for code and comments.
+Tagalog for all player-facing text (one exception since Block 117: the
+Americans of Act III speak English, each line given in Tagalog right
+after). English for code and comments.
 The teacher dashboard (teacher.html, teacher.js, teacher-questions.js)
 is in English since Block 69: the instructor found it confusing in
 Tagalog, and a teacher is not a player.
@@ -2292,6 +2314,8 @@ look, by system:
     Act II; the meter twice as fast;      Block 113 (content/people.js,
       Act I accepted                      the sundalo, the press
                                           picture, fifteen enemies)
+    Act III; English for the Americans;   Block 117 (tint, the
+      the disguise                        customer, balatkayo)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

@@ -4907,6 +4907,77 @@ said nothing of a guest's Act II; CLAUDE.md said resetStats had one
 caller. ART.md and its Owed list agree with the disk (prepare.js checks
 it).
 
+## Block 117: Act III, 1899 to 1902
+
+On 5 Oct 2026 the proponent gave Act III's plot (Santa Mesa, Manila
+under American guard, Macario underground in disguise founding chapters
+and teaching Bonifacio's creed, Aguinaldo's capture and surrender, the
+Partido Nacionalista's petition, the Sedition Law, the capture in
+January 1902, the amnesty, the Republika ng Katagalugan with Carreón and
+Montalan, the vow not to cut their hair, the Brigandage Act), asked for
+it planned first, and answered the four questions the plan left open:
+the Americans speak English; Isko surrenders in 1901 to go home to a
+child; the informer of 1902 is unnamed; all fourteen beats, with two
+big fights. The proponent's writing skills (plot-structure, scene-craft,
+theme-craft, character-management) are enabled on claude.ai but come
+from plugins not loaded into this session, so the plan was built on
+their lenses by hand: a controlling idea, an arc, the threads paid off,
+and each scene turning on something.
+
+The spine is the words. The war of the act is fought as much over names
+as with rifles: a law makes asking for independence sedition (Act No.
+292) and a fighter a bandit (Act No. 518), and Macario answers by naming
+a republic. His arc runs from hiding to being seen: he begins in a
+disguise from the theatre's trunk, the actor's trade turned to staying
+alive, and ends swearing not to cut his hair, a vow nobody can keep in
+disguise. Hair carries it: the Barbero of Act I hides him, the haircut
+is played again (on an American who calls the insurrectos "bandits",
+the word the last law will make official), and he who was a barber
+refuses the scissors at Morong. The threads Act II left are paid where
+they belong: Jacinto's "Hanggang dulo" by his death in 1899; Maryam's
+question about the two men by the years; the three who took the
+pamphlets and then would not know him, sworn in now and taught the
+creed; the Manlilimbag and the direktor among the petition's names; the
+Kalayaan answering "papel laban sa riple"; the oath he took in Act I
+given by him now, and broken in on at its height as the knock broke in
+on his promise to Nanay (the proponent's rule: the blow lands at the
+peak). Nanay's fate stays unknown, as the record would leave it: the
+Mananahi says she waited at the door, and strangers live in the house.
+
+English for the Americans, at the proponent's word: true to the history,
+and the one exception to Tagalog for every player-facing line. So that
+no student is shut out of a scene, every English line is given in
+Tagalog right after, in Macario's thought for a short one and by an
+interpreter (the Tagasalin) for the Sedition Law, which is read out in
+full. The interpreter is the history too: the Commission's laws reached
+most Filipinos through one.
+
+Built on what the engine has. Two battles of fifteen in four waves, as
+the proponent likes them (the battle helper is Act II's). Two stealth
+runs past American sentries who catch, not shoot, each restarting a
+catch at the last point passed; the first in a disguise that is an
+outfit (balatkayo, stillDetectionMult 0.1, a tint), handed over by the
+story as the stage clothes were, and taken off at the vow. The haircut
+once more, with its customer changed (game.js, playCutGame's customer:
+his hair's colours, no moustache), the only engine change for the
+story. Three counted steps (the creed, the petition, the doors), each
+gift or door ticking a flag and the third playing the next script.
+Isko moved to content/people.js, since he returns.
+
+The fighters needed something to be told apart by. Act III's Americans
+and the Philippine Constabulary would otherwise be the bantay's art, the
+Spanish guardia civil, and a student would read them as Spaniards. A
+tint (a CSS filter) on any body, drawn under the flash of a blow and the
+red ! rather than replacing them (style.css, .body-tinted), makes them
+khaki and olive until their own sheets are drawn; a new type is one
+line in content/enemies.js. The values were chosen on screen: the first
+try barely moved the navy uniform, so they take the colour fully.
+
+Checked: the content check, STORY.md, ART.md (thirteen new pictures
+owed), every story point (thirteen more), and Act III end to end as a
+guest (verify_new_scene.js --only=act3), with no line ever said behind
+black.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

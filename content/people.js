@@ -71,6 +71,10 @@
     kasama: stillAnimated("kasama",
       { columns: 4, contentTop: 8, contentHeight: 404, footX: 119, headroom: 8 }),
 
+    // Isko (Block 113), Macario's man in Acts II and III, owed (ART.md):
+    // a placeholder box until drawn. Here since Block 117, as he returns.
+    isko: { src: "assets/sprites/characters/isko.png", frames: 1, fps: 1 },
+
     // The Mabalasig (Block 101): the proponent's still, side on, idle only.
     mabalasig: {
       src: "assets/sprites/characters/mabalasig.png", frames: 8, fps: 4, columns: 4,

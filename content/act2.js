@@ -58,7 +58,7 @@
 
   // ---- Art ------------------------------------------------------------
   const owed = (folder, name) => ({ src: `assets/sprites/${folder}/${name}.png`, frames: 1, fps: 1 });
-  const ISKO = owed("characters", "isko");
+  const ISKO = P.isko; // content/people.js since Block 117
   const JACINTO = owed("characters", "jacinto");
   const BONIFACIO = owed("characters", "bonifacio");
   const MANLILIMBAG = owed("characters", "manlilimbag");

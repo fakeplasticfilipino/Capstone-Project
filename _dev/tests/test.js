@@ -411,9 +411,9 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("legacy 'empty' room falls back to the first scene",
        (await page.evaluate(() => currentRoom)) === "tondo", await page.evaluate(() => currentRoom));
     ok("acts II-IV still registered", await page.evaluate(() => [2,3,4].every(n => !!Acts.getAct(n))));
-    // Block 113: Act II is written; III and IV are still stubs.
-    ok("acts III and IV still have no objectives",
-       (await page.evaluate(() => Acts.objectivesFor(3).length + Acts.objectivesFor(4).length)) === 0);
+    // Block 113: Act II is written; Block 117: Act III too. IV is a stub.
+    ok("Act III has its fourteen objectives, and Act IV still none (Block 117)",
+       await page.evaluate(() => Acts.objectivesFor(3).length === 14 && Acts.objectivesFor(4).length === 0));
     await ctx.close();
   }
 
@@ -5868,8 +5868,8 @@ const visible = (page, sel) => page.evaluate((s) => {
         title: c.querySelector(".tl-title").value, text: c.querySelector(".tl-text").value })),
     }));
     ok("the dashboard offers three papers, says where each lies, and shows what is saved",
-       // Block 113: Act II declares fixed papers with places, so it is offered too.
-       e0.acts.join() === "Act I,Act II" && e0.papers.length === 3 && e0.papers.every((p) => p.where.length > 10) &&
+       // Block 113: Act II declares fixed papers with places, so it is offered too; Block 117: Act III.
+       e0.acts.join() === "Act I,Act II,Act III" && e0.papers.length === 3 && e0.papers.every((p) => p.where.length > 10) &&
        e0.papers[1].title === "Luma" && e0.papers[1].text === "Lumang papel." && e0.papers[0].text === "", e0);
 
     const e1 = await page.evaluate(async () => {
@@ -6642,8 +6642,10 @@ const visible = (page, sel) => page.evaluate((s) => {
     const list = await page.evaluate(() => [...document.querySelectorAll("#shell-dev-jump optgroup")].map((g) =>
       ({ label: g.label, values: [...g.querySelectorAll("option")].map((o) => o.value) })));
     ok("?dev=1 lists every act's story points, grouped by act (Polish #2)",
-       list.length === 2 && list[1].label === "Ikalawa" && list[1].values[0] === "2:gitna" &&
-       list[0].values.every((v) => v.startsWith("1:")), list);
+       // Block 117: and Act III's.
+       list.length === 3 && list[1].label === "Ikalawa" && list[1].values[0] === "2:gitna" &&
+       list[0].values.every((v) => v.startsWith("1:")) && list[2].label === "Ang Republika sa Lilim" &&
+       list[2].values.length === 13 && list[2].values.every((v) => v.startsWith("3:")), list);
     await page.selectOption("#shell-dev-jump", "2:gitna");
     await page.click("#shell-dev-go");
     await page.waitForTimeout(800);
