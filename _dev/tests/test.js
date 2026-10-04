@@ -405,7 +405,9 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("legacy 'empty' room falls back to the first scene",
        (await page.evaluate(() => currentRoom)) === "tondo", await page.evaluate(() => currentRoom));
     ok("acts II-IV still registered", await page.evaluate(() => [2,3,4].every(n => !!Acts.getAct(n))));
-    ok("act II still has no objectives", (await page.evaluate(() => Acts.objectivesFor(2).length)) === 0);
+    // Block 113: Act II is written; III and IV are still stubs.
+    ok("acts III and IV still have no objectives",
+       (await page.evaluate(() => Acts.objectivesFor(3).length + Acts.objectivesFor(4).length)) === 0);
     await ctx.close();
   }
 
@@ -5855,7 +5857,8 @@ const visible = (page, sel) => page.evaluate((s) => {
         title: c.querySelector(".tl-title").value, text: c.querySelector(".tl-text").value })),
     }));
     ok("the dashboard offers three papers, says where each lies, and shows what is saved",
-       e0.acts.join() === "Act I" && e0.papers.length === 3 && e0.papers.every((p) => p.where.length > 10) &&
+       // Block 113: Act II declares fixed papers with places, so it is offered too.
+       e0.acts.join() === "Act I,Act II" && e0.papers.length === 3 && e0.papers.every((p) => p.where.length > 10) &&
        e0.papers[1].title === "Luma" && e0.papers[1].text === "Lumang papel." && e0.papers[0].text === "", e0);
 
     const e1 = await page.evaluate(async () => {
