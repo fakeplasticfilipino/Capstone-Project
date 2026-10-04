@@ -606,9 +606,12 @@ Scene shape:
                                                  (Block 113)
       noRanged: true,                            optional; no shot here
       checkpoints: [{ x, flag,                   optional; respawn points
-                      reach, requiresFlag }],    reach: sets its own flag
-                                                 when passed, only while
-                                                 requiresFlag (Block 113)
+                      reach, requiresFlag,       reach: sets its own flag
+                      script }],                 when passed, only while
+                                                 requiresFlag; script: and
+                                                 then runs the scene's
+                                                 script waiting on it
+                                                 (Block 113)
       scripts: [{ requiresFlag, unlessFlag,      optional; cutscenes that
                   doneFlag, x, facing, run }]    play by themselves (Block 52)
     }

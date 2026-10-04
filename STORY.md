@@ -125,25 +125,30 @@ asks whether he is one of them. He tells her he is rehearsing a new
 komedya. The Kasama shuts the door on her as the men call him Pangulo,
 and Act I ends; the post-test follows.
 
-Act II, Ang Mahabang Anino ng Digmaan. Tondo, 1896 (Block 113). He
-prints the Katipunan's paper, Kalayaan, "from Yokohama", with Jacinto,
-and sees where the list of members, with where each lives, is kept.
-At home Nanay finds ink on his hands, hears a boy at the door call him
-Pangulo, and begs him not to vanish as his father did; he promises to
-come home on Sunday, and does not. In August the press is raided: a
-member has confessed to the parish priest. He sends Isko to warn the
-others and nobody to his mother, slips past the guards for the list,
-and finds his own name in it, and knows the receipts they took give
-his address. He runs home through the night and finds guards at her
-open, dark door; seen, he flees into the estero and never gets back to
-her. Nobody learns what became of her. In the hills he tears up his
-cedula for her, charges the powder store at San Juan del Monte, where
-the Kasama dies telling him not to look back, raises straw soldiers at
-the Nangka, and hears by a fire at Balara that Bonifacio, too, left
-someone. In 1897 Bonifacio is killed by his own side; Macario stays
-with Jacinto in Laguna. On black: Biak-na-Bato, the Americans, Kawit,
-and Spain selling the country for twenty million dollars, a price he
-sets against the cedula, and his promise to Nanay still unkept.
+Act II, Ang Mahabang Anino ng Digmaan. Tondo, August 1896 (Block 113).
+He prints the second issue of the Katipunan's paper, Kalayaan, "from
+Yokohama" like the first, hears a rumour that someone went to the
+priest, and sees where the list of members, with where each lives, is
+kept. On the walk home the neighbours will not be seen with him. Nanay
+finds ink on his hands, says the word she heard at the door, Pangulo,
+and begs him not to vanish as his father did; he swears he will come
+back, and before he has finished answering her Isko is at the door:
+trouble at the press, nothing more. Nobody knows the sweep has begun.
+"Kapapangako mo lang." "Sandali lang po ito." The street is full of
+guards; he gets past them to the press, past the guards searching it,
+to the list, and finds his own name in it, and only then understands:
+the receipts they took give her address, and he left her alone. Running
+home through the night he is seen well short of her door ("Hoy,
+sino ka?! Bumalik ka dito!") and chased the other way, out of Tondo, to
+the mountains. He never gets back. Nobody learns what became of her. In
+the hills he tears up his cedula for her, charges the powder store at
+San Juan del Monte, where the Kasama dies telling him not to look back,
+raises straw soldiers at the Nangka, and hears by a fire at Balara that
+Bonifacio, too, left someone. In 1897 Bonifacio is killed by his own
+side; Macario stays with Jacinto in Laguna. On black: Biak-na-Bato, the
+Americans, Kawit, and Spain selling the country for twenty million
+dollars, a price he sets against the cedula, and his promise to Nanay
+still unkept.
 
 Acts III and IV are not written. Their content files are registered
 stubs (content/act3.js, act4.js) and hold no story.
@@ -1098,10 +1103,13 @@ words (Block 69).
 
 Block 113, from the proponent's plot (1896 to 1898), rebuilt the same
 day at the proponent's word: it opens at the press, home comes second,
-and it is a tragedy, not a safe story ("we're presenting historical
+Isko's knock breaks in on Nanay's plea and his promise, nobody knows
+the sweep has begun until he has the list, and it is a tragedy, not a
+safe story ("we're presenting historical
 shit, not wrapping children in a bubble"; CLAUDE.md, Writing dialogue).
-Macario chooses the Katipunan's list over his mother, sets nobody to
-watch her, and never gets back to her; nobody learns what became of
+Macario leaves his mother for a problem at the press, sets nobody to
+watch her because nobody knows she needs it, understands only when he
+has the list, and never gets back to her; nobody learns what became of
 her. The Kasama dies at San Juan del Monte. Every line is ours, marked
 + here and PLACEHOLDER in content/act2.js, until the proponents accept
 or replace it. Every flag starts with a2_.
@@ -1123,8 +1131,8 @@ of the enemy catalogue charges with the bayonet, and a bantay among them
 fires.
 
 Stealth is long in this act, at the proponent's word: four stretches
-(the day's walk to the press, the press itself, the night's walk back,
-the retreat from San Juan del Monte), each a line of guards with cover,
+(the sweep's walk to the press, the press itself, the night's walk and
+its chase, the retreat from San Juan del Monte), each a line of guards with cover,
 and on each a catch puts Macario back at the last point he passed
 (checkpoints that mark themselves, Block 113).
 
@@ -1132,15 +1140,17 @@ and on each a catch puts Macario back at the last point he passed
 
 imprenta. Plays by itself the first time a student enters Act II.
 
-  + [BLACK] Tondo, Marso 1896
+  + [BLACK] Tondo, Agosto 1896
 
     (Macario walks to the press.)
 
-  + Jacinto: Dahan-dahan sa diin, Macario. Ang unang pahina ang pinakamahalaga.
+  + Jacinto: Dahan-dahan sa diin, Macario. Hinihintay ng bayan ang ikalawang labas.
 
 The press (palimbagan, x 210), its button "Gamitin": the work game (as
 the horse in Act I), a sheet under the platen printed a line at each
-stroke. The first thing a student does in Act II is print.
+stroke. The first thing a student does in Act II is print: the second
+issue of Kalayaan, the one the histories say was in hand when the
+Katipunan was found out.
 
   + (the game) Palimbagan / Diinan ang palimbagan kapag nasa berde ang guhit.
   + (a good stroke) Malinaw ang limbag!
@@ -1149,18 +1159,20 @@ stroke. The first thing a student does in Act II is print.
 
 Completes: Maglimbag ng Kalayaan. Then, by itself:
 
-  + Jacinto: Heto. Ang unang pahayagan ng Katipunan.
-  + Macario: "Kalayaan"...
-  + Macario: "Inilimbag sa Yokohama"? Nasa Hapon po ba tayo?
-  + Jacinto: Kung ang guardia ang tatanungin, oo.
-  + Jacinto: Hahanapin nila ang imprenta sa kabilang dagat, hindi sa ilalim ng ilong nila.
-  + Manlilimbag: Ginoo, saan ko itatago ang talaan?
+  + Jacinto: Heto. Ang ikalawang labas ng Kalayaan.
+  + Macario: "Inilimbag sa Yokohama" pa rin po?
+  + Jacinto: Doon pa rin. Hanggang ngayon, sa kabilang dagat nila hinahanap ang imprenta.
+  + Jacinto: Hindi sa ilalim ng ilong nila.
+  + Manlilimbag: Ginoo... may usap-usapan sa pagawaan. May kapatid daw na kinabahan, at nagpunta sa kura.
+  + Jacinto: ...
+  + Jacinto: Usap-usapan lang 'yan.
+  + Manlilimbag: Saan ko po itatago ang talaan?
   + Jacinto: Sa ilalim ng palimbagan. Ang mga pangalan ng kasapi, at kung saan sila nakatira.
   + Macario (sa isip): Pati ang pangalan ko. Pati ang bahay namin.
   + Jacinto: Umuwi ka muna, Macario. Ilang gabi ka nang hindi umuuwi.
 
-The list, and that it says where everyone lives, is set up here for
-beat 5. The others, talked to:
+The rumour of the confession, and the list with where everyone lives,
+are set up here. The others, talked to:
 
   + Jacinto: Pantay na diin, Macario. Ang malabong letra, hindi mababasa ng bayan.
     (before the first page)
@@ -1168,11 +1180,35 @@ beat 5. The others, talked to:
     (after)
   + Manlilimbag: Yokohama, ha. Ni hindi ko alam kung saan 'yon.
 
-### 2. Home
+### 2. The walk home
 
-The way home is the street in March, the neighbours glad to see him
-(beat 4 has their lines). Nanay's door is at x 2000, its button
-"Pumasok sa bahay". bahay, plays by itself.
+tondo, from the press door (x 7900) to Nanay's (x 2000), "Pumasok sa
+bahay". No guards yet, but the neighbours are afraid of him already:
+the hints, before the sweep. Each says one line; from the sweep on they
+are indoors.
+
+  + Kutsero: Hindi kita kilala, iho. Umalis ka na.
+  + Mangingisda: Sinunog ko na 'yung ibinigay mo noon. Pasensya na.
+  + Barbero: Sarado kami. May nagtanong tungkol sa'yo kaninang umaga. Hindi ko sinabi kung saan ka nakatira.
+  + Mananahi (pabulong): May kura raw sa Tondo na may alam na. Umalis ka muna, iho, habang kaya mo pa.
+  + Tabakera: Tatlo na ang hinuli sa pagawaan kahapon. Huwag kang lalapit sa akin.
+  + Karpintero: Wala akong kilalang Macario. Wala.
+  + Direktor: Sarado ang entablado hanggang sa susunod na abiso. Mag-ingat ka, iho.
+
+Maryam (the question she asked in Act I, answered):
+
+  + Maryam: May mga guardia sa entablado kanina. Hinahanap ka.
+  + Maryam: Sino ba talaga 'yung dalawang lalaki noon, Macario?
+  + Macario: Mas mabuti nang hindi mo alam.
+
+### 3. Home, and the knock
+
+bahay, plays by itself. At the proponent's word, the knock breaks in on
+the promise itself: she asks him not to vanish like his father, he
+swears to come back, and before he has finished answering her the door
+is hammered. Nobody in the room knows the sweep has begun: Isko brings
+a problem at the press, nothing more, and Macario goes thinking it will
+take an hour.
 
   + Nanay: Anak! Akala ko kung napaano ka na.
 
@@ -1183,13 +1219,7 @@ The way home is the street in March, the neighbours glad to see him
   + Nanay: Ano 'to? Tinta?
   + Macario: Sa entablado po, 'Nay. Pinta sa—
   + Nanay: Hindi ganyang kulay ang pinta sa entablado, Macario.
-
-    (A knock at the door.)
-
-  + Isko: Pangulo! Pangulo, nandiyan po ba kayo?
-  + Nanay: ...
-  + Nanay: Pangulo.
-  + Nanay: 'Yan din ang tawag nila sa'yo noong gabing 'yon, sa pinto.
+  + Nanay: Noong gabing hinanap kita, may tumawag sa'yo sa pinto. "Pangulo".
   + Macario: 'Nay...
   + Nanay: Hindi ako bingi, anak. Hindi rin bulag ang mga kapitbahay.
   + Nanay: May hinuli na naman daw sa Trozo. Hindi na nakauwi sa pamilya nila.
@@ -1201,72 +1231,53 @@ The way home is the street in March, the neighbours glad to see him
   + Macario: Babalik po ako. Pangako.
   + Nanay: ...
   + Nanay: Magluluto ako ng sinigang sa Linggo. Umuwi ka.
-  + Macario: Opo, 'Nay. Uuwi po ako.
+  + Macario: Opo, 'Nay. Uuwi p—
 
-  + [BLACK] Hindi siya umuwi noong Linggong iyon.
-  + [BLACK] Agosto 1896
+    (The door, hammered, three times.)
 
-Completes: Umuwi sa bahay. She heard "Pangulo" at the door at the end
-of Act I. The card lifts on the street outside her door. If he goes back
-in before the raid:
+  + Isko: Pangulo! Pangulo!
+  + Nanay: ...
 
-  + Nanay: Anak, ang daming guardia sa kalye. Dito ka na lang.
+    (Isko comes in.)
 
-### 3. Isko's news
-
-tondo, beside Nanay's door. Plays by itself. Isko runs up from the
-right.
-
-  + Isko: Pangulo! May problema po sa imprenta.
-  + Macario: Hinaan mo ang boses mo. Ano'ng nangyari?
+  + Isko: Pasensya na po sa abala. May problema po sa imprenta.
   + Isko: Ayaw pong ibigay ng mga manlilimbag 'yung mga papel na ipinalimbag natin.
   + Isko: Kanina pa raw po sarado ang pinto. Walang sumasagot.
   + Macario: Hindi ganyan ang mga tao roon.
   + Macario: Pupuntahan ko.
   + Isko: Sasama po ako—
-  + Macario: Hindi. Ikalat mo ang balita sa ibang balangay. Kailangan nilang malaman.
-  + Isko: Paano po si Nanay ninyo?
-  + Macario: ...
-  + Macario: Babalikan ko siya mamaya.
-  + Isko: ...Opo, Pangulo.
+  + Macario: Hindi. Sabihan mo ang mga kapatid sa pulungan. Baka kailanganin ko sila.
+  + Isko: Opo, Pangulo.
 
-    (Isko runs off. Nobody is sent to her.)
+    (Isko runs out. Macario turns to her.)
 
-### 4. The street in August
+  + Nanay: Macario...
+  + Nanay: Kapapangako mo lang.
+  + Macario: Sandali lang po ito, 'Nay. Babalik po ako agad.
 
-Nothing is staged: the neighbours are where they were, and each says one
-line. In March they are glad to see him; in August nobody will be seen
-with him. Four guardia civil walk between Nanay's door and the press
+    (He goes out of the door.)
+
+Completes: Umuwi sa bahay. Nobody is left with her: nobody thinks she
+needs anyone. If he goes back in before the press:
+
+  + Nanay: Anak, huwag ka nang lumabas. Pakiusap.
+
+### 4. The street, in the sweep
+
+tondo, outside Nanay's door. He does not know it is a sweep, only that
+the street is wrong:
+
+  + Macario (sa isip): Bakit ang daming guardia sa kalye?
+  + Macario (sa isip): ...Hindi ako dapat makita.
+
+Nobody is out. Four guardia civil walk between home and the press
 (2600 to 3000, 3700 to 4150, 5950 to 6300, 7330 to 7700), each with a
-crate in his beat; they catch, not shoot.
-
-  + Kutsero: Macario! Bihira ka nang dumaan dito. Kumusta ang nanay mo?
-    (March)
-  + Kutsero: Hindi kita kilala, iho. Umalis ka na.
-    (August)
-  + Mangingisda: May bago raw na pahayagan? Pabasa naman ako kapag may kopya ka.
-  + Mangingisda: Sinunog ko na 'yung ibinigay mo noon. Pasensya na.
-  + Barbero: Mahaba na ang buhok mo, iho. Dumaan ka minsan, libre na.
-  + Barbero: Sarado kami. May nagtanong tungkol sa'yo kaninang umaga. Hindi ko sinabi kung saan ka nakatira.
-  + Mananahi: Aba, suot mo pa rin ang tinahi ko? Kasya pa rin, ha.
-  + Mananahi (pabulong): May kura raw sa Tondo na may alam na. Umalis ka muna, iho, habang kaya mo pa.
-  + Tabakera: Ikaw 'yung bata ng polyeto, 'di ba? Tahimik lang ako.
-  + Tabakera: Tatlo na ang hinuli sa pagawaan kahapon. Huwag kang lalapit sa akin.
-  + Karpintero: May ginagawa akong mga kahon para sa isang imprenta. Hindi ko tinanong kung ano'ng ilalagay.
-  + Karpintero: Wala akong kilalang Macario. Wala.
-  + Direktor: Iho, may palabas tayo sa Sabado. Sana dumating ka.
-  + Direktor: Sarado ang entablado hanggang sa susunod na abiso. Mag-ingat ka, iho.
-  + Maryam: Macario! Hindi ka na sumisipot sa ensayo. Galit na ang direktor.
-
-August, Maryam (the question she asked in Act I, answered):
-
-  + Maryam: May mga guardia sa entablado kanina. Hinahanap ka.
-  + Maryam: Sino ba talaga 'yung dalawang lalaki noon, Macario?
-  + Macario: Mas mabuti nang hindi mo alam.
+crate in his beat; they catch, not shoot, and a catch puts him back at
+the last point he passed. The task: Bumalik sa imprenta.
 
 ### 5. The raid, and the list
 
-imprenta, August. Plays by itself on arrival. Three guardia civil
+imprenta, in the sweep. Plays by itself on arrival. Three guardia civil
 search the room (1850 to 2200, 1100 to 1500, 400 to 800), each with
 cover in his beat, and two high shelves (1580 and 860) stand above
 their sight; they catch, not shoot.
@@ -1274,14 +1285,14 @@ their sight; they catch, not shoot.
   + Macario (sa isip): Bukas ang pinto...
   + Macario (sa isip): Mga guardia... nauna na sila.
   + Manlilimbag (pabulong): Pangulo... dito po.
-  + Manlilimbag: May kapatid na nagtapat sa kura ng Tondo. Alam na nila ang lahat.
+  + Manlilimbag: Pumasok sila bago pa kami makatakbo. Dinampot nila ang iba.
   + Manlilimbag: Kinuha na nila ang mga resibo at ang mga sulat. Pero ang talaan... nasa ilalim pa ng palimbagan.
   + Macario: Kapag nakita nila 'yon...
   + Manlilimbag: Daan-daang pangalan, Pangulo. Pati ang sa inyo.
   + Macario: Kukunin ko. Lumabas ka na habang abala sila.
 
-Completes: Alamin ang nangyari sa imprenta. "The printers will not hand
-over the papers" was the guards, not the printers. At the press, past
+Completes: Bumalik sa imprenta. "The printers will not hand over the
+papers" was the guards, not the printers. At the press, past
 the guards:
 
   + Macario (sa isip): Nandito... ang talaan ng mga kasapi.
@@ -1289,6 +1300,7 @@ the guards:
   + Macario (sa isip): "Macario Sakay. Tondo. Kasama ang ina."
   + Macario (sa isip): Ang mga resibong kinuha nila... nakasulat din doon ang tirahan namin.
   + Macario (sa isip): Si Nanay!
+  + Macario (sa isip): Iniwan ko siyang mag-isa.
 
 Completes: Kunin ang talaan ng mga kasapi ("Tumakas sa bintana at
 balikan si Nanay!"). The front door is shut to him now; the back
@@ -1303,7 +1315,7 @@ Thoughts and lines around the press:
   + Macario (sa isip): Bintana sa likod. Daan palabas, kung sakaling magkagulo.
   + Manlilimbag (pabulong): Bilisan n'yo po, Pangulo. Sa ilalim ng palimbagan.
 
-### 6. The night: Nanay's door
+### 6. The night: the chase
 
 tondo, at night, behind the press (x 8050). The street is dark and
 nobody is out. On arrival:
@@ -1311,29 +1323,38 @@ nobody is out. On arrival:
   + Macario (sa isip): Kailangan kong maunahan sila sa bahay.
   + Macario (sa isip): Wala akong pinabantay sa kanya. Wala ni isa.
 
-The way home is past four more guards (6500 to 6950, 5000 to 5450, 3650
-to 4050, 2900 to 3200), each with cover, and two standing at Nanay's
-door, facing up the street. Within sight of it (x 2600), "Silipin ang
-bahay":
+The way home is past two patrols (6500 to 6950, 5000 to 5450), each with
+cover. At x 4550, a long way short of her door, it plays by itself:
 
-  + Macario (sa isip): May mga guardia sa pinto namin...
-  + Macario (sa isip): Bukas ang pinto. Walang ilaw.
-  + Macario (sa isip): 'Nay...
-  + Bantay: Ayun si Sakay! Hulihin!
+  + Macario (sa isip): Malapit na ang bahay...
+  + Macario (sa isip): Konti na lang, 'Nay.
 
-Completes: Balikan si Nanay. The two at the door raise their rifles and
-come after him, firing ("Tumakas! Sa estero, sa kanan!"); the estero
-(x 3550), "Tumalon sa estero":
+    (Two guardia civil come round the corner ahead, between him and
+    the house.)
 
-  + [BLACK] Tumalon si Macario sa estero, at hindi na lumingon.
+  + Bantay: Hoy, sino ka?!
+  + Macario (sa isip): Hawak ko ang talaan. Hindi ako puwedeng mahuli.
+
+    (He turns and runs, away from her.)
+
+  + Bantay: Bumalik ka dito!
+
+Completes: Balikan si Nanay. The chase: the two come after him firing,
+and two more on the street ahead (7400 to 7750, 9300 to 9650) turn on
+him when they see him; two hearts lie on the way, and a catch puts him
+back at the last point of the chase he passed (6000, 8000, 10000). At
+the end of the street (x 11300), the road out of Tondo, "Tumakas sa
+bundok":
+
+  + [BLACK] Tumakas si Macario patungo sa kabundukan.
   + [BLACK] Hindi na siya nakabalik kay Nanay.
   + [BLACK] Natuklasan ang Katipunan.
   + [BLACK] Sa loob ng ilang araw, daan-daan ang hinuli sa Tondo.
   + [BLACK] Agosto 23, 1896
   + [BLACK] Pugad Lawin, Kalookan
 
-Completes: Tumakas sa estero. He never reaches her, and the game never
-shows what happened to her.
+Completes: Tumakas papunta sa bundok. He never reaches her door, and
+the game never shows what happened to her.
 
 ### 7. Pugad Lawin
 
@@ -1614,8 +1635,8 @@ next passage. None of these is a promise; they are what is there.
     Act II's (Block 113), for Act III:
 
     Nanay. Her fate unknown: the door broken, the house empty, nobody
-      in Tondo has seen her. "Babalik po ako, 'Nay. Pangako." He set
-      nobody to watch her, and he knows it.
+      in Tondo has seen her. "Babalik po ako, 'Nay. Pangako." "Sandali
+      lang po ito." He left nobody with her, and he knows it.
     The father. Nanay names him: he went out one night and never came
       back. Still never answered; now the son has done the same.
     Isko. Macario's man since the raid; still asking after Nanay.
@@ -1648,8 +1669,8 @@ Act II (Block 113). Every + line: accept, rewrite or replace. Also:
     Pugad Lawin, 23 August, for the cedulas (the official date and
       place; Balintawak and 26 August are the older tradition).
     Nanay's fate, the Kasama's death at San Juan del Monte, and the
-      night at her door: ours, the proponent's direction (a tragedy,
-      not a safe story).
+      chase short of her door: ours and the proponent's (a tragedy, not
+      a safe story).
     The Talaan's three papers of Act II.
 
 Act I's play (Block 113, the proponent's direction): the moro-moro now

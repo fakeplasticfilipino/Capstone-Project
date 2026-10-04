@@ -9,25 +9,27 @@
 // beat", is every line. Every line here is ours, marked PLACEHOLDER
 // below each block of them, until the proponents accept or replace it.
 //
-//   imprenta     Marso 1896. The act opens at the Katipunan's press:
-//                Kalayaan printed (the work game), "from Yokohama", and
-//                the list of members, with where each lives, kept under
-//                the press. Jacinto sends him home.
-//   tondo        the street, Act I's paintings and people. March: home,
-//                the neighbours glad to see him. August: Isko's news,
-//                four guards between home and the press. The night of
-//                the raid: four more, the street dark, the way home.
-//   bahay        Nanay, the ink on his hands, "Pangulo" at the door, her
-//                warning and his promise; the Sunday he will not come
-//                home for.
-//   imprenta     August. Three guards searching it, two shelves to climb
-//                over them; the list under the press, his own name in
-//                it, and the realisation: the guards have the receipts,
-//                and the receipts have Nanay's door.
-//   tondo        night. Back toward home past the patrols; guards at
-//                Nanay's door, open and dark; seen, chased, and into the
-//                estero. He never gets back to her. He set nobody to
-//                watch her.
+//   imprenta     Agosto 1896. The act opens at the Katipunan's press:
+//                the second issue of Kalayaan printed (the work game),
+//                "from Yokohama" like the first; a rumour that someone
+//                went to the priest; the list of members, with where
+//                each lives, kept under the press. Jacinto sends him home.
+//   tondo        the street, Act I's paintings and people: the walk home,
+//                the neighbours afraid of him already.
+//   bahay        Nanay, the ink on his hands, "Pangulo", the father, her
+//                plea and his promise, and in the middle of his answer
+//                Isko at the door: a problem at the press, nothing more.
+//                Nobody in the room knows the sweep has begun. He goes,
+//                "Sandali lang po ito", on the promise he has just made.
+//   tondo        more guards than he has ever seen between home and the
+//                press. Later, the night: back toward home past the
+//                patrols, and short of it a guard: "Hoy, sino ka?!
+//                Bumalik ka dito!" The chase, away from her, to the
+//                mountains. He never gets back.
+//   imprenta     the sweep, found: three guards searching it, two
+//                shelves to climb over them; the list under the press,
+//                his own name in it, and only now the realisation: the
+//                receipts they took have Nanay's door, and he left her.
 //   pugad-lawin  23 August. Isko went to the house: empty, the door
 //                broken, nobody knows. The cedula torn, for her.
 //   san-juan     30 August. Fifteen soldiers in four waves; the rifles
@@ -107,13 +109,22 @@
   const NIGHT_GUARDS = [
     { beat: [6500, 6950], hide: 6720 },
     { beat: [5000, 5450], hide: 5220 },
-    { beat: [3650, 4050], hide: 3850 },
-    { beat: [2900, 3200], hide: 3050 },
   ];
-  const NIGHT_CHECKPOINTS = [6100, 4600, 3400];
-  const DOOR_GUARDS_X = [1940, 2160];
-  const NEAR_HOME_X = 2600;     // where he sees the door
-  const ESTERO_X = 3550;        // the canal he gets away by
+  const NIGHT_CHECKPOINTS = [6100];
+  // Short of home (x 4550, a long way short of her door), the shout:
+  // two guardia civil come round the corner between him and the house,
+  // already after him (hostile), and the chase runs the other way, the
+  // length of the street, to the road out to the mountains. Two more
+  // stand on the way and turn on him when they see him. A catch puts him
+  // back at the last point of the chase he passed.
+  const SPOTTED_X = 4550;
+  const CHASERS_X = [3700, 3560];
+  const CHASE_GUARDS = [
+    { beat: [7400, 7750] },
+    { beat: [9300, 9650] },
+  ];
+  const CHASE_CHECKPOINTS = [6000, 8000, 10000];
+  const MOUNTAIN_ROAD_X = 11300;
 
   // ---- Rooms ---------------------------------------------------------
   const ROOM = 1180;            // one screen wide, as the entablado
@@ -166,8 +177,9 @@
 
   // ---- Flags -------------------------------------------------------------
   const PANAKOT_FLAGS = DAYAMI_X.map((_, i) => "a2_panakot" + (i + 1));
-  const MARCH = { skipIfFlag: "a2_agosto" };
-  const RAID_NIGHT = { requiresFlag: "a2_nakuhaAngListahan" };
+  // From the sweep on, the neighbours are indoors: their fear is said on
+  // the walk home, before it (the hints the proponent asked for).
+  const SWEEP = { requiresFlag: "a2_paghuli" };
 
   function thinkAloud(text) {
     return playDialogue([{ speaker: "Macario (sa isip)", text }]);
@@ -214,17 +226,18 @@
   }
 
   // =============================================================
-  // Beat 1. Marso 1896, the press. The act opens here, the first thing
+  // Beat 1. Agosto 1896, the press: the second issue of Kalayaan, the
+  // one the histories say was in hand when the Katipunan was found out. The act opens here, the first thing
   // the student does is print. PLACEHOLDER, every line.
   // =============================================================
   async function theFirstPage() {
     setCutscene(true);
     turnPlayer(-1);
-    await playIntertitle(["Tondo, Marso 1896"], { startBlack: true });
+    await playIntertitle(["Tondo, Agosto 1896"], { startBlack: true });
     await wait(300);
     await movePlayer(PRESS_X + 110, 200);
     await playDialogue([
-      { speaker: "Jacinto", text: "Dahan-dahan sa diin, Macario. Ang unang pahina ang pinakamahalaga." },
+      { speaker: "Jacinto", text: "Dahan-dahan sa diin, Macario. Hinihintay ng bayan ang ikalawang labas." },
     ]);
     setCutscene(false);
   }
@@ -233,7 +246,7 @@
   // August, the list of members taken from under it.
   async function usePress() {
     const f = state.flags;
-    if (f.a2_agosto) {
+    if (f.a2_paghuli) {
       if (!f.a2_nakitaAngRonda) return;
       if (f.a2_nakuhaAngListahan) {
         thinkAloud("Nasa akin na ang talaan. Sa bintana sa likod ako dadaan.");
@@ -265,12 +278,14 @@
     setCutscene(true);
     await wait(300);
     await playDialogue([
-      { speaker: "Jacinto", text: "Heto. Ang unang pahayagan ng Katipunan." },
-      { speaker: "Macario", text: "\"Kalayaan\"..." },
-      { speaker: "Macario", text: "\"Inilimbag sa Yokohama\"? Nasa Hapon po ba tayo?" },
-      { speaker: "Jacinto", text: "Kung ang guardia ang tatanungin, oo." },
-      { speaker: "Jacinto", text: "Hahanapin nila ang imprenta sa kabilang dagat, hindi sa ilalim ng ilong nila." },
-      { speaker: "Manlilimbag", text: "Ginoo, saan ko itatago ang talaan?" },
+      { speaker: "Jacinto", text: "Heto. Ang ikalawang labas ng Kalayaan." },
+      { speaker: "Macario", text: "\"Inilimbag sa Yokohama\" pa rin po?" },
+      { speaker: "Jacinto", text: "Doon pa rin. Hanggang ngayon, sa kabilang dagat nila hinahanap ang imprenta." },
+      { speaker: "Jacinto", text: "Hindi sa ilalim ng ilong nila." },
+      { speaker: "Manlilimbag", text: "Ginoo... may usap-usapan sa pagawaan. May kapatid daw na kinabahan, at nagpunta sa kura." },
+      { speaker: "Jacinto", text: "..." },
+      { speaker: "Jacinto", text: "Usap-usapan lang 'yan." },
+      { speaker: "Manlilimbag", text: "Saan ko po itatago ang talaan?" },
       { speaker: "Jacinto", text: "Sa ilalim ng palimbagan. Ang mga pangalan ng kasapi, at kung saan sila nakatira." },
       { speaker: "Macario (sa isip)", text: "Pati ang pangalan ko. Pati ang bahay namin." },
       { speaker: "Jacinto", text: "Umuwi ka muna, Macario. Ilang gabi ka nang hindi umuuwi." },
@@ -279,9 +294,11 @@
   }
 
   // =============================================================
-  // Beat 2. Home, that evening. The ink, the knock, the father, the
-  // promise, and the Sunday he will not come home for. Then August, on
-  // black. PLACEHOLDER, every line.
+  // Beat 2. Home, that evening. The ink, "Pangulo", the father, her plea,
+  // the promise, and before he can finish answering her, Isko at the
+  // door: trouble at the press. Nobody knows it is the sweep. He goes on
+  // the promise he has just made, sure he will be back in an hour.
+  // PLACEHOLDER, every line.
   // =============================================================
   async function home() {
     setCutscene(true);
@@ -297,14 +314,7 @@
       { speaker: "Nanay", text: "Ano 'to? Tinta?" },
       { speaker: "Macario", text: "Sa entablado po, 'Nay. Pinta sa—" },
       { speaker: "Nanay", text: "Hindi ganyang kulay ang pinta sa entablado, Macario." },
-    ]);
-    playSfx("door");
-    await wait(700);
-    await playDialogue([
-      { speaker: "Isko", text: "Pangulo! Pangulo, nandiyan po ba kayo?" },
-      { speaker: "Nanay", text: "..." },
-      { speaker: "Nanay", text: "Pangulo." },
-      { speaker: "Nanay", text: "'Yan din ang tawag nila sa'yo noong gabing 'yon, sa pinto." },
+      { speaker: "Nanay", text: "Noong gabing hinanap kita, may tumawag sa'yo sa pinto. \"Pangulo\"." },
       { speaker: "Macario", text: "'Nay..." },
       { speaker: "Nanay", text: "Hindi ako bingi, anak. Hindi rin bulag ang mga kapitbahay." },
       { speaker: "Nanay", text: "May hinuli na naman daw sa Trozo. Hindi na nakauwi sa pamilya nila." },
@@ -316,53 +326,55 @@
       { speaker: "Macario", text: "Babalik po ako. Pangako." },
       { speaker: "Nanay", text: "..." },
       { speaker: "Nanay", text: "Magluluto ako ng sinigang sa Linggo. Umuwi ka." },
-      { speaker: "Macario", text: "Opo, 'Nay. Uuwi po ako." },
+      { speaker: "Macario", text: "Opo, 'Nay. Uuwi p—" },
     ]);
-    await playIntertitle(["Hindi siya umuwi noong Linggong iyon."], { keepBlack: true });
-    await playIntertitle(["Agosto 1896"], {
-      startBlack: true, keepBlack: true,
-      whileBlack: () => {
-        state.flags.a2_nangako = true;
-        state.flags.a2_agosto = true;
-        markDirty();
-      },
-    });
-    if (window.Acts) Acts.gotoScene("tondo", { x: HOME_X + 150, facing: 1 });
-  }
-
-  // =============================================================
-  // Beat 3. August, outside the house: Isko brings the news, and asks
-  // about Nanay. He is sent to warn the others. Nobody is sent to her.
-  // PLACEHOLDER, every line.
-  // =============================================================
-  async function iskoBringsNews() {
-    setCutscene(true);
-    turnPlayer(1);
-    const here = playerX();
-    placeDecoration("isko-takbo", Math.max(here + MEETS, viewEdges().right + 80));
-    showDecoration("isko-takbo", true);
-    await moveDecoration("isko-takbo", here + MEETS, 260);
+    // The door, hammered.
+    playSfx("door");
+    await wait(260);
+    playSfx("door");
+    await wait(260);
+    playSfx("door");
     await playDialogue([
-      { speaker: "Isko", text: "Pangulo! May problema po sa imprenta." },
-      { speaker: "Macario", text: "Hinaan mo ang boses mo. Ano'ng nangyari?" },
+      { speaker: "Isko", text: "Pangulo! Pangulo!" },
+      { speaker: "Nanay", text: "..." },
+    ]);
+    turnPlayer(1);
+    placeDecoration("isko-bahay", ROOM + 60);
+    showDecoration("isko-bahay", true);
+    await moveDecoration("isko-bahay", BAHAY_NANAY_X + BESIDE + MEETS, 320);
+    // Nobody in the room knows the sweep has begun: Isko brings a
+    // problem at the press, nothing more.
+    state.flags.a2_paghuli = true;
+    markDirty();
+    await playDialogue([
+      { speaker: "Isko", text: "Pasensya na po sa abala. May problema po sa imprenta." },
       { speaker: "Isko", text: "Ayaw pong ibigay ng mga manlilimbag 'yung mga papel na ipinalimbag natin." },
       { speaker: "Isko", text: "Kanina pa raw po sarado ang pinto. Walang sumasagot." },
       { speaker: "Macario", text: "Hindi ganyan ang mga tao roon." },
       { speaker: "Macario", text: "Pupuntahan ko." },
       { speaker: "Isko", text: "Sasama po ako—" },
-      { speaker: "Macario", text: "Hindi. Ikalat mo ang balita sa ibang balangay. Kailangan nilang malaman." },
-      { speaker: "Isko", text: "Paano po si Nanay ninyo?" },
-      { speaker: "Macario", text: "..." },
-      { speaker: "Macario", text: "Babalikan ko siya mamaya." },
-      { speaker: "Isko", text: "...Opo, Pangulo." },
+      { speaker: "Macario", text: "Hindi. Sabihan mo ang mga kapatid sa pulungan. Baka kailanganin ko sila." },
+      { speaker: "Isko", text: "Opo, Pangulo." },
     ]);
-    await moveDecoration("isko-takbo", viewEdges().right + 120, 300);
-    showDecoration("isko-takbo", false);
-    setCutscene(false);
+    await moveDecoration("isko-bahay", ROOM + 120, 360);
+    showDecoration("isko-bahay", false);
+    turnPlayer(-1);
+    await wait(500);
+    await playDialogue([
+      { speaker: "Nanay", text: "Macario..." },
+      { speaker: "Nanay", text: "Kapapangako mo lang." },
+      { speaker: "Macario", text: "Sandali lang po ito, 'Nay. Babalik po ako agad." },
+    ]);
+    // He turns his back on her and goes.
+    await movePlayer(ROOM - 90, 200);
+    playSfx("door");
+    state.flags.a2_nangako = true;
+    markDirty();
+    if (window.Acts) Acts.gotoScene("tondo", { x: HOME_X + 60, facing: 1 });
   }
 
   // =============================================================
-  // Beat 4. August, the press: the guardia civil got there first. A
+  // Beat 4. The sweep, the press: the guardia civil got there first. A
   // printer hiding by the door tells him why. PLACEHOLDER, every line.
   // =============================================================
   async function theRaid() {
@@ -375,7 +387,7 @@
     ]);
     turnPlayer(-1);
     await playDialogue([
-      { speaker: "Manlilimbag", text: "May kapatid na nagtapat sa kura ng Tondo. Alam na nila ang lahat." },
+      { speaker: "Manlilimbag", text: "Pumasok sila bago pa kami makatakbo. Dinampot nila ang iba." },
       { speaker: "Manlilimbag", text: "Kinuha na nila ang mga resibo at ang mga sulat. Pero ang talaan... nasa ilalim pa ng palimbagan." },
       { speaker: "Macario", text: "Kapag nakita nila 'yon..." },
       { speaker: "Manlilimbag", text: "Daan-daang pangalan, Pangulo. Pati ang sa inyo." },
@@ -395,6 +407,7 @@
       { speaker: "Macario (sa isip)", text: "\"Macario Sakay. Tondo. Kasama ang ina.\"" },
       { speaker: "Macario (sa isip)", text: "Ang mga resibong kinuha nila... nakasulat din doon ang tirahan namin." },
       { speaker: "Macario (sa isip)", text: "Si Nanay!" },
+      { speaker: "Macario (sa isip)", text: "Iniwan ko siyang mag-isa." },
     ]);
     state.flags.a2_nakuhaAngListahan = true;
     markDirty();
@@ -405,7 +418,7 @@
   // Out of the back window, onto the street at night. PLACEHOLDER.
   async function outTheWindow() {
     const f = state.flags;
-    if (!f.a2_agosto) {
+    if (!f.a2_paghuli) {
       thinkAloud("Bintana sa likod. Daan palabas, kung sakaling magkagulo.");
       return;
     }
@@ -419,39 +432,41 @@
   }
 
   // =============================================================
-  // Beat 6. The night: within sight of home. Guards at Nanay's door,
-  // the door open, no light. Seen, and chased off. PLACEHOLDER.
+  // Beat 6. The night, short of home: seen. Started where he stands
+  // (the checkpoint at SPOTTED_X runs it), a long way short of her
+  // door. He turns and runs, away from her. PLACEHOLDER, every line.
   // =============================================================
-  async function theDoorIsGuarded() {
+  async function spotted() {
     setCutscene(true);
     turnPlayer(-1);
+    await playDialogue([
+      { speaker: "Macario (sa isip)", text: "Malapit na ang bahay..." },
+      { speaker: "Macario (sa isip)", text: "Konti na lang, 'Nay." },
+    ]);
+    refreshOnDuty(); // the two from round the corner
+    refreshNpcVisibility(); // and the road out, at the end of the street
     await wait(400);
     await playDialogue([
-      { speaker: "Macario (sa isip)", text: "May mga guardia sa pinto namin..." },
-      { speaker: "Macario (sa isip)", text: "Bukas ang pinto. Walang ilaw." },
-      { speaker: "Macario (sa isip)", text: "'Nay..." },
+      { speaker: "Bantay", text: "Hoy, sino ka?!" },
+      { speaker: "Macario (sa isip)", text: "Hawak ko ang talaan. Hindi ako puwedeng mahuli." },
     ]);
-    await wait(600);
+    turnPlayer(1);
     await playDialogue([
-      { speaker: "Bantay", text: "Ayun si Sakay! Hulihin!" },
+      { speaker: "Bantay", text: "Bumalik ka dito!" },
     ]);
-    state.flags.a2_nakita = true;
-    markDirty();
-    refreshOnDuty();
-    refreshNpcVisibility();
     playSfx("caught");
     setCutscene(false);
-    showToast("Tumakas! Sa estero, sa kanan!", 3200);
+    showToast("Tumakbo! Papunta sa bundok, sa dulo ng kalye!", 3600);
   }
 
-  // Into the estero, and away. He never gets back to her. Then the
-  // discovery, on black, and the hills. PLACEHOLDER.
-  async function intoTheEstero() {
+  // The road out of Tondo, at the end of the chase: the mountains, on
+  // black. He never gets back to her. PLACEHOLDER.
+  async function toTheMountains() {
     if (!state.flags.a2_nakita) return;
     setCutscene(true);
     state.flags.a2_nakatakas = true;
     markDirty();
-    await playIntertitle(["Tumalon si Macario sa estero, at hindi na lumingon.",
+    await playIntertitle(["Tumakas si Macario patungo sa kabundukan.",
       "Hindi na siya nakabalik kay Nanay."], { keepBlack: true });
     await playIntertitle(["Natuklasan ang Katipunan.",
       "Sa loob ng ilang araw, daan-daan ang hinuli sa Tondo."], { startBlack: true, keepBlack: true });
@@ -763,11 +778,11 @@
   // Each the flags set by then, built on the one before. Each guest wears
   // the stage clothes, which Act I handed over and he still wears.
   const DEV_PRINTED = { a2_simula: true, a2_nakalimbag: true, a2_umuwiNa: true };
-  const DEV_AUGUST = Object.assign({}, DEV_PRINTED, { a2_nangako: true, a2_agosto: true });
-  const DEV_RAID = Object.assign({}, DEV_AUGUST, { a2_nagulatSiIsko: true, a2_nakitaAngRonda: true });
+  const DEV_SWEEP = Object.assign({}, DEV_PRINTED, { a2_nangako: true, a2_paghuli: true });
+  const DEV_RAID = Object.assign({}, DEV_SWEEP, { a2_napansin: true, a2_nakitaAngRonda: true });
   const DEV_NIGHT = Object.assign({}, DEV_RAID, { a2_nakuhaAngListahan: true, a2_gabiNa: true });
-  const DEV_DOOR = Object.assign({}, DEV_NIGHT, { a2_gabi1: true, a2_gabi2: true, a2_gabi3: true });
-  const DEV_CRY = Object.assign({}, DEV_DOOR, { a2_nakita: true, a2_nakatakas: true });
+  const DEV_CHASE = Object.assign({}, DEV_NIGHT, { a2_gabi1: true, a2_nakita: true });
+  const DEV_CRY = Object.assign({}, DEV_CHASE, { a2_hinabol: true, a2_nakatakas: true });
   const DEV_CHARGE = Object.assign({}, DEV_CRY, { a2_nagtalumpati: true, a2_pinunit: true, a2_papuntangSanJuan: true });
   const DEV_RETREAT = Object.assign({}, DEV_CHARGE, { a2_lumusob: true });
   const DEV_STRAW = Object.assign({}, DEV_RETREAT, { a2_nakaatras: true });
@@ -777,20 +792,20 @@
     a2_saLaguna: true });
   const CLOTHES = ["damit-entablado"];
   const DEV_JUMPS = [
-    { id: "simula", items: CLOTHES, label: "Ang simula: ang Kalayaan (Marso 1896)", scene: "imprenta",
+    { id: "simula", items: CLOTHES, label: "Ang simula: ang Kalayaan (Agosto 1896)", scene: "imprenta",
       flags: {}, task: "Maglimbag ng Kalayaan" },
     { id: "uwi", items: CLOTHES, label: "Pauwi kay Nanay", scene: "tondo",
       x: PRESS_DOOR_X - 60, facing: -1, flags: DEV_PRINTED, task: "Umuwi sa bahay" },
     { id: "bahay", items: CLOTHES, label: "Sa bahay: si Nanay", scene: "bahay",
       x: ROOM - 160, facing: -1, flags: DEV_PRINTED, task: "Umuwi sa bahay" },
-    { id: "agosto", items: CLOTHES, label: "Agosto 1896: ang balita ni Isko", scene: "tondo",
-      x: HOME_X + 150, facing: 1, flags: DEV_AUGUST, task: "Alamin ang nangyari sa imprenta" },
+    { id: "paghuli", items: CLOTHES, label: "Ang paghuli: pabalik sa imprenta", scene: "tondo",
+      x: HOME_X + 60, facing: 1, flags: DEV_SWEEP, task: "Bumalik sa imprenta" },
     { id: "ronda", items: CLOTHES, label: "Ang ronda sa imprenta", scene: "imprenta",
       x: PRESS_ENTER_X, facing: -1, flags: DEV_RAID, task: "Kunin ang talaan ng mga kasapi" },
     { id: "gabi", items: CLOTHES, label: "Ang gabi: pauwi kay Nanay", scene: "tondo",
       x: BEHIND_PRESS_X, facing: -1, flags: DEV_NIGHT, task: "Balikan si Nanay" },
-    { id: "pinto", items: CLOTHES, label: "Ang pinto ni Nanay", scene: "tondo",
-      x: NEAR_HOME_X + 150, facing: -1, flags: DEV_DOOR, task: "Balikan si Nanay" },
+    { id: "habol", items: CLOTHES, label: "Ang habulan: papunta sa bundok", scene: "tondo",
+      x: SPOTTED_X, facing: -1, flags: DEV_CHASE, task: "Tumakas papunta sa bundok" },
     { id: "sedula", items: CLOTHES, label: "Pugad Lawin: ang mga sedula", scene: "pugad-lawin",
       flags: DEV_CRY, task: "Punitin ang sedula" },
     { id: "sanjuan", items: CLOTHES, label: "San Juan del Monte: ang paglusob", scene: "san-juan",
@@ -816,11 +831,11 @@
     // One chain, in story order, the quest log (Block 48).
     //
     //   1  the first round at the press (usePress).
-    //   2  home, Nanay, and August on black (home).
-    //   3  August: the press reached again (theRaid).
+    //   2  home, Nanay, and the sweep breaking in on the promise (home).
+    //   3  the press reached again, through the sweep (theRaid).
     //   4  the list taken from under the press (takeTheList).
-    //   5  back toward Nanay, until he is seen at her door.
-    //   6  into the estero (intoTheEstero).
+    //   5  back toward Nanay, until he is seen short of home (spotted).
+    //   6  the chase, to the road to the mountains (toTheMountains).
     //   7  the cedula torn, Bonifacio's gift.
     //   8  the charge at San Juan del Monte (theCharge, 15 soldiers).
     //   9  across the river (acrossTheRiver), past the rifles.
@@ -833,10 +848,10 @@
     objectives: [
       { id: "maglimbag", label: "Maglimbag ng Kalayaan", flag: "a2_nakalimbag" },
       { id: "umuwi", label: "Umuwi sa bahay", flag: "a2_nangako" },
-      { id: "alamin_imprenta", label: "Alamin ang nangyari sa imprenta", flag: "a2_nakitaAngRonda" },
+      { id: "bumalik_imprenta", label: "Bumalik sa imprenta", flag: "a2_nakitaAngRonda" },
       { id: "kunin_talaan", label: "Kunin ang talaan ng mga kasapi", flag: "a2_nakuhaAngListahan" },
       { id: "balikan_nanay", label: "Balikan si Nanay", flag: "a2_nakita" },
-      { id: "tumakas", label: "Tumakas sa estero", flag: "a2_nakatakas" },
+      { id: "tumakas", label: "Tumakas papunta sa bundok", flag: "a2_nakatakas" },
       { id: "punitin_sedula", label: "Punitin ang sedula", flag: "a2_pinunit" },
       { id: "lumusob", label: "Lumusob sa San Juan del Monte", flag: "a2_lumusob" },
       { id: "umatras", label: "Umatras sa ilog", flag: "a2_nakaatras" },
@@ -891,18 +906,18 @@
         guards: PRESS_GUARDS.map((g, i) => ({
           type: "bantay", id: "guardia-loob-" + (i + 1), shoots: false,
           x: g.facing < 0 ? g.beat[1] : g.beat[0], patrolFrom: g.beat[0], patrolTo: g.beat[1],
-          facing: g.facing, requiresFlag: "a2_agosto", unlessFlag: "a2_nakatakas",
+          facing: g.facing, requiresFlag: "a2_paghuli", unlessFlag: "a2_nakatakas",
         })),
         hideSpots: PRESS_GUARDS.map((g) => ({ x: g.hide, width: 110,
-          requiresFlag: "a2_agosto", unlessFlag: "a2_nakatakas" })),
+          requiresFlag: "a2_paghuli", unlessFlag: "a2_nakatakas" })),
         platforms: PRESS_SHELVES,
         checkpoints: reached(PRESS_CHECKPOINTS, "a2_loob", "a2_nakitaAngRonda"),
         scripts: [
           // Listed first: after the round, Kalayaan and the list.
-          { requiresFlag: "a2_nakalimbag", unlessFlag: "a2_agosto", doneFlag: "a2_umuwiNa",
+          { requiresFlag: "a2_nakalimbag", unlessFlag: "a2_paghuli", doneFlag: "a2_umuwiNa",
             run: kalayaan },
-          { unlessFlag: "a2_agosto", doneFlag: "a2_simula", x: 900, facing: -1, run: theFirstPage },
-          { requiresFlag: "a2_agosto", doneFlag: "a2_nakitaAngRonda", x: PRESS_ENTER_X, facing: -1,
+          { unlessFlag: "a2_paghuli", doneFlag: "a2_simula", x: 900, facing: -1, run: theFirstPage },
+          { requiresFlag: "a2_paghuli", doneFlag: "a2_nakitaAngRonda", x: PRESS_ENTER_X, facing: -1,
             run: theRaid },
         ],
         decorations: [],
@@ -926,7 +941,7 @@
           },
           {
             id: "jacinto", x: JACINTO_PRESS_X, label: "Jacinto", animation: JACINTO,
-            hiddenByFlag: "a2_agosto",
+            hiddenByFlag: "a2_paghuli",
             // PLACEHOLDER.
             dialogueSets: [
               oneLine("Jacinto", "Pantay na diin, Macario. Ang malabong letra, hindi mababasa ng bayan.",
@@ -936,7 +951,7 @@
           },
           {
             id: "manlilimbag", x: PRINTER_X, label: "Manlilimbag", animation: MANLILIMBAG,
-            hiddenByFlag: "a2_agosto",
+            hiddenByFlag: "a2_paghuli",
             dialogueSets: [
               oneLine("Manlilimbag", "Yokohama, ha. Ni hindi ko alam kung saan 'yon."),
             ],
@@ -944,7 +959,7 @@
           {
             // August: the printer who hid when the guards came.
             id: "manlilimbag-nakatago", x: HIDING_PRINTER_X, label: "Manlilimbag", animation: MANLILIMBAG,
-            startsHidden: true, revealedByFlag: "a2_agosto",
+            startsHidden: true, revealedByFlag: "a2_paghuli",
             speakers: ["Manlilimbag (pabulong)"],
             dialogueSets: [
               oneLine("Manlilimbag (pabulong)", "Bilisan n'yo po, Pangulo. Sa ilalim ng palimbagan."),
@@ -953,9 +968,11 @@
         ],
       },
       {
-        // The street. March: home, everyone as they were. August
-        // (a2_agosto): Isko's news, the neighbours afraid, four guards on
-        // the way to the press. The night of the raid (from the list):
+        // The street. The walk home: the neighbours afraid of him. The
+        // sweep (a2_paghuli), which he does not know is one: nobody out,
+        // four guards on the way back to the press. The night: two
+        // patrols, the shout short of home, and the chase to the
+        // mountains. The night of the raid (from the list):
         // dark, nobody out, four more guards, and two at Nanay's door. No
         // gun among the neighbours (noRanged).
         id: "tondo",
@@ -970,39 +987,46 @@
           ...DAY_GUARDS.map((g, i) => ({
             type: "bantay", id: "guardia-araw-" + (i + 1), shoots: false,
             x: g.beat[0], patrolFrom: g.beat[0], patrolTo: g.beat[1], facing: 1,
-            requiresFlag: "a2_agosto", unlessFlag: "a2_nakuhaAngListahan",
+            requiresFlag: "a2_paghuli", unlessFlag: "a2_nakuhaAngListahan",
           })),
           ...NIGHT_GUARDS.map((g, i) => ({
             type: "bantay", id: "guardia-gabi-" + (i + 1), shoots: false,
             x: g.beat[1], patrolFrom: g.beat[0], patrolTo: g.beat[1], facing: -1,
             requiresFlag: "a2_nakuhaAngListahan", unlessFlag: "a2_nakita",
           })),
-          // At Nanay's door, standing, facing up the street toward him.
-          ...DOOR_GUARDS_X.map((x, i) => ({
-            type: "bantay", id: "guardia-pinto-" + (i + 1), shoots: false,
-            x, patrolFrom: x, patrolTo: x, facing: 1,
-            requiresFlag: "a2_nakuhaAngListahan", unlessFlag: "a2_nakita",
-          })),
-          // Seen: the same two, now with rifles raised and after him
-          // (hostile, Block 113), until he is in the estero.
-          ...DOOR_GUARDS_X.map((x, i) => ({
+          // Seen: the two from round the corner, after him from the start
+          // (hostile, Block 113), until he is out of Tondo.
+          ...CHASERS_X.map((x, i) => ({
             type: "bantay", id: "guardia-habol-" + (i + 1), hostile: true,
             x, patrolFrom: x, patrolTo: x, facing: 1,
+            requiresFlag: "a2_nakita", unlessFlag: "a2_nakatakas",
+          })),
+          // And two on the way, who turn on him when they see him.
+          ...CHASE_GUARDS.map((g, i) => ({
+            type: "bantay", id: "guardia-daan-" + (i + 1),
+            x: g.beat[1], patrolFrom: g.beat[0], patrolTo: g.beat[1], facing: -1,
             requiresFlag: "a2_nakita", unlessFlag: "a2_nakatakas",
           })),
         ],
         hideSpots: [
           ...DAY_GUARDS.map((g) => ({ x: g.hide, width: 110,
-            requiresFlag: "a2_agosto", unlessFlag: "a2_nakuhaAngListahan" })),
+            requiresFlag: "a2_paghuli", unlessFlag: "a2_nakuhaAngListahan" })),
           ...NIGHT_GUARDS.map((g) => ({ x: g.hide, width: 110,
             requiresFlag: "a2_nakuhaAngListahan", unlessFlag: "a2_nakita" })),
         ],
         // In route order: the day's run to the press, then the night's
         // back from it (game.js, respawnX takes the last reached).
         checkpoints: [
-          ...reached(DAY_CHECKPOINTS, "a2_araw", "a2_agosto"),
+          ...reached(DAY_CHECKPOINTS, "a2_araw", "a2_paghuli"),
           { x: BEHIND_PRESS_X, flag: "a2_nakuhaAngListahan" },
           ...reached(NIGHT_CHECKPOINTS, "a2_gabi", "a2_nakuhaAngListahan"),
+          // The shout: reached, it starts spotted (script).
+          { x: SPOTTED_X, flag: "a2_nakita", reach: true, requiresFlag: "a2_nakuhaAngListahan", script: true },
+          ...reached(CHASE_CHECKPOINTS, "a2_habol", "a2_nakita"),
+        ],
+        pickups: [
+          { id: "puso-habol-1", x: 6650, type: "heart" },
+          { id: "puso-habol-2", x: 9000, type: "heart" },
         ],
         exits: [
           { id: "bahay", x: HOME_X - 40, width: 80, label: "Pumasok sa bahay",
@@ -1012,8 +1036,16 @@
             unlessFlag: "a2_nakuhaAngListahan",
             toScene: "imprenta", toX: PRESS_ENTER_X, toFacing: -1 },
         ],
-        // Out of the window, the first thing he thinks. PLACEHOLDER.
+        // On the way to the press, more guards than he has ever seen; out
+        // of the window, the first thing he thinks. PLACEHOLDER.
         arrivalDialogues: [
+          {
+            requiresFlag: "a2_paghuli", unlessFlag: "a2_nakuhaAngListahan", doneFlag: "a2_napansin",
+            lines: [
+              { speaker: "Macario (sa isip)", text: "Bakit ang daming guardia sa kalye?" },
+              { speaker: "Macario (sa isip)", text: "...Hindi ako dapat makita." },
+            ],
+          },
           {
             requiresFlag: "a2_nakuhaAngListahan", doneFlag: "a2_gabiNa",
             x: BEHIND_PRESS_X, facing: -1,
@@ -1024,86 +1056,63 @@
           },
         ],
         scripts: [
-          // Beat 3. August, at the door.
-          { requiresFlag: "a2_agosto", doneFlag: "a2_nagulatSiIsko", x: HOME_X + 150, facing: 1,
-            run: iskoBringsNews },
+          // The shout, where he stands (the checkpoint at SPOTTED_X).
+          { requiresFlag: "a2_nakita", doneFlag: "a2_hinabol", run: spotted },
         ],
-        decorations: [
-          { id: "isko-takbo", x: HOME_X + 400, hidden: true, animation: ISKO, faceMovement: true },
-        ],
+        decorations: [],
         npcs: [
           {
-            // The night: within sight of the door (theDoorIsGuarded).
-            id: "lapit", x: NEAR_HOME_X, label: "Bahay", scenery: true,
-            startsHidden: true, revealedByFlag: "a2_nakuhaAngListahan", hiddenByFlag: "a2_nakita",
-            interactLabel: "Silipin ang bahay",
-            interactIcon: "i-hand",
-            dialogueSets: [],
-            onInteract: theDoorIsGuarded,
-          },
-          {
-            // Seen: the canal, and away.
-            id: "estero", x: ESTERO_X, label: "Estero", scenery: true,
+            // The chase's end: the road out of Tondo, to the mountains.
+            id: "bundok", x: MOUNTAIN_ROAD_X, label: "Daan sa bundok", scenery: true,
             startsHidden: true, revealedByFlag: "a2_nakita", hiddenByFlag: "a2_nakatakas",
-            interactLabel: "Tumalon sa estero",
+            interactLabel: "Tumakas sa bundok",
             interactIcon: "i-out",
             dialogueSets: [],
-            onInteract: intoTheEstero,
+            onInteract: toTheMountains,
           },
-          // The neighbours. One line each, March and August; indoors the
-          // night of the raid. PLACEHOLDER, every line.
+          // The neighbours, on the walk home: none will be seen with him.
+          // Indoors once the sweep is on. PLACEHOLDER, every line.
           {
-            id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: P.kutsero, hiddenWhile: RAID_NIGHT,
+            id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: P.kutsero, hiddenWhile: SWEEP,
             dialogueSets: [
-              oneLine("Kutsero", "Macario! Bihira ka nang dumaan dito. Kumusta ang nanay mo?", MARCH),
-              oneLine("Kutsero", "Hindi kita kilala, iho. Umalis ka na.", { requiresFlag: "a2_agosto" }),
+              oneLine("Kutsero", "Hindi kita kilala, iho. Umalis ka na."),
             ],
           },
           {
-            id: "mangingisda", x: MANGINGISDA_X, label: "Mangingisda", animation: P.mangingisda, hiddenWhile: RAID_NIGHT,
+            id: "mangingisda", x: MANGINGISDA_X, label: "Mangingisda", animation: P.mangingisda, hiddenWhile: SWEEP,
             dialogueSets: [
-              oneLine("Mangingisda", "May bago raw na pahayagan? Pabasa naman ako kapag may kopya ka.", MARCH),
-              oneLine("Mangingisda", "Sinunog ko na 'yung ibinigay mo noon. Pasensya na.", { requiresFlag: "a2_agosto" }),
+              oneLine("Mangingisda", "Sinunog ko na 'yung ibinigay mo noon. Pasensya na."),
             ],
           },
           {
-            id: "barbero", x: BARBERO_X, label: "Barbero", animation: P.barbero, hiddenWhile: RAID_NIGHT,
+            id: "barbero", x: BARBERO_X, label: "Barbero", animation: P.barbero, hiddenWhile: SWEEP,
             dialogueSets: [
-              oneLine("Barbero", "Mahaba na ang buhok mo, iho. Dumaan ka minsan, libre na.", MARCH),
-              oneLine("Barbero", "Sarado kami. May nagtanong tungkol sa'yo kaninang umaga. Hindi ko sinabi kung saan ka nakatira.",
-                { requiresFlag: "a2_agosto" }),
+              oneLine("Barbero", "Sarado kami. May nagtanong tungkol sa'yo kaninang umaga. Hindi ko sinabi kung saan ka nakatira."),
             ],
           },
           {
-            id: "mananahi", x: MANANAHI_X, label: "Mananahi", animation: P.mananahi, hiddenWhile: RAID_NIGHT,
+            id: "mananahi", x: MANANAHI_X, label: "Mananahi", animation: P.mananahi, hiddenWhile: SWEEP,
             speakers: ["Mananahi (pabulong)"],
             dialogueSets: [
-              oneLine("Mananahi", "Aba, suot mo pa rin ang tinahi ko? Kasya pa rin, ha.", MARCH),
-              oneLine("Mananahi (pabulong)", "May kura raw sa Tondo na may alam na. Umalis ka muna, iho, habang kaya mo pa.",
-                { requiresFlag: "a2_agosto" }),
+              oneLine("Mananahi (pabulong)", "May kura raw sa Tondo na may alam na. Umalis ka muna, iho, habang kaya mo pa."),
             ],
           },
           {
-            id: "tabakera", x: TABAKERA_X, label: "Tabakera", animation: P.tabakera, hiddenWhile: RAID_NIGHT,
+            id: "tabakera", x: TABAKERA_X, label: "Tabakera", animation: P.tabakera, hiddenWhile: SWEEP,
             dialogueSets: [
-              oneLine("Tabakera", "Ikaw 'yung bata ng polyeto, 'di ba? Tahimik lang ako.", MARCH),
-              oneLine("Tabakera", "Tatlo na ang hinuli sa pagawaan kahapon. Huwag kang lalapit sa akin.",
-                { requiresFlag: "a2_agosto" }),
+              oneLine("Tabakera", "Tatlo na ang hinuli sa pagawaan kahapon. Huwag kang lalapit sa akin."),
             ],
           },
           {
-            id: "karpintero", x: KARPINTERO_X, label: "Karpintero", animation: P.karpintero, hiddenWhile: RAID_NIGHT,
+            id: "karpintero", x: KARPINTERO_X, label: "Karpintero", animation: P.karpintero, hiddenWhile: SWEEP,
             dialogueSets: [
-              oneLine("Karpintero", "May ginagawa akong mga kahon para sa isang imprenta. Hindi ko tinanong kung ano'ng ilalagay.", MARCH),
-              oneLine("Karpintero", "Wala akong kilalang Macario. Wala.", { requiresFlag: "a2_agosto" }),
+              oneLine("Karpintero", "Wala akong kilalang Macario. Wala."),
             ],
           },
           {
-            id: "maryam", x: MARYAM_X, label: "Maryam", animation: P.maryam, hiddenWhile: RAID_NIGHT,
+            id: "maryam", x: MARYAM_X, label: "Maryam", animation: P.maryam, hiddenWhile: SWEEP,
             dialogueSets: [
-              oneLine("Maryam", "Macario! Hindi ka na sumisipot sa ensayo. Galit na ang direktor.", MARCH),
               {
-                requiresFlag: "a2_agosto",
                 lines: [
                   { speaker: "Maryam", text: "May mga guardia sa entablado kanina. Hinahanap ka." },
                   { speaker: "Maryam", text: "Sino ba talaga 'yung dalawang lalaki noon, Macario?" },
@@ -1114,18 +1123,16 @@
           },
           {
             id: "direktor", x: DIREKTOR_X, label: "Direktor", animation: P.direktor, facesPlayer: true,
-            hiddenWhile: RAID_NIGHT,
+            hiddenWhile: SWEEP,
             dialogueSets: [
-              oneLine("Direktor", "Iho, may palabas tayo sa Sabado. Sana dumating ka.", MARCH),
-              oneLine("Direktor", "Sarado ang entablado hanggang sa susunod na abiso. Mag-ingat ka, iho.",
-                { requiresFlag: "a2_agosto" }),
+              oneLine("Direktor", "Sarado ang entablado hanggang sa susunod na abiso. Mag-ingat ka, iho."),
             ],
           },
         ],
       },
       {
         // Beat 2. Home, one room; its painting is owed. Reached from the
-        // street in March, and (if he goes in) in August before the raid.
+        // street on the walk home, and (if he goes back in) in the sweep.
         id: "bahay",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/bahay.jpg" },
@@ -1137,19 +1144,21 @@
             toScene: "tondo", toX: HOME_X + 60, toFacing: 1 },
         ],
         scripts: [
-          { requiresFlag: "a2_nakalimbag", unlessFlag: "a2_agosto", doneFlag: "a2_nangako",
+          { requiresFlag: "a2_nakalimbag", unlessFlag: "a2_paghuli", doneFlag: "a2_nangako",
             x: ROOM - 160, facing: -1, run: home },
+        ],
+        decorations: [
+          { id: "isko-bahay", x: ROOM + 60, hidden: true, animation: ISKO, faceMovement: true },
         ],
         npcs: [
           {
             id: "nanay", x: BAHAY_NANAY_X, label: "Nanay", animation: P.nanay, facesPlayer: true,
-            // PLACEHOLDER. August, before the raid: she asks him to stay.
+            // PLACEHOLDER. If he goes back in during the sweep.
             dialogueSets: [
-              oneLine("Nanay", "Anak, ang daming guardia sa kalye. Dito ka na lang."),
+              oneLine("Nanay", "Anak, huwag ka nang lumabas. Pakiusap."),
             ],
           },
         ],
-        decorations: [],
       },
       {
         // Beat 7. Pugad Lawin, 23 August 1896. One screen; its painting

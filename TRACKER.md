@@ -246,23 +246,28 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 
     Block 113, Act II (rebuilt). ?dev=1 lists thirteen points under Ang
       Mahabang Anino ng Digmaan; each opens its place with its task in
-      the log. From Ang simula: "Tondo, Marso 1896" at the press; print
-      (a sheet printed a line at a time); Jacinto and the list; walk home
-      (the neighbours glad); Nanay, the ink, the knock, the promise,
-      "Hindi siya umuwi noong Linggong iyon". August: Isko is sent away,
-      nobody to Nanay; four guards on the way to the press, a catch
-      putting you back at the last crate passed; inside, three guards and
-      two shelves to climb; his name in the list; out the window into a
-      dark street, four patrols, two guards at Nanay's door; "Silipin ang
-      bahay", seen, shot at, into the estero. Pugad Lawin: Isko found the
+      the log. From Ang simula: "Tondo, Agosto 1896" at the press; print
+      the second Kalayaan; the rumour of the priest and the list; walk
+      home past neighbours who will not know him; Nanay, the ink,
+      "Pangulo", the father, the promise, and in the middle of "Uuwi
+      p—" Isko at the door: a problem at the press, nothing more (nobody
+      knows it is the sweep). "Kapapangako mo lang." "Sandali lang po
+      ito." Straight onto the street, no card: "Bakit ang daming guardia
+      sa kalye?" Four guards to the press, a catch putting you at the
+      last crate passed; inside, three guards and two shelves; his name
+      in the list, and only now "Si Nanay! ... Iniwan ko siyang
+      mag-isa"; out the window into a dark street, two patrols; well
+      short of home "Hoy, sino ka?! Bumalik ka dito!" and the chase the
+      other way, two firing behind and two ahead, to the road to the
+      mountains at the end of the street. Pugad Lawin: Isko found the
       house empty. San Juan del Monte: fifteen soldiers, the Kasama's
       death, five riflemen on the run back. The Nangka, Balara, Laguna,
-      and the end: his last thoughts on screen, then "Wakas ng Ikalawang
-      Yugto". Every new person and place is a dashed box or a dark wall:
-      expected. Failure: a black screen with nothing happening (the bug
-      this fixes), a catch that sends you to the start of a long run, a
-      point that opens the wrong place or task, or anyone frozen after a
-      black card.
+      and the end: his last thoughts on screen, then "Wakas ng
+      Ikalawang Yugto". Every new person and place is a dashed box or a
+      dark wall: expected. Failure: a black screen with nothing
+      happening, anyone at home knowing about the sweep, a card or a
+      pause between her plea and the knock, a catch that sends you to
+      the start of a long run, or anyone frozen after a black card.
 
     Block 113, Act I's play. ?dev=1, Ang dula: Don Rodrigo. After the
       fight the Sultan drops his kampilan, his kingdom falls, Maryam
@@ -553,7 +558,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (802 and 324 checks). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (802 and 326 checks). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -871,7 +876,7 @@ test.js (802 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (324 checks; Act II since Block 113) drives the real
+what is covered. verify_new_scene.js (326 checks; Act II since Block 113) drives the real
 content through Act I end to end, to the post-test opening, including
 reloads mid-beat, old saves,
 a guest, and checks that every line of the content is

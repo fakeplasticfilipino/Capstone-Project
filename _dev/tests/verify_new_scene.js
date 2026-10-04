@@ -61,8 +61,8 @@ const INTERACT_DISTANCE_FOR_TEST = 90; // game.js INTERACT_DISTANCE
 // Block 113. Act II's flags up to the charge at San Juan del Monte, for
 // the reload check (content/act2.js, DEV_CHARGE).
 const ACT2_CHARGE_FLAGS = { a2_simula: true, a2_nakalimbag: true, a2_umuwiNa: true,
-  a2_nangako: true, a2_agosto: true, a2_nagulatSiIsko: true, a2_nakitaAngRonda: true,
-  a2_nakuhaAngListahan: true, a2_gabiNa: true, a2_nakita: true, a2_nakatakas: true,
+  a2_nangako: true, a2_paghuli: true, a2_napansin: true, a2_nakitaAngRonda: true,
+  a2_nakuhaAngListahan: true, a2_gabiNa: true, a2_nakita: true, a2_hinabol: true, a2_nakatakas: true,
   a2_nagtalumpati: true, a2_pinunit: true, a2_papuntangSanJuan: true };
 
 const walkTo = async (page, x) => {
@@ -1745,8 +1745,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
 
   // ---------------------------------------------------------------
   // Block 113. Act II, end to end, as a guest from its first story
-  // point: the press, home, August, the raid and the list, the night run
-  // to Nanay's door and the estero, the cedula, San Juan del Monte
+  // point: the press, home and the knock, the sweep, the raid and the
+  // list, the night run, the shout and the chase to the mountains, the cedula, San Juan del Monte
   // (fifteen soldiers, the Kasama), the retreat, the scarecrows, Balara,
   // Laguna and the end. Throughout, no line is ever said behind black
   // (the bug that froze the end). Then a reload in the middle of a beat.
@@ -1811,13 +1811,13 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const { ctx, page } = await newPage(browser, { session: null });
     await startAt(page, "simula");
     await watchBlack(page);
-    ok("Act II opens at the press on Tondo, Marso 1896", await waitIntertitle(page, true, 5000) &&
-       (await intertitle(page)).lines[0] === "Tondo, Marso 1896" && await page.evaluate(() => currentSceneId === "imprenta"));
+    ok("Act II opens at the press on Tondo, Agosto 1896", await waitIntertitle(page, true, 5000) &&
+       (await intertitle(page)).lines[0] === "Tondo, Agosto 1896" && await page.evaluate(() => currentSceneId === "imprenta"));
     await waitIntertitle(page, false, 15000);
     let c = await readLines(page, 3);
     await settle(page);
     ok("Jacinto, and the first thing to do is print",
-       c.lines[0] === "Jacinto: Dahan-dahan sa diin, Macario. Ang unang pahina ang pinakamahalaga." &&
+       c.lines[0] === "Jacinto: Dahan-dahan sa diin, Macario. Hinihintay ng bayan ang ikalawang labas." &&
        await stepIs(page, "Maglimbag ng Kalayaan"), c.lines);
     await press(page, 330);
     const pw = await workState(page);
@@ -1833,8 +1833,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        JSON.stringify(printed) === JSON.stringify(["work-print-ok", "work-print-bad", "work-print-ok", "work-print-bad", "work-print-ok"]), printed);
     await page.click("#work-hit");
     c = await readLines(page, 12);
-    ok("Kalayaan \"from Yokohama\", and the list kept with where everyone lives",
-       c.lines.includes("Macario: \"Inilimbag sa Yokohama\"? Nasa Hapon po ba tayo?") &&
+    ok("the second Kalayaan \"from Yokohama\", a rumour of the priest, and the list kept with where everyone lives",
+       c.lines.includes("Macario: \"Inilimbag sa Yokohama\" pa rin po?") &&
+       c.lines.some((x) => /nagpunta sa kura/.test(x)) &&
        c.lines.includes("Macario (sa isip): Pati ang pangalan ko. Pati ang bahay namin."), c.lines);
     await settle(page);
     ok("the task: home", await stepIs(page, "Umuwi sa bahay"));
@@ -1847,31 +1848,33 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await page.keyboard.press("e");
     let l = await line(page);
     await page.keyboard.press("e");
-    ok("in March the Kutsero is glad to see him", /Bihira ka nang dumaan dito/.test(l || ""), l);
+    ok("on the walk home the Kutsero will not know him (before the sweep)", l === "Kutsero: Hindi kita kilala, iho. Umalis ka na." &&
+       (await page.evaluate(() => GUARDS.length)) === 0, l);
     await page.waitForTimeout(300);
     await press(page, 1990);
     ok("Nanay's door leads home", await waitForScene(page, "bahay"));
-    c = await readLines(page, 30, 6000); // he walks the room to her mid-beat
-    ok("the ink, the knock, Pangulo, the father, the promise, and Sunday",
+    c = await readLines(page, 50, 6000); // he walks the room to her mid-beat, Isko runs in
+    const promise = c.lines.indexOf("Macario: Babalik po ako. Pangako.");
+    const cut = c.lines.indexOf("Macario: Opo, 'Nay. Uuwi p—");
+    const knock = c.lines.indexOf("Isko: Pangulo! Pangulo!");
+    ok("the ink, Pangulo, the father, the promise, and the knock breaks in on his answer",
        c.lines[0] === "Nanay: Anak! Akala ko kung napaano ka na." && c.lines.includes("Nanay: Ano 'to? Tinta?") &&
-       c.lines.includes("Isko: Pangulo! Pangulo, nandiyan po ba kayo?") && c.lines.includes("Macario: Babalik po ako. Pangako.") &&
-       c.lines[c.lines.length - 1] === "Macario: Opo, 'Nay. Uuwi po ako.", c.lines);
-    ok("he does not come home that Sunday, and it is August, on the street",
-       await playOn(page, "currentSceneId === 'tondo' && state.flags.a2_agosto && inDialogue", 40000));
-    c = await readLines(page, 14);
-    ok("Isko's news; Isko is sent to the others, and nobody to Nanay",
-       c.lines[0] === "Isko: Pangulo! May problema po sa imprenta." && c.lines.includes("Isko: Paano po si Nanay ninyo?") &&
-       c.lines.includes("Macario: Babalikan ko siya mamaya.") && !c.lines.some((x) => /Bantayan mo si Nanay/.test(x)), c.lines);
+       promise > 0 && cut === promise + 3 && knock === cut + 1, c.lines);
+    ok("Isko brings a problem at the press and nothing more: nobody knows it is the sweep",
+       c.lines.includes("Isko: Pasensya na po sa abala. May problema po sa imprenta.") &&
+       !c.lines.some((x) => /paghuli|nagtapat|Paano po si Nanay|Bantayan/.test(x)), c.lines);
+    const goes = c.lines.indexOf("Macario: Sandali lang po ito, 'Nay. Babalik po ako agad.");
+    ok("she says it, and he goes for an hour",
+       goes > 0 && c.lines[goes - 1] === "Nanay: Kapapangako mo lang.", c.lines);
+    ok("straight out onto the street, no card between, and the street is wrong",
+       c.lines[goes + 1] === "Macario (sa isip): Bakit ang daming guardia sa kalye?" &&
+       await page.evaluate(() => currentSceneId === "tondo" && state.flags.a2_paghuli === true), c.lines);
     await settle(page);
-    ok("the task: find out what happened", await stepIs(page, "Alamin ang nangyari sa imprenta"));
-    ok("four guards walk between home and the press by day", (await on(page, "guardia-araw-")) === 4);
+    ok("the task: back to the press", await stepIs(page, "Bumalik sa imprenta"));
+    ok("the neighbours are indoors now", await page.evaluate(() =>
+      NPCS.filter((n) => !n.hidden && !n.scenery).length === 0));
+    ok("four guards walk between home and the press in the sweep", (await on(page, "guardia-araw-")) === 4);
     await quiet(page);
-    await walkTo(page, 3220);
-    await page.waitForTimeout(150);
-    await page.keyboard.press("e");
-    l = await line(page);
-    await page.keyboard.press("e");
-    ok("and the Kutsero will not know him", l === "Kutsero: Hindi kita kilala, iho. Umalis ka na.", l);
     // A catch on the way puts him back at the last point he passed
     // (reached checkpoints, Block 113).
     const back = await page.evaluate(async () => {
@@ -1929,11 +1932,12 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await quiet(page);
     ok("the task: the list", await stepIs(page, "Kunin ang talaan ng mga kasapi"));
     await press(page, 330);
-    c = await readLines(page, 6);
+    c = await readLines(page, 7);
     await settle(page);
     ok("his own name in the list, and the receipts have Nanay's door",
        c.lines.includes("Macario (sa isip): \"Macario Sakay. Tondo. Kasama ang ina.\"") &&
-       c.lines[c.lines.length - 1] === "Macario (sa isip): Si Nanay!" && await stepIs(page, "Balikan si Nanay"), c.lines);
+       c.lines.includes("Macario (sa isip): Si Nanay!") &&
+       c.lines[c.lines.length - 1] === "Macario (sa isip): Iniwan ko siyang mag-isa." && await stepIs(page, "Balikan si Nanay"), c.lines);
     ok("the front door is shut to him now", await page.evaluate(() => { posX = 2500; return true; }) &&
        await page.evaluate(() => new Promise((r) => setTimeout(() => r(btnInteract.classList.contains("hidden") ||
          !/Lumabas/.test(btnInteract.textContent)), 200))));
@@ -1942,26 +1946,34 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     c = await readLines(page, 3);
     const night = await page.evaluate(() => ({ night: document.getElementById("skyline").classList.contains("night-tint"),
       x: Math.round(posX), out: NPCS.filter((n) => !n.hidden && !n.scenery).map((n) => n.id) }));
-    ok("he set nobody to watch her; the street is dark and nobody is out",
+    ok("he left nobody with her; the street is dark and nobody is out",
        c.lines[1] === "Macario (sa isip): Wala akong pinabantay sa kanya. Wala ni isa." && night.night && night.out.length === 0 && night.x === 8050,
        { lines: c.lines, night });
     await settle(page);
-    ok("four night patrols and two guards at Nanay's door",
-       (await on(page, "guardia-gabi-")) === 4 && (await on(page, "guardia-pinto-")) === 2);
+    ok("two night patrols on the way home", (await on(page, "guardia-gabi-")) === 2);
     await quiet(page);
-    await walkTo(page, 4600);
-    await walkTo(page, 3400);
-    await press(page, 2700);
-    c = await readLines(page, 5);
-    ok("within sight of home: guards at her open, dark door, and he is seen",
-       c.lines.includes("Macario (sa isip): Bukas ang pinto. Walang ilaw.") && c.lines[c.lines.length - 1] === "Bantay: Ayun si Sakay! Hulihin!", c.lines);
+    await walkTo(page, 6100);
+    await walkTo(page, 4530);
+    c = await readLines(page, 6);
+    ok("short of home, a guard: \"Hoy, sino ka?! Bumalik ka dito!\", started where he stands",
+       c.lines.includes("Bantay: Hoy, sino ka?!") && c.lines[c.lines.length - 1] === "Bantay: Bumalik ka dito!" &&
+       await page.evaluate(() => currentSceneId === "tondo" && posX > 4000), c.lines);
     await settle(page);
-    const chase = await page.evaluate(() => GUARDS.filter((g) => /^guardia-habol-/.test(g.id)).map((g) => g.hostile));
-    ok("the two at the door come after him with rifles; the task is the estero",
-       JSON.stringify(chase) === "[true,true]" && await stepIs(page, "Tumakas sa estero"), chase);
+    const chase = await page.evaluate(() => ({
+      after: GUARDS.filter((g) => /^guardia-habol-/.test(g.id)).map((g) => g.hostile),
+      ahead: GUARDS.filter((g) => /^guardia-daan-/.test(g.id)).length,
+      facing, road: NPCS.some((n) => n.id === "bundok" && !n.hidden) }));
+    ok("he turns and runs from her; two come after him firing, two more ahead; the road to the mountains open",
+       JSON.stringify(chase.after) === "[true,true]" && chase.ahead === 2 && chase.facing === 1 && chase.road &&
+       await stepIs(page, "Tumakas papunta sa bundok"), chase);
     await quiet(page);
-    await press(page, 3480);
-    ok("into the estero; he never gets back to her; on black to Pugad Lawin",
+    await walkTo(page, 6000);
+    await walkTo(page, 8000);
+    await walkTo(page, 10000);
+    ok("the chase's points are reached as he passes them",
+       await page.evaluate(() => state.flags.a2_habol1 && state.flags.a2_habol2 && state.flags.a2_habol3));
+    await press(page, 11240);
+    ok("to the mountains; he never gets back to her; on black to Pugad Lawin",
        await playOn(page, "currentSceneId === 'pugad-lawin' && inDialogue", 50000));
     c = await readLines(page, 16);
     ok("Isko went to the house: empty, the door broken, nobody knows",

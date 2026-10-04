@@ -4693,6 +4693,44 @@ fought, the Kasama's death and absence, the end's thoughts seen and not
 behind black, and no line of the act behind black. Act I's play check
 reads the new ending.
 
+The knock, on the promise, and nobody knowing (the same day). The
+proponent, playing the rebuild, twice. First: "The moment his mother
+told him the emotional speech, that's WHEN THE SWEEP HAPPENS": the
+first rebuild had put her plea in March and the sweep in August behind
+a card, which turned the break into a caption. Then, of the next
+attempt, which had Isko announce the sweep in the room: "Macario,
+august, they're unaware of the sweep. Guy comes in and says there is a
+problem at the printing shop. The rest happens but at the very end
+(when he finally got the thing), he realizes his mother is in danger.
+Before he could reach his house he was almost caught and was then
+forced to run for the mountains."
+
+So the act is all August. The press prints the second issue of Kalayaan
+(the one the histories say was in hand when the Katipunan was found
+out); a printer passes on a rumour of a confession that Jacinto waves
+away; the walk home is past neighbours already afraid of him. At home,
+as he answers her "Uuwi p—", Isko is at the door with a problem at the
+press and nothing more. Nobody knows it is the sweep, so nobody thinks
+she needs anyone: "Kapapangako mo lang." "Sandali lang po ito, 'Nay."
+Straight onto the street, no card, more guards than he has ever seen,
+and he does not know why. Only with the list in his hand, and his own
+name in it, does he understand that the receipts they took give her
+address and that he left her alone. Running home through the night, he
+is seen well short of her door ("Hoy, sino ka?! Bumalik ka dito!") and
+the chase runs the other way, the length of the street, to the road
+out to the mountains: two guards behind him firing, two more ahead who
+turn on him, checkpoints as he goes. He never reaches the door, so the
+game never shows it; the guarded open door and the estero of the first
+rebuild are gone. The beat is started where he stands, not where he
+presses a button: a checkpoint may now run the scene's waiting script
+when reached (script: true).
+
+The rules learned, for every act: the blow lands at the emotional peak,
+with no time, card or buffer between the vow and what breaks it; and
+what the characters do not know, they do not say. Dramatic irony (her
+"Kapapangako mo lang", his "Sandali lang") is worth more than any line
+that explains the danger.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

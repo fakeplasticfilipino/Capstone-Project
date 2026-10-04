@@ -3735,6 +3735,11 @@ function updateCheckpoints() {
     if (Math.abs(posX + PLAYER_WIDTH / 2 - cp.x) < CHECKPOINT_REACH) {
       state.flags[cp.flag] = true;
       markDirty();
+      // A checkpoint with script: true starts the scene's script that
+      // waits on its flag the moment it is reached: a beat that happens
+      // where he is, not where he presses E (Act II, the shout in the
+      // night street).
+      if (cp.script) setTimeout(() => runSceneScript(), 0);
     }
   }
 }
