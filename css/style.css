@@ -4089,3 +4089,12 @@ body.dialogue-top .dialogue-portrait {
   margin-top: 10px;
   justify-content: center;
 }
+
+/* Block 115. The harness's fast-forward (game.js, TEST_SPEED): the black
+   of a scene change and of a card switches at once, as the waits behind
+   them are shortened. Never set for a student. */
+.test-fast #blackout,
+.test-fast #intertitle,
+.test-fast .intertitle-line {
+  transition-duration: 0s !important;
+}

@@ -1,8 +1,8 @@
 # MACARIO: both suites on every push to main (Block 104).
 #
 # Pushing to main publishes to GitHub Pages, so this is the check that
-# runs behind every push: GitHub starts a fresh machine, runs the two
-# suites side by side, and marks the commit with a green tick or a red
+# runs behind every push: GitHub starts fresh machines, runs the two
+# suites in pieces side by side (Block 115, _dev/tests/run.js), and marks the commit with a green tick or a red
 # cross (the Actions tab on GitHub says which check failed). A push that
 # changes only Markdown (the context files) cannot break the game and
 # runs nothing. Before a release to students (the pilot, the freeze, the
@@ -42,15 +42,19 @@ jobs:
           node-version: lts/*
       - run: node _dev/tools/prepare.js --check
 
+  # Block 115. The two suites cut into pieces (each part of
+  # verify_new_scene.js, test.js's sections six at a time) and dealt to
+  # four machines, two pieces at a time on each, with the story
+  # fast-forwarded (game.js, TEST_SPEED). run.js --list shows the pieces.
   suite:
     needs: checks
-    name: ${{ matrix.suite }}
+    name: shard ${{ matrix.shard }}/4
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        suite: [test.js, verify_new_scene.js]
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -69,6 +73,6 @@ jobs:
         run: |
           set -o pipefail
           status=0
-          node _dev/tests/${{ matrix.suite }} 2>&1 | tee suite.log || status=$?
-          grep -E "^\s*FAIL" suite.log | head -n 20 | sed -E 's/^\s*/::error title=${{ matrix.suite }}::/' || true
+          node _dev/tests/run.js --shard=${{ matrix.shard }}/4 --jobs=2 2>&1 | tee suite.log || status=$?
+          grep -E "^\s*FAIL" suite.log | head -n 20 | sed -E 's/^\s*/::error title=shard ${{ matrix.shard }}::/' || true
           exit $status

@@ -39,7 +39,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..", "..");
-const PORT = 8099;
+let PORT = Number(process.env.PORT) || 0; // 0: any free port, so shards run side by side (Block 115)
 const SPEED_FOR_TEST = 5; // game.js SPEED, the walk
 const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
 
@@ -159,6 +159,10 @@ const ONLY = (() => {
   return arg ? new Set(arg.slice(7).split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)) : null;
 })();
 const LIST = process.argv.includes("--list");
+// Block 115. The story's own time (game.js, TEST_SPEED) runs this many
+// times faster: the pauses, black cards, fades and scripted walks, never
+// the world a student plays against. --real runs it at a student's speed.
+const STORY_SPEED = process.argv.includes("--real") ? 1 : 10;
 let sectionOn = true;
 const section = (id, title) => {
   sectionOn = !LIST && !(ONLY && !ONLY.has(id));
@@ -179,6 +183,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
 (async () => {
   await new Promise((r) => server.listen(PORT, r));
+  PORT = server.address().port;
   const browser = await chromium.launch();
 
   // block is either a URL pattern to serve empty (the original use: testing
@@ -225,7 +230,8 @@ const visible = (page, sel) => page.evaluate((s) => {
       }
     }
 
-    await page.addInitScript((s) => { window.__TEST = s; }, testState);
+    await page.addInitScript((s) => { window.__TEST = s.testState; window.__TEST_SPEED = s.speed; },
+      { testState, speed: STORY_SPEED });
     await page.goto("http://localhost:" + PORT + "/index.html");
     return { ctx, page };
   }
@@ -3352,7 +3358,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     const midFade = await page.evaluate(() => new Promise((resolve) => {
       state.flags.test_bumalik = true;
       const done = fadeToScene("tondo");
-      setTimeout(() => resolve({ open: inDialogue, posX, facing, black: blackout.classList.contains("visible") }), 1100);
+      // Block 115: the story runs __TEST_SPEED times faster here.
+      setTimeout(() => resolve({ open: inDialogue, posX, facing, black: blackout.classList.contains("visible") }), 1100 / (window.__TEST_SPEED || 1));
       window.__fade = done;
     }));
     ok("under the blackout Macario is already placed, with nothing open yet",
@@ -3689,11 +3696,14 @@ const visible = (page, sel) => page.evaluate((s) => {
       ENEMIES.forEach((e) => { e.nextSwingAt = 0; e.cooldownUntil = 0; });
       const before = health;
       window.__sawWindup = false;
-      const watch = setInterval(() => {
+      // Block 115: every class change seen, not a 30 ms poll that a busy
+      // machine (several suites side by side) can starve past the tell.
+      const watch = new MutationObserver(() => {
         if (document.querySelector(".enemy-windup")) window.__sawWindup = true;
-      }, 30);
+      });
+      watch.observe(document.body, { attributes: true, attributeFilter: ["class"], subtree: true });
       setTimeout(() => {
-        clearInterval(watch);
+        watch.disconnect();
         resolve({ before, after: health, telegraphed: window.__sawWindup });
       }, ATTACK_TELL_MS + 400);
     }));
@@ -4856,7 +4866,7 @@ const visible = (page, sel) => page.evaluate((s) => {
         seen.duringBlack = el.classList.contains("visible");
         seen.afterText = document.querySelectorAll("#intertitle .intertitle-line.shown").length;
       } });
-      await new Promise((r) => setTimeout(r, 1400));
+      await new Promise((r) => setTimeout(r, 1400 / (window.__TEST_SPEED || 1))); // Block 115
       const el = document.getElementById("intertitle");
       seen.black = el.classList.contains("visible") && !el.classList.contains("hidden");
       seen.lines = [...document.querySelectorAll("#intertitle .intertitle-line")].map((x) => x.textContent);

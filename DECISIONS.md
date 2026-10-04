@@ -4814,6 +4814,62 @@ make-fun-sfx.js like the others. playOrderGame, its screen, its styles
 and the comb and razor icons were removed: nothing else used them, and
 one way of doing a thing is the rule (Consistency).
 
+## Block 115: testing in minutes
+
+On 4 Oct 2026 the proponent found the testing taking longer than the
+building and asked for all of the fix at once. The time went to four
+things: verify_new_scene.js could only run whole, Act I and Act II end
+to end every time; it ran the story at a student's speed, every black
+card, fade and scripted pause in real time; it ran one piece after
+another in one browser; and readings waited fixed pauses (140 ms a
+line of dialogue, 700 ms after a reload, 2.5 seconds of silence after
+Act II's conversations) whether or not anything was coming.
+
+Parts. verify_new_scene.js is eight parts (files, act1, reloads,
+talaan, tutorials, guest, act2, jumps), each opening pages of its own
+and depending on no other, with --only and --list as test.js has had
+since Block 106. What more than one used (resume, the teacher's
+papers) is declared before them all. Act I's run stays one part: it
+is one student logging in and playing to the post-test, saves and
+scores written as they go, and cutting it would test a different path.
+
+The story fast-forwarded. The harness sets window.__TEST_SPEED (10)
+and game.js divides the story's own time by it (TEST_SPEED, storyMs):
+wait(), the black card's reading time, the scene fade's holds, the
+speed of movePlayer and moveDecoration, the beat after a scripted
+fight; and the black's own CSS fades switch at once (.test-fast). The
+world a student plays against is untouched: physics, guards and their
+meters, fights, the work game, the haircut. That line is the point. A
+global clock would have been one change and would have made every
+timing the suites measure (a meter filling in 0.7 s, a dash, a jump's
+height) a measurement of something no student meets. For a student
+TEST_SPEED is 1, set from a global only the harness defines; a page's
+__TEST is left as it was, because a null __TEST is what turns the
+tutorials on in some of test.js's sections. --real runs at a student's
+speed, and a release to students is run that way.
+
+Readings by condition. A check that read the page after a fixed pause
+assumed the story's pace; three did (the opening card's lines, the
+reload's taps through the card, two in-page timers in test.js) and now
+watch for the state or scale by the speed. readConversation told one
+conversation from the next by the box still being shut 140 ms after a
+press; at ten times the speed a scripted conversation 300 ms later
+opened inside that window and two readings ran together. A harness-
+side observer now notes when the box closed and opened, and a reading
+ends when the box stayed shut longer than 140 ms of story time, which
+is the old rule exactly at a student's speed. Each line waits for the
+next to replace it rather than for 140 ms.
+
+Side by side. Every piece takes a free port (PORT 0), so several run
+at once. _dev/tests/run.js lists both suites' pieces (verify's parts,
+test.js's sections six at a time), runs them a few at a time each in
+its own process and browser, and prints each with its time and every
+FAIL line together. CI deals the same pieces to four machines
+(--shard=I/4), two at a time on each. On the proponent's computer
+the whole of both suites, 1,154 checks, ran in 108 seconds against
+about fifteen minutes before; Act I's part, the longest, in 108
+seconds against 300 at a student's speed.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

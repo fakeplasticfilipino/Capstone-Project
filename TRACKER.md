@@ -764,6 +764,12 @@ machine, the assessment module.
         the engine); each job played once, 8 to 12 barya; the barber's
         game a haircut on a customer drawn in pixels, its lines
         rewritten; the order game removed
+    115 testing in minutes: verify_new_scene.js in eight parts
+        (--only, --list), the story fast-forwarded ten times under test
+        (TEST_SPEED, never for a student), readings by condition not by
+        fixed pauses, run.js running both suites in pieces side by side
+        (about two minutes for all 1,154 checks, from about fifteen),
+        CI in four parallel shards
 
 ## Blocks remaining
 

@@ -15,6 +15,19 @@
 const world = document.getElementById("world");
 const viewport = document.getElementById("viewport");
 
+// Block 115. The harness's fast-forward. A test may ask for the story's
+// own time to pass faster (window.__TEST_SPEED, which only the harness
+// defines): the pauses a script waits (wait), the black cards, the
+// scene fades and the walks a script makes. The world's own time, the
+// physics, guards, fights, the work game and every timing a student
+// plays against, is never touched, so what the suites measure there is
+// what a student meets. For a student this is 1 and changes nothing.
+const TEST_SPEED = Math.max(1, Number(window.__TEST_SPEED) || 1);
+function storyMs(ms) {
+  return ms / TEST_SPEED;
+}
+if (TEST_SPEED > 1) document.documentElement.classList.add("test-fast");
+
 // Block 36. The camera needs the viewport's width every frame, and reading
 // it back from the layout after the frame's own writes forced the browser
 // to lay the whole world out again, every frame, to answer. It changes
@@ -2615,7 +2628,7 @@ function endDialogue() {
 }
 
 function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, storyMs(ms))); // Block 115
 }
 
 // teleportToNewRoom() and hideActWorld() lived here. Both existed
@@ -5188,7 +5201,7 @@ function playIntertitle(lines, opts) {
   let skipped = false;
   const skippable = (ms) => new Promise((resolve) => {
     if (skipped) { resolve(); return; }
-    const t = setTimeout(done, ms);
+    const t = setTimeout(done, storyMs(ms)); // Block 115
     function done() { clearTimeout(t); skip = null; resolve(); }
     skip = () => { skipped = true; done(); };
   });
@@ -5223,7 +5236,7 @@ function playIntertitle(lines, opts) {
       el.classList.add("visible");
       await wait(INTERTITLE_FADE_MS);
     }
-    skipFrom = performance.now() + INTERTITLE_SKIP_AFTER_MS;
+    skipFrom = performance.now() + storyMs(INTERTITLE_SKIP_AFTER_MS);
     window.addEventListener("keydown", onKey, true);
     el.addEventListener("pointerdown", onTap);
     // Block 84. A card is silent unless it names a sound (opts.sfx, one of
@@ -5283,7 +5296,7 @@ function playIntertitle(lines, opts) {
 // ends the walk where it is.
 function movePlayer(toX, pxPerSecond) {
   const target = Math.max(0, Math.min(Number(toX) || 0, WORLD_WIDTH - PLAYER_WIDTH));
-  const speed = Math.max(1, pxPerSecond || 170);
+  const speed = Math.max(1, pxPerSecond || 170) * TEST_SPEED; // Block 115
   const token = actLoadToken;
   if (target !== posX) facing = target < posX ? -1 : 1;
   scriptWalking = true;
@@ -5399,7 +5412,7 @@ function moveDecoration(id, toX, pxPerSecond) {
   const dec = ((currentScene && currentScene.decorations) || []).find((d) => d.id === id);
   const el = decorationEl(id);
   if (!dec || !el) return Promise.resolve();
-  const speed = Math.max(1, pxPerSecond || 160);
+  const speed = Math.max(1, pxPerSecond || 160) * TEST_SPEED; // Block 115
   // Block 40. faceMovement turns the art toward where he is walking, and
   // leaves it that way when he stops. The art is assumed to face right.
   const from0 = typeof dec.currentX === "number" ? dec.currentX : dec.x;
@@ -6536,7 +6549,7 @@ function finishFight() {
   cancelTutorial("atake", "tanda");
   const resolve = enemiesDone;
   enemiesDone = null;
-  if (resolve) setTimeout(resolve, FIGHT_END_BEAT_MS);
+  if (resolve) setTimeout(resolve, storyMs(FIGHT_END_BEAT_MS));
 }
 
 // Block 60. The weight of a blow: a sound, a freeze of a few frames

@@ -81,14 +81,16 @@ separate branch.
 TESTING A PUSH (Block 104, the proponent's choice, 1 Oct 2026). No
 student has the URL yet, so a push is not yet a release. GitHub Actions
 (.github/workflows/tests.yml) runs both suites on every push to main
-that changes anything but Markdown, side by side on a fresh machine,
-and marks the commit green or red; a red run is fixed in the next push,
-before anything else. So:
+that changes anything but Markdown, cut into pieces over four machines
+(Block 115), and marks the commit green or red; a red run is fixed in
+the next push, before anything else. So:
 
-    a push of game code      run the suites the change touches, or the
-                             part of one, while building (test.js
-                             --only=BD,BL runs those sections; --list
-                             names them; Block 106); push; then
+    a push of game code      run only the pieces the change touches
+                             while building, never both suites whole
+                             (test.js --only=BD,BL, verify_new_scene.js
+                             --only=act1 or act2, jumps, reloads...;
+                             --list names them; Blocks 106, 115);
+                             push; then
                              check the Actions run before calling the
                              work done (the Actions tab, or, the repo
                              being public, curl on api.github.com/repos/
@@ -96,13 +98,26 @@ before anything else. So:
                              actions/runs; gh is not installed on the
                              proponent's computer). The API allows 60
                              requests an hour without a login: poll it
-                             every 30 seconds at most (a run takes about
-                             8 minutes), never in a tight loop, or read
-                             the Actions page itself
+                             every 30 seconds at most (a run takes
+                             about 4 minutes), never in a tight loop, or
+                             read the Actions page itself
     a Markdown-only push     no suites; CI skips it too
     a release to students    both suites in full on this computer
-    (the pilot, the freeze,  first, green, then push; and CI green
-    the study session)
+    (the pilot, the freeze,  first, at a student's speed (node
+    the study session)       _dev/tests/run.js --real, a few minutes),
+                             green, then push; and CI green
+
+The suites fast-forward the story (Block 115): the harness sets
+window.__TEST_SPEED (10), and game.js's TEST_SPEED divides the story's
+own time by it (wait, the black cards, the scene fades, the scripted
+walks, the beat after a fight) and nothing else; the physics, guards,
+fights and games a student plays against run at their real speed. A
+new check reads the story by what the page shows, not after a fixed
+pause: a wait for a condition holds at any speed, a fixed one that
+expects something still on screen does not. --real runs at a
+student's speed. node _dev/tests/run.js runs both suites in pieces
+side by side (each part of verify_new_scene.js, test.js's sections six
+at a time), about two minutes on the proponent's computer.
 
 Once students have the URL, every push is a release again and the full
 local run comes back before every push.
@@ -199,7 +214,9 @@ off the repository.
       audio/music/, audio/sfx/
       fonts/                   the two woff2 faces and their licences
     db/                        migrations/, seeds/, scripts/ (Database)
-    _dev/tests/                the harness and its fixtures
+    _dev/tests/                the harness and its fixtures; run.js runs
+                               both suites in pieces side by side
+                               (Block 115)
     _dev/hooks/                pre-commit: prepare.js --check (Block 106)
     _dev/rigs/                 one rig per character animated from a
                                still by animate-still.js (Block 97)
@@ -2240,7 +2257,10 @@ look, by system:
     the barber's pay                      Block 102 (by the round
                                           right, 20 in one run)
     testing: CI and when to run           Block 104 (GitHub Actions;
-      the suites                          Deployment, Testing a push)
+      the suites                          Deployment, Testing a push),
+                                          115 (parts, the story
+                                          fast-forwarded, run.js, CI
+                                          in four pieces)
     the game kept on the phone, the       Block 105 (sw.js,
       Supabase library in the repo,       keepGameOffline,
       sheets shrunk                       shrink-sprites.js)

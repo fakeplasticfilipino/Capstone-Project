@@ -12,11 +12,23 @@ From the repository root:
     node _dev/tests/test.js
     node _dev/tests/test.js --only=BD,BL    only those sections (Block 106)
     node _dev/tests/test.js --list          the sections, by letter
+    node _dev/tests/verify_new_scene.js --only=act1,jumps   its parts (Block 115)
+    node _dev/tests/verify_new_scene.js --list              the parts
+    node _dev/tests/run.js                  both suites, in pieces, side by side
+    node _dev/tests/run.js verify:act2 test:BR              only those pieces
+    node _dev/tests/run.js --real           at a student's speed (a release)
 
 Expected output ends with a count. Anything other than "0 failed" is a
-regression. While building, run the sections a change touches; the
+regression. While building, run the pieces a change touches; the
 whole of both suites is CI's on every push, and this computer's before
 a release to students (CLAUDE.md, Testing a push).
+
+Since Block 115 the story runs ten times faster under test (the
+harness sets window.__TEST_SPEED; game.js, TEST_SPEED): the scripted
+pauses, black cards, fades and walks, never the world a student plays
+against. Every piece takes a free port of its own, so pieces run side
+by side. A check reads what the page shows when it shows it: wait for a
+condition, not a fixed pause.
 
 Before every commit, node _dev/tools/prepare.js: the checks that need no
 browser, in a second, after fixing what a tool can fix (the sheets, the
