@@ -38,12 +38,13 @@ anything about progress stated anywhere else, including here, may be out
 of date.
 
 In short: every system is built and covered by automated tests, and the
-game runs on a real Android phone. Act I is written and playable from
-its opening to its end, where its post-test runs; its lines are still
-being checked against the resource person's source material. Acts II to
-IV are registered and empty. Every character is drawn; three pictures
-(the barber's chair, the sewing table and one room) are still
-placeholder boxes until the artist's drawings arrive (ART.md).
+game runs on a real Android phone. All four acts are written and
+playable from their openings to their ends, each closing with its
+post-test; Act I's lines are accepted by the proponents, and those of
+Acts II to IV are waiting on their review. Act I's people are all drawn;
+fifty pictures across the four acts (rooms, places, the people of Acts
+II to IV and their fighters) are still placeholder boxes until the
+artist's drawings arrive (ART.md).
 
 ## Stack
 
@@ -80,7 +81,7 @@ administrator, through the Supabase dashboard or create_accounts.js, and
 students must be assigned to a class or the dashboard shows nothing. The
 title screen also offers Maglaro bilang Bisita, play as a guest: nothing
 about a guest session is saved, there are no tests, and a guest who
-finishes Act I plays on into Act II.
+finishes an act plays on into the next, to the end of Act IV.
 
 ## Layout
 
@@ -128,7 +129,7 @@ scores measure learning gain rather than rank students.
 GitHub Actions runs prepare.js --check and both suites on every push.
 The first suite drives the real game in headless Chromium at phone size
 against its own fixture act and a fake in-memory database, covering
-every engine system. The second plays the real Act I content end to end
-and checks the story, the art list and the asset manifest against the
+every engine system. The second plays the real content of all four
+acts end to end and checks the story, the art list and the asset manifest against the
 repository. Neither touches the live Supabase project, and neither is a
 substitute for playing it on a phone. See _dev/README.md.

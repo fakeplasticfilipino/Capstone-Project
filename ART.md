@@ -148,17 +148,20 @@ animate-still.js can move them; the things are stills.
 
     assets/sprites/characters/isko.png
         Isko, a young Katipunero, one of the recruits of Act I's end:
-        side on; he runs on and off. (NOT STARTED)
+        side on; he runs on and off. In Acts II to IV (Francisco Reyes
+        from 1901). (NOT STARTED)
 
     assets/sprites/characters/manlilimbag.png
-        A printer, ink on his apron: side on, standing. (NOT STARTED)
+        A printer, ink on his apron: side on, standing; he walks into
+        the camp in Act IV. In Acts II to IV. (NOT STARTED)
 
     assets/sprites/characters/tagapagbalita.png
-        A messenger from Cavite: side on; he runs in. (NOT STARTED)
+        A messenger from Cavite: side on; he runs in. In Acts II to IV.
+        (NOT STARTED)
 
     assets/sprites/scenery/palimbagan.png
         The hand press, used with E: a still, about 110px tall in the
-        game. (NOT STARTED)
+        game. In Act II, and half of it saved in Act IV. (NOT STARTED)
 
     assets/sprites/scenery/dayami.png
         A bundle of straw on the riverbank: a still, about 70px tall.
@@ -199,7 +202,7 @@ arrives.
     assets/backgrounds/act3/morong.jpg
         The camp in the mountains of Morong, 1902: huts among trees on a
         slope, the Republika ng Katagalugan's flag. Wide (3200).
-        (NOT STARTED)
+        Act IV opens here too, in 1903. (NOT STARTED)
 
     assets/sprites/characters/alvarez.png
         Santiago Álvarez, a Katipunan general turned to the Partido
@@ -208,11 +211,13 @@ arrives.
 
     assets/sprites/characters/carreon.png
         Francisco Carreón, an old Katipunero, Vice President of the
-        Katagalugan: side on, standing, long hair. (NOT STARTED)
+        Katagalugan: side on, standing, long hair. In Acts III and IV.
+        (NOT STARTED)
 
     assets/sprites/characters/montalan.png
         Julian Montalan, the Katagalugan's general: side on, standing,
-        long hair, a bolo. (NOT STARTED)
+        long hair, a bolo. In Acts III and IV (the raids, the reception,
+        the cell, the court). (NOT STARTED)
 
     assets/sprites/characters/guro.png
         A Filipino teacher, 1901, a man in a barong: standing.
@@ -236,12 +241,15 @@ arrives.
         khaki trousers, a Krag rifle with a bayonet. Side on. He fights
         hand to hand and stands sentry with the rifle, so a walk, a
         strike, a shot and a flinch are wanted in time (as the bantay
-        has); one still is a start. (NOT STARTED)
+        has); one still is a start. In Acts III and IV (the battle at
+        Malabon, the soldiers at the reception in Cavite). (NOT STARTED)
 
     assets/sprites/enemies/konstable.png
         A man of the Philippine Constabulary, 1902: a Filipino in the
         Americans' khaki uniform and hat. Side on; he fights hand to
-        hand. (NOT STARTED)
+        hand, and in Act IV stands guard with a rifle at a post (the
+        catalogue's bantay-konstable, the same picture). In Acts III
+        and IV. (NOT STARTED)
 
     assets/sprites/characters/sundalong-amerikano.png
         An American private in a barber's chair, sandy hair, no hat, a
@@ -356,6 +364,12 @@ forgotten.
     The bantay's walk, shot and flinch (bantay-walk, -shoot, -hit).
         Made from the artist's one still by _dev/tools/animate-bantay.js
         (Blocks 73, 75); the still itself (bantay.png) is the artist's.
+    The nameless men of the Katipunan and the Katagalugan (Act II's
+        Katipunero at the camps, Act III's two in the queue, the three
+        new members and the Batang Kawal, Act IV's Batang Kawal) wear the
+        Katipunero's sheet (P.katipunero), drawn by the artist for Act
+        I's man in the wings. Act IV's other fighters are their own
+        picture, owed (kawal-katagalugan.png).
     The Spanish soldier of Act II's battles (the catalogue's sundalo,
         Block 113) is the bantay's art: his walk, his flinch, and the
         first frames of his shot as a bayonet lunge. A soldier's own

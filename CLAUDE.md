@@ -655,8 +655,10 @@ Scene shape:
 
 Acts written before scenes existed declare worldWidth, startX, npcs and
 decorations directly on the act. scenesFor() wraps those in a single
-implicit scene, so content/act2.js through act4.js need no changes. Do not
-"modernise" them; the fallback is the compatibility guarantee.
+implicit scene, which is how Acts II to IV ran as stubs until each was
+written in the scene form (Blocks 113, 117, 119). No shipped act uses
+it now, and no check covers it; it is kept for a stub act, should one
+be registered again.
 
 A guard whose patrolFrom and patrolTo are within 1px of each other is a
 stationary sentry and keeps its given facing.
@@ -770,7 +772,8 @@ playing, because a room the story walks him into gives no other sign of
 its door.
 
 An act with an empty objectives array can never complete, which is how
-Acts II through IV are kept from reporting progress they have not made.
+Acts II through IV were kept from reporting progress they had not made
+while they were stubs.
 That also means the act after it stays locked, which is correct. The
 same mechanism works one objective at a time: an objective whose flag
 nothing in content ever sets keeps the act from finishing without
@@ -1757,8 +1760,8 @@ prepare.js (and so the hook, CI and verify_new_scene.js) fails if a line
 of dialogue or a black card in any act's content is missing from it
 (every act since Polish list #3). The check runs one way only (the
 content into the story), so a line deleted from the content must be
-deleted from STORY.md by hand. When Acts II to IV are written, their
-beats join the file.
+deleted from STORY.md by hand. Every act's beats are in the file
+(Acts II to IV since Blocks 113, 117 and 119).
 
 Documentation style: plain professional prose. No emoji, no checkboxes, no
 bold, no em dashes, no horizontal rules. Status markers in parentheses:

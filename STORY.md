@@ -23,11 +23,12 @@ finished. Flags, positions and scene ids appear only so a reader can
 find the beat in content/act1.js; how a mechanic works is CLAUDE.md's,
 and what is owed or broken is TRACKER.md's.
 
-content/act1.js is what ships. This file is its script, and the two are
-changed together, in the same change, or the story is wrong in one of
-them. verify_new_scene.js checks that every line of dialogue and every
-black card in content/act1.js appears here word for word, and fails if
-one does not.
+content/act1.js to act4.js are what ships. This file is their script,
+and the two are changed together, in the same change, or the story is
+wrong in one of them. prepare.js (and so the hook, CI and
+verify_new_scene.js) checks that every line of dialogue and every black
+card of every act appears here word for word, and fails if one does
+not.
 
 How to read the script:
 
@@ -35,8 +36,8 @@ How to read the script:
   + Speaker: line          ours, marked PLACEHOLDER in the content file,
                            until the proponents accept or replace it.
                            Act I's were accepted on 4 Oct 2026 (Block
-                           113), so the + is gone from them; Act II's
-                           carry it
+                           113), so the + is gone from them; those of
+                           Acts II to IV carry it
     [BLACK] line           a black card (playIntertitle)
     [HINT] Title: text     a hint for the post-test, found on the road
     (stage direction)      what happens, not what is said

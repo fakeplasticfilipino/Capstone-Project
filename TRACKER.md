@@ -17,7 +17,9 @@ unsaid), San Francisco de Malabon, the reconcentration heard of and the
 rice shared out, Gómez and the terms, Manila, the reception in Cavite,
 Bilibid, the court, the Assembly elected without him, and the last
 morning, walked by the student; two battles of fifteen; a stone floor
-for Bilibid. The game now has all four acts. Block 118: Act III revised
+for Bilibid. The game now has all four acts. The same day, every tracker read
+through against the build (TRACKER, ART, STORY, CLAUDE, README) and
+the stale lines brought up to date. Block 118: Act III revised
 against the proponent's labelled sources (the source of truth): Santa
 Mesa heard of from a runner, not shown, the opening fight a patrol in
 the hills; Macario at the Partido Nacionalista's founding and its
@@ -33,7 +35,7 @@ Brigandage Act; two battles of fifteen; the Americans in English, each
 line given in Tagalog). Block 116 (4 Oct): a guest who
 finishes Act I plays on into Act II, with no tests and nothing saved.
 Block 115: the suites in pieces, the story fast-forwarded under test and
-run side by side (both suites, 1,217 checks since Block 118, in about two minutes; CI
+run side by side (both suites, 1,292 checks since Block 119, in about two minutes; CI
 in four shards, about two and a half). Block 114: a floor drawn for each
 place, each job played once, the barber's game a haircut on a customer
 drawn in pixels. Block 113: Act II written, 1896 to 1898, as a tragedy;
@@ -77,7 +79,7 @@ title screen says when the phone is ready ("Nakahanda na ang laro
 kahit walang internet."). A student's login and save still need the
 internet.
 
-Act II is written (Block 113), below Act I's list. Act I, rewritten in Block 52 against the
+Acts II to IV are written (Blocks 113, 117, 119), below Act I's list. Act I, rewritten in Block 52 against the
 proponents' script and built forward since, and since Block 80 it has
 an ending. STORY.md has it beat by beat, with every line. It is one
 street ten paintings long (14500px, street-01..04.jpg in order, twice,
@@ -197,9 +199,9 @@ became of Montalan and Villafuerte. Nanay's fate stays unknown. Its
 paintings and new people are owed (ART.md).
 
 Enemies are content: content/enemies.js describes each kind
-once (bantay, kawal, the three siga of the opening, Act II's sundalo and
-Act III's amerikano, sentinela and konstable) and scenes place them by
-type.
+once (bantay, kawal, the three siga of the opening, Act II's sundalo,
+Act III's amerikano, sentinela and konstable, and Act IV's
+bantay-konstable) and scenes place them by type.
 
 Art: Macario's idle, walk, jump, punch and shot are the artist's; so
 are the street paintings, the inside of the entablado, the Mananahi,
@@ -207,7 +209,7 @@ and the stills of the bantay, the three siga, the direktor, the
 Katipunero and the Kasama. The proponent drew Kabayo, Nanay, the
 Kutsero, the Barbero, Maryam, the Sultan, the kawal, the Mabalasig and
 the three who take the pamphlets (Blocks 100 to 102). Since Block 113
-the people who return in Act II are described once, in
+the people who return in Acts II to IV are described once, in
 content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
@@ -305,7 +307,7 @@ dashboard (CLAUDE.md, Standing decisions); nothing here tracks them.
 Block 119 (Act I's three: the pulungan's painting, the Mananahi's
 sewing table and the Barbero's chair; Act II's fifteen: seven
 paintings, Isko, Jacinto, Bonifacio, a printer, a messenger, the press,
-the straw and the scarecrow; Act III's thirteen: five paintings,
+the straw and the scarecrow; Act III's sixteen: five paintings,
 Álvarez, Poblete, Carreón, Montalan, a teacher, an American officer,
 the American in the barber's chair, the stranger in Nanay's house, the
 Katagalugan's flag, the American soldier and the Constabulary; Act
@@ -386,7 +388,7 @@ Block 110. Status:
                                                                         working, 4 Oct 2026)
     S39          private files and names in the git history             (BLOCKED: the
                                                                         proponent's decision)
-    S40          the three owed pictures                                (BLOCKED: the artist)
+    S40          the owed pictures (three then, fifty since Block 119)  (BLOCKED: the artist)
     S41          the years, every + line, the Talaan papers, the        (the years, lines
                  written delegation, the pilot accounts                 and papers accepted
                                                                         4 Oct 2026; the
@@ -418,11 +420,10 @@ only aggregate figures. Get that waiver in writing and keep it with the
 validation form. A panel asking about consent wants a document, not a
 recollection.
 
-Data collection covers Act I. Act II is written (Block 113), but its
-lines wait on the proponents and it has no questions of its own yet (the
-teacher's); Acts III and IV are written the same way (Blocks 117,
-119). Act I quality and the
-assessment instrument therefore outrank Act II content entirely.
+Data collection covers Act I. Acts II to IV are written (Blocks 113,
+117, 119), but their lines wait on the proponents and they have no
+questions of their own yet (the teacher's). Act I quality and the
+assessment instrument therefore outrank Acts II to IV entirely.
 
 Freeze the software roughly ten days before the defense, to leave room
 for scheduling the session, running it, and analysing what comes back.
@@ -547,14 +548,14 @@ The paper specifies seventeen.
 
 | Requirement | Status |
 |---|---|
-| User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest: Acts I and II with nothing saved and no tests (Block 116). A student can change the password in settings |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. All four acts playable to their ends (fourteen objectives in Acts I to III, thirteen in Act IV), completing into their post-tests (an act with no questions skips its tests with a notice); a guest plays on from act to act to the end of Act IV |
+| User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest: every act, one into the next, with nothing saved and no tests (Block 116). A student can change the password in settings |
+| Chapter Progression | (BUILT) All four acts registered and unlock in order. All four acts playable to their ends (fourteen objectives in Acts I to III, thirteen in Act IV), completing into their post-tests (an act with no questions skips its tests with a notice); a guest plays on from act to act to the end of Act IV |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
 | Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; shooting guards are covered by the harness fixture |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's haircut (Block 114), tutorials that wait for the task, NPCs that open the shop |
-| Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. All four acts use them |
-| Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113 |
+| Narrative Delivery | (BUILT) Scene scripts that play by themselves, black cards, arrival dialogues. All four acts use them; the lines of Acts II to IV await the proponents' review |
+| Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113, Act III (1.30) and Act IV (1.45) |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (fixture; none ships) |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one item, the stage clothes (Block 82, worn, slower detection while still); the rest verified against the fixture |
 | Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No outfit ships yet; verified against the fixture |
@@ -577,7 +578,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (803 and 414 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (803 and 489 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -805,8 +806,8 @@ decided against the source material. (NOT STARTED)
 The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
 Block 85 except two. The item bank, one of them, is the teacher's
 (Block 110). Act I's people are all drawn since Block 102; what is still owed,
-Act I's chair, sewing table and pulungan painting and Act II's fifteen,
-is ART.md's list (BLOCKED, the artist). The list: DECISIONS.md,
+fifty pictures across the four acts, is ART.md's list (BLOCKED, the
+artist). The list: DECISIONS.md,
 Block 85.
 
 ## Blocked on other people
@@ -926,9 +927,9 @@ test.js (803 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (414 checks, nine parts) drives
+what is covered. verify_new_scene.js (489 checks, ten parts) drives
 the real content: Act I end to end as a student, to the post-test
-opening; Acts II and III end to end as a guest; reloads mid-beat, old saves, a
+opening; Acts II, III and IV end to end as a guest; reloads mid-beat, old saves, a
 guest going on from Act I into Act II, every story point of ?dev=1 and
 its floor; and checks that every line of the content is in STORY.md,
 that ART.md's Owed list matches the disk, that the asset manifest
