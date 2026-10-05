@@ -31,8 +31,7 @@ place, each job played once, the barber's game a haircut on a customer
 drawn in pixels. Block 113: Act II written, 1896 to 1898, as a tragedy;
 the detection meter twice as fast; Act I's lines accepted by the
 proponents. The proponent reported Blocks 98 to 112 working on the
-phone on 4 Oct 2026; Blocks 113, 114, 116, 117 and 118 are not yet
-seen on a device (Next action 1). Earlier blocks: the Blocks list below, and
+phone on 4 Oct 2026, and Blocks 113 to 118 on 5 Oct 2026. Earlier blocks: the Blocks list below, and
 DECISIONS.md. Both suites green locally and on CI. Everything is
 committed and pushed to main.
 
@@ -204,9 +203,8 @@ from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
 Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
 the proponent tested Blocks 90 to 97 on the phone and reported no
-fault, and on 4 Oct 2026 Blocks 98 to 112. Blocks 113 and 114 are
-pushed and not yet seen on a device: Next action 1 says what to look
-for.
+fault, on 4 Oct 2026 Blocks 98 to 112, and on 5 Oct 2026 Blocks 113
+to 118.
 
 Versions: since Block 106 every ?v= is the file's fingerprint, written
 by node _dev/tools/prepare.js before each commit and checked by the
@@ -228,95 +226,11 @@ plays as a guest and saves nothing. Play from the start before the
 pilot all the same, since a jump skips what comes before it. Write the block's own checks here (what to see,
 and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
-1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026. Open:
+1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
+Oct 2026. Open:
 
-    Block 113, the meter. ?dev=1, Ang gabi ng mga polyeto (Act I):
-      walking straight past the first guard while he faces you is a
-      catch now; behind his back, or behind the crate, you get through.
-      Standing still in the stage clothes still buys a few seconds
-      (the meter pale blue). Failure: a walk past him in plain sight
-      with no catch, or a catch that comes before you can react at all.
-
-    Block 113, Act II (rebuilt). ?dev=1 lists thirteen points under Ang
-      Mahabang Anino ng Digmaan; each opens its place with its task in
-      the log. From Ang simula: "Tondo, Agosto 1896" at the press; print
-      the second Kalayaan; the rumour of the priest and the list; walk
-      home past neighbours who will not know him; Nanay, the ink,
-      "Pangulo", the father, the promise, and in the middle of "Uuwi
-      p—" Isko at the door: a problem at the press, nothing more (nobody
-      knows it is the sweep). "Kapapangako mo lang." "Sandali lang po
-      ito." Straight onto the street, no card: "Bakit ang daming guardia
-      sa kalye?" Four guards to the press, a catch putting you at the
-      last crate passed; inside, three guards and two shelves; his name
-      in the list, and only now "Si Nanay! ... Iniwan ko siyang
-      mag-isa"; out the window into a dark street, two patrols; well
-      short of home "Hoy, sino ka?! Bumalik ka dito!" and the chase the
-      other way, two firing behind and two ahead, to the road to the
-      mountains at the end of the street. Pugad Lawin: Isko found the
-      house empty. San Juan del Monte: fifteen soldiers, the Kasama's
-      death, five riflemen on the run back. The Nangka, Balara, Laguna,
-      and the end: his last thoughts on screen, then "Wakas ng
-      Ikalawang Yugto". Every new person and place is a dashed box or a
-      dark wall: expected. Failure: a black screen with nothing
-      happening, anyone at home knowing about the sweep, a card or a
-      pause between her plea and the knock, a catch that sends you to
-      the start of a long run, or anyone frozen after a black card.
-
-    Block 114, the floors. ?dev=1, Act II: Sa bahay is bamboo slats,
-      Ang simula (the press) floorboards, Pugad Lawin grass; Act I's
-      Ang panunumpa (the pulungan) floorboards; the street still dirt.
-      Sharp pixels, no seam you can see along the road. Failure: dirt
-      in a room, a blurred floor, or no floor at all.
-
-    Block 114, the jobs once. ?dev=1, Mga trabaho: groom the horse
-      once (8 to 12 barya), then E again is a thought, no game; the
-      Kutsero says "Sapat na". The sewing is one round, then she stops
-      him. Failure: a second game anywhere, or a quest line still
-      counting (n/2).
-
-    Block 114, the haircut. The Barbero's talk ends "Sundan mo lang ang
-      guhit"; the chair opens the customer in pixels with a dashed
-      yellow line; drag a finger over his hair: the scissors sit a
-      little above the finger, the hair past the line falls onto the
-      cape with a snip, crossing the line says "Aray! Ang ikli!"; near
-      the end the rest falls by itself, he says how it looks, and the
-      Barbero pays. Failure: scissors under the finger, hair that does
-      not fall, a cut that never finishes, the screen too tall for the
-      phone, or the page scrolling while cutting.
-
-    Block 116, a guest on into Act II. ?dev=1, Ang ulat at ang wakas
-      (or play Act I through as a guest): after "Wakas ng Unang Yugto" a
-      card says Magaling!, no test, and offers Magpatuloy sa Ikalawang
-      Yugto; it opens Act II's title and then the press, in the stage
-      clothes. At Act II's end, Wakas and back to the title. Failure: a
-      quiz or trivia card for a guest, Act II not offered, or Act II
-      opening on a black screen.
-
-    Block 117, Act III. ?dev=1 lists thirteen points under Ang
-      Republika sa Lilim; each opens its place with its task in the
-      log. From Ang simula: "Pebrero 5, 1899" in the hills; a runner
-      with the news of Santa Mesa (Macario is never shown there); the
-      lookout, a patrol coming up; fifteen Americans (placeholder boxes).
-      Tondo by day: Isko's letter (Jacinto dead), Maryam's trunk (the
-      disguise, in the bag; he looks the same), the sentries, the Mananahi and
-      the stranger in Nanay's house. The barbershop: the haircut on a
-      sandy-haired American who speaks English, the Tagalog after each
-      line; that night the three from the pamphlets taught the creed.
-      The town: the proclamation, Isko's surrender ("Raise your right
-      hand"). Calle Gunao: the founding, Macario named Secretary-
-      General, three signatures; months later Poblete brings the
-      printed Sedition Law. Tondo at night: three doors. The oath broken
-      in on. Morong: President and Generalissimo, the flag raised, the
-      vow, the Constabulary, "Wakas ng Ikatlong Yugto". New people,
-      places and fighters are dashed boxes or dark walls: expected.
-      Failure: Macario anywhere a [CONTEXT] event happens, an English
-      line with no Tagalog after it, a black screen with nothing
-      happening, or any fighter drawn with borrowed art.
-
-    Block 113, Act I's play. ?dev=1, Ang dula: Don Rodrigo. After the
-      fight the Sultan drops his kampilan, his kingdom falls, Maryam
-      leaves him, the crowd cheers. Failure: the old blessing, or the
-      scene stuck after the kampilan falls.
+    Nothing open: Blocks 113 to 118 reported fine on the phone on 5
+    Oct 2026.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
