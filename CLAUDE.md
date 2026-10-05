@@ -1014,9 +1014,10 @@ of them plain globals in game.js, like addQuest:
                                  doneText(good), rounds, mode ("tap", or
                                  "hold": hold to fill, let go over the
                                  patch), scene ("horse" with art: the
-                                 horse's sheet, "cloth", or "press": a
+                                 horse's sheet, "cloth", "press": a
                                  sheet printed a line a stroke, Block
-                                 113), snapText,
+                                 113, or "drill": a row of figures
+                                 saluting, Block 120), snapText,
                                  icon (the button's symbol; Block 93);
                                  resolves with the good strokes, or -1 if
                                  he left before the last. One game for
@@ -1087,7 +1088,29 @@ of them plain globals in game.js, like addQuest:
                                  a black card (Block 94)
     playSfx(name)                an SFX_SOURCES sound, for something
                                  shown rather than said (the door,
-                                 Block 94)
+                                 Block 94; the post's bell, kampana,
+                                 Block 120)
+    setDecoys(list)              Block 120: NPCs of the scene an enemy
+                                 goes for instead of Macario whenever
+                                 one is nearer ([{ id, hp, holds,
+                                 fallText }]); his dash hits it, at no
+                                 hp it topples and stays down. One
+                                 that holds (the flag) and falls loses
+                                 the wave, as running out of hearts
+                                 does, and every decoy stands again.
+                                 Rifles still aim at Macario. Set before
+                                 the waves, null after them
+    advanceTo(x, text)           Block 120: a fight that moves; resolves
+                                 once Macario's middle reaches x, the
+                                 text at the top of the log meanwhile
+                                 (wayOutLine). Content awaits it between
+                                 waves; a lost wave starts again at the
+                                 run's reached checkpoints
+    rouseGuards()                Block 120: the guards on duty join the
+                                 fight as they stand (hostile, firing,
+                                 counted by the next spawnEnemies'
+                                 promise), rather than being taken off
+                                 the street under a card
 
 scripts (Block 52) are how a scene plays one of these by itself. The
 first entry whose requiresFlag is set (or that has none) and whose
@@ -2353,6 +2376,10 @@ look, by system:
                                           tint removed)
     Act IV; the stone floor; the end      Block 119 (bantay-konstable,
       of the game                         the last card left black)
+    the pacing pass: cards made scenes,   Block 120 (decoys, fights
+      decoys, fights that move            that move, guards roused, the
+                                          drill, Bilibid in Act III, the
+                                          press door nearer home)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

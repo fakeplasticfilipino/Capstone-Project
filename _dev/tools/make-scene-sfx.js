@@ -26,6 +26,10 @@
 //   gabi        music/gabi.wav, the pamphlet run's night: crickets over
 //               a faint wind, a loop that joins without a click.
 //
+// Block 120:
+//
+//   kampana     an alarm bell, struck twice (Act IV's post).
+//
 // No recording was used. A recorded, freely licensed file dropped over
 // either name replaces it; then node _dev/tools/prepare.js.
 //
@@ -198,6 +202,42 @@ function normalise(sig) {
     out[i] = (a[i] * 1.0 + b[i] * 0.7 + s[i] * 0.15) * wobble * env;
   }
   write("cheer", normalise(out), 0.5);
+}
+
+// ---- kampana -----------------------------------------------------
+// Block 120. The post's alarm bell, rung twice: a bell's inharmonic
+// partials (the hum, the prime, the minor third, the fifth, the octave
+// and above), each dying at its own rate, with a clank of noise at each
+// strike. Played where Act IV once put "Tumunog ang kampana" on black.
+{
+  const SECONDS = 2.4;
+  const n = len(SECONDS);
+  const r = rng(120);
+  const out = new Float64Array(n);
+  const FUND = 520;
+  const PARTIALS = [
+    { ratio: 0.5, amp: 0.45, decay: 1.4 },
+    { ratio: 1, amp: 1, decay: 0.9 },
+    { ratio: 1.19, amp: 0.55, decay: 0.7 },
+    { ratio: 1.5, amp: 0.35, decay: 0.5 },
+    { ratio: 2, amp: 0.4, decay: 0.45 },
+    { ratio: 2.52, amp: 0.25, decay: 0.3 },
+    { ratio: 3.01, amp: 0.18, decay: 0.22 },
+  ];
+  [0, 0.55].forEach((at, k) => {
+    const start = len(at);
+    const loud = k === 0 ? 1 : 0.85;
+    for (let i = 0; start + i < n; i++) {
+      const t = i / RATE;
+      let v = 0;
+      PARTIALS.forEach((p) => {
+        v += Math.sin(2 * Math.PI * FUND * p.ratio * t) * p.amp * Math.exp(-t / p.decay);
+      });
+      v += (r() * 2 - 1) * 0.6 * Math.exp(-t / 0.012);
+      out[start + i] += v * loud;
+    }
+  });
+  write("kampana", normalise(lowpass(out, 5000)), 0.5);
 }
 
 // ---- gabi (music) ------------------------------------------------

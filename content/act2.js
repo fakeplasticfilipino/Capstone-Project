@@ -87,8 +87,11 @@
   const BARBERO_X = 5300;
   const MANANAHI_X = 6400;
   const TABAKERA_X = 6900;
-  const PRESS_DOOR_X = 7900;    // the press, behind an ordinary door
-  const BEHIND_PRESS_X = 8050;  // where the back window lets out
+  // Block 120: between the Mananahi and the tabakera, rather than 7900,
+  // so the walk home and the sweep's walk back are each a quarter
+  // shorter. The night and the chase run from here as before.
+  const PRESS_DOOR_X = 6650;    // the press, behind an ordinary door
+  const BEHIND_PRESS_X = 6800;  // where the back window lets out
   const KARPINTERO_X = 10600;
   const MARYAM_X = 13250;       // outside the entablado
   const DIREKTOR_X = 13600;
@@ -99,18 +102,18 @@
   const DAY_GUARDS = [
     { beat: [2600, 3000], hide: 2800 },
     { beat: [3700, 4150], hide: 3920 },
+    { beat: [4900, 5250], hide: 5070 },
     { beat: [5950, 6300], hide: 6120 },
-    { beat: [7330, 7700], hide: 7520 },
   ];
-  const DAY_CHECKPOINTS = [3350, 4600, 6750];
+  const DAY_CHECKPOINTS = [3350, 4600, 5600];
   // The night of the raid, the way back toward home: four more, and the
   // two at Nanay's door, standing. Checkpoints in the order he meets
   // them, right to left (game.js, respawnX takes the last reached).
   const NIGHT_GUARDS = [
-    { beat: [6500, 6950], hide: 6720 },
-    { beat: [5000, 5450], hide: 5220 },
+    { beat: [5950, 6350], hide: 6150 },
+    { beat: [5000, 5400], hide: 5200 },
   ];
-  const NIGHT_CHECKPOINTS = [6100];
+  const NIGHT_CHECKPOINTS = [5650];
   // Short of home (x 4550, a long way short of her door), the shout:
   // two guardia civil come round the corner between him and the house,
   // already after him (hostile), and the chase runs the other way, the
@@ -673,11 +676,18 @@
       { speaker: "Bonifacio", text: "Habang abala sila sa mga panakot, sa gilid tayo lulusob. Sugod!" },
     ]);
     setCutscene(false);
+    // Block 120: the straw is in the fight, not only in the cutscene. A
+    // soldier nearer a scarecrow than Macario goes for it, two blows to
+    // bring one down; while they hack at straw, he takes them from the
+    // side, as Bonifacio said.
+    setDecoys(DAYAMI_X.map((_, i) => ({ id: "panakot-" + (i + 1), hp: 2 })));
+    showToast("Habang abala sila sa mga panakot, lusubin sila!", 3000);
     await battle("ng", [
       { types: ["sundalo", "sundalo", "sundalo"],
         after: [{ speaker: "Katipunero", text: "Hindi nila alam kung saan kami nanggaling!" }] },
       { types: ["sundalo", "bantay", "sundalo"] },
     ]);
+    setDecoys(null);
     setCutscene(true);
     await wait(400);
     await playDialogue([
@@ -749,6 +759,7 @@
   // Beat 13. The end of Act II: the years after, on black, and what he
   // makes of the last of them; Nanay still not found. The last card is
   // the one that lifts the black the others left (game.js, Block 113).
+  // Since Block 120 the sale of the country is a paper read in the camp.
   // PLACEHOLDER, every line.
   async function theEnd() {
     setCutscene(true);
@@ -757,9 +768,23 @@
       "at naglayag sila patungong Hong Kong."], { keepBlack: true });
     await playIntertitle(["1898. Dumating ang mga Amerikano."], { startBlack: true, keepBlack: true });
     await playIntertitle(["Hunyo 12, 1898. Idineklara ang kalayaan sa Kawit."], { startBlack: true, keepBlack: true });
-    await playIntertitle(["Disyembre 1898. Ipinagbili ng Espanya ang Pilipinas sa Amerika",
-      "sa halagang dalawampung milyong dolyar."], { startBlack: true });
+    // Block 120. The treaty of Paris [CONTEXT] reaches the camp as a
+    // paper the messenger brings, read aloud by Jacinto, rather than a
+    // card. PLACEHOLDER, every line.
+    await playIntertitle(["Disyembre 1898"], { startBlack: true });
     await wait(400);
+    placeDecoration("tagapagbalita", viewEdges().left - 80);
+    showDecoration("tagapagbalita", true);
+    await moveDecoration("tagapagbalita", playerX() - MEETS + 40, 280);
+    await playDialogue([
+      { speaker: "Tagapagbalita", text: "Ginoong Jacinto! Galing Maynila. Basahin n'yo po." },
+      { speaker: "Jacinto", text: "..." },
+      { speaker: "Jacinto", text: "\"Sa Paris, nilagdaan ang kasunduan. Ipinagbili ng Espanya ang Pilipinas sa Amerika.\"" },
+      { speaker: "Jacinto", text: "\"Sa halagang dalawampung milyong dolyar.\"" },
+      { speaker: "Isko", text: "Ipinagbili? Paano nila maipagbibili ang hindi naman sa kanila?" },
+    ]);
+    await moveDecoration("tagapagbalita", -140, 260);
+    showDecoration("tagapagbalita", false);
     await playDialogue([
       { speaker: "Macario (sa isip)", text: "Dati, isang sedula ang halaga ko sa mga Kastila." },
       { speaker: "Macario (sa isip)", text: "Ngayon, ipinagbili nila ang buong bayan, na para bang kanila." },
@@ -877,7 +902,7 @@
       places: [
         "On the street between Nanay's house and the Kutsero. Every student walks past it on the way home.",
         "On the street by the mangingisda, at jump height: the student has to jump for it.",
-        "On the street just past the Mananahi, at jump height, short of the press.",
+        "On the street just short of the Mananahi, at jump height, before the press.",
       ],
       foundText: "Naitala ito sa Talaan. Buksan ang Talaan sa pause para basahin ulit.",
       completeText: "Nahanap mo na ang lahat ng papel!",
@@ -1031,7 +1056,7 @@
           ...reached(CHASE_CHECKPOINTS, "a2_habol", "a2_nakita"),
         ],
         pickups: [
-          { id: "puso-habol-1", x: 6650, type: "heart" },
+          { id: "puso-habol-1", x: 7000, type: "heart" },
           { id: "puso-habol-2", x: 9000, type: "heart" },
         ],
         exits: [
@@ -1379,7 +1404,8 @@
       },
       {
         // Beats 12 and 13. Laguna, 1897: Jacinto's camp. Its painting is
-        // owed. The second talk with Jacinto ends the act.
+        // owed. The second talk with Jacinto ends the act; the messenger
+        // brings the news from Paris (Block 120).
         id: "laguna",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/laguna.jpg" },
@@ -1390,7 +1416,10 @@
           { requiresFlag: "a2_nagpasya", doneFlag: "a2_wakas", run: theEnd },
           { requiresFlag: "a2_saLaguna", doneFlag: "a2_kayJacinto", x: 450, facing: 1, run: withJacinto },
         ],
-        decorations: [],
+        decorations: [
+          { id: "tagapagbalita", x: -120, hidden: true, animation: TAGAPAGBALITA, faceMovement: true,
+            speakers: ["Tagapagbalita"] },
+        ],
         npcs: [
           {
             id: "katipunero", x: 380, label: "Katipunero", animation: P.katipunero.idle, facesPlayer: true,

@@ -38,12 +38,15 @@
 //   calle-gunao  August 1901, Quiapo. The founding of the Partido
 //                Nacionalista with Álvarez and Poblete [MACARIO]; he is
 //                its Secretary-General, and gathers the petition's names.
-//                November: Poblete brings the printed Sedition Law
-//                [CONTEXT, read secondhand].
-//   tondo        January 1902, at night: word to three houses past the
-//                patrols.
+//                November, two names in: Poblete brings the printed
+//                Sedition Law [CONTEXT, read secondhand], and the third
+//                will not sign (Block 120).
+//   tondo        January 1902, at night: three houses past the patrols;
+//                one does not answer.
 //   barberya     The oath, and at its height the door broken in: someone
-//                informed. Prison, the amnesty of 4 July 1902, on black.
+//                informed. Prison, on black.
+//   selda        Bilibid, 4 July 1902: the amnesty from a guard at the
+//                bars, and out of the gate himself (Block 120).
 //   morong       The mountains: Carreón and Montalan, the Republika ng
 //                Katagalugan, Macario its President and Generalissimo, its
 //                flag raised, the vow not to cut their hair. November: the
@@ -82,6 +85,10 @@
   const BAGONG_NAKATIRA = owed("characters", "bagong-nakatira");
   const MANLILIMBAG = owed("characters", "manlilimbag"); // Act II's, owed
   const SILYA = owed("scenery", "silya-barbero"); // Act I's chair, owed
+  // Block 120: Bilibid's guard (Act IV's, owed), and the Republic's
+  // soldiers at Morong, seen beside its flag (Act IV's Kawal, owed).
+  const BANTAY_BILIBID = owed("characters", "bantay-bilibid");
+  const KAWAL = owed("characters", "kawal-katagalugan");
 
   // ---- The street ---------------------------------------------------
   // Act I's street. Joins at every multiple of 1450 (5800, 7250, 8700,
@@ -127,6 +134,7 @@
   const MESA_X = 1000;          // the officer's table at the town hall
   const BATTLE_WIDTH = 3200;    // the hills in 1899, and the camp at Morong
   const FLAG_X = 1500;          // the Katagalugan's flag, at Morong
+  const KAWAL_X = [1700, 1820, 1940]; // its soldiers, beside it (Block 120)
   const LOOKOUT_X = 2300;
 
   const BESIDE = 120;
@@ -139,7 +147,8 @@
 
   // ---- Flags -------------------------------------------------------------
   const ARAL_FLAGS = ["a3_aral1", "a3_aral2", "a3_aral3"];
-  const PIRMA_FLAGS = ["a3_pirma1", "a3_pirma2", "a3_pirma3"];
+  // Block 120: two sign before the law; the third, after it, will not.
+  const PIRMA_FLAGS = ["a3_pirma1", "a3_pirma2"];
   const PINTO_FLAGS = ["a3_pinto1", "a3_pinto2", "a3_pinto3"];
   // The street by day, before he is in the barbershop: the sentries are
   // on, the neighbours out. At night in 1902 only the patrols are out.
@@ -405,8 +414,7 @@
     markDirty();
     await playIntertitle(["Sa sumunod na dalawang taon, palipat-lipat si Macario ng bayan, nakabalatkayo.",
       "Nagtatag siya ng mga bagong balangay ng Katipunan."], { keepBlack: true });
-    await playIntertitle(["Marso 23, 1901. Nahuli si Heneral Emilio Aguinaldo sa Palanan, Isabela.",
-      "Nagpanggap na mga rebolusyonaryo ang mga sundalong humuli sa kanya."], { startBlack: true, keepBlack: true });
+    // Block 120: Palanan is Isko's news in the town, not a card.
     await playIntertitle(["Abril 1901"], { startBlack: true, keepBlack: true });
     if (window.Acts) Acts.gotoScene("bayan", { x: 250, facing: 1 });
   }
@@ -426,8 +434,14 @@
     showDecoration("isko-bayan", true);
     await moveDecoration("isko-bayan", playerX() - MEETS + 60, 300);
     turnPlayer(-1);
+    // Block 120. Aguinaldo's capture [CONTEXT], heard from Isko rather
+    // than read on a card: the disguise Macario lives by, turned on the
+    // Republic. PLACEHOLDER, every line.
     await playDialogue([
-      { speaker: "Isko", text: "Pangulo... basahin n'yo po. Sa pader." },
+      { speaker: "Isko", text: "Pangulo... nahuli na raw ang Heneral sa Palanan." },
+      { speaker: "Isko", text: "Mga sundalong nagpanggap na rebolusyonaryo ang humuli sa kanya." },
+      { speaker: "Macario (sa isip)", text: "Nagbalatkayo sila. Gaya ko." },
+      { speaker: "Isko", text: "Basahin n'yo po. Sa pader." },
     ]);
     turnPlayer(1);
     setCutscene(false);
@@ -522,6 +536,9 @@
   // Beat 10. November 1901: the Sedition Law. Passed without him
   // [CONTEXT]; Poblete brings the printed notice, and he reads it. The
   // law's own words in English, then in Tagalog. PLACEHOLDER.
+  //
+  // Block 120: it lands in the middle of the petition, after two names,
+  // and the third (the Guro) will not sign once it is posted.
   async function theSeditionLaw() {
     setCutscene(true);
     await wait(300);
@@ -544,9 +561,23 @@
       { speaker: "Poblete", text: "Ang petisyon natin... krimen na." },
       { speaker: "Macario (sa isip)", text: "Noon, sedula ang pinunit namin." },
       { speaker: "Macario (sa isip)", text: "Ngayon, krimen na ang bawat papel namin." },
-      { speaker: "Macario", text: "Wala nang ibang daan, Heneral." },
+      { speaker: "Poblete", text: "May isa pang pirmang kulang, Kalihim-Heneral. Ang guro." },
     ]);
     state.flags.a3_batas = true;
+    markDirty();
+    setCutscene(false);
+  }
+
+  // The last name refused, and January 1902. PLACEHOLDER, every line.
+  async function noOtherWay() {
+    setCutscene(true);
+    await wait(300);
+    await playDialogue([
+      { speaker: "Macario (sa isip)", text: "Dalawang pirma. Isang batas lang ang kinailangan nila." },
+      { speaker: "Álvarez", text: "Ano ngayon, Kalihim-Heneral?" },
+      { speaker: "Macario", text: "Wala nang ibang daan, Heneral." },
+    ]);
+    state.flags.a3_papuntangTondo = true;
     markDirty();
     await playIntertitle(["Enero 1902", "Tondo"], { keepBlack: true });
     if (window.Acts) Acts.gotoScene("tondo", { x: NIGHT_ARRIVE_X, facing: -1 });
@@ -563,10 +594,13 @@
       { speaker: "Macario (pabulong)", text: "Bukas ng gabi, sa barberya. Tatlo kayo." },
       { speaker: "Tinig sa Loob", text: "Darating kami." },
     ],
+    // Block 120: the second house does not answer. Someone got there
+    // first; who, and what became of them, is not said.
     [
-      { speaker: "Tinig sa Loob", text: "Sino 'yan?" },
-      { speaker: "Macario (pabulong)", text: "Anak ng Bayan. Bukas ng gabi, sa barberya." },
-      { speaker: "Tinig sa Loob", text: "May nagbabantay sa kanto. Mag-ingat ka." },
+      { speaker: "Macario (pabulong)", text: "Anak ng Bayan." },
+      { speaker: "Macario (sa isip)", text: "..." },
+      { speaker: "Macario (sa isip)", text: "Walang sumasagot. Bukas ang bintana." },
+      { speaker: "Macario (sa isip)", text: "Nauna na sila rito." },
     ],
     [
       { speaker: "Tinig sa Loob", text: "Akala ko, hindi ka na darating." },
@@ -575,18 +609,20 @@
     ],
   ];
 
+  const EMPTY_DOOR = 1;
+
   function knock(n) {
     return async () => {
       const f = state.flags;
       if (!f.a3_batas || f.a3_nahuli) return;
       if (f[PINTO_FLAGS[n]]) {
-        thinkAloud("Naipaalam ko na rito. Sa susunod na bahay.");
+        thinkAloud(n === EMPTY_DOOR ? "Wala nang tao rito." : "Naipaalam ko na rito. Sa susunod na bahay.");
         return;
       }
       playSfx("door");
       await wait(260);
       await playDialogue(DOOR_LINES[n]);
-      tick(PINTO_FLAGS, PINTO_FLAGS[n], "a3_naipaalam", "Naipaalam");
+      tick(PINTO_FLAGS, PINTO_FLAGS[n], "a3_naipaalam", "Kinatok");
       if (f.a3_naipaalam) showToast("Pumunta sa barberya.", 3000);
     };
   }
@@ -640,10 +676,51 @@
     markDirty();
     await playIntertitle(["Enero 1902. Nahuli si Macario Sakay habang nagtatatag ng mga balangay ng Katipunan.",
       "Ikinulong siya sa Bilibid."], { keepBlack: true });
-    await playIntertitle(["Hulyo 4, 1902. Idineklara ng mga Amerikano na tapos na ang digmaan.",
-      "Pinalaya ang mga bilanggong pulitikal sa bisa ng amnestiya."], { startBlack: true, keepBlack: true });
+    // Block 120: the amnesty is shown in the cell, not put on cards.
+    await playIntertitle(["Hulyo 4, 1902"], { startBlack: true, keepBlack: true });
+    if (window.Acts) Acts.gotoScene("selda", { x: 300, facing: 1 });
+  }
+
+  // =============================================================
+  // Block 120. Bilibid, 4 July 1902 [MACARIO: imprisoned, released under
+  // the amnesty]. The war declared over and the amnesty [CONTEXT] reach
+  // him from a guard at the bars [INSERT]; he walks out himself. Act IV's
+  // cell, the same room he comes back to in 1906 ("Bilibid. Muli.").
+  // PLACEHOLDER, every line.
+  // =============================================================
+  async function theAmnesty() {
+    setCutscene(true);
+    await wait(400);
+    await playDialogue([
+      { speaker: "Macario (sa isip)", text: "Anim na buwan na sa Bilibid." },
+    ]);
+    placeDecoration("bantay", ROOM + 60);
+    showDecoration("bantay", true);
+    await moveDecoration("bantay", playerX() + MEETS, 200);
+    turnPlayer(1);
+    await playDialogue([
+      { speaker: "Bantay", text: "Sakay. May balita mula sa Maynila." },
+      { speaker: "Bantay", text: "Idineklara raw ng mga Amerikano na tapos na ang digmaan." },
+      { speaker: "Bantay", text: "Amnestiya sa mga bilanggong pulitikal. Kasama ka sa listahan." },
+      { speaker: "Macario", text: "Tapos na raw ang digmaan." },
+      { speaker: "Bantay", text: "Lumabas ka na, bago pa magbago ang isip nila." },
+      { speaker: "Macario (sa isip)", text: "Malaya raw ako. Pero ang bayan?" },
+    ]);
+    await moveDecoration("bantay", ROOM + 60, 200);
+    showDecoration("bantay", false);
+    setCutscene(false);
+  }
+
+  // Out of the gate, on his own feet, and to Morong. PLACEHOLDER.
+  async function outOfBilibid() {
+    const f = state.flags;
+    if (!f.a3_saSelda || f.a3_pinalaya) return;
+    setCutscene(true);
+    playSfx("door");
+    f.a3_pinalaya = true;
+    markDirty();
     await playIntertitle(["Lumabas si Macario sa bilangguan,", "at tumuloy sa kabundukan ng Morong."],
-      { startBlack: true, keepBlack: true });
+      { keepBlack: true });
     if (window.Acts) Acts.gotoScene("morong", { x: 400, facing: 1 });
   }
 
@@ -728,15 +805,21 @@
     await playIntertitle(["Nobyembre 12, 1902", "Ipinasa ng mga Amerikano ang Batas sa Bandolerismo."],
       { keepBlack: true });
     await playIntertitle(["Ang sinumang patuloy na lumalaban ay hindi na sundalo.",
-      "Isa na siyang bandido, at kamatayan ang parusa."], { startBlack: true });
+      "Isa na siyang bandido, at kamatayan ang parusa."], { startBlack: true,
+      whileBlack: () => placePlayer(FLAG_X - 140, -1) });
     await wait(300);
     await playDialogue([
       { speaker: "Konstable", text: "Mga bandido! Sumuko kayo!" },
       { speaker: "Montalan", text: "Konstabularya. Mga Pilipino rin sila, Pangulo." },
       { speaker: "Macario", text: "Pilipinong naka-uniporme ng Amerikano." },
       { speaker: "Macario", text: "Ipagtanggol ang kampo!" },
+      { speaker: "Montalan", text: "Ang watawat, Pangulo! Doon sila papunta!" },
     ]);
     setCutscene(false);
+    // Block 120: the flag is what they come for. A Constable nearer the
+    // flag than Macario goes for it; if it falls, the wave starts again.
+    setDecoys([{ id: "watawat", hp: 8, holds: true, fallText: "Bumagsak ang watawat!" }]);
+    showToast("Ipagtanggol ang watawat!", 3000);
     await battle("mr", [
       { types: ["konstable", "konstable", "konstable", "konstable"],
         after: [{ speaker: "Carreón", text: "Marami pa sa ibaba!" }] },
@@ -746,6 +829,7 @@
         after: [{ speaker: "Montalan", text: "Huwag kayong aatras!" }] },
       { types: ["konstable", "konstable", "sentinela"] },
     ]);
+    setDecoys(null);
     setCutscene(true);
     await wait(400);
     await playDialogue([
@@ -781,11 +865,13 @@
     Object.fromEntries(ARAL_FLAGS.map((k) => [k, true])));
   const DEV_GUNAO = Object.assign({}, DEV_TOWN, { a3_saBayan: true, a3_nabasaAngProklama: true,
     a3_umalisSiIsko: true, a3_saGunao: true });
-  const DEV_STREET_NIGHT = Object.assign({}, DEV_GUNAO, { a3_pumirma: true, a3_batas: true, a3_saGabi: true },
+  const DEV_LAW = Object.assign({}, DEV_GUNAO, { a3_pumirma: true, a3_batas: true },
     Object.fromEntries(PIRMA_FLAGS.map((k) => [k, true])));
+  const DEV_STREET_NIGHT = Object.assign({}, DEV_LAW, { a3_tumanggi: true, a3_papuntangTondo: true, a3_saGabi: true });
   const DEV_OATH = Object.assign({}, DEV_STREET_NIGHT, { a3_naipaalam: true },
     Object.fromEntries(PINTO_FLAGS.map((k) => [k, true])));
-  const DEV_MORONG = Object.assign({}, DEV_OATH, { a3_handaNa: true, a3_nahuli: true, a3_saMorong: true });
+  const DEV_CELL = Object.assign({}, DEV_OATH, { a3_handaNa: true, a3_nagsimula: true, a3_nahuli: true });
+  const DEV_MORONG = Object.assign({}, DEV_CELL, { a3_saSelda: true, a3_pinalaya: true, a3_saMorong: true });
   const DEV_REPUBLIC = Object.assign({}, DEV_MORONG, { a3_itinatag: true, a3_watawat: true, a3_republika: true });
   const CLOTHES = ["damit-entablado"];
   const DISGUISE = ["damit-entablado", "balatkayo"];
@@ -808,10 +894,14 @@
       x: 250, facing: 1, flags: Object.assign({}, DEV_TOWN, { a3_saBayan: true }), task: "Basahin ang proklama" },
     { id: "gunao", items: DISGUISE, label: "Calle Gunao, 1901: ang petisyon", scene: "calle-gunao",
       x: 440, facing: 1, flags: DEV_GUNAO, task: "Papirmahin ang petisyon" },
+    { id: "batas", items: DISGUISE, label: "Calle Gunao, 1901: ang huling pirma", scene: "calle-gunao",
+      x: 440, facing: 1, flags: DEV_LAW, task: "Kunin ang huling pirma" },
     { id: "gabi", items: DISGUISE, label: "Tondo, 1902: ang tatlong bahay", scene: "tondo",
-      x: NIGHT_ARRIVE_X, facing: -1, flags: DEV_STREET_NIGHT, task: "Ipaalam sa tatlong bahay" },
+      x: NIGHT_ARRIVE_X, facing: -1, flags: DEV_STREET_NIGHT, task: "Kumatok sa tatlong bahay" },
     { id: "panunumpa", items: DISGUISE, label: "Ang barberya, 1902: ang panunumpa", scene: "barberya",
       x: ROOM - 160, facing: -1, flags: DEV_OATH, task: "Panumpain ang mga bagong kasapi" },
+    { id: "bilibid", items: DISGUISE, label: "Bilibid, Hulyo 1902: ang amnestiya", scene: "selda",
+      x: 300, facing: 1, flags: DEV_CELL, task: "Lumabas sa Bilibid" },
     { id: "morong", items: DISGUISE, label: "Morong, 1902: ang Republika", scene: "morong",
       x: 640, facing: 1, flags: DEV_MORONG, task: "Itatag ang Republika" },
     { id: "bandido", items: CLOTHES, label: "Morong, 1902: ang mga bandido", scene: "morong",
@@ -858,12 +948,14 @@
     //   6  the haircut on the American (cutTheAmerican).
     //   7  the creed taught to three (n/3) and their oath.
     //   8  Aguinaldo's proclamation, and Isko goes home (iskoGoesHome).
-    //   9  the founding, Secretary-General; the petition signed by three.
-    //  10  the Sedition Law, a printed notice (theSeditionLaw).
-    //  11  word to three houses at night (n/3).
+    //   9  the founding, Secretary-General; two sign the petition.
+    //  10  the Sedition Law, a printed notice (theSeditionLaw), and the
+    //      last name refused (Block 120).
+    //  11  three houses knocked on at night (n/3); one is empty.
     //  12  the oath broken in on (theRaidOnTheOath): caught.
-    //  13  the Republika ng Katagalugan, its flag, and the vow (theVow).
-    //  14  the Brigandage Act and the camp defended (theBandits): the end.
+    //  13  Bilibid: the amnesty, and out of the gate (Block 120).
+    //  14  the Republika ng Katagalugan, its flag, and the vow (theVow).
+    //  15  the Brigandage Act and the flag defended (theBandits): the end.
     linearObjectives: true,
     objectives: [
       { id: "bantayan", label: "Bantayan ang kampo", flag: "a3_putok" },
@@ -875,9 +967,10 @@
       { id: "aral", label: "Ituro ang aral ng Supremo", flag: "a3_balangay", countFlags: ARAL_FLAGS },
       { id: "proklama", label: "Basahin ang proklama", flag: "a3_umalisSiIsko" },
       { id: "petisyon", label: "Papirmahin ang petisyon", flag: "a3_pumirma", countFlags: PIRMA_FLAGS },
-      { id: "batas", label: "Basahin ang batas", flag: "a3_batas" },
-      { id: "tatlong_bahay", label: "Ipaalam sa tatlong bahay", flag: "a3_naipaalam", countFlags: PINTO_FLAGS },
+      { id: "huling_pirma", label: "Kunin ang huling pirma", flag: "a3_tumanggi" },
+      { id: "tatlong_bahay", label: "Kumatok sa tatlong bahay", flag: "a3_naipaalam", countFlags: PINTO_FLAGS },
       { id: "panunumpa", label: "Panumpain ang mga bagong kasapi", flag: "a3_nahuli" },
+      { id: "bilibid", label: "Lumabas sa Bilibid", flag: "a3_pinalaya" },
       { id: "republika", label: "Itatag ang Republika", flag: "a3_republika" },
       { id: "kampo", label: "Ipagtanggol ang kampo", flag: "a3_wakas" },
     ],
@@ -1079,11 +1172,13 @@
                   { speaker: "Mananahi", text: "Isang umaga, wala na siya. Bukas ang pinto. Walang nakakita." },
                   { speaker: "Macario", text: "..." },
                   { speaker: "Mananahi", text: "Patawarin mo ako. Wala akong nagawa." },
+                  // Block 120: the house is on no task's way; she sends him.
+                  { speaker: "Mananahi", text: "Iba na ang nakatira sa bahay ninyo. Puntahan mo, kung kaya mo." },
                 ],
                 skipIfFlag: "a3_kinausapAngMananahi",
                 onComplete() { state.flags.a3_kinausapAngMananahi = true; markDirty(); },
               },
-              oneLine("Mananahi", "Mag-ingat ka, iho. Marami nang nagbago rito."),
+              oneLine("Mananahi", "Lampas sa barberya ang bahay ninyo, iho. Mag-ingat ka."),
             ],
           },
           {
@@ -1240,6 +1335,35 @@
         ],
       },
       {
+        // Block 120. A cell in Bilibid, July 1902: Act IV's room (its
+        // painting owed, the floor the engine's stone). The amnesty from a
+        // guard; the gate at the right edge.
+        id: "selda",
+        worldWidth: ROOM,
+        backdrop: { src: "assets/backgrounds/act4/selda.jpg" },
+        ground: { floor: "bato" },
+        noRanged: true,
+        startX: 300,
+        wayOut: "Lumabas sa Bilibid: pumunta sa kanan",
+        scripts: [
+          { requiresFlag: "a3_nahuli", doneFlag: "a3_saSelda", x: 300, facing: 1, run: theAmnesty },
+        ],
+        decorations: [
+          { id: "bantay", x: ROOM + 60, hidden: true, animation: BANTAY_BILIBID, faceMovement: true,
+            speakers: ["Bantay"] },
+        ],
+        npcs: [
+          {
+            // The gate: no picture, a body to reach.
+            id: "tarangkahan", x: ROOM - 100, label: "Tarangkahan", scenery: true,
+            interactLabel: "Lumabas",
+            interactIcon: "i-out",
+            dialogueSets: [],
+            onInteract: outOfBilibid,
+          },
+        ],
+      },
+      {
         // Beat 8. A town, April 1901: the proclamation on the wall, the
         // men in line before an American officer's table. Its painting is
         // owed.
@@ -1279,7 +1403,8 @@
         noRanged: true,
         startX: 150,
         scripts: [
-          { requiresFlag: "a3_pumirma", doneFlag: "a3_batas", run: theSeditionLaw },
+          { requiresFlag: "a3_tumanggi", doneFlag: "a3_papuntangTondo", run: noOtherWay },
+          { requiresFlag: "a3_pumirma", unlessFlag: "a3_tumanggi", doneFlag: "a3_batas", run: theSeditionLaw },
           { requiresFlag: "a3_umalisSiIsko", doneFlag: "a3_saGunao", x: 150, facing: 1, run: theFounding },
         ],
         decorations: [
@@ -1296,7 +1421,8 @@
               oneLine("Álvarez", "Kahit ang paghingi, Sakay. Kahit ang paghingi."),
             ],
           },
-          // Three to sign. PLACEHOLDER, every line.
+          // Two sign; the third, the Guro, means to and then will not,
+          // once the law is posted (Block 120). PLACEHOLDER, every line.
           {
             id: "manlilimbag", x: 330, label: "Manlilimbag", animation: MANLILIMBAG,
             dialogueSets: [oneLine("Manlilimbag", "Ako na ang maglilimbag nito, Pangulo, kung papayagan nila.")],
@@ -1319,12 +1445,29 @@
           },
           {
             id: "guro", x: 980, label: "Guro", animation: GURO,
-            dialogueSets: [oneLine("Guro", "Sa sariling bayan, dayuhan na ang wika natin.")],
-            gift: sign(2, [
-              { speaker: "Guro", text: "Ingles na raw ang ituturo sa mga bata. May mga gurong Amerikanong dumating sa barkong Thomas." },
-              { speaker: "Guro", text: "Sa sariling bayan, dayuhan na ang wika natin." },
-              { speaker: "Guro", text: "Pipirma ako." },
-            ]),
+            dialogueSets: [
+              {
+                skipIfFlag: "a3_batas",
+                lines: [
+                  { speaker: "Guro", text: "Ingles na raw ang ituturo sa mga bata. May mga gurong Amerikanong dumating sa barkong Thomas." },
+                  { speaker: "Guro", text: "Sa sariling bayan, dayuhan na ang wika natin." },
+                  { speaker: "Guro", text: "Pipirma ako. Bukas, pagkatapos ng klase." },
+                ],
+              },
+              oneLine("Guro", "Patawad, Kalihim-Heneral.", { requiresFlag: "a3_tumanggi" }),
+            ],
+            gift: {
+              buttonLabel: "Papirmahin",
+              requiresFlag: "a3_batas",
+              givenFlag: "a3_tumanggi",
+              responseLines: [
+                { speaker: "Guro", text: "Nabasa ko ang nakapaskil, Kalihim-Heneral." },
+                { speaker: "Guro", text: "Krimen na raw ang pumirma. May tatlo akong anak." },
+                { speaker: "Macario", text: "Hindi kita pipilitin." },
+                { speaker: "Guro", text: "...Patawad." },
+              ],
+              onComplete() { setTimeout(() => runSceneScript(), 0); },
+            },
           },
         ],
       },
@@ -1341,8 +1484,10 @@
         scripts: [
           { requiresFlag: "a3_republika", doneFlag: "a3_wakas", run: theBandits },
           { requiresFlag: "a3_watawat", doneFlag: "a3_republika", run: theVow },
-          { requiresFlag: "a3_nahuli", doneFlag: "a3_saMorong", x: 400, facing: 1, run: theMountains },
+          { requiresFlag: "a3_pinalaya", doneFlag: "a3_saMorong", x: 400, facing: 1, run: theMountains },
         ],
+        // Block 120: a lost wave of the last fight starts him by the flag.
+        checkpoints: [{ x: FLAG_X - 140, flag: "a3_republika" }],
         pickups: [
           { id: "puso-mr-1", x: 700, type: "heart" },
           { id: "puso-mr-2", x: 1600, type: "heart" },
@@ -1351,11 +1496,15 @@
         decorations: [
           { id: "batang-kawal", x: -120, hidden: true, animation: P.katipunero.idle,
             walkAnimation: P.katipunero.walk, faceMovement: true, speakers: ["Batang Kawal"] },
+          // Block 120. The Republic's soldiers, seen beside its flag (owed).
+          ...KAWAL_X.map((x, i) => ({
+            id: "kawal-" + (i + 1), x, animation: KAWAL, facing: -1,
+            speakers: i === 0 ? ["Mga Kawal"] : [],
+          })),
         ],
         npcs: [
           {
             id: "montalan", x: 900, label: "Montalan", animation: MONTALAN,
-            speakers: ["Mga Kawal"],
             // PLACEHOLDER.
             dialogueSets: [
               oneLine("Montalan", "Kausapin mo si Carreón. Siya ang marunong sa mga papel.", { skipIfFlag: "a3_itinatag" }),

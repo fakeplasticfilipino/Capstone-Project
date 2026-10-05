@@ -721,6 +721,9 @@ let questAnnouncedId = null;
 // handed over (questAnnounceReady), because loadAct reaches here at parse
 // time and the running-scripts set is declared further down (the TDZ).
 function wayOutLine() {
+  // Block 120. A fight that moves says where to, the same way, while it
+  // waits for him to get there (advanceTo); its script is playing then.
+  if (advanceGoal && advanceGoal.text) return advanceGoal.text;
   const scene = currentScene;
   if (!scene || !scene.wayOut || !questAnnounceReady) return null;
   if (sceneScriptsRunning.size || pendingSceneScript(scene)) return null;
@@ -851,6 +854,12 @@ let ENEMIES = [];
 // dead zone pitfall in CLAUDE.md).
 let GUARD_BULLETS = [];
 let enemiesDone = null; // resolves the spawnEnemies promise
+// Block 120. Bodies a scripted fight names that enemies go for when one
+// is nearer than Macario (setDecoys), and the point a fight that moves
+// is waiting for him to reach (advanceTo). Up here for the same reason:
+// unloadScene clears both, and wayOutLine reads the second.
+let DECOYS = [];
+let advanceGoal = null;
 let HIDE_SPOTS = []; // regions that suppress guard detection
 let HAZARDS = []; // ground regions that cost one health on contact
 let PICKUPS = []; // collectibles; currently only hearts
@@ -1049,6 +1058,8 @@ function unloadScene() {
   ENEMIES = []; // their elements are in actElements, removed above
   GUARD_BULLETS = []; // likewise
   enemiesDone = null;
+  DECOYS = [];
+  advanceGoal = null;
   currentScene = null;
   currentSceneId = null;
 }
@@ -3862,6 +3873,27 @@ function updateCheckpoints() {
 }
 const CHECKPOINT_REACH = 60;
 
+// Block 120. A fight that moves (the way out of the post, the push into
+// Malabon's plaza): between waves the script awaits advanceTo(x, text),
+// the text stands at the top of the log (wayOutLine) and the promise
+// resolves once Macario's middle is at or past x, from whichever side he
+// started. Nothing else changes while it waits: the world is his.
+function advanceTo(x, text) {
+  return new Promise((resolve) => {
+    const dir = Math.sign(x - (posX + PLAYER_WIDTH / 2)) || 1;
+    advanceGoal = { x, dir, text: text || null, resolve };
+    renderQuests();
+  });
+}
+
+function updateAdvance() {
+  const goal = advanceGoal;
+  if (!goal || (posX + PLAYER_WIDTH / 2 - goal.x) * goal.dir < 0) return;
+  advanceGoal = null;
+  renderQuests();
+  goal.resolve();
+}
+
 // =============================================================
 // HAZARDS AND PICKUPS
 // =============================================================
@@ -5607,7 +5639,8 @@ function cancelTutorial(...ids) {
 // Resolves with how many strokes were good out of opts.rounds, or -1 if
 // he walked away before the last. Content names the words (title, hint,
 // verb, hitText, missText, doneText), the mode and the picture
-// (opts.scene "horse", "cloth" or "press", opts.art the horse's sheet), and
+// (opts.scene "horse", "cloth", "press" or, Block 120, "drill", a row of
+// figures saluting; opts.art the horse's sheet), and
 // decides what the strokes are worth; this only plays them.
 const WORK_ROUNDS = 5;
 const WORK_ZONE_FIRST = 0.34;  // the good part of the bar at the first stroke, as a fraction of it
@@ -5695,7 +5728,7 @@ function playWorkGame(opts) {
     const scene = buildWorkScene();
 
     function buildWorkScene() {
-      const kind = o.scene === "cloth" || o.scene === "press" ? o.scene : "horse";
+      const kind = ["cloth", "press", "drill"].includes(o.scene) ? o.scene : "horse";
       stageEl.className = "work-stage-" + kind;
       propEl.className = "";
       propEl.removeAttribute("style");
@@ -5738,6 +5771,22 @@ function playWorkGame(opts) {
             const line = marksEl.children[k];
             if (line) line.className = hit ? "work-print-ok" : "work-print-bad";
             replay(toolEl, "work-platen");
+          },
+        };
+      }
+      // Block 120. A drill: a row of figures, one a stroke, who salute
+      // smartly on a good one and fumble it on a bad one. Drawn by the
+      // stylesheet, as the stitches and the printed lines are.
+      if (kind === "drill") {
+        for (let i = 0; i < rounds; i++) {
+          const fig = document.createElement("i");
+          fig.style.left = (10 + (80 * i) / Math.max(1, rounds - 1)) + "%";
+          marksEl.appendChild(fig);
+        }
+        return {
+          stroke(hit, n, k) {
+            const fig = marksEl.children[k];
+            if (fig) fig.className = hit ? "work-salute-ok" : "work-salute-bad";
           },
         };
       }
@@ -6574,6 +6623,68 @@ function spawnEnemies(defs) {
   });
 }
 
+// Block 120. Decoys: NPCs a scripted fight names, which an enemy goes
+// for instead of Macario whenever one is nearer to him (the scarecrows on
+// the Nangka, the Republic's flag at Morong). His dash hits it as it
+// would Macario; each hit flashes it and costs it one; at none it
+// topples and is passed over. A decoy that holds (the flag) and falls
+// loses the fight, exactly as running out of hearts does: the wave
+// starts again (respawnInScene), and every decoy stands again with it.
+// Rifles keep aiming at Macario. list: [{ id, hp, holds, fallText }],
+// set before the waves and cleared (null) after them; a toppled decoy
+// stays down on screen until the scene is built again.
+function setDecoys(list) {
+  DECOYS = (list || []).map((d) => {
+    const npc = NPCS.find((n) => n.id === d.id && !n.hidden);
+    const el = npc && document.getElementById("npc-" + npc.id);
+    if (!el) return null;
+    const hp = Math.max(1, d.hp || 2);
+    return { id: d.id, el, centre: npc.x + NPC_WIDTH / 2, hp, maxHp: hp,
+      holds: Boolean(d.holds), fallText: d.fallText || "", down: false };
+  }).filter(Boolean);
+}
+
+function hitDecoy(decoy) {
+  decoy.hp -= 1;
+  impact("punch");
+  // A flash, restarted on every hit (the two names alternate, as the
+  // work game's replay does, so the same animation plays again).
+  decoy.flip = !decoy.flip;
+  decoy.el.classList.remove("decoy-hit-a", "decoy-hit-b");
+  decoy.el.classList.add(decoy.flip ? "decoy-hit-a" : "decoy-hit-b");
+  if (decoy.hp > 0) return;
+  decoy.down = true;
+  decoy.el.classList.add("decoy-down");
+  impact("knockout");
+  if (decoy.holds) {
+    showToast((decoy.fallText ? decoy.fallText + " " : "") + "Ulitin natin.");
+    respawnInScene();
+  }
+}
+
+function standDecoys() {
+  DECOYS.forEach((d) => {
+    d.hp = d.maxHp;
+    d.down = false;
+    d.el.classList.remove("decoy-down", "decoy-hit-a", "decoy-hit-b");
+  });
+}
+
+// Block 120. The guards on duty in the scene join the fight, as they
+// stand: hostile, firing, counted by enemiesAlive like a fight's own, so
+// the post's three watchmen are the alarm's first wave rather than being
+// taken off the street. Called by content just before spawnEnemies, so
+// the promise that wave returns waits for them too.
+function rouseGuards() {
+  const now = performance.now();
+  GUARDS.forEach((g) => {
+    if (g.disabled || g.fight) return;
+    Object.assign(g, { hostile: true, alert: 1, fight: true, shoots: true,
+      nextShotAt: now + GUARD_AIM_MS });
+  });
+  updateHudVisibility();
+}
+
 function finishFight() {
   updateHudVisibility();
   cancelTutorial("atake", "tanda");
@@ -6670,7 +6781,16 @@ function updateEnemies(step, now) {
   ENEMIES.forEach((enemy) => {
     if (enemy.dead) return;
     const centre = enemy.pos + ENEMY_WIDTH / 2;
-    const dx = playerCentre - centre;
+    // Block 120. What he goes for: Macario, or a decoy standing nearer.
+    let targetCentre = playerCentre;
+    enemy.target = null;
+    DECOYS.forEach((d) => {
+      if (!d.down && Math.abs(d.centre - centre) < Math.abs(targetCentre - centre)) {
+        targetCentre = d.centre;
+        enemy.target = d;
+      }
+    });
+    const dx = targetCentre - centre;
     const dir = Math.sign(dx) || enemy.facing;
     const dist = Math.abs(dx);
 
@@ -6688,7 +6808,7 @@ function updateEnemies(step, now) {
         turnToward(enemy, dir, now);
       } else {
         enemy.turnAt = 0;
-        const blocked = comradeAhead(enemy, dir, centre, playerCentre);
+        const blocked = comradeAhead(enemy, dir, centre, targetCentre);
         if (dist > ENEMY_COMMIT_RANGE) {
           if (!blocked) {
             enemy.pos += dir * Math.min(enemy.speed * step, dist - ENEMY_COMMIT_RANGE);
@@ -6697,7 +6817,8 @@ function updateEnemies(step, now) {
         } else if (now < enemy.cooldownUntil) {
           enemy.walking = repositionEnemy(enemy, dir, dist, step, now);
         } else if (!blocked) {
-          if (canHop(enemy, dir, dist, playerCentre)) startEnemyHop(enemy, dir, playerCentre, now);
+          // A hop is over Macario, never over a decoy.
+          if (!enemy.target && canHop(enemy, dir, dist, playerCentre)) startEnemyHop(enemy, dir, playerCentre, now);
           else enemy.nextSwingAt = now + jitter(ATTACK_TELL_MS, ATTACK_TELL_SPREAD);
         }
       }
@@ -6839,7 +6960,8 @@ function startEnemyDash(enemy, now) {
   enemy.nextSwingAt = 0;
   enemy.swings = (enemy.swings || 0) + 1;
   enemy.hopped = false;
-  enemy.dash = { from: enemy.pos, to: enemy.pos + enemy.facing * ENEMY_DASH_DISTANCE, t0: now, hit: false };
+  enemy.dash = { from: enemy.pos, to: enemy.pos + enemy.facing * ENEMY_DASH_DISTANCE, t0: now, hit: false,
+    decoysHit: [] };
   playSfx("swing");
   spawnDust(enemy.pos + ENEMY_WIDTH / 2, GROUND_LEVEL, enemy.facing, "land");
 }
@@ -6859,6 +6981,17 @@ function enemyDash(enemy, now) {
       }
     }
   }
+  // Block 120. And any decoy it touches, once a dash (a respawn from a
+  // fallen one that holds clears the dash, hence the second check).
+  for (const decoy of DECOYS) {
+    if (!enemy.dash || decoy.down || d.decoysHit.includes(decoy)) continue;
+    const ahead = (decoy.centre - (enemy.pos + ENEMY_WIDTH / 2)) * enemy.facing;
+    if (ahead >= -ENEMY_STRIKE_BEHIND && ahead <= ENEMY_STRIKE_REACH) {
+      d.decoysHit.push(decoy);
+      hitDecoy(decoy);
+    }
+  }
+  if (!enemy.dash) return;
   if (u >= 1) {
     enemy.dash = null;
     enemy.cooldownUntil = now + jitter(ATTACK_COOLDOWN_MS, ATTACK_COOLDOWN_SPREAD);
@@ -7032,6 +7165,7 @@ function resetEnemies() {
     placeBody(enemy.el, enemy.pos);
     enemy.drawnPos = enemy.pos;
   });
+  standDecoys(); // Block 120
 }
 
 // =============================================================
@@ -7109,6 +7243,8 @@ const SFX_SOURCES = {
   notice: "assets/audio/sfx/notice.wav",
   caught: "assets/audio/sfx/caught.wav",
   cheer: "assets/audio/sfx/cheer.wav",
+  // Block 120 (make-scene-sfx.js): the post's alarm bell, struck twice.
+  kampana: "assets/audio/sfx/kampana.wav",
 };
 
 // Music sits under everything else. It is the one sound that never
@@ -7592,6 +7728,7 @@ function gameLoop(now) {
   updateHazards();
   updatePickups();
   if (canAct) updateCheckpoints(); // Block 113
+  if (canAct) updateAdvance(); // Block 120
 
   updateProjectile(step);
 

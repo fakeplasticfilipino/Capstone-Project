@@ -5082,6 +5082,82 @@ point of all four acts with its floor, Act IV end to end as a guest
 the end screen over the black), and test.js's sections that knew Act IV
 as a stub.
 
+## Block 120: the pacing pass
+
+On 5 Oct 2026 the proponent asked for a read of the whole game for its
+feel before any change: scenes told on black that could be shown with
+placeholders, stretches that go too far, boring segments, and fun ones
+that end too fast. The read (with the proponent's plot and scene
+skills, applied to STORY.md and the scene layouts) found twelve, and the
+proponent approved all twelve, taking the recommended route wherever
+two were offered.
+
+Cards made scenes. CLAUDE.md already said an action the game can play
+is not put on a black card; Act IV broke it with "Tumunog ang kampana":
+the bell is now a sound (kampana, made by make-scene-sfx.js) and the
+three watchmen turn on him where they stand. Act III's six cards from
+the arrest to Morong held a stretch the sources give him ([MACARIO]:
+imprisoned, released under the amnesty), so it is a short scene in
+Act IV's cell, the amnesty heard from a guard ([CONTEXT] kept
+secondhand), and the gate walked out of; it also gives Act IV's
+"Bilibid. Muli." something seen to answer. Paris (Act II) is a paper the
+messenger brings and Jacinto reads aloud, so Macario's cedula thought
+answers something said in front of him. Palanan (Act III) was said
+twice, a card and then the wall; Isko now says it, and the disguise
+turned on the Republic becomes Macario's own thought. Tanay and the
+changed plea stay on black: the record is silent, and a scene would
+have to choose.
+
+Too far. The press door moved from 7900 to 6650 in Act II: the walk
+home and the sweep's walk back were the same street twice running, each
+about 5900; the guards were re-spaced, the chase is untouched. In Act
+IV the Kutsero waits at 5950, where the crowd thins, with Kabayo (moved
+to content/people.js so both acts read one sheet), instead of 3100 of
+empty road further on at his Act I spot. The stranger in Nanay's house
+was on no task's way; the Mananahi now sends him there.
+
+Sags. Act III's middle was five steps of talking or reading in a row.
+The Sedition Law now lands two names into the petition, and the third
+(the Guro) will not sign once it is posted: the step "Kunin ang huling
+pirma" ends refused, the try/fail outcome a plot wants in its middle.
+Of seven "three of something" tasks, two changed: Tanay's three buttons
+are one drill (the work game's new "drill" picture, a row of figures
+saluting, then their three questions as one scene), and the second of
+Act III's three doors does not answer. The pamphlets, the creed and the
+rice keep their three, since each grows the story.
+
+Fun that ended too fast, and battles that were the same. The
+scarecrows only worked in a cutscene; they are now decoys in the fight
+(setDecoys), and the same rule makes Act III's last battle the defence
+of the flag (a decoy that holds: its fall loses the wave, as running
+out of hearts does). The post's fight is a fight out to the fence and
+Malabon's a push into the plaza (advanceTo between waves, the line at
+the top of the log, checkpoints at each stretch), every battle keeping
+the fifteen the proponent asked for.
+
+The engine gained three calls, each one rule written once: setDecoys
+(an enemy goes for whatever is nearest, Macario or a named NPC; a dash
+hits either), advanceTo, and rouseGuards (the guards on duty made a
+fight's, rather than a second kind of fighter). Rifles keep aiming at
+Macario: a bullet that sought straw would be a second targeting rule
+for a picture nobody would read. Two new pictures are owed (the
+townspeople), none made; the crowd and the Republic's soldiers stand
+as placeholders, as the rule of Block 118 says.
+
+Checked: prepare.js (STORY.md has every new line, ART.md fifty-two
+owed, the content check finds no door to nowhere and nobody behind a
+tree after the press door moved); test.js's new section BS (an enemy
+goes for the nearer decoy, two blows topple it, a fallen one is passed
+over, a decoy that holds and falls loses the wave and stands again, the
+moving fight's line and its end, the guards roused) and the sound and
+work-game sections; verify_new_scene.js's Act I, II, III and IV parts
+end to end (the scarecrows targeted, Paris read, Palanan told, the law
+mid-petition and the refusal, the empty house, the cell and its gate,
+the flag a decoy that holds, the bell with no card, fifteen at the post
+with the watchmen among them and every stretch reached, the drill, the
+plaza, the crowd and the Kutsero), and every story point of all four
+acts.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

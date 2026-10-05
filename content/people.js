@@ -17,7 +17,7 @@
 // and the content check in _dev/tools/lib/checks.js). Every sheet was
 // measured with _dev/tools/measure-sprite.js; the comments on each are
 // where it came from. Who appears only in one act (the siga, the
-// Sultan, the horse) stays in that act's file.
+// Sultan) stays in that act's file.
 // =============================================================
 
 (function () {
@@ -74,6 +74,16 @@
     // Isko (Block 113), Macario's man in Acts II and III, owed (ART.md):
     // a placeholder box until drawn. Here since Block 117, as he returns.
     isko: { src: "assets/sprites/characters/isko.png", frames: 1, fps: 1 },
+
+    // The Kutsero's horse (Block 100): the proponent's still of a saddled
+    // bay, animated by _dev/tools/animate-kabayo.js to dip his head and
+    // tuck his tail, a horse at rest. Here since Block 120, when he comes
+    // back in Act IV with the carriage; Act I and its grooming game read
+    // him from here.
+    kabayo: {
+      src: "assets/sprites/characters/kabayo.png", frames: 12, fps: 6, columns: 4,
+      contentTop: 4, contentHeight: 262, footX: 115, headroom: 4,
+    },
 
     // The Mabalasig (Block 101): the proponent's still, side on, idle only.
     mabalasig: {

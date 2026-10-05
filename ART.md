@@ -37,7 +37,10 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 5 Oct 2026, Block 119 (fifty owed: Act IV names sixteen
+Last updated: 5 Oct 2026, Block 120 (fifty-two owed: the crowd in
+Manila, two townspeople, seen rather than only heard; Act III borrows
+Act IV's cell, its guard and its fighters, which were owed already).
+Before that, Block 119 (fifty owed: Act IV names sixteen
 more, seven places and nine people, each a placeholder until drawn).
 Before that, Block 118 (thirty-four owed: Act III revised
 against the proponent's sources names the hills instead of Santa Mesa,
@@ -290,7 +293,8 @@ until it arrives.
     assets/backgrounds/act4/selda.jpg
         A cell in Bilibid, 1906 to 1907: stone walls, bars, a small barred
         window on the right. The floor is drawn by the game (stone).
-        (NOT STARTED)
+        Since Block 120 Act III uses it too (July 1902, the amnesty), so
+        a gate or a door out at the right edge helps both. (NOT STARTED)
 
     assets/backgrounds/act4/hukuman.jpg
         The Court of First Instance of Cavite, 1906: a judge's bench on
@@ -323,7 +327,8 @@ until it arrives.
 
     assets/sprites/characters/bantay-bilibid.png
         A Filipino guard of Bilibid, 1907, in a guard's uniform: side on;
-        he walks to the cell. (NOT STARTED)
+        he walks to the cell. In Act III too, in 1902 (Block 120).
+        (NOT STARTED)
 
     assets/sprites/characters/taga-cavite.png
         A woman of Cavite, 1905, thin, a small sack of rice on her hip:
@@ -336,7 +341,16 @@ until it arrives.
     assets/sprites/characters/kawal-katagalugan.png
         A fighter of the Republika ng Katagalugan, 1904: long hair tied
         back, poor clothes, a bolo: standing. Two of them stand in the
-        camp. (NOT STARTED)
+        camp; since Block 120 three also stand by the flag at Morong in
+        Act III. (NOT STARTED)
+
+    assets/sprites/characters/taong-bayan-1.png
+    assets/sprites/characters/taong-bayan-2.png
+        Block 120. The crowd in Manila, July 1906, come out to see Sakay
+        come down: two townspeople of Tondo, a man (1) and a woman (2),
+        plain clothes, standing, facing the front or three-quarter. Each
+        is used three times along the street (some mirrored). (NOT
+        STARTED)
 
 ## Stand-ins
 

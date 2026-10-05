@@ -9,7 +9,17 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 5 Oct 2026, after Block 119. Block 119: Act IV written,
+Last updated: 5 Oct 2026, after Block 120. Block 120: the pacing pass,
+twelve changes from a read of the whole game, all approved: what was
+told on black and could be shown is shown (the post's bell, the
+amnesty in a cell in Bilibid, Paris read in Laguna, Palanan told by
+Isko); the long walks shortened (Act II's press door, Act IV's
+Kutsero) and the stranger in Nanay's house pointed to; Act III's middle
+made to go wrong (the law mid-petition, the last name refused, an empty
+house); Tanay's three buttons one drill; and the battles given a goal
+each (the scarecrows and the flag as decoys, the fight out of the post,
+the push into Malabon's plaza), the crowd and the Republic's soldiers
+seen as placeholders. Block 119: Act IV written,
 1903 to 1907, end to end, from the proponent's labelled sources: the
 first presidential order, a Constabulary post raided for guns and
 uniforms, the manifesto, the costume for Tanay (whether he went left
@@ -160,11 +170,12 @@ are owed (ART.md), drawn as placeholders. The soldiers are the bantay's
 art (the sundalo of the enemy catalogue).
 
 Act III, Ang Republika sa Lilim (Blocks 117, 118), 1899 to 1902, from
-the proponent's labelled sources: six places (his band's camp in the
+the proponent's labelled sources: seven places (his band's camp in the
 hills outside Manila, where the news of Santa Mesa reaches him; Act I's
 street under American guard, by day in
 1899 and at night in 1902; the barbershop; a town plaza; Calle Gunao in
-Quiapo; the camp at Morong), fourteen steps in one chain, every line
+Quiapo; a cell in Bilibid, Block 120; the camp at Morong), fifteen
+steps in one chain, every line
 ours (+ in STORY.md, PLACEHOLDER in content/act3.js), every beat
 tagged [CONTEXT], [MACARIO] or [INSERT]. Macario is never at a [CONTEXT]
 event. The Americans speak English, every line given in Tagalog after
@@ -214,9 +225,9 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): fifty pictures, Act I's three (the
+in code. Still owed (ART.md): fifty-two pictures, Act I's three (the
 Barbero's chair, the Mananahi's sewing table, the pulungan's painting),
-Act II's fifteen, Act III's sixteen and Act IV's sixteen. No picture is made or borrowed
+Act II's fifteen, Act III's sixteen and Act IV's eighteen. No picture is made or borrowed
 for what is not drawn (CLAUDE.md, Conventions).
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
@@ -257,6 +268,25 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026. Open:
 
+    Block 120, the pacing pass. Act II ("Pauwi kay Nanay"): the press
+      door is now between the Mananahi and the tabakera, the walks
+      shorter; at the Nangka ("Ilog Nangka") the soldiers go for the
+      scarecrows, which topple after two blows; Laguna's end, the
+      messenger's paper, Jacinto reading Paris aloud. Act III: in the
+      town, Isko tells of Palanan; at Calle Gunao ("ang petisyon") two
+      sign, the law arrives, and the Guro ("ang huling pirma") refuses;
+      the second door at night does not answer; after the raid, a cell
+      in Bilibid ("ang amnestiya"), the guard, and the gate on the right;
+      at Morong the soldiers stand by the flag, and in the last fight a
+      Constable reaching the flag hacks at it (eight blows and the wave
+      starts again). Act IV: the bell rings (no card), Montalan comes
+      out, the three watchmen fire; the fight moves right to the fence
+      with "Lumaban palabas" at the top of the log; Tanay's line of three
+      ("Sanayin"), a row of figures saluting; Malabon pushes right into
+      the plaza; Manila shows six dashed townspeople and the Kutsero with
+      Kabayo at about the Mananahi. Failure: a fight that never moves
+      on, a decoy that never falls or never stands again, a black card
+      where a scene should be, or a line said behind black.
     Block 119, Act IV. ?dev=1 lists thirteen points under Ang Mapait
       na Ani; each opens its place with its task in the log. From Ang
       simula: "Marso 18, 1903" at Morong, sign the order at the table;
@@ -303,8 +333,8 @@ Van Schaick's words, the names ours gave and the Talaan's papers
 4. The test questions: not ours. Teachers write and change them on the
 dashboard (CLAUDE.md, Standing decisions); nothing here tracks them.
 
-5. Art from the artist: ART.md's Owed list, fifty pictures since
-Block 119 (Act I's three: the pulungan's painting, the Mananahi's
+5. Art from the artist: ART.md's Owed list, fifty-two pictures since
+Block 120 (Act I's three: the pulungan's painting, the Mananahi's
 sewing table and the Barbero's chair; Act II's fifteen: seven
 paintings, Isko, Jacinto, Bonifacio, a printer, a messenger, the press,
 the straw and the scarecrow; Act III's sixteen: five paintings,
@@ -312,8 +342,9 @@ the straw and the scarecrow; Act III's sixteen: five paintings,
 the American in the barber's chair, the stranger in Nanay's house, the
 Katagalugan's flag, the American soldier and the Constabulary; Act
 IV's sixteen: seven paintings, Gómez, Van Schaick, Villafuerte, de
-Vega, the judge, a Bilibid guard, a woman of Cavite, Isko's son and the
-Katagalugan's fighter). PNGs with transparency; each goes through ART.md's steps.
+Vega, the judge, a Bilibid guard, a woman of Cavite, Isko's son, the
+Katagalugan's fighter, and since Block 120 two townspeople for the
+crowd in Manila). PNGs with transparency; each goes through ART.md's steps.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
@@ -388,7 +419,7 @@ Block 110. Status:
                                                                         working, 4 Oct 2026)
     S39          private files and names in the git history             (BLOCKED: the
                                                                         proponent's decision)
-    S40          the owed pictures (three then, fifty since Block 119)  (BLOCKED: the artist)
+    S40          the owed pictures (three then, fifty-two since Block 120)  (BLOCKED: the artist)
     S41          the years, every + line, the Talaan papers, the        (the years, lines
                  written delegation, the pilot accounts                 and papers accepted
                                                                         4 Oct 2026; the
@@ -786,6 +817,14 @@ machine, the assessment module.
         sources: the order, the post, the manifesto, Tanay, Malabon, the
         hunger, Gómez, Manila, the reception, Bilibid, the court, the
         window, the last morning; two battles of fifteen; the stone floor
+    120 the pacing pass (all twelve approved): cards made scenes (the
+        post's bell heard, Bilibid's amnesty in a cell, Paris read in
+        Laguna, Palanan told by Isko); the press door nearer home, the
+        Kutsero nearer in Manila, the Mananahi sending him to the house;
+        the law mid-petition and the last name refused, an empty house,
+        Tanay's drill; the scarecrows and the flag as decoys, the fights
+        out of the post and into Malabon's plaza; the crowd and the
+        Republic's soldiers seen (setDecoys, advanceTo, rouseGuards)
 
 ## Blocks remaining
 
@@ -806,7 +845,7 @@ decided against the source material. (NOT STARTED)
 The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
 Block 85 except two. The item bank, one of them, is the teacher's
 (Block 110). Act I's people are all drawn since Block 102; what is still owed,
-fifty pictures across the four acts, is ART.md's list (BLOCKED, the
+fifty-two pictures across the four acts, is ART.md's list (BLOCKED, the
 artist). The list: DECISIONS.md,
 Block 85.
 

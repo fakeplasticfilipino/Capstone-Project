@@ -126,10 +126,8 @@ const MANANAHI = window.PEOPLE.mananahi;
 // The Kutsero's horse (Block 100): the proponent's still of a saddled
 // bay, animated by _dev/tools/animate-kabayo.js to dip his head and tuck
 // his tail, a horse at rest. The grooming game draws the same sheet.
-const KABAYO = {
-  src: "assets/sprites/characters/kabayo.png", frames: 12, fps: 6, columns: 4,
-  contentTop: 4, contentHeight: 262, footX: 115, headroom: 4,
-};
+// In content/people.js since Block 120, as he comes back in Act IV.
+const KABAYO = window.PEOPLE.kabayo;
 // The direktor (Block 98), on the street and inside alike: the artist's
 // still of an old man with a cane and the play under his arm, animated by
 // _dev/tools/animate-still.js (rig _dev/rigs/direktor.js) to breathe and

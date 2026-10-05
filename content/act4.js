@@ -22,7 +22,8 @@
 //   morong       March 1903: the first presidential order. A post to
 //                raid for guns and uniforms ("Makikita mo rin").
 //   himpilan     1903, at night: past the Constabulary's guards to the
-//                storeroom, then the alarm and fifteen in four waves.
+//                storeroom, then the bell, and fifteen fought on the way
+//                out to the fence (Block 120).
 //   morong       April 1904: the manifesto, printed on half a press.
 //   dimasalang   Late 1904: the costume for Tanay, his last performance
 //                [INSERT]; whether he went is left as the record leaves
@@ -30,9 +31,10 @@
 //                of rice for three. 1906: Gómez, sent by Ide [CONTEXT],
 //                and the terms [MACARIO].
 //   malabon      24 January 1905: San Francisco de Malabon, fifteen in
-//                four waves.
+//                four waves, a push into the plaza (Block 120).
 //   tondo        14 July 1906: down into Manila, the crowd [INSERT],
-//                Isko and his son, Maryam, the Kutsero's carriage.
+//                Isko and his son, Maryam, the Kutsero's carriage where
+//                the crowd thins out.
 //   sala         17 July 1906, Cavite: Van Schaick's reception; seized at
 //                the toast.
 //   selda        Bilibid, 1906 and 1907: Montalan; the Supreme Court and
@@ -70,6 +72,9 @@
   const HUKOM = owed("characters", "hukom");
   const BANTAY_BILIBID = owed("characters", "bantay-bilibid");
   const AMERIKANO = owed("enemies", "amerikano");          // Act III's, owed
+  // Block 120. The crowd in Manila, seen and not only heard: two
+  // townspeople, owed, placeholders until drawn.
+  const TAONG_BAYAN = [owed("characters", "taong-bayan-1"), owed("characters", "taong-bayan-2")];
 
   // ---- The street ---------------------------------------------------
   // Act I's street, by day in July 1906. Joins at every multiple of 1450;
@@ -88,8 +93,13 @@
   const MARYAM_X = 13250;
   const ISKO_X = 11000;
   const CROWD_X = [9300, 8000, 7600];
+  // Block 120. The townspeople, most of them near where he comes in.
+  const TOWNSPEOPLE_X = [12150, 12330, 11900, 11380, 10700, 9950];
   const MANANAHI_X = 6400;
-  const KUTSERO_X = 3300;       // where he stood in Act I
+  // Block 120: where the crowd thins out, with the carriage, rather than
+  // where he stood in Act I, a long empty walk further on.
+  const KUTSERO_X = 5950;
+  const KABAYO_X = 6230;
 
   // ---- Rooms and fields ----------------------------------------------
   const ROOM = 1180;            // one screen wide, as the entablado
@@ -109,9 +119,19 @@
     { beat: [450, 800], hide: 620 },
   ];
   const POST_CHECKPOINTS = [1650, 950];
+  // Block 120. After the alarm, the fight out, toward the fence where he
+  // came in: a wave at the storeroom, then one at each of these, and the
+  // fence. Each is where a lost wave starts him again.
+  const FIGHT_OUT_X = [900, 1600, 2250];
+  const FENCE_X = POST_ENTER_X;
+  const LABAS_FLAGS = FIGHT_OUT_X.map((_, i) => "a4_labas" + (i + 1));
+  // Malabon: the push from the edge of town into the plaza.
+  const PLAZA_X = [1200, 2000, 2700];
+  const PLAZA_FLAGS = PLAZA_X.map((_, i) => "a4_plaza" + (i + 1));
 
   const MONTALAN_X = 900;
   const KAWAL_X = [1300, 1500, 1700];
+  const HANAY_X = 1150;         // the line of three, drilled (Block 120)
   const GOMEZ_X = 2100;
 
   const MEETS = 190;
@@ -122,7 +142,6 @@
   const NIGHT = "assets/audio/music/gabi.wav";
 
   // ---- Flags -------------------------------------------------------------
-  const TURO_FLAGS = ["a4_turo1", "a4_turo2", "a4_turo3"];
   const BIGAS_FLAGS = ["a4_bigas1", "a4_bigas2", "a4_bigas3"];
 
   function thinkAloud(text) {
@@ -162,10 +181,24 @@
   // As Acts II and III (the proponent: a lot of fighting): waves from
   // both sides of the screen, a line between waves. Running out of hearts
   // restarts the wave in hand, the fallen staying down.
-  async function battle(tag, waves) {
+  //
+  // Block 120: a battle may move. A wave with at waits for him to get
+  // there first (advanceTo, the opts.go line at the top of the log), and
+  // opts.end is where the fight is over; opts.follow are the decorations
+  // who fight beside him and walk up behind him as he goes. A wave with
+  // rouse brings the guards on duty in as its first fighters.
+  async function battle(tag, waves, opts) {
+    const o = opts || {};
+    const advance = async (x) => {
+      await advanceTo(x, o.go);
+      (o.follow || []).forEach((id, i) => {
+        moveDecoration(id, Math.max(40, playerX() - MEETS - i * 90), 300);
+      });
+    };
     setMusic(FIGHT);
     for (let w = 0; w < waves.length; w++) {
       const wave = waves[w];
+      if (wave.at != null) await advance(wave.at);
       const here = playerX();
       const edges = viewEdges();
       const defs = wave.types.map((type, i) => {
@@ -179,6 +212,7 @@
         };
       });
       if (w === 0) showToast("Pindutin ang Atake para lumaban!", 2400);
+      if (wave.rouse) rouseGuards();
       await spawnEnemies(defs);
       if (wave.after) {
         setCutscene(true);
@@ -187,7 +221,15 @@
         setCutscene(false);
       }
     }
+    if (o.end != null) await advance(o.end);
     setMusic(CALM);
+  }
+
+  // A moving fight's checkpoints are cleared when it starts, so a reload
+  // that fights it again from the top starts it where it starts.
+  function clearRun(flags) {
+    flags.forEach((k) => { state.flags[k] = false; });
+    markDirty();
   }
 
   // =============================================================
@@ -256,30 +298,36 @@
     setTimeout(() => runSceneScript(), 0);
   }
 
+  // Block 120. The bell is heard, not put on a card: it rings, Montalan
+  // comes out of the storeroom behind him, and the three on watch turn on
+  // him where they stand (rouseGuards), the first of the fight out.
   async function theAlarm() {
     setCutscene(true);
-    await playIntertitle(["Tumunog ang kampana ng himpilan."], {
-      whileBlack: () => {
-        refreshOnDuty();
-        placeDecoration("montalan-h", Math.max(80, playerX() - MEETS));
-        showDecoration("montalan-h", true);
-      },
-    });
+    clearRun(LABAS_FLAGS);
+    state.flags.a4_labas0 = true;
+    markDirty();
+    playSfx("kampana");
+    await wait(1100);
     turnPlayer(-1);
+    placeDecoration("montalan-h", STOREROOM_X);
+    showDecoration("montalan-h", true);
+    await moveDecoration("montalan-h", Math.max(40, playerX() - MEETS), 300);
     await playDialogue([
       { speaker: "Montalan", text: "Pangulo! Gising na ang buong himpilan!" },
       { speaker: "Macario", text: "Dalhin ang mga riple. Lalaban tayo palabas!" },
     ]);
+    playSfx("kampana");
+    turnPlayer(1);
     setCutscene(false);
     await battle("hp", [
-      { types: ["konstable", "konstable", "konstable", "konstable"],
+      { rouse: true, types: ["konstable", "konstable"],
         after: [{ speaker: "Montalan", text: "Marami pa sa loob!" }] },
-      { types: ["konstable", "konstable", "bantay-konstable", "konstable"],
+      { at: FIGHT_OUT_X[0], types: ["konstable", "konstable", "bantay-konstable", "konstable"],
         after: [{ speaker: "Macario (sa isip)", text: "Kapwa Pilipino na naman ang kaharap ko." }] },
-      { types: ["konstable", "bantay-konstable", "konstable", "konstable"],
+      { at: FIGHT_OUT_X[1], types: ["konstable", "bantay-konstable", "konstable"],
         after: [{ speaker: "Montalan", text: "Malapit na ang bakod!" }] },
-      { types: ["konstable", "konstable", "bantay-konstable"] },
-    ]);
+      { at: FIGHT_OUT_X[2], types: ["konstable", "konstable", "bantay-konstable"] },
+    ], { go: "Lumaban palabas: pumunta sa kanan, sa bakod", end: FENCE_X, follow: ["montalan-h"] });
     setCutscene(true);
     await wait(400);
     await playDialogue([
@@ -372,6 +420,51 @@
     setCutscene(false);
   }
 
+  // Block 120. The three drilled together, once, rather than taught one
+  // by one (the seventh "three of something" in the game): the line of
+  // three, used with E, is the work game's drill, a row of figures
+  // saluting, and then what each of them asks, as one scene.
+  // PLACEHOLDER, every line.
+  async function drillTheFighters() {
+    const f = state.flags;
+    if (!f.a4_saDimasalang) return;
+    if (f.a4_ensayo) {
+      thinkAloud("Handa na sila. Wala na akong maituturo pa.");
+      return;
+    }
+    const good = await playWorkGame({
+      title: "Ensayo",
+      hint: "Pindutin kapag nasa berde ang guhit: sabay-sabay ang saludo.",
+      verb: "Saludo",
+      icon: "i-hand",
+      scene: "drill",
+      hitText: "Sabay-sabay!",
+      missText: "Magulo ang hanay!",
+      doneText: (n) => n + "/5 ang malinis na saludo.",
+    });
+    if (good < 0 || f.a4_ensayo) return;
+    setCutscene(true);
+    await playDialogue([
+      { speaker: "Kawal", text: "Ganito po ba sumaludo ang Konstable?" },
+      { speaker: "Macario", text: "Masyadong mabagal." },
+      { speaker: "Macario", text: "Sumasaludo ang Konstable na parang may utang sa kanya ang buong mundo." },
+      { speaker: "Kawal", text: "...Ganito?" },
+      { speaker: "Macario", text: "'Yan." },
+      { speaker: "Kawal", text: "Pangulo, ang buhok namin. Walang Konstable na ganito kahaba ang buhok." },
+      { speaker: "Macario", text: "Itali, at itago sa ilalim ng sumbrero." },
+      { speaker: "Kawal", text: "Hindi po namin gugupitin?" },
+      { speaker: "Macario", text: "Hindi. Sumumpa tayo." },
+      { speaker: "Batang Kawal", text: "Paano po kung kausapin ako ng bantay?" },
+      { speaker: "Macario", text: "Huwag kang magpaliwanag. Ang nagpapaliwanag, may itinatago." },
+      { speaker: "Macario (sa isip)", text: "Kay Maryam ko natutunan 'yan." },
+    ]);
+    f.a4_ensayo = true;
+    markDirty();
+    refreshNpcVisibility();
+    setCutscene(false);
+    setTimeout(() => runSceneScript(), 0);
+  }
+
   async function toTanay() {
     setCutscene(true);
     await wait(300);
@@ -394,8 +487,11 @@
   // Beat 5. San Francisco de Malabon, 24 January 1905 [MACARIO,
   // reported]; the battle shown is ours. PLACEHOLDER, every line.
   // =============================================================
+  // Block 120: a push into the plaza, a wave at the edge of town and one
+  // at each stretch of road after it, the officers coming up behind.
   async function malabon() {
     setCutscene(true);
+    clearRun(PLAZA_FLAGS);
     await wait(300);
     await playDialogue([
       { speaker: "Montalan", text: "Ang garison, Pangulo. Nasa plaza ang mga baril nila." },
@@ -405,15 +501,15 @@
     await battle("sf", [
       { types: ["konstable", "konstable", "konstable", "konstable"],
         after: [{ speaker: "Villafuerte", text: "Pangulo! Sa kaliwa!" }] },
-      { types: ["konstable", "konstable", "konstable", "konstable"],
+      { at: PLAZA_X[0], types: ["konstable", "konstable", "konstable", "konstable"],
         after: [{ speaker: "De Vega", text: "Ako na rito!" }] },
-      { types: ["konstable", "amerikano", "sentinela", "amerikano"],
+      { at: PLAZA_X[1], types: ["konstable", "amerikano", "sentinela", "amerikano"],
         after: [
           { speaker: "Montalan", text: "Dumating ang mga Amerikano!" },
           { speaker: "Macario (sa isip)", text: "Isang bayan pa. Isang bayan pa na hindi nila hawak." },
         ] },
-      { types: ["amerikano", "sentinela", "amerikano"] },
-    ]);
+      { at: PLAZA_X[2], types: ["amerikano", "sentinela", "amerikano"] },
+    ], { go: "Sumulong sa plaza: pumunta sa kanan", follow: ["montalan-m", "villafuerte-m", "de-vega-m"] });
     setCutscene(true);
     await wait(400);
     await playDialogue([
@@ -765,8 +861,7 @@
   const DEV_POST = { a4_simula: true, a4_kautusan: true, a4_papuntaHimpilan: true };
   const DEV_PRESS = Object.assign({}, DEV_POST, { a4_kinuha: true, a4_himpilan: true });
   const DEV_TANAY = Object.assign({}, DEV_PRESS, { a4_saManipesto: true, a4_manipesto: true, a4_lumipat: true });
-  const DEV_MALABON = Object.assign({}, DEV_TANAY, { a4_saDimasalang: true, a4_ensayo: true, a4_tanay: true },
-    Object.fromEntries(TURO_FLAGS.map((k) => [k, true])));
+  const DEV_MALABON = Object.assign({}, DEV_TANAY, { a4_saDimasalang: true, a4_ensayo: true, a4_tanay: true });
   const DEV_RICE = Object.assign({}, DEV_MALABON, { a4_malabon: true });
   const DEV_GOMEZ = Object.assign({}, DEV_RICE, { a4_gutom: true, a4_bigas: true, a4_dumatingSiGomez: true },
     Object.fromEntries(BIGAS_FLAGS.map((k) => [k, true])));
@@ -808,18 +903,7 @@
 
   const oneLine = (speaker, text, extra) => Object.assign({ lines: [{ speaker, text }] }, extra || {});
 
-  // A fighter taught to pass as the Constabulary, for Tanay: the gift
-  // button. PLACEHOLDER, every line.
-  const rehearse = (n, lines) => ({
-    buttonLabel: "Ituro",
-    requiresFlag: "a4_saDimasalang",
-    givenFlag: TURO_FLAGS[n],
-    responseLines: lines,
-    onComplete() {
-      tick(TURO_FLAGS, TURO_FLAGS[n], "a4_ensayo", "Naituro");
-    },
-  });
-  // The same three, 1905: what they say through the act, and the rice
+  // The three fighters drilled for Tanay (drillTheFighters), 1905: what they say through the act, and the rice
   // shared out by talking to each (n/3). PLACEHOLDER, every line.
   const fighterSets = (speaker, n, before, waiting, rice, after) => [
     oneLine(speaker, before, { skipIfFlag: "a4_ensayo" }),
@@ -845,10 +929,13 @@
     // One chain, in story order, the quest log (Block 48).
     //
     //   1  the first presidential order, signed (signTheOrder).
-    //   2  the post raided for guns and uniforms; the alarm (theAlarm).
+    //   2  the post raided for guns and uniforms; the bell, and the
+    //      fight out to the fence (theAlarm, Block 120).
     //   3  the manifesto printed (printTheManifesto).
-    //   4  three taught to pass as the Constabulary (n/3); Tanay.
-    //   5  San Francisco de Malabon (malabon, fifteen in four waves).
+    //   4  three drilled to pass as the Constabulary (drillTheFighters,
+    //      Block 120); Tanay.
+    //   5  San Francisco de Malabon (malabon, fifteen in four waves,
+    //      pushing into the plaza, Block 120).
     //   6  the rice shared out (n/3).
     //   7  Gómez heard, and the terms.
     //   8  down into Manila: the Kutsero's carriage to Cavite.
@@ -863,7 +950,7 @@
       { id: "kautusan", label: "Lagdaan ang unang kautusan", flag: "a4_kautusan" },
       { id: "himpilan", label: "Kunin ang mga baril at uniporme", flag: "a4_himpilan" },
       { id: "manipesto", label: "Ilimbag ang manipesto", flag: "a4_manipesto" },
-      { id: "tanay", label: "Ihanda ang mga kawal", flag: "a4_ensayo", countFlags: TURO_FLAGS },
+      { id: "tanay", label: "Ihanda ang mga kawal", flag: "a4_ensayo" },
       { id: "malabon", label: "Salakayin ang San Francisco de Malabon", flag: "a4_malabon" },
       { id: "bigas", label: "Hatiin ang bigas", flag: "a4_bigas", countFlags: BIGAS_FLAGS },
       { id: "gomez", label: "Harapin si Dominador Gómez", flag: "a4_gomez" },
@@ -974,11 +1061,19 @@
         guards: POST_GUARDS.map((g, i) => ({
           type: "bantay-konstable", id: "konstable-bantay-" + (i + 1), shoots: false,
           x: g.beat[1], patrolFrom: g.beat[0], patrolTo: g.beat[1], facing: -1,
-          requiresFlag: "a4_kautusan", unlessFlag: "a4_kinuha",
+          // Block 120: on duty until the fight is over, since the alarm
+          // turns these three on him (rouseGuards); a reload mid-fight
+          // finds them at their posts and the alarm rouses them again.
+          requiresFlag: "a4_kautusan", unlessFlag: "a4_himpilan",
         })),
         hideSpots: POST_GUARDS.map((g) => ({ x: g.hide, width: 110,
           requiresFlag: "a4_kautusan", unlessFlag: "a4_kinuha" })),
-        checkpoints: reached(POST_CHECKPOINTS, "a4_bakuran", "a4_kautusan"),
+        // In route order: the run in, then the fight out (Block 120).
+        checkpoints: [
+          ...reached(POST_CHECKPOINTS, "a4_bakuran", "a4_kautusan"),
+          { x: STOREROOM_X + 150, flag: "a4_labas0" },
+          ...reached(FIGHT_OUT_X, "a4_labas", "a4_kinuha"),
+        ],
         pickups: [
           { id: "puso-hp-1", x: 700, type: "heart" },
           { id: "puso-hp-2", x: 1400, type: "heart" },
@@ -1047,6 +1142,16 @@
             ],
           },
           {
+            // Block 120. The line of three, drilled with E: no picture,
+            // a body to reach beside them.
+            id: "hanay", x: HANAY_X, label: "Hanay", scenery: true,
+            hiddenByFlag: "a4_ensayo",
+            interactLabel: "Sanayin",
+            interactIcon: "i-hand",
+            dialogueSets: [],
+            onInteract: drillTheFighters,
+          },
+          {
             id: "kawal-1", x: KAWAL_X[0], label: "Kawal", animation: KAWAL,
             dialogueSets: fighterSets("Kawal", 0,
               "Pangulo, hindi pa po ako nakasuot ng uniporme kahit kailan.",
@@ -1056,14 +1161,6 @@
                 { speaker: "Kawal", text: "Salamat, Pangulo." },
               ],
               "Salamat sa bigas, Pangulo."),
-            // PLACEHOLDER, every line.
-            gift: rehearse(0, [
-              { speaker: "Kawal", text: "Ganito po ba sumaludo ang Konstable?" },
-              { speaker: "Macario", text: "Masyadong mabagal." },
-              { speaker: "Macario", text: "Sumasaludo ang Konstable na parang may utang sa kanya ang buong mundo." },
-              { speaker: "Kawal", text: "...Ganito?" },
-              { speaker: "Macario", text: "'Yan." },
-            ]),
           },
           {
             id: "kawal-2", x: KAWAL_X[1], label: "Kawal", animation: KAWAL,
@@ -1075,12 +1172,6 @@
                 { speaker: "Macario", text: "Mamaya na ako." },
               ],
               "Mamaya na raw kayo, Pangulo. Lagi n'yo 'yang sinasabi."),
-            gift: rehearse(1, [
-              { speaker: "Kawal", text: "Pangulo, ang buhok namin. Walang Konstable na ganito kahaba ang buhok." },
-              { speaker: "Macario", text: "Itali, at itago sa ilalim ng sumbrero." },
-              { speaker: "Kawal", text: "Hindi po namin gugupitin?" },
-              { speaker: "Macario", text: "Hindi. Sumumpa tayo." },
-            ]),
           },
           {
             // The young fighter who offered to cut his hair at Morong
@@ -1094,11 +1185,6 @@
                 { speaker: "Macario", text: "Kumain ka. Mas kailangan ka ng bayan nang may lakas." },
               ],
               "Busog na po ako, Pangulo. Totoo."),
-            gift: rehearse(2, [
-              { speaker: "Batang Kawal", text: "Paano po kung kausapin ako ng bantay?" },
-              { speaker: "Macario", text: "Huwag kang magpaliwanag. Ang nagpapaliwanag, may itinatago." },
-              { speaker: "Macario (sa isip)", text: "Kay Maryam ko natutunan 'yan." },
-            ]),
           },
           {
             // Dominador Gómez, from 1906: the terms [MACARIO].
@@ -1147,6 +1233,7 @@
         backdrop: { src: "assets/backgrounds/act4/malabon.jpg" },
         dangerous: true,
         startX: 400,
+        checkpoints: reached(PLAZA_X, "a4_plaza", "a4_tanay"), // Block 120
         scripts: [
           { requiresFlag: "a4_tanay", doneFlag: "a4_malabon", x: 400, facing: 1, run: malabon },
         ],
@@ -1190,6 +1277,14 @@
         ],
         decorations: [
           { id: "anak-ni-isko", x: ISKO_X + 110, animation: ANAK_NI_ISKO, displayHeight: 80 },
+          // Block 120. The crowd, seen: townspeople, owed. The first answers
+          // to "Mga Tao".
+          ...TOWNSPEOPLE_X.map((x, i) => ({
+            id: "tao-" + (i + 1), x, animation: TAONG_BAYAN[i % 2], facing: i % 3 === 0 ? -1 : 1,
+            speakers: i === 0 ? ["Mga Tao"] : [],
+          })),
+          // The Kutsero's horse, with the carriage (Act I's art).
+          { id: "kabayo", x: KABAYO_X, animation: P.kabayo, displayHeight: 120 },
         ],
         npcs: [
           {
@@ -1266,8 +1361,9 @@
             ],
           },
           {
-            // The Kutsero, his first employer: the carriage to Cavite.
-            // PLACEHOLDER, every line.
+            // The Kutsero, his first employer: the carriage to Cavite,
+            // waiting where the crowd thins out (Block 120). PLACEHOLDER,
+            // every line.
             id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: P.kutsero,
             dialogueSets: [oneLine("Kutsero", "Ang batang nagsuklay ng kabayo ko. Tingnan mo ngayon.")],
             gift: {

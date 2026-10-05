@@ -1132,6 +1132,25 @@ html, body {
   display: none;
 }
 
+/* Block 120. A decoy (a scarecrow, the flag) flashes when an enemy's
+   dash hits it, and topples and greys when it falls; it stays down. The
+   two hit names alternate so the same flash plays again. */
+.decoy-hit-a .sprite { animation: decoy-hit-a 0.25s ease-out; }
+.decoy-hit-b .sprite { animation: decoy-hit-b 0.25s ease-out; }
+@keyframes decoy-hit-a { from { filter: brightness(2.2); } to { filter: none; } }
+@keyframes decoy-hit-b { from { filter: brightness(2.2); } to { filter: none; } }
+
+.decoy-down {
+  transform-origin: 50% 100%;
+  transform: rotate(-80deg);
+  opacity: 0.55;
+  transition: transform 0.4s cubic-bezier(0.5, 0, 0.9, 0.6), opacity 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .decoy-down { transition: none; }
+}
+
 .enemy-fall-right,
 .guard-fall-right {
   animation: enemy-fall-right 0.42s cubic-bezier(0.5, 0, 0.9, 0.6) forwards;
@@ -3867,6 +3886,64 @@ body.dialogue-top .dialogue-portrait {
   border-bottom: 7px solid rgba(42, 30, 20, 0.55);
   filter: blur(1.5px);
   transform: skewX(-18deg);
+}
+
+/* Block 120. The drill: a row of figures on the parade ground, one a
+   stroke, a head on a body; a good stroke raises the arm to the brow,
+   a bad one leaves him crooked. */
+.work-stage-drill #work-marks {
+  bottom: 14px;
+  width: 240px;
+  height: 70px;
+  margin-left: -120px;
+}
+
+.work-stage-drill #work-marks i {
+  width: 16px;
+  height: 40px;
+  margin-left: -8px;
+  border: 2px solid var(--px-ink);
+  border-radius: 2px;
+  background: #3f4f8a;
+  box-sizing: border-box;
+}
+
+.work-stage-drill #work-marks i::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -16px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--px-ink);
+  border-radius: 50%;
+  background: #c98f5e;
+}
+
+.work-stage-drill #work-marks i.work-salute-ok::after,
+.work-stage-drill #work-marks i.work-salute-bad::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 18px;
+  background: var(--px-ink);
+}
+
+.work-stage-drill #work-marks i.work-salute-ok::after {
+  right: -6px;
+  top: -14px;
+  transform: rotate(-30deg);
+}
+
+.work-stage-drill #work-marks i.work-salute-bad {
+  transform: rotate(-12deg);
+  background: #6b6f86;
+}
+
+.work-stage-drill #work-marks i.work-salute-bad::after {
+  right: -8px;
+  top: 4px;
+  transform: rotate(40deg);
 }
 
 #work-tool.work-platen {

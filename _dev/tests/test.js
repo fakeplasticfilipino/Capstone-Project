@@ -6525,6 +6525,117 @@ const visible = (page, sel) => page.evaluate((s) => {
   }
 
   // -------------------------------------------------------------
+  // BS. Block 120: decoys an enemy goes for when one is nearer than
+  // Macario (the scarecrows, the flag), a decoy that holds and loses the
+  // wave when it falls, a fight that moves (advanceTo), and the guards on
+  // duty roused into a fight.
+  // -------------------------------------------------------------
+  if (section("BS", "Decoys, a fight that moves, and guards roused (Block 120)")) {
+    const { ctx, page } = await enterTestRoom();
+    const d = await page.evaluate(() => new Promise((resolve) => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      // The test room has nobody in it: a body of straw, as a scene would
+      // build one (buildNpcs), to be the decoy.
+      const el = document.createElement("div");
+      el.className = "entity";
+      el.id = "npc-straw";
+      mountBody(el, 400, NPC_WIDTH);
+      world.appendChild(el);
+      actElements.push(el);
+      NPCS.push({ id: "straw", x: 400, label: "Straw", scenery: true, hidden: false, dialogueSets: [] });
+      const npc = NPCS.find((n) => n.id === "straw");
+      const side = npc.x + 900 < WORLD_WIDTH - 100 ? 1 : -1;
+      const centre = npc.x + NPC_WIDTH / 2;
+      posX = npc.x + side * 900; posY = floorHeightAt(posX); onGround = true;
+      health = maxHealth; invulnUntil = performance.now() + 1e9;
+      setDecoys([{ id: npc.id, hp: 2 }]);
+      spawnEnemies([{ id: "dc1", x: centre + side * 300 - ENEMY_WIDTH / 2, hp: 2, img: "assets/Kaaway.png" }]);
+      const e = ENEMIES[ENEMIES.length - 1];
+      const out = { npc: npc.id, target: null, hits: 0 };
+      const t0 = performance.now();
+      const timer = setInterval(() => {
+        if (e.target && !out.target) out.target = e.target.id;
+        out.hits = DECOYS[0].maxHp - DECOYS[0].hp;
+        if (DECOYS[0].down && !out.downAt) out.downAt = performance.now();
+        // A frame or two after it falls, so he has chosen again.
+        if ((out.downAt && performance.now() - out.downAt > 150) || performance.now() - t0 > 8000) {
+          clearInterval(timer);
+          out.down = DECOYS[0].down;
+          out.drawnDown = DECOYS[0].el.classList.contains("decoy-down");
+          out.health = health;
+          out.after = e.target ? e.target.id : null;
+          hitEnemy(e, 99);
+          setDecoys(null);
+          resolve(out);
+        }
+      }, 16);
+    }));
+    ok("an enemy nearer a decoy than Macario goes for it", d.target === d.npc, d);
+    ok("his dash hits it; two blows and it topples, and stays drawn down", d.down && d.hits === 2 && d.drawnDown, d);
+    ok("Macario, far off, was never touched; a fallen decoy is passed over", d.health === 3 && d.after === null, d);
+
+    const h = await page.evaluate(() => new Promise((resolve) => {
+      const npc = NPCS.find((n) => n.id === "straw");
+      const side = npc.x + 900 < WORLD_WIDTH - 100 ? 1 : -1;
+      const centre = npc.x + NPC_WIDTH / 2;
+      posX = npc.x + side * 900; posY = floorHeightAt(posX); onGround = true;
+      document.getElementById("npc-straw").classList.remove("decoy-down");
+      setDecoys([{ id: npc.id, hp: 1, holds: true, fallText: "Bumagsak!" }]);
+      let respawns = 0;
+      const real = window.respawnInScene;
+      window.respawnInScene = () => { respawns++; real(); };
+      spawnEnemies([{ id: "dc2", x: centre + side * 300 - ENEMY_WIDTH / 2, hp: 2, img: "assets/Kaaway.png" }]);
+      const e = ENEMIES[ENEMIES.length - 1];
+      const t0 = performance.now();
+      const timer = setInterval(() => {
+        if (respawns || performance.now() - t0 > 6000) {
+          clearInterval(timer);
+          window.respawnInScene = real;
+          const out = { respawns, standing: !DECOYS[0].down && DECOYS[0].hp === 1,
+            drawnUp: !DECOYS[0].el.classList.contains("decoy-down"),
+            enemyBack: Math.round(e.pos) === Math.round(e.x), x: Math.round(posX), want: respawnX(currentScene) };
+          hitEnemy(e, 99);
+          setDecoys(null);
+          resolve(out);
+        }
+      }, 16);
+    }));
+    ok("a decoy that holds and falls loses the wave: Macario back, the enemy back, the decoy standing again",
+       h.respawns === 1 && h.standing && h.drawnUp && h.enemyBack && h.x === h.want, h);
+
+    const a = await page.evaluate(async () => {
+      await new Promise((r) => setTimeout(r, 700)); // the fight's end beat
+      posX = 600; posY = floorHeightAt(posX); onGround = true;
+      let done = false;
+      advanceTo(900, "Sumulong: pumunta sa kanan").then(() => { done = true; });
+      await new Promise((r) => setTimeout(r, 200));
+      const shown = document.querySelector("#quest-list li.quest-way");
+      const out = { line: shown && shown.textContent, waiting: !done };
+      posX = 900;
+      await new Promise((r) => setTimeout(r, 200));
+      out.done = done;
+      out.gone = !document.querySelector("#quest-list li.quest-way");
+      return out;
+    });
+    ok("a fight that moves says where to at the top of the log, and goes on once he is there",
+       a.line === "Sumulong: pumunta sa kanan" && a.waiting && a.done && a.gone, a);
+
+    const g = await page.evaluate(() => {
+      const guard = GUARDS[0];
+      guard.disabled = false; guard.hostile = false; guard.fight = false; guard.alert = 0;
+      const before = enemiesAlive();
+      rouseGuards();
+      const out = { before, fight: guard.fight, hostile: guard.hostile, shoots: guard.shoots, alert: guard.alert,
+        alive: enemiesAlive() };
+      guard.disabled = true;
+      return out;
+    });
+    ok("the guards on duty roused: hostile, firing, and counted in the fight",
+       !g.before && g.fight && g.hostile && g.shoots && g.alert === 1 && g.alive, g);
+    await ctx.close();
+  }
+
+  // -------------------------------------------------------------
   // BR. The Scan list's engine fixes (TRACKER.md, 2 Oct 2026): one save
   // at a time (S9), a script that throws (S8), the shop button only with
   // something for sale (S6), and ?dev=1 with a student signed in (S5).
