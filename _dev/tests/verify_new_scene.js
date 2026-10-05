@@ -2435,6 +2435,224 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await ctx.close();
   }
 
+  if (part("act4", "Act IV end to end")) {
+    // ---------------------------------------------------------------
+    // Block 119. Act IV, end to end, as a guest from its first story
+    // point: the first order, the post and its alarm, the manifesto, the
+    // costume for Tanay (whether he went left unsaid), Malabon, the
+    // hunger, Gómez and the terms, Manila, the reception, Bilibid, the
+    // court, the window, and the last morning, walked by the student. No
+    // line is ever said behind black.
+    // ---------------------------------------------------------------
+    console.log("\nAct IV (Block 119)");
+    const { ctx, page } = await newPage(browser, { session: null });
+    // Every black card seen, for the whole act.
+    const seenCards = () => page.evaluate(() => window.__cards || []);
+    await jumpTo(page, "4:simula");
+    await watchBlack(page);
+    await page.evaluate(() => {
+      window.__cards = [];
+      setInterval(() => {
+        const el = document.getElementById("intertitle");
+        if (el && !el.classList.contains("hidden")) {
+          const t = [...el.querySelectorAll(".intertitle-line")].map((x) => x.textContent).join(" | ");
+          if (t && !window.__cards.includes(t)) window.__cards.push(t);
+        }
+      }, 100);
+    });
+    ok("Act IV opens at Morong, March 1903",
+       await waitIntertitle(page, true, 5000) &&
+       JSON.stringify((await intertitle(page)).lines) === '["Marso 18, 1903","Kabundukan ng Morong"]' &&
+       await page.evaluate(() => currentSceneId === "morong"));
+    await waitIntertitle(page, false, 15000);
+    let c = await readLines(page, 3, 3000);
+    await settle(page);
+    ok("the first presidential order, ready to sign",
+       c.lines.includes("Macario (sa isip): \"Kautusan ng Pangulo, Bilang 1.\"") &&
+       await stepIs(page, "Lagdaan ang unang kautusan"), c.lines);
+    await press(page, 570);
+    c = await readLines(page, 7, 3000);
+    ok("signed; Montalan wants guns, and uniforms: \"Makikita mo rin\"",
+       c.lines.includes("Macario: Makikita mo rin.") && await page.evaluate(() => state.flags.a4_kautusan === true), c.lines);
+    ok("on black to the Constabulary's post, at night", await waitForScene(page, "himpilan", 30000) &&
+       await page.evaluate(() => document.getElementById("skyline").classList.contains("night-tint")));
+    c = await readLines(page, 2);
+    await settle(page);
+    ok("three of the Constabulary on watch, the task the storeroom",
+       c.lines[0] === "Macario (sa isip): Tatlong bantay sa bakuran." &&
+       (await on(page, "konstable-bantay-")) === 3 && await stepIs(page, "Kunin ang mga baril at uniporme"), c.lines);
+    await quiet(page);
+    await walkTo(page, 1650);
+    await walkTo(page, 950);
+    ok("the run's points are reached as he passes them",
+       await page.evaluate(() => state.flags.a4_bakuran1 && state.flags.a4_bakuran2));
+    await press(page, 240);
+    c = await readLines(page, 2);
+    ok("rifles and uniforms: one more costume for the trunk",
+       c.lines.includes("Macario (sa isip): Isang kasuotan pa para sa baul."), c.lines);
+    ok("the alarm, the fight out, and on black to Morong in April 1904",
+       await playOn(page, "currentSceneId === 'morong' && state.flags.a4_himpilan === true", 90000));
+    const hp = await page.evaluate(() => [...window.__fought].filter((id) => id.startsWith("hp-")).length);
+    ok("fifteen of the Constabulary in four waves at the post", hp === 15, hp);
+    c = await readLines(page, 5, 3000);
+    await playOn(page, "state.flags.a4_saManipesto === true && !cutscenePlaying", 20000);
+    await settle(page);
+    ok("the Manlilimbag's half a press: \"Sasagutin namin sa papel namin\"",
+       c.lines.includes("Macario: Tinawag nila kaming bandido sa batas nila. Sasagutin namin sa papel namin.") &&
+       await stepIs(page, "Ilimbag ang manipesto"), c.lines);
+    await press(page, 1590);
+    for (let t = 0; t < 4000 && !(await workState(page)).up; t += 100) await page.waitForTimeout(100);
+    ok("the press is the work game, once", (await workState(page)).title === "Palimbagan");
+    await workRound(page, true);
+    c = await readLines(page, 2, 3000);
+    ok("the manifesto printed: every right to fight for their independence",
+       c.lines[0] === "Macario (sa isip): \"...may buong karapatan ang mga Pilipino na ipaglaban ang kanilang kalayaan.\"", c.lines);
+    ok("on black to Di-Masalang, August 1904", await waitForScene(page, "dimasalang", 30000));
+    c = await readLines(page, 7, 3000);
+    await playOn(page, "state.flags.a4_saDimasalang === true && !cutscenePlaying", 20000);
+    await settle(page);
+    ok("Tanay: his last performance, and three to teach (0/3)",
+       c.lines.includes("Macario: Ang huli kong dula, siguro.") && await stepIs(page, "Ihanda ang mga kawal (0/3)"), c.lines);
+    const taught = [];
+    for (const x of [1390, 1590, 1790]) {
+      await walkTo(page, x);
+      const label = await gift(page);
+      taught.push({ label, lines: (await readLines(page, 5, 1200)).lines });
+    }
+    ok("each taught a part of the Constabulary: the salute, the hair kept, saying nothing",
+       taught.every((t) => t.label === "Ituro") &&
+       taught[1].lines.includes("Macario: Hindi. Sumumpa tayo.") &&
+       taught[2].lines.includes("Macario (sa isip): Kay Maryam ko natutunan 'yan."), taught);
+    ok("Tanay on black, and San Francisco de Malabon", await playOn(page, "currentSceneId === 'malabon'", 40000));
+    const tanay = await seenCards();
+    ok("Tanay taken; whether he was there, the record does not say",
+       tanay.some((x) => /Hindi sinasabi ng mga tala kung kasama si Sakay\./.test(x)), tanay);
+    ok("the battle at Malabon, and back to Di-Masalang in 1905",
+       await playOn(page, "currentSceneId === 'dimasalang' && state.flags.a4_malabon === true", 90000));
+    const sf = await page.evaluate(() => [...window.__fought].filter((id) => id.startsWith("sf-")).length);
+    ok("fifteen in four waves at Malabon", sf === 15, sf);
+    c = await readLines(page, 8, 3000);
+    await playOn(page, "state.flags.a4_gutom === true && !cutscenePlaying", 20000);
+    await settle(page);
+    ok("the camps heard of from a woman of Cavite; one sack for three",
+       c.lines.includes("Taga-Cavite: Inipon kami ng mga Amerikano. Lahat ng taga-baryo, sa loob ng bakod, may bantay.") &&
+       await stepIs(page, "Hatiin ang bigas (0/3)"), c.lines);
+    const rice = [];
+    for (const x of [1390, 1590, 1790]) {
+      await press(page, x);
+      rice.push((await readLines(page, 3, 1200)).lines);
+    }
+    ok("the rice shared out; he does not eat",
+       rice[2].includes("Macario: Kumain ka. Mas kailangan ka ng bayan nang may lakas."), rice);
+    ok("1906: Gómez is coming, sent by Ide", await playOn(page, "state.flags.a4_dumatingSiGomez === true && !cutscenePlaying", 30000));
+    await settle(page);
+    ok("the task: face Gómez", await stepIs(page, "Harapin si Dominador Gómez"));
+    await press(page, 2190);
+    c = await readLines(page, 17, 3000);
+    ok("the Assembly, and his three terms: amnesty, firearms, leave to go abroad",
+       c.lines.includes("Gómez: Kayo na lang ang natitira, Pangulo.") &&
+       c.lines.includes("Macario: Amnestiya sa lahat ng tauhan ko. Karapatang magdala ng baril.") &&
+       c.lines.includes("Macario: At pahintulot na makaalis ng bansa, ako at ang aking mga opisyal.") &&
+       c.lines.includes("Macario: Kung para sa Asamblea... bababa ako."), c.lines);
+    ok("down into Manila, July 1906", await playOn(page, "currentSceneId === 'tondo'", 30000));
+    c = await readLines(page, 4);
+    await settle(page);
+    ok("the crowd knows him by his hair", c.lines.includes("Mga Tao: Ang haba ng buhok!") &&
+       await stepIs(page, "Bumaba sa Maynila"), c.lines);
+    await walkTo(page, 11090);
+    await page.keyboard.press("e");
+    c = await readLines(page, 11);
+    ok("Isko and his son Andres; he looked for Nanay and nobody knows",
+       c.lines.includes("Isko: Wala po. Walang nakaaalam.") && c.lines.includes("Isko: Kaya nga po hindi ako tumigil."), c.lines);
+    await walkTo(page, 3390);
+    ok("the Kutsero's button reads Sumakay", (await gift(page)) === "Sumakay");
+    await readLines(page, 3);
+    ok("the carriage to Cavite", await playOn(page, "currentSceneId === 'sala'", 30000));
+    c = await readLines(page, 6, 3000);
+    await playOn(page, "state.flags.a4_saSala === true && !cutscenePlaying", 20000);
+    await settle(page);
+    ok("Van Schaick's reception, in English and then in Tagalog",
+       c.lines[0] === "Van Schaick: Mr. Sakay. Welcome to Cavite." &&
+       c.lines[1] === "Macario (sa isip): Maligayang pagdating daw sa Cavite." &&
+       await stepIs(page, "Dumalo sa salu-salo"), c.lines);
+    await press(page, 570);
+    c = await readLines(page, 12, 3000);
+    const cut = c.lines.indexOf("Macario: At sa araw na—");
+    ok("seized at the toast, at its peak", cut > 0 && c.lines[cut + 1] === "Van Schaick: Now!" &&
+       c.lines.includes("Macario (sa isip): Ngayon, sila ang gumanap."), c.lines);
+    ok("Bilibid", await waitForScene(page, "selda", 30000) &&
+       await page.evaluate(() => document.getElementById("ground-tiles").dataset.floor === "bato"));
+    await readLines(page, 2);
+    await playOn(page, "state.flags.a4_saSelda === true && !cutscenePlaying", 20000);
+    await settle(page);
+    ok("the task: Montalan", await stepIs(page, "Kausapin si Montalan"));
+    await walkTo(page, 790);
+    await page.keyboard.press("e");
+    c = await readLines(page, 4);
+    ok("\"Sa papel nila, amnestiya. Sa batas nila, bandido.\"",
+       c.lines.includes("Macario: Sa papel nila, amnestiya. Sa batas nila, bandido."), c.lines);
+    ok("the court in Cavite", await waitForScene(page, "hukuman", 30000));
+    c = await readLines(page, 5, 3000);
+    await playOn(page, "state.flags.a4_saHukuman === true && !cutscenePlaying", 20000);
+    await settle(page);
+    ok("charged with bandolerismo", c.lines.includes("Hukom: You are charged with bandolerismo. Brigandage.") &&
+       await stepIs(page, "Harapin ang hukuman"), c.lines);
+    await press(page, 990);
+    c = await readLines(page, 3);
+    ok("not guilty, noted", c.lines[0] === "Macario: Hindi ako nagkasala.", c.lines);
+    c = await readLines(page, 6, 6000);
+    ok("the plea changed (why, the record does not say), and death for four",
+       c.lines.includes("Hukom: Macario Sakay. Julian Montalan. León Villafuerte. Lucio de Vega.") &&
+       (await seenCards()).some((x) => /Hindi sinasabi ng mga tala kung bakit\./.test(x)), c.lines);
+    ok("1907, the cell again", await playOn(page, "currentSceneId === 'selda' && state.flags.a4_saSelda1907 === true && !cutscenePlaying", 30000));
+    await settle(page);
+    ok("the task: the window", await stepIs(page, "Dumungaw sa bintana"));
+    await press(page, 1090);
+    c = await readLines(page, 9, 3000);
+    ok("the Assembly elected without him; the hair, still uncut",
+       c.lines.includes("Macario (sa isip): Bumoboto sila. At narito ako.") &&
+       c.lines.includes("Bantay: Hindi pa malaya ang bayan."), c.lines);
+    c = await readLines(page, 5, 3000);
+    ok("the last night: the father answered",
+       c.lines.includes("Macario (sa isip): Umalis si Tatay isang gabi at hindi na bumalik. Hinintay mo siya."), c.lines);
+    ok("the yard of Old Bilibid", await waitForScene(page, "patyo", 30000));
+    await readLines(page, 4);
+    await playOn(page, "state.flags.a4_saPatyo === true && !cutscenePlaying", 20000);
+    await settle(page);
+    ok("the task: he walks it himself", await stepIs(page, "Lumakad sa huling umaga") &&
+       await page.evaluate(() => !state.flags.a4_saBitayan));
+    await walkTo(page, 1750);
+    c = await readLines(page, 6, 3000);
+    ok("his last statement: never bandits, the revolutionary force that defended the Philippines",
+       c.lines.includes("Macario: Kami ay mga kasapi ng hukbong rebolusyonaryo na nagtanggol sa ating Inang Bayan, ang Pilipinas.") &&
+       c.lines[c.lines.length - 1] === "Macario: Paalam! Mabuhay ang Pilipinas!", c.lines);
+    ok("the hanging, the hair, the Assembly 33 days later, Wakas, and every step of Act IV done",
+       await playOn(page, "state.flags.a4_wakas === true", 60000) &&
+       await page.evaluate(() => Acts.countDone(4) === ACT_4.objectives.length));
+    const end = await seenCards();
+    ok("  the cards say it plainly",
+       end.some((x) => /Binitay si Macario Sakay sa Lumang Bilibid/.test(x)) &&
+       end.some((x) => /Tatlumpu't tatlong araw matapos siyang mamatay\./.test(x)) &&
+       end.some((x) => /Wakas ng Ikaapat na Yugto/.test(x)), end);
+    // The last act: a guest is shown the end over the black and sent
+    // back to the title (Block 116), never left on a black screen.
+    let shown = false;
+    for (let t2 = 0; t2 < 8000 && !shown; t2 += 100) {
+      shown = await page.evaluate(() => {
+        const el = document.getElementById("act-screen");
+        const r = el.getBoundingClientRect();
+        const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return !el.classList.contains("hidden") && Boolean(top && el.contains(top)) &&
+          document.getElementById("act-screen-title").textContent === "Wakas";
+      });
+      if (!shown) await page.waitForTimeout(100);
+    }
+    ok("  then the guest sees Wakas over the black, with the way back to the title", shown);
+    const unseen = await page.evaluate(() => window.__unseen);
+    ok("no line of Act IV was ever said behind black", unseen.length === 0, unseen);
+    await ctx.close();
+  }
+
   if (part("jumps", "every story point of ?dev=1, and its floor")) {
     // ---------------------------------------------------------------
     // Block 108. The story points a tester can start from (?dev=1).

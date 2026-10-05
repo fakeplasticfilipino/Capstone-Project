@@ -5031,6 +5031,57 @@ the proponent says otherwise.
 Checked: the content check, STORY.md, ART.md, every story point, and
 Act III end to end as a guest; both suites in full (1,217 checks).
 
+## Block 119: Act IV, 1903 to 1907
+
+On 5 Oct 2026 the proponent sent Act IV's sources labelled as Act III's
+were ([CONTEXT], [MACARIO], [INSERT]), with two corrections: Sakay's
+terms were amnesty, the right to carry firearms and leave for himself and
+his officers to go abroad; and his forces took Tanay, the sources not
+saying whether he led it. The plan was written in the conversation and
+approved; three choices were the proponent's: Montalan's and
+Villafuerte's later fates left out, Gómez's part in the trap left
+unsaid, the stub's title kept (Ang Mapait na Ani).
+
+The shape. A tragedy whose spine is who gets the last word: the law
+called him a bandit in Act III, and the act ends on his own statement
+that they were not, the last line spoken in the game. Every thread the
+earlier acts left is paid or left open on purpose (STORY.md, Threads
+left open): the hair is never cut; the disguise is his last performance
+at Tanay and is turned on him at Cavite, a reception staged for him, as
+Aguinaldo's captors came disguised in Act III; Isko kept looking for
+Nanay and nobody knows; the father who went out one night and never came
+back, the first line of the game, is answered on the last night. The
+blow lands at the peak as in Acts II and III: the toast is cut off
+mid-word. Nothing is softened: the hanging is stated plainly on black,
+and the Assembly he came down for opens thirty-three days after.
+
+[CONTEXT] kept out of his sight. The reconcentration is told by a woman
+of Cavite who escaped it; Ide's sending Gómez by the messenger; the
+Supreme Court and the election by a guard at the cell; the Assembly's
+opening on black after his death. Tanay is two black cards that say
+plainly that the record does not say whether he was there, and he is
+shown only planning the disguise (the proponent's insert). Why the plea
+changed to guilty is not in the sources, so a card says so rather than
+inventing a reason.
+
+What it is built from. Nothing new in the engine but a floor: bato,
+flagstones for Bilibid, drawn by game.js as the other floors are. The
+post's guards are a new catalogue type, bantay-konstable (a guard, on
+the konstable's owed picture), so a stealth run and the battle that
+follows are the existing mechanics. The last morning is a checkpoint
+with script: true: the student walks Macario to the scaffold, nothing
+walks for him, and the statement plays where he stops. The last card is
+left black (keepBlack): the end of the game should not lift back onto a
+man standing on a scaffold; the post-test, or a guest's end screen,
+comes up over it (checked). Sixteen pictures are owed, none made or
+borrowed; the Batang Kawal keeps the look Act III gave him.
+
+Checked: the content check, STORY.md, ART.md (fifty owed), every story
+point of all four acts with its floor, Act IV end to end as a guest
+(forty-nine checks, the two battles counted, no line said behind black,
+the end screen over the black), and test.js's sections that knew Act IV
+as a stub.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

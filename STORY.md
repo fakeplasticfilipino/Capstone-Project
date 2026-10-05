@@ -47,7 +47,8 @@ ours. Since Block 93 their spelling and grammar are corrected, at their
 request, with the wording and the meaning kept (po rather than 'ho,
 'Nay, rin and rito after a vowel, 'yung, no "Okay").
 
-Last updated: 5 Oct 2026, Block 118 (Act III revised against the
+Last updated: 5 Oct 2026, Block 119 (Act IV, 1903 to 1907, beat by
+beat, every line +, each beat tagged). Before that, Block 118 (Act III revised against the
 proponent's labelled sources: Santa Mesa heard of, not shown; the
 Partido Nacionalista's founding and Macario its Secretary-General, with
 Poblete; the Sedition Law read from a notice; President and
@@ -161,8 +162,30 @@ Americans, Kawit, and Spain selling the country for twenty million
 dollars, a price he sets against the cedula, and his promise to Nanay
 still unkept.
 
-Acts III and IV are not written. Their content files are registered
-stubs (content/act3.js, act4.js) and hold no story.
+Act III, Ang Republika sa Lilim (Blocks 117, 118), 1899 to 1902. Santa
+Mesa reaches him in the hills as news, and he fights on. In Tondo under
+American guard he learns Jacinto is dead, and Maryam dresses him as a
+taho seller to reach the barbershop, where he cuts an American's hair
+and teaches Bonifacio's creed to the three who once refused him. Isko
+surrenders to go home to his child. Macario is at the founding of the
+Partido Nacionalista and its Secretary-General, until the Sedition Law
+makes asking for freedom a crime. Taken at an oath, released under the
+amnesty, he founds the Republika ng Katagalugan at Morong, its President
+and Generalissimo, raises its flag, and swears not to cut his hair until
+the country is free. The Brigandage Act calls him a bandit.
+
+Act IV, Ang Mapait na Ani (Block 119), 1903 to 1907. He governs from the
+mountains, raids a post for guns and uniforms, prints a manifesto, and
+plans one last performance: his men take Tanay in the Constabulary's
+uniforms (whether he went, the record does not say). After Malabon the
+Americans herd the villages into camps and his army starves. Dominador
+Gómez brings the promise of an Assembly that can open only when the last
+fighter comes down; Macario names his terms and comes down to a crowd
+that knows him by his hair. At a reception in Cavite he is seized at the
+toast. Tried for bandolerismo, sentenced to death, he hears the Assembly
+elected through the bars of Bilibid. On 13 September 1907 he walks to
+the scaffold and says that they were never bandits. The Assembly opens
+thirty-three days later. Nobody ever learns what became of his mother.
 
 ## Places
 
@@ -2311,6 +2334,608 @@ teacher's paper replaces its own slot.
   + [HINT] Ang Batas sa Sedisyon: Noong Nobyembre 4, 1901, ipinasa ng Komisyon ng Pilipinas ang Batas Bilang 292. Ginawa nitong krimen ang pagsusulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, at ang pagsapi sa mga lihim na samahan.
   + [HINT] Ang Republika ng Katagalugan: Noong 1902, itinatag ni Macario Sakay ang Republika ng Katagalugan sa kabundukan ng Morong, at ginawang saligang batas ang mga aral ni Andres Bonifacio. Noong Nobyembre 12, 1902, ipinasa ng mga Amerikano ang Batas sa Bandolerismo: tinawag nilang bandido ang sinumang patuloy na lumalaban.
 
+## Act IV, beat by beat
+
+Block 119, from the proponent's labelled sources (1903 to 1907), which
+are the source of truth. Each beat is tagged as Act III's are: [CONTEXT]
+happened in the world without Macario, who only hears of it secondhand
+(news, a guard, a black card); [MACARIO] is his, from the sources
+(reported where the sources only report it); [INSERT] is invented for the
+story. Every line is ours, marked + here and PLACEHOLDER in
+content/act4.js, until the proponents accept or replace it. Every flag
+starts with a4_. The Americans speak English, each line given in Tagalog
+after it, as in Act III.
+
+The spine: who gets the last word. The law calls him a bandit; he
+answers with orders, a manifesto and a republic, and at the end with his
+last statement, the last line anyone speaks in the game. A tragedy: the
+Republic at its height; the turn, when the people who feed it are
+starved; the climax, his choice to come down for an Assembly; the
+reversal, a reception that is a play staged for him (he lived by the
+disguise, and now the enemy performs); the court, the cell, the morning;
+and the Assembly opening thirty-three days after he dies. The threads
+paid: the hair he swore not to cut is never cut; Tanay is his last
+costume; Isko searched for Nanay and never found her, and her fate stays
+unknown; the father who went out one night and never came back, the
+first thing said in the game, is answered on his son's last night.
+
+At the proponent's word (5 Oct 2026): the sources do not say whether
+Macario was at Tanay, and the game does not either; whether Gómez knew
+of the trap is left unsaid; Montalan's and Villafuerte's later fates are
+left out. The title stays Ang Mapait na Ani.
+
+Places, in order: morong (Act III's camp, 1903 and 1904, 3200 wide),
+himpilan (a post of the Constabulary, at night, 2600), dimasalang (the
+camp in the Di-Masalang mountains, 1904 to 1906, 3200), malabon (San
+Francisco de Malabon, Cavite, 3200), tondo (Act I's street, July 1906),
+sala (the hall in Cavite, one room), selda (a cell in Bilibid, one room,
+1906 and 1907), hukuman (the court in Cavite, one room) and patyo (the
+yard of Old Bilibid, 2400). Every painting of Act IV is owed (ART.md):
+until drawn, each is a dark wall with its file name on it. Bilibid's
+floor is stone, drawn by the engine.
+
+New people, owed as placeholder boxes: Dominador Gómez, Colonel Louis
+Van Schaick, León Villafuerte, Lucio de Vega, the judge (Hukom), a guard
+of Bilibid (Bantay), a woman of Cavite (Taga-Cavite), Isko's son Andres,
+and the Katagalugan's fighters (Kawal). Carreón, Montalan, the
+Manlilimbag, the messenger, the Batang Kawal, Isko, Maryam, the
+Mananahi, the Kutsero and the three who took the pamphlets return. The
+fighters are the enemy catalogue's konstable, bantay-konstable (the
+Constabulary on guard with a rifle), amerikano and sentinela, their
+pictures owed.
+
+### 1. The first order
+
+[MACARIO] On 18 March 1903 Presidential Order No. 1; on 5 May Military
+Circular No. 1; his army organized. [INSERT] The words. morong, plays by
+itself the first time a student enters Act IV.
+
+  + [BLACK] Marso 18, 1903
+  + [BLACK] Kabundukan ng Morong
+
+  + Carreón: Pangulo, handa na ang unang kautusan. Lagda n'yo na lang ang kulang.
+  + Macario (sa isip): "Kautusan ng Pangulo, Bilang 1."
+  + Macario (sa isip): Noon, ako ang tumatanggap ng utos. Ngayon, pangalan ko na ang nasa ibaba.
+
+The table (x 640), "Lagdaan":
+
+  + Macario (sa isip): Macario Sakay, Pangulo ng Republika ng Katagalugan.
+
+Completes: Lagdaan ang unang kautusan. Then, by itself:
+
+  + Montalan: Kalahati ng mga tauhan, walang baril, Pangulo.
+  + Macario: Kung gayon, kukuha tayo.
+  + Montalan: May himpilan ng Konstabularya sa bayan sa ibaba. Puno ng riple, at ng uniporme.
+  + Macario: Uniporme?
+  + Montalan: Para saan ang uniporme, Pangulo?
+  + Macario: Makikita mo rin.
+
+  + [BLACK] Mayo 5, 1903. Inilabas ni Sakay ang Sirkular Militar Bilang 1.
+  + [BLACK] Inayos niya ang kanyang hukbo.
+  + [BLACK] Isang himpilan ng Konstabularya, sa gabi.
+
+"Makikita mo rin" is paid at Tanay. Talked to, before and after:
+
+  + Carreón: Ang lagda n'yo, Pangulo. Nasa mesa.
+  + Carreón: Isang republika, may sarili nang kautusan.
+  + Carreón: Papel laban sa batas nila. Gusto ko 'yan, Pangulo.
+  + Montalan: Kulang tayo sa baril, Pangulo.
+  + Montalan: May riple na tayo. At uniporme. Para saan pa rin, hindi ko alam.
+
+### 2. The post
+
+[MACARIO, reported] In 1903 his forces raid for guns and uniforms.
+[INSERT] The post, the run and the fight. himpilan, at night, in from the
+right. On arrival:
+
+  + Macario (sa isip): Tatlong bantay sa bakuran.
+  + Macario (sa isip): Nasa dulo ang bodega. Huwag akong makita.
+
+Three of the Constabulary on watch, each with a crate in his beat; they
+catch, not shoot, and a catch puts him back at the last point he passed.
+The storeroom (x 150), "Kunin":
+
+  + Macario (sa isip): Mga riple. At mga uniporme ng Konstabularya.
+  + Macario (sa isip): Isang kasuotan pa para sa baul.
+
+  + [BLACK] Tumunog ang kampana ng himpilan.
+
+  + Montalan: Pangulo! Gising na ang buong himpilan!
+  + Macario: Dalhin ang mga riple. Lalaban tayo palabas!
+
+The first big fight: fifteen of the Constabulary in four waves
+(konstable, hand to hand; a bantay-konstable, a rifle, in each of the
+last three), three hearts on the field. Between waves:
+
+  + Montalan: Marami pa sa loob!
+  + Macario (sa isip): Kapwa Pilipino na naman ang kaharap ko.
+  + Montalan: Malapit na ang bakod!
+
+Then:
+
+  + Montalan: Nakalabas tayo! Dala ang lahat!
+  + Macario: Bukas, babasahin ng Maynila na ninakawan sila ng mga bandido.
+
+  + [BLACK] Abril 5, 1904
+  + [BLACK] Kabundukan ng Morong
+
+Completes: Kunin ang mga baril at uniporme.
+
+### 3. The manifesto
+
+[MACARIO] On 5 April 1904 he issues a manifesto: Filipinos have every
+right to fight for their independence. [INSERT] The Manlilimbag, from
+Acts II and III, and the half a press he saved. morong, by itself.
+
+  + Manlilimbag: Pangulo! Dinala ko ang lumang palimbagan. Kalahati lang ang naisalba ko.
+  + Macario: Sapat na ang kalahati.
+  + Carreón: Ano ang ilalagay natin, Pangulo?
+  + Macario: Na may buong karapatan ang bawat Pilipino na ipaglaban ang kanyang kalayaan.
+  + Macario: Tinawag nila kaming bandido sa batas nila. Sasagutin namin sa papel namin.
+
+The press (x 1500), "Ilimbag": the work game, once, as at Act II's press
+(Palimbagan). Afterwards:
+
+  + Macario (sa isip): "...may buong karapatan ang mga Pilipino na ipaglaban ang kanilang kalayaan."
+  + Manlilimbag: Gaya ng Kalayaan noon, Pangulo. Sa sariling papel.
+
+  + [BLACK] Agosto 1904. Inilipat ni Sakay ang kanyang himpilan sa kabundukan ng Di-Masalang.
+
+Completes: Ilimbag ang manipesto. Talked to, and the press again:
+
+  + Manlilimbag: Kalahating palimbagan, Pangulo. Pero buong salita.
+  + Macario (sa isip): Nailimbag na. Nasa mga bayan na ito.
+
+### 4. The last performance
+
+[MACARIO, reported] Late in 1904 his forces take the town of Tanay,
+disguised in stolen Constabulary uniforms; the sources do not say
+whether Macario was there. [INSERT] He plans the disguise himself: one
+last performance from his stage days. dimasalang, by itself.
+
+  + Montalan: Tanay. May himpilan ng Konstabularya roon, at maraming baril.
+  + Montalan: Pero makikita nila tayong paakyat bago pa tayo makalapit.
+  + Macario: Kaya hindi tayo papasok bilang mga kawal ng Republika.
+  + Macario: Papasok tayo bilang Konstabularya.
+  + Montalan: ...Ang mga uniporme. Ito pala ang ibig mong sabihin.
+  + Montalan: Isang dula?
+  + Macario: Ang huli kong dula, siguro.
+
+Three fighters in the stolen uniforms, each a button, "Ituro"
+("Naituro (n/3)"):
+
+  + Kawal: Ganito po ba sumaludo ang Konstable?
+  + Macario: Masyadong mabagal.
+  + Macario: Sumasaludo ang Konstable na parang may utang sa kanya ang buong mundo.
+  + Kawal: ...Ganito?
+  + Macario: 'Yan.
+
+  + Kawal: Pangulo, ang buhok namin. Walang Konstable na ganito kahaba ang buhok.
+  + Macario: Itali, at itago sa ilalim ng sumbrero.
+  + Kawal: Hindi po namin gugupitin?
+  + Macario: Hindi. Sumumpa tayo.
+
+The Batang Kawal of Act III, who offered to cut his hair:
+
+  + Batang Kawal: Paano po kung kausapin ako ng bantay?
+  + Macario: Huwag kang magpaliwanag. Ang nagpapaliwanag, may itinatago.
+  + Macario (sa isip): Kay Maryam ko natutunan 'yan.
+
+"Ang nagmamadali, may itinatago" was Maryam's in Act III. With the
+third, by itself:
+
+  + Montalan: Handa na sila, Pangulo.
+  + Macario: Sa Tanay, walang palakpakan. Kung tama ang pagganap, walang makakapansin.
+
+  + [BLACK] Huling bahagi ng 1904
+  + [BLACK] Pumasok sa bayan ng Tanay ang mga tauhan ni Sakay, suot ang mga ninakaw na uniporme ng Konstabularya.
+  + [BLACK] Nakuha nila ang bayan.
+  + [BLACK] Hindi sinasabi ng mga tala kung kasama si Sakay.
+  + [BLACK] Enero 24, 1905
+  + [BLACK] San Francisco de Malabon, Cavite
+
+Completes: Ihanda ang mga kawal (3/3). Talked to, before:
+
+  + Kawal: Pangulo, hindi pa po ako nakasuot ng uniporme kahit kailan.
+  + Kawal: Ang uniporme, Pangulo... masikip.
+  + Batang Kawal: Ano po ang sasabihin ko kung tanungin nila ako?
+  + Montalan: Turuan mo sila, Pangulo. Hindi sila artista.
+
+### 5. San Francisco de Malabon
+
+[MACARIO, reported] On 24 January 1905 his forces raid San Francisco de
+Malabon, Cavite. [INSERT] The battle shown; Villafuerte and de Vega
+beside him, so the sentence of beat 11 lands. malabon, by itself.
+
+  + Montalan: Ang garison, Pangulo. Nasa plaza ang mga baril nila.
+  + Macario: Pasok!
+
+The second big fight: fifteen in four waves (the Constabulary first,
+Americans and a rifle among them in the last two), three hearts on the
+field. Between waves:
+
+  + Villafuerte: Pangulo! Sa kaliwa!
+  + De Vega: Ako na rito!
+  + Montalan: Dumating ang mga Amerikano!
+  + Macario (sa isip): Isang bayan pa. Isang bayan pa na hindi nila hawak.
+
+Then:
+
+  + De Vega: Kanila na naman ang plaza bukas, Pangulo.
+  + Macario: Pero ngayong gabi, atin.
+
+  + [BLACK] Kinabukasan, nabasa sa Maynila: sinalakay ng mga bandido ang San Francisco de Malabon.
+  + [BLACK] 1905
+  + [BLACK] Kabundukan ng Di-Masalang
+
+Completes: Salakayin ang San Francisco de Malabon.
+
+### 6. Hunger
+
+[CONTEXT] In 1905 the Americans herd the villagers of Cavite and
+Batangas into guarded camps (reconcentration); the people who fed and hid
+his army go hungry. Macario is not in the camps: he hears of them from a
+woman of Cavite [INSERT], and feels them as the food runs out.
+dimasalang, by itself.
+
+  + Taga-Cavite: Ito na lang po ang naitakas ko, Pangulo.
+  + Macario: Nasaan ang iba? Ang mga dating nagdadala sa amin?
+  + Taga-Cavite: Inipon kami ng mga Amerikano. Lahat ng taga-baryo, sa loob ng bakod, may bantay.
+  + Taga-Cavite: Ang hindi pumasok, kalaban daw.
+  + Taga-Cavite: Wala nang magtatanim. Wala nang magdadala sa inyo.
+  + Macario: ...
+  + Macario (sa isip): Hindi kami ang tinamaan nila. Ang mga nagpapakain sa amin.
+  + Macario (sa isip): Isang sako. Tatlong kawal na hindi pa kumakain.
+
+  + (a notice) Hatiin ang bigas sa mga kawal.
+
+The three fighters of Tanay, talked to ("Nabigyan ng bigas (n/3)"):
+
+  + Macario: Kunin mo ito.
+  + Kawal: Salamat, Pangulo.
+
+  + Kawal: Kayo po, Pangulo? Kumain na kayo?
+  + Macario: Mamaya na ako.
+
+  + Batang Kawal: Pangulo... hindi na kayo kumakain, 'di po ba?
+  + Macario: Kumain ka. Mas kailangan ka ng bayan nang may lakas.
+
+Completes: Hatiin ang bigas (3/3). Talked to, between Tanay and the rice,
+and after:
+
+  + Kawal: Sumasaludo pa rin po ako sa salamin ng ilog.
+  + Kawal: Nakatago pa rin po sa sumbrero ang buhok ko.
+  + Batang Kawal: Hindi na po ako nagpapaliwanag, Pangulo.
+  + Kawal: Salamat sa bigas, Pangulo.
+  + Kawal: Mamaya na raw kayo, Pangulo. Lagi n'yo 'yang sinasabi.
+  + Batang Kawal: Busog na po ako, Pangulo. Totoo.
+  + Montalan: Wala nang dumarating mula sa mga baryo, Pangulo.
+
+### 7. Gómez
+
+[CONTEXT] In 1906 the Governor-General, Henry Clay Ide, authorizes
+Dominador Gómez, a labour leader, to negotiate; Macario hears it from
+the messenger. [MACARIO] Gómez comes to the mountains: the Assembly the
+Americans promised can open only once the fighting stops, and Macario is
+the last thing in its way. He agrees to come down on terms: amnesty for
+his men, the right to carry firearms, and leave for himself and his
+officers to go abroad. dimasalang, by itself.
+
+  + [BLACK] 1906
+
+  + Tagapagbalita: Pangulo! May darating. Si Dominador Gómez, ang lider ng mga manggagawa sa Maynila.
+  + Tagapagbalita: Pinahintulutan daw siya ng Gobernador-Heneral na si Ide na makipag-usap sa inyo.
+  + Montalan: Sugo ng Amerikano.
+  + Macario: Pilipinong sugo ng Amerikano. Pakinggan natin.
+
+    (Gómez walks up the slope. Talked to:)
+
+  + Gómez: Heneral Sakay. Malayo ang inakyat ko.
+  + Macario: Pangulo. Hindi Heneral. May Republika kami rito.
+  + Gómez: Pangulo, kung gayon.
+  + Gómez: Nangako ang mga Amerikano ng isang Asamblea. Mga Pilipinong boboto, mga Pilipinong gagawa ng batas.
+  + Gómez: Pero hindi nila ito bubuksan habang may lumalaban pa sa bundok.
+  + Gómez: Kayo na lang ang natitira, Pangulo.
+  + Macario: ...
+  + Montalan: At ang kapalit? Bitayan?
+  + Gómez: Amnestiya. Para sa lahat ng tauhan ninyo.
+  + Macario (sa isip): Isang Asamblea. Mga Pilipinong susulat ng batas sa sariling bayan.
+  + Macario (sa isip): Noon, batas nila ang tumawag sa amin na bandido.
+  + Macario: May mga kondisyon ako.
+  + Macario: Amnestiya sa lahat ng tauhan ko. Karapatang magdala ng baril.
+  + Macario: At pahintulot na makaalis ng bansa, ako at ang aking mga opisyal.
+  + Gómez: Dadalhin ko ang mga ito sa Gobernador-Heneral.
+  + Macario: ...
+  + Macario: Kung para sa Asamblea... bababa ako.
+
+Completes: Harapin si Dominador Gómez. Then, by itself:
+
+  + Montalan: Hindi ako nagtitiwala sa kanila, Pangulo.
+  + Macario: Hindi rin ako. Pero kung ako na lang ang nakaharang, aalis ako sa daan.
+
+  + [BLACK] Hulyo 14, 1906
+  + [BLACK] Maynila
+
+Talked to, after:
+
+  + Montalan: Sugo ng Amerikano, Pangulo. Mag-ingat ka sa sasabihin niya.
+  + Montalan: Kung bababa ka, bababa kami.
+  + Gómez: Dadalhin ko ang mga kondisyon ninyo, Pangulo.
+
+Whether Gómez knew what would happen in Cavite is debated; the game does
+not say.
+
+### 8. Into Manila
+
+[MACARIO] On 14 July 1906 he comes down from the mountains and enters
+Manila. [INSERT] The crowd, and those who knew him. tondo, by day, from
+the east end (x 12500). On arrival:
+
+  + Macario (sa isip): Apat na taon akong nasa bundok.
+  + Mga Tao: Si Sakay! Si Sakay 'yan!
+  + Mga Tao: Ang haba ng buhok!
+  + Macario (sa isip): Makikilala nila ako kahit sa malayo. 'Yon ang sinabi ko.
+
+That last is his thought at Morong, paid. Isko (x 11000), with his son
+Andres (owed), once:
+
+  + Isko: Pangulo!
+  + Macario: Isko. ...Francisco Reyes, 'di ba?
+  + Isko: Isko pa rin po, sa inyo.
+  + Isko: Ito po si Andres. Pitong taon na.
+  + Macario: Andres.
+  + Isko: Gaya ng Supremo.
+  + Isko: Hinanap ko po si Nanay ninyo. Sa Tondo, sa Malabon, sa mga ospital.
+  + Isko: Wala po. Walang nakaaalam.
+  + Macario: ...
+  + Macario: Sinabi ko sa'yong huwag kang mangako.
+  + Isko: Kaya nga po hindi ako tumigil.
+
+and then:
+
+  + Isko: Mag-ingat po kayo sa Cavite, Pangulo.
+
+Maryam (x 13250), once:
+
+  + Maryam: Macario! Ang haba ng buhok mo.
+  + Maryam: Para kang Sultan sa dula natin.
+  + Macario: Bumaba na ako, Maryam.
+  + Maryam: Tapos na ba ang dula?
+  + Macario: Ang huling eksena, sa Cavite. May salu-salo raw.
+  + Maryam: ...
+  + Maryam: Mag-ingat ka sa mga eksenang hindi mo isinulat.
+
+and then:
+
+  + Maryam: Mag-ingat ka, Macario.
+
+The three who took the pamphlets, in the crowd:
+
+  + Mangingisda: Pangulo! Bumaba na raw kayo!
+  + Tabakera: Kung ganyan kahaba ang buhok, ikaw nga 'yan.
+  + Karpintero: Sabi ko sa'yo, kilala na kita, Macario.
+
+The Mananahi (x 6400), once, and then:
+
+  + Mananahi: Iho... nakita kita.
+  + Mananahi: Sana nakita ka rin niya.
+  + Mananahi: Nandito lang ako, iho.
+
+The Kutsero (x 3300), his first employer, where he stood in Act I:
+
+  + Kutsero: Ang batang nagsuklay ng kabayo ko. Tingnan mo ngayon.
+
+His button, "Sumakay":
+
+  + Kutsero: Macario? Ikaw nga.
+  + Kutsero: Sumakay ka. Wala nang bayad.
+  + Macario: Salamat po.
+
+  + [BLACK] Hulyo 17, 1906
+  + [BLACK] Cavite
+
+Completes: Bumaba sa Maynila.
+
+### 9. The reception
+
+[MACARIO] On 17 July 1906 he and his officers attend a reception in
+Cavite hosted by Colonel Louis Van Schaick, and are seized and disarmed
+there. [INSERT] The words, and the toast broken at its peak, as the knock
+broke Nanay's plea in Act II and the raid the oath in Act III. sala, by
+itself.
+
+  + Van Schaick: Mr. Sakay. Welcome to Cavite.
+  + Macario (sa isip): Maligayang pagdating daw sa Cavite.
+  + Van Schaick: Please. Enjoy the music. You are our guests.
+  + Macario (sa isip): Mga panauhin daw kami.
+  + Montalan (pabulong): Masyadong mabait, Pangulo.
+  + Macario (pabulong): Ngumiti ka. Dula ito para sa kanila.
+
+  + (a notice) Itaas ang baso sa mesa.
+
+Talked to:
+
+  + Van Schaick: Relax, Mr. Sakay. The war is over.
+  + Macario (sa isip): Magpahinga raw ako. Tapos na raw ang digmaan.
+  + Montalan (pabulong): Hindi ko gusto ang dami ng sundalo sa labas, Pangulo.
+
+The table (x 640), "Itaas ang baso":
+
+  + Van Schaick: A toast. To peace.
+  + Macario (sa isip): Sa kapayapaan daw.
+  + Macario: Sa kapayapaan... at sa Asamblea.
+  + Macario: At sa araw na—
+  + Van Schaick: Now!
+
+    (Soldiers come in from both doors.)
+
+  + Sundalong Amerikano: Hands up! Drop your weapons!
+  + Macario (sa isip): Itaas daw ang kamay. Ibaba ang sandata.
+  + De Vega: Pangulo!
+  + Macario: Huwag! ...Huwag.
+  + Macario (sa isip): Ilang ulit akong nagbalatkayo para malusutan sila.
+  + Macario (sa isip): Ngayon, sila ang gumanap.
+
+  + [BLACK] Hulyo 17, 1906. Dinakip at dinisarmahan si Sakay at ang kanyang mga opisyal sa salu-salo.
+  + [BLACK] Hulyo 20, 1906. Dinala siya sa Maynila at ikinulong sa Bilibid.
+
+Completes: Dumalo sa salu-salo. The soldiers who took Aguinaldo came as
+revolutionaries (Act III); now the trap is a party.
+
+### 10. Bilibid
+
+[MACARIO, reported] Imprisoned at Bilibid. [INSERT] Montalan in the next
+cell. selda, by itself.
+
+  + Macario (sa isip): Bilibid. Muli.
+  + Macario (sa isip): Amnestiya ang ipinangako. Rehas ang ibinigay.
+
+Montalan, talked to:
+
+  + Montalan: Amnestiya raw, Sakay.
+  + Macario: Sa papel nila, amnestiya. Sa batas nila, bandido.
+  + Montalan: At ang Asamblea?
+  + Macario: Bubuksan nila. Wala na kasing nakaharang.
+
+  + [BLACK] Setyembre 17, 1906
+  + [BLACK] Hukuman ng Unang Dulugan, Cavite
+
+Completes: Kausapin si Montalan. The window before 1907, and Montalan
+after:
+
+  + Macario (sa isip): Sa labas, ang Maynila. Hindi ko na abot.
+  + Montalan: Hindi nila tayo mapapatahimik, Sakay. Kahit dito.
+
+### 11. The court
+
+[MACARIO] On 17 September 1906 he is arraigned in the Court of First
+Instance of Cavite for bandolerismo and pleads not guilty; on 21
+September he and his co-defendants change the plea to guilty; before the
+end of 1906 the court sentences him to death, with Julian Montalan, León
+Villafuerte and Lucio de Vega. Why the plea changed the record does not
+say, and the game does not either. [INSERT] The judge's words. hukuman,
+by itself.
+
+  + Hukom: Macario Sakay.
+  + Hukom: You are charged with bandolerismo. Brigandage.
+  + Macario (sa isip): Bandolerismo. Pagiging bandido.
+  + Hukom: How do you plead?
+  + Macario (sa isip): Ano raw ang sagot ko.
+
+The judge (x 900), "Sumagot":
+
+  + Macario: Hindi ako nagkasala.
+  + Hukom: Not guilty. So noted.
+  + Macario (sa isip): Hindi raw nagkasala. Itinala.
+
+  + [BLACK] Setyembre 21, 1906
+  + [BLACK] Binago ni Sakay at ng kanyang mga kasama ang kanilang sagot: nagkasala.
+  + [BLACK] Hindi sinasabi ng mga tala kung bakit.
+  + [BLACK] Bago matapos ang 1906
+
+  + Hukom: The court finds the accused guilty of bandolerismo.
+  + Macario (sa isip): Nagkasala raw kami ng bandolerismo.
+  + Hukom: Macario Sakay. Julian Montalan. León Villafuerte. Lucio de Vega.
+  + Hukom: Sentenced to death by hanging.
+  + Macario (sa isip): Kamatayan. Bibitayin kaming apat.
+  + Macario: ...
+
+  + [BLACK] Hulyo 26, 1907
+  + [BLACK] Bilibid
+
+Completes: Harapin ang hukuman. The Brigandage Act of Act III is the law
+he is tried under.
+
+### 12. The window
+
+[CONTEXT] On 26 July 1907 the Supreme Court upholds the sentences; on 30
+July the first elections for the Philippine Assembly. Macario is in his
+cell for both and hears of them from a guard. [INSERT] The guard, the
+hair, the last night. selda, by itself.
+
+  + Bantay: Sakay. Galing sa Korte Suprema.
+  + Bantay: Pinagtibay ang hatol. Bibitayin kayo.
+  + De Vega: Wala na palang tutubos.
+  + Macario: ...
+
+De Vega, talked to:
+
+  + De Vega: Kasama mo ako hanggang dulo, Pangulo.
+
+The window (x 1000), "Dumungaw":
+
+  + [BLACK] Hulyo 30, 1907
+
+  + Bantay: Bumoboto na raw sila sa labas. Ang unang halalan ng Asamblea.
+  + Macario (sa isip): Ang Asamblea. Para rito ako bumaba.
+  + Macario (sa isip): Bumoboto sila. At narito ako.
+  + De Vega: Sulit ba, Pangulo?
+  + Macario: Kung may Pilipinong susulat ng batas para sa sariling bayan... oo.
+  + Bantay: Ang haba ng buhok mo, Sakay.
+  + Macario: Sumumpa ako. Hindi ko ito gugupitin hangga't hindi malaya ang bayan.
+  + Bantay: Hindi pa malaya ang bayan.
+  + Macario: Hindi pa nga.
+
+Completes: Dumungaw sa bintana. Then, by itself: the father, the first
+thing said in the game ("inaantay mo pa din tatay mo?"), answered.
+
+  + [BLACK] Setyembre 12, 1907
+  + [BLACK] Ang huling gabi
+
+  + Macario (sa isip): 'Nay...
+  + Macario (sa isip): Umalis si Tatay isang gabi at hindi na bumalik. Hinintay mo siya.
+  + Macario (sa isip): Hinintay mo rin ako.
+  + Macario (sa isip): ...
+  + Macario (sa isip): Patawad po.
+
+  + [BLACK] Setyembre 13, 1907
+
+### 13. The last morning
+
+[MACARIO] On 13 September 1907, at about 8:30 in the morning, he is
+hanged at Old Bilibid Prison in Santa Cruz, Manila, with Lucio de Vega.
+In his final statement he says that he and his men were never bandits but
+members of the revolutionary force that defended the Philippines: the
+substance is documented, the wording varies by translation, and this
+Tagalog is ours. [CONTEXT] On 16 October 1907, thirty-three days after,
+the Philippine Assembly opens; on black. patyo, by itself.
+
+  + Macario (sa isip): Alas-otso y medya ng umaga.
+  + Bantay: Oras na, Sakay.
+  + Macario (sa isip): Ilang beses akong umakyat sa entablado.
+  + Macario (sa isip): Ito ang huli.
+
+The student walks him across the yard to the scaffold (x 1750, reached);
+nothing walks for him. Completes, at the end: Lumakad sa huling umaga.
+
+  + Macario: Darating ang kamatayan sa ating lahat, maaga man o huli.
+  + Macario: Kaya haharapin ko nang mahinahon ang Panginoong Maykapal.
+  + Macario: Ngunit nais kong sabihin sa inyo: hindi kami mga bandido at magnanakaw, gaya ng paratang sa amin ng mga Amerikano.
+  + Macario: Kami ay mga kasapi ng hukbong rebolusyonaryo na nagtanggol sa ating Inang Bayan, ang Pilipinas.
+  + Macario: Paalam! Mabuhay ang Republika, at nawa'y isilang ang ating kalayaan sa hinaharap!
+  + Macario: Paalam! Mabuhay ang Pilipinas!
+
+  + [BLACK] Setyembre 13, 1907. Alas-otso y medya ng umaga.
+  + [BLACK] Binitay si Macario Sakay sa Lumang Bilibid, Santa Cruz, Maynila, kasama si Lucio de Vega.
+  + [BLACK] Hindi niya ginupit ang kanyang buhok.
+  + [BLACK] Oktubre 16, 1907. Binuksan ang Asamblea ng Pilipinas.
+  + [BLACK] Tatlumpu't tatlong araw matapos siyang mamatay.
+  + [BLACK] Hindi nalaman kailanman kung ano ang nangyari sa kanyang ina.
+  + [BLACK] Wakas ng Ikaapat na Yugto
+
+The screen stays black after the last card: Act IV is finished, and the
+post-test runs (a guest goes back to the title).
+
+### Act IV's Talaan
+
+Three papers of facts of the game's own, on the street in July 1906
+(fixed: x 11800 on the road; x 9600 and x 6900 at jump height); a
+teacher's paper replaces its own slot.
+
+  + [HINT] Ang Manipesto ng 1904: Noong Abril 5, 1904, naglabas si Macario Sakay ng manipesto mula sa kabundukan. Ipinahayag nito na may buong karapatan ang mga Pilipino na ipaglaban ang kanilang kalayaan.
+  + [HINT] Ang Rekonsentrasyon: Noong 1905, inipon ng mga Amerikano ang mga taga-baryo ng Cavite at Batangas sa mga kampong may bantay. Nagutom ang mga taga-baryo, at naubos ang pagkain at tulong para sa mga lumalaban sa bundok.
+  + [HINT] Ang Asamblea ng Pilipinas: Noong Hulyo 30, 1907, bumoto ang mga Pilipino sa unang halalan para sa Asamblea ng Pilipinas. Binuksan ito noong Oktubre 16, 1907. Ito ang asambleang ipinangako nang pumayag si Sakay na bumaba mula sa bundok noong 1906.
+
 ## Threads left open
 
 What the story has set up and not yet paid off, for whoever writes the
@@ -2363,6 +2988,13 @@ next passage. None of these is a promise; they are what is there.
     Maryam. Knows now who the two men were; the theatre shut; "Wala na
       akong ibang kapareha sa entablado."
 
+    Act IV's (Block 119): the game's end. Paid: the hair (never cut),
+      the disguise (Tanay; the reception turned on him), Isko's promise
+      (he searched, and nobody knows), the father (answered on the last
+      night), "bandido" (answered by the last statement). Left open on
+      purpose: Nanay's fate, whether Sakay was at Tanay, whether Gómez
+      knew, why the plea changed, Montalan's and Villafuerte's fates.
+
 ## Open questions for the proponents
 
 Act I. The proponents accepted it on 4 Oct 2026 (Block 113): every line
@@ -2407,6 +3039,19 @@ Act III (Block 117). Every + line: accept, rewrite or replace. Also:
     Carreón, Montalan, Álvarez and Poblete speak words of ours; check
       them.
     The Talaan's three papers of Act III.
+
+Act IV (Block 119). Every + line: accept, rewrite or replace. Also:
+
+    Sakay's last statement in our Tagalog: the substance is documented,
+      the wording varies by translation; check it against the source.
+    Gómez's, Van Schaick's and the judge's words, ours.
+    The post raided in 1903 and its fight, the Malabon battle shown, the
+      woman of Cavite, the rice, the crowd in Manila, Isko's son Andres,
+      the Kutsero's carriage, the toast, the guard of Bilibid: inserts.
+    Sakay is shown planning Tanay's disguise (the proponent's insert);
+      the cards say the record does not say whether he went.
+    The names ours gave: the Taga-Cavite, the Bantay, Andres.
+    The Talaan's three papers of Act IV.
 
 Act I's play (Block 113, the proponent's direction): the moro-moro now
 ends with the Moorish kingdom's fall and the princess taking the

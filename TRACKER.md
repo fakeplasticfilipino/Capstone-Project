@@ -9,7 +9,15 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 5 Oct 2026, after Block 118. Block 118: Act III revised
+Last updated: 5 Oct 2026, after Block 119. Block 119: Act IV written,
+1903 to 1907, end to end, from the proponent's labelled sources: the
+first presidential order, a Constabulary post raided for guns and
+uniforms, the manifesto, the costume for Tanay (whether he went left
+unsaid), San Francisco de Malabon, the reconcentration heard of and the
+rice shared out, Gómez and the terms, Manila, the reception in Cavite,
+Bilibid, the court, the Assembly elected without him, and the last
+morning, walked by the student; two battles of fifteen; a stone floor
+for Bilibid. The game now has all four acts. Block 118: Act III revised
 against the proponent's labelled sources (the source of truth): Santa
 Mesa heard of from a runner, not shown, the opening fight a patrol in
 the hills; Macario at the Partido Nacionalista's founding and its
@@ -168,7 +176,25 @@ Sedition Law read from a notice, the capture at an oath, the Republika
 ng Katagalugan with its flag, Macario its President and Generalissimo,
 and the vow not to cut their hair. Nanay's fate stays unknown. Its
 paintings, its new people, its flag and its fighters are owed (ART.md):
-placeholders until drawn. Act IV is a registered stub.
+placeholders until drawn.
+
+Act IV, Ang Mapait na Ani (Block 119), 1903 to 1907, from the
+proponent's labelled sources: nine places (Morong again, a Constabulary
+post at night, the Di-Masalang camp, San Francisco de Malabon, Act I's
+street in July 1906, the hall in Cavite, a cell in Bilibid, the court in
+Cavite, Bilibid's yard), thirteen steps in one chain, every line ours (+
+in STORY.md, PLACEHOLDER in content/act4.js), every beat tagged. Two
+battles of fifteen (the post's alarm, Malabon), a stealth run, the
+press's work game, two counted steps (three taught for Tanay, the rice
+shared), Gómez and the three terms, the crowd in Manila (Isko and his
+son, Maryam, the Kutsero's carriage), the toast broken at the
+reception, the plea and the sentence, the election heard through the
+bars, the father answered on the last night, and the walk to the
+scaffold, which the student makes. His last statement is the last line
+of the game; the last card stays black. At the proponent's word the
+game does not say whether he was at Tanay, whether Gómez knew, or what
+became of Montalan and Villafuerte. Nanay's fate stays unknown. Its
+paintings and new people are owed (ART.md).
 
 Enemies are content: content/enemies.js describes each kind
 once (bantay, kawal, the three siga of the opening, Act II's sundalo and
@@ -186,9 +212,9 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): thirty-four pictures, Act I's three (the
+in code. Still owed (ART.md): fifty pictures, Act I's three (the
 Barbero's chair, the Mananahi's sewing table, the pulungan's painting),
-Act II's fifteen and Act III's sixteen. No picture is made or borrowed
+Act II's fifteen, Act III's sixteen and Act IV's sixteen. No picture is made or borrowed
 for what is not drawn (CLAUDE.md, Conventions).
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
@@ -229,8 +255,27 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026. Open:
 
-    Nothing open: Blocks 113 to 118 reported fine on the phone on 5
-    Oct 2026.
+    Block 119, Act IV. ?dev=1 lists thirteen points under Ang Mapait
+      na Ani; each opens its place with its task in the log. From Ang
+      simula: "Marso 18, 1903" at Morong, sign the order at the table;
+      Montalan, "Makikita mo rin"; the post at night, three guards, the
+      storeroom at the left end, the bell and fifteen in four waves;
+      April 1904, the Manlilimbag's press (the work game, once);
+      Di-Masalang, three taught for Tanay (the hair kept under the hat),
+      the cards saying the record does not say whether he went; Malabon,
+      fifteen; the woman of Cavite and the rice; 1906, Gómez and the three
+      terms; Manila, the crowd, Isko and his son, the Kutsero's
+      "Sumakay"; the toast broken at "At sa araw na—"; Bilibid (a stone
+      floor), Montalan; the court, "Hindi ako nagkasala", the plea
+      changed on black, the sentence; 1907, the window, the election
+      heard; the last night; the yard: walk him to the scaffold yourself,
+      his statement, the cards, "Wakas ng Ikaapat na Yugto", and the
+      screen stays black under the end card (a guest: Wakas, back to the
+      title). New people and places are dashed boxes or dark walls:
+      expected. Failure: Macario anywhere a [CONTEXT] event happens, an
+      English line with no Tagalog after it, a black screen with nothing
+      happening (before the end), the scaffold reached with nothing
+      said, or the scene coming back after the last card.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -248,26 +293,31 @@ Act II's three Talaan papers, against the source book (STORY.md, Open
 questions). And Act III's (Block 117) the same way: every + line, the
 Americans' English, Bonifacio's three precepts as taught, Aguinaldo's
 proclamation and the Sedition Law in our words, the names ours gave and
-the Talaan's papers (STORY.md, Open questions).
+the Talaan's papers (STORY.md, Open questions). And Act IV's (Block
+119): every + line, Sakay's last statement in our Tagalog, Gómez's and
+Van Schaick's words, the names ours gave and the Talaan's papers
+(STORY.md, Open questions).
 
 4. The test questions: not ours. Teachers write and change them on the
 dashboard (CLAUDE.md, Standing decisions); nothing here tracks them.
 
-5. Art from the artist: ART.md's Owed list, thirty-four pictures since
-Block 118 (Act I's three: the pulungan's painting, the Mananahi's
+5. Art from the artist: ART.md's Owed list, fifty pictures since
+Block 119 (Act I's three: the pulungan's painting, the Mananahi's
 sewing table and the Barbero's chair; Act II's fifteen: seven
 paintings, Isko, Jacinto, Bonifacio, a printer, a messenger, the press,
 the straw and the scarecrow; Act III's thirteen: five paintings,
 Álvarez, Poblete, Carreón, Montalan, a teacher, an American officer,
 the American in the barber's chair, the stranger in Nanay's house, the
-Katagalugan's flag, the American soldier and the Constabulary). PNGs with transparency; each goes through ART.md's steps.
+Katagalugan's flag, the American soldier and the Constabulary; Act
+IV's sixteen: seven paintings, Gómez, Van Schaick, Villafuerte, de
+Vega, the judge, a Bilibid guard, a woman of Cavite, Isko's son and the
+Katagalugan's fighter). PNGs with transparency; each goes through ART.md's steps.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
 
-6. Then the remaining polish, the pilot, and Act IV against the source
-material, starting from STORY.md, Threads left open (Act III's: the
-hair, Nanay, Isko, the Barbero, the informer, "bandido").
+6. Then the remaining polish and the pilot. All four acts are written
+(Block 119).
 
 7. The Scan list (2 Oct 2026, below): worked in Block 110. Left: run
 reset_test_accounts.sql before a full-flow test (S37; it deletes the
@@ -370,8 +420,8 @@ recollection.
 
 Data collection covers Act I. Act II is written (Block 113), but its
 lines wait on the proponents and it has no questions of its own yet (the
-teacher's); Act III is written the same way (Block 117); Act IV is a
-stub. Act I quality and the
+teacher's); Acts III and IV are written the same way (Blocks 117,
+119). Act I quality and the
 assessment instrument therefore outrank Act II content entirely.
 
 Freeze the software roughly ten days before the defense, to leave room
@@ -474,7 +524,9 @@ fourteen objectives on one street, in the entablado and in the
 pulungan, and completes into its post-test (Block 80). Act II is
 playable end to end, fourteen objectives in eight places (Block 113),
 its art owed. Act III is playable end to end, fourteen objectives in
-six places (Block 117), its art owed. Act IV is a registered stub.
+six places (Block 117), its art owed. Act IV is playable end to end,
+thirteen objectives in nine places (Block 119), its art owed; its last
+card ends the game.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health, equipment,
 cosmetic rewards. (IN PROGRESS) All four are built and tested against
@@ -496,12 +548,12 @@ The paper specifies seventeen.
 | Requirement | Status |
 |---|---|
 | User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest: Acts I and II with nothing saved and no tests (Block 116). A student can change the password in settings |
-| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. Acts I, II and III playable to their ends, fourteen objectives each, completing into their post-tests (an act with no questions skips its tests with a notice); a guest plays on from act to act, as far as Act III; Act IV is a stub |
+| Chapter Progression | (PARTIAL) All four acts registered and unlock in order. All four acts playable to their ends (fourteen objectives in Acts I to III, thirteen in Act IV), completing into their post-tests (an act with no questions skips its tests with a notice); a guest plays on from act to act to the end of Act IV |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
 | Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; shooting guards are covered by the harness fixture |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's haircut (Block 114), tutorials that wait for the task, NPCs that open the shop |
-| Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. Acts I to III use them; Act IV has none |
+| Narrative Delivery | (PARTIAL) Built: scene scripts that play by themselves, black cards, arrival dialogues. All four acts use them |
 | Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113 |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (fixture; none ships) |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one item, the stage clothes (Block 82, worn, slower detection while still); the rest verified against the fixture |
@@ -729,17 +781,21 @@ machine, the assessment module.
         Macario its Secretary-General, the Sedition Law from a notice,
         President and Generalissimo and the flag; beats tagged; no
         borrowed or made art (the tint removed, fighters placeholders)
+    119 Act IV, 1903 to 1907, end to end, from the proponent's labelled
+        sources: the order, the post, the manifesto, Tanay, Malabon, the
+        hunger, Gómez, Manila, the reception, Bilibid, the court, the
+        window, the last morning; two battles of fifteen; the stone floor
 
 ## Blocks remaining
 
 Act I's lines and history checked by the proponents. (COMPLETE, 4 Oct
 2026)
 
-Act II's and Act III's lines checked by the proponents (Next action,
-3). (NOT STARTED)
+Act II's, Act III's and Act IV's lines checked by the proponents (Next
+action, 3). (NOT STARTED)
 
 Act II written (Block 113). (COMPLETE) Act III written (Block 117).
-(COMPLETE) Act IV against the source material. (NOT STARTED) An act without questions skips its
+(COMPLETE) Act IV written (Block 119). (COMPLETE) An act without questions skips its
 tests with a notice, which is deliberate; the questions are the
 teacher's.
 

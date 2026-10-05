@@ -411,9 +411,9 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("legacy 'empty' room falls back to the first scene",
        (await page.evaluate(() => currentRoom)) === "tondo", await page.evaluate(() => currentRoom));
     ok("acts II-IV still registered", await page.evaluate(() => [2,3,4].every(n => !!Acts.getAct(n))));
-    // Block 113: Act II is written; Block 117: Act III too. IV is a stub.
-    ok("Act III has its fourteen objectives, and Act IV still none (Block 117)",
-       await page.evaluate(() => Acts.objectivesFor(3).length === 14 && Acts.objectivesFor(4).length === 0));
+    // Block 113: Act II is written; Block 117: Act III; Block 119: Act IV.
+    ok("Act III has its fourteen objectives, and Act IV its thirteen (Block 119)",
+       await page.evaluate(() => Acts.objectivesFor(3).length === 14 && Acts.objectivesFor(4).length === 13));
     await ctx.close();
   }
 

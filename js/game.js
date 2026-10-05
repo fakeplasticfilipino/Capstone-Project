@@ -357,6 +357,23 @@ const FLOORS = {
     }
     return [32, 32];
   },
+  // Block 119. Flagstones, for Bilibid: grey stones in two staggered
+  // rows, dark mortar under each, lit along the top, a little wear.
+  bato(px, rnd) {
+    px(0, 0, 64, 32, "#5f5b55");
+    const joints = [[0, 22, 44], [11, 33, 55]];
+    for (let r = 0; r < 2; r++) {
+      const y = r * 16;
+      px(0, y, 64, 1, "#7a756d");
+      px(0, y + 15, 64, 1, "#2f2c28");
+      for (const j of joints[r]) {
+        px(j, y + 1, 1, 14, "#2f2c28");
+        px(j + 1, y + 1, 1, 14, "#77726a");
+      }
+      for (let g = 0; g < 10; g++) px(Math.floor(rnd() * 64), y + 2 + Math.floor(rnd() * 12), 1, 1, rnd() < 0.5 ? "#524e49" : "#6c6760");
+    }
+    return [64, 32];
+  },
 };
 
 // The CSS for a floor: { image, size }, built once each. The seeded

@@ -172,4 +172,9 @@ window.ENEMY_TYPES = {
   T.amerikano = { kind: "enemy", hp: 2, animation: owed("amerikano") };
   T.sentinela = { kind: "guard", shoots: true, hp: 2, speed: 1.3, detectRadius: 260, animation: owed("amerikano") };
   T.konstable = { kind: "enemy", hp: 2, animation: owed("konstable") };
+  // Block 119. The Constabulary on guard with a rifle, Act IV: on watch
+  // at a post (catching rather than shooting where a scene says shoots:
+  // false), and the rifles in a battle. The konstable's picture.
+  T["bantay-konstable"] = { kind: "guard", shoots: true, hp: 2, speed: 1.3, detectRadius: 260,
+    animation: owed("konstable") };
 })();

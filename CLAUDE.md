@@ -287,8 +287,13 @@ speak short, plain English (the proponent's choice, true to the
 history), and every such line is followed by its Tagalog, in Macario's
 thought, so no student is left out; this is the one exception to
 Tagalog for all player-facing text, and a new English line keeps the
-rule of being given in Tagalog right after. Act IV is a registered
-stub, to be written the same way.
+rule of being given in Tagalog right after.
+
+Act IV (Block 119) is written the same way, 1903 to 1907, from the
+proponent's labelled sources: STORY.md, "Act IV, beat by beat", every
+line ours and marked PLACEHOLDER, every beat tagged, flags a4_. It ends
+the game: the last card stays black, and the post-test (or, for a guest,
+the end screen) comes up over it.
 
 ## Writing a new act (Polish list #5)
 
@@ -308,7 +313,7 @@ the flags and the objective chain, written out and agreed.
   3. Places and art: paintings in assets/backgrounds/act2/, lowercase
      and hyphenated; a scene's own road with ground: { src } (Polish
      #6), or a floor drawn by the engine, ground: { floor } (kahoy,
-     kawayan, damo; Block 114), for a room or a field; people in assets/sprites/characters/, animated from one still
+     kawayan, damo, bato; Blocks 114, 119), for a room or a field; people in assets/sprites/characters/, animated from one still
      by animate-still.js where drawn side on; every picture not yet
      drawn in ART.md, Owed (missing-art.js lists them).
   4. Fighters as types in content/enemies.js (Enemy data format), never
@@ -791,8 +796,8 @@ lays a road of the scene's own instead of Tondo's dirt (GROUND_SRC,
 assets/backgrounds/act1/ground-lupa.jpg); an owed road picture falls
 back to the dirt. ground: { floor } (Block 114) lays one of the floors
 game.js draws itself, FLOORS: kahoy (floorboards: the pulungan, the
-press), kawayan (split bamboo: a nipa house) and damo (grass over
-earth: a field, a camp). Each is a small tile of pixels built as an SVG
+press), kawayan (split bamboo: a nipa house), damo (grass over earth: a
+field, a camp) and bato (flagstones: Bilibid; Block 119). Each is a small tile of pixels built as an SVG
 in a data: URL, so it is never downloaded, versioned or owed, drawn at
 FLOOR_SCALE with the pixels kept sharp (.ground-floor). A scene that
 is not Tondo's street names one; prepare.js fails on a floor name
@@ -1150,7 +1155,8 @@ spawnEnemies is a rifle, already hostile. Act III's amerikano (hand
 to hand), sentinela (a rifle; a guard) and konstable (the Philippine
 Constabulary, hand to hand; Block 117) have their own pictures, owed:
 the placeholder box until drawn (Block 118, the art rule under
-Conventions).
+Conventions). Act IV adds bantay-konstable (Block 119), the
+Constabulary on guard with a rifle, on the konstable's picture.
 
 A placement's own fields win over its type's, so a sentry can see
 further than the rest of his kind without a second type. A placement
@@ -2342,6 +2348,8 @@ look, by system:
     the sources' labels; no borrowed art  Block 118 ([CONTEXT],
                                           [MACARIO], [INSERT]; the
                                           tint removed)
+    Act IV; the stone floor; the end      Block 119 (bantay-konstable,
+      of the game                         the last card left black)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

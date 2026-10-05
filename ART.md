@@ -37,7 +37,9 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 5 Oct 2026, Block 118 (thirty-four owed: Act III revised
+Last updated: 5 Oct 2026, Block 119 (fifty owed: Act IV names sixteen
+more, seven places and nine people, each a placeholder until drawn).
+Before that, Block 118 (thirty-four owed: Act III revised
 against the proponent's sources names the hills instead of Santa Mesa,
 Pascual Poblete, the Katagalugan's flag, and its fighters' own pictures,
 the American soldier and the Constabulary, each a placeholder; no art is
@@ -250,6 +252,84 @@ arrives.
         A woman living now in Nanay's house, a stranger: standing.
         (NOT STARTED)
 
+Act IV (Block 119). As Acts II and III: the places one painting each,
+drawn once and not tiled, anchored at the bottom; the rooms one phone
+screen wide (sala, selda, hukuman, about 1180 in the game), the post 2600,
+the yard 2400, and the camp and the battlefield wide (dimasalang and
+malabon, 3200). Act IV's first scene reuses Act III's morong.jpg. The
+people side on where they walk on. Each is a dark wall or a dashed box
+until it arrives.
+
+    assets/backgrounds/act4/himpilan.jpg
+        A post of the Philippine Constabulary in a town below the
+        mountains, 1903, a yard with a fence and a storeroom at the left
+        end; the game darkens it to night. Wide (2600). (NOT STARTED)
+
+    assets/backgrounds/act4/dimasalang.jpg
+        Sakay's camp in the Di-Masalang mountains, Rizal, 1904 to 1906:
+        huts among trees on a slope, thinner and poorer than Morong's.
+        Wide (3200). (NOT STARTED)
+
+    assets/backgrounds/act4/malabon.jpg
+        San Francisco de Malabon, Cavite, January 1905: a town plaza, a
+        church and the garrison's building. Wide (3200). (NOT STARTED)
+
+    assets/backgrounds/act4/sala.jpg
+        The hall in Cavite where Colonel Van Schaick's reception was held,
+        July 1906: a large room, a table laid, doors at both ends.
+        (NOT STARTED)
+
+    assets/backgrounds/act4/selda.jpg
+        A cell in Bilibid, 1906 to 1907: stone walls, bars, a small barred
+        window on the right. The floor is drawn by the game (stone).
+        (NOT STARTED)
+
+    assets/backgrounds/act4/hukuman.jpg
+        The Court of First Instance of Cavite, 1906: a judge's bench on
+        the right, a rail, benches. (NOT STARTED)
+
+    assets/backgrounds/act4/patyo.jpg
+        The yard of Old Bilibid Prison, Santa Cruz, Manila, September
+        1907, morning: stone walls and the scaffold toward the right end
+        (about x 1900 of 2400). Wide. (NOT STARTED)
+
+    assets/sprites/characters/gomez.png
+        Dominador Gómez, labour leader, 1906: a man in his forties in a
+        coat and hat, side on; he walks up the slope. (NOT STARTED)
+
+    assets/sprites/characters/van-schaick.png
+        Colonel Louis Van Schaick, American officer, 1906, in a dress
+        uniform: standing. (NOT STARTED)
+
+    assets/sprites/characters/villafuerte.png
+        León Villafuerte, one of Sakay's officers: side on, standing,
+        long hair. (NOT STARTED)
+
+    assets/sprites/characters/de-vega.png
+        Lucio de Vega, one of Sakay's officers, hanged with him: side on,
+        long hair; he walks across the yard at the end. (NOT STARTED)
+
+    assets/sprites/characters/hukom.png
+        The judge of the Court of First Instance of Cavite, 1906, an
+        American in a dark suit, seated at the bench. (NOT STARTED)
+
+    assets/sprites/characters/bantay-bilibid.png
+        A Filipino guard of Bilibid, 1907, in a guard's uniform: side on;
+        he walks to the cell. (NOT STARTED)
+
+    assets/sprites/characters/taga-cavite.png
+        A woman of Cavite, 1905, thin, a small sack of rice on her hip:
+        side on; she walks into the camp. (NOT STARTED)
+
+    assets/sprites/characters/anak-ni-isko.png
+        Andres, Isko's son, about seven, 1906: standing beside his
+        father, drawn about 80px tall in the game. (NOT STARTED)
+
+    assets/sprites/characters/kawal-katagalugan.png
+        A fighter of the Republika ng Katagalugan, 1904: long hair tied
+        back, poor clothes, a bolo: standing. Two of them stand in the
+        camp. (NOT STARTED)
+
 ## Stand-ins
 
 Art that exists and is on screen, but is not the artist's final work
@@ -293,7 +373,3 @@ day's paintings, Block 85, so no night painting is owed), platforms,
 crates, hazards, heart pickups, bullets, the guard's sight cone, the
 dust, the Talaan's papers, and every icon (inline SVG in index.html).
 
-## Act IV
-
-No content yet, so nothing is named and nothing is owed. Its
-characters and backdrops join the Owed list as the act is written.
