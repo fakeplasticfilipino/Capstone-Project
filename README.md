@@ -16,11 +16,12 @@ sit the post-test again.
 Gameplay is movement, a run and a jump; stealth past patrols with a
 detection meter and a visible line of sight; a punch, a takedown and a
 ranged shot, and an attack that is a dash through the enemy; enemies that fight back, with blows that land with weight;
-health with hazards and collectible hearts; jobs to do again for barya;
+health with hazards and collectible hearts; jobs that pay barya by how
+well they are done;
 and short tutorials that stop the world until the control is used. Guard and enemy speed
-scale with the act number. An inventory with three equipment slots, a
-shop and in-game currency awarded by performance are built, ready for
-the items the story will bring.
+scale with the act number. An inventory with three equipment slots holds what
+the story hands over, and a shop sells a remedy, an anting-anting and
+finer powder for barya awarded by performance.
 
 The interface is flat pixel art to match the sprites, with two
 self-hosted pixel fonts, a three-step text size, music and sound effect
@@ -42,7 +43,7 @@ game runs on a real Android phone. All four acts are written and
 playable from their openings to their ends, each closing with its
 post-test; Act I's lines are accepted by the proponents, and those of
 Acts II to IV are waiting on their review. Act I's people are all drawn;
-fifty pictures across the four acts (rooms, places, the people of Acts
+fifty-two pictures across the four acts (rooms, places, the people of Acts
 II to IV and their fighters) are still placeholder boxes until the
 artist's drawings arrive (ART.md).
 
@@ -126,7 +127,8 @@ scores measure learning gain rather than rank students.
     node _dev/tests/test.js                 --only=BD,BL for some sections
     node _dev/tests/verify_new_scene.js
 
-GitHub Actions runs prepare.js --check and both suites on every push.
+GitHub Actions runs prepare.js --check on every push, and both suites
+on every push that changes more than Markdown.
 The first suite drives the real game in headless Chromium at phone size
 against its own fixture act and a fake in-memory database, covering
 every engine system. The second plays the real content of all four

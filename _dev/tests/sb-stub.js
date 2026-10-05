@@ -167,7 +167,14 @@
         listeners.push(cb);
         return { data: { subscription: { unsubscribe() {} } } };
       },
-      signInWithPassword() {
+      // Block 122. With __TEST.currentPassword set, any other password is
+      // refused, as Supabase refuses a wrong one (the password change
+      // checks the current one this way).
+      signInWithPassword(creds) {
+        window.__CALLS.push({ auth: "signInWithPassword" });
+        if (T.currentPassword && creds && creds.password !== T.currentPassword) {
+          return Promise.resolve({ error: { message: "Invalid login credentials" } });
+        }
         session = { user: { id: "u1" } };
         listeners.forEach((cb) => cb("SIGNED_IN", session));
         return Promise.resolve({ error: null });

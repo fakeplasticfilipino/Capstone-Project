@@ -9,14 +9,17 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 5 Oct 2026, after Block 121. Block 121: the audit of 5
+Last updated: 5 Oct 2026, after Block 122. Block 122: the password
+change offered to every student again (a panelist's suggestion), with
+the current password asked first; the trackers read through against
+the build. Block 121: the audit of 5
 Oct 2026, fifteen items, all approved: a fight that moves always goes
 on to the right, at once if he is already past the point; the shop
 sells three things (lagundi, the anting-anting, the pulbura), shut
 while Act I saves for Nanay; a failed save is sent again; a replay
 takes back only its own act's items and gives back no barya; an act
 entered with no row plays on; one "Walang pagsusulit" per act; the
-password change for test accounts only; and the small ones (an old
+password change for test accounts only (undone in Block 122); and the small ones (an old
 Act III save, a catch in the grace window, the reset's kept scores,
 the CSV, CI on Markdown). Block 120: the pacing pass,
 twelve changes from a read of the whole game, all approved: what was
@@ -155,10 +158,12 @@ nothing but the turns is staged: the work is simply there; since Block
 
 Act I completes (holdOpen is gone since Block 80). It pays no barya per
 step; the performance award is paid on completion.
-One item ships: the stage clothes (damit-entablado), which the direktor
-gives Macario after Principe Baldovino, worn from then on; standing
-still in them, a guard notices him five times more slowly. The harness
-fixture covers every other item path.
+The stage clothes (damit-entablado) are the direktor's gift after
+Principe Baldovino, worn from then on; standing still in them, a guard
+notices him five times more slowly. Act III's disguise (balatkayo) is
+the same kind of item. Since Block 121 the corner shop sells three
+things for barya (lagundi, the anting-anting, the pulbura), shut until
+Nanay has her savings. The harness fixture covers every other item path.
 
 Act II, Ang Mahabang Anino ng Digmaan (Block 113), 1896 to 1898: eight
 places joined by black cards (the Katipunan's press, where it opens;
@@ -281,14 +286,16 @@ Oct 2026. Open:
       savings; after, the coins open Tindahan with three: Dahon ng
       Lagundi (5), Anting-anting (50), Pinong Pulbura (90), each tile
       a symbol, no picture. Buy and wear the anting-anting: four hearts.
+      (Block 122) Settings as a student: Palitan ang password asks
+      for the current one first; a wrong one says "Mali ang kasalukuyan
+      mong password." and changes nothing.
       Act IV (?dev=1, Malabon): chase an enemy of the first wave far to
       the right; when it falls, the next wave comes where he stands, no
-      "pumunta sa kanan" pulling him back. Settings as a study student:
-      no Palitan ang password (a test account still has it). Act II to
+      "pumunta sa kanan" pulling him back. Act II to
       IV as a student with no questions written: "Walang pagsusulit"
       before the act, nothing after it. Failure: a shop button in Act I
       before the gift, a coins button that opens empty, a fight that
-      waits behind him, or a password button for a study account.
+      waits behind him, or a password changed without the current one.
 
     Block 120, the pacing pass. Act II ("Pauwi kay Nanay"): the press
       door is now between the Mananahi and the tabakera, the walks
@@ -363,7 +370,7 @@ the straw and the scarecrow; Act III's sixteen: five paintings,
 Álvarez, Poblete, Carreón, Montalan, a teacher, an American officer,
 the American in the barber's chair, the stranger in Nanay's house, the
 Katagalugan's flag, the American soldier and the Constabulary; Act
-IV's sixteen: seven paintings, Gómez, Van Schaick, Villafuerte, de
+IV's eighteen: seven paintings, Gómez, Van Schaick, Villafuerte, de
 Vega, the judge, a Bilibid guard, a woman of Cavite, Isko's son, the
 Katagalugan's fighter, and since Block 120 two townspeople for the
 crowd in Manila). PNGs with transparency; each goes through ART.md's steps.
@@ -577,8 +584,8 @@ framework is complete. Act I is playable from the opening to its end,
 fourteen objectives on one street, in the entablado and in the
 pulungan, and completes into its post-test (Block 80). Act II is
 playable end to end, fourteen objectives in eight places (Block 113),
-its art owed. Act III is playable end to end, fourteen objectives in
-six places (Block 117), its art owed. Act IV is playable end to end,
+its art owed. Act III is playable end to end, fifteen objectives in
+seven places (Blocks 117, 120), its art owed. Act IV is playable end to end,
 thirteen objectives in nine places (Block 119), its art owed; its last
 card ends the game.
 
@@ -613,23 +620,23 @@ The paper specifies seventeen.
 
 | Requirement | Status |
 |---|---|
-| User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest: every act, one into the next, with nothing saved and no tests (Block 116). A student can change the password in settings |
-| Chapter Progression | (BUILT) All four acts registered and unlock in order. All four acts playable to their ends (fourteen objectives in Acts I to III, thirteen in Act IV), completing into their post-tests (an act with no questions skips its tests with a notice); a guest plays on from act to act to the end of Act IV |
+| User Authentication | (CHANGED) Login and role routing built. Self-registration deliberately not built; accounts are administrator-created. Play-as-guest: every act, one into the next, with nothing saved and no tests (Block 116). A student can change the password in settings, giving the current one first (Block 122) |
+| Chapter Progression | (BUILT) All four acts registered and unlock in order. All four acts playable to their ends (fourteen objectives in Acts I and II, fifteen in Act III, thirteen in Act IV), completing into their post-tests (an act with no questions skips its tests, saying so once); a guest plays on from act to act to the end of Act IV |
 | Player Movement | (BUILT) Walk, run, jump with coyote time and a buffer |
-| Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind |
-| Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; shooting guards are covered by the harness fixture |
+| Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind. Acts II to IV have two battles of fifteen each, in waves, some with decoys to defend or ground to take (Block 120) |
+| Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; Acts II to IV add long stealth runs with checkpoints and riflemen who fire (the sentinela, the Constabulary on guard) |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's haircut (Block 114), tutorials that wait for the task, NPCs that open the shop |
 | Narrative Delivery | (BUILT) Scene scripts that play by themselves, black cards, arrival dialogues. All four acts use them; the lines of Acts II to IV await the proponents' review |
 | Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113, Act III (1.30) and Act IV (1.45) |
-| Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (fixture; none ships) |
-| Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. Act I ships one item, the stage clothes (Block 82, worn, slower detection while still); the rest verified against the fixture |
-| Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No outfit ships yet; verified against the fixture |
+| Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (the lagundi, sold since Block 121) |
+| Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. The story hands over the stage clothes (Block 82) and Act III's disguise (Block 117), each slowing detection while still; the corner shop sells the lagundi, the anting-anting (a fourth heart) and the pulbura (a faster shot) since Block 121; the rest verified against the fixture |
+| Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No cosmetic outfit ships until the artist draws one (two asked for, ART.md, Wanted); verified against the fixture |
 | Trivia | (BUILT) Act I built in and editable; Acts II to IV have none yet (the teacher's, on the dashboard) |
 | Act Assessment | (BUILT) Act I built in and editable; a 75% pass mark and a replay before another post-test try. Acts II to IV have none yet (the teacher's) |
 | Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded, not scored |
 | Progress Tracking | (BUILT) Completion, scores and attempts, damage taken, detections, play time |
 | Teacher Monitoring | (BUILT) Class roster and summary per class, scoped by RLS, searchable and sortable; basic summaries, no charts, by decision. Also the questions editor and the Talaan papers |
-| Data Synchronization | (CHANGED) Writes go straight to Supabase and a student's login and save require a connection. No offline queue, so "upon internet availability" is not implemented as worded. Since Block 105 the game itself is kept on the phone after one visit and a guest can play with no internet |
+| Data Synchronization | (CHANGED) Writes go straight to Supabase and a student's login and save require a connection. A test score that cannot be sent is kept on the phone and sent at the next login (Scan S3), and a failed save is sent again by the autosave (Block 121); there is no offline queue for play, so "upon internet availability" is met for scores only. Since Block 105 the game itself is kept on the phone after one visit and a guest can play with no internet |
 
 ## Non-functional requirements
 
@@ -638,7 +645,7 @@ The paper specifies ten.
 | Requirement | Status |
 |---|---|
 | Performance | (BUILT) No build step, no framework, plain script tags. The loop writes to the page only on a change; the phone was confirmed smooth after Block 36. Pictures are JPEG where they can be and sheets 256-colour PNGs; the whole game is kept on the phone after the first visit |
-| Reliability | (BUILT) Debounced save, ten second autosave, beforeunload and logout flushes. A loader that retries every picture until it arrives |
+| Reliability | (BUILT) Debounced save, ten second autosave that also resends a save that failed (Block 121), beforeunload and logout flushes. A loader that retries every picture until it arrives |
 | Usability | (BUILT) Tagalog throughout the game; the teacher dashboard in English. Touch targets 44px on glass, icons beside every label, a three-step text size, a rotate notice in portrait. No guide arrow, by decision |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
@@ -868,6 +875,9 @@ machine, the assessment module.
         key stated; an old Act III save; caughtBy in the grace window;
         the reset's kept scores; the CSV's formulas; an NPC's img
         through loadImage; CI pinned and checking Markdown
+    122 the password change for every student again (a panelist's
+        suggestion), the current password asked first; the trackers
+        read through against the build
 
 ## Blocks remaining
 
@@ -879,11 +889,12 @@ action, 3). (NOT STARTED)
 
 Act II written (Block 113). (COMPLETE) Act III written (Block 117).
 (COMPLETE) Act IV written (Block 119). (COMPLETE) An act without questions skips its
-tests with a notice, which is deliberate; the questions are the
+tests, saying so once (Block 121), which is deliberate; the questions are the
 teacher's.
 
-Real items for Sandata, Anting-anting and Damit, and outfit art,
-decided against the source material. (NOT STARTED)
+Real items for Sandata, Anting-anting and Damit: three sold since Block
+121 (COMPLETE). Cosmetic outfits: two asked of the artist (ART.md,
+Wanted), on sale once drawn (BLOCKED, the artist).
 
 The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
 Block 85 except two. The item bank, one of them, is the teacher's
@@ -966,7 +977,8 @@ nothing is recorded until submission, so nothing is lost).
 ## Verification
 
 Since Block 104 GitHub Actions runs both suites on every push to main
-that changes anything but Markdown (.github/workflows/tests.yml); since
+that changes anything but Markdown (.github/workflows/tests.yml), and
+since Block 121 its checks on a Markdown-only push too; since
 Block 115 in pieces over four machines, about two and a half minutes.
 The commit shows a green tick or a red cross, and the Actions tab says
 which check failed. Locally, run the pieces a change touches while
@@ -999,8 +1011,8 @@ headless shell by hand and unzip it where Playwright looks:
     https://cdn.playwright.dev/builds/cft/<chrome version>/win64/chrome-headless-shell-win64.zip
     into %LOCALAPPDATA%\ms-playwright\chromium_headless_shell-<build>\
 
-npx playwright install chromium --dry-run prints both numbers (1243
-and 153.0.8010.12 for Playwright 1.63), and the harness says which path
+npx playwright install chromium --dry-run prints both numbers for the
+Playwright package.json pins, and the harness says which path
 it wanted if it is still missing. A Playwright update needs it again.
 There run.js runs everything in about two minutes, and at a student's
 speed (--real) in about four and a half.
@@ -1033,8 +1045,8 @@ absent. The harness is not a substitute for a device pass, and cannot
 tell whether a sound is too loud.
 
 In a cloud sandbox, npm install --no-save playwright@1.56 matches its
-preinstalled Chromium; package.json asks for ^1.62, which installed
-1.63 on the proponent's computer. The pitfalls the suites were built around are
+preinstalled Chromium; package.json pins 1.62.1 exactly (Polish list
+#9), the version CI and the proponent's computer run. The pitfalls the suites were built around are
 in CLAUDE.md, Pitfalls.
 
 ## Documentation debt
@@ -1061,7 +1073,8 @@ and post pairs on the same topic and difficulty with the key in a
 different position, and the trivia card checked so it cannot hand a
 pre-test answer. Her written delegation sits alongside. (NOT STARTED)
 
-Document grading honestly: since Block 68 the game grades the tests
+Document grading honestly (stated in DECISIONS.md, Block 121, and under
+Objective 2, above): since Block 68 the game grades the tests
 itself, at the instructor's direction, so a student with the browser's
 developer tools could read the answers; a score still cannot be changed
 or deleted from a browser, and one attempt per pre-test is enforced by

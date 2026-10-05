@@ -5548,15 +5548,22 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.evaluate(() => Shell.openPause());
     await page.click("#shell-pause-settings");
     await page.waitForTimeout(200);
-    // Block 121. Only a test account (the reset's list) may change it: a
-    // study student could lock a coded account on a shared phone.
-    const studyOffered = await visible(page, "#shell-password");
-    await page.evaluate(() => { __TEST.canReset = true; Shell._closeSettings(); Shell.openPause(); });
-    await page.click("#shell-pause-settings");
-    await page.waitForTimeout(200);
-    ok("a study student is not offered Palitan ang password (Block 121)", !studyOffered);
-    ok("a test account is", await visible(page, "#shell-password"));
+    // Block 122. Every signed-in student, the current password asked first.
+    ok("a signed-in student is offered Palitan ang password", await visible(page, "#shell-password"));
+    await page.evaluate(() => { __TEST.currentPassword = "lumang-pass"; });
     await page.click("#shell-password");
+    await page.fill("#shell-password-new", "bagongpass");
+    await page.fill("#shell-password-again", "bagongpass");
+    await page.click("#shell-password-save");
+    const noOld = await page.textContent("#shell-password-note");
+    await page.fill("#shell-password-old", "mali");
+    await page.click("#shell-password-save");
+    await page.waitForTimeout(200);
+    const wrongOld = await page.evaluate(() => ({ note: document.getElementById("shell-password-note").textContent,
+      sent: __CALLS.some((c) => c.auth === "updateUser") }));
+    ok("without the current password, or with a wrong one, nothing is changed (Block 122)",
+       /kasalukuyan/.test(noOld) && /Mali ang kasalukuyan/.test(wrongOld.note) && !wrongOld.sent, { noOld, wrongOld });
+    await page.fill("#shell-password-old", "lumang-pass");
     await page.fill("#shell-password-new", "abc");
     await page.fill("#shell-password-again", "abc");
     await page.click("#shell-password-save");

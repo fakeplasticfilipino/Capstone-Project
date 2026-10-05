@@ -81,7 +81,8 @@ separate branch.
 TESTING A PUSH (Block 104, the proponent's choice, 1 Oct 2026). No
 student has the URL yet, so a push is not yet a release. GitHub Actions
 (.github/workflows/tests.yml) runs both suites on every push to main
-that changes anything but Markdown, cut into pieces over four machines
+that changes anything but Markdown (and its checks alone on a Markdown
+push, Block 121), cut into pieces over four machines
 (Block 115), and marks the commit green or red; a red run is fixed in
 the next push, before anything else. So:
 
@@ -1977,9 +1978,10 @@ The join_code column exists but no student-facing join screen is built.
 This is a deliberate change from the proposal's User Authentication
 requirement and is the right one for supervised classroom sessions.
 
-Passwords are the administrator's too (Block 121). The settings panel
-offers a password change only to an account is_reset_allowed() names
-(the test accounts): a study student on a shared phone could otherwise
+Passwords are issued by the administrator, and a student may change
+theirs in settings (a panelist's suggestion; Block 68, kept in Block
+122), giving the current one first: the game signs in with it again
+before updateUser, so someone else on a shared classroom phone cannot
 lock a coded account. Supabase's leaked-password protection is a
 dashboard toggle (Authentication), switched by the proponent, never by
 a session.
@@ -2417,7 +2419,10 @@ look, by system:
                                           direction, the shop's stock,
                                           a failed save retried, replays
                                           by givenInAct, a missing row,
-                                          passwords, CI on Markdown)
+                                          passwords, CI on Markdown),
+                                          122 (the password change kept
+                                          for students, the current
+                                          one asked)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

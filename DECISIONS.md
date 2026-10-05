@@ -5270,6 +5270,28 @@ test account only), AV (the CSV's cells); verify_new_scene.js's Act I
 bought in memory), Act IV (past the point at the end of a wave), and
 Acts II and III, reloads and every story point.
 
+## Block 122: the password change kept for students
+
+Block 121 hid the password change from every account but the test
+accounts, so that someone else on a shared classroom phone could not
+lock a coded study account. The proponent overruled it: a student
+changing their own password was a panelist's suggestion, and stays.
+The risk is met the other way the audit offered: the panel asks for the
+current password first, and the game signs in with it again
+(signInWithPassword, as the same student; the session is theirs either
+way) before updateUser. A wrong one changes nothing and says so. A
+student who forgets a changed password is reset by the administrator,
+as before. Checked: test.js, section BH (offered to a signed-in
+student; nothing sent with no current password or a wrong one; the
+rest as Block 68), and the panel's three fields on a phone held
+sideways.
+
+The same day every tracker was read against the build: TRACKER.md's
+item, health, combat, stealth and synchronisation lines brought up to
+Blocks 117 to 121, Act III's fifteen steps in seven places, Act IV's
+eighteen owed pictures, the pinned Playwright, CI on Markdown; README's
+jobs, shop and owed count.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

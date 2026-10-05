@@ -104,6 +104,7 @@ const Shell = {
       },
       notebookBtn: document.getElementById("shell-notebook"),
       passwordBtn: document.getElementById("shell-password"),
+      passwordOld: document.getElementById("shell-password-old"),
       passwordNew: document.getElementById("shell-password-new"),
       passwordAgain: document.getElementById("shell-password-again"),
       passwordSave: document.getElementById("shell-password-save"),
@@ -648,13 +649,13 @@ const Shell = {
       this.el.settingsNote.textContent = "";
       this.el.settingsNote.className = "shell-note";
     }
-    // Block 68. Only a signed-in student has a password to change.
-    // Block 121: and only a test account (the reset's list, which
-    // _refreshResetOffer reads and then shows this button with the
-    // reset). A study student on a shared phone could otherwise lock a
-    // coded account by changing its password; theirs are set by the
-    // administrator (create_accounts.js).
-    if (this.el.passwordBtn) this.el.passwordBtn.classList.add("hidden");
+    // Block 68. Only a signed-in student has a password to change (a
+    // panelist's suggestion). Block 122: every student again, with the
+    // current password asked first (_savePassword), so someone else on
+    // a shared classroom phone cannot lock the account.
+    if (this.el.passwordBtn) {
+      this.el.passwordBtn.classList.toggle("hidden", !(window.Game && Game.isSignedIn()));
+    }
     this._refreshResetOffer();
     this._renderDoneQuests();
     this.settingsReturn = from;
@@ -763,7 +764,7 @@ const Shell = {
   // -----------------------------------------------------------
   // Changing the password (Block 68)
   //
-  // From settings, for a test account (Block 121). Supabase changes the
+  // From settings, for a signed-in student. Supabase changes the
   // password of the session's own account (auth.updateUser), so there
   // is nothing a student could aim at anyone else's. Awaited, like the
   // reset, because it is the one change a student cannot see took.
@@ -772,6 +773,7 @@ const Shell = {
 
   _openPassword() {
     if (this.state !== "settings") return;
+    this.el.passwordOld.value = "";
     this.el.passwordNew.value = "";
     this.el.passwordAgain.value = "";
     this.el.passwordNote.textContent = "";
@@ -789,9 +791,14 @@ const Shell = {
 
   async _savePassword() {
     const note = this.el.passwordNote;
+    const old = this.el.passwordOld.value;
     const next = this.el.passwordNew.value;
     const again = this.el.passwordAgain.value;
     note.className = "shell-note";
+    if (!old) {
+      note.textContent = "Ilagay muna ang kasalukuyan mong password.";
+      return;
+    }
     if (next.length < this.PASSWORD_MIN) {
       note.textContent = "Dapat hindi bababa sa " + this.PASSWORD_MIN + " na titik ang password.";
       return;
@@ -803,8 +810,22 @@ const Shell = {
     this.el.passwordSave.disabled = true;
     note.textContent = "Sine-save...";
     try {
+      // Block 122. updateUser asks for no old password, so the game asks:
+      // the current one is checked by signing in with it again, as the
+      // same student (the session stays theirs either way). A wrong one
+      // changes nothing.
+      const { data: got } = await sb.auth.getSession();
+      const email = got && got.session && got.session.user && got.session.user.email;
+      const check = await sb.auth.signInWithPassword({ email, password: old });
+      if (check.error) {
+        if (/fetch|network|failed to/i.test(String(check.error.message))) throw check.error;
+        note.textContent = "Mali ang kasalukuyan mong password.";
+        this.el.passwordSave.disabled = false;
+        return;
+      }
       const { error } = await sb.auth.updateUser({ password: next });
       if (error) throw error;
+      this.el.passwordOld.value = "";
       this.el.passwordNew.value = "";
       this.el.passwordAgain.value = "";
       note.textContent = "Napalitan na ang password mo.";
@@ -1455,10 +1476,7 @@ const Shell = {
     try {
       const { data, error } = await sb.rpc("can_reset_my_data");
       if (error) throw error;
-      if (data === true) {
-        this.el.resetBtn.classList.remove("hidden");
-        if (this.el.passwordBtn) this.el.passwordBtn.classList.remove("hidden");
-      }
+      if (data === true) this.el.resetBtn.classList.remove("hidden");
     } catch (err) {
       console.warn("Reset availability could not be read:", err);
     }
