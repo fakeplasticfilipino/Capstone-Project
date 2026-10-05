@@ -5877,8 +5877,9 @@ const visible = (page, sel) => page.evaluate((s) => {
         title: c.querySelector(".tl-title").value, text: c.querySelector(".tl-text").value })),
     }));
     ok("the dashboard offers three papers, says where each lies, and shows what is saved",
-       // Block 113: Act II declares fixed papers with places, so it is offered too; Block 117: Act III.
-       e0.acts.join() === "Act I,Act II,Act III" && e0.papers.length === 3 && e0.papers.every((p) => p.where.length > 10) &&
+       // Block 113: Act II declares fixed papers with places, so it is offered too; Block 117: Act III;
+       // Block 119: Act IV.
+       e0.acts.join() === "Act I,Act II,Act III,Act IV" && e0.papers.length === 3 && e0.papers.every((p) => p.where.length > 10) &&
        e0.papers[1].title === "Luma" && e0.papers[1].text === "Lumang papel." && e0.papers[0].text === "", e0);
 
     const e1 = await page.evaluate(async () => {
@@ -6651,10 +6652,11 @@ const visible = (page, sel) => page.evaluate((s) => {
     const list = await page.evaluate(() => [...document.querySelectorAll("#shell-dev-jump optgroup")].map((g) =>
       ({ label: g.label, values: [...g.querySelectorAll("option")].map((o) => o.value) })));
     ok("?dev=1 lists every act's story points, grouped by act (Polish #2)",
-       // Block 117: and Act III's.
-       list.length === 3 && list[1].label === "Ikalawa" && list[1].values[0] === "2:gitna" &&
+       // Block 117: and Act III's; Block 119: and Act IV's.
+       list.length === 4 && list[1].label === "Ikalawa" && list[1].values[0] === "2:gitna" &&
        list[0].values.every((v) => v.startsWith("1:")) && list[2].label === "Ang Republika sa Lilim" &&
-       list[2].values.length === 13 && list[2].values.every((v) => v.startsWith("3:")), list);
+       list[2].values.length === 13 && list[2].values.every((v) => v.startsWith("3:")) &&
+       list[3].label === "Ang Mapait na Ani" && list[3].values.length === 13 && list[3].values.every((v) => v.startsWith("4:")), list);
     await page.selectOption("#shell-dev-jump", "2:gitna");
     await page.click("#shell-dev-go");
     await page.waitForTimeout(800);

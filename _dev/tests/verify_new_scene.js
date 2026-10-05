@@ -2323,6 +2323,12 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     c = await readLines(page, 2, 800);
     for (let t = 0; t < 4000 && !(await cutState(page)).up; t += 100) await page.waitForTimeout(100);
     const cut0 = await cutState(page);
+    // Block 119: the customer is drawn a frame after the game opens; on a
+    // loaded machine the read came first and saw an empty canvas.
+    await page.waitForFunction(() => {
+      const d = document.getElementById("cut-canvas").getContext("2d").getImageData(32, 4, 1, 1).data;
+      return d[3] > 0;
+    }, null, { timeout: 4000 }).catch(() => {});
     const sandy = await page.evaluate(() => {
       const d = document.getElementById("cut-canvas").getContext("2d").getImageData(0, 0, 64, 56).data;
       const k = (4 * 64 + 32) * 4;
