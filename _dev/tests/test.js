@@ -412,8 +412,8 @@ const visible = (page, sel) => page.evaluate((s) => {
        (await page.evaluate(() => currentRoom)) === "tondo", await page.evaluate(() => currentRoom));
     ok("acts II-IV still registered", await page.evaluate(() => [2,3,4].every(n => !!Acts.getAct(n))));
     // Block 113: Act II is written; Block 117: Act III; Block 119: Act IV.
-    ok("Act III has its fourteen objectives, and Act IV its thirteen (Block 119)",
-       await page.evaluate(() => Acts.objectivesFor(3).length === 14 && Acts.objectivesFor(4).length === 13));
+    ok("Act III has its fifteen objectives (Block 120), and Act IV its thirteen (Block 119)",
+       await page.evaluate(() => Acts.objectivesFor(3).length === 15 && Acts.objectivesFor(4).length === 13));
     await ctx.close();
   }
 
@@ -6766,7 +6766,7 @@ const visible = (page, sel) => page.evaluate((s) => {
        // Block 117: and Act III's; Block 119: and Act IV's.
        list.length === 4 && list[1].label === "Ikalawa" && list[1].values[0] === "2:gitna" &&
        list[0].values.every((v) => v.startsWith("1:")) && list[2].label === "Ang Republika sa Lilim" &&
-       list[2].values.length === 13 && list[2].values.every((v) => v.startsWith("3:")) &&
+       list[2].values.length === 15 && list[2].values.every((v) => v.startsWith("3:")) &&
        list[3].label === "Ang Mapait na Ani" && list[3].values.length === 13 && list[3].values.every((v) => v.startsWith("4:")), list);
     await page.selectOption("#shell-dev-jump", "2:gitna");
     await page.click("#shell-dev-go");
