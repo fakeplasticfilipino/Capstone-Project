@@ -890,10 +890,11 @@ let npcAnimators = []; // animated sprites needing an .update(now) each frame
 // pointing at a removed element.
 let actLoadToken = 0;
 
-// An act is a list of scenes. Acts that predate scenes, which is every
-// act except Act I, declare their world directly on the act object; those
-// are wrapped in a single implicit scene here rather than being rewritten.
-// content/act2.js through act4.js therefore need no changes at all.
+// An act is a list of scenes. An act that predates scenes declares its
+// world directly on the act object, and is wrapped in a single implicit
+// scene here rather than being rewritten. No shipped act does since Acts
+// II to IV were written in the scene form (Blocks 113, 117, 119); it is
+// kept for a stub act, should one be registered again.
 function scenesFor(actData) {
   if (Array.isArray(actData.scenes) && actData.scenes.length) {
     return actData.scenes;
@@ -1340,10 +1341,14 @@ function buildNpcs(token) {
     } else {
       // Static image, falling back to a placeholder box showing the
       // expected filename if the file is missing. An <img> cannot
-      // display text, so on error it is swapped for a real div.
+      // display text, so then it is swapped for a real div.
+      //
+      // Block 121. Through loadImage, like every other picture: counted
+      // by the loader, retried, and owed art (not in the manifest) never
+      // asked for. No shipped NPC uses img since the acts were animated;
+      // the harness's fixture still does.
       const img = document.createElement("img");
       img.className = "sprite npc-sprite";
-      img.src = assetUrl(npc.img);
       img.alt = npc.label;
       // A static image has no measured feet, so it is centred on the
       // body, the same assumption an unmeasured sheet gets.
@@ -1351,7 +1356,14 @@ function buildNpcs(token) {
       img.onload = () => {
         img.style.left = (NPC_WIDTH - img.offsetWidth) / 2 + "px";
       };
-      img.onerror = () => {
+      el.appendChild(img);
+      world.appendChild(el);
+      loadImage(npc.img).then((loaded) => {
+        if (token !== actLoadToken) return;
+        if (loaded) {
+          img.src = loaded.src;
+          return;
+        }
         const placeholder = document.createElement("div");
         placeholder.className = "sprite npc-sprite";
         // Same box every other character gets. 80 by 112 was written
@@ -1359,9 +1371,7 @@ function buildNpcs(token) {
         // Macario a head taller than every NPC and guard on screen.
         bodyPlaceholder(placeholder, npc.img, DISPLAY_HEIGHT, NPC_WIDTH);
         img.replaceWith(placeholder);
-      };
-      el.appendChild(img);
-      world.appendChild(el);
+      });
     }
 
     actElements.push(el);
@@ -3621,9 +3631,12 @@ function playerIsSafe() {
 // documentation says so rather than leaving a panel to notice.
 function caughtBy(guard) {
   guard.alert = 0;
+  // Block 121. Counted only when the catch lands: inside the grace window
+  // after a hit, damagePlayer refuses it, and a detection counted then
+  // cost the stealth term for a catch that never happened.
+  if (!damagePlayer("Nakita ka ng bantay!", true)) return;
   detections += 1;
   playSfx("caught"); // Block 85, a sting over the hurt
-  damagePlayer("Nakita ka ng bantay!", true);
 }
 
 // Block 85. How long one guard waits before his notice note can sound
@@ -3874,14 +3887,24 @@ function updateCheckpoints() {
 const CHECKPOINT_REACH = 60;
 
 // Block 120. A fight that moves (the way out of the post, the push into
-// Malabon's plaza): between waves the script awaits advanceTo(x, text),
-// the text stands at the top of the log (wayOutLine) and the promise
-// resolves once Macario's middle is at or past x, from whichever side he
-// started. Nothing else changes while it waits: the world is his.
-function advanceTo(x, text) {
+// Malabon's plaza): between waves the script awaits advanceTo(x, text,
+// dir), the text stands at the top of the log (wayOutLine) and the
+// promise resolves once Macario's middle is at or past x going dir (1,
+// the default, is to the right). Nothing else changes while it waits:
+// the world is his.
+//
+// Block 121. The direction is the content's, never read from where he
+// stands: a student who chased the last enemy past the next point used to
+// be sent back to it while the log said "pumunta sa kanan". Already at or
+// past x going dir, it resolves at once.
+function advanceTo(x, text, dir) {
+  const way = dir === -1 ? -1 : 1;
+  if ((posX + PLAYER_WIDTH / 2 - x) * way >= 0) {
+    passCheckpoints(way);
+    return Promise.resolve();
+  }
   return new Promise((resolve) => {
-    const dir = Math.sign(x - (posX + PLAYER_WIDTH / 2)) || 1;
-    advanceGoal = { x, dir, text: text || null, resolve };
+    advanceGoal = { x, dir: way, text: text || null, resolve };
     renderQuests();
   });
 }
@@ -3890,8 +3913,29 @@ function updateAdvance() {
   const goal = advanceGoal;
   if (!goal || (posX + PLAYER_WIDTH / 2 - goal.x) * goal.dir < 0) return;
   advanceGoal = null;
+  passCheckpoints(goal.dir);
   renderQuests();
   goal.resolve();
+}
+
+// Block 121. A moving fight's checkpoints are reached by being within
+// CHECKPOINT_REACH of them, and a student who chased an enemy well past
+// one never was: a lost wave then put him back before it. When the fight
+// moves on, every run checkpoint behind him (reach, no script, its
+// requiresFlag set) counts as passed.
+function passCheckpoints(dir) {
+  const list = currentScene && currentScene.checkpoints;
+  if (!list) return;
+  const middle = posX + PLAYER_WIDTH / 2;
+  let changed = false;
+  for (const cp of list) {
+    if (!cp.reach || cp.script || !cp.flag || state.flags[cp.flag]) continue;
+    if (cp.requiresFlag && !state.flags[cp.requiresFlag]) continue;
+    if ((middle - cp.x) * dir < 0) continue;
+    state.flags[cp.flag] = true;
+    changed = true;
+  }
+  if (changed) markDirty();
 }
 
 // =============================================================
@@ -8040,10 +8084,10 @@ async function enterGameAsUser(userId) {
 // Acts.checkObjectives all already refuse to run without a
 // currentUserId (see acts.js), because that guard was written for
 // "nothing to write yet" rather than "guest", and it already covers
-// this case for free. A guest therefore gets exactly Act I's world —
-// movement, dialogue, combat, health — and nothing that touches the
-// database: no game_progress row, no act_progress row, no trivia, no
-// pre-test or post-test, no currency, no equipment grant. Closing the
+// this case for free. A guest therefore plays the same story (and since
+// Block 116 on into the next act), with barya, items and the shop held in
+// memory, and nothing that touches the database: no game_progress row,
+// no act_progress row, no trivia, no pre-test or post-test. Closing the
 // tab loses everything, which is the point.
 //
 // See CLAUDE.md, Decisions on record, Guest mode, for why
@@ -8223,6 +8267,8 @@ function saveProgress() {
 
 async function writeProgress() {
   if (!currentUserId || !saveReady) return;
+  // Cleared before the payload is built, so a change made while the
+  // write is on its way marks the save dirty again and is sent next.
   saveDirty = false;
 
   const payload = {
@@ -8242,8 +8288,21 @@ async function writeProgress() {
     updated_at: new Date().toISOString(),
   };
 
-  const { error } = await sb.from("game_progress").upsert(payload);
-  if (error) console.error("Save error:", error);
+  // Block 121. A save that did not arrive is still owed: the flag goes
+  // back up, so the ten second autosave sends it again (classroom wifi
+  // drops a request now and then). Not after stopSaving (the reset),
+  // which takes saveReady away for good.
+  let failed = null;
+  try {
+    const { error } = await sb.from("game_progress").upsert(payload);
+    failed = error || null;
+  } catch (err) {
+    failed = err;
+  }
+  if (failed) {
+    console.error("Save error:", failed);
+    if (saveReady) saveDirty = true;
+  }
 
   // Recount objectives on the same cadence as the save rather than
   // after every flag mutation. This early-returns when the count has

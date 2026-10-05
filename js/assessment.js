@@ -329,9 +329,18 @@ const Assessment = {
     }
 
     if (!items.length) {
-      // Acts II to IV have no questions yet. Skipping is the right
-      // call: an act should not be unreachable because a test that
-      // does not exist cannot be taken.
+      // No questions for this test: the teacher has not written any and
+      // the built-in bank has none (only Act I ships with questions; the
+      // rest are the teacher's, CLAUDE.md, Standing decisions). Skipped,
+      // since an act should not be unreachable because a test that does
+      // not exist cannot be taken.
+      //
+      // Block 121. Said once, at the pre-test. An act with no questions
+      // at all ends without a second "Walang pagsusulit": the student was
+      // already told, and the same screen twice teaches nothing. An act
+      // that has pre-test questions and no post-test ones (a gap in the
+      // teacher's bank) still says so, since that one is news.
+      if (testType === "post" && !(await this._hasAny(actNumber))) return null;
       await this._message({
         eyebrow: label,
         title: "Walang pagsusulit",
@@ -341,6 +350,21 @@ const Assessment = {
       return null;
     }
     return items;
+  },
+
+  // Block 121. Whether the act has any question at all, of either test:
+  // the built-in bank, else one row in the database. A failed read says
+  // yes, so the student is told rather than left wondering.
+  async _hasAny(actNumber) {
+    const bank = this._bank(actNumber);
+    if ((bank.pre || []).length || (bank.post || []).length) return true;
+    try {
+      const res = await sb.from("assessment_items").select("id").eq("act_number", actNumber);
+      if (res.error) throw res.error;
+      return Boolean(res.data && res.data.length);
+    } catch (err) {
+      return true;
+    }
   },
 
   // One question per screen. The target device is a low-end phone,
@@ -553,6 +577,14 @@ const Assessment = {
     const list = this._readPending();
     list.push(Object.assign({}, row));
     this._writePending(list);
+  },
+
+  // Block 121. The full reset (shell.js) drops this student's kept
+  // scores: sent after the wipe, one would bring back a test the reset
+  // took away. Another student's, on a shared phone, stay.
+  forgetPending() {
+    if (!currentUserId) return;
+    this._writePending(this._readPending().filter((r) => r.student_id !== currentUserId));
   },
 
   async flushPending() {

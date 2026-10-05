@@ -648,12 +648,15 @@ const Shell = {
       this.el.settingsNote.textContent = "";
       this.el.settingsNote.className = "shell-note";
     }
+    // Block 68. Only a signed-in student has a password to change.
+    // Block 121: and only a test account (the reset's list, which
+    // _refreshResetOffer reads and then shows this button with the
+    // reset). A study student on a shared phone could otherwise lock a
+    // coded account by changing its password; theirs are set by the
+    // administrator (create_accounts.js).
+    if (this.el.passwordBtn) this.el.passwordBtn.classList.add("hidden");
     this._refreshResetOffer();
     this._renderDoneQuests();
-    // Block 68. Only a signed-in student has a password to change.
-    if (this.el.passwordBtn) {
-      this.el.passwordBtn.classList.toggle("hidden", !(window.Game && Game.isSignedIn()));
-    }
     this.settingsReturn = from;
     this.state = "settings";
     this._showPanel("settings");
@@ -760,7 +763,7 @@ const Shell = {
   // -----------------------------------------------------------
   // Changing the password (Block 68)
   //
-  // From settings, for a signed-in student. Supabase changes the
+  // From settings, for a test account (Block 121). Supabase changes the
   // password of the session's own account (auth.updateUser), so there
   // is nothing a student could aim at anyone else's. Awaited, like the
   // reset, because it is the one change a student cannot see took.
@@ -1452,7 +1455,10 @@ const Shell = {
     try {
       const { data, error } = await sb.rpc("can_reset_my_data");
       if (error) throw error;
-      if (data === true) this.el.resetBtn.classList.remove("hidden");
+      if (data === true) {
+        this.el.resetBtn.classList.remove("hidden");
+        if (this.el.passwordBtn) this.el.passwordBtn.classList.remove("hidden");
+      }
     } catch (err) {
       console.warn("Reset availability could not be read:", err);
     }
@@ -1512,6 +1518,10 @@ const Shell = {
     } catch (err) {
       console.warn("Settings could not be cleared:", err);
     }
+    // Block 121. And any score of this student's kept on the phone to be
+    // sent later (Scan S3): sent after the wipe, it would put back a test
+    // the reset just took away.
+    if (window.Assessment && Assessment.forgetPending) Assessment.forgetPending();
 
     this.el.resetNote.className = "shell-note ok";
     this.el.resetNote.textContent = "Tapos na. Magsisimula ulit ang laro...";

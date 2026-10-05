@@ -9,7 +9,16 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 5 Oct 2026, after Block 120. Block 120: the pacing pass,
+Last updated: 5 Oct 2026, after Block 121. Block 121: the audit of 5
+Oct 2026, fifteen items, all approved: a fight that moves always goes
+on to the right, at once if he is already past the point; the shop
+sells three things (lagundi, the anting-anting, the pulbura), shut
+while Act I saves for Nanay; a failed save is sent again; a replay
+takes back only its own act's items and gives back no barya; an act
+entered with no row plays on; one "Walang pagsusulit" per act; the
+password change for test accounts only; and the small ones (an old
+Act III save, a catch in the grace window, the reset's kept scores,
+the CSV, CI on Markdown). Block 120: the pacing pass,
 twelve changes from a read of the whole game, all approved: what was
 told on black and could be shown is shown (the post's bell, the
 amnesty in a cell in Bilibid, Paris read in Laguna, Palanan told by
@@ -45,7 +54,7 @@ Brigandage Act; two battles of fifteen; the Americans in English, each
 line given in Tagalog). Block 116 (4 Oct): a guest who
 finishes Act I plays on into Act II, with no tests and nothing saved.
 Block 115: the suites in pieces, the story fast-forwarded under test and
-run side by side (both suites, 1,292 checks since Block 119, in about two minutes; CI
+run side by side (both suites, 1,337 checks since Block 121, in about two minutes; CI
 in four shards, about two and a half). Block 114: a floor drawn for each
 place, each job played once, the barber's game a haircut on a customer
 drawn in pixels. Block 113: Act II written, 1896 to 1898, as a tragedy;
@@ -267,6 +276,19 @@ and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026. Open:
+
+    Block 121, the audit. Act I: no coins button until Nanay has her
+      savings; after, the coins open Tindahan with three: Dahon ng
+      Lagundi (5), Anting-anting (50), Pinong Pulbura (90), each tile
+      a symbol, no picture. Buy and wear the anting-anting: four hearts.
+      Act IV (?dev=1, Malabon): chase an enemy of the first wave far to
+      the right; when it falls, the next wave comes where he stands, no
+      "pumunta sa kanan" pulling him back. Settings as a study student:
+      no Palitan ang password (a test account still has it). Act II to
+      IV as a student with no questions written: "Walang pagsusulit"
+      before the act, nothing after it. Failure: a shop button in Act I
+      before the gift, a coins button that opens empty, a fight that
+      waits behind him, or a password button for a study account.
 
     Block 120, the pacing pass. Act II ("Pauwi kay Nanay"): the press
       door is now between the Mananahi and the tabakera, the walks
@@ -562,10 +584,22 @@ card ends the game.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health, equipment,
 cosmetic rewards. (IN PROGRESS) All four are built and tested against
-the harness fixture. The shipped Act I uses health (the play's fight);
-its difficulty is the 1.00 of Act I, so the lever cannot be seen; one
-equipment item ships, the stage clothes (Block 82), and no cosmetic.
-What remains is content and art, not code.
+the harness fixture. The shipped acts use health (every fight) and
+difficulty (guard speed 1.00 to 1.45 across Acts I to IV). Equipment
+ships: the two story outfits (Blocks 82, 117), and since Block 121 the
+corner shop sells three items bought with barya, the lagundi (a heal),
+the anting-anting (a fourth heart) and the pulbura (a faster shot),
+open once Act I's savings are given. No cosmetic is sold: one worn
+without its sheets would draw Macario as the placeholder box, so two
+outfits are asked of the artist (ART.md, Wanted) and go on sale when
+drawn. What remains is art, not code.
+
+Stated for the defense (Block 121): since schema 006 (Block 68, the
+instructor's decision) a signed-in student can read the answer key
+(assessment_items, correct_index) through the database's public API
+with the browser's console. Scores are select and insert only, so
+none can be changed; the key is readable so the teacher can edit
+questions on the dashboard and the game can grade itself.
 
 Objective 3, integrated assessment. (COMPLETE) Pre-tests and post-tests
 graded in the game (Block 68, with a pass mark and a replay for a failed
@@ -609,7 +643,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (803 and 489 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (823 and 514 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -825,6 +859,15 @@ machine, the assessment module.
         Tanay's drill; the scarecrows and the flag as decoys, the fights
         out of the post and into Malabon's plaza; the crowd and the
         Republic's soldiers seen (setDecoys, advanceTo, rouseGuards)
+    121 the audit of 5 Oct 2026 (all fifteen approved): advanceTo's
+        direction the content's, its run checkpoints passed; the shop's
+        stock (lagundi, anting-anting, pulbura), shut while an act saves
+        toward a sum, no barya back on a replay; a failed save retried;
+        givenInAct; a missing act_progress row; one "Walang
+        pagsusulit"; the password for test accounts only; the answer
+        key stated; an old Act III save; caughtBy in the grace window;
+        the reset's kept scores; the CSV's formulas; an NPC's img
+        through loadImage; CI pinned and checking Markdown
 
 ## Blocks remaining
 
@@ -962,11 +1005,11 @@ it wanted if it is still missing. A Playwright update needs it again.
 There run.js runs everything in about two minutes, and at a student's
 speed (--real) in about four and a half.
 
-test.js (803 checks) drives the shipping index.html with a stubbed
+test.js (823 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (489 checks, ten parts) drives
+what is covered. verify_new_scene.js (514 checks, ten parts) drives
 the real content: Act I end to end as a student, to the post-test
 opening; Acts II, III and IV end to end as a guest; reloads mid-beat, old saves, a
 guest going on from Act I into Act II, every story point of ?dev=1 and

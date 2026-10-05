@@ -167,6 +167,7 @@ const Inventory = {
   // has nothing of its own (Tindero). So the clothes are never on the
   // corner button, and never on a stall in the flashback.
   forSale(sellerId) {
+    if (this.saving()) return [];
     const priced = this.catalogue().filter((entry) => {
       if ((entry.price || 0) <= 0) return false;
       if (this.isQuest(entry) && entry.forQuest) return this.questOpen(entry.forQuest);
@@ -174,6 +175,18 @@ const Inventory = {
     });
     const own = sellerId ? priced.filter((entry) => entry.soldBy === sellerId) : [];
     return own.length ? own : priced.filter((entry) => !entry.soldBy);
+  },
+
+  // Block 121. True while the act on screen is saving toward a sum: one
+  // of its steps counts barya (countCurrency) and is not done. Act I's
+  // jobs are paid once, and Nanay's gift needs the whole of it, so a
+  // shop open then could spend what the story needs and leave the act
+  // unfinishable. Nothing is sold until the step is done.
+  saving() {
+    const act = typeof currentActData !== "undefined" ? currentActData : null;
+    if (!act || !Array.isArray(act.objectives)) return false;
+    const flags = (typeof state !== "undefined" && state.flags) || {};
+    return act.objectives.some((o) => o.countCurrency && !flags[o.flag]);
   },
 
   // Reads the engine's quest log. A quest that has been logged and is
@@ -195,6 +208,7 @@ const Inventory = {
     const item = this.item(id);
     if (!item) return "Hindi mabibili";
     if (!this._active()) return "Hindi mabibili";
+    if (this.saving()) return "Nag-iipon ka pa";
     if (!this.isConsumable(item) && this.owns(id)) return "Nasa iyo na";
     if (this.isConsumable(item) && this.count(id) >= this.maxStack(item)) {
       return "Puno ang supot";

@@ -729,6 +729,10 @@
   // Katagalugan, Bonifacio's creed its constitution. PLACEHOLDER.
   // =============================================================
   async function theMountains() {
+    // Block 121. A save from before Block 120 put the arrest straight into
+    // Morong, with no cell: the steps between are taken as done, so its
+    // task line is not left at "Lumabas sa Bilibid".
+    if (!state.flags.a3_pinalaya) { state.flags.a3_saSelda = state.flags.a3_pinalaya = true; markDirty(); }
     setCutscene(true);
     await wait(400);
     await movePlayer(900 - BESIDE - 40, 170);
@@ -1484,7 +1488,10 @@
         scripts: [
           { requiresFlag: "a3_republika", doneFlag: "a3_wakas", run: theBandits },
           { requiresFlag: "a3_watawat", doneFlag: "a3_republika", run: theVow },
-          { requiresFlag: "a3_pinalaya", doneFlag: "a3_saMorong", x: 400, facing: 1, run: theMountains },
+          // a3_nahuli, not a3_pinalaya (Block 121): every way here today
+          // is out of Bilibid, and a save from before Block 120, arrested
+          // and already in Morong, still has its welcome.
+          { requiresFlag: "a3_nahuli", doneFlag: "a3_saMorong", x: 400, facing: 1, run: theMountains },
         ],
         // Block 120: a lost wave of the last fight starts him by the flag.
         checkpoints: [{ x: FLAG_X - 140, flag: "a3_republika" }],

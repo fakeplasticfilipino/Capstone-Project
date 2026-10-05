@@ -4,8 +4,9 @@
 # runs behind every push: GitHub starts fresh machines, runs the two
 # suites in pieces side by side (Block 115, _dev/tests/run.js), and marks the commit with a green tick or a red
 # cross (the Actions tab on GitHub says which check failed). A push that
-# changes only Markdown (the context files) cannot break the game and
-# runs nothing. Before a release to students (the pilot, the freeze, the
+# changes only Markdown (the context files) cannot break the game, so
+# since Block 121 it runs the checks alone (STORY.md and ART.md are
+# checked there) and not the suites. Before a release to students (the pilot, the freeze, the
 # study) the suites are also run in full on the proponent's computer
 # (CLAUDE.md, Deployment).
 
@@ -14,14 +15,7 @@ name: tests
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "**/*.md"
   workflow_dispatch:
-
-# A newer push makes an older run of the same branch pointless.
-concurrency:
-  group: tests-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   # Block 106. The checks that need no browser (prepare.js --check: every
@@ -32,15 +26,41 @@ jobs:
   # The runner is pinned (Polish list #9): ubuntu-latest moves to Ubuntu
   # 26 from 19 Oct 2026, and a new system under Playwright's browser is
   # the kind of change to make on purpose, not find in a red run.
+  # Block 121: Node is pinned (24, the proponent's), not lts/*, for the
+  # same reason as the runner. The job also says whether the push changed
+  # anything but Markdown (code: true or false), which is what the suites
+  # run on: a Markdown-only push is checked here and goes no further.
   checks:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    outputs:
+      code: ${{ steps.changed.outputs.code }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
-          node-version: lts/*
+          node-version: "24"
       - run: node _dev/tools/prepare.js --check
+      # The files this push changed, against the commit before it (fetched
+      # alone; two trees are compared, no history needed). Unknown (a new
+      # branch, a manual run, a fetch that fails) counts as code.
+      - id: changed
+        shell: bash
+        run: |
+          before="${{ github.event.before }}"
+          code=true
+          zero=0000000000000000000000000000000000000000
+          if [ "${{ github.event_name }}" = "push" ] && [ -n "$before" ] && [ "$before" != "$zero" ] &&
+             git fetch --quiet --depth=1 origin "$before"; then
+            # false only when the diff was read, is not empty, and every
+            # file in it is Markdown.
+            if files=$(git diff --name-only "$before" "${{ github.sha }}") && [ -n "$files" ] &&
+               ! printf '%s\n' "$files" | grep -qv '\.md$'; then
+              code=false
+            fi
+          fi
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "code changed: $code"
 
   # Block 115. The two suites cut into pieces (each part of
   # verify_new_scene.js, test.js's sections six at a time) and dealt to
@@ -48,9 +68,16 @@ jobs:
   # fast-forwarded (game.js, TEST_SPEED). run.js --list shows the pieces.
   suite:
     needs: checks
+    if: needs.checks.outputs.code == 'true'
     name: shard ${{ matrix.shard }}/4
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    # A newer push of code makes an older run of the suites pointless. Kept
+    # to the suites (Block 121), so a Markdown push, which runs the checks
+    # alone, never cancels the suites of the code pushed before it.
+    concurrency:
+      group: suite-${{ github.ref }}-${{ matrix.shard }}
+      cancel-in-progress: true
     strategy:
       fail-fast: false
       matrix:
@@ -59,7 +86,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
-          node-version: lts/*
+          node-version: "24"
       # package-lock.json is gitignored, so npm install, not npm ci.
       # Playwright's version is pinned exactly in package.json (Polish
       # list #9), so CI and the proponent's computer run the same browser.

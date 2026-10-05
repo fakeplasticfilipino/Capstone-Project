@@ -616,8 +616,13 @@ function exportCsv() {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
+// Block 121. A cell a spreadsheet would read as a formula (= + - @, or a
+// tab or return first) gets an apostrophe in front, so a name typed as
+// "=HYPERLINK(...)" is shown, not run. A plain number is left alone: a
+// negative gain must stay a number.
 function csvField(v) {
-  const s = v === null || v === undefined ? "" : String(v);
+  let s = v === null || v === undefined ? "" : String(v);
+  if (/^[=+\-@\t\r]/.test(s) && !/^-?\d+(\.\d+)?$/.test(s)) s = "'" + s;
   return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
 }
 

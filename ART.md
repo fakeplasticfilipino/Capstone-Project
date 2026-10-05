@@ -37,7 +37,8 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 5 Oct 2026, Block 120 (fifty-two owed: the crowd in
+Last updated: 5 Oct 2026, Block 121 (two cosmetic outfits Wanted for
+the shop, not yet named by the game). Block 120 (fifty-two owed: the crowd in
 Manila, two townspeople, seen rather than only heard; Act III borrows
 Act IV's cell, its guard and its fighters, which were owed already).
 Before that, Block 119 (fifty owed: Act IV names sixteen
@@ -390,6 +391,31 @@ forgotten.
         sheets would replace them.
     Item tiles. No item ships (content/items.js is empty); each item
         added later names its own tile picture.
+
+## Wanted
+
+Not named by the game yet, so not in Owed (which must match the
+content exactly): pictures that would let the shop sell what it cannot
+today (Block 121). A cosmetic outfit is worn as sprite sheets, and one
+sold without them would draw Macario as the placeholder box, so none is
+sold until drawn. When the sheets arrive, the item goes into
+content/items.js (kind "cosmetic", slot "outfit", priced 50 and 90 as
+the Standing decisions set) and its sheets move to Owed or straight in.
+
+    assets/sprites/player/macario-katipunero-idle.png
+    assets/sprites/player/macario-katipunero-walk.png
+        Macario as a Katipunero of 1896: white camisa de chino, red
+        trousers rolled at the shin, a red kerchief at the neck, a bolo
+        at the hip. The same poses, cells and frame counts as
+        macario-idle.png and macario-walk.png, so the game's numbers
+        fit. (NOT STARTED)
+
+    assets/sprites/player/macario-heneral-idle.png
+    assets/sprites/player/macario-heneral-walk.png
+        Macario as President of the Republika ng Katagalugan, 1902 to
+        1906: a dark buttoned uniform, a sash, the long hair he swore
+        not to cut, worn loose. The same poses, cells and frame counts
+        as above. (NOT STARTED)
 
 ## No picture, by design
 

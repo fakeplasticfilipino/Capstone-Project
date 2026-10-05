@@ -190,7 +190,7 @@
   async function battle(tag, waves, opts) {
     const o = opts || {};
     const advance = async (x) => {
-      await advanceTo(x, o.go);
+      await advanceTo(x, o.go, 1); // always onward, to the right (Block 121)
       (o.follow || []).forEach((id, i) => {
         moveDecoration(id, Math.max(40, playerX() - MEETS - i * 90), 300);
       });

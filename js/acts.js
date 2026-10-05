@@ -401,7 +401,7 @@ const Acts = {
   // The starting state is trivia when the assessment module is
   // present and playing when it is not, so the row never claims a
   // state that nothing on the page can move it out of.
-  async _ensureRow(n) {
+  async _ensureRow(n, retried) {
     if (this.progress[n]) return;
 
     const startState = window.Assessment ? "trivia" : "playing";
@@ -418,6 +418,10 @@ const Acts = {
     });
 
     if (error) {
+      // Block 121. Tried once more, then left: the caller plays on from
+      // the state the row would have had, and the next login inserts it
+      // (complete() upserts, so the act's end is written either way).
+      if (!retried) return this._ensureRow(n, true);
       console.error("act_progress insert failed:", error);
       return;
     }
@@ -744,14 +748,20 @@ const Acts = {
       const start = state.flags["__startCurrency_" + n];
       const target = typeof start === "number" ? start : 0;
       const now = Game.currency();
+      // Block 121: only taken back, never given back. Below the act's
+      // start means barya spent in the shop, on things he keeps.
       if (now > target) Game.spendCurrency(now - target);
-      else if (now < target) Game.addCurrency(target - now);
       if (Game.resetStats) Game.resetStats();
     }
 
     // Scan S7. What the story handed over is given again by the story.
+    // Block 121: only what this act hands over (givenInAct). A replay of
+    // Act II used to take Act I's stage clothes for good, since only Act I
+    // gives them. An item that names no act is taken on any replay, as
+    // before.
     if (window.Inventory && Inventory.revoke) {
-      const back = Inventory.catalogue().filter((it) => it.replayRemoves);
+      const back = Inventory.catalogue().filter((it) => it.replayRemoves &&
+        (it.givenInAct == null || Number(it.givenInAct) === n));
       for (const it of back) await Inventory.revoke(it.id);
     }
 
@@ -880,7 +890,12 @@ const Acts = {
     await saveProgress();
 
     await this._ensureRow(n);
-    this.status = this.progress[n].status;
+    // Block 121. No row (the insert failed twice, no connection) is not a
+    // reason to strand the student between acts: on from where a new row
+    // starts, as syncStart does.
+    const row = this.progress[n];
+    if (!row) console.error("act_progress: no row for act " + n + "; playing on without one");
+    this.status = (row && row.status) || (window.Assessment ? "trivia" : "playing");
 
     await this.startSession(n);
 

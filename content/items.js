@@ -19,7 +19,8 @@
 //
 //   replayRemoves (optional): the story hands it over, so a replay of
 //   the act after a failed post-test takes it back (Inventory.revoke,
-//   Scan S7) and the story hands it over again.
+//   Scan S7) and the story hands it over again. givenInAct (Block 121)
+//   names that act: a replay of any other act leaves it alone.
 //
 //   Consumable: kind "consumable". Stacks up to maxStack (default 5).
 //   Gamitin applies `use` once and spends one.
@@ -29,7 +30,8 @@
 //   an open quest.
 //
 // Block 52 emptied the catalogue with the Act I rewrite, and Block 82
-// brought back the one item Act I ships, the stage clothes. The harness
+// brought back the one item Act I ships, the stage clothes. Block 121
+// put a small general stock back on the corner shop button (below). The harness
 // fixture still carries every kind, so the shop, equipment, consumables
 // and quest items stay tested. The ids "mansanas" and "mansanas-kabayo"
 // (the old apples) must not be reused for a different item. There are
@@ -66,6 +68,7 @@ window.ITEMS = [
     price: 0,
     effect: { stillDetectionMult: 0.2 },
     replayRemoves: true, // Scan S7: a replay starts without them
+    givenInAct: 1, // Block 121: and only a replay of Act I
     // Block 85. A stand-in until the costume is drawn: Macario warmed
     // toward the gold of a stage costume, so a student can see it is on.
     tint: "sepia(0.55) saturate(1.6) hue-rotate(-12deg) brightness(1.05)",
@@ -87,5 +90,41 @@ window.ITEMS = [
     price: 0,
     effect: { stillDetectionMult: 0.1 },
     replayRemoves: true,
+    givenInAct: 3,
+  },
+
+  // Block 121. The general stock, on the corner shop button: what barya
+  // are for (objective 2). Only effects the engine already has, each
+  // tested by the harness's fixture. Not sold while the act is saving
+  // toward a sum (a step with countCurrency, Act I's for Nanay), so the
+  // shop cannot spend what the story needs (Inventory.forSale). Priced
+  // against what an act pays (CLAUDE.md, Standing decisions): an act
+  // pays 50 to 100 on completion, so every student who finishes Act I
+  // can buy the anting-anting, and a strong run the pulbura. No tile
+  // pictures: a tile shows the item's symbol, by design, and nothing is
+  // owed. Names and descriptions ours. PLACEHOLDER, all three.
+  {
+    // PLACEHOLDER. The herb every barrio knew for a cough and a wound.
+    id: "lagundi", name: "Dahon ng Lagundi", kind: "consumable",
+    description: "Dinikdik na dahon, pantapal sa sugat. Gamitin para maibalik ang isang puso.",
+    price: 5,
+    icon: "i-heart",
+    use: { heal: 1 },
+    maxStack: 3,
+  },
+  {
+    // PLACEHOLDER. The Katipuneros and Sakay's men wore them into battle.
+    id: "anting-anting", name: "Anting-anting", kind: "equipment", slot: "accessory",
+    description: "Isinusuot ng mga Katipunero sa labanan. Habang suot mo, may dagdag kang isang puso.",
+    price: 50,
+    effect: { maxHealthBonus: 1 },
+  },
+  {
+    // PLACEHOLDER. Finer powder for his pistol: a faster shot, and so the
+    // next one sooner (one in flight at a time), for the long fights.
+    id: "pulbura", name: "Pinong Pulbura", kind: "equipment", slot: "weapon",
+    description: "Pinong pulbura para sa pistola. Habang dala mo, mas mabilis ang iyong putok.",
+    price: 90,
+    effect: { projectileSpeedMult: 1.5 },
   },
 ];

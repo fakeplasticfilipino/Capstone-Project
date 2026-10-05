@@ -699,11 +699,21 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       !(SCENES[0].exits || []).length && !ACT_1.testRoom && !Game.enterTestRoom &&
       !document.getElementById("shell-testroom")));
     // Block 117: and Act III's disguise, the story's too, neither for sale.
+    // Block 121: each given in its own act, and a general stock of three.
     ok("the item catalogue is the stage clothes (Block 82) and the disguise (Block 117), not for sale, still-detection effects",
-       await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 2 && ITEMS[0].id === "damit-entablado" &&
+       await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 5 && ITEMS[0].id === "damit-entablado" &&
          ITEMS[0].price === 0 && ITEMS[0].slot === "outfit" && ITEMS[0].effect.stillDetectionMult === 0.2 &&
+         ITEMS[0].givenInAct === 1 && ITEMS[1].givenInAct === 3 &&
          ITEMS[1].id === "balatkayo" && ITEMS[1].price === 0 && ITEMS[1].slot === "outfit" &&
          ITEMS[1].effect.stillDetectionMult === 0.1 && !Inventory.owns("damit-entablado")));
+    ok("and the shop's stock: lagundi (5, a heart, three at most), the anting-anting (50, a heart more), the pulbura (90, a faster shot) (Block 121)",
+       await page.evaluate(() => {
+         const by = (id) => ITEMS.find((i) => i.id === id) || {};
+         const l = by("lagundi"), a = by("anting-anting"), p = by("pulbura");
+         return l.kind === "consumable" && l.price === 5 && l.use.heal === 1 && l.maxStack === 3 && !l.soldBy &&
+           a.slot === "accessory" && a.price === 50 && a.effect.maxHealthBonus === 1 && !a.replayRemoves &&
+           p.slot === "weapon" && p.price === 90 && p.effect.projectileSpeedMult === 1.5 && !p.replayRemoves;
+       }));
 
     const t0 = await intertitle(page);
     ok("the game opens on black: Tondo, 1890", t0.up && t0.black &&
@@ -1201,6 +1211,11 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("and pays nothing: the work paid each time (Block 89)", (await gift(page)) === null);
 
     await page.evaluate(() => { Game.spendCurrency(Game.currency()); Game.addCurrency(99); });
+    // Block 121. The shop sells nothing while Act I saves for Nanay: the
+    // jobs pay once, and barya spent now would leave the gift unreachable.
+    ok("with 99 barya saved for Nanay, the shop sells nothing and its button is hidden (Block 121)",
+       await page.evaluate(() => !Inventory.forSale(null).length &&
+         document.getElementById("btn-shop").classList.contains("hidden")));
     await walkTo(page, 1880);
     ok("with 99 barya, Nanay's savings are not yet offered", (await gift(page)) === null);
     await page.evaluate(() => Game.addCurrency(31));
@@ -1210,6 +1225,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        n1.lines.length === 10 && JSON.stringify([...n1.lines.slice(0, 3), ...n1.lines.slice(8)]) === JSON.stringify(NANAY_THANKS_OWN) &&
        n1.lines[3] === "Macario: Pati po sa Barbero." && /entablado/.test(n1.lines[4]), n1.lines);
     ok("the savings are spent, and he keeps the rest", (await page.evaluate(() => Game.currency())) === 30);
+    ok("and once they are given, the shop opens: lagundi, the anting-anting and the pulbura (Block 121)",
+       await page.evaluate(() => JSON.stringify(Inventory.forSale(null).map((i) => i.id)) ===
+         '["lagundi","anting-anting","pulbura"]'));
 
     // ---------------------------------------------------------------
     // Block 80. The end of Act I.
@@ -1955,6 +1973,18 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("then straight into Act II's opening at the press, still a guest, the stage clothes kept, no test, nothing written",
        into.act === 2 && into.scene === "imprenta" && into.guest && into.clothes && !into.quiz && !into.trivia &&
        into.written === 0 && Boolean(await line(gpage)), into);
+    // Block 121. The corner shop in Act II, and a guest buying in memory:
+    // the anting-anting's fourth heart, nothing written.
+    const bought = await gpage.evaluate(async () => {
+      Game.spendCurrency(Game.currency());
+      Game.addCurrency(60);
+      const ok = await Inventory.buy("anting-anting");
+      const worn = await Inventory.equip("anting-anting");
+      return { ok, worn, max: Game.health().max, left: Game.currency(),
+        written: (__DB.player_inventory || []).length + (__DB.player_equipment || []).length };
+    });
+    ok("a guest buys the anting-anting in memory: a fourth heart, 10 barya left, nothing written (Block 121)",
+       bought.ok && bought.worn && bought.max === 4 && bought.left === 10 && bought.written === 0, bought);
     await ga.ctx.close();
   }
 
@@ -2613,6 +2643,34 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const tanay = await seenCards();
     ok("Tanay taken; whether he was there, the record does not say",
        tanay.some((x) => /Hindi sinasabi ng mga tala kung kasama si Sakay\./.test(x)), tanay);
+    // Block 121. playOn puts him on the point a moving fight waits for; a
+    // student who chased the last of a wave beyond it is somewhere else.
+    // At the end of the first wave he is put past the next point (1200),
+    // and the fight must carry on from there, not wait for him to walk back.
+    await page.evaluate(() => { window.__fought = window.__fought || new Set(); window.__placed = null; });
+    let carried = null;
+    for (let t = 0; t < 30000 && !carried; t += 150) {
+      const s = await page.evaluate(() => {
+        const talking = !dialogueBox.classList.contains("hidden");
+        const second = ENEMIES.some((e) => e.id.startsWith("sf-2-"));
+        if (second) return { second, x: Math.round(posX + PLAYER_WIDTH / 2), waiting: Boolean(advanceGoal),
+          passed: Boolean(state.flags.a4_plaza1) };
+        const first = ENEMIES.filter((e) => e.id.startsWith("sf-1-"));
+        if (!first.length) return { talking };
+        ENEMIES.forEach((e) => { window.__fought.add(e.id); if (!e.dead && e.id.startsWith("sf-1-")) hitEnemy(e, 99); });
+        if (!window.__placed && first.every((e) => e.dead)) {
+          posX = 1500; posY = floorHeightAt(posX); window.__placed = posX;
+        }
+        return { talking };
+      });
+      if (s.second) carried = s;
+      else if (s.talking) await page.keyboard.press("e");
+      await page.waitForTimeout(150);
+    }
+    ok("past the next point at the end of a wave, the fight carries on where he stands (Block 121)",
+       carried && carried.x >= 1200 && !carried.waiting, carried);
+    ok("  and the point he went past counts as reached, for a lost wave's restart",
+       carried && carried.passed, carried);
     ok("the battle at Malabon, and back to Di-Masalang in 1905",
        await playOn(page, "currentSceneId === 'dimasalang' && state.flags.a4_malabon === true", 90000));
     const sf = await page.evaluate(() => [...window.__fought].filter((id) => id.startsWith("sf-")).length);

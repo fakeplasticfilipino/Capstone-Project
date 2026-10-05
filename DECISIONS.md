@@ -5158,6 +5158,118 @@ with the watchmen among them and every stretch reached, the drill, the
 plaza, the crowd and the Kutsero), and every story point of all four
 acts.
 
+## Block 121: the audit of 5 Oct 2026
+
+An audit after Block 120 listed fifteen problems, approved item by item
+by the proponent. What was decided, and why.
+
+advanceTo took its direction from where Macario stood when it was
+called, so a student who chased the last of a wave past the next point
+was told "pumunta sa kanan" while the fight waited for him to walk
+back. The direction is now the content's (advanceTo(x, text, dir), 1
+by default), and a point he is already past resolves at once. The
+suite missed it because its playOn stands Macario on the point; a
+check in Act IV's part now puts him beyond it at the end of a wave.
+That check found a second fault behind the first: a run checkpoint is
+reached by standing within 60px of it, so the point he ran past was
+never reached, and a lost wave would have restarted him before it.
+When a moving fight moves on, every run checkpoint behind him counts
+as passed (passCheckpoints), only reach checkpoints with no script.
+
+The shop had nothing to sell (the two story outfits are price 0), so
+objective 2's equipment and rewards were invisible and barya pointless.
+Three items of general stock, using only effects the engine and the
+fixture already cover: lagundi (heal 1, three at most, 5), the
+anting-anting (one more heart, 50) and the pulbura (a faster shot, 90).
+50 is the least an act pays on completion, so every finisher of Act I
+can buy the anting-anting, and a strong run the pulbura, the Standing
+decisions' pricing. The anting-anting is the period's own: Katipuneros
+and Sakay's men wore them into battle. No tile pictures: a tile shows
+the item's symbol by design, so no art is owed. Cosmetics were not
+added: a cosmetic worn without its sheets draws Macario as the dashed
+placeholder box, and a shop item that turns the hero into a box is
+worse than none. Two outfits are listed in ART.md, Wanted, for the
+artist; they go on sale when drawn.
+
+Selling at all raised a softlock: Act I's jobs are paid once (Block
+114) and Nanay's gift needs the whole 100, so a lagundi bought before
+the gift could leave the act unfinishable. The shop sells nothing while
+any countCurrency step of the act on screen is undone
+(Inventory.saving), a rule about saving toward a sum rather than about
+Act I, so it holds for any act that counts barya. And a replay used to
+put barya back to the act's start in both directions, which handed back
+what the shop had taken while the student kept the item; it now only
+takes back down.
+
+writeProgress cleared saveDirty before the write, so a save the
+classroom's wifi dropped was never sent again. The flag goes back up on
+an error or a throw, unless stopSaving ran (saveReady false), so the
+reset still stops everything; Scan S9's queue is untouched.
+
+A replay revoked every replayRemoves item, so replaying Act II took the
+stage clothes Act I gave, for good. givenInAct names the act; a replay
+revokes only its own act's. An item without it keeps the old rule.
+
+enterAct read progress[n].status after _ensureRow, which leaves no row
+when the insert fails, and threw, stranding the student between acts.
+The insert is tried once more; then the act goes on from the state a
+new row starts in (trivia with the assessment, so the pre-test is not
+lost to a dropped request), logged, never thrown. complete() upserts,
+so the act's end is written either way, and the next login inserts the
+row. The audit suggested playing; the start state was chosen because a
+skipped pre-test cannot be sat later and is the study's data.
+
+Acts II to IV have no built-in questions, so without the teacher's each
+showed "Walang pagsusulit" twice. It is said once, at the pre-test; the
+post-test of an act with no questions of either kind (the bank and one
+row of the database) is skipped silently. An act with pre-test items
+and no post-test ones still says so, since that is a gap the student
+should not mistake for the end. The questions themselves stay the
+teacher's.
+
+A student could change their own password from settings, with no old
+password asked, on a shared classroom phone, and lock a coded study
+account. The change is now offered only where can_reset_my_data() says
+yes: the test accounts. Study passwords are the administrator's, like
+class assignment. Supabase's leaked-password protection is a dashboard
+toggle and was left to the proponent.
+
+Stated plainly for the defense: since schema 006 (Block 68, the
+instructor's decision) a signed-in student can read assessment_items
+whole, answer key included, through the database's public API, with
+the browser's console or any HTTP client; the game grades a test itself
+from it. What a student cannot do is change or delete a score: that is
+select and insert only, enforced by row level security. The trade was
+made so a teacher can write and change questions on the dashboard
+without a server function per change; a student who reads the key
+before the pre-test has done so on purpose and outside the game.
+
+Small ones. A save from between Act III's arrest and Morong (before
+Block 120 there was no cell) stalled, since Morong's welcome waited on
+a3_pinalaya; it waits on a3_nahuli again, and the welcome marks the
+cell's two steps done. caughtBy counted a detection inside the grace
+window that refused the hit; it counts only a catch that lands. The
+reset left the student's offline scores on the phone (Scan S3), to be
+sent again at the next login; it drops them, and another student's
+stay. The CSV export prefixed nothing, so a cell starting = + - @ would
+run as a formula in a spreadsheet; such a cell gets an apostrophe, and
+a plain number (a negative gain) stays a number. A static NPC img
+bypassed loadImage; it goes through it. CI pinned Node to 24 and now
+runs its checks on every push, Markdown included (STORY.md and ART.md
+are checked there), and the suites only when something else changed;
+the suites' concurrency moved to their own job, so a Markdown push
+never cancels the suites of the code before it.
+
+Checked: prepare.js; test.js's new section BT (a missing row, a replay
+by givenInAct and no barya given back, a catch in the grace window, the
+shop shut while saving, one "Walang pagsusulit", the reset's kept
+scores), BS (advanceTo past the point and behind it), BR (a failed save
+sent by the autosave, and not after stopSaving), BH (the password for a
+test account only), AV (the CSV's cells); verify_new_scene.js's Act I
+(the shop shut before the gift, open after), guest (the anting-anting
+bought in memory), Act IV (past the point at the end of a wave), and
+Acts II and III, reloads and every story point.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -101,7 +101,9 @@ the next push, before anything else. So:
                              every 30 seconds at most (a run takes
                              about 4 minutes), never in a tight loop, or
                              read the Actions page itself
-    a Markdown-only push     no suites; CI skips it too
+    a Markdown-only push     no suites; CI runs only its checks
+                             (prepare.js --check: STORY.md, ART.md;
+                             Block 121)
     a release to students    both suites in full on this computer
     (the pilot, the freeze,  first, at a student's speed (node
     the study session)       _dev/tests/run.js --real, a few minutes),
@@ -1100,12 +1102,18 @@ of them plain globals in game.js, like addQuest:
                                  does, and every decoy stands again.
                                  Rifles still aim at Macario. Set before
                                  the waves, null after them
-    advanceTo(x, text)           Block 120: a fight that moves; resolves
-                                 once Macario's middle reaches x, the
+    advanceTo(x, text, dir)      Block 120: a fight that moves; resolves
+                                 once Macario's middle is at or past x
+                                 going dir (1, right, the default; -1
+                                 left; Block 121: always the content's,
+                                 never read from where he stands, and
+                                 at once if he is already past), the
                                  text at the top of the log meanwhile
                                  (wayOutLine). Content awaits it between
-                                 waves; a lost wave starts again at the
-                                 run's reached checkpoints
+                                 waves; the scene's run checkpoints
+                                 behind him count as passed when it
+                                 resolves, and a lost wave starts again
+                                 at the run's reached checkpoints
     rouseGuards()                Block 120: the guards on duty join the
                                  fight as they stand (hostile, firing,
                                  counted by the next spawnEnemies'
@@ -1237,6 +1245,11 @@ low-end phone would buy nothing. Only ownership is stored.
                                                  over, so a replay of the act
                                                  takes it back (Inventory.
                                                  revoke; Scan S7)
+      givenInAct: 1                              with replayRemoves: the act
+                                                 that hands it over; a replay
+                                                 of any other act leaves it
+                                                 (Block 121). Without it,
+                                                 every replay takes it
     }
 
 There are three groups, and the inventory screen, the shop and
@@ -1296,6 +1309,19 @@ soldBy names the NPC whose shop sells the item. A seller with any stock
 of its own lists only that stock; every item without soldBy is general
 stock, listed by the corner shop button and by a seller with nothing of
 its own.
+
+Nothing is sold while the act on screen is saving toward a sum (Block
+121, Inventory.saving): while any of its objectives with countCurrency
+is not done, forSale lists nothing (so the corner button is hidden) and
+buyBlocker says "Nag-iipon ka pa". Act I's jobs are paid once and
+Nanay's gift needs the whole sum, so a shop open then could leave the
+act unfinishable. A replay takes barya back down to what the act began
+with and never tops them up: barya below that were spent in the shop,
+on things he keeps. The general stock since Block 121 is three items,
+none story-given: lagundi (a consumable heal, 5), the anting-anting
+(maxHealthBonus, 50) and the pulbura (projectileSpeedMult, 90). No
+cosmetic is sold until its sheets are drawn (ART.md, Wanted): one worn
+without them would draw Macario as the placeholder box.
 
 Effects are deliberately small and few. A faster projectile, one extra
 heart and a slower meter while still are the whole design brief; anything that needs a balance spreadsheet
@@ -1951,6 +1977,13 @@ The join_code column exists but no student-facing join screen is built.
 This is a deliberate change from the proposal's User Authentication
 requirement and is the right one for supervised classroom sessions.
 
+Passwords are the administrator's too (Block 121). The settings panel
+offers a password change only to an account is_reset_allowed() names
+(the test accounts): a study student on a shared phone could otherwise
+lock a coded account. Supabase's leaked-password protection is a
+dashboard toggle (Authentication), switched by the proponent, never by
+a session.
+
 Assessments allow one attempt per act per test type. Enforced by a unique
 constraint and by submit_assessment. A pilot run on a study account
 therefore consumes that student's attempt, so pilot and study accounts must
@@ -2380,6 +2413,11 @@ look, by system:
       decoys, fights that move            that move, guards roused, the
                                           drill, Bilibid in Act III, the
                                           press door nearer home)
+    the audit of 5 Oct 2026               Block 121 (advanceTo's
+                                          direction, the shop's stock,
+                                          a failed save retried, replays
+                                          by givenInAct, a missing row,
+                                          passwords, CI on Markdown)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

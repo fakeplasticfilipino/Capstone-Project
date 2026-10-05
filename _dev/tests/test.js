@@ -4353,6 +4353,9 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("Download CSV saves the roster, a header and a line per student (S15)",
        /\.csv$/.test(download.suggestedFilename()) && csv.length === 5 && /^student,act,status/.test(csv[0]) &&
        csv.some((l) => /^mag-aaral03,1,completed,.*,20\.0,50\.0,64\.0,/.test(l)), csv);
+    const cells = await page.evaluate(() => ["=1+1", "+63", "-x", "@a", "-12.5", "12", "Ana"].map(csvField));
+    ok("a cell a spreadsheet would run as a formula is written as text; numbers stay numbers (Block 121)",
+       JSON.stringify(cells) === JSON.stringify(["'=1+1", "'+63", "'-x", "'@a", "-12.5", "12", "Ana"]), cells);
 
     // Polish list #1. The roster describes one act, chosen above it. It
     // opens on the furthest act with objectives (Act I here: s1's Act II
@@ -5545,7 +5548,14 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.evaluate(() => Shell.openPause());
     await page.click("#shell-pause-settings");
     await page.waitForTimeout(200);
-    ok("a signed-in student is offered Palitan ang password", await visible(page, "#shell-password"));
+    // Block 121. Only a test account (the reset's list) may change it: a
+    // study student could lock a coded account on a shared phone.
+    const studyOffered = await visible(page, "#shell-password");
+    await page.evaluate(() => { __TEST.canReset = true; Shell._closeSettings(); Shell.openPause(); });
+    await page.click("#shell-pause-settings");
+    await page.waitForTimeout(200);
+    ok("a study student is not offered Palitan ang password (Block 121)", !studyOffered);
+    ok("a test account is", await visible(page, "#shell-password"));
     await page.click("#shell-password");
     await page.fill("#shell-password-new", "abc");
     await page.fill("#shell-password-again", "abc");
@@ -6620,6 +6630,32 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a fight that moves says where to at the top of the log, and goes on once he is there",
        a.line === "Sumulong: pumunta sa kanan" && a.waiting && a.done && a.gone, a);
 
+    // Block 121. The direction is the content's, not read from where he
+    // stands: past the point already, it goes on at once; past it the
+    // other way, it waits for him to come right, however far left he goes.
+    const past = await page.evaluate(async () => {
+      posX = 1100; posY = floorHeightAt(posX); onGround = true;
+      let done = false;
+      advanceTo(900, "Sumulong: pumunta sa kanan", 1).then(() => { done = true; });
+      await new Promise((r) => setTimeout(r, 50));
+      const out = { pastDone: done, noLine: !document.querySelector("#quest-list li.quest-way") };
+      posX = 600;
+      let right = false;
+      advanceTo(900, "Sumulong: pumunta sa kanan", 1).then(() => { right = true; });
+      posX = 100; // further from it, to the left
+      await new Promise((r) => setTimeout(r, 200));
+      out.waitsLeft = !right;
+      out.line = (document.querySelector("#quest-list li.quest-way") || {}).textContent;
+      posX = 950;
+      await new Promise((r) => setTimeout(r, 200));
+      out.rightDone = right;
+      return out;
+    });
+    ok("advanceTo with him already past the point goes on at once, with no line (Block 121)",
+       past.pastDone && past.noLine, past);
+    ok("and one he is behind waits for him to go right, not back, even as he goes further left",
+       past.waitsLeft && past.line === "Sumulong: pumunta sa kanan" && past.rightDone, past);
+
     const g = await page.evaluate(() => {
       const guard = GUARDS[0];
       guard.disabled = false; guard.hostile = false; guard.fight = false; guard.alert = 0;
@@ -6658,6 +6694,64 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("saves asked for while one is in flight wait, and share one save after it (S9)",
        saves.shared && saves.first && saves.writes === 2 && saves.latest, saves);
+
+    // Block 121. A save that fails (the classroom's wifi) is still owed,
+    // and the ten second autosave sends it; the first version cleared the
+    // flag before the write and never tried again.
+    const retry = await page.evaluate(async () => {
+      const orig = console.error;
+      console.error = () => {};
+      const realFrom = sb.from;
+      let fails = 1;
+      sb.from = function (table) {
+        if (table === "game_progress" && fails > 0) {
+          fails--;
+          return { upsert: () => Promise.resolve({ error: { message: "simulated" } }) };
+        }
+        return realFrom.call(sb, table);
+      };
+      // The stub keeps the payload by reference, so a write is counted by
+      // the calls that reached it, not read back from the row.
+      const writes = () => __CALLS.filter((c) => c.table === "game_progress" && c.op === "upsert").length;
+      const before = writes();
+      saveDirty = true;
+      await saveProgress();
+      const out = { dirtyAfterFail: saveDirty, failedWrites: writes() - before };
+      const t0 = performance.now();
+      while (writes() === before && performance.now() - t0 < 11500) {
+        await new Promise((r) => setTimeout(r, 200));
+      }
+      await new Promise((r) => setTimeout(r, 50));
+      sb.from = realFrom;
+      console.error = orig;
+      return Object.assign(out, { sent: writes() - before, dirtyNow: saveDirty,
+        waitedMs: Math.round(performance.now() - t0) });
+    });
+    ok("a failed save stays owed, and the autosave sends it (Block 121)",
+       retry.dirtyAfterFail && retry.failedWrites === 0 && retry.sent === 1 && !retry.dirtyNow, retry);
+    const stopped = await page.evaluate(async () => {
+      const realFrom = sb.from;
+      const realReady = saveReady;
+      sb.from = function (table) {
+        if (table === "game_progress") {
+          return { upsert: () => { stopSaving(); return Promise.resolve({ error: { message: "simulated" } }); } };
+        }
+        return realFrom.call(sb, table);
+      };
+      const orig = console.error;
+      console.error = () => {};
+      saveDirty = true;
+      await saveProgress();
+      const out = { dirty: saveDirty };
+      sb.from = realFrom;
+      console.error = orig;
+      // The room goes on being tested: saving back on, as the login left it.
+      saveReady = realReady;
+      autosaveTimer = setInterval(() => { if (saveDirty) saveProgress(); }, 10000);
+      return out;
+    });
+    ok("but a save that fails after the reset has stopped saving stays stopped",
+       stopped.dirty === false, stopped);
 
     const script = await page.evaluate(async () => {
       const orig = console.error;
@@ -6799,6 +6893,128 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.waitForTimeout(400);
     ok("and from there a guest can still go in",
        await page.evaluate(() => Game.isGuest() && Shell.state === "playing"));
+    await ctx.close();
+  }
+
+  // -------------------------------------------------------------
+  // BT. Block 121, the audit of 5 Oct 2026: an act entered with no
+  // act_progress row, a replay that takes only its own act's items, a
+  // catch inside the grace window, the shop shut while an act saves
+  // toward a sum, one "Walang pagsusulit" for an act with no questions,
+  // and the reset's kept scores.
+  // -------------------------------------------------------------
+  if (section("BT", "Block 121: a missing row, replays, catches, the shop, no questions, the reset")) {
+    const { ctx, page } = await enterTestRoom();
+    const entered = await page.evaluate(async () => {
+      window.__runTest = Assessment.runTest; // the real one, for the questions below
+      Assessment.runTest = async function () {};
+      Assessment.runTrivia = async function () {};
+      Acts.showActTitle = async function () {};
+      Acts.progress[1] = { status: "completed", objectives_done: 5 };
+      delete Acts.progress[2];
+      const inserts = () => __CALLS.filter((c) => c.table === "act_progress" && c.op === "insert").length;
+      const before = inserts();
+      __TEST.insertError = { act_progress: "Failed to fetch" };
+      const orig = console.error;
+      console.error = () => {};
+      let threw = null;
+      try { await Acts.enterAct(2); } catch (e) { threw = String(e); }
+      console.error = orig;
+      delete __TEST.insertError;
+      return { threw, tries: inserts() - before, current: Acts.current, status: Acts.status };
+    });
+    ok("an act entered with its row's insert failing tries once more, then plays on, never throwing",
+       entered.threw === null && entered.tries === 2 && entered.current === 2 && entered.status === "playing", entered);
+
+    const replay = await page.evaluate(async () => {
+      ITEMS.push({ id: "bigay-1", name: "Isa", kind: "equipment", slot: "outfit", price: 0, description: "",
+        effect: {}, replayRemoves: true, givenInAct: 1 });
+      ITEMS.push({ id: "bigay-2", name: "Dalawa", kind: "equipment", slot: "accessory", price: 0, description: "",
+        effect: {}, replayRemoves: true, givenInAct: 2 });
+      await Inventory.grant("bigay-1");
+      await Inventory.grant("bigay-2");
+      state.flags.__startCurrency_2 = 40;
+      Game.spendCurrency(Game.currency());
+      Game.addCurrency(10); // spent in the shop: below the act's start
+      await Acts.replayAct(2);
+      return { kept: Inventory.owns("bigay-1"), taken: !Inventory.owns("bigay-2"), currency: Game.currency() };
+    });
+    ok("a replay of Act II takes back what Act II gave, and keeps what Act I gave (givenInAct)",
+       replay.kept && replay.taken, replay);
+    ok("and gives back no barya spent in the shop", replay.currency === 10, replay);
+
+    const caught = await page.evaluate(() => {
+      const guard = { alert: 1 }; // a guard whose meter just filled (Act II's room has none)
+      health = maxHealth;
+      invulnUntil = performance.now() + 1e9;
+      const d0 = Game.stats().detections;
+      caughtBy(guard);
+      const inGrace = { detections: Game.stats().detections - d0, health };
+      invulnUntil = 0;
+      caughtBy(guard);
+      const out = { inGrace, landed: Game.stats().detections - d0, health };
+      invulnUntil = performance.now() + 1e9;
+      return out;
+    });
+    ok("a catch inside the grace window counts no detection; one that lands counts one",
+       caught.inGrace.detections === 0 && caught.inGrace.health === 3 && caught.landed === 1 && caught.health === 2, caught);
+
+    const shop = await page.evaluate(() => {
+      const act = currentActData;
+      const saved = act.objectives;
+      act.objectives = [{ id: "ipon", label: "Mag-ipon", flag: "t_ipon", countCurrency: 50 }];
+      const id = Inventory.forSale(null).length ? null : ITEMS.find((it) => it.price > 0).id;
+      const out = { during: Inventory.forSale(null).length, why: Inventory.buyBlocker(id) };
+      state.flags.t_ipon = true;
+      out.after = Inventory.forSale(null).length;
+      act.objectives = saved;
+      delete state.flags.t_ipon;
+      return out;
+    });
+    ok("nothing is sold while the act saves toward a sum, and the shop opens once it is given",
+       shop.during === 0 && shop.why === "Nag-iipon ka pa" && shop.after > 0, shop);
+
+    const tests = await page.evaluate(async () => {
+      const open = () => !document.getElementById("quiz").classList.contains("hidden");
+      const title = () => document.getElementById("quiz-title").textContent;
+      const real = window.QUESTIONS[9];
+      const run = (n, t) => window.__runTest.call(Assessment, n, t);
+      const p = run(9, "pre");
+      for (let i = 0; i < 40 && !open(); i++) await new Promise((r) => setTimeout(r, 50));
+      const pre = { open: open(), title: title() };
+      document.getElementById("quiz-btn").click();
+      await p;
+      const q = run(9, "post");
+      let postOpen = false;
+      for (let i = 0; i < 10; i++) { if (open()) postOpen = true; await new Promise((r) => setTimeout(r, 30)); }
+      const post = await q;
+      window.QUESTIONS[9] = { pre: [{ question: "Q?", choices: ["a", "b"], correct: 0 }] };
+      const r = run(9, "post");
+      let gapOpen = false;
+      for (let i = 0; i < 40 && !gapOpen; i++) { if (open() && title() === "Walang pagsusulit") gapOpen = true; await new Promise((res) => setTimeout(res, 50)); }
+      if (gapOpen) document.getElementById("quiz-btn").click();
+      await r;
+      if (real === undefined) delete window.QUESTIONS[9]; else window.QUESTIONS[9] = real;
+      return { pre, postOpen, post, gapOpen };
+    });
+    ok("an act with no questions says \"Walang pagsusulit\" once, at the pre-test, and skips the post-test silently",
+       tests.pre.open && tests.pre.title === "Walang pagsusulit" && !tests.postOpen && tests.post === null, tests);
+    ok("an act with pre-test questions and no post-test ones still says so",
+       tests.gapOpen, tests);
+
+    const kept = await page.evaluate(() => {
+      Assessment._writePending([
+        { student_id: "u1", act_number: 1, test_type: "pre", score: 1, max_score: 2 },
+        { student_id: "iba", act_number: 1, test_type: "pre", score: 2, max_score: 2 },
+      ]);
+      __TEST.canReset = true;
+      Shell._resetData();
+      return true;
+    });
+    await page.waitForTimeout(1500); // the reset reloads the page
+    const left = await page.evaluate(() => JSON.parse(localStorage.getItem("macario_pending_scores") || "[]"));
+    ok("the full reset drops this student's kept scores and leaves another's",
+       kept && left.length === 1 && left[0].student_id === "iba", left);
     await ctx.close();
   }
 
