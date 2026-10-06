@@ -7212,6 +7212,39 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("on a 740 by 360 phone, Susunod is in view for all ten pre-test items",
        fold.length === 10 && fold.every((d) => d <= 0), fold);
     await r.ctx.close();
+
+    // And the shell's ways out: settings' Bumalik with a long list of
+    // finished tasks above it, and the password panel's I-save and Bumalik.
+    const done14 = {};
+    ["nakitaAngMgaSiga", "nakausapSiNanaySaBahay", "nagpasyangMagtrabaho"].forEach((f) => { done14[f] = true; });
+    r = await newPage({ session: { user: { id: "u1" } },
+      game_progress: [{ student_id: "u1", current_act: 1, current_room: "tondo",
+        save_state: { quests: [], posX: 6000, flags: done14 } }],
+      act_progress: [{ student_id: "u1", act_number: 1, status: "playing", objectives_done: 3 }] },
+      null, { width: 740, height: 360 });
+    await r.page.click("#shell-start");
+    for (let t = 0; t < 6000 && (await r.page.evaluate(() => Shell.state)) !== "playing"; t += 100) await r.page.waitForTimeout(100);
+    const ways = await r.page.evaluate(async () => {
+      const inView = (id) => {
+        const b = document.getElementById(id).getBoundingClientRect();
+        const box = document.getElementById("shell-box").getBoundingClientRect();
+        return b.height > 0 && b.top >= box.top - 1 && b.bottom <= box.bottom + 1;
+      };
+      // Thirteen of Act I's steps done, so the finished list is long.
+      Acts.objectivesFor(1).slice(0, 13).forEach((o) => { state.flags[o.flag] = true; });
+      renderQuests();
+      Shell.openPause();
+      document.getElementById("shell-pause-settings").click();
+      await new Promise((res) => setTimeout(res, 300));
+      const listed = document.querySelectorAll("#shell-done-quests li").length;
+      const settingsBack = inView("shell-settings-back");
+      document.getElementById("shell-password").click();
+      await new Promise((res) => setTimeout(res, 300));
+      return { listed, settingsBack, save: inView("shell-password-save"), back: inView("shell-password-back") };
+    });
+    ok("on a 740 by 360 phone, settings' Bumalik and the password panel's buttons are on screen",
+       ways.listed >= 10 && ways.settingsBack && ways.save && ways.back, ways);
+    await r.ctx.close();
   }
 
   await browser.close();

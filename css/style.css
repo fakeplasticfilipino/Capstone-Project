@@ -4197,3 +4197,42 @@ body.dialogue-top .dialogue-portrait {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Block 123 (6 Oct 2026). Two shell panels whose way out was off the
+   bottom of a phone held sideways (measured at 740 by 360). Settings
+   grows with the list of finished tasks and the controls, and its only
+   button back sat 400 to 500 pixels down: it now stays on the panel's
+   bottom edge while the rest scrolls under it. The password panel's
+   three fields left I-save just under the edge and Bumalik under that:
+   the two now share a row. */
+@media (orientation: landscape) and (max-height: 500px) {
+  #shell-settings-back {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    box-shadow: 0 -10px 0 var(--px-panel), 0 24px 0 var(--px-panel);
+  }
+
+  #shell-password-panel:not(.hidden) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10px;
+  }
+
+  #shell-password-panel > * {
+    grid-column: 1 / -1;
+  }
+
+  #shell-password-panel > #shell-password-save,
+  #shell-password-panel > #shell-password-back {
+    grid-column: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  /* Room for the row: the note takes its space only when it says
+     something. */
+  #shell-password-note:empty {
+    display: none;
+  }
+}

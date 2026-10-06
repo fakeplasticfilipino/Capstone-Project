@@ -5398,6 +5398,14 @@ every item at every text size, and a laptop at 1280 by 720 (desktop
 --zoom) went from 100 to 450 pixels below to all but the longest two
 in view. test.js, section BU.
 
+Measuring every shell screen the same way at 740 by 360 found two more:
+settings, whose only way back sat 400 to 500 pixels down under the
+growing list of finished tasks and the controls (it now stays on the
+panel's bottom edge as the rest scrolls), and the password panel, whose
+I-save sat just under the edge (its two buttons now share a row, and
+the empty note takes no room). The pause, Talaan, inventory, shop,
+logout, act screen, feedback, work game and haircut screens all fit.
+
 Not built, waiting on the proponent: a database change (drafted; kept
 off the public repository until applied, Database guardrails), and the
 paper's drafts for the Documentation debt, written for the proponent
