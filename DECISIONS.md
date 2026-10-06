@@ -5431,6 +5431,44 @@ lines of ours open the beat with it (Montalan, Macario), tagged
 The paper's drafts for the Documentation debt were written for the
 proponent to adapt, on the proponent's computer.
 
+## Block 124: an hour's pass on my own, 6 Oct 2026
+
+The proponent went out for an hour and asked for work without input:
+bugs, enhancements, consistency. The game itself needed nothing; what
+was found was in the tools and the docs.
+
+A flag that content waits on (a requiresFlag, an unlessFlag, a pinned
+line's from, a state.flags read) and that nothing sets is a typo, and a
+typo there fails silently: the beat never plays, the person never comes
+out, nothing errors, and only a tester who knows the story notices. No
+check looked for it; the content check already did the same for an
+objective's flag. It now looks for every flag waited on in every act
+(flagsNeverSet, lib/checks.js), so prepare.js, the hook and CI fail on
+one. Set means assigned (flags.x =, or through an alias such as act3's
+f.x =) or named in quotes anywhere but after a waiting key, which takes
+in a doneFlag, a givenFlag, a checkpoint's flag and a helper's argument
+without listing them. The engine's own flags (salita_, pahiwatig_,
+__turo_) are skipped. On the content as it stands it finds nothing; a
+planted typo in Act II was caught.
+
+monkey.js counted console errors and page errors only, and the enemy
+catalogue reports a placement it cannot merge (an unknown type, or a
+guard placed as an enemy) with console.warn, drawing a placeholder box.
+Those warnings now count as errors in a random run.
+
+The rest was read and found right, and is recorded so it is not done
+again for nothing: every flag of Acts II to IV starts with its act's
+prefix; no line says okay or 'ho; every English line is followed by its
+Tagalog; every line of dialogue in STORY.md's beats is still in the
+content (the reverse of the story check, by a scratch script; the two
+"+n barya" lines of the haircut are composed); every item id a story
+point or a grant names is in the catalogue; the four acts' Talaan
+papers agree in count, places and spots; every function the engine
+contract and the content calls list exists, and the one missing from
+the list (setOutfitTint, Block 85) was added; no TODO and no stray
+console.log in the shipped code; every button in index.html has a
+label or an aria-label.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

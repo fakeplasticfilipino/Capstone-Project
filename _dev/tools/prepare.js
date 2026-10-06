@@ -13,7 +13,8 @@
 // is stamped with its files' fingerprints (lib/stamp.js). Then it runs
 // the checks that need no browser (lib/checks.js): every script
 // compiles, STORY.md has every act's lines, every act's content holds
-// together (doors, story points, enemy types, ids, objectives, trees),
+// together (doors, story points, enemy types, ids, objectives, trees,
+// flags waited on),
 // ART.md's Owed list is right, the manifest, the stamps, the sheets. A
 // few seconds in all.
 //

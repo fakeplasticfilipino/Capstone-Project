@@ -330,8 +330,10 @@ the flags and the objective chain, written out and agreed.
      (Polish #2), and verify_new_scene.js starts from every one.
   7. node _dev/tools/prepare.js: STORY.md has every line, and the content
      check (Polish #4) finds doors to nowhere, story points in no scene,
-     unknown enemy types, repeated ids, objectives nothing sets, and
-     anyone behind a shadow tree, for every act.
+     unknown enemy types, repeated ids, objectives nothing sets,
+     anyone behind a shadow tree, and a flag waited on (requiresFlag,
+     unlessFlag, a state.flags read) that nothing sets, a typo that
+     would otherwise fail silently (Block 124), for every act.
   8. Suites: the fixture act keeps every engine mechanic covered; the
      act's own story end to end is a new section in verify_new_scene.js
      (or a sibling file), modelled on Act I's, with reloads mid-beat.
@@ -495,6 +497,9 @@ game.js exposes window.Game and nothing else:
     doneQuests()         the finished tasks' lines, for the settings
                          panel; Block 57
     setOutfit(sheets)    awaitable; null restores the base sprites
+    setOutfitTint(css)   a CSS filter on Macario while an outfit with
+                         no sheets is worn (its tint), null for none;
+                         inventory.js only (Block 85)
     currency()
     addCurrency(n)
     spendCurrency(n)     false and no change when the student is short
@@ -2435,6 +2440,8 @@ look, by system:
                                           black cards; first-attempt
                                           post-test average; question
                                           save by upsert)
+    a flag waited on and never set        Block 124 (flagsNeverSet in
+                                          the content check)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

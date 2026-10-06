@@ -9,7 +9,13 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 6 Oct 2026, after Block 123. Block 123: an overnight
+Last updated: 6 Oct 2026, after Block 124. Block 124: an hour's pass
+on my own, nothing in the game changed: prepare.js now fails on a flag
+that content waits on and nothing sets (a typo that would silently stop
+a beat), monkey.js counts the enemy catalogue's warnings, and a read of
+all four acts against the rules (flag prefixes, the English lines, the
+story both ways, items, the Talaan, the contract) found nothing else.
+Both suites 1,348 green before it. Block 123: an overnight
 pass at the proponent's word (work on, no questions): the release run
 at a student's speed made green again (the checks waited by fixed
 silences a black card outlasts; the game was right), the dashboard's
@@ -938,6 +944,10 @@ machine, the assessment module.
         test, settings and password screens fit a 740 by 360 phone;
         monkey.js; schema v11 (no browser role updates profiles, scores
         must be possible); Malabon's raid in the stolen uniforms
+    124 an hour's pass: the content check fails on a flag waited on
+        that nothing sets (a silent typo); monkey.js counts the enemy
+        catalogue's warnings; setOutfitTint in the engine contract; the
+        rest of the consistency read found nothing (DECISIONS.md)
 
 ## Blocks remaining
 

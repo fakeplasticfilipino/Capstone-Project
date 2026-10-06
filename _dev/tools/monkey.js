@@ -59,6 +59,9 @@ const KEYS = ["a", "d", "a", "d", "d", "d", " ", "j", "j", "e", "e", "Shift", "E
       const errors = [];
       page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
       page.on("console", (m) => { if (m.type() === "error" && !/404|Failed to load resource/.test(m.text())) errors.push("console: " + m.text().slice(0, 200)); });
+      // Block 124. A placement the catalogue cannot merge is only warned
+      // about (it draws as the placeholder box), so it counts here.
+      page.on("console", (m) => { if (m.type() === "warning" && /enemy type/i.test(m.text())) errors.push("warn: " + m.text().slice(0, 200)); });
       await page.route("**/supabaseClient.js*", (r) => r.fulfill({ body: STUB, contentType: "text/javascript" }));
       await page.route("**/js/vendor/supabase.js*", (r) => r.fulfill({ body: "", contentType: "text/javascript" }));
       await page.addInitScript(() => { window.__TEST = {}; });

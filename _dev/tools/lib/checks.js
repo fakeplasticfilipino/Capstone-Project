@@ -21,7 +21,8 @@
 //              doors and scene changes lead to scenes that exist, story
 //              points stand in real scenes, enemy types are in the
 //              catalogue, ids are unique, objective flags are set by
-//              something, and nobody to reach stands behind a tree
+//              something, nobody to reach stands behind a tree, and
+//              every flag waited on is set somewhere (Block 124)
 //
 // Since Polish list #3 the story check reads every act, not only Act I.
 // =============================================================
@@ -129,6 +130,8 @@ function content() {
   const floorsSrc = (read("js/game.js").match(/const FLOORS = \{([\s\S]*?)\n\};/) || [])[1] || "";
   const floors = new Set([...floorsSrc.matchAll(/^  (\w+)\(/gm)].map((m) => m[1]));
   const problems = [];
+  const allSrc = ACT_FILES.concat("content/items.js")
+    .filter((rel) => fs.existsSync(path.join(ROOT, rel))).map(read).join("\n");
   ACT_FILES.forEach((rel, i) => {
     const act = ctx["ACT_" + (i + 1)];
     if (!act) return;
@@ -201,9 +204,37 @@ function content() {
       const bySetter = new RegExp("\\b(?:givenFlag|doneFlag|buyFlag|first|full|earned)\\s*:\\s*[\"']" + o.flag + "[\"']").test(src);
       if (quoted < 2 && dotted === 0 && !viaConst && !bySetter) problems.push(tag + ": nothing sets objective " + o.id + "'s flag " + o.flag);
     }
+    for (const f of flagsNeverSet(src, allSrc)) problems.push(tag + ": the flag " + f + " is waited on and nothing sets it");
   });
-  return { name: "every act's content holds together: doors, story points, types, ids, objectives, trees",
+  return { name: "every act's content holds together: doors, story points, types, ids, objectives, trees, flags",
            ok: problems.length === 0, detail: problems };
+}
+
+// Block 124. A flag something waits on (a requiresFlag, an unlessFlag, a
+// pinned line's from, a state.flags read) that no act sets is a typo, and
+// a typo there fails silently: the beat never plays, the person never
+// appears, and nothing errors. Set means assigned (flags.x = or, through
+// an alias, f.x =) or named in quotes anywhere but after one of those
+// keys: a doneFlag, a givenFlag, a checkpoint's flag, a helper's
+// argument, a constant. The engine's own flags (salita_, pahiwatig_,
+// __turo_ and the like) are set by game.js.
+const WAIT_KEYS = "requiresFlag|unlessFlag|skipIfFlag|revealedByFlag|hiddenByFlag|from";
+function flagsNeverSet(src, allSrc) {
+  const waited = new Set();
+  for (const m of src.matchAll(new RegExp("\\b(?:" + WAIT_KEYS + ")\\s*:\\s*\"(\\w+)\"", "g"))) waited.add(m[1]);
+  for (const m of src.matchAll(/\bflags\.(\w+)\b(?!\s*=[^=])/g)) waited.add(m[1]);
+  const afterWaitKey = new RegExp("\\b(?:" + WAIT_KEYS + ")\\s*:\\s*$");
+  const unset = [];
+  for (const f of waited) {
+    if (/^(salita_|pahiwatig_|__)/.test(f) || /^(filter|length|forEach|every|some|map|includes)$/.test(f)) continue;
+    if (new RegExp("\\.\\s*" + f + "\\s*=[^=]").test(allSrc)) continue;
+    let named = false;
+    for (const m of allSrc.matchAll(new RegExp("[\"'`]" + f + "[\"'`]", "g"))) {
+      if (!afterWaitKey.test(allSrc.slice(Math.max(0, m.index - 25), m.index))) { named = true; break; }
+    }
+    if (!named) unset.push(f);
+  }
+  return unset;
 }
 
 // ART.md's Owed list is every picture the game asks for that is not on
