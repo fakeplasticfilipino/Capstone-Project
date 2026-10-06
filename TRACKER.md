@@ -1056,7 +1056,7 @@ Playwright package.json pins, and the harness says which path
 it wanted if it is still missing. A Playwright update needs it again.
 There run.js runs everything in about two minutes, and at a student's
 speed (--real) in about four and a half. Last full run at a student's
-speed: 6 Oct 2026, 1,346 passed, 0 failed (Block 123, after its last change). Random play from
+speed: 6 Oct 2026, 1,348 passed, 0 failed (Block 123, after its last change). Random play from
 every story point (node _dev/tools/monkey.js, Block 123): 6 Oct 2026,
 three seeds, 150 runs, no error. Worth a run before the pilot too. The
 same night: every person of every story point talked to (no error,
