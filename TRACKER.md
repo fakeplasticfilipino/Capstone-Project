@@ -66,7 +66,7 @@ Brigandage Act; two battles of fifteen; the Americans in English, each
 line given in Tagalog). Block 116 (4 Oct): a guest who
 finishes Act I plays on into Act II, with no tests and nothing saved.
 Block 115: the suites in pieces, the story fast-forwarded under test and
-run side by side (both suites, 1,337 checks since Block 121, in about two minutes; CI
+run side by side (both suites, 1,338 checks since Block 123, in about two minutes; CI
 in four shards, about two and a half). Block 114: a floor drawn for each
 place, each job played once, the barber's game a haircut on a customer
 drawn in pixels. Block 113: Act II written, 1896 to 1898, as a tragedy;
@@ -663,13 +663,13 @@ The paper specifies ten.
 
 | Requirement | Status |
 |---|---|
-| Performance | (BUILT) No build step, no framework, plain script tags. The loop writes to the page only on a change; the phone was confirmed smooth after Block 36. Pictures are JPEG where they can be and sheets 256-colour PNGs; the whole game is kept on the phone after the first visit |
+| Performance | (BUILT) No build step, no framework, plain script tags. The loop writes to the page only on a change; the phone was confirmed smooth after Block 36. Pictures are JPEG where they can be and sheets 256-colour PNGs; the whole game is kept on the phone after the first visit. The six battles of fifteen (Acts II to IV) measured on 6 Oct 2026 with the CPU slowed six times: a steady 60 frames a second, none over 33 ms |
 | Reliability | (BUILT) Debounced save, ten second autosave that also resends a save that failed (Block 121), beforeunload and logout flushes. A loader that retries every picture until it arrives |
 | Usability | (BUILT) Tagalog throughout the game; the teacher dashboard in English. Touch targets 44px on glass, icons beside every label, a three-step text size, a rotate notice in portrait. No guide arrow, by decision |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (823 and 514 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (824 and 514 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -1039,9 +1039,10 @@ npx playwright install chromium --dry-run prints both numbers for the
 Playwright package.json pins, and the harness says which path
 it wanted if it is still missing. A Playwright update needs it again.
 There run.js runs everything in about two minutes, and at a student's
-speed (--real) in about four and a half.
+speed (--real) in about four and a half. Last full run at a student's
+speed: 6 Oct 2026, 1,338 passed, 0 failed (Block 123).
 
-test.js (823 checks) drives the shipping index.html with a stubbed
+test.js (824 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
