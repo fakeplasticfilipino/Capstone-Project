@@ -7534,6 +7534,12 @@ function setAudio(prefs) {
 // Android build, and a phone in a pocket playing music through a
 // lesson is the one audio failure a teacher would hear about.
 document.addEventListener("visibilitychange", () => {
+  // 6 Oct 2026. And send what is owed the moment the page is hidden: on
+  // Android, switching apps, locking the phone or swiping the tab away
+  // often fires no beforeunload, and the debounced save (800 ms) could
+  // be the one that never went. flushSave is gated like every save
+  // (a guest, before the login ends, after the reset).
+  if (document.hidden) flushSave();
   syncMusic();
   if (audioCtx) {
     if (document.hidden) audioCtx.suspend().catch(() => {});

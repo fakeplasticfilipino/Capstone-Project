@@ -7169,6 +7169,26 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("Escape in the middle of the pre-test opens nothing: the question stays, no pause screen",
        esc.status === "pretest" && esc.shell === "playing" && esc.quiz && esc.choices > 0, esc);
     await r.ctx.close();
+
+    // The page hidden (another app, the phone locked) sends the save at
+    // once, not after the debounce that may never come.
+    r = await enterTestRoom();
+    const hid = await r.page.evaluate(async () => {
+      await new Promise((res) => setTimeout(res, 1200)); // whatever was pending, gone
+      const saves = () => __CALLS.filter((c) => c.table === "game_progress" && c.op === "upsert").length;
+      const before = saves();
+      state.flags.__nakatago = true;
+      markDirty();
+      Object.defineProperty(document, "hidden", { value: true, configurable: true });
+      document.dispatchEvent(new Event("visibilitychange"));
+      await new Promise((res) => setTimeout(res, 100)); // well inside the 800 ms debounce
+      const sent = saves() - before;
+      const row = __DB.game_progress[0];
+      Object.defineProperty(document, "hidden", { value: false, configurable: true });
+      return { sent, has: Boolean(row && row.save_state && row.save_state.flags.__nakatago) };
+    });
+    ok("hiding the page sends the save at once", hid.sent === 1 && hid.has, hid);
+    await r.ctx.close();
   }
 
   await browser.close();

@@ -5380,6 +5380,10 @@ papers found, facts a post-test may ask about), and closing pause
 unblocked the world under the questions. Escape now opens pause only
 when the pause button could be tapped (shown and laid out). Phones have
 no Escape key; a laptop used for the study does. test.js, section BU.
+The save is also sent the moment the page is hidden (visibilitychange):
+on Android, switching apps, locking the phone or swiping the tab away
+often fires no beforeunload, so the 800 ms debounce could be the save
+that never went.
 
 Not built, waiting on the proponent: a database change (drafted; kept
 off the public repository until applied, Database guardrails), and the
