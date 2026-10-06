@@ -631,9 +631,21 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   };
   // Every line said until the box has stayed shut for gapMs: a beat
   // with a pause in it (a knock, someone walking on) is one reading.
+  // A black card or the scene fade on screen: story still going, only
+  // with no line in the box. At a student's speed (--real) a run of
+  // cards lasts longer than the wait for a reading's first line, so
+  // that wait does not count the time one is up (6 Oct 2026; under
+  // TEST_SPEED a card is a tenth as long, which is why only --real ever
+  // met it). The silence that ends a reading still counts it: a reading
+  // stops at a card, and the next one picks up after it.
+  const onBlack = (p) => p.evaluate(() =>
+    !document.getElementById("intertitle").classList.contains("hidden") || blackout.classList.contains("visible"));
   const readLines = async (p, max, gapMs) => {
     const lines = [];
-    for (let i = 0; i < 80 && !(await line(p)); i++) await p.waitForTimeout(100);
+    for (let waited = 0, total = 0; waited < 8000 && total < 120000 && !(await line(p)); total += 100) {
+      if (!(await onBlack(p))) waited += 100;
+      await p.waitForTimeout(100);
+    }
     // Block 115: the silence that ends a reading is story time, so
     // a third of it when the story runs fast; and each line is
     // waited out until it changes, not for a fixed 140 ms.
@@ -2394,7 +2406,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const cut1 = await cutState(page);
     ok("a clean cut: \"Not bad, kid\"", cut1.over && cut1.ask === "Sundalong Amerikano: Not bad, kid. Not bad at all.", cut1);
     await page.click("#cut-stop");
-    c = await readLines(page, 12, 3000);
+    // Through the card "Nang gabing iyon.": about four seconds of black at
+    // a student's speed, longer than the usual silence (6 Oct 2026).
+    c = await readLines(page, 16, 7000);
     ok("\"Bandits, all of 'em\", given in Tagalog; he leaves; that night, the three",
        c.lines.includes("Macario (sa isip): Mga bandido raw kaming lahat.") &&
        c.lines.includes("Macario (sa isip): Tatlong mukhang kilala ko.") &&
@@ -2485,7 +2499,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        c.lines.includes("Macario (sa isip): May nagturo."), c.lines);
     ok("prison, and the card lifts on a cell in Bilibid, July 1902 (Block 120)", await waitForScene(page, "selda", 30000) &&
        await page.evaluate(() => document.getElementById("ground-tiles").dataset.floor === "bato"));
-    c = await readLines(page, 8, 3000);
+    // The guard walks the length of the cell to the bars between the first
+    // line and his: about five seconds at a student's speed (6 Oct 2026).
+    c = await readLines(page, 8, 9000);
     await playOn(page, "state.flags.a3_saSelda === true && !cutscenePlaying", 20000);
     await settle(page);
     ok("the war declared over and the amnesty, from a guard at the bars; \"Pero ang bayan?\"",

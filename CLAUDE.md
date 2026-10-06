@@ -2423,6 +2423,11 @@ look, by system:
                                           122 (the password change kept
                                           for students, the current
                                           one asked)
+    an overnight pass                     Block 123 (--real green: a
+                                          reading's first wait skips
+                                          black cards; first-attempt
+                                          post-test average; question
+                                          save by upsert)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

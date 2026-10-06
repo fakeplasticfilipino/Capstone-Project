@@ -4302,6 +4302,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       done: document.getElementById("stat-done").textContent,
       pre: document.getElementById("stat-pre").textContent,
       post: document.getElementById("stat-post").textContent,
+      postSub: document.getElementById("stat-post-sub").textContent,
       gain: document.getElementById("stat-gain").textContent,
       gainSub: document.getElementById("stat-gain-sub").textContent,
     }));
@@ -4312,8 +4313,11 @@ const visible = (page, sel) => page.evaluate((s) => {
        !first.rows.some((r) => r[0] === "ibang-klase"), first.rows);
     ok("the summary counts the class: 4 students, 3 started, 2 finished Act I",
        first.students === "4" && first.started === "3" && first.done === "2", first);
+    // 6 Oct 2026: the post-test average is the first attempts (90 and
+    // 70), as the gain is, not the retake 100.
     ok("and averages only who has sat each test, with the n shown",
-       first.pre === "50%" && first.post === "95%" && first.gain === "+35%" &&
+       first.pre === "50%" && first.post === "80%" && /n = 2, first attempt/.test(first.postSub) &&
+       first.gain === "+35%" &&
        /n = 2, pre to first post-test/.test(first.gainSub), first);
     ok("a retake: the post-test shows the latest, the gain the first, the latest under it (S13)",
        first.rows[2][5].startsWith("100%") && /2 attempts/.test(first.rows[2][5]) &&
@@ -5670,6 +5674,22 @@ const visible = (page, sel) => page.evaluate((s) => {
        saved.n === 9 && saved.first.question === "Binagong tanong?" && saved.first.correct_index === 2 &&
        JSON.stringify(saved.orders) === "[1,2,3,4,5,6,7,8,9]" && /^Saved/.test(saved.status) &&
        /matched pairs/.test(saved.status) && /From the database/.test(saved.source), saved);
+
+    // 6 Oct 2026: a save that fails on its way leaves the test as it was,
+    // never empty (the old order deleted the rows first).
+    const dropped = await page.evaluate(async () => {
+      window.__TEST.upsertError = { assessment_items: "Failed to fetch" };
+      document.querySelector("#qe-list .qe-question").value = "Hindi aabot.";
+      document.getElementById("qe-save").click();
+      await new Promise((r) => setTimeout(r, 300));
+      delete window.__TEST.upsertError;
+      const rows = __DB.assessment_items.filter((r) => r.act_number === 1 && r.test_type === "pre");
+      document.querySelector("#qe-list .qe-question").value = "Binagong tanong?";
+      return { n: rows.length, first: rows[0] && rows[0].question,
+        status: document.getElementById("qe-status").textContent };
+    });
+    ok("a save lost on the way leaves the old test whole, and says so",
+       dropped.n === 9 && dropped.first === "Binagong tanong?" && /^Not saved/.test(dropped.status), dropped);
 
     const invalid = await page.evaluate(async () => {
       document.querySelector("#qe-list .qe-question").value = "  ";

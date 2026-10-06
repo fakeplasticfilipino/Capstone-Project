@@ -1220,7 +1220,7 @@
             // PLACEHOLDER, every line.
             dialogueSets: [
               oneLine("Bonifacio", "Ilabas mo ang sedula mo, kapatid.", { skipIfFlag: "a2_pinunit" }),
-              oneLine("Bonifacio", "Sa makalawa, sa San Juan del Monte.", { requiresFlag: "a2_pinunit" }),
+              oneLine("Bonifacio", "Sa susunod na linggo, sa San Juan del Monte.", { requiresFlag: "a2_pinunit" }),
             ],
             gift: {
               buttonLabel: "Punitin ang sedula",
@@ -1235,7 +1235,7 @@
                 { speaker: "Macario", text: "Opo, Supremo." },
                 { speaker: "Bonifacio", text: "Napanood kita bilang Baldovino. \"Walang bayang mananatiling alipin...\"" },
                 { speaker: "Bonifacio", text: "Akala ko, linya lang. Ngayon, nakikita kong hindi." },
-                { speaker: "Bonifacio", text: "Sa makalawa, lulusob tayo sa San Juan del Monte. Sumama ka sa akin." },
+                { speaker: "Bonifacio", text: "Sa susunod na linggo, lulusob tayo sa San Juan del Monte. Sumama ka sa akin." },
                 { speaker: "Macario", text: "Opo." },
               ],
               onComplete() {

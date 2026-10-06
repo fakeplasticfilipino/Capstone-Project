@@ -14,11 +14,16 @@
 // test over. "Restore defaults" puts the built-in questions back in
 // the editor; nothing is written until Save.
 //
-// Saving a test replaces its rows: the old ones are deleted and the
-// edited list inserted in order, so reordering and removing need no
-// bookkeeping. If the insert fails after the delete, the database holds
-// no questions for that test and the game falls back to its built-in
-// bank, which is a safe place to fail to; the teacher is told.
+// Saving a test replaces its rows: the edited list is written in order
+// over the old one (an upsert on act, test and order), then any row past
+// its new last question is deleted, so reordering and removing need no
+// bookkeeping. Until 6 Oct 2026 the old rows were deleted first and the
+// list inserted after, and a dropped connection between the two left
+// the test with no questions: Act I fell back to the built-in bank
+// (another test mid-study) and Acts II to IV skipped theirs. Now a
+// failure leaves the old test, or the new one with the old one's extra
+// questions still at the end; either way the teacher is told and saves
+// again.
 //
 // Everything a teacher typed is written into inputs as values, never
 // as HTML.
@@ -287,13 +292,14 @@ const TeacherQuestions = {
           this.setStatus("Not saved.", "");
           return;
         }
-        const del = await sb.from("assessment_items").delete().eq("act_number", act).eq("test_type", type);
-        if (del.error) throw del.error;
-        const ins = await sb.from("assessment_items").insert(checked.rows.map((r, i) => ({
+        const put = await sb.from("assessment_items").upsert(checked.rows.map((r, i) => ({
           act_number: act, test_type: type, item_order: i + 1,
           question: r.question, choices: r.choices, correct_index: r.correct,
-        })));
-        if (ins.error) throw ins.error;
+        })), { onConflict: "act_number,test_type,item_order" });
+        if (put.error) throw put.error;
+        const del = await sb.from("assessment_items").delete().eq("act_number", act).eq("test_type", type)
+          .gt("item_order", checked.rows.length);
+        if (del.error) throw del.error;
       }
       this.loadedFromDb = true;
       this.render();

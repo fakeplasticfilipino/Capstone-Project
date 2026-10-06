@@ -41,7 +41,7 @@
   // teacher dashboard's .in("student_id", ids).
   const match = (rows, filters) =>
     rows.filter((r) => filters.every(([k, v, op]) =>
-      op === "in" ? v.includes(r[k]) : r[k] === v));
+      op === "in" ? v.includes(r[k]) : op === "gt" ? r[k] > v : r[k] === v));
 
   function builder(table, op, payload, opts) {
     const filters = [];
@@ -78,6 +78,9 @@
           rows.push(...added);
           data = m === "single" ? added[0] : added;
         } else if (op === "upsert") {
+          if (T.upsertError && T.upsertError[table]) {
+            return Promise.resolve({ data: null, error: { message: T.upsertError[table] } });
+          }
           const list = Array.isArray(payload) ? payload : [payload];
           list.forEach((p) => {
             const keys = (opts && opts.onConflict
@@ -110,6 +113,7 @@
       select() { return b; },
       eq(k, v) { filters.push([k, v]); return b; },
       in(k, list) { filters.push([k, list, "in"]); return b; },
+      gt(k, v) { filters.push([k, v, "gt"]); return b; },
       order() { return b; },
       maybeSingle() { mode = "maybe"; return exec("maybe"); },
       single() { return exec("single"); },

@@ -322,6 +322,7 @@
       { speaker: "Barbero", text: "Hindi bagay sa'yo ang maging magtataho." },
       { speaker: "Barbero", text: "Kung magtatago ka, dito ka magtago. Walang naghahanap ng rebelde sa likod ng gunting." },
       { speaker: "Sundalong Amerikano", text: "Hey, old man. I've been waiting." },
+      { speaker: "Macario (sa isip)", text: "Kanina pa raw siya naghihintay." },
       { speaker: "Barbero (pabulong)", text: "Amerikano. Linggo-linggo siyang pumupunta rito." },
       { speaker: "Barbero", text: "Marunong ka pang humawak ng gunting?" },
       { speaker: "Macario", text: "Hindi kabayo ang mga suki n'yo, 'di po ba?" },
@@ -349,18 +350,21 @@
       hint: "Gupitin ang buhok na lampas sa guhit.",
       speaker: "Sundalong Amerikano",
       askText: "Just a trim. Short on the sides.",
-      tooShortText: "Hey! Easy there, pal!",
+      tooShortText: "Hey! Easy there, pal! (Dahan-dahan daw!)",
       customer: { hair: [176, 124, 70], hairLight: [205, 156, 96], hairShine: [226, 186, 128], moustache: false },
       doneText: (c) => (c >= 0.8 ? "Not bad, kid. Not bad at all." : "Huh. It'll grow back."),
     });
     if (clean < 0) return;
     setCutscene(true);
+    // 6 Oct 2026: the verdict, given in Tagalog (the game's toast is his).
     await playDialogue([
+      { speaker: "Macario (sa isip)", text: clean >= 0.8 ? "Hindi raw masama. Hindi talaga masama." : "Tutubo rin naman daw ulit." },
       { speaker: "Sundalong Amerikano", text: "Say. They tell me the insurrectos are hiding right here in Tondo." },
       { speaker: "Macario (sa isip)", text: "Nagtatago raw ang mga rebelde rito mismo sa Tondo." },
       { speaker: "Macario", text: "Dito po sa Tondo, ser?" },
       { speaker: "Sundalong Amerikano", text: "Bandits, all of 'em. Here. Keep the change." },
       { speaker: "Macario (sa isip)", text: "Mga bandido raw kaming lahat." },
+      { speaker: "Macario (sa isip)", text: "At sa akin na raw ang sukli." },
     ]);
     if (window.Game && Game.addCurrency) Game.addCurrency(10);
     showToast("+10 barya", 2000);
@@ -661,6 +665,7 @@
     await moveDecoration("sundalo-likod", 90, 260);
     await playDialogue([
       { speaker: "Sundalong Amerikano", text: "Hands up! Don't move!" },
+      { speaker: "Macario (sa isip)", text: "Itaas daw ang kamay. Huwag gagalaw." },
       { speaker: "Macario (sa isip)", text: "Pati ang likod." },
       { speaker: "Macario (sa isip)", text: "May nagturo." },
     ]);

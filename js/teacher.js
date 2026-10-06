@@ -483,7 +483,11 @@ function renderSummary(rows) {
   const started = rows.filter((r) => r.hasPlayed);
   const done = rows.filter((r) => r.status === "completed");
   const withPre = rows.filter((r) => r.prePct !== null);
-  const withPost = rows.filter((r) => r.postPct !== null);
+  // 6 Oct 2026. The class's post-test is each student's first attempt,
+  // the one the gain is measured from (Scan S13): averaging the latest
+  // let retakes raise it, so pre, post and gain did not agree. The
+  // roster and the CSV still show the latest beside it.
+  const withPost = rows.filter((r) => r.firstPostPct !== null);
   const withGain = rows.filter((r) => r.gain !== null);
 
   stat("stat-students").textContent = n;
@@ -497,9 +501,9 @@ function renderSummary(rows) {
     : "—";
   stat("stat-pre-sub").textContent = `n = ${withPre.length}`;
   stat("stat-post").textContent = withPost.length
-    ? average(withPost.map((r) => r.postPct)).toFixed(0) + "%"
+    ? average(withPost.map((r) => r.firstPostPct)).toFixed(0) + "%"
     : "—";
-  stat("stat-post-sub").textContent = `n = ${withPost.length}`;
+  stat("stat-post-sub").textContent = `n = ${withPost.length}, first attempt`;
 
   const gainEl = stat("stat-gain");
   gainEl.classList.remove("gain-positive", "gain-negative");

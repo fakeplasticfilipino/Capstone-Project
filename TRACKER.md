@@ -9,7 +9,16 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 5 Oct 2026, after Block 122. Block 122: the password
+Last updated: 6 Oct 2026, after Block 123. Block 123: an overnight
+pass at the proponent's word (work on, no questions): the release run
+at a student's speed made green again (the checks waited by fixed
+silences a black card outlasts; the game was right), the dashboard's
+average post-test made the first attempts' like the gain, a question
+save that can no longer leave a test empty, "Sa makalawa" made "Sa
+susunod na linggo" (Act II, a week), and five English lines of Act
+III given their Tagalog. Waiting on the proponent: a database change,
+drafted and kept off the repository until applied, and the drafts for
+the paper (both on the proponent's computer, Claude outputs/). Block 122: the password
 change offered to every student again (a panelist's suggestion), with
 the current password asked first; the trackers read through against
 the build. Block 121: the audit of 5
@@ -281,6 +290,16 @@ and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026. Open:
+
+    Block 123, the overnight pass. Dashboard (teacher.html): Ave.
+      post-test reads "n = ..., first attempt". The questions editor
+      still saves (Saved...) and the test plays. Act II (?dev=1,
+      Pugad Lawin): Bonifacio says "Sa susunod na linggo". Act III
+      (?dev=1, the barbershop): "Kanina pa raw siya naghihintay." after
+      the American's first line, a thought giving his verdict after
+      the cut, "At sa akin na raw ang sukli."; the raid: "Itaas daw ang
+      kamay. Huwag gagalaw." Failure: an English line with no Tagalog
+      after it, or a question save that says Saved and changes nothing.
 
     Block 121, the audit. Act I: no coins button until Nanay has her
       savings; after, the coins open Tindahan with three: Dahon ng
@@ -878,6 +897,11 @@ machine, the assessment module.
     122 the password change for every student again (a panelist's
         suggestion), the current password asked first; the trackers
         read through against the build
+    123 an overnight pass: the release run at a student's speed green
+        again (checks, not the game), the dashboard's post-test average
+        of first attempts, a question save that cannot empty a test,
+        "sa susunod na linggo" in Act II, five English lines of Act III
+        given their Tagalog
 
 ## Blocks remaining
 

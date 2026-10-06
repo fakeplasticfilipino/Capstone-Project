@@ -5292,6 +5292,59 @@ Blocks 117 to 121, Act III's fifteen steps in seven places, Act IV's
 eighteen owed pictures, the pinned Playwright, CI on Markdown; README's
 jobs, shop and owed count.
 
+## Block 123: an overnight pass, 6 Oct 2026
+
+The proponent asked for work to go on through the night without
+questions. What could be built without a decision only the proponent
+can make was built; the rest waits. Every change below is listed for
+the proponent's review the next morning, and each is a small diff to
+undo if refused.
+
+The release run (node _dev/tests/run.js --real) was red: 26 checks in
+verify_new_scene.js's Acts III and IV, CI green all along. The game was
+right; the checks read the story by fixed silences that are story time.
+readLines waited at most eight seconds for a reading's first line, and
+a run of black cards at a student's speed lasts longer (Act IV's court:
+four cards before the sentence); under TEST_SPEED a card is a tenth as
+long, so only --real met it. That first wait now does not count the
+time a card or the scene fade is on screen. Making the silence that
+ends a reading ignore cards too was tried and refused by the fast
+suite: some readings are meant to stop at a card (Laguna's end, where
+the next reading starts with the messenger), so the two readings that
+genuinely span a pause at a student's speed get a longer silence
+instead (the barbershop through "Nang gabing iyon.", and the guard
+walking to the bars in Bilibid).
+
+The dashboard's average post-test was every student's latest attempt
+while the gain was the first post-test's (Scan S13), so a class whose
+weaker students retook until they passed showed pre, post and gain that
+did not add up. The tile is now the first attempts' ("n = 2, first
+attempt"); the roster's cells and the CSV keep the latest beside it.
+
+Saving a test's questions deleted its rows and then inserted the new
+ones, two requests. A connection lost between them left no questions:
+Act I fell back to its built-in bank, a different test mid-study, and
+Acts II to IV skipped the test. The save is now an upsert on (act,
+test, order), the unique key the table already has, then a delete of
+the rows past the new last question; a failure leaves the old test or
+the new one with stray questions at its end, never nothing, and says
+"Not saved". The harness stub learned upsert errors and .gt().
+
+Two content corrections, ours and PLACEHOLDER like the lines around
+them. Act II: Bonifacio at Pugad Lawin (card: 23 August 1896) said "Sa
+makalawa" (the day after tomorrow) of San Juan del Monte, whose card is
+30 August; now "Sa susunod na linggo", twice. Act III: five English
+lines had no Tagalog after them, against Block 117's rule: the
+American's "Hey, old man. I've been waiting.", his verdict on the cut
+(the toast stays his, a thought after the game gives it), "Hey! Easy
+there, pal!" (glossed in the toast), "Keep the change", and "Hands up!
+Don't move!" at the raid.
+
+Not built, waiting on the proponent: a database change (drafted; kept
+off the public repository until applied, Database guardrails), and the
+paper's drafts for the Documentation debt, written for the proponent
+to adapt.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

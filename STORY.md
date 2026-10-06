@@ -1457,7 +1457,7 @@ sedula".
   + Macario: Opo, Supremo.
   + Bonifacio: Napanood kita bilang Baldovino. "Walang bayang mananatiling alipin..."
   + Bonifacio: Akala ko, linya lang. Ngayon, nakikita kong hindi.
-  + Bonifacio: Sa makalawa, lulusob tayo sa San Juan del Monte. Sumama ka sa akin.
+  + Bonifacio: Sa susunod na linggo, lulusob tayo sa San Juan del Monte. Sumama ka sa akin.
   + Macario: Opo.
 
   + [BLACK] Agosto 30, 1896
@@ -1472,7 +1472,7 @@ from the stage (Act I, beat 12). The others there:
   + Kasama: Akala ko, nahuli ka na sa Tondo, Pangulo.
   + Bonifacio: Ilabas mo ang sedula mo, kapatid.
     (before)
-  + Bonifacio: Sa makalawa, sa San Juan del Monte.
+  + Bonifacio: Sa susunod na linggo, sa San Juan del Monte.
     (after)
 
 ### 8. San Juan del Monte
@@ -1923,6 +1923,7 @@ barberya, plays by itself on arrival.
   + Barbero: Hindi bagay sa'yo ang maging magtataho.
   + Barbero: Kung magtatago ka, dito ka magtago. Walang naghahanap ng rebelde sa likod ng gunting.
   + Sundalong Amerikano: Hey, old man. I've been waiting.
+  + Macario (sa isip): Kanina pa raw siya naghihintay.
   + Barbero (pabulong): Amerikano. Linggo-linggo siyang pumupunta rito.
   + Barbero: Marunong ka pang humawak ng gunting?
   + Macario: Hindi kabayo ang mga suki n'yo, 'di po ba?
@@ -1937,14 +1938,17 @@ on the American, sandy-haired and clean-shaven.
   + Sundalong Amerikano: Just a trim. Short on the sides.
   + Macario (sa isip): Maikli raw sa gilid.
   + (the game) Barberya / Gupitin ang buhok na lampas sa guhit.
-  + (a cut inside the line) Sundalong Amerikano: Hey! Easy there, pal!
+  + (a cut inside the line) Sundalong Amerikano: Hey! Easy there, pal! (Dahan-dahan daw!)
   + (a clean cut) Sundalong Amerikano: Not bad, kid. Not bad at all.
   + (a rough one) Sundalong Amerikano: Huh. It'll grow back.
+  + (after a clean cut) Macario (sa isip): Hindi raw masama. Hindi talaga masama.
+  + (after a rough one) Macario (sa isip): Tutubo rin naman daw ulit.
   + Sundalong Amerikano: Say. They tell me the insurrectos are hiding right here in Tondo.
   + Macario (sa isip): Nagtatago raw ang mga rebelde rito mismo sa Tondo.
   + Macario: Dito po sa Tondo, ser?
   + Sundalong Amerikano: Bandits, all of 'em. Here. Keep the change.
   + Macario (sa isip): Mga bandido raw kaming lahat.
+  + Macario (sa isip): At sa akin na raw ang sukli.
 
     (He pays, +10 barya, and goes.)
 
@@ -2264,6 +2268,7 @@ the blow lands at the peak):
     (A soldier at the back door, too.)
 
   + Sundalong Amerikano: Hands up! Don't move!
+  + Macario (sa isip): Itaas daw ang kamay. Huwag gagalaw.
   + Macario (sa isip): Pati ang likod.
   + Macario (sa isip): May nagturo.
   + Barbero: Walang kinalaman dito ang mga batang 'yan!
