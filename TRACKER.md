@@ -976,7 +976,10 @@ minute a push is still deploying can be kept under the new ?v=; any
 change to that file's bytes, then prepare.js and a push, gives it a new
 fingerprint and fixes it (Block 106). Before a class or a presentation, open the
 game once on good wifi on every device and wait for the green line.
-(FIX BUILT, NOT SEEN ON DEVICE)
+Simulated on 6 Oct 2026 against the live site, cold cache, at 740 by
+360: on fast 3G the title is usable in 3 seconds and the whole game is
+kept in about 40; on slow 3G, 12 seconds and about 2 and a half
+minutes. (FIX BUILT, NOT SEEN ON DEVICE)
 
 A phone that kept an old index.html keeps asking for old files. Since
 Block 62 the service worker asks the network for the page first, which
