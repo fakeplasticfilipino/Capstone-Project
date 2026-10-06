@@ -1055,7 +1055,12 @@ There run.js runs everything in about two minutes, and at a student's
 speed (--real) in about four and a half. Last full run at a student's
 speed: 6 Oct 2026, 1,346 passed, 0 failed (Block 123, after its last change). Random play from
 every story point (node _dev/tools/monkey.js, Block 123): 6 Oct 2026,
-three seeds, 150 runs, no error. Worth a run before the pilot too.
+three seeds, 150 runs, no error. Worth a run before the pilot too. The
+same night: every person of every story point talked to (no error,
+nothing stuck); every screen measured at 640 by 360, 740 by 360 and 823
+by 412 (all fit since Block 123's layout fixes); memory flat across four
+rounds of every scene of Acts II to IV; the stealth stretches and the
+battles at 60 frames a second with the CPU slowed six times.
 
 test.js (834 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
