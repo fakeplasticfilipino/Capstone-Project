@@ -5371,6 +5371,16 @@ for a red cross. The battles of fifteen were measured the same night
 broke the house spelling (Block 93: rito after a vowel): the guard's
 "Bumalik ka dito!" is "Bumalik ka rito!".
 
+The same random play as a signed-in student found one thing the guests
+could not: Escape opened the pause screen in the middle of a test. The
+pause button is hidden while a test is up, but the shell's state stays
+"playing" under assessment.js's overlay, and the Escape handler only
+read that state. From the pause screen the Talaan was one tap away (the
+papers found, facts a post-test may ask about), and closing pause
+unblocked the world under the questions. Escape now opens pause only
+when the pause button could be tapped (shown and laid out). Phones have
+no Escape key; a laptop used for the study does. test.js, section BU.
+
 Not built, waiting on the proponent: a database change (drafted; kept
 off the public repository until applied, Database guardrails), and the
 paper's drafts for the Documentation debt, written for the proponent

@@ -266,9 +266,20 @@ const Shell = {
     // Escape both opens and closes, which is what every player will
     // try first. It deliberately does nothing outside playing and
     // paused, so it cannot dismiss the title screen or a test.
+    //
+    // 6 Oct 2026: and it opens the pause screen only when the pause
+    // button could be tapped. A test, the act's end screen and the other
+    // overlays of assessment.js and acts.js leave the shell "playing"
+    // and hide the button; Escape used to open the pause screen over a
+    // test all the same, with the Talaan (the papers found, facts a
+    // post-test may ask about) one tap away, and closing it unblocked
+    // the world underneath the test.
     document.addEventListener("keydown", (e) => {
       if (e.key !== "Escape") return;
-      if (this.state === "playing") this.openPause();
+      if (this.state === "playing") {
+        const btn = document.getElementById("btn-pause");
+        if (!btn || (!btn.classList.contains("hidden") && btn.offsetParent !== null)) this.openPause();
+      }
       else if (this.state === "paused") this.closePause();
       else if (this.state === "settings") this._closeSettings();
       else if (this.state === "notebook") this._closeNotebook();

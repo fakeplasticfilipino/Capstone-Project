@@ -7150,6 +7150,25 @@ const visible = (page, sel) => page.evaluate((s) => {
        ended.screen.button === "Subukan ulit", ended);
     ok("and written once the connection is back", ended.after, ended);
     await r.ctx.close();
+
+    // Escape during a test does what a tap could: nothing. It used to open
+    // the pause screen over the questions, the Talaan one tap away.
+    r = await newPage({ session: { user: { id: "u1" } }, realQuestions: true });
+    await r.page.click("#shell-start");
+    for (let t = 0; t < 6000 && !(await r.page.evaluate(() => Acts.status === "pretest" &&
+      !document.getElementById("quiz").classList.contains("hidden") &&
+      document.querySelectorAll("#quiz-choices button").length > 0)); t += 100) {
+      await r.page.evaluate(() => { const b = document.getElementById("quiz-btn"); if (b && b.offsetParent) b.click(); });
+      await r.page.waitForTimeout(100);
+    }
+    await r.page.keyboard.press("Escape");
+    await r.page.waitForTimeout(300);
+    const esc = await r.page.evaluate(() => ({ status: Acts.status, shell: Shell.state,
+      quiz: !document.getElementById("quiz").classList.contains("hidden"),
+      choices: document.querySelectorAll("#quiz-choices button").length }));
+    ok("Escape in the middle of the pre-test opens nothing: the question stays, no pause screen",
+       esc.status === "pretest" && esc.shell === "playing" && esc.quiz && esc.choices > 0, esc);
+    await r.ctx.close();
   }
 
   await browser.close();
