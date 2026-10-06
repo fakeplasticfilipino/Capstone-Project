@@ -4175,3 +4175,25 @@ body.dialogue-top .dialogue-portrait {
 .test-fast .intertitle-line {
   transition-duration: 0s !important;
 }
+
+/* Block 123 (6 Oct 2026). A test on a phone held sideways. The box was a
+   380px column in the middle of a screen three times as wide, so a
+   question and four answers, each at least 63px tall, ran past the
+   bottom at 740 by 360: Susunod sat below the visible part of the box
+   for nine of Act I's ten pre-test items, reached only by scrolling a
+   box that nothing said would scroll. Wider, with the answers two to a
+   row, the question, the answers and the button share the screen. The
+   trivia card and the score screen reuse the box and only get longer
+   lines. Any screen wider than tall: a laptop at 1280 by 720, under the
+   desktop camera (--zoom 1.75), ran three to four hundred pixels past the
+   bottom before. */
+@media (orientation: landscape) {
+  #quiz-box {
+    width: min(96vw, 1000px);
+  }
+
+  #quiz-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}

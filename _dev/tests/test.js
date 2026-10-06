@@ -7189,6 +7189,29 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("hiding the page sends the save at once", hid.sent === 1 && hid.has, hid);
     await r.ctx.close();
+
+    // Block 123: on a 740 by 360 phone, Susunod is in view for every one
+    // of Act I's built-in pre-test items, without scrolling the box (it
+    // was below the fold for nine of ten in a 380px column).
+    r = await newPage({ session: { user: { id: "u1" } }, realQuestions: true }, null, { width: 740, height: 360 });
+    await r.page.click("#shell-start");
+    const fold = [];
+    for (let q = 0; q < 10; q++) {
+      for (let t = 0; t < 8000; t += 100) {
+        if (await r.page.evaluate(() => document.querySelectorAll("#quiz-choices button").length > 0 &&
+          !document.getElementById("quiz").classList.contains("hidden"))) break;
+        await r.page.evaluate(() => { const b = document.getElementById("quiz-btn"); if (b && b.offsetParent) b.click(); });
+        await r.page.waitForTimeout(100);
+      }
+      fold.push(await r.page.evaluate(() => Math.round(document.getElementById("quiz-btn").getBoundingClientRect().bottom -
+        document.getElementById("quiz-box").getBoundingClientRect().bottom)));
+      await r.page.click("#quiz-choices button >> nth=0");
+      await r.page.click("#quiz-btn");
+      await r.page.waitForTimeout(150);
+    }
+    ok("on a 740 by 360 phone, Susunod is in view for all ten pre-test items",
+       fold.length === 10 && fold.every((d) => d <= 0), fold);
+    await r.ctx.close();
   }
 
   await browser.close();

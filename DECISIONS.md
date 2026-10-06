@@ -5385,6 +5385,19 @@ on Android, switching apps, locking the phone or swiping the tab away
 often fires no beforeunload, so the 800 ms debounce could be the save
 that never went.
 
+A test on a phone held sideways (found measuring, not reported): the
+quiz box was a 380px column in the middle of a screen three times as
+wide, and a question with four answers, each at least 63px tall for the
+touch target, ran past the bottom at 740 by 360. Susunod was below the
+visible part of the box for nine of Act I's ten pre-test items, reached
+only by scrolling a box that nothing said would scroll; a student who
+answered and saw no button could think the test had stopped. In any
+landscape screen the box is now wide (min(96vw, 1000px)) and the answers
+two to a row: at 740 by 360 and 823 by 412 the button is in view for
+every item at every text size, and a laptop at 1280 by 720 (desktop
+--zoom) went from 100 to 450 pixels below to all but the longest two
+in view. test.js, section BU.
+
 Not built, waiting on the proponent: a database change (drafted; kept
 off the public repository until applied, Database guardrails), and the
 paper's drafts for the Documentation debt, written for the proponent

@@ -21,7 +21,8 @@ then stopped, never putting a student into the wrong act (and what he
 carries read again too); an act's end that cannot be written said, with
 a reload, instead of a next-act button that did nothing; Escape no
 longer opens the pause screen (and the Talaan) in the middle of a test;
-the save sent the moment the phone leaves the page. Waiting on the proponent: a database change,
+the save sent the moment the phone leaves the page; the test's answers
+two to a row in landscape, so Susunod is on screen without scrolling. Waiting on the proponent: a database change,
 drafted and kept off the repository until applied, and the drafts for
 the paper (both on the proponent's computer, Claude outputs/). Block 122: the password
 change offered to every student again (a panelist's suggestion), with
@@ -71,7 +72,7 @@ Brigandage Act; two battles of fifteen; the Americans in English, each
 line given in Tagalog). Block 116 (4 Oct): a guest who
 finishes Act I plays on into Act II, with no tests and nothing saved.
 Block 115: the suites in pieces, the story fast-forwarded under test and
-run side by side (both suites, 1,346 checks since Block 123, in about two minutes; CI
+run side by side (both suites, 1,347 checks since Block 123, in about two minutes; CI
 in four shards, about two and a half). Block 114: a floor drawn for each
 place, each job played once, the barber's game a haircut on a customer
 drawn in pixels. Block 113: Act II written, 1896 to 1898, as a tragedy;
@@ -303,7 +304,9 @@ Oct 2026. Open:
       (?dev=1, the barbershop): "Kanina pa raw siya naghihintay." after
       the American's first line, a thought giving his verdict after
       the cut, "At sa akin na raw ang sukli."; the raid: "Itaas daw ang
-      kamay. Huwag gagalaw." Login on the phone as usual: no change
+      kamay. Huwag gagalaw." The pre-test on the phone: the four
+      answers two to a row, Susunod visible without scrolling. Login on
+      the phone as usual: no change
       to see (the failure path is the harness's, section BU). Failure:
       an English line with no Tagalog after it, a question save that
       says Saved and changes nothing, or a student opening in the wrong
@@ -677,7 +680,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (832 and 514 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (833 and 514 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -1053,7 +1056,7 @@ speed: 6 Oct 2026, 1,346 passed, 0 failed (Block 123, after its last change). Ra
 every story point (node _dev/tools/monkey.js, Block 123): 6 Oct 2026,
 three seeds, 150 runs, no error. Worth a run before the pilot too.
 
-test.js (832 checks) drives the shipping index.html with a stubbed
+test.js (833 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
