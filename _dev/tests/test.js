@@ -7104,6 +7104,25 @@ const visible = (page, sel) => page.evaluate((s) => {
        !twice.ready && !twice.signed && twice.box && /Hindi mabuksan ang iyong laro/.test(twice.said), twice);
     ok("and nothing is written: his save still says Act II", twice.stored === 2 && twice.writes === 0, twice);
     await r.ctx.close();
+
+    // The same for what he carries: one dropped read of each, and the
+    // anting-anting he wears still gives its fourth heart.
+    r = await newPage(Object.assign(inAct2({ player_inventory: 1, player_equipment: 1 }), {
+      player_inventory: [{ student_id: "u1", item_id: "anting-anting", quantity: 1 }],
+      player_equipment: [{ student_id: "u1", slot: "accessory", item_id: "anting-anting" }],
+    }));
+    await settleLogin(r.page);
+    await r.page.click("#shell-start");
+    let worn = null;
+    for (let t = 0; t < 5000; t += 100) {
+      worn = await r.page.evaluate(() => ({ owns: Inventory.owns("anting-anting"),
+        worn: Inventory.equipped("accessory"), max: Game.health().max }));
+      if (worn.owns && worn.max === 4) break;
+      await r.page.waitForTimeout(100);
+    }
+    ok("his things read again after a dropped request: the anting-anting worn, four hearts",
+       worn.owns && worn.worn === "anting-anting" && worn.max === 4, worn);
+    await r.ctx.close();
   }
 
   await browser.close();

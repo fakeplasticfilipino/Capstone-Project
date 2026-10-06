@@ -244,16 +244,20 @@ const Inventory = {
 
     if (!this._persists()) return;
 
+    // 6 Oct 2026. A read that fails is tried once more, as the login's
+    // own reads are: one dropped request on classroom wifi used to leave
+    // the session with nothing owned and nothing worn (the anting-anting's
+    // heart gone until the next login).
+    const read = async (table, cols) => {
+      const once = () => sb.from(table).select(cols).eq("student_id", currentUserId);
+      const first = await once();
+      return first.error ? once() : first;
+    };
+
     try {
       const [inv, eq] = await Promise.all([
-        sb
-          .from("player_inventory")
-          .select("item_id, quantity")
-          .eq("student_id", currentUserId),
-        sb
-          .from("player_equipment")
-          .select("slot, item_id")
-          .eq("student_id", currentUserId),
+        read("player_inventory", "item_id, quantity"),
+        read("player_equipment", "slot, item_id"),
       ]);
 
       if (inv.error) console.error("player_inventory read failed:", inv.error);

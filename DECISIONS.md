@@ -5351,6 +5351,10 @@ time when the first fails, and a second failure stops the login
 iyong laro...", nothing written (saveReady is still false), and signing
 in again starts afresh; with a stored session the title screen's timer
 still offers a reload. test.js, section BU (the stub's selectFail).
+The inventory's two reads at login (Inventory.sync) are tried again the
+same way: one dropped request used to leave the session with nothing
+owned and nothing worn, the anting-anting's fourth heart gone until the
+next login.
 
 Not built, waiting on the proponent: a database change (drafted; kept
 off the public repository until applied, Database guardrails), and the
