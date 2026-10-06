@@ -5354,7 +5354,11 @@ still offers a reload. test.js, section BU (the stub's selectFail).
 The inventory's two reads at login (Inventory.sync) are tried again the
 same way: one dropped request used to leave the session with nothing
 owned and nothing worn, the anting-anting's fourth heart gone until the
-next login.
+next login. And the act's end (Acts.complete) is written a second time
+when the first fails; if that fails too, the transition screen no longer
+offers the next act (it was still locked, so its button did nothing)
+but says "Hindi pa naitala" and reloads, and the login finishes the act
+from where it stopped (the post-test already sat, the write again).
 
 Not built, waiting on the proponent: a database change (drafted; kept
 off the public repository until applied, Database guardrails), and the

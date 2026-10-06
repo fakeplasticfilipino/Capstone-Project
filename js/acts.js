@@ -814,7 +814,12 @@ const Acts = {
 
     const stats = this.currentStats();
 
-    const { error } = await sb.from("act_progress").upsert(
+    // 6 Oct 2026. Tried once more when the first write fails (a dropped
+    // request), as the act's other writes are. Still failing, the act
+    // stays unrecorded here; showTransition says so and reloads, and the
+    // next login finishes it (resume: the post-test already sat, then
+    // this write again).
+    const write = () => sb.from("act_progress").upsert(
       {
         student_id: currentUserId,
         act_number: n,
@@ -829,7 +834,10 @@ const Acts = {
         updated_at: new Date().toISOString(),
       },
       { onConflict: "student_id,act_number" }
-    );
+    ).then((r) => r, (err) => ({ error: err }));
+
+    let { error } = await write();
+    if (error) ({ error } = await write());
 
     if (error) {
       console.error("act_progress complete failed:", error);
@@ -1009,6 +1017,23 @@ const Acts = {
     this._lastAward = 0;
 
     const earned = award ? `Nakakuha ka ng ${award} barya. ` : "";
+
+    // 6 Oct 2026. The act's end could not be written (complete, twice):
+    // the next act would stay locked and its button would do nothing.
+    // Said plainly, and a reload, whose login finishes the act from where
+    // it stopped. A guest never comes here.
+    if (currentUserId && !this.isCompleted(fromAct)) {
+      await this._screen({
+        eyebrow: `Natapos: ${ACT_ORDINALS[fromAct] || "Yugto " + fromAct}`,
+        title: "Hindi pa naitala",
+        body: "Natapos mo ang yugtong ito, pero hindi pa ito naitala dahil sa koneksyon. " +
+          "Tiyaking may internet, saka pindutin ang Subukan ulit.",
+        button: "Subukan ulit",
+      });
+      if (window.Game && Game.flushSave) await Game.flushSave();
+      location.reload();
+      return;
+    }
 
     if (!nextAct) {
       await this._screen({

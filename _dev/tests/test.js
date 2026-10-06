@@ -7123,6 +7123,33 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("his things read again after a dropped request: the anting-anting worn, four hearts",
        worn.owns && worn.worn === "anting-anting" && worn.max === 4, worn);
     await r.ctx.close();
+
+    // The act's end, written on a dropped connection: tried twice, then
+    // said, rather than a next-act button that does nothing.
+    r = await enterTestRoom();
+    const ended = await r.page.evaluate(async () => {
+      const upserts = () => __CALLS.filter((c) => c.table === "act_progress" && c.op === "upsert").length;
+      const orig = console.error;
+      console.error = () => {};
+      __TEST.upsertError = { act_progress: "Failed to fetch" };
+      const before = upserts();
+      await Acts.complete();
+      const tries = upserts() - before;
+      const stillOpen = !Acts.isCompleted(Acts.current);
+      Acts.showTransition(Acts.current);
+      await new Promise((res) => setTimeout(res, 300));
+      const screen = { title: document.getElementById("act-screen-title").textContent,
+        button: document.querySelector("#act-screen-btn .lbl").textContent };
+      delete __TEST.upsertError;
+      await Acts.complete();
+      console.error = orig;
+      return { tries, stillOpen, screen, after: Acts.isCompleted(Acts.current) };
+    });
+    ok("an act's end that cannot be written is tried twice, then said, with a way to try again",
+       ended.tries === 2 && ended.stillOpen && ended.screen.title === "Hindi pa naitala" &&
+       ended.screen.button === "Subukan ulit", ended);
+    ok("and written once the connection is back", ended.after, ended);
+    await r.ctx.close();
   }
 
   await browser.close();
