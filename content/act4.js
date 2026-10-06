@@ -493,7 +493,12 @@
     setCutscene(true);
     clearRun(PLAZA_FLAGS);
     await wait(300);
+    // Block 123 (approved 6 Oct 2026): the disguise, as the Constabulary's
+    // own report of 1905 tells this raid: at dusk, in the uniforms of the
+    // Constabulary and the Scouts, the barracks rushed before a challenge.
     await playDialogue([
+      { speaker: "Montalan", text: "Takipsilim na, Pangulo. Suot pa rin natin ang mga uniporme ng Konstabularya." },
+      { speaker: "Macario", text: "Hanggang hindi tayo nakakalapit sa kuwartel, Konstabularya tayo sa mata nila." },
       { speaker: "Montalan", text: "Ang garison, Pangulo. Nasa plaza ang mga baril nila." },
       { speaker: "Macario", text: "Pasok!" },
     ]);

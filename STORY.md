@@ -2661,9 +2661,15 @@ Completes: Ihanda ang mga kawal. Talked to, before:
 ### 5. San Francisco de Malabon
 
 [MACARIO, reported] On 24 January 1905 his forces raid San Francisco de
-Malabon, Cavite. [INSERT] The battle shown; Villafuerte and de Vega
-beside him, so the sentence of beat 11 lands. malabon, by itself.
+Malabon, Cavite. [MACARIO, reported] They come in at dusk dressed as the
+Constabulary and the Scouts, march in as government troops and rush the
+barracks for its guns (the Constabulary's own report of 1905; added in
+Block 123 at the proponent's word). [INSERT] The battle shown;
+Villafuerte and de Vega beside him, so the sentence of beat 11 lands.
+malabon, by itself.
 
+  + Montalan: Takipsilim na, Pangulo. Suot pa rin natin ang mga uniporme ng Konstabularya.
+  + Macario: Hanggang hindi tayo nakakalapit sa kuwartel, Konstabularya tayo sa mata nila.
   + Montalan: Ang garison, Pangulo. Nasa plaza ang mga baril nila.
   + Macario: Pasok!
 

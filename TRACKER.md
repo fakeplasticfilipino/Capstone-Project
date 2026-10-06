@@ -23,9 +23,10 @@ a reload, instead of a next-act button that did nothing; Escape no
 longer opens the pause screen (and the Talaan) in the middle of a test;
 the save sent the moment the phone leaves the page; the test's answers
 two to a row in landscape, so Susunod is on screen without scrolling;
-settings' Bumalik kept on screen, the password panel's buttons in a row. Waiting on the proponent: a database change,
-drafted and kept off the repository until applied, and the drafts for
-the paper (both on the proponent's computer, Claude outputs/). Block 122: the password
+settings' Bumalik kept on screen, the password panel's buttons in a row. Schema v11 applied the same day at the
+proponent's word (Run log), and Malabon's raid told in the stolen
+uniforms, as the Constabulary's report of 1905 has it. The drafts for
+the paper are on the proponent's computer (Claude outputs/). Block 122: the password
 change offered to every student again (a panelist's suggestion), with
 the current password asked first; the trackers read through against
 the build. Block 121: the audit of 5
@@ -583,6 +584,19 @@ Trust this over any memory of a chat.
                                         visitor, and a student's own and
                                         refused writes, the same before
                                         and after
+    db/migrations/011_macario_schema_v11.sql   RUN, 6 Oct 2026, from the
+                                        session, at the proponent's word.
+                                        No browser role may update
+                                        profiles (a student could make
+                                        himself a teacher and edit the
+                                        tests); a score must be possible
+                                        (0 to max, act 1 to 4); a
+                                        redundant feedback index dropped.
+                                        Before: the test student updated
+                                        his own row; after: permission
+                                        denied, and 500/10 refused. Reads
+                                        for a student, the teacher and a
+                                        visitor the same before and after
 
     db/seeds/macario_items_v3.sql              RUN, 28 Aug 2026
     db/seeds/enrollment_setup.sql              only for a fresh database

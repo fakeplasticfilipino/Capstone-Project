@@ -1736,6 +1736,11 @@ feedback has no update and no delete policy, deliberately. A student who
 wants to change their answer has no mechanism, which is correct for a
 research instrument.
 
+Since schema v11 (Block 123) no browser role may UPDATE profiles at all:
+the own-row update policy had no WITH CHECK, and a student could make
+himself a teacher. A new column a student should edit needs a column
+grant, never the table back.
+
 WHICH TABLES A STUDENT MAY DELETE FROM. A reset button is safe or
 unsafe entirely on this answer, so it is written down here:
 

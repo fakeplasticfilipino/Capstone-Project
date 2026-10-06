@@ -5406,10 +5406,30 @@ I-save sat just under the edge (its two buttons now share a row, and
 the empty note takes no room). The pause, Talaan, inventory, shop,
 logout, act screen, feedback, work game and haircut screens all fit.
 
-Not built, waiting on the proponent: a database change (drafted; kept
-off the public repository until applied, Database guardrails), and the
-paper's drafts for the Documentation debt, written for the proponent
-to adapt.
+Schema v11 (applied the same day, at the proponent's word; the draft was
+kept off the public repository until then). The policy "Users can update
+their own profile" (schema 001) had no WITH CHECK, and Supabase grants
+UPDATE on every column to the browser roles, so a signed-in student
+could set his own role to teacher from the console, and the schema 006
+and 007 policies, which ask private.my_role(), then let him rewrite or
+delete every test question, trivia card and Talaan paper. Nothing in the
+game or the dashboard writes profiles, so UPDATE was revoked from anon
+and authenticated: a grant, not a policy, the narrowest change. With it,
+assessment_scores gained checks that a score is possible (0 to max_score,
+act 1 to 4), since the game grades in the browser; a made-up score
+inside the range is still possible and is stated in the paper's drafts.
+A redundant index on feedback was dropped. Probed before and after:
+the test student's update went through, then was refused; reads for a
+student, the teacher and a visitor unchanged.
+
+San Francisco de Malabon (Act IV, beat 5): the Constabulary's own report
+of 1905 tells this raid with the disguise, at dusk, in the uniforms of
+the Constabulary and the Scouts, the barracks rushed for its guns. Two
+lines of ours open the beat with it (Montalan, Macario), tagged
+[MACARIO, reported]; Tanay keeps its own, as the sources give it.
+
+The paper's drafts for the Documentation debt were written for the
+proponent to adapt, on the proponent's computer.
 
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
