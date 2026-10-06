@@ -3712,10 +3712,24 @@ const visible = (page, sel) => page.evaluate((s) => {
         if (document.querySelector(".enemy-windup")) window.__sawWindup = true;
       });
       watch.observe(document.body, { attributes: true, attributeFilter: ["class"], subtree: true });
-      setTimeout(() => {
-        watch.disconnect();
-        resolve({ before, after: health, telegraphed: window.__sawWindup });
-      }, ATTACK_TELL_MS + 400);
+      // 6 Oct 2026: read the moment the blow lands, within a generous
+      // bound, not at a fixed ATTACK_TELL_MS + 400: on a busy CI machine
+      // the dash after the tell finished a few frames past that and the
+      // check read a heart not yet taken.
+      // The checks after this one start from a fight at rest, so once hit
+      // it still waits out the old window and the end of every dash.
+      const t0 = performance.now();
+      const look = () => {
+        const waited = performance.now() - t0;
+        const hit = health < before && waited >= ATTACK_TELL_MS + 400 && ENEMIES.every((e) => !e.dash);
+        if (hit || waited > ATTACK_TELL_MS + 2500) {
+          watch.disconnect();
+          resolve({ before, after: health, telegraphed: window.__sawWindup });
+          return;
+        }
+        requestAnimationFrame(look);
+      };
+      requestAnimationFrame(look);
     }));
     ok("an enemy in reach takes a heart", swing.after === swing.before - 1, swing);
     ok("after lighting up first, so the swing is readable", swing.telegraphed, swing);
