@@ -306,8 +306,12 @@ Oct 2026. Open:
       (?dev=1, the barbershop): "Kanina pa raw siya naghihintay." after
       the American's first line, a thought giving his verdict after
       the cut, "At sa akin na raw ang sukli."; the raid: "Itaas daw ang
-      kamay. Huwag gagalaw." The pre-test on the phone: the four
-      answers two to a row, Susunod visible without scrolling. Login on
+      kamay. Huwag gagalaw." Act IV (?dev=1, Malabon): Montalan,
+      "Takipsilim na, Pangulo. Suot pa rin natin ang mga uniporme ng
+      Konstabularya." before the garrison. The pre-test on the phone:
+      the four answers two to a row, Susunod visible without scrolling.
+      Settings with many finished tasks: Bumalik stays on screen; the
+      password panel's I-save and Bumalik side by side. Login on
       the phone as usual: no change
       to see (the failure path is the harness's, section BU). Failure:
       an English line with no Tagalog after it, a question save that
@@ -696,7 +700,7 @@ The paper specifies ten.
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
 | Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (834 and 514 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
-| Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser |
+| Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser. Since schema v11 (Block 123) a student cannot change any profile (no making oneself a teacher) and a score must lie between 0 and its maximum |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
 
@@ -928,7 +932,12 @@ machine, the assessment module.
         of first attempts, a question save that cannot empty a test,
         "sa susunod na linggo" in Act II, five English lines of Act III
         given their Tagalog; a login that cannot read the save or the
-        acts tries again, then stops, never guessing the act
+        acts tries again, then stops, never guessing the act; an act's
+        end that cannot be written said, with a reload; Escape no longer
+        opens pause mid-test; the save sent when the page is hidden; the
+        test, settings and password screens fit a 740 by 360 phone;
+        monkey.js; schema v11 (no browser role updates profiles, scores
+        must be possible); Malabon's raid in the stolen uniforms
 
 ## Blocks remaining
 
