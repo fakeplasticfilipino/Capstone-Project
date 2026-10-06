@@ -159,7 +159,7 @@ guards; he gets past them to the press, past the guards searching it,
 to the list, and finds his own name in it, and only then understands:
 the receipts they took give her address, and he left her alone. Running
 home through the night he is seen well short of her door ("Hoy,
-sino ka?! Bumalik ka dito!") and chased the other way, out of Tondo, to
+sino ka?! Bumalik ka rito!") and chased the other way, out of Tondo, to
 the mountains. He never gets back. Nobody learns what became of her. In
 the hills he tears up his cedula for her, charges the powder store at
 San Juan del Monte, where the Kasama dies telling him not to look back,
@@ -1405,7 +1405,7 @@ cover. At x 4550, a long way short of her door, it plays by itself:
 
     (He turns and runs, away from her.)
 
-  + Bantay: Bumalik ka dito!
+  + Bantay: Bumalik ka rito!
 
 Completes: Balikan si Nanay. The chase: the two come after him firing,
 and two more on the street ahead (7400 to 7750, 9300 to 9650) turn on

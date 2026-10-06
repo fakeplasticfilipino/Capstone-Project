@@ -235,6 +235,8 @@ off the repository.
                                (Block 78), shrink-sprites.js (Block 105),
                                prepare.js and lib/stamp.js, lib/checks.js
                                (Block 106), profile.js (Block 107),
+                               monkey.js (random play from every story
+                               point, Block 123),
                                make-sfx.py,
                                make-combat-sfx.js, make-fun-sfx.js,
                                make-scene-sfx.js (Block 81), and

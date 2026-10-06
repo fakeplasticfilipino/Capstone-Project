@@ -24,7 +24,7 @@
 //   tondo        more guards than he has ever seen between home and the
 //                press. Later, the night: back toward home past the
 //                patrols, and short of it a guard: "Hoy, sino ka?!
-//                Bumalik ka dito!" The chase, away from her, to the
+//                Bumalik ka rito!" The chase, away from her, to the
 //                mountains. He never gets back.
 //   imprenta     the sweep, found: three guards searching it, two
 //                shelves to climb over them; the list under the press,
@@ -460,7 +460,7 @@
     ]);
     turnPlayer(1);
     await playDialogue([
-      { speaker: "Bantay", text: "Bumalik ka dito!" },
+      { speaker: "Bantay", text: "Bumalik ka rito!" },
     ]);
     playSfx("caught");
     setCutscene(false);

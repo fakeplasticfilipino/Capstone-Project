@@ -2160,8 +2160,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       await walkTo(page, 5650);
       await walkTo(page, 4530);
       c = await readLines(page, 6);
-      ok("short of home, a guard: \"Hoy, sino ka?! Bumalik ka dito!\", started where he stands",
-         c.lines.includes("Bantay: Hoy, sino ka?!") && c.lines[c.lines.length - 1] === "Bantay: Bumalik ka dito!" &&
+      ok("short of home, a guard: \"Hoy, sino ka?! Bumalik ka rito!\", started where he stands",
+         c.lines.includes("Bantay: Hoy, sino ka?!") && c.lines[c.lines.length - 1] === "Bantay: Bumalik ka rito!" &&
          await page.evaluate(() => currentSceneId === "tondo" && posX > 4000), c.lines);
       await settle(page);
       const chase = await page.evaluate(() => ({

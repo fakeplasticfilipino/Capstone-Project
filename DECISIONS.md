@@ -5360,6 +5360,17 @@ offers the next act (it was still locked, so its button did nothing)
 but says "Hindi pa naitala" and reloads, and the login finishes the act
 from where it stopped (the post-test already sat, the write again).
 
+_dev/tools/monkey.js: a guest from every story point of every act, then
+random controls (walk, run, jump, punch, shoot, talk, Escape, and any
+button on a screen that is up), watching for page and console errors
+and for a game that sits unchanged. The scripted suites only walk the
+paths someone wrote; this walks the others. Three seeds, 150 runs, on 6
+Oct 2026: no error. Not in CI, since random input is for looking, not
+for a red cross. The battles of fifteen were measured the same night
+(CPU slowed six times): a steady 60 frames a second. One line of Act II
+broke the house spelling (Block 93: rito after a vowel): the guard's
+"Bumalik ka dito!" is "Bumalik ka rito!".
+
 Not built, waiting on the proponent: a database change (drafted; kept
 off the public repository until applied, Database guardrails), and the
 paper's drafts for the Documentation debt, written for the proponent
