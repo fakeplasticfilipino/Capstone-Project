@@ -203,10 +203,24 @@ function content() {
       // code that reads that field.
       const bySetter = new RegExp("\\b(?:givenFlag|doneFlag|buyFlag|first|full|earned)\\s*:\\s*[\"']" + o.flag + "[\"']").test(src);
       if (quoted < 2 && dotted === 0 && !viaConst && !bySetter) problems.push(tag + ": nothing sets objective " + o.id + "'s flag " + o.flag);
+      // Block 125. The guide's arrow points at what the step names: a
+      // scene, and in it an NPC, several, or a door that are there.
+      for (const g of [].concat(o.guide || [])) {
+        const at = tag + ", objective " + o.id + "'s guide";
+        const scene = scenes.find((s) => s.id === g.scene);
+        if (!scene) { problems.push(at + " names no scene \"" + g.scene + "\""); continue; }
+        const npcIds = new Set((scene.npcs || []).map((n) => n.id));
+        for (const id of [].concat(g.npc || [], g.npcs || [])) {
+          if (!npcIds.has(id)) problems.push(at + ": no NPC " + id + " in " + scene.id);
+        }
+        if (g.exit && !(scene.exits || []).some((e) => e.id === g.exit)) problems.push(at + ": no exit " + g.exit + " in " + scene.id);
+        if (g.doneFlags && (!g.npcs || g.doneFlags.length !== g.npcs.length)) problems.push(at + ": doneFlags must pair with npcs, one each");
+        if (typeof g.x === "number" && (g.x < 0 || g.x > (scene.worldWidth || 0))) problems.push(at + ": x " + g.x + " is off the road");
+      }
     }
     for (const f of flagsNeverSet(src, allSrc)) problems.push(tag + ": the flag " + f + " is waited on and nothing sets it");
   });
-  return { name: "every act's content holds together: doors, story points, types, ids, objectives, trees, flags",
+  return { name: "every act's content holds together: doors, story points, types, ids, objectives, guides, trees, flags",
            ok: problems.length === 0, detail: problems };
 }
 

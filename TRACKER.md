@@ -9,7 +9,15 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 6 Oct 2026, after Block 124. Block 124: an hour's pass
+Last updated: 6 Oct 2026, after Block 125. Block 125: the guide is
+back, at the proponent's word ("I'm absolutely lost playing this
+without them"), for everyone and with no way to turn it off: an arrow
+with a name over whoever or wherever the step in hand is done, a tab at
+the screen's edge with the distance when it is off screen, and the door
+on the way when it is in another scene. Every objective of the four
+acts names its place (guide); the content check, test.js AW and a
+check from every story point (52) cover it. Both suites 1,409 green.
+Block 124: an hour's pass
 on my own, nothing in the game changed: prepare.js now fails on a flag
 that content waits on and nothing sets (a typo that would silently stop
 a beat), monkey.js counts the enemy catalogue's warnings, and a read of
@@ -304,6 +312,17 @@ and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026. Open:
+
+    Block 125, the guide. Any act, any point (?dev=1): once a beat
+      hands the world back, a green arrow with a name tab bobs over
+      the next person or thing to use (Act I's first job: "Kutsero");
+      walk away and it becomes a tab at the screen's edge, "Kutsero
+      15m", pointing the way. Inside a room whose step is elsewhere
+      (the entablado after the play), the arrow stands over the door,
+      "Lumabas". It is gone during any dialogue, card, fight or
+      tutorial, and back after. Failure: no arrow when free to walk, an
+      arrow at someone the step is not about, an arrow over a talking
+      scene, or the arrow drawn behind a tree.
 
     Block 123, the overnight pass. Dashboard (teacher.html): Ave.
       post-test reads "n = ..., first attempt". The questions editor
@@ -701,7 +720,7 @@ The paper specifies ten.
 |---|---|
 | Performance | (BUILT) No build step, no framework, plain script tags. The loop writes to the page only on a change; the phone was confirmed smooth after Block 36. Pictures are JPEG where they can be and sheets 256-colour PNGs; the whole game is kept on the phone after the first visit. The six battles of fifteen (Acts II to IV) measured on 6 Oct 2026 with the CPU slowed six times: a steady 60 frames a second, none over 33 ms |
 | Reliability | (BUILT) Debounced save, ten second autosave that also resends a save that failed (Block 121), beforeunload and logout flushes. A loader that retries every picture until it arrives |
-| Usability | (BUILT) Tagalog throughout the game; the teacher dashboard in English. Touch targets 44px on glass, icons beside every label, a three-step text size, a rotate notice in portrait. No guide arrow, by decision |
+| Usability | (BUILT) Tagalog throughout the game; the teacher dashboard in English. Touch targets 44px on glass, icons beside every label, a three-step text size, a rotate notice in portrait. A guide arrow to the step in hand (Block 125) |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
@@ -761,7 +780,8 @@ machine, the assessment module.
     40  the moro-moro's walk and sword art; walkOnly, attackAnimation,
         headroom
     41  stand-in stills (deleted in 59)
-    42  the guide (removed in 69); the sight cone; a longer street
+    42  the guide (removed in 69, back in 125); the sight cone; a
+        longer street
     43  painted panels and shadow trees
     44  the repository reorganised
     45  to 47  mirrored panels, then none; the cone from the eyes
@@ -787,6 +807,7 @@ machine, the assessment module.
     68  questions in the game, the editor, replays, password change,
         the Talaan
     69  dashboard in English; Talaan content removed; the guide removed
+        (brought back in 125)
     70  the teacher's Talaan papers (schema 007); lower tree crowns
     71  the punch lands on its contact frame
     72  the siga drawn in code
@@ -948,6 +969,11 @@ machine, the assessment module.
         that nothing sets (a silent typo); monkey.js counts the enemy
         catalogue's warnings; setOutfitTint in the engine contract; the
         rest of the consistency read found nothing (DECISIONS.md)
+    125 the guide back, for everyone, not switchable: the arrow and the
+        edge tab over where the step in hand is done, the door on the
+        way to another scene; a guide on every objective of the four
+        acts; checked by the content check, test.js AW, and from every
+        story point (GUIDE_AT)
 
 ## Blocks remaining
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>MACARIO</title>
-  <link rel="stylesheet" href="css/style.css?v=2872882675" />
+  <link rel="stylesheet" href="css/style.css?v=3518992349" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -81,6 +81,12 @@
         <div id="player" class="entity">
           <div class="sprite player-sprite"></div>
         </div>
+        <!-- Block 125. The guide's arrow over whoever or wherever is next.
+             Placed and shown by game.js (updateGuide). -->
+        <div id="guide-marker" class="hidden" aria-hidden="true">
+          <span class="guide-label"></span>
+          <span class="guide-arrow"></span>
+        </div>
       </div>
     </div>
     <button id="gift-btn" class="hidden"><span class="ico"><svg aria-hidden="true"><use href="#i-gift"></use></svg></span><span class="lbl"></span></button>
@@ -115,6 +121,12 @@
     <button id="btn-inventory" class="hidden" type="button" aria-label="Imbentaryo"><span class="ico"><svg aria-hidden="true"><use href="#i-bag"></use></svg></span></button>
     <button id="btn-pause" class="hidden" type="button" aria-label="Pahinga"><span class="ico"><svg aria-hidden="true"><use href="#i-pause"></use></svg></span></button>
     <div id="toast" class="hidden"></div>
+    <!-- Block 125. The guide's tab at the screen edge when the next place
+         is off screen: which way, and how far. -->
+    <div id="guide-edge" class="hidden" aria-hidden="true">
+      <span class="guide-arrow"></span>
+      <span class="guide-label"></span>
+    </div>
 
     <!-- Mobile controls -->
     <div id="mobile-controls">
@@ -625,14 +637,14 @@
   <script src="js/supabaseClient.js?v=2770937222"></script>
   <script src="content/enemies.js?v=1684018870"></script>
   <script src="content/people.js?v=4165620873"></script>
-  <script src="content/act1.js?v=391304793"></script>
-  <script src="content/act2.js?v=2923946152"></script>
-  <script src="content/act3.js?v=3282287175"></script>
-  <script src="content/act4.js?v=2572669241"></script>
+  <script src="content/act1.js?v=3741003050"></script>
+  <script src="content/act2.js?v=4054652913"></script>
+  <script src="content/act3.js?v=876715781"></script>
+  <script src="content/act4.js?v=75597542"></script>
   <script src="content/items.js?v=1936794751"></script>
   <script src="content/questions.js?v=527737549"></script>
   <script src="js/asset-manifest.js?v=2085169975"></script>
-  <script src="js/game.js?v=249594948"></script>
+  <script src="js/game.js?v=11706500"></script>
   <script src="js/acts.js?v=49959917"></script>
   <script src="js/inventory.js?v=1012480451"></script>
   <script src="js/assessment.js?v=3988839839"></script>

@@ -327,7 +327,9 @@ the flags and the objective chain, written out and agreed.
      under another name declares speakers (Polish #8).
   6. Story points: devJumps on the act, one per beat a tester would want
      to start from, each with its task; ?dev=1 lists them under the act
-     (Polish #2), and verify_new_scene.js starts from every one.
+     (Polish #2), and verify_new_scene.js starts from every one. Each
+     objective done somewhere gets its guide (Block 125), and each story
+     point a line in verify_new_scene.js's GUIDE_AT.
   7. node _dev/tools/prepare.js: STORY.md has every line, and the content
      check (Polish #4) finds doors to nowhere, story points in no scene,
      unknown enemy types, repeated ids, objectives nothing sets,
@@ -553,10 +555,13 @@ world belongs to the scene.
       objectives: [{ id, label, flag,
                      countFlags,                 countFlags optional (Block 48)
                      countCurrency,              optional; barya target (Block 52)
-                     pinned: { from } }],        optional; stays in the log
+                     pinned: { from },           optional; stays in the log
                                                  beside the step in hand
                                                  once flag "from" is set,
                                                  until done (Block 92)
+                     guide }],                   optional; where the step is
+                                                 done, for the arrow
+                                                 (Block 125; The guide)
       linearObjectives: true,                    optional; the quest log is
                                                  the objective chain (Block 48)
       objectiveCurrency: false,                  optional; no barya per step
@@ -772,14 +777,33 @@ dangerous, or declares any guard, or declares any hazard. The explicit flag
 still wins. The derivation exists because a scene that adds a hazard and
 forgets the flag would take a heart the student cannot see.
 
-There is no guide (removed in Block 69, at the proponent's direction):
-nothing on screen says where to go next, and a student finds each
-person from what the story says. Block 42's guide list is gone from
-the act format and the engine. The one exception is a room's way out
-(wayOut, Block 93, at the proponent's request): a line with an arrow at
-the top of the log, shown once no script of the scene is pending or
-playing, because a room the story walks him into gives no other sign of
-its door.
+The guide (Block 125, Block 42's brought back after Block 69 removed
+it; for everyone, always on, with no setting to turn it off). An arrow
+with a name tab over whoever or wherever the step in hand is done, and
+off screen a tab at that edge of the screen with the name and the
+distance (game.js, THE GUIDE). What it points at is the objective's
+guide, one entry or a list:
+
+    { scene, npc: id | npcs: [ids] | exit: id | x,
+      label, requiresFlag, unlessFlag, doneFlags: [flags] }
+
+The step in hand is the first objective whose flag is not set. Entries
+whose flags do not hold are passed over; one in the scene on screen
+wins; else the first naming another scene is reached through the exits
+open now, and the arrow stands over the first door on the way, named by
+the door's label. A way that is a conversation or a script's gotoScene
+is not a door: name the person who starts it, in that scene. An entry
+with a scene and nothing else means "go there", its script taking over.
+npcs points at the nearest who still waits (no gift given, and its
+doneFlags entry not set, for those used with E). A step a script plays
+by itself, and a battle, names none. A fight that moves (advanceTo) is
+pointed at with no name. It hides in dialogue, a cutscene, a card, a
+screen, a tutorial, a fight and while a script plays. The content check
+fails on a guide naming what is not there, and verify_new_scene.js
+checks what it names from every story point (GUIDE_AT): a step added
+or moved is a guide to write and a line of that table to check. A
+room's way out (wayOut, Block 93) is still said at the top of the log
+as well.
 
 An act with an empty objectives array can never complete, which is how
 Acts II through IV were kept from reporting progress they had not made
@@ -931,8 +955,8 @@ are one chain in story order; the task in hand is the first whose flag
 is not set, and a set flag marks every earlier step done
 (syncObjectiveChain, game.js), so an old save or a step passed another
 way never leaves the chain behind the student. The quests array is
-rebuilt from the chain on every markDirty, so forQuest and the guide's
-questOpen see the step in hand as the one open quest, and content calls
+rebuilt from the chain on every markDirty, so forQuest sees the step in
+hand as the one open quest (and the guide points at it), and content calls
 no addQuest or completeQuest: setting the step's flag is completing it.
 countFlags adds "(n/N)" to a step's line from those flags.
 countCurrency (Block 52) adds "(n/N)" from the barya balance instead,
@@ -2356,7 +2380,8 @@ look, by system:
     teacher dashboard                     Blocks 39, 68, 69, 70
     repository layout                     Block 44
     quests and objectives                 Blocks 48, 52, 56, 57, 89, 92
-                                          (autonomy; the pinned line)
+                                          (autonomy; the pinned line),
+                                          125 (the guide)
     Act I's story passages                Blocks 19 to 21, 31 to 37,
                                           52 to 59, 80 (the ending),
                                           81 (checked against the
@@ -2442,6 +2467,9 @@ look, by system:
                                           save by upsert)
     a flag waited on and never set        Block 124 (flagsNeverSet in
                                           the content check)
+    the guide brought back                Block 125 (the objective's
+                                          guide, the way through the
+                                          doors, GUIDE_AT)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

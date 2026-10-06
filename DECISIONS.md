@@ -5469,6 +5469,76 @@ the list (setOutfitTint, Block 85) was added; no TODO and no stray
 console.log in the shipped code; every button in index.html has a
 label or an aria-label.
 
+## Block 125: the guide brought back, 6 Oct 2026
+
+The proponent, playing the four acts: "I'm absolutely lost playing this
+without them." Block 69 had removed Block 42's guide so that a student
+would work out where to go from the story; with four acts, twenty-seven
+scenes and streets many screens long, nobody could, the proponent
+included. The guide is back, for every act, on by default, and cannot
+be turned off (the proponent's word: "It's for everyone"), so there is
+no setting and nothing in shell.js. This supersedes Block 69's removal.
+
+What it looks like is Block 42's, unchanged: over the target a name tab
+and a bobbing arrow, drawn in the world; off screen, a tab at that edge
+of the screen with the name and the distance in metres; neither takes
+a tap. Two things changed in how it is placed: the arrow is moved by
+the translate property through placeBody (Block 107; Block 42 wrote
+left, which lays out the street), with the bob as the transform, so the
+two compose; and every class write goes through setClass (Block 66).
+
+Where it points changed. Block 42 had a guide list on the act, an
+ordered list of goals each with its own conditions, which repeated the
+story's order beside the objectives and had to be kept in step with
+them. Since Block 48 the objectives are themselves the story's order,
+and the step in hand is already known (the first whose flag is not
+set), so the guide is now a field of the objective: guide, where that
+step is done, one entry or a list ({ scene, npc | npcs | exit | x,
+label, requiresFlag, unlessFlag, doneFlags }). The arrow moves on by
+itself when the step does, and an act cannot point at a step it has
+finished. A list is for a step done in two places in turn (the barber,
+then his chair; Carreón, then the flag; the window out of the press,
+then home).
+
+A step done in another scene is the common case (go home, go back to
+the press, into the barbershop), and naming every door on the way in
+content would be a second map of the act. The engine finds the way
+instead: a search through the scenes' exits that are open now, and the
+arrow stands over the first door on it, labelled with the door's own
+words (Pumasok sa bahay, Lumabas sa likod). A way that is a
+conversation or a card rather than a door (the direktor taking him in,
+a script's gotoScene) is not a door, so a step that needs one names the
+person who starts it, in that scene. An entry with a scene and nothing
+else means "go there": the scene's script takes over on arrival.
+
+npcs points at the nearest of several who still waits: no gift given
+yet, and its doneFlags entry (for those used with E, the three doors
+and the scarecrows, which have no gift) not set. A fight that moves
+(Block 120, advanceTo) is pointed at too, with no name, since the line
+at the top of the log already says where; it is the one time the arrow
+shows while a script is playing.
+
+It hides whenever the student could not act on it: a dialogue, a
+cutscene, a card, a screen, a tutorial (the card is the instruction
+then), a fight, and a script still playing. A step a script plays by
+itself, and every battle, names no guide, so the arrow shows nothing
+then rather than pointing somewhere stale. Before the world is handed
+over (questAnnounceReady) it shows nothing, so it never appears over a
+title or a test.
+
+Checked three ways. prepare.js's content check fails on a guide naming
+a scene, an NPC or an exit that is not there, doneFlags that do not
+pair with npcs, or an x off the road. test.js section AW (where Block
+69 checked the guide was gone) drives the engine against the fixture:
+the arrow over a person with their name, the edge tab and its
+distance, the door to another scene, nothing when that door is shut,
+the nearest of several and then the next, hidden in a cutscene, a
+fight that moves, a step with no guide, no switch to turn it off, and
+no write to the page while standing still. verify_new_scene.js starts
+from every story point of every act (52), plays the beat on until the
+world is the student's, and checks what the arrow names against a
+table (GUIDE_AT). Both suites, 1,409 checks, green.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

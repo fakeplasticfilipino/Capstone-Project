@@ -4426,18 +4426,108 @@ const visible = (page, sel) => page.evaluate((s) => {
     await sctx.close();
   }
 
-  if (section("AW", "No guide, and the vision cone (Blocks 42, 69)")) {
-    // Block 69. The guide is gone at the proponent's direction: students
-    // find their own way. Nothing of it is left on the page or in the
-    // engine.
+  if (section("AW", "The guide, and the vision cone (Blocks 42, 69, 125)")) {
+    // Block 125. The guide is back, for everyone: the step in hand names
+    // where it is done, and the arrow points there. Tested against the
+    // fixture, given objectives with guides, people and a door at run
+    // time, so the engine is checked apart from whatever the acts ship.
     const { ctx, page } = await enterTestRoom();
-    const gone = await page.evaluate(() => ({
-      marker: document.getElementById("guide-marker"),
-      edge: document.getElementById("guide-edge"),
-      engine: typeof window.updateGuide + typeof window.guideTarget,
+    const guide = (wait) => page.evaluate(async (ms) => {
+      await new Promise((r) => setTimeout(r, ms));
+      const m = document.getElementById("guide-marker");
+      const e = document.getElementById("guide-edge");
+      const t = guideTarget();
+      return {
+        target: t && { x: t.x, label: t.label },
+        marker: !m.classList.contains("hidden"),
+        markerText: m.querySelector(".guide-label").textContent,
+        markerX: bodyX(m),
+        edge: !e.classList.contains("hidden"),
+        edgeSide: e.classList.contains("guide-edge-left") ? "left" : e.classList.contains("guide-edge-right") ? "right" : null,
+        edgeText: e.querySelector(".guide-label").textContent,
+      };
+    }, wait === undefined ? 200 : wait);
+    await page.evaluate(() => {
+      const misyon = SCENES.find((s) => s.id === "misyon");
+      const tondo = SCENES.find((s) => s.id === "tondo");
+      misyon.npcs = [
+        { id: "gabay-a", x: 300, label: "Gabay A", dialogueSets: [] },
+        { id: "gabay-c", x: 2000, label: "Gabay C", dialogueSets: [] },
+      ];
+      misyon.exits = [{ id: "pinto", x: 600, width: 80, label: "Pasok", toScene: "tondo" }];
+      tondo.npcs = [{ id: "gabay-b", x: 900, label: "Gabay B", dialogueSets: [] }];
+      // The last objective's flag is never set, so the act cannot finish
+      // under the test.
+      currentActData.objectives = [
+        { id: "g1", label: "Isa", flag: "__g1", guide: { scene: "misyon", npc: "gabay-a" } },
+        { id: "g2", label: "Dalawa", flag: "__g2", guide: { scene: "tondo", npc: "gabay-b" } },
+        { id: "g3", label: "Tatlo", flag: "__g3",
+          guide: { scene: "misyon", npcs: ["gabay-a", "gabay-c"], doneFlags: ["__a", "__c"] } },
+        { id: "g4", label: "Apat", flag: "__g4" },
+      ];
+      loadScene("misyon");
+      GUARDS.forEach((g) => { g.disabled = true; });
+      posX = 200; posY = floorHeightAt(posX); velY = 0;
+    });
+
+    let g = await guide();
+    ok("the step in hand names a person here: the arrow stands over them with their name",
+       g.target && g.target.x === 340 && g.marker && !g.edge && g.markerText === "Gabay A" &&
+       Math.abs(g.markerX - 340) < 1, g);
+    const layers = await page.evaluate(() => {
+      const m = document.getElementById("guide-marker");
+      return { z: +getComputedStyle(m).zIndex, pe: getComputedStyle(m).pointerEvents,
+               edgePe: getComputedStyle(document.getElementById("guide-edge")).pointerEvents };
+    });
+    ok("it stands in front of the shadow trees (3) and takes no tap",
+       layers.z > 3 && layers.pe === "none" && layers.edgePe === "none", layers);
+
+    // Standing still, nothing about the guide is written (Block 36).
+    const writes = await page.evaluate(() => new Promise((r) => {
+      let n = 0;
+      const obs = new MutationObserver((list) => { n += list.length; });
+      ["guide-marker", "guide-edge"].forEach((id) => obs.observe(document.getElementById(id),
+        { attributes: true, childList: true, subtree: true, characterData: true }));
+      setTimeout(() => { obs.disconnect(); r(n); }, 600);
     }));
-    ok("there is no guide: no arrow, no edge tab, nothing in the engine",
-       gone.marker === null && gone.edge === null && gone.engine === "undefinedundefined", gone);
+    ok("standing still, the guide writes nothing to the page", writes === 0, writes);
+
+    await page.evaluate(() => { posX = 1500; posY = floorHeightAt(posX); });
+    g = await guide();
+    ok("off screen, a tab at that edge says who and how far",
+       !g.marker && g.edge && g.edgeSide === "left" && g.edgeText === "Gabay A 15m", g);
+
+    await page.evaluate(() => { state.flags.__g1 = true; markDirty(); });
+    g = await guide();
+    ok("a step in another scene points at the door that leads there",
+       g.target && g.target.x === 640 && g.target.label === "Pasok" && g.edge && g.edgeSide === "left", g);
+    await page.evaluate(() => { currentScene.exits[0].requiresFlag = "__bukas"; });
+    g = await guide();
+    ok("with that door shut there is no way to point, and nothing shows",
+       g.target === null && !g.marker && !g.edge, g);
+    await page.evaluate(() => { delete currentScene.exits[0].requiresFlag; });
+
+    await page.evaluate(() => { state.flags.__g2 = true; markDirty(); });
+    g = await guide();
+    ok("several people: the nearest who still waits", g.target && g.target.label === "Gabay C", g);
+    await page.evaluate(() => { state.flags.__c = true; });
+    g = await guide();
+    ok("and once they have had it, the next", g.target && g.target.label === "Gabay A", g);
+
+    await page.evaluate(() => setCutscene(true));
+    g = await guide();
+    ok("hidden while a cutscene holds the world", !g.marker && !g.edge, g);
+    await page.evaluate(() => setCutscene(false));
+    await page.evaluate(() => { advanceGoal = { x: 2500, dir: 1, text: null, resolve() {} }; });
+    g = await guide();
+    ok("a fight that moves points at where he has to get to",
+       g.target && g.target.x === 2500 && g.edge && g.edgeSide === "right" && g.edgeText === "12m", g);
+    await page.evaluate(() => { advanceGoal = null; state.flags.__g3 = true; });
+    g = await guide();
+    ok("a step that names nowhere shows nothing", g.target === null && !g.marker && !g.edge, g);
+    const settings = await page.evaluate(() => /gabay/i.test(document.getElementById("shell").textContent));
+    ok("there is no switch to turn it off", !settings);
+    await page.evaluate(() => loadScene("misyon")); // the cone below wants the fixture's guard
 
     // The cone. Measured on screen and converted back to world pixels, so
     // it checks what is drawn rather than a style value.

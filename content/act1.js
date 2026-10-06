@@ -1276,37 +1276,48 @@ window.ACT_1 = {
   //      theYearAfter), which finishes Act I.
   linearObjectives: true,
   objectives: [
+    // Block 125. guide: where each step is done, for the arrow (game.js,
+    // THE GUIDE). A step a script plays by itself (the opening, the
+    // plays, the oath) names none, or names who starts it after a reload.
     { id: "umuwi_kasama_nanay", label: "Umuwi kasama si Nanay",
       flag: "nagpasyangMagtrabaho" },
     { id: "kausapin_kutsero", label: "Maghanap ng trabaho: kausapin ang Kutsero",
-      flag: "nakausapAngKutsero" },
+      flag: "nakausapAngKutsero", guide: { scene: "tondo", npc: "kutsero" } },
     { id: "alagaan_kabayo", label: "Alagaan ang kabayo ng Kutsero",
-      flag: HORSE_JOB.first },
+      flag: HORSE_JOB.first, guide: { scene: "tondo", npc: "kabayo" } },
     // Block 94. The barber's first game.
     { id: "barberya", label: "Magtrabaho sa barberya",
-      flag: BARBER_JOB.first },
+      flag: BARBER_JOB.first, guide: [
+        { scene: "tondo", npc: "barbero", unlessFlag: "nakausapAngBarbero" },
+        { scene: "tondo", npc: "silya", requiresFlag: "nakausapAngBarbero" },
+      ] },
     { id: "kausapin_mananahi", label: "Kausapin ang Mananahi",
-      flag: "nakausapAngMananahi" },
+      flag: "nakausapAngMananahi", guide: { scene: "tondo", npc: "mananahi" } },
     { id: "tulungan_mananahi", label: "Tulungan ang Mananahi sa pananahi",
-      flag: "tinawagAngMananahi" },
+      flag: "tinawagAngMananahi", guide: { scene: "tondo", npc: "tahian" } },
     { id: "ihatid_damit", label: "Ihatid ang mga damit sa direktor",
-      flag: "naihatidAngMgaDamit" },
+      flag: "naihatidAngMgaDamit", guide: { scene: "tondo", npc: "direktor" } },
+    // The play is a script; on the street after a reload, the direktor
+    // takes him in.
     { id: "gumanap_sa_dula", label: "Gumanap bilang Don Rodrigo sa dula",
-      flag: "naitanghalAngDula" },
+      flag: "naitanghalAngDula", guide: { scene: "tondo", npc: "direktor" } },
     { id: "mag_ipon", label: "Mag-ipon para kay Nanay",
       flag: "naibigayAngIponKayNanay", countCurrency: SAVINGS_GOAL,
-      pinned: { from: "nakausapAngKutsero" } },
+      pinned: { from: "nakausapAngKutsero" }, guide: { scene: "tondo", npc: "nanay" } },
     { id: "gumanap_baldovino", label: "Gumanap bilang Principe Baldovino",
       flag: "nilapitanNgKatipunan" },
     { id: "hanapin_kasama", label: "Hanapin ang naghihintay sa kalye",
-      flag: "nakausapAngKasama" },
+      flag: "nakausapAngKasama", guide: { scene: "tondo", npc: "kasama" } },
     { id: "sumapi_katipunan", label: "Sumapi sa Katipunan",
-      flag: "tinanggapSaKatipunan" },
+      flag: "tinanggapSaKatipunan", guide: { scene: "tondo", npc: "kasama" } },
     { id: "ipamigay_polyeto", label: "Ipamigay ang mga polyeto",
-      flag: "naipamigayAngMgaPolyeto", countFlags: PAMPHLET_FLAGS },
-    // Block 94. Done only at the very end, a year on (theYearAfter).
+      flag: "naipamigayAngMgaPolyeto", countFlags: PAMPHLET_FLAGS,
+      guide: { scene: "tondo", npcs: CITIZENS.map((c) => c.id) } },
+    // Block 94. Done only at the very end, a year on (theYearAfter). The
+    // Kasama comes for him; a reload before the report finds him at his
+    // old spot.
     { id: "mag_ulat", label: "Bumalik sa pulungan at mag-ulat",
-      flag: "pinunoNgBalangay" },
+      flag: "pinunoNgBalangay", guide: { scene: "tondo", npc: "kasama" } },
   ],
 
   // Block 80. No holdOpen any more (Block 56 held the act open while its

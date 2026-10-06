@@ -1778,24 +1778,25 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await r.ctx.close();
   }
 
-  if (part("talaan", "the teacher's Talaan papers, no guide")) {
+  if (part("talaan", "the teacher's Talaan papers, and the guide")) {
     // ---------------------------------------------------------------
-    // Block 69. Act I declares no words and there is no guide. Block 70:
-    // the Talaan's papers are the teacher's, three at fixed places; with
-    // none written there is no Talaan at all.
+    // Block 69. Act I declares no words. Block 70: the Talaan's papers are
+    // the teacher's, three at fixed places; with none written there is no
+    // Talaan at all. Block 125: the guide is back, on the act's steps.
     // ---------------------------------------------------------------
-    console.log("\nThe teacher's Talaan papers, no guide");
+    console.log("\nThe teacher's Talaan papers, and the guide");
     const afterThought = { nakitaAngMgaSiga: true, nakausapSiNanaySaBahay: true, nagpasyangMagtrabaho: true };
     r = await resume("tondo", afterThought);
     await r.page.waitForTimeout(400);
     const bare = await r.page.evaluate(() => ({
       book: Game.glossary(), hints: PICKUPS.filter((p) => p.type === "hint").length,
       button: !document.getElementById("shell-notebook").classList.contains("hidden"),
-      guide: ACT_1.guide, marker: document.getElementById("guide-marker"),
+      guide: ACT_1.objectives.filter((o) => o.guide).length,
+      marker: Boolean(document.getElementById("guide-marker")),
       spots: JSON.stringify(currentScene.hintSpots), fixed: ACT_1.hints.fixed, count: ACT_1.hints.count }));
-    ok("Act I has three fixed places for papers, no words and no guide",
+    ok("Act I has three fixed places for papers, no words, and a guide on its steps (Block 125)",
        bare.spots === '[2500,{"x":8200,"y":155},{"x":12200,"y":155}]' && bare.fixed === true && bare.count === 3 &&
-       bare.guide === undefined && bare.marker === null, bare);
+       bare.guide >= 10 && bare.marker, bare);
     ok("with no papers written, the game's own three lie on the road (Block 94)",
        bare.book && bare.book.hints.total === 3 && bare.hints === 3, bare);
     const own = await r.page.evaluate(() => hintList().map((h) => h.title));
@@ -2817,6 +2818,27 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await ctx.close();
   }
 
+  // Block 125. Where the guide points from each story point once the beat
+  // it leads to has handed the world back: an NPC's label, a door's, or
+  // "" for a place. null: the step names nowhere (a battle, a beat the
+  // story plays by itself).
+  const GUIDE_AT = {
+    "1:trabaho": "Kutsero", "1:direktor": "Direktor", "1:dula": "Lumabas", "1:ipon": "Nanay",
+    "1:baldovino": "Lumabas", "1:kasama": "Kasama", "1:panunumpa": "Lumabas sa likod",
+    "1:polyeto": "Mangingisda", "1:ulat": null,
+    "2:simula": "Palimbagan", "2:uwi": "Pumasok sa bahay", "2:bahay": "Pumasok sa imprenta",
+    "2:paghuli": "Pumasok sa imprenta", "2:ronda": "Palimbagan", "2:gabi": "Bahay",
+    "2:habol": "Daan sa bundok", "2:sedula": "Bonifacio", "2:sanjuan": "Ilog", "2:atras": "Ilog",
+    "2:panakot": "Dayami", "2:balara": "Bonifacio", "2:laguna": "Jacinto",
+    "3:simula": "Bantayan", "3:labanan": "Isko", "3:tondo": "Isko", "3:maryam": "Maryam",
+    "3:balatkayo": "Pumasok sa barberya", "3:barberya": "Silya", "3:aral": "Mangingisda",
+    "3:proklama": "Proklama", "3:gunao": "Manlilimbag", "3:batas": "Guro", "3:gabi": "Pinto",
+    "3:panunumpa": "Mesa", "3:bilibid": "Tarangkahan", "3:morong": "Carreón", "3:bandido": null,
+    "4:simula": "Mesa", "4:himpilan": "Bodega", "4:manipesto": "Palimbagan", "4:tanay": "Hanay",
+    "4:malabon": null, "4:bigas": "Kawal", "4:gomez": "Gómez", "4:maynila": "Kutsero",
+    "4:salusalo": "Mesa", "4:bilibid": "Montalan", "4:hukuman": "Hukom", "4:bintana": "Bintana",
+    "4:umaga": "",
+  };
   if (part("jumps", "every story point of ?dev=1, and its floor")) {
     // ---------------------------------------------------------------
     // Block 108. The story points a tester can start from (?dev=1).
@@ -2856,6 +2878,25 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
         floor: document.getElementById("ground-tiles").dataset.floor || "",
         floorDrawn: /^url\("data:image\/svg/.test(document.getElementById("ground-tiles").style.getPropertyValue("--ground-src")),
       }));
+      // Block 125. The beat it leads to played on (lines pressed through,
+      // fights won) until the world is the student's again; the guide then
+      // points where the step in hand is done (GUIDE_AT), or shows nothing
+      // for a step that names nowhere.
+      const free = await playOn(p.page, "Shell.state !== 'playing' || (!cutscenePlaying && !inDialogue && " +
+        "!enemiesAlive() && (!sceneScriptsRunning.size || advanceGoal) && !blackout.classList.contains('visible') && " +
+        "document.getElementById('intertitle').classList.contains('hidden'))", 30000);
+      await p.page.waitForTimeout(250);
+      const pointed = await p.page.evaluate(() => {
+        const t = guideTarget();
+        const m = document.getElementById("guide-marker");
+        const e = document.getElementById("guide-edge");
+        return { playing: Shell.state === "playing", step: (quests.find((q) => !q.done) || {}).text || null,
+                 label: t ? t.label : null,
+                 shown: !m.classList.contains("hidden") || !e.classList.contains("hidden") };
+      });
+      const want = pointed.playing ? GUIDE_AT[j.n + ":" + j.id] : null;
+      ok("  and once the world is his, the guide points at " + (want === null ? "nothing" : JSON.stringify(want)) +
+         " (Block 125)", free && pointed.label === want && pointed.shown === (want !== null), pointed);
       ok("starting at " + j.id + " opens " + j.scene + " with \"" + j.task + "\" in hand, writing nothing",
          at.scene === j.scene && at.act === j.n && at.guest && at.log.includes(j.task) && at.written === 0, at);
       ok("  and its ground is " + (at.floorWanted || "the dirt") + " (Block 114)",

@@ -7652,6 +7652,226 @@ function setClass(el, cls, on) {
   if (el.classList.contains(cls) !== on) el.classList.toggle(cls, on);
 }
 
+// =============================================================
+// THE GUIDE (Block 125)
+//
+// Block 42's arrow, removed in Block 69 so that students would find
+// their own way, and brought back at the proponent's word: playing
+// without it, nobody could. It is for everyone and cannot be turned off.
+//
+// What it points at is the act's, never the engine's: each objective
+// may declare guide, where its step is done, as one entry or a list.
+//
+//   { scene, npc: id | npcs: [ids] | exit: id | x, label,
+//     requiresFlag, unlessFlag, doneFlags: [flags] }
+//
+// The step in hand is the first objective whose flag is not set (the
+// chain, Block 48), so the arrow moves on by itself as the story does.
+// Entries whose flags do not hold are passed over. One in the scene on
+// screen wins; failing that, the first naming another scene is reached
+// through the doors (exits) that are open, and the arrow stands over the
+// first door on the way. An entry with a scene and nothing else means
+// "go there": the scene's own script takes over on arrival. npcs points
+// at the nearest of several who is visible and still waits for
+// something (no gift given yet, its doneFlags[i] not set): the pamphlet
+// citizens, the scarecrows, the three doors.
+//
+// Over the target, a name tab and a bobbing arrow, drawn in the world so
+// it stays over them as the camera moves; off screen, a tab at that edge
+// of the screen with the name and the distance. Hidden whenever the
+// student could not act on it (dialogue, a cutscene, a card, a screen, a
+// tutorial, a fight, a script still playing), except that a fight that
+// moves (advanceTo) is pointed at too: the place he has to reach. Like
+// everything else in the loop it writes to the page only when what it
+// shows changes (Block 36), and reads no layout.
+// =============================================================
+
+const GUIDE_ONSCREEN_MARGIN = 40;  // world px inside the viewport edge
+const GUIDE_MARKER_ABOVE = 16;     // above a character's head
+const GUIDE_EXIT_HEIGHT = 170;     // over a doorway or a place, which has no head
+const PX_PER_METRE = 80;           // Macario is 134px, about 1.7m
+
+let guideDrawn = { mode: null, x: null, bottom: null, markerText: null, edgeText: null };
+
+function guideFlagsHold(entry) {
+  if (entry.requiresFlag && !state.flags[entry.requiresFlag]) return false;
+  if (entry.unlessFlag && state.flags[entry.unlessFlag]) return false;
+  return true;
+}
+
+// The entries of the step in hand that apply now, in the content's order.
+function guideEntries() {
+  const list = (currentActData && currentActData.objectives) || [];
+  const step = list.find((o) => !state.flags[o.flag]);
+  if (!step || !step.guide) return [];
+  return [].concat(step.guide).filter(guideFlagsHold);
+}
+
+function exitIsOpen(exit) {
+  if (exit.requiresFlag && !state.flags[exit.requiresFlag]) return false;
+  if (exit.unlessFlag && state.flags[exit.unlessFlag]) return false;
+  return true;
+}
+
+function guideNpcPoint(npc) {
+  return {
+    x: npc.x + NPC_WIDTH / 2,
+    bottom: GROUND_LEVEL + (npc.displayHeight || DISPLAY_HEIGHT) + GUIDE_MARKER_ABOVE,
+    label: npc.label || "",
+  };
+}
+
+function guideExitPoint(exit) {
+  return {
+    x: exit.x + (exit.width || 80) / 2,
+    bottom: GROUND_LEVEL + GUIDE_EXIT_HEIGHT,
+    label: exit.label || "Pasok",
+  };
+}
+
+// Where an entry points in the scene on screen, or null if what it names
+// is not here now (a hidden NPC, a shut door, everyone already given
+// what they waited for).
+function guidePoint(entry) {
+  if (entry.npc) {
+    const npc = NPCS.find((n) => n.id === entry.npc);
+    return npc && !npc.hidden ? guideNpcPoint(npc) : null;
+  }
+  if (entry.npcs) {
+    const centre = posX + PLAYER_WIDTH / 2;
+    let best = null;
+    let bestDist = Infinity;
+    entry.npcs.forEach((id, i) => {
+      const npc = NPCS.find((n) => n.id === id);
+      if (!npc || npc.hidden) return;
+      if (npc.gift && state.flags[npc.gift.givenFlag]) return;
+      if (entry.doneFlags && state.flags[entry.doneFlags[i]]) return;
+      const dist = Math.abs(npc.x + NPC_WIDTH / 2 - centre);
+      if (dist < bestDist) { best = npc; bestDist = dist; }
+    });
+    return best ? guideNpcPoint(best) : null;
+  }
+  if (entry.exit) {
+    const exit = ((currentScene && currentScene.exits) || []).find((e) => e.id === entry.exit);
+    return exit && exitIsOpen(exit) ? guideExitPoint(exit) : null;
+  }
+  if (typeof entry.x === "number") {
+    return { x: entry.x, bottom: GROUND_LEVEL + GUIDE_EXIT_HEIGHT, label: "" };
+  }
+  return null;
+}
+
+// The first door of the scene on screen on the shortest way to sceneId
+// through open doors, or null if there is none (the way there is a
+// conversation or a card, not a door).
+function guideDoorTo(sceneId) {
+  const first = new Map(); // scene id -> the door out of here that leads there
+  const queue = [];
+  ((currentScene && currentScene.exits) || []).forEach((exit) => {
+    if (!exitIsOpen(exit) || first.has(exit.toScene) || exit.toScene === currentSceneId) return;
+    first.set(exit.toScene, exit);
+    queue.push(exit.toScene);
+  });
+  while (queue.length) {
+    const id = queue.shift();
+    if (id === sceneId) return first.get(id);
+    const scene = SCENES.find((s) => s.id === id);
+    ((scene && scene.exits) || []).forEach((exit) => {
+      if (!exitIsOpen(exit) || first.has(exit.toScene) || exit.toScene === currentSceneId) return;
+      first.set(exit.toScene, first.get(id));
+      queue.push(exit.toScene);
+    });
+  }
+  return null;
+}
+
+// The current target, or null. Read by the harness by name.
+function guideTarget() {
+  // Block 120's fight that moves: where he has to get to.
+  if (advanceGoal) return { x: advanceGoal.x, bottom: GROUND_LEVEL + GUIDE_EXIT_HEIGHT, label: "" };
+  const entries = guideEntries();
+  for (const entry of entries) {
+    if (entry.scene && entry.scene !== currentSceneId) continue;
+    const point = guidePoint(entry);
+    if (point) return Object.assign(point, { label: entry.label || point.label });
+    // A step whose place in this scene is not there yet (a scene with
+    // nothing named: its script plays) stops here rather than pointing
+    // somewhere else.
+    if (entry.scene === currentSceneId && !entry.npc && !entry.npcs && !entry.exit &&
+        typeof entry.x !== "number") return null;
+  }
+  for (const entry of entries) {
+    if (!entry.scene || entry.scene === currentSceneId) continue;
+    const door = guideDoorTo(entry.scene);
+    if (door) return guideExitPoint(door);
+  }
+  return null;
+}
+
+function guideEls() {
+  if (!guideEls.cache) {
+    guideEls.cache = {
+      marker: document.getElementById("guide-marker"),
+      markerLabel: document.querySelector("#guide-marker .guide-label"),
+      edge: document.getElementById("guide-edge"),
+      edgeLabel: document.querySelector("#guide-edge .guide-label"),
+    };
+  }
+  return guideEls.cache;
+}
+
+function updateGuide(canAct, cameraX) {
+  const els = guideEls();
+  if (!els.marker || !els.edge) return;
+
+  // questAnnounceReady: the world has been handed over (no title, test
+  // or trivia card in front of it).
+  const free = canAct && questAnnounceReady && !tutorial && !enemiesAlive() &&
+    (!sceneScriptsRunning.size || advanceGoal);
+  const target = free ? guideTarget() : null;
+  let mode = null;
+  let text = null;
+
+  if (target) {
+    const left = cameraX + GUIDE_ONSCREEN_MARGIN;
+    const right = cameraX + viewportWidth - GUIDE_ONSCREEN_MARGIN;
+    if (target.x >= left && target.x <= right) {
+      mode = "marker";
+      text = target.label;
+    } else {
+      mode = target.x < left ? "edge-left" : "edge-right";
+      const metres = Math.max(1, Math.round(Math.abs(target.x - (posX + PLAYER_WIDTH / 2)) / PX_PER_METRE));
+      text = (target.label ? target.label + " " : "") + metres + "m";
+    }
+  }
+
+  if (mode !== guideDrawn.mode) {
+    setClass(els.marker, "hidden", mode !== "marker");
+    setClass(els.edge, "hidden", !mode || mode === "marker");
+    setClass(els.edge, "guide-edge-left", mode === "edge-left");
+    setClass(els.edge, "guide-edge-right", mode === "edge-right");
+    guideDrawn.mode = mode;
+  }
+  if (!mode) return;
+
+  if (mode === "marker") {
+    // Placed by translate, as every body is since Block 107: a left that
+    // changes would lay out the whole street.
+    if (target.x !== guideDrawn.x || target.bottom !== guideDrawn.bottom) {
+      placeBody(els.marker, target.x, target.bottom);
+      guideDrawn.x = target.x;
+      guideDrawn.bottom = target.bottom;
+    }
+    if (text !== guideDrawn.markerText) {
+      els.markerLabel.textContent = text;
+      guideDrawn.markerText = text;
+    }
+  } else if (text !== guideDrawn.edgeText) {
+    els.edgeLabel.textContent = text;
+    guideDrawn.edgeText = text;
+  }
+}
+
 function gameLoop(now) {
   now = now || 0;
 
@@ -7821,6 +8041,7 @@ function gameLoop(now) {
   cameraX = Math.max(0, Math.min(cameraX, WORLD_WIDTH - viewportWidth));
   drawCamera(cameraX, now);
   updatePickupMotion(cameraX); // Block 64
+  updateGuide(canAct, cameraX); // Block 125
 
 
   // Interact and gift buttons follow whichever NPC or stage is nearby.
