@@ -1091,7 +1091,9 @@ There run.js runs everything in about two minutes, and at a student's
 speed (--real) in about four and a half. Last full run at a student's
 speed: 6 Oct 2026, 1,348 passed, 0 failed (Block 123, after its last change). Random play from
 every story point (node _dev/tools/monkey.js, Block 123): 6 Oct 2026,
-three seeds, 150 runs, no error. Worth a run before the pilot too. The
+three seeds, 150 runs, no error; Block 124, a fourth seed at 40
+seconds a point, 50 runs, no error, the longest idle 22 seconds. Worth
+a run before the pilot too. The
 same night: every person of every story point talked to (no error,
 nothing stuck); every screen measured at 640 by 360, 740 by 360 and 823
 by 412 (all fit since Block 123's layout fixes); memory flat across four
