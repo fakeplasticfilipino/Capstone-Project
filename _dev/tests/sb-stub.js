@@ -53,6 +53,12 @@
       let data = null;
       try {
         if (op === "select") {
+          // 6 Oct 2026: the next n reads of a table fail, as a dropped
+          // request does (selectFail: { table: n }).
+          if (T.selectFail && T.selectFail[table] > 0) {
+            T.selectFail[table] -= 1;
+            return Promise.resolve({ data: null, error: { message: "Failed to fetch" } });
+          }
           if (table === "profiles" && T.profileError) {
             return Promise.resolve({
               data: null,

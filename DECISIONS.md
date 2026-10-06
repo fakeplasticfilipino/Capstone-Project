@@ -5340,6 +5340,18 @@ American's "Hey, old man. I've been waiting.", his verdict on the cut
 there, pal!" (glossed in the toast), "Keep the change", and "Hands up!
 Don't move!" at the raid.
 
+A login whose reads fail no longer guesses. A failed read of act_progress
+at login left an empty progress map, which acts.js called "the safe
+direction to fail in": every act but the first read as locked, so a
+student in Act II was put into Act I, and the next save wrote current_act
+1 over their real act. On classroom wifi a single dropped request is an
+ordinary afternoon. Now the save and the act map are each read a second
+time when the first fails, and a second failure stops the login
+(loginFailed in game.js): back to the login box, "Hindi mabuksan ang
+iyong laro...", nothing written (saveReady is still false), and signing
+in again starts afresh; with a stored session the title screen's timer
+still offers a reload. test.js, section BU (the stub's selectFail).
+
 Not built, waiting on the proponent: a database change (drafted; kept
 off the public repository until applied, Database guardrails), and the
 paper's drafts for the Documentation debt, written for the proponent

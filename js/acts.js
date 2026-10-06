@@ -306,20 +306,30 @@ const Acts = {
   // this before deciding which act to load, because canEnter needs
   // the answers and the login path should not issue four separate
   // reads to get them.
+  //
+  // Resolves false when the read failed. An empty map was once taken as
+  // the safe direction to fail in (everything but Act I locked), and it
+  // was not: the student was put in Act I and the next save wrote that
+  // over their real act. game.js tries again, then stops the login
+  // (6 Oct 2026).
   async loadProgressMap() {
     this.progress = {};
-    if (!currentUserId) return;
+    if (!currentUserId) return true;
 
-    const { data, error } = await sb
-      .from("act_progress")
-      .select("act_number, status, objectives_done")
-      .eq("student_id", currentUserId);
+    let res;
+    try {
+      res = await sb
+        .from("act_progress")
+        .select("act_number, status, objectives_done")
+        .eq("student_id", currentUserId);
+    } catch (err) {
+      res = { data: null, error: err };
+    }
+    const { data, error } = res;
 
     if (error) {
-      // Not fatal. An empty map means everything except Act I reads
-      // as locked, which is the safe direction to fail in.
       console.error("act_progress read failed:", error);
-      return;
+      return false;
     }
 
     (data || []).forEach((row) => {
@@ -328,6 +338,7 @@ const Acts = {
         objectives_done: row.objectives_done,
       };
     });
+    return true;
   },
 
   // -----------------------------------------------------------

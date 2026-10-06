@@ -7045,6 +7045,53 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  // -------------------------------------------------------------
+  // BU. 6 Oct 2026: a login whose reads fail. Each is tried once more;
+  // a second failure stops the login and says so, rather than putting
+  // a student who is in Act II into Act I (and saving that).
+  // -------------------------------------------------------------
+  if (section("BU", "A login on a dropped connection: tried again, never put in the wrong act")) {
+    const inAct2 = (fail) => ({
+      session: { user: { id: "u1" } },
+      selectFail: fail,
+      game_progress: [{ student_id: "u1", current_act: 2, current_room: "imprenta", currency: 30,
+        save_state: { quests: [], flags: { a2_simula: true }, posX: 300 } }],
+      act_progress: [
+        { student_id: "u1", act_number: 1, status: "completed", objectives_done: 14, objectives_total: 14 },
+        { student_id: "u1", act_number: 2, status: "playing", objectives_done: 0, objectives_total: 14 },
+      ],
+    });
+    const settleLogin = async (page) => {
+      for (let t = 0; t < 4000; t += 100) {
+        const s = await page.evaluate(() => ({ ready: Shell.ready, failed: !document.getElementById("auth-overlay").classList.contains("hidden") && /Hindi mabuksan/.test(document.getElementById("auth-status").textContent) }));
+        if (s.ready || s.failed) return;
+        await page.waitForTimeout(100);
+      }
+    };
+
+    let r = await newPage(inAct2({ act_progress: 1, game_progress: 1 }));
+    await settleLogin(r.page);
+    const once = await r.page.evaluate(() => ({ ready: Shell.ready, act: Acts.current, signed: Game.isSignedIn() }));
+    ok("one dropped read of the save and one of the acts: tried again, and he is in Act II",
+       once.ready && once.act === 2 && once.signed, once);
+    await r.ctx.close();
+
+    r = await newPage(inAct2({ act_progress: 2 }));
+    await settleLogin(r.page);
+    await r.page.waitForTimeout(1500);
+    const twice = await r.page.evaluate(() => ({
+      ready: Shell.ready, signed: Game.isSignedIn(),
+      box: !document.getElementById("auth-overlay").classList.contains("hidden"),
+      said: document.getElementById("auth-status").textContent,
+      stored: __DB.game_progress[0].current_act,
+      writes: __CALLS.filter((c) => c.op !== "select" && (c.table === "game_progress" || c.table === "act_progress")).length,
+    }));
+    ok("both reads of the acts dropped: the login stops and says so, signed out of the game",
+       !twice.ready && !twice.signed && twice.box && /Hindi mabuksan ang iyong laro/.test(twice.said), twice);
+    ok("and nothing is written: his save still says Act II", twice.stored === 2 && twice.writes === 0, twice);
+    await r.ctx.close();
+  }
+
   await browser.close();
   server.close();
   if (ONLY && !pass && !fail) {

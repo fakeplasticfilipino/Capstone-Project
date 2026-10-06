@@ -8006,12 +8006,24 @@ async function enterGameAsUser(userId) {
   // count reads the flags the save restores, and because it is what
   // resumes the pre-test, which must not begin until the shell has
   // handed the screen over.
-  const row = await loadProgress(userId);
-  if (!row) return;
+  // 6 Oct 2026. Each read the login needs is tried once more before it
+  // gives up (classroom wifi drops a request now and then), and giving
+  // up stops the login and says so (loginFailed). It used to go on: a
+  // failed act_progress read left an empty map, resolveAct then saw every
+  // act but the first as locked, and the student was put in Act I, whose
+  // number the next save wrote over the act they were really in.
+  const row = (await loadProgress(userId)) || (await loadProgress(userId));
+  if (!row) {
+    loginFailed();
+    return;
+  }
 
   let actNumber = 1;
   if (window.Acts) {
-    await Acts.loadProgressMap();
+    if (!(await Acts.loadProgressMap()) && !(await Acts.loadProgressMap())) {
+      loginFailed();
+      return;
+    }
     actNumber = Acts.resolveAct(row.current_act);
 
     // Set before saves are unblocked, so nothing can write a stale
@@ -8135,6 +8147,21 @@ async function enterGameAsGuest(jumpId) {
   if (window.Shell) await Shell.awaitEntry();
   startMusic();
   enterWorldScripts();
+}
+
+// 6 Oct 2026. A login that cannot read the student's save or acts is
+// undone, back to the login box with a line saying why, rather than
+// left half entered. Nothing has been written by then (saveReady is
+// still false), and a second try signs in again, which calls
+// enterGameAsUser afresh. With a stored session the title screen's own
+// timer offers a reload as well (Shell, loadTimer).
+function loginFailed() {
+  currentUserId = null;
+  currentProfile = null;
+  authGated = true;
+  authOverlay.classList.remove("hidden");
+  authStatus.textContent = "Hindi mabuksan ang iyong laro. Suriin ang internet at subukan ulit.";
+  authStatus.className = "";
 }
 
 async function loadProgress(userId) {
