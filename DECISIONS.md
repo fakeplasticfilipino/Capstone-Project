@@ -5539,6 +5539,83 @@ from every story point of every act (52), plays the beat on until the
 world is the student's, and checks what the arrow names against a
 table (GUIDE_AT). Both suites, 1,409 checks, green.
 
+## Block 126: lit doorways, and layers behind the street, 8 Oct 2026
+
+The proponent: the background "looks dead", like "flat cutout
+cardboard", and it is "really hard to tell players that this is an
+architecture you can go inside". Asked whether the houses could be cut
+out of the paintings as sprites, for a parallax.
+
+They could not be, by a session. Each street is one flat picture; a
+house lifted out of it leaves a hole, and once layers move at different
+speeds the hole shows and has to be painted in (sky, trees, the harbour
+behind it). That is making art, which Block 118's rule forbids and
+Block 109 showed going wrong. So the two halves of the complaint were
+split and both done (the proponent's choice of the options put to
+them): what the engine can do now, and what it needs from the artist.
+
+"Which building can I go into" was the urgent half. A door was a zone
+on the road with nothing drawn (Block 120 found the back door unfindable
+on the phone for exactly that). Every exit, and every NPC that is
+really a door (doorway: true, or the flags of its stretch: Act III's
+three doors until knocked, the press window once the list is taken,
+Bilibid's gate while it is the way out), is lit while it is open: a
+column of warm light the width of the door, a glow on the wall around
+it (screen-blended, so it lifts what is painted rather than covering
+it) and a pool on the road. It is brighter once Macario is in reach,
+stronger at night, and dark while the door is shut or anyone is
+fighting, so the light says "you can go in now" and teaches the rule by
+the difference. These are gradients the engine draws, like the floors
+and the shadow trees, so nothing is owed for them. A first, softer
+version was invisible on a sunlit wall and was made stronger the same
+day; at night it reads as lamplight from an open door. The mountain
+road and the river are ways out but not doors, and are not lit.
+
+The lights stand behind the people (inserted after the road, before
+everyone else), are held still out of view (the pitfall of a CSS
+animation running off screen, as pickups are), and the loop writes a
+class only when open, near or in view changes. test.js BV counts no
+writes while standing still.
+
+The cardboard half needs the artist. A layer that drifts can only be
+something nobody reaches: the street row, its doors and its people stay
+1:1, or a painted door would slide away from the doorway that is really
+there. So the engine's part is a scene's layers, pictures behind the
+street's panels, far to near, each moved by its own transform at its
+rate of the camera's travel (0 holds still on the screen, 1 is the
+road), written only when the camera moves, with the sky colour on the
+farthest and the street's panels then cut-outs. No scene declares any:
+a layer is not named before its picture exists, because the placeholder
+across the whole sky would be worse than the flat painting. ART.md,
+Wanted, asks for each street painting as three registered PNGs (sky,
+far, street, the far layer painted in where houses hid it) and the four
+buildings that are gone into (Nanay's house and the press in Act II,
+the barbershop in Act III, the entablado's front in Act I) as their own
+pictures with the door drawn open and lit, placed as decorations over
+their exits, so the painted door and the doorway are one place. Today
+the exits do not line up with doors in the paintings, which repeat
+along the road; the buildings' own pictures are what fixes that.
+
+Checked by test.js BV (doors lit, near, shut, knocked, out of view,
+behind the people, at night, in a fight; layers laid behind, drifting
+at their rates, the street as before without them), a check from every
+story point that each door there is lit exactly when it is open, and
+the content check (a layer's rate from 0 to 1 and its panels, a
+doorway's shape).
+
+Measured with profile.js against the build before Block 125, standing
+still on the street: 60 style recalculations a second instead of 15.
+The cause was Block 125's guide, not the doors: a CSS animation that
+runs is a style pass every frame here, and a stepped one (the edge
+tab's blink) worst of all, and the guide is up for most of a play. Its
+arrow now bobs four times when it appears and its tab pulses four times,
+then both hold still (being shown again starts them again); the door's
+flicker plays only in reach. With them stopped, standing still is 13.8
+a second, under the old build's 15; walking lays out a little more
+(6.5 a second, from 3.3) because the tab's distance is rewritten, which
+is contained to the tab. Nodes and listeners across eight scene round
+trips do not grow.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

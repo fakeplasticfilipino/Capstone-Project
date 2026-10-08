@@ -7337,6 +7337,125 @@ const visible = (page, sel) => page.evaluate((s) => {
     await r.ctx.close();
   }
 
+  if (section("BV", "Block 126: lit doorways, and layers that drift behind the street")) {
+    // The fixture scene given doors and layers at run time, so the engine
+    // is checked apart from what the acts ship.
+    const { ctx, page } = await enterTestRoom();
+    await page.evaluate(() => {
+      const misyon = SCENES.find((s) => s.id === "misyon");
+      misyon.exits = [
+        { id: "bukas", x: 400, width: 80, label: "Pasok", toScene: "tondo" },
+        { id: "sarado", x: 700, width: 80, label: "Pasok", toScene: "tondo", requiresFlag: "__bukas" },
+        { id: "malayo", x: 2700, width: 80, label: "Pasok", toScene: "tondo" },
+      ];
+      misyon.npcs = [
+        { id: "pinto", x: 1000, label: "Pinto", scenery: true, doorway: { unlessFlag: "__kinatok" }, dialogueSets: [] },
+        { id: "tao", x: 1200, label: "Tao", dialogueSets: [] },
+      ];
+      loadScene("misyon");
+      GUARDS.forEach((g) => { g.disabled = true; });
+      posX = 380; posY = floorHeightAt(posX); velY = 0;
+    });
+    const doors = () => page.evaluate(() => new Promise((r) => setTimeout(() => r(DOORWAYS.map((d) => ({
+      id: d.exit ? d.exit.id : d.npc.id,
+      open: d.el.classList.contains("doorway-open"),
+      near: d.el.classList.contains("doorway-near"),
+      still: d.el.classList.contains("doorway-still"),
+    }))), 250)));
+    let d = await doors();
+    const by = (id) => d.find((x) => x.id === id) || {};
+    ok("every exit and the door that is an NPC are lit doorways, and the person is not",
+       d.length === 4 && !d.some((x) => x.id === "tao"), d);
+    ok("an open door is lit, and brighter with Macario in reach",
+       by("bukas").open && by("bukas").near && by("pinto").open && !by("pinto").near, d);
+    ok("a door still shut is dark", !by("sarado").open, d);
+    ok("a lit door out of view is held still", by("malayo").open && by("malayo").still && !by("bukas").still, d);
+
+    const order = await page.evaluate(() => {
+      const el = DOORWAYS[0].el;
+      const after = (other) => Boolean(el.compareDocumentPosition(other) & Node.DOCUMENT_POSITION_FOLLOWING);
+      return { player: after(document.getElementById("player")), npc: after(document.getElementById("npc-tao")),
+               light: getComputedStyle(el.querySelector(".doorway-shaft")).backgroundImage.slice(0, 15) };
+    });
+    ok("the light is behind the people, and drawn (a gradient, no picture)",
+       order.player && order.npc && /^linear-gradient/.test(order.light), order);
+
+    const writes = await page.evaluate(() => new Promise((r) => {
+      let n = 0;
+      const obs = new MutationObserver((list) => { n += list.length; });
+      DOORWAYS.forEach((x) => obs.observe(x.el, { attributes: true, childList: true, subtree: true }));
+      setTimeout(() => { obs.disconnect(); r(n); }, 600);
+    }));
+    ok("standing still, the doorways write nothing to the page", writes === 0, writes);
+
+    await page.evaluate(() => { state.flags.__bukas = true; state.flags.__kinatok = true; });
+    d = await doors();
+    ok("the shut door lights once its flag is set, and a knocked door goes dark",
+       by("sarado").open && !by("pinto").open, d);
+
+    const shaft = (sel) => page.evaluate(async (s) => {
+      await new Promise((r) => setTimeout(r, 600));
+      return +getComputedStyle(document.querySelector(s)).opacity;
+    }, sel);
+    await page.evaluate(() => { posX = 1500; });
+    const day = await shaft("#world .doorway-open:not(.doorway-near) .doorway-shaft");
+    await page.evaluate(() => world.classList.add("night-scene"));
+    const night = await shaft("#world .doorway-open:not(.doorway-near) .doorway-shaft");
+    await page.evaluate(() => world.classList.remove("night-scene"));
+    ok("at night the light is stronger", night > day && day > 0, { day, night });
+
+    await page.evaluate(() => { posX = 380; spawnEnemies([{ id: "away", x: 900, hp: 1 }]); });
+    d = await doors();
+    ok("no door is lit while anyone is fighting", !d.some((x) => x.open), d);
+    await page.evaluate(() => ENEMIES.forEach((e) => hitEnemy(e, 99)));
+    await page.waitForTimeout(1500);
+    d = await doors();
+    ok("and they light again once the fight is over", by("bukas").open, d);
+
+    // The layers. Only a street (panels) has them.
+    const layers = await page.evaluate(async () => {
+      const misyon = SCENES.find((s) => s.id === "misyon");
+      misyon.panels = ["assets/backgrounds/act1/street-01.jpg", "assets/backgrounds/act1/street-02.jpg"];
+      misyon.panelSky = "#72a8d0";
+      misyon.layers = [
+        { panels: ["assets/backgrounds/act1/street-03.jpg"], rate: 0.2 },
+        { panels: ["assets/backgrounds/act1/street-04.jpg"], rate: 0.5 },
+      ];
+      loadScene("misyon");
+      GUARDS.forEach((g) => { g.disabled = true; });
+      const at = async (x) => {
+        posX = x; posY = floorHeightAt(posX);
+        await new Promise((r) => setTimeout(r, 250));
+        return { camera: lastCameraX, shifts: PARALLAX.map((p) => p.el.style.transform) };
+      };
+      const a = await at(200);
+      const b = await at(1800);
+      const els = [...document.querySelectorAll("#skyline .parallax-layer")];
+      const street = document.querySelector("#skyline > .skyline-panel");
+      return { a, b, count: els.length, first: els.length && els[0].style.backgroundColor,
+               streetSky: street && street.style.backgroundColor,
+               before: els.length && Boolean(els[1].compareDocumentPosition(street) & Node.DOCUMENT_POSITION_FOLLOWING),
+               wide: els.length && parseFloat(els[0].style.width) };
+    });
+    const expect = (cam, rate) => "translateX(" + Math.round(cam * (1 - rate)) + "px)";
+    ok("a street's layers are laid behind its panels, the sky colour on the farthest",
+       layers.count === 2 && layers.before && layers.first === "rgb(114, 168, 208)" && !layers.streetSky, layers);
+    ok("each layer drifts at its rate as the camera moves, the farthest slowest",
+       layers.b.camera > layers.a.camera &&
+       layers.b.shifts[0] === expect(layers.b.camera, 0.2) && layers.b.shifts[1] === expect(layers.b.camera, 0.5), layers);
+    const rest = await page.evaluate(async () => {
+      const misyon = SCENES.find((s) => s.id === "misyon");
+      delete misyon.layers;
+      loadScene("misyon");
+      await new Promise((r) => setTimeout(r, 200));
+      return { n: PARALLAX.length, els: document.querySelectorAll("#skyline .parallax-layer").length,
+               sky: document.querySelector("#skyline > .skyline-panel").style.backgroundColor };
+    });
+    ok("a street with no layers is as before: no layer, the sky on its panels",
+       rest.n === 0 && rest.els === 0 && rest.sky === "rgb(114, 168, 208)", rest);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   if (ONLY && !pass && !fail) {

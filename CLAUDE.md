@@ -614,6 +614,11 @@ Scene shape:
                                                  second one (Block 45)
       panelSky: "#72a8d0",                       colour above the pictures
                                                  (Block 46)
+      layers: [{ panels, rate, panelWidth }],    optional, a street only;
+                                                 pictures behind it, far
+                                                 to near, drifting at rate
+                                                 (0 to 1) of the camera
+                                                 (Block 126)
       ground: false | { src } | { floor },       optional; hides the dirt strip,
                                                  or lays the scene's own road
                                                  (Polish #6), or a floor of
@@ -864,6 +869,17 @@ panel width and its own shape, standing on the floor (the panel starts at
 --ground-level), and panelSky fills whatever is above its top edge on a
 tall screen.
 
+Lit doorways and layers (Block 126). Every exit, and every NPC with
+doorway, is lit while open (game.js, LIT DOORWAYS): a column of warm
+light the width of the door, a glow on the wall and a pool on the
+road, behind the people, brighter in reach and at night, dark while
+shut or while anyone fights. Gradients the engine draws, not art. A
+street's layers (game.js, PARALLAX LAYERS) drift behind its panels,
+each at its rate of the camera, the sky colour (panelSky) on the
+farthest; everything a student reaches stays on the street, 1:1, or a
+painted door would slide off the doorway. No scene declares layers
+until the artist's layered streets arrive (ART.md, Wanted).
+
 An exit is a doorway: a zone on the road, x and width like a hazard,
 reached edge to edge like an NPC. The interact button reads its label
 (default Pasok), and E calls Acts.gotoScene(toScene, { x: toX, facing:
@@ -932,6 +948,8 @@ NPC shape:
       scenery: true,                             optional; no picture and no
                                                  placeholder, only a body to
                                                  reach (Block 69)
+      doorway: true | { requiresFlag,            optional; it is a door: lit
+                        unlessFlag },            while open (Block 126)
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete(),
                        skipIfFlag, requiresFlag }],  both optional; a
@@ -2364,7 +2382,8 @@ look, by system:
                                           next act, no tests)
     palette and pixel theme               Blocks 15, 16, 29
     backdrops, panels and shadow trees    Blocks 18, 26, 43, 45, 46, 49,
-                                          50, 51, 53, 54, 70
+                                          50, 51, 53, 54, 70, 126 (layers,
+                                          lit doorways)
     bodies and collision                  Blocks 22 to 24
     inventory, shop, items, equipment     Blocks 20, 22, 25, 32
     melee, shooting, combat               Blocks 17, 27, 28, 35, 40, 60,
@@ -2470,6 +2489,8 @@ look, by system:
     the guide brought back                Block 125 (the objective's
                                           guide, the way through the
                                           doors, GUIDE_AT)
+    lit doorways, parallax layers         Block 126 (the layered streets
+                                          and buildings wanted)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,
@@ -2515,7 +2536,10 @@ the kept copy; Block 105).
 A CSS animation on something repeated along the road runs, and costs
 style work, even off screen. Hold what is out of view still, as
 updatePickupMotion does, and measure with the counters before adding
-one.
+one. Any animation left running on screen is a style pass every frame
+too, a stepped one (steps()) worst of all: something up for most of a
+play (the guide, Block 126) plays a few times when it appears and then
+holds still.
 
 Assessment checks for an existing score before showing any question,
 rather than relying on the database refusing a second one at submit

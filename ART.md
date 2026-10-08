@@ -37,7 +37,9 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 5 Oct 2026, Block 121 (two cosmetic outfits Wanted for
+Last updated: 8 Oct 2026, Block 126 (the streets in layers and the
+four buildings that are gone into, Wanted for the parallax and the
+doors, not yet named by the game). Block 121 (two cosmetic outfits Wanted for
 the shop, not yet named by the game). Block 120 (fifty-two owed: the crowd in
 Manila, two townspeople, seen rather than only heard; Act III borrows
 Act IV's cell, its guard and its fighters, which were owed already).
@@ -416,6 +418,39 @@ the Standing decisions set) and its sheets move to Owed or straight in.
         1906: a dark buttoned uniform, a sash, the long hair he swore
         not to cut, worn loose. The same poses, cells and frame counts
         as above. (NOT STARTED)
+
+Block 126, the proponent (8 Oct 2026): the streets look flat, "like
+cardboard", and nothing says which building can be gone into. The
+engine now drifts layers behind the street (CLAUDE.md, Act data
+format: layers) and lights every open door; what it needs is the
+same streets in layers, and the buildings that are gone into as their
+own pictures. Not named by any scene until they arrive, since a
+placeholder across the whole sky would be worse than the painting.
+
+    assets/backgrounds/act1/street-01-sky.png, -far.png, -street.png
+    (and the same three for street-02, street-03, street-04)
+        Each street painting as three PNGs on the same canvas as the
+        painting (1992 by 736), lined up exactly, so laid over each
+        other they make the painting again. sky: the sky and clouds,
+        opaque. far: what is far off (the harbour and its ships, the
+        distant trees and roofs), transparent around it. street: the
+        row of houses, the church, the fences, the plants and the
+        road's edge, transparent above the roofs. Where the far layer
+        was hidden behind a house it has to be painted in, because a
+        slower layer slides out from behind. (NOT STARTED)
+
+    assets/sprites/scenery/bahay-nanay.png       Act II, door at x 2000
+    assets/sprites/scenery/imprenta.png          Act II, door at x 6690
+    assets/sprites/scenery/barberya.png          Act III, door at x 5300
+    assets/sprites/scenery/entablado-harap.png   Act I, by the direktor
+        Each building that is gone into, as its own PNG with
+        transparency, front on, in the painting's style and scale, its
+        door drawn open with warm light inside so it reads as a way in.
+        Placed as a decoration with its door over the exit (CLAUDE.md,
+        Act data format: a building to walk into is a decoration for
+        the picture plus an exit at its door), so the door in the
+        picture and the doorway the student walks into are the same
+        place. (NOT STARTED)
 
 ## No picture, by design
 

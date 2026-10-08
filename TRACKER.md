@@ -9,7 +9,14 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 6 Oct 2026, after Block 125. Block 125: the guide is
+Last updated: 8 Oct 2026, after Block 126. Block 126: the streets felt
+like cardboard and nobody could tell which building could be entered.
+Every open door is now lit (a column of warm light, a glow on the wall,
+a pool on the road; brighter in reach and at night, dark while shut or
+in a fight), and the engine can drift layers behind a street; the
+layered streets and the four enterable buildings are asked of the
+artist (ART.md, Wanted), since cutting them from the paintings would
+mean painting in what they hide. Block 125: the guide is
 back, at the proponent's word ("I'm absolutely lost playing this
 without them"), for everyone and with no way to turn it off: an arrow
 with a name over whoever or wherever the step in hand is done, a tab at
@@ -312,6 +319,15 @@ and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026. Open:
+
+    Block 126, lit doorways. Act II (?dev=1, Pauwi kay Nanay): on the street,
+      Nanay's door at the arrow has a warm column of light and a pool on
+      the road, brighter as Macario reaches it; the press door further
+      on too. Act III (?dev=1, Tondo, 1902: ang tatlong bahay): each door glows
+      until knocked on, then goes dark. Inside a room (the barbershop,
+      the bahay) the way out at the edge is lit. Failure: a lit door
+      that will not open, a door that opens with no light, light drawn
+      in front of a person, or a light left on in a fight.
 
     Block 125, the guide. Any act, any point (?dev=1): once a beat
       hands the world back, a green arrow with a name tab bobs over
@@ -974,6 +990,9 @@ machine, the assessment module.
         way to another scene; a guide on every objective of the four
         acts; checked by the content check, test.js AW, and from every
         story point (GUIDE_AT)
+    126 lit doorways (every open exit and door-NPC, drawn by the
+        engine) and parallax layers behind a street (engine only; the
+        layered streets and four buildings Wanted from the artist)
 
 ## Blocks remaining
 

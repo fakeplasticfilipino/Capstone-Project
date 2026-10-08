@@ -155,6 +155,16 @@ function content() {
           seen.add(x.id);
         }
       }
+      // Block 126. A layer behind the street drifts at a rate between the
+      // screen (0) and the road (1), and has a picture; a doorway is
+      // true or the flags of its stretch.
+      for (const [n, l] of (s.layers || []).entries()) {
+        if (typeof l.rate !== "number" || l.rate < 0 || l.rate > 1) problems.push(at + ": layer " + n + "'s rate must be a number from 0 to 1");
+        if (!Array.isArray(l.panels) || !l.panels.length) problems.push(at + ": layer " + n + " names no panels");
+      }
+      for (const n of s.npcs || []) {
+        if (n.doorway !== undefined && n.doorway !== true && (typeof n.doorway !== "object" || n.doorway === null)) problems.push(at + ": " + n.id + "'s doorway must be true or { requiresFlag, unlessFlag }");
+      }
       for (const g of s.guards || []) {
         if (g.type && !(types[g.type] && types[g.type].kind === "guard")) problems.push(at + ": guard type \"" + g.type + "\" is not a guard in content/enemies.js");
       }
@@ -220,7 +230,7 @@ function content() {
     }
     for (const f of flagsNeverSet(src, allSrc)) problems.push(tag + ": the flag " + f + " is waited on and nothing sets it");
   });
-  return { name: "every act's content holds together: doors, story points, types, ids, objectives, guides, trees, flags",
+  return { name: "every act's content holds together: doors, story points, types, ids, objectives, guides, layers, trees, flags",
            ok: problems.length === 0, detail: problems };
 }
 

@@ -860,6 +860,12 @@ let enemiesDone = null; // resolves the spawnEnemies promise
 // unloadScene clears both, and wayOutLine reads the second.
 let DECOYS = [];
 let advanceGoal = null;
+// Block 126. The lit doorways of the scene (buildDoorways) and the
+// backdrop layers that drift behind the street (buildParallaxLayers).
+// Up here with the other scene lists: unloadScene clears them, and
+// loadAct reaches unloadScene at parse time.
+let DOORWAYS = [];
+let PARALLAX = [];
 let HIDE_SPOTS = []; // regions that suppress guard detection
 let HAZARDS = []; // ground regions that cost one health on contact
 let PICKUPS = []; // collectibles; currently only hearts
@@ -1035,6 +1041,7 @@ function loadScene(sceneId) {
   buildPickups();
   buildHints(); // Block 68
   buildGuards(token);
+  buildDoorways(); // Block 126
 
   posX = typeof scene.startX === "number" ? scene.startX : 0;
   posY = groundHeightAt(posX);
@@ -1061,6 +1068,8 @@ function unloadScene() {
   enemiesDone = null;
   DECOYS = [];
   advanceGoal = null;
+  DOORWAYS = []; // Block 126; their elements are in actElements
+  PARALLAX = [];
   currentScene = null;
   currentSceneId = null;
 }
@@ -1203,6 +1212,8 @@ function buildPanelBackdrop(scene) {
   if (!layer) return;
   layer.classList.add("skyline-tiled");
   const width = scene.panelWidth || PANEL_WIDTH;
+  // Block 126. Layers behind the street, laid first so they are behind.
+  const layered = buildParallaxLayers(scene, layer);
 
   for (let i = 0, x = 0; x < WORLD_WIDTH; i++, x += width) {
     const tile = document.createElement("div");
@@ -1226,7 +1237,9 @@ function buildPanelBackdrop(scene) {
     // Block 46. The whole picture stands on the floor (.skyline-panel):
     // anything above its top edge is panelSky, so the sky carries on up
     // a tall screen instead of ending in the page's own colour.
-    if (scene.panelSky) tile.style.backgroundColor = scene.panelSky;
+    // With layers behind it the street row is a cut-out, and the sky is
+    // the farthest layer's (buildParallaxLayers).
+    if (scene.panelSky && !layered) tile.style.backgroundColor = scene.panelSky;
     layer.appendChild(tile);
     actElements.push(tile);
   }
@@ -1258,6 +1271,154 @@ function buildPanelBackdrop(scene) {
     world.appendChild(tree);
     actElements.push(tree);
   });
+}
+
+// =============================================================
+// PARALLAX LAYERS (Block 126)
+//
+// The street paintings are one flat picture each, so a house reads as
+// cardboard. A scene may declare layers: pictures behind the street that
+// move slower than it as the camera does, the farthest slowest.
+//
+//   layers: [{ panels: ["...png"], rate: 0.2, panelWidth }, ...]
+//
+// Listed far to near. rate is the share of the camera's travel the layer
+// moves (0 holds still on the screen, 1 is the road's own); between them
+// it drifts. Only what cannot be reached drifts: everything a student
+// touches (the street row, its doors, its people) stays 1:1, or a
+// painted door would slide away from the doorway that is really there.
+// With layers the street's panels are cut-outs and the sky is the
+// farthest layer's colour (panelSky on it).
+//
+// No shipped scene declares any: the layered pictures are wanted from the
+// artist (ART.md, Wanted), and a layer is not named before its picture
+// exists, since a placeholder over the whole sky would be worse than the
+// flat painting. The harness tests the engine with the existing paintings.
+//
+// Each layer is one element in #skyline holding its own tiles, wide
+// enough to cover the screen at the end of the road, moved by its own
+// transform when the camera moves (drawCamera), never by left: nothing
+// else transforms the layer itself, and a transform composites.
+// =============================================================
+
+function buildParallaxLayers(scene, layer) {
+  const defs = Array.isArray(scene.layers) ? scene.layers : [];
+  const viewW = viewportWidth || measureViewport() || 0;
+  defs.forEach((def, i) => {
+    const panels = (def.panels || []).filter(Boolean);
+    if (!panels.length) return;
+    const rate = Math.max(0, Math.min(1, typeof def.rate === "number" ? def.rate : 0.5));
+    const width = def.panelWidth || scene.panelWidth || PANEL_WIDTH;
+    const span = Math.ceil(viewW + Math.max(0, WORLD_WIDTH - viewW) * rate) + 2;
+    const el = document.createElement("div");
+    el.className = "parallax-layer";
+    el.style.width = span + "px";
+    if (i === 0 && scene.panelSky) el.style.backgroundColor = scene.panelSky;
+    for (let n = 0, x = 0; x < span; n++, x += width) {
+      const tile = document.createElement("div");
+      tile.className = "skyline-tile skyline-panel";
+      tile.style.left = x + "px";
+      tile.style.width = width + 1 + "px";
+      const src = panels[n % panels.length];
+      loadImage(src);
+      tile.style.backgroundImage = `url("${assetUrl(src)}")`;
+      el.appendChild(tile);
+    }
+    layer.appendChild(el);
+    actElements.push(el);
+    PARALLAX.push({ el, rate, drawn: null });
+  });
+  return PARALLAX.length > 0;
+}
+
+// Where each layer stands for a camera at cameraX: it is carried with the
+// world, so it is held back by the part of the camera's travel it does
+// not make. Written only when that moves.
+function drawParallax(cameraX) {
+  for (let i = 0; i < PARALLAX.length; i++) {
+    const p = PARALLAX[i];
+    const x = Math.round(cameraX * (1 - p.rate));
+    if (x === p.drawn) continue;
+    p.drawn = x;
+    p.el.style.transform = "translateX(" + x + "px)";
+  }
+}
+
+// =============================================================
+// LIT DOORWAYS (Block 126)
+//
+// A door on the street was a zone on the road with nothing to show it,
+// and on the phone nobody found one (Block 120). Every exit, and every
+// NPC that is really a door (doorway: true, or { requiresFlag,
+// unlessFlag } for one that is a way in only for a stretch of the
+// story), is lit while it is open: a warm light rising from the
+// threshold and a pool of it on the road, brighter once Macario is in
+// reach and stronger at night. A shut door is dark, so the light also
+// says "you can go in now". Drawn by the engine (gradients), like the
+// floors and the shadow trees: no picture is made or owed for it.
+//
+// A light out of view is held still (.doorway-still), as pickups are,
+// because a CSS animation runs off screen too; and the loop writes a
+// class only when one of the three states changes.
+// =============================================================
+
+const DOORWAY_VIEW_MARGIN = 200;
+
+function doorwayOpen(d) {
+  if (d.exit) {
+    if (d.exit.requiresFlag && !state.flags[d.exit.requiresFlag]) return false;
+    return !(d.exit.unlessFlag && state.flags[d.exit.unlessFlag]);
+  }
+  if (d.npc.hidden) return false;
+  const when = d.npc.doorway;
+  if (when && typeof when === "object") {
+    if (when.requiresFlag && !state.flags[when.requiresFlag]) return false;
+    if (when.unlessFlag && state.flags[when.unlessFlag]) return false;
+  }
+  return true;
+}
+
+function buildDoorways() {
+  const scene = currentScene;
+  if (!scene) return;
+  const add = (x, width, src) => {
+    const el = document.createElement("div");
+    el.className = "doorway";
+    placeBody(el, x);
+    el.style.width = width + "px";
+    const glow = document.createElement("div");
+    glow.className = "doorway-glow";
+    const shaft = document.createElement("div");
+    shaft.className = "doorway-shaft";
+    const pool = document.createElement("div");
+    pool.className = "doorway-pool";
+    el.appendChild(glow);
+    el.appendChild(shaft);
+    el.appendChild(pool);
+    // Behind everyone: straight after the road, before the people, who
+    // are painted over it in the order they were added.
+    world.insertBefore(el, document.getElementById("ground-tiles").nextSibling);
+    actElements.push(el);
+    DOORWAYS.push(Object.assign({ el, x, width, open: null, near: null, moving: null }, src));
+  };
+  (scene.exits || []).forEach((exit) => add(exit.x, exit.width || 80, { exit }));
+  NPCS.forEach((npc) => { if (npc.doorway) add(npc.x, NPC_WIDTH, { npc }); });
+}
+
+function updateDoorways(cameraX) {
+  const from = cameraX - DOORWAY_VIEW_MARGIN;
+  const to = cameraX + (viewportWidth || 0) + DOORWAY_VIEW_MARGIN;
+  const fighting = ENEMIES.length > 0 && enemiesAlive();
+  for (let i = 0; i < DOORWAYS.length; i++) {
+    const d = DOORWAYS[i];
+    // No way out mid-fight (findNearby), so no light either.
+    const open = !fighting && doorwayOpen(d);
+    const near = open && edgeGap(posX, PLAYER_WIDTH, d.x, d.width) < INTERACT_DISTANCE;
+    const moving = open && d.x + d.width >= from && d.x <= to;
+    if (open !== d.open) { d.open = open; setClass(d.el, "doorway-open", open); }
+    if (near !== d.near) { d.near = near; setClass(d.el, "doorway-near", near); }
+    if (moving !== d.moving) { d.moving = moving; setClass(d.el, "doorway-still", !moving); }
+  }
 }
 
 // Four trees in silhouette (Block 50; one coconut palm before that, and
@@ -2982,6 +3143,7 @@ function applyNight(scene) {
   const on = Boolean(sceneNight(scene));
   document.getElementById("skyline").classList.toggle("night-tint", on);
   document.getElementById("ground-tiles").classList.toggle("night-tint", on);
+  world.classList.toggle("night-scene", on); // Block 126: the doorways' light
 }
 
 // Also read for hide spots, which the same stretch of story brings.
@@ -6794,6 +6956,9 @@ function cameraShake(now) {
 // Written only when the camera or the shake moved (Block 36).
 function drawCamera(cameraX, now) {
   const s = cameraShake(now);
+  // Block 126. Before the early return: a scene's new layers start
+  // undrawn even when the camera has not moved. Writes only on a change.
+  if (PARALLAX.length) drawParallax(cameraX);
   if (cameraX === lastCameraX && s.x === lastShakeX && s.y === lastShakeY) return;
   world.style.transform = s.x || s.y
     ? `translate(${-cameraX + s.x}px, ${s.y}px)`
@@ -8042,6 +8207,7 @@ function gameLoop(now) {
   drawCamera(cameraX, now);
   updatePickupMotion(cameraX); // Block 64
   updateGuide(canAct, cameraX); // Block 125
+  if (DOORWAYS.length) updateDoorways(cameraX); // Block 126
 
 
   // Interact and gift buttons follow whichever NPC or stage is nearby.

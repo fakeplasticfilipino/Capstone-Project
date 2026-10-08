@@ -981,6 +981,8 @@
           {
             // The back window: no picture, only a body to reach.
             id: "bintana", x: WINDOW_X, label: "Bintana", scenery: true,
+            // Block 126. Lit once it is the way out, with the list.
+            doorway: { requiresFlag: "a2_nakuhaAngListahan" },
             interactLabel: "Tumakas sa bintana",
             interactIcon: "i-out",
             dialogueSets: [],

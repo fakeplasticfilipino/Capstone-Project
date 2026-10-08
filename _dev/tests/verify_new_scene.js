@@ -2892,8 +2892,15 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
         const e = document.getElementById("guide-edge");
         return { playing: Shell.state === "playing", step: (quests.find((q) => !q.done) || {}).text || null,
                  label: t ? t.label : null,
-                 shown: !m.classList.contains("hidden") || !e.classList.contains("hidden") };
+                 shown: !m.classList.contains("hidden") || !e.classList.contains("hidden"),
+                 // Block 126. Every door here lit exactly when it opens.
+                 doors: DOORWAYS.map((d) => ({ id: d.exit ? d.exit.id : d.npc.id,
+                   lit: d.el.classList.contains("doorway-open"), open: doorwayOpen(d) && !enemiesAlive() })) };
       });
+      if (pointed.doors.length) {
+        ok("  and its doors are lit exactly when open (Block 126)",
+           pointed.doors.every((x) => x.lit === x.open), pointed.doors);
+      }
       const want = pointed.playing ? GUIDE_AT[j.n + ":" + j.id] : null;
       ok("  and once the world is his, the guide points at " + (want === null ? "nothing" : JSON.stringify(want)) +
          " (Block 125)", free && pointed.label === want && pointed.shown === (want !== null), pointed);
