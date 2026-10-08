@@ -860,12 +860,10 @@ let enemiesDone = null; // resolves the spawnEnemies promise
 // unloadScene clears both, and wayOutLine reads the second.
 let DECOYS = [];
 let advanceGoal = null;
-// Block 126. The lit doorways of the scene (buildDoorways) and the
-// backdrop layers that drift behind the street (buildParallaxLayers).
-// Up here with the other scene lists: unloadScene clears them, and
-// loadAct reaches unloadScene at parse time.
+// Block 126. The lit doorways of the scene (buildDoorways). Up here
+// with the other scene lists: unloadScene clears it, and loadAct
+// reaches unloadScene at parse time.
 let DOORWAYS = [];
-let PARALLAX = [];
 let HIDE_SPOTS = []; // regions that suppress guard detection
 let HAZARDS = []; // ground regions that cost one health on contact
 let PICKUPS = []; // collectibles; currently only hearts
@@ -1069,7 +1067,6 @@ function unloadScene() {
   DECOYS = [];
   advanceGoal = null;
   DOORWAYS = []; // Block 126; their elements are in actElements
-  PARALLAX = [];
   currentScene = null;
   currentSceneId = null;
 }
@@ -1212,8 +1209,6 @@ function buildPanelBackdrop(scene) {
   if (!layer) return;
   layer.classList.add("skyline-tiled");
   const width = scene.panelWidth || PANEL_WIDTH;
-  // Block 126. Layers behind the street, laid first so they are behind.
-  const layered = buildParallaxLayers(scene, layer);
 
   for (let i = 0, x = 0; x < WORLD_WIDTH; i++, x += width) {
     const tile = document.createElement("div");
@@ -1237,9 +1232,7 @@ function buildPanelBackdrop(scene) {
     // Block 46. The whole picture stands on the floor (.skyline-panel):
     // anything above its top edge is panelSky, so the sky carries on up
     // a tall screen instead of ending in the page's own colour.
-    // With layers behind it the street row is a cut-out, and the sky is
-    // the farthest layer's (buildParallaxLayers).
-    if (scene.panelSky && !layered) tile.style.backgroundColor = scene.panelSky;
+    if (scene.panelSky) tile.style.backgroundColor = scene.panelSky;
     layer.appendChild(tile);
     actElements.push(tile);
   }
@@ -1271,77 +1264,6 @@ function buildPanelBackdrop(scene) {
     world.appendChild(tree);
     actElements.push(tree);
   });
-}
-
-// =============================================================
-// PARALLAX LAYERS (Block 126)
-//
-// The street paintings are one flat picture each, so a house reads as
-// cardboard. A scene may declare layers: pictures behind the street that
-// move slower than it as the camera does, the farthest slowest.
-//
-//   layers: [{ panels: ["...png"], rate: 0.2, panelWidth }, ...]
-//
-// Listed far to near. rate is the share of the camera's travel the layer
-// moves (0 holds still on the screen, 1 is the road's own); between them
-// it drifts. Only what cannot be reached drifts: everything a student
-// touches (the street row, its doors, its people) stays 1:1, or a
-// painted door would slide away from the doorway that is really there.
-// With layers the street's panels are cut-outs and the sky is the
-// farthest layer's colour (panelSky on it).
-//
-// No shipped scene declares any: the layered pictures are wanted from the
-// artist (ART.md, Wanted), and a layer is not named before its picture
-// exists, since a placeholder over the whole sky would be worse than the
-// flat painting. The harness tests the engine with the existing paintings.
-//
-// Each layer is one element in #skyline holding its own tiles, wide
-// enough to cover the screen at the end of the road, moved by its own
-// transform when the camera moves (drawCamera), never by left: nothing
-// else transforms the layer itself, and a transform composites.
-// =============================================================
-
-function buildParallaxLayers(scene, layer) {
-  const defs = Array.isArray(scene.layers) ? scene.layers : [];
-  const viewW = viewportWidth || measureViewport() || 0;
-  defs.forEach((def, i) => {
-    const panels = (def.panels || []).filter(Boolean);
-    if (!panels.length) return;
-    const rate = Math.max(0, Math.min(1, typeof def.rate === "number" ? def.rate : 0.5));
-    const width = def.panelWidth || scene.panelWidth || PANEL_WIDTH;
-    const span = Math.ceil(viewW + Math.max(0, WORLD_WIDTH - viewW) * rate) + 2;
-    const el = document.createElement("div");
-    el.className = "parallax-layer";
-    el.style.width = span + "px";
-    if (i === 0 && scene.panelSky) el.style.backgroundColor = scene.panelSky;
-    for (let n = 0, x = 0; x < span; n++, x += width) {
-      const tile = document.createElement("div");
-      tile.className = "skyline-tile skyline-panel";
-      tile.style.left = x + "px";
-      tile.style.width = width + 1 + "px";
-      const src = panels[n % panels.length];
-      loadImage(src);
-      tile.style.backgroundImage = `url("${assetUrl(src)}")`;
-      el.appendChild(tile);
-    }
-    layer.appendChild(el);
-    actElements.push(el);
-    PARALLAX.push({ el, rate, drawn: null });
-  });
-  return PARALLAX.length > 0;
-}
-
-// Where each layer stands for a camera at cameraX: it is carried with the
-// world, so it is held back by the part of the camera's travel it does
-// not make. Written only when that moves.
-function drawParallax(cameraX) {
-  for (let i = 0; i < PARALLAX.length; i++) {
-    const p = PARALLAX[i];
-    const x = Math.round(cameraX * (1 - p.rate));
-    if (x === p.drawn) continue;
-    p.drawn = x;
-    p.el.style.transform = "translateX(" + x + "px)";
-  }
 }
 
 // =============================================================
@@ -6956,9 +6878,6 @@ function cameraShake(now) {
 // Written only when the camera or the shake moved (Block 36).
 function drawCamera(cameraX, now) {
   const s = cameraShake(now);
-  // Block 126. Before the early return: a scene's new layers start
-  // undrawn even when the camera has not moved. Writes only on a change.
-  if (PARALLAX.length) drawParallax(cameraX);
   if (cameraX === lastCameraX && s.x === lastShakeX && s.y === lastShakeY) return;
   world.style.transform = s.x || s.y
     ? `translate(${-cameraX + s.x}px, ${s.y}px)`

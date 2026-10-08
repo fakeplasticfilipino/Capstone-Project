@@ -614,11 +614,6 @@ Scene shape:
                                                  second one (Block 45)
       panelSky: "#72a8d0",                       colour above the pictures
                                                  (Block 46)
-      layers: [{ panels, rate, panelWidth }],    optional, a street only;
-                                                 pictures behind it, far
-                                                 to near, drifting at rate
-                                                 (0 to 1) of the camera
-                                                 (Block 126)
       ground: false | { src } | { floor },       optional; hides the dirt strip,
                                                  or lays the scene's own road
                                                  (Polish #6), or a floor of
@@ -869,16 +864,13 @@ panel width and its own shape, standing on the floor (the panel starts at
 --ground-level), and panelSky fills whatever is above its top edge on a
 tall screen.
 
-Lit doorways and layers (Block 126). Every exit, and every NPC with
-doorway, is lit while open (game.js, LIT DOORWAYS): a column of warm
-light the width of the door, a glow on the wall and a pool on the
-road, behind the people, brighter in reach and at night, dark while
-shut or while anyone fights. Gradients the engine draws, not art. A
-street's layers (game.js, PARALLAX LAYERS) drift behind its panels,
-each at its rate of the camera, the sky colour (panelSky) on the
-farthest; everything a student reaches stays on the street, 1:1, or a
-painted door would slide off the doorway. No scene declares layers
-until the artist's layered streets arrive (ART.md, Wanted).
+Lit doorways (Block 126). Every exit, and every NPC with doorway, is
+lit while open (game.js, LIT DOORWAYS): a column of warm light the
+width of the door, a glow on the wall and a pool on the road, behind
+the people, brighter in reach and at night, dark while shut or while
+anyone fights. Gradients the engine draws, not art. (A parallax of
+layered streets was built and taken out the same day, Block 126: no
+time for the art it needs.)
 
 An exit is a doorway: a zone on the road, x and width like a hazard,
 reached edge to edge like an NPC. The interact button reads its label
@@ -2382,8 +2374,8 @@ look, by system:
                                           next act, no tests)
     palette and pixel theme               Blocks 15, 16, 29
     backdrops, panels and shadow trees    Blocks 18, 26, 43, 45, 46, 49,
-                                          50, 51, 53, 54, 70, 126 (layers,
-                                          lit doorways)
+                                          50, 51, 53, 54, 70, 126 (lit
+                                          doorways)
     bodies and collision                  Blocks 22 to 24
     inventory, shop, items, equipment     Blocks 20, 22, 25, 32
     melee, shooting, combat               Blocks 17, 27, 28, 35, 40, 60,
@@ -2489,8 +2481,8 @@ look, by system:
     the guide brought back                Block 125 (the objective's
                                           guide, the way through the
                                           doors, GUIDE_AT)
-    lit doorways, parallax layers         Block 126 (the layered streets
-                                          and buildings wanted)
+    lit doorways                          Block 126 (the buildings
+                                          wanted; parallax dropped)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

@@ -7337,8 +7337,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     await r.ctx.close();
   }
 
-  if (section("BV", "Block 126: lit doorways, and layers that drift behind the street")) {
-    // The fixture scene given doors and layers at run time, so the engine
+  if (section("BV", "Block 126: lit doorways")) {
+    // The fixture scene given doors at run time, so the engine
     // is checked apart from what the acts ship.
     const { ctx, page } = await enterTestRoom();
     await page.evaluate(() => {
@@ -7412,47 +7412,6 @@ const visible = (page, sel) => page.evaluate((s) => {
     d = await doors();
     ok("and they light again once the fight is over", by("bukas").open, d);
 
-    // The layers. Only a street (panels) has them.
-    const layers = await page.evaluate(async () => {
-      const misyon = SCENES.find((s) => s.id === "misyon");
-      misyon.panels = ["assets/backgrounds/act1/street-01.jpg", "assets/backgrounds/act1/street-02.jpg"];
-      misyon.panelSky = "#72a8d0";
-      misyon.layers = [
-        { panels: ["assets/backgrounds/act1/street-03.jpg"], rate: 0.2 },
-        { panels: ["assets/backgrounds/act1/street-04.jpg"], rate: 0.5 },
-      ];
-      loadScene("misyon");
-      GUARDS.forEach((g) => { g.disabled = true; });
-      const at = async (x) => {
-        posX = x; posY = floorHeightAt(posX);
-        await new Promise((r) => setTimeout(r, 250));
-        return { camera: lastCameraX, shifts: PARALLAX.map((p) => p.el.style.transform) };
-      };
-      const a = await at(200);
-      const b = await at(1800);
-      const els = [...document.querySelectorAll("#skyline .parallax-layer")];
-      const street = document.querySelector("#skyline > .skyline-panel");
-      return { a, b, count: els.length, first: els.length && els[0].style.backgroundColor,
-               streetSky: street && street.style.backgroundColor,
-               before: els.length && Boolean(els[1].compareDocumentPosition(street) & Node.DOCUMENT_POSITION_FOLLOWING),
-               wide: els.length && parseFloat(els[0].style.width) };
-    });
-    const expect = (cam, rate) => "translateX(" + Math.round(cam * (1 - rate)) + "px)";
-    ok("a street's layers are laid behind its panels, the sky colour on the farthest",
-       layers.count === 2 && layers.before && layers.first === "rgb(114, 168, 208)" && !layers.streetSky, layers);
-    ok("each layer drifts at its rate as the camera moves, the farthest slowest",
-       layers.b.camera > layers.a.camera &&
-       layers.b.shifts[0] === expect(layers.b.camera, 0.2) && layers.b.shifts[1] === expect(layers.b.camera, 0.5), layers);
-    const rest = await page.evaluate(async () => {
-      const misyon = SCENES.find((s) => s.id === "misyon");
-      delete misyon.layers;
-      loadScene("misyon");
-      await new Promise((r) => setTimeout(r, 200));
-      return { n: PARALLAX.length, els: document.querySelectorAll("#skyline .parallax-layer").length,
-               sky: document.querySelector("#skyline > .skyline-panel").style.backgroundColor };
-    });
-    ok("a street with no layers is as before: no layer, the sky on its panels",
-       rest.n === 0 && rest.els === 0 && rest.sky === "rgb(114, 168, 208)", rest);
     await ctx.close();
   }
 

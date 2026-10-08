@@ -5539,7 +5539,7 @@ from every story point of every act (52), plays the beat on until the
 world is the student's, and checks what the arrow names against a
 table (GUIDE_AT). Both suites, 1,409 checks, green.
 
-## Block 126: lit doorways, and layers behind the street, 8 Oct 2026
+## Block 126: lit doorways (and a parallax, dropped), 8 Oct 2026
 
 The proponent: the background "looks dead", like "flat cutout
 cardboard", and it is "really hard to tell players that this is an
@@ -5615,6 +5615,13 @@ a second, under the old build's 15; walking lays out a little more
 (6.5 a second, from 3.3) because the tab's distance is rewritten, which
 is contained to the tab. Nodes and listeners across eight scene round
 trips do not grow.
+
+The parallax was taken out the same day, at the proponent's word: "we
+don't have the time to do it". With no artist's layers coming before
+the defense the engine side was code nothing could use, so it went
+whole (the layers, their check and their tests); the lit doorways and
+the four buildings' pictures stay. Brought back, it is the commit
+"Block 126: lit doorways, and layers that drift behind a street".
 
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 

@@ -37,9 +37,10 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 8 Oct 2026, Block 126 (the streets in layers and the
-four buildings that are gone into, Wanted for the parallax and the
-doors, not yet named by the game). Block 121 (two cosmetic outfits Wanted for
+Last updated: 8 Oct 2026, Block 126 (the four buildings that are
+gone into, Wanted for the doors, not yet named by the game; the
+layered streets asked for the same day were dropped with the
+parallax). Block 121 (two cosmetic outfits Wanted for
 the shop, not yet named by the game). Block 120 (fifty-two owed: the crowd in
 Manila, two townspeople, seen rather than only heard; Act III borrows
 Act IV's cell, its guard and its fighters, which were owed already).
@@ -419,25 +420,11 @@ the Standing decisions set) and its sheets move to Owed or straight in.
         not to cut, worn loose. The same poses, cells and frame counts
         as above. (NOT STARTED)
 
-Block 126, the proponent (8 Oct 2026): the streets look flat, "like
-cardboard", and nothing says which building can be gone into. The
-engine now drifts layers behind the street (CLAUDE.md, Act data
-format: layers) and lights every open door; what it needs is the
-same streets in layers, and the buildings that are gone into as their
-own pictures. Not named by any scene until they arrive, since a
-placeholder across the whole sky would be worse than the painting.
-
-    assets/backgrounds/act1/street-01-sky.png, -far.png, -street.png
-    (and the same three for street-02, street-03, street-04)
-        Each street painting as three PNGs on the same canvas as the
-        painting (1992 by 736), lined up exactly, so laid over each
-        other they make the painting again. sky: the sky and clouds,
-        opaque. far: what is far off (the harbour and its ships, the
-        distant trees and roofs), transparent around it. street: the
-        row of houses, the church, the fences, the plants and the
-        road's edge, transparent above the roofs. Where the far layer
-        was hidden behind a house it has to be painted in, because a
-        slower layer slides out from behind. (NOT STARTED)
+Block 126, the proponent (8 Oct 2026): nothing on the street says
+which building can be gone into. The engine lights every open door; a
+picture of each such building, its door over the doorway, would make
+the painted door and the real one the same place. Not named by any
+scene until it arrives.
 
     assets/sprites/scenery/bahay-nanay.png       Act II, door at x 2000
     assets/sprites/scenery/imprenta.png          Act II, door at x 6690

@@ -13,10 +13,9 @@ Last updated: 8 Oct 2026, after Block 126. Block 126: the streets felt
 like cardboard and nobody could tell which building could be entered.
 Every open door is now lit (a column of warm light, a glow on the wall,
 a pool on the road; brighter in reach and at night, dark while shut or
-in a fight), and the engine can drift layers behind a street; the
-layered streets and the four enterable buildings are asked of the
-artist (ART.md, Wanted), since cutting them from the paintings would
-mean painting in what they hide. Block 125: the guide is
+in a fight); the four enterable buildings are asked of the artist
+(ART.md, Wanted). A parallax of layered streets was built and taken out
+the same day at the proponent's word (no time for the art). Block 125: the guide is
 back, at the proponent's word ("I'm absolutely lost playing this
 without them"), for everyone and with no way to turn it off: an arrow
 with a name over whoever or wherever the step in hand is done, a tab at
@@ -991,8 +990,8 @@ machine, the assessment module.
         acts; checked by the content check, test.js AW, and from every
         story point (GUIDE_AT)
     126 lit doorways (every open exit and door-NPC, drawn by the
-        engine) and parallax layers behind a street (engine only; the
-        layered streets and four buildings Wanted from the artist)
+        engine); the four buildings Wanted from the artist; parallax
+        built and dropped (no time for its art)
 
 ## Blocks remaining
 
