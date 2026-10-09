@@ -5699,6 +5699,31 @@ Talaan papers. A game that meets a database without the column (the
 migration not yet applied, or undone) writes the score again without
 it: the score is the study's data and the answers are commentary on it.
 
+Difficulty that eases (item 7). Until now dynamic difficulty was speed
+scaled by act number and nothing else, the same for every student in an
+act, and a panel can fairly say that is a difficulty curve, not a
+dynamic one. The answer is the smallest thing that responds to the
+student: setbacks counted per scene (every respawnInScene: hearts out,
+a catch, a decoy that held falling), and at three and six of them the
+guards and enemies slow (0.85, 0.7) and a guard's meter fills more
+slowly (0.7, 0.5). Speed and the meter, because they are what the
+existing lever already moves; enemy health, damage and the dash stay
+as they are, so a fight is the same fight, only less pressed. It is
+cleared by progress rather than by time, because progress is what
+shows the student is through the hard part: a scene changed, a fight
+won, a moving fight's point reached, a run's checkpoint passed. It is
+silent, at the proponent's word, so no student reads "you are doing
+badly" in a class where the person beside him can see the screen. It
+is applied as a multiplier at the five places bodies move and the one
+place the meter fills, per frame, rather than by rebuilding guards with
+a new scale, so nothing the act's scaling built needs rebuilding and
+the numbers CLAUDE.md gives for Act I to IV stay true. Damage and
+detections are counted as before, so the performance score is not
+flattered by the help; the number of times it stepped in (assists) is
+kept with the counters in the save, for the paper, and not scored. The
+thresholds and factors are chosen, not measured, like the score's
+budgets.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

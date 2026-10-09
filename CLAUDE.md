@@ -492,7 +492,8 @@ game.js exposes window.Game and nothing else:
                          from the act's devJumps (Block 108), starts the
                          guest at that point in the story
     isGuest()
-    stats()              { damageTaken, detections, playMs }, a copy
+    stats()              { damageTaken, detections, playMs, assists },
+                         a copy (assists: Block 128)
     resetStats()         called by Acts.enterAct and, for a guest,
                          Acts.enterActAsGuest (Block 116), and by
                          nothing else
@@ -2112,11 +2113,20 @@ takedown; from the front it alerts the guard and costs a health point.
 That is what makes stealth and combat interlock rather than sit beside each
 other, and it means a corridor can be solved two ways.
 
-Dynamic difficulty is guard speed, scaled by act number, and nothing else.
-Speed changes the detection window, the cost of a mistimed run, and how much
-ground a patrol covers, so one lever moves the whole difficulty curve. A
-system with more knobs would need tuning data this project will never
-collect.
+Dynamic difficulty is speed, scaled by act number, and one easing for
+the student who keeps failing (Block 128, the proponent's choice; until
+then the act's scaling was the only lever). Speed changes the detection
+window, the cost of a mistimed run, and how much ground a patrol covers,
+so one lever moves the whole difficulty curve. The easing: every
+respawnInScene in a scene is a setback; at 3 the guards and enemies move
+at 0.85 and a guard's meter fills at 0.7, at 6 at 0.7 and 0.5
+(ASSIST_AFTER, ASSIST_SPEED, ASSIST_ALERT in game.js). A scene changed, a
+fight won, a moving fight's point reached or a run's checkpoint passed
+clears it. It is silent (no student is told), applied per frame where
+bodies move and meters fill rather than baked into the act's scaling,
+and counted (stats().assists, in the save) but not scored: damage and
+detections are counted as ever. A system with more knobs would need
+tuning data this project will never collect.
 
 There is no game over. Reaching zero health returns the player to the start
 of the scene at full health. A fail state that ejects a Grade 8 student

@@ -398,7 +398,8 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
                                                    BW)
         fast-forward (Block 85 built the skip;
         nothing says so)
-     7  Difficulty that eases after repeated       (NOT STARTED)
+     7  Difficulty that eases after repeated       (COMPLETE; test.js
+                                                   BW)
         setbacks in a scene, silently, the
         assists kept in the save
      8  A timeline in the Talaan (Mga Pangyayari)  (NOT STARTED)
@@ -650,7 +651,7 @@ The paper specifies seventeen.
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; Acts II to IV add long stealth runs with checkpoints and riflemen who fire (the sentinela, the Constabulary on guard) |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's haircut (Block 114), tutorials that wait for the task, NPCs that open the shop |
 | Narrative Delivery | (BUILT) Scene scripts that play by themselves, black cards, arrival dialogues. All four acts use them; every act's lines accepted by the proponents (Acts II to IV on 9 Oct 2026) |
-| Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113, Act III (1.30) and Act IV (1.45) |
+| Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113, Act III (1.30) and Act IV (1.45). Since Block 128 it also eases for the student: after 3 setbacks in a scene the guards and enemies slow to 0.85 and the meter fills at 0.7, after 6 to 0.7 and 0.5, cleared by progress, silent, counted as assists in the save |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (the lagundi, sold since Block 121) |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. The story hands over the stage clothes (Block 82) and Act III's disguise (Block 117), each slowing detection while still; the corner shop sells the lagundi, the anting-anting (a fourth heart) and the pulbura (a faster shot) since Block 121; the rest verified against the fixture |
 | Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No cosmetic outfit ships until the artist draws one (two asked for, ART.md, Wanted); verified against the fixture |

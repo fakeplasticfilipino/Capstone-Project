@@ -7561,6 +7561,72 @@ const visible = (page, sel) => page.evaluate((s) => {
        guarded && guarded.answers.a === 1 && !("b" in guarded.answers) && guarded.index === 1, guarded);
     await ctx.close();
   }
+  if (still()) { // the section above, continued: difficulty that eases (item 7)
+    const { ctx, page } = await enterTestRoom();
+    const steps = await page.evaluate(() => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      const read = () => ({ level: assistLevel, speed: assistSpeed(), alert: assistAlert(), assists: Game.stats().assists });
+      const out = { start: read() };
+      respawnInScene(); respawnInScene();
+      out.two = read();
+      respawnInScene();
+      out.three = read();
+      respawnInScene(); respawnInScene(); respawnInScene();
+      out.six = read();
+      loadScene(currentScene.id);
+      out.newScene = read();
+      return out;
+    });
+    ok("two setbacks change nothing; the third eases the scene, the sixth eases it more",
+       steps.start.level === 0 && steps.two.level === 0 && steps.three.level === 1 &&
+       steps.three.speed === 0.85 && steps.three.alert === 0.7 &&
+       steps.six.level === 2 && steps.six.speed === 0.7 && steps.six.alert === 0.5, steps);
+    ok("each step is counted with the record, and a new scene starts unaided",
+       steps.six.assists === 2 && steps.newScene.level === 0 && steps.newScene.assists === 2, steps);
+
+    const cleared = await page.evaluate(async () => {
+      GUARDS.forEach((g) => { g.disabled = true; });
+      for (let i = 0; i < 3; i++) respawnInScene();
+      const before = assistLevel;
+      posX = 300;
+      const fight = spawnEnemies([{ id: "e1", x: 900, hp: 1 }]);
+      ENEMIES.forEach((e) => hitEnemy(e, 99));
+      await fight;
+      return { before, after: assistLevel };
+    });
+    ok("a fight won clears it", cleared.before === 1 && cleared.after === 0, cleared);
+
+    const walked = await page.evaluate(async () => {
+      const walk = async (level) => {
+        GUARDS.forEach((g) => { g.disabled = true; });
+        posX = 200; posY = floorHeightAt(posX); invulnUntil = performance.now() + 60000;
+        assistLevel = level;
+        spawnEnemies([{ id: "w" + level, x: 1400, hp: 9 }]);
+        const e = ENEMIES[ENEMIES.length - 1];
+        const from = e.pos;
+        await new Promise((r) => setTimeout(r, 500));
+        const moved = from - e.pos;
+        ENEMIES.forEach((x) => hitEnemy(x, 99));
+        await new Promise((r) => setTimeout(r, 900));
+        return moved;
+      };
+      const plain = await walk(0);
+      const eased = await walk(2);
+      assistLevel = 0;
+      return { plain, eased, ratio: eased / plain };
+    });
+    ok("eased, an enemy closes the distance more slowly", walked.plain > 20 && walked.ratio < 0.85, walked);
+
+    const saved = await page.evaluate(async () => {
+      for (let i = 0; i < 3; i++) respawnInScene();
+      markDirty();
+      await Game.flushSave();
+      const row = __DB.game_progress.find((r) => r.student_id === "u1");
+      return row && row.save_state && row.save_state.stats;
+    });
+    ok("the assists are kept in the save with the counters", saved && saved.assists >= 3, saved);
+    await ctx.close();
+  }
   if (still()) { // the section above, continued: the Questions report (item 2)
     const ans = (pairs) => Object.fromEntries(pairs.map(([o, k], i) =>
       ["i" + o, { o, c: k ? 1 : 0, k, q: "Tanong " + o + "?" }]));

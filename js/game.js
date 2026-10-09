@@ -249,6 +249,45 @@ function difficultyMultiplier(actNumber) {
   return 1 + (n - 1) * DIFFICULTY_STEP;
 }
 
+// Block 128. Difficulty that eases for the student who keeps failing the
+// same stretch. The act's scaling above is the same for every student;
+// this is the one part that answers to the one playing. Each setback in a
+// scene (out of hearts, caught, a flag that falls: every respawnInScene)
+// counts; at ASSIST_AFTER[0] of them the guards and enemies move at
+// ASSIST_SPEED[1] and a guard's meter fills at ASSIST_ALERT[1], at
+// ASSIST_AFTER[1] at the second step. Progress clears it: a scene changed,
+// a fight won, a moving fight's point reached, a run's checkpoint passed.
+// Silent, at the proponent's word: no student is told he is being
+// helped. Damage and detections are counted as ever, so the performance
+// score is not flattered; how many times it stepped in is kept with the
+// counters (assists). Applied where bodies move and meters fill, per
+// frame, as a multiplier, so nothing built from the act's scaling is
+// rebuilt and the act's numbers stay what CLAUDE.md says they are.
+const ASSIST_AFTER = [3, 6];
+const ASSIST_SPEED = [1, 0.85, 0.7];
+const ASSIST_ALERT = [1, 0.7, 0.5];
+let sceneSetbacks = 0;
+let assistLevel = 0;
+let assists = 0; // persisted with the counters
+
+function noteSetback() {
+  sceneSetbacks++;
+  const level = sceneSetbacks >= ASSIST_AFTER[1] ? 2 : sceneSetbacks >= ASSIST_AFTER[0] ? 1 : 0;
+  if (level > assistLevel) {
+    assistLevel = level;
+    assists++;
+    saveDirty = true;
+  }
+}
+
+function clearSetbacks() {
+  sceneSetbacks = 0;
+  assistLevel = 0;
+}
+
+function assistSpeed() { return ASSIST_SPEED[assistLevel]; }
+function assistAlert() { return ASSIST_ALERT[assistLevel]; }
+
 // How fast a guard's meter fills while he sees Macario, per 60th of a
 // second, for a guard whose content gives no alertRate of its own.
 // Block 113 doubled it from 0.012, at the proponent's word: at 0.012 a
@@ -1069,6 +1108,7 @@ function unloadScene() {
   enemiesDone = null;
   DECOYS = [];
   advanceGoal = null;
+  clearSetbacks(); // Block 128: a new scene starts unaided
   DOORWAYS = []; // Block 126; their elements are in actElements
   currentScene = null;
   currentSceneId = null;
@@ -3344,7 +3384,7 @@ function updateGuards(step) {
     // a twitching guard that can never actually catch anyone.
     const route = (guard.patrolTo || 0) - (guard.patrolFrom || 0);
     if (route >= 1) {
-      const speed = (guard.speed || 1.4) * step;
+      const speed = (guard.speed || 1.4) * assistSpeed() * step;
       guard.pos += speed * guard.facing;
       if (guard.pos <= guard.patrolFrom) {
         guard.pos = guard.patrolFrom;
@@ -3389,7 +3429,7 @@ function updateGuards(step) {
             : "May nakapansin! Lumayo sa tingin niya.", 3600);
         }
       }
-      guard.alert = Math.min(1, guard.alert + (guard.alertRate || GUARD_ALERT_RATE) * stillMult * step);
+      guard.alert = Math.min(1, guard.alert + (guard.alertRate || GUARD_ALERT_RATE) * stillMult * assistAlert() * step);
       // Block 38. The first time the clothes are what is holding a guard
       // back in a scene, say so. The meter turning blue (drawGuard) says
       // it every time after.
@@ -3551,7 +3591,7 @@ function updateHostileGuard(guard, step, now) {
   const busy = guard.shootAnimation && (guard.aiming || now < guard.lowerSince + guardRaiseMs(guard));
 
   if (dist > GUARD_HOLD_DISTANCE && !busy) {
-    const move = Math.min(guard.chaseSpeed * step, dist - GUARD_HOLD_DISTANCE);
+    const move = Math.min(guard.chaseSpeed * assistSpeed() * step, dist - GUARD_HOLD_DISTANCE);
     guard.pos += move * guard.facing;
     guard.pos = Math.max(0, Math.min(guard.pos, WORLD_WIDTH - GUARD_WIDTH));
     placeBody(guard.el, guard.pos);
@@ -3880,6 +3920,7 @@ function damagePlayer(reason, respawn) {
 // Back to the start of the scene, guards reset to their posts. Health is
 // only restored when it ran out, so a player on one heart still feels it.
 function respawnInScene() {
+  noteSetback(); // Block 128
   const scene = currentScene;
   posX = respawnX(scene);
   posY = floorHeightAt(posX);
@@ -3967,6 +4008,7 @@ function updateCheckpoints() {
     if (Math.abs(posX + PLAYER_WIDTH / 2 - cp.x) < CHECKPOINT_REACH) {
       state.flags[cp.flag] = true;
       markDirty();
+      clearSetbacks(); // Block 128: the run got further
       // A checkpoint with script: true starts the scene's script that
       // waits on its flag the moment it is reached: a beat that happens
       // where he is, not where he presses E (Act II, the shout in the
@@ -4004,6 +4046,7 @@ function updateAdvance() {
   const goal = advanceGoal;
   if (!goal || (posX + PLAYER_WIDTH / 2 - goal.x) * goal.dir < 0) return;
   advanceGoal = null;
+  clearSetbacks(); // Block 128
   passCheckpoints(goal.dir);
   renderQuests();
   goal.resolve();
@@ -6825,6 +6868,7 @@ function finishFight() {
   cancelTutorial("atake", "tanda");
   const resolve = enemiesDone;
   enemiesDone = null;
+  clearSetbacks(); // Block 128: the fight was won
   if (resolve) setTimeout(resolve, storyMs(FIGHT_END_BEAT_MS));
 }
 
@@ -6946,7 +6990,7 @@ function updateEnemies(step, now) {
         const blocked = comradeAhead(enemy, dir, centre, targetCentre);
         if (dist > ENEMY_COMMIT_RANGE) {
           if (!blocked) {
-            enemy.pos += dir * Math.min(enemy.speed * step, dist - ENEMY_COMMIT_RANGE);
+            enemy.pos += dir * Math.min(enemy.speed * assistSpeed() * step, dist - ENEMY_COMMIT_RANGE);
           }
           enemy.walking = !blocked;
         } else if (now < enemy.cooldownUntil) {
@@ -7025,7 +7069,7 @@ function comradeAhead(enemy, dir, centre, playerCentre) {
 function repositionEnemy(enemy, dir, dist, step, now) {
   let move = 0;
   if (dist < ENEMY_KEEP) {
-    move = -dir * enemy.speed * ENEMY_BACK_PACE * step;
+    move = -dir * enemy.speed * assistSpeed() * ENEMY_BACK_PACE * step;
   } else {
     if (!enemy.shuffleUntil || now >= enemy.shuffleUntil) {
       enemy.shuffleDir = Math.random() < 0.5 ? -1 : 1;
@@ -7034,7 +7078,7 @@ function repositionEnemy(enemy, dir, dist, step, now) {
     // Never shuffled back inside ENEMY_KEEP, or out of range.
     const toward = enemy.shuffleDir === dir;
     if (toward ? dist - ENEMY_KEEP > 10 : ENEMY_COMMIT_RANGE - dist > 10) {
-      move = enemy.shuffleDir * enemy.speed * ENEMY_SHUFFLE_PACE * step;
+      move = enemy.shuffleDir * enemy.speed * assistSpeed() * ENEMY_SHUFFLE_PACE * step;
     }
   }
   const next = Math.max(0, Math.min(enemy.pos + move, WORLD_WIDTH - ENEMY_WIDTH));
@@ -8541,6 +8585,9 @@ function applyLoadedState(row) {
     if (typeof saved.stats.playMs === "number") {
       playMs = saved.stats.playMs;
     }
+    if (typeof saved.stats.assists === "number") {
+      assists = saved.stats.assists; // Block 128
+    }
   }
 
   if (typeof row.currency === "number") currency = row.currency;
@@ -8629,7 +8676,7 @@ async function writeProgress() {
       quests,
       flags: state.flags,
       posX,
-      stats: { damageTaken, detections, playMs },
+      stats: { damageTaken, detections, playMs, assists },
     },
     updated_at: new Date().toISOString(),
   };
@@ -8727,7 +8774,7 @@ window.Game = {
   // Read by acts.js, which is the only thing that writes them anywhere.
   // Returned as a copy so a caller cannot mutate the engine's counters by
   // holding onto the object.
-  stats: () => ({ damageTaken, detections, playMs }),
+  stats: () => ({ damageTaken, detections, playMs, assists }),
 
   // Set by inventory.js from the student's equipped items, and by nothing
   // else. Takes numbers rather than items deliberately: the engine applies
@@ -8818,6 +8865,7 @@ window.Game = {
     damageTaken = 0;
     detections = 0;
     playMs = 0;
+    assists = 0;
   },
 
   // shell.js is the only thing that knows how to open the shop screen,
