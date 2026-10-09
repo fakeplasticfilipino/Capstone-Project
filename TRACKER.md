@@ -1065,7 +1065,10 @@ in CLAUDE.md, Pitfalls.
 
 ## Documentation debt
 
-For the paper and the defense, tracked apart from code.
+For the paper and the defense, tracked apart from code. Every item is
+drafted (6 Oct 2026) in Claude outputs/defense-drafts.md, with the ERD
+in erd.md, on the proponent's computer only (gitignored); what is left
+is putting each into the paper.
 
 Justify vanilla JavaScript and Supabase over Unity and C#, from the
 study's own literature review: a comparable project was constrained by
@@ -1074,39 +1077,39 @@ addresses that gap directly. Frame it as responding to an identified
 limitation rather than as reduced scope. On 28 Sep 2026 the proponent
 asked about porting to Unity and was advised against it (CLAUDE.md,
 Stack); this paragraph is the answer to a panel that asks. A draft was
-offered. (NOT STARTED)
+offered. (DRAFTED)
 
 Revise the ERD to twelve entities (eleven, and talaan_entries since schema 007). The paper says fifteen and describes
 seventeen. PlayerAction and the achievement entities are dropped,
 GameScore folds into ActProgress, each with a stated reason. The
-database matches. (NOT STARTED)
+database matches. (DRAFTED)
 
 Document how the assessment items were validated, given that no external
 validation form exists: written from the source material, matched pre
 and post pairs on the same topic and difficulty with the key in a
 different position, and the trivia card checked so it cannot hand a
-pre-test answer. (NOT STARTED)
+pre-test answer. (DRAFTED)
 
 Document grading honestly (stated in DECISIONS.md, Block 121, and under
 Objective 2, above): since Block 68 the game grades the tests
 itself, at the instructor's direction, so a student with the browser's
 developer tools could read the answers; a score still cannot be changed
 or deleted from a browser, and one attempt per pre-test is enforced by
-the database. (NOT STARTED)
+the database. (DRAFTED)
 
 Document the dashboard's queries and their RLS enforcement: how one
-teacher is kept from another class's data. (NOT STARTED)
+teacher is kept from another class's data. (DRAFTED)
 
 Document that game_progress.currency is client written and why that is
 acceptable: it buys cosmetics only and touches nothing the dashboard
-reports. (NOT STARTED)
+reports. (DRAFTED)
 
 Document the performance score formula and its weights, and why time is
-recorded but not scored (CLAUDE.md, Standing decisions). (NOT STARTED)
+recorded but not scored (CLAUDE.md, Standing decisions). (DRAFTED)
 
 Revise Technical Background: keep Aseprite, Audacity and Figma; remove
 Unity and C#; correct Visual Studio to Visual Studio Code; add GitHub
-Pages and Supabase. (NOT STARTED)
+Pages and Supabase. (DRAFTED)
 
 Credit any licensed art used for enemies, outfits or combat animations.
-(NOT STARTED)
+(DRAFTED)
