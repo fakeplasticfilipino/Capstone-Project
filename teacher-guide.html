@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MACARIO — Teacher's Guide</title>
+  <link rel="stylesheet" href="css/teacher.css?v=792872769" />
+</head>
+<!-- Block 128, item 12. One printable page for the teacher running a
+     class session: before, during and after, and what to do when a phone
+     misbehaves. Linked from the dashboard's header. It holds no data and
+     needs no login, so it loads no script. Kept in step with the game:
+     a change to what a student sees (the green line, the pass mark, the
+     tests) is a change to this page too. -->
+<body class="guide-page">
+  <header id="dash-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">M</div>
+        <div>
+          <h1 id="dash-title">MACARIO</h1>
+          <p id="dash-subtitle">Teacher's Guide</p>
+        </div>
+      </div>
+      <div id="dash-user">
+        <a class="guide-link" href="teacher.html">Back to the dashboard</a>
+        <button type="button" class="guide-link guide-print" onclick="window.print()">Print</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="dash-body" class="guide">
+    <section class="card guide-card">
+      <h2 class="section-title">The day before</h2>
+      <ol>
+        <li><strong>Open the game once on every phone, on good wifi.</strong> Go to the game's address in Chrome and wait on the title screen until the line under the buttons turns green and reads <em>Nakahanda na ang laro kahit walang internet.</em> The whole game is then kept on that phone, and the next opening needs no download.</li>
+        <li><strong>Check each phone is held sideways.</strong> The game is played in landscape. A phone held upright shows a notice asking the student to turn it; turn off the phone's rotation lock if the notice will not go away.</li>
+        <li><strong>Have the account list ready.</strong> Each student has a coded account (mag-aaral01, mag-aaral02, and so on) and a password from the administrator. Keep the list matching codes to names on paper; the game and the dashboard never hold a student's name.</li>
+      </ol>
+    </section>
+
+    <section class="card guide-card">
+      <h2 class="section-title">During the session</h2>
+      <ol>
+        <li><strong>Students log in with their own code.</strong> Playing as a guest saves nothing and sits no test, so a guest's play is not counted. A student can change their password in the settings, giving the current one first.</li>
+        <li><strong>Each act begins with a trivia card and a pre-test.</strong> The pre-test can be taken once only. Ask students not to help one another: it measures what they knew before playing.</li>
+        <li><strong>The act is played.</strong> Progress saves by itself while there is internet; a student who closes the game picks up where they were at the next login. Hearts that run out send the student back a little way, never out of the game.</li>
+        <li><strong>The act ends with the post-test.</strong> The pass mark is 75%. A student below it may replay the act and take the post-test again, or finish with the score as it is. The study's learning gain uses the first post-test.</li>
+        <li><strong>A short feedback form follows,</strong> and it may be skipped. Answers cannot be changed afterwards.</li>
+        <li><strong>If the internet drops during a test,</strong> the answers stay on the phone. When sending fails, the student can try again or go on (<em>Ituloy muna</em>): the score is kept on the phone and sent at their next login on that phone.</li>
+      </ol>
+    </section>
+
+    <section class="card guide-card">
+      <h2 class="section-title">Reading the dashboard</h2>
+      <ul>
+        <li><strong>Choose the act</strong> at the top: the roster, the summary and the Questions report all describe that act.</li>
+        <li><strong>Pre-test and Post-test</strong> are percentages. Where a student took the post-test more than once, the column shows the latest attempt.</li>
+        <li><strong>Gain</strong> is the first post-test minus the pre-test. The class averages above the roster use first attempts too.</li>
+        <li><strong>Performance</strong> (0 to 100) is 50 for finishing the act's objectives, plus up to 25 for avoiding damage and 25 for staying unseen. Time is recorded but not scored.</li>
+        <li><strong>The Questions report</strong> pairs each pre-test question with the post-test question in the same place and shows the share of the class that answered each correctly, with the change. It shows which topics the game taught well and which it did not.</li>
+        <li><strong>Export CSV</strong> saves the roster, and the report's own button saves the questions, as spreadsheets.</li>
+      </ul>
+    </section>
+
+    <section class="card guide-card">
+      <h2 class="section-title">Questions and Talaan papers</h2>
+      <ul>
+        <li><strong>The test questions are yours.</strong> Edit them under Test Questions and Answers. Pre-test and post-test items should be matched pairs: the same topic and difficulty, in different words, the correct answer in a different position.</li>
+        <li><strong>Edit before the session, not during it.</strong> A question changed after students have answered it makes the pre-test and post-test harder to compare.</li>
+        <li><strong>The trivia card</strong> is shown before the pre-test, so it must not contain the answer to any pre-test question.</li>
+        <li><strong>Talaan papers</strong> are up to three per act, found on the road and kept in the Talaan on the pause screen. Avoid giving away a post-test answer word for word.</li>
+      </ul>
+    </section>
+
+    <section class="card guide-card">
+      <h2 class="section-title">When something goes wrong</h2>
+      <table class="guide-table">
+        <thead><tr><th>What you see</th><th>What to do</th></tr></thead>
+        <tbody>
+          <tr><td>The title screen keeps loading</td><td>The phone is still downloading the game. Move closer to the wifi and wait; it carries on by itself. This is why each phone is opened the day before.</td></tr>
+          <tr><td>A phone shows an old version</td><td>Open the game in a private (incognito) tab, or clear the site's data in Chrome's settings, then open it again on wifi.</td></tr>
+          <tr><td>A student cannot log in</td><td>Check the code and password against your list, and that the phone has internet: logging in needs a connection even when the game is kept on the phone.</td></tr>
+          <tr><td>A student logged out by mistake</td><td>Log in again with the same code. Progress, scores and items are kept.</td></tr>
+          <tr><td>"Hindi naipasa" after a test</td><td>The score could not be sent. Try again once the internet is back, or tap <em>Ituloy muna</em>: the score is kept on that phone and sent at the next login. Have the student log in on the same phone.</td></tr>
+          <tr><td>The dashboard shows no students</td><td>The students are not yet assigned to your class. Ask the administrator to set their class.</td></tr>
+          <tr><td>The dashboard opens the game instead</td><td>A student is logged in on this browser. Open the dashboard in a private (incognito) window.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

@@ -32,7 +32,7 @@ const crypto = require("crypto");
 
 const ROOT = path.join(__dirname, "..", "..", "..");
 const TEXT = /\.(js|css|html|md|txt|json|svg)$/i;
-const PAGES = ["index.html", "teacher.html"];
+const PAGES = ["index.html", "teacher.html", "teacher-guide.html"];
 
 function fingerprint(rel) {
   let bytes = fs.readFileSync(path.join(ROOT, rel));

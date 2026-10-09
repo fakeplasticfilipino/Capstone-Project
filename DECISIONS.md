@@ -5745,6 +5745,17 @@ held is the dashboard's for the papers: nothing hands a post-test
 answer over in its own words. All of it is ours and marked PLACEHOLDER
 until the proponents read it against the source book.
 
+The teacher's guide (item 12). What a teacher needs to run a session
+was spread over CLAUDE.md's pitfalls (open each phone once on wifi, the
+incognito window, the empty dashboard when students have no class) and
+nowhere a teacher would look. It is one page, in English like the
+dashboard, linked from the dashboard's header, printable, with no
+script and no data, so it needs no login and cannot break. It states
+what the game does in the game's own words where a teacher will see
+them (the green line, Ituloy muna, Hindi naipasa), so a teacher can
+match the screen to the page. prepare.js stamps it like the other two
+pages.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -416,7 +416,9 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
                                                    BW)
     11  ART.md: which owed picture to draw first   (COMPLETE: ART.md,
                                                    Draw first)
-    12  A teacher's guide, a page linked from the  (NOT STARTED)
+    12  A teacher's guide, a page linked from the  (COMPLETE:
+                                                   teacher-guide.html;
+                                                   test.js BW)
         dashboard
 
 ## Polish list (Block 112)

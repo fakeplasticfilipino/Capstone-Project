@@ -674,10 +674,89 @@ input:focus-visible {
   body { background: #fff; }
   #dash-header { background: #fff; color: var(--text); border-bottom: 2px solid var(--text); }
   #dash-subtitle, .user-role { color: var(--text-muted); }
-  #logout-btn, .toolbar-actions, .search, #class-picker-row { display: none !important; }
+  #logout-btn, .toolbar-actions, .search, #class-picker-row, .guide-link { display: none !important; }
   .stat, .card { box-shadow: none; }
   #roster thead th { position: static; }
   #roster th button::after { content: ""; }
+}
+
+/* ---- The teacher's guide (Block 128), and its link in the header ---- */
+
+.guide-link {
+  display: inline-block;
+  background: transparent;
+  color: #f5efe0;
+  border: 1px solid rgba(245, 239, 224, 0.45);
+  border-radius: 7px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.guide-link:hover {
+  background: rgba(245, 239, 224, 0.1);
+  border-color: rgba(245, 239, 224, 0.8);
+}
+
+#dash-user .guide-link + .guide-link,
+#dash-user .guide-link + #logout-btn {
+  margin-left: 8px;
+}
+
+.guide {
+  max-width: 860px;
+}
+
+.guide-card {
+  margin-bottom: 20px;
+  padding: 22px 26px;
+  line-height: 1.55;
+}
+
+.guide-card ol,
+.guide-card ul {
+  margin: 10px 0 0;
+  padding-left: 22px;
+}
+
+.guide-card li {
+  margin-bottom: 9px;
+}
+
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.guide-table th {
+  text-align: left;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--border);
+  padding: 9px 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.guide-table td {
+  border-bottom: 1px solid var(--grey-soft);
+  padding: 10px 12px;
+  vertical-align: top;
+}
+
+.guide-table td:first-child {
+  width: 32%;
+  font-weight: 600;
+}
+
+@media print {
+  .guide-card { break-inside: avoid; }
 }
 
 /* ---- Question editor (Block 68) ---- */

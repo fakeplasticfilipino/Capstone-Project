@@ -7728,6 +7728,18 @@ const visible = (page, sel) => page.evaluate((s) => {
     }));
     ok("an act with no answers says so, with no table and nothing to export",
        empty.empty && empty.table && empty.exportOff, empty);
+
+    // Item 12: the teacher's guide, a page of its own linked from the header.
+    const missing = [];
+    page.on("response", (r) => { if (r.status() >= 400) missing.push(r.url()); });
+    await page.click("#dash-user a.guide-link");
+    await page.waitForLoadState("load");
+    const guide = await page.evaluate(() => ({ path: location.pathname,
+      sections: [...document.querySelectorAll(".guide-card .section-title")].map((h) => h.textContent),
+      back: (document.querySelector("a.guide-link") || {}).getAttribute ? document.querySelector("a.guide-link").getAttribute("href") : null }));
+    ok("the dashboard links the teacher's guide, which loads whole and links back (item 12)",
+       guide.path.endsWith("/teacher-guide.html") && guide.sections.length === 5 &&
+       guide.back === "teacher.html" && missing.length === 0, { guide, missing });
     await ctx.close();
   }
 

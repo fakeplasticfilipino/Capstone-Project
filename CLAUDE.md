@@ -173,6 +173,11 @@ off the repository.
 
     index.html, teacher.html   the two pages; they must stay at the root,
                                because the Pages URL serves index.html
+    teacher-guide.html         the teacher's guide, one printable page
+                               linked from the dashboard (Block 128); no
+                               script. A change to what a student sees
+                               (the green line, the pass mark, the
+                               tests) is a change to it too
     sw.js                      the service worker (Blocks 62, 105); at the
                                root so its scope is the whole site
     CLAUDE.md, TRACKER.md,     the three context files (how it is built,
