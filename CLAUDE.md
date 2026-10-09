@@ -578,7 +578,12 @@ world belongs to the scene.
                                                  (Block 56)
       glossary: { title, hint,                   optional; words earned by
                   entries: [{ id, term,          unlockGlossary(id)
-                              text }] },         (Block 68)
+                              text,              (Block 68), or by
+                              requiresFlag }] }, their flag (Block 128)
+      timeline: [{ requiresFlag, year, text }],  optional; Mga Pangyayari
+                                                 in the Talaan, each shown
+                                                 once its flag is set
+                                                 (Block 128)
       hints: { count, label, foundText,          optional; count of them
                completeText,                     laid at random on a
                pool: [{ title, text }],          scene's hintSpots
@@ -738,8 +743,17 @@ last) and opens a card over a stopped world. It is taken whatever the
 student's health, never while a dialogue, cutscene or screen is up
 (playerIsSafe), and a found one is never laid again. The pause screen
 lists both through Game.glossary(). A pickup out of view does not
-animate (updatePickupMotion). Since Block 69 Act I declares no
-words.
+animate (updatePickupMotion). Act I declared no words from Block 69
+to Block 128. Since Block 128 every act declares words, each with the
+requiresFlag of the beat where it first matters: found the moment that
+flag is set, however it was set, and announced and kept (salita_) by
+earnGlossaryByFlags from markDirty, quietly for a save restored past
+it. And a timeline, Mga Pangyayari, each entry a card or a beat of the
+act restated and shown once its requiresFlag is set, so an old save
+fills in by itself; none for a beat after the act's last playable
+moment, which nobody could pause to read. Both are read by the content
+check (a requiresFlag nothing sets fails it) and by STORY.md's ([WORD],
+[TIME]).
 
 Fixed hints (Block 70) are the teacher's Talaan papers. hints.fixed
 lays paper n at the scene's hintSpots[n - 1], always, and at most

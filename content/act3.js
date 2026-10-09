@@ -995,6 +995,48 @@
     ],
     startingQuests: [],
 
+    // Block 128. Words of the period and what has happened by now, as
+    // Act I's: each earned or shown by the flag of its beat.
+    // PLACEHOLDER: ours, until the proponents accept or replace them.
+    glossary: {
+      title: "Talaan",
+      hint: "Matutuklasan mo ang mga salita habang naglalaro.",
+      entries: [
+        { id: "a3_balatkayo", requiresFlag: "a3_nagbihis", term: "Balatkayo",
+          text: "Ibang anyo o damit na isinusuot para hindi makilala." },
+        { id: "a3_petisyon", requiresFlag: "a3_pumirma", term: "Petisyon",
+          text: "Nakasulat na kahilingan sa pamahalaan, na pinipirmahan ng maraming tao." },
+        { id: "a3_sedisyon", requiresFlag: "a3_batas", term: "Sedisyon",
+          text: "Pag-uudyok sa taong-bayan na tumutol o lumaban sa pamahalaan." },
+        { id: "a3_amnestiya", requiresFlag: "a3_pinalaya", term: "Amnestiya",
+          text: "Pagpapatawad ng pamahalaan sa isang buong pangkat ng mga itinuring na nagkasala, kaya sila pinalalaya." },
+        { id: "a3_republika", requiresFlag: "a3_republika", term: "Republika",
+          text: "Pamahalaang pinamumunuan ng mga pinunong pinili ng mamamayan, sa halip na ng hari." },
+        { id: "a3_generalissimo", requiresFlag: "a3_republika", term: "Generalissimo",
+          text: "Ang pinakamataas na heneral, na namumuno sa buong hukbo." },
+      ],
+    },
+    timeline: [
+      { requiresFlag: "a3_lumaban", year: "Pebrero 1899",
+        text: "Nabalitaan sa kabundukan: sa Santa Mesa, Maynila, nagsimula ang digmaan laban sa mga Amerikano." },
+      { requiresFlag: "a3_nabasaAngSulat", year: "Mayo 1899",
+        text: "Tondo, sa bantay ng mga Amerikano. Nabalitaan ni Macario na pumanaw si Emilio Jacinto." },
+      { requiresFlag: "a3_balangay", year: "1899 hanggang 1901",
+        text: "Palipat-lipat si Macario ng bayan, nakabalatkayo, at nagtatag ng mga bagong balangay ng Katipunan." },
+      { requiresFlag: "a3_umalisSiIsko", year: "Abril 1901",
+        text: "Libu-libo ang sumuko at nanumpa ng katapatan sa Amerika. Tumanggi si Macario." },
+      { requiresFlag: "a3_pumirma", year: "Agosto 1901",
+        text: "Calle Gunao, Quiapo. Itinatag ang Partido Nacionalista, at si Macario ang Kalihim-Heneral nito." },
+      { requiresFlag: "a3_batas", year: "Nobyembre 1901",
+        text: "Ipinasa ng mga Amerikano ang Batas sa Sedisyon." },
+      { requiresFlag: "a3_nahuli", year: "Enero 1902",
+        text: "Nahuli si Macario habang nagtatatag ng mga balangay, at ikinulong sa Bilibid." },
+      { requiresFlag: "a3_pinalaya", year: "Hulyo 4, 1902",
+        text: "Lumabas si Macario sa bilangguan, at tumuloy sa kabundukan ng Morong." },
+      { requiresFlag: "a3_republika", year: "1902",
+        text: "Kabundukan ng Morong. Itinatag ang Republika ng Katagalugan, at si Macario ang Pangulo at Generalissimo nito." },
+    ],
+
     hints: {
       count: 3,
       fixed: true,

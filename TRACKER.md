@@ -336,7 +336,10 @@ PAMPHLET_GUARDS in content/act1.js).
 2026 (Block 113). Nothing open in Act I.
 
 3. Acts II to IV's lines, names, words and Talaan papers: accepted by
-the proponents on 9 Oct 2026. Nothing open in Acts II to IV.
+the proponents on 9 Oct 2026. Open since Block 128, for every act: the
+Talaan's new words and timeline (STORY.md, each act's Talaan, the
+lines marked + as [WORD] and [TIME]; PLACEHOLDER in the content), to
+be read against the source book and accepted, reworded or cut.
 
 4. The test questions are the teacher's to write and change on the
 dashboard (CLAUDE.md, Standing decisions). Since 9 Oct 2026, at the
@@ -402,9 +405,12 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
                                                    BW)
         setbacks in a scene, silently, the
         assists kept in the save
-     8  A timeline in the Talaan (Mga Pangyayari)  (NOT STARTED)
-     9  Talaan words in every act, none answering  (NOT STARTED)
-        a pre-test item
+     8  A timeline in the Talaan (Mga Pangyayari)  (COMPLETE; lines
+                                                   PLACEHOLDER, for
+                                                   the proponents)
+     9  Talaan words in every act, none answering  (COMPLETE; lines
+        a post-test item word for word             PLACEHOLDER, for
+                                                   the proponents)
     10  A test's answers kept through a reload     (COMPLETE; test.js
                                                    BW)
     11  ART.md: which owed picture to draw first   (NOT STARTED)

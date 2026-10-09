@@ -5724,6 +5724,27 @@ kept with the counters in the save, for the paper, and not scored. The
 thresholds and factors are chosen, not measured, like the score's
 budgets.
 
+The Talaan's timeline and words (items 8 and 9). Students meet years
+and places on black cards that are gone in a few seconds, with nowhere
+to see them in order; and the Talaan had held no words since Block 69.
+Both are now declared on the act and follow the flags rather than calls
+in the story: a timeline entry shows, and a word counts as found, the
+moment the flag of its beat is set. That was the smallest way to make
+an old save, a story point (?dev=1) and a replay all right without a
+line of story code: the check from every story point found the first
+version wrong (a word earned only when the next save ran, so a story
+point showed none), which is why "found" now reads the flag itself and
+earning (the toast, salita_) is only the announcement. The timeline
+restates the act's own cards and beats, so it adds no claim the
+proponents have not accepted; it stops at each act's last playable
+moment, since an entry no student can pause to read is no entry. The
+words are period terms defined plainly. Item 9 as proposed said none
+should answer a pre-test item; on reading the flow that cannot happen
+(the pre-test is sat before the act and never again), so the standard
+held is the dashboard's for the papers: nothing hands a post-test
+answer over in its own words. All of it is ours and marked PLACEHOLDER
+until the proponents read it against the source book.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

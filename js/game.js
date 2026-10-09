@@ -4245,6 +4245,21 @@ function unlockGlossary(id) {
   return true;
 }
 
+// Block 128. A word may declare requiresFlag instead of being earned by
+// a call: it is earned the moment that flag is set (markDirty, the one
+// place every flag change passes), with the same sound and toast as
+// unlockGlossary, and kept the same way (salita_). quiet earns without
+// either, for a save that already passed the beat.
+function earnGlossaryByFlags(quiet) {
+  const def = glossaryDef();
+  if (!def || !Array.isArray(def.entries)) return;
+  for (const e of def.entries) {
+    if (!e.requiresFlag || !state.flags[e.requiresFlag] || state.flags["salita_" + e.id]) continue;
+    if (quiet) state.flags["salita_" + e.id] = true;
+    else unlockGlossary(e.id);
+  }
+}
+
 // A toast that waits its turn: a word earned as a conversation ends
 // would otherwise wipe the "Bagong gawain" toast the same moment set.
 function queueToast(text, ms) {
@@ -4340,9 +4355,18 @@ function glossaryState() {
   const g = glossaryDef();
   const h = hintsDef();
   const list = hintList();
-  if (!(g && (g.entries || []).length) && !list.length) return null;
+  // Block 128. The act's timeline: what has happened by now, an entry
+  // shown once its beat's flag is set (requiresFlag), so a save that
+  // already passed it shows it with no call from content.
+  const line = Array.isArray(currentActData && currentActData.timeline) ? currentActData.timeline : [];
+  if (!(g && (g.entries || []).length) && !list.length && !line.length) return null;
+  const events = line.filter((e) => !e.requiresFlag || state.flags[e.requiresFlag])
+    .map((e) => ({ year: e.year || "", text: e.text || "" }));
   const words = ((g && g.entries) || []).map((e, i) => {
-    const found = Boolean(state.flags["salita_" + e.id]);
+    // Block 128. A word earned by a flag counts the moment the flag is
+    // set, however it was set (a story point, a script that saves later);
+    // earnGlossaryByFlags only announces it and keeps it (salita_).
+    const found = Boolean(state.flags["salita_" + e.id] || (e.requiresFlag && state.flags[e.requiresFlag]));
     return { n: i + 1, id: e.id, found, term: found ? e.term : "", text: found ? e.text : "" };
   });
   const hintTotal = h && h.fixed ? list.length : Math.min((h && h.count) || 3, list.length);
@@ -4355,6 +4379,7 @@ function glossaryState() {
     total: words.length,
     entries: words,
     hints: { found: hints.length, total: hintTotal, entries: hints, label: (h && (h.listLabel || h.label)) || "Mga Pahiwatig" },
+    timeline: { found: events.length, total: line.length, entries: events },
   };
 }
 
@@ -8569,6 +8594,9 @@ function applyLoadedState(row) {
 
   if (saved.flags) {
     Object.assign(state.flags, saved.flags);
+    // Block 128. Words whose beat a save already passed are earned
+    // quietly, not toasted all at once over the title screen.
+    earnGlossaryByFlags(true);
   }
 
   // Absent on any save written before Block 9, which is why each field is
@@ -8625,6 +8653,7 @@ function markDirty() {
   // Block 48. Flags are set by content directly and then markDirty is
   // called, so this is the one place a change of step is always seen.
   if (currentActData && currentActData.linearObjectives) renderQuests();
+  earnGlossaryByFlags(false); // Block 128, for the same reason
   // Scan S4: a guest has no save, so the act's end is looked for here.
   // Not by reading isGuest: markDirty runs at parse time (loadAct), before
   // that let is declared; guestCheck asks Game.isGuest() itself.

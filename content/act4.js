@@ -979,6 +979,50 @@
     ],
     startingQuests: [],
 
+    // Block 128. Words of the period and what has happened by now, as
+    // Act I's: each earned or shown by the flag of its beat.
+    // PLACEHOLDER: ours, until the proponents accept or replace them.
+    glossary: {
+      title: "Talaan",
+      hint: "Matutuklasan mo ang mga salita habang naglalaro.",
+      entries: [
+        { id: "a4_konstabularya", requiresFlag: "a4_himpilan", term: "Konstabularya",
+          text: "Ang Philippine Constabulary: pulisyang itinatag ng mga Amerikano, binubuo ng mga Pilipino, para tugisin ang mga lumalaban." },
+        { id: "a4_manipesto", requiresFlag: "a4_manipesto", term: "Manipesto",
+          text: "Pahayag na isinusulat at ipinakakalat ng isang pinuno o pangkat para ipaalam ang kanilang paninindigan." },
+        { id: "a4_rekonsentrasyon", requiresFlag: "a4_bigas", term: "Rekonsentrasyon",
+          text: "Sapilitang paglilipat ng mga taga-baryo sa mga kampong may bantay." },
+        { id: "a4_asamblea", requiresFlag: "a4_gomez", term: "Asamblea",
+          text: "Kapulungan ng mga kinatawang inihalal ng mamamayan para gumawa ng mga batas." },
+        { id: "a4_bandolerismo", requiresFlag: "a4_hatol", term: "Bandolerismo",
+          text: "Ang krimen ng pagiging bandido o tulisan." },
+      ],
+    },
+    timeline: [
+      { requiresFlag: "a4_kautusan", year: "Mayo 5, 1903",
+        text: "Inilabas ni Sakay ang Sirkular Militar Bilang 1, at inayos ang kanyang hukbo." },
+      { requiresFlag: "a4_manipesto", year: "Abril 5, 1904",
+        text: "Naglabas si Sakay ng manipesto mula sa kabundukan ng Morong." },
+      { requiresFlag: "a4_lumipat", year: "Agosto 1904",
+        text: "Inilipat ni Sakay ang kanyang himpilan sa kabundukan ng Di-Masalang." },
+      { requiresFlag: "a4_tanay", year: "Huling bahagi ng 1904",
+        text: "Nakuha ng mga tauhan ni Sakay ang bayan ng Tanay, suot ang mga ninakaw na uniporme ng Konstabularya. Hindi sinasabi ng mga tala kung kasama si Sakay." },
+      { requiresFlag: "a4_malabon", year: "Enero 24, 1905",
+        text: "Sinalakay ng hukbo ni Sakay ang San Francisco de Malabon, Cavite." },
+      { requiresFlag: "a4_bigas", year: "1905",
+        text: "Inipon ng mga Amerikano ang mga taga-baryo sa mga kampong may bantay. Nagutom ang mga baryo, at ang mga nasa bundok." },
+      { requiresFlag: "a4_gomez", year: "1906",
+        text: "Dumating si Dominador Gómez, dala ang pangako ng Asamblea ng Pilipinas." },
+      { requiresFlag: "a4_bumaba", year: "Hulyo 14, 1906",
+        text: "Bumaba si Sakay sa Maynila, at sinalubong siya ng mga tao." },
+      { requiresFlag: "a4_nahuli", year: "Hulyo 17, 1906",
+        text: "Sa isang salu-salo sa Cavite, dinakip si Sakay at ang kanyang mga opisyal." },
+      { requiresFlag: "a4_hatol", year: "1906",
+        text: "Hinatulan ng kamatayan si Sakay." },
+      { requiresFlag: "a4_dumungaw", year: "Hulyo 30, 1907",
+        text: "Bumoto ang mga Pilipino sa unang halalan para sa Asamblea, habang nasa Bilibid si Sakay." },
+    ],
+
     hints: {
       count: 3,
       fixed: true,

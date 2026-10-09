@@ -906,6 +906,44 @@
     ],
     startingQuests: [],
 
+    // Block 128. Words of the period and what has happened by now, as
+    // Act I's: each earned or shown by the flag of its beat.
+    // PLACEHOLDER: ours, until the proponents accept or replace them.
+    glossary: {
+      title: "Talaan",
+      hint: "Matutuklasan mo ang mga salita habang naglalaro.",
+      entries: [
+        { id: "a2_imprenta", requiresFlag: "a2_nakalimbag", term: "Imprenta",
+          text: "Palimbagan: ang lugar at ang makinang ginagamit sa paglilimbag ng mga pahayagan at aklat." },
+        { id: "a2_supremo", requiresFlag: "a2_nagtalumpati", term: "Supremo",
+          text: "Ang pinakamataas na pinuno ng Katipunan. Si Andres Bonifacio ang Supremo noong 1896." },
+        { id: "a2_himagsikan", requiresFlag: "a2_pinunit", term: "Himagsikan",
+          text: "Paglaban ng taong-bayan para palitan ang pamahalaang umaapi sa kanila; rebolusyon." },
+        { id: "a2_polvorin", requiresFlag: "a2_lumusob", term: "Polvorin",
+          text: "Imbakan ng pulbura at bala." },
+        { id: "a2_panakot", requiresFlag: "a2_naitayoAngPanakot", term: "Panakot",
+          text: "Taong-dayami na itinatayo sa bukid para takutin ang mga ibon." },
+      ],
+    },
+    timeline: [
+      { requiresFlag: "a2_nakalimbag", year: "Agosto 1896",
+        text: "Inilimbag ang ikalawang labas ng Kalayaan, ang pahayagan ng Katipunan." },
+      { requiresFlag: "a2_nakatakas", year: "Agosto 1896",
+        text: "Natuklasan ang Katipunan. Daan-daan ang hinuli sa Tondo, at tumakas si Macario patungo sa kabundukan." },
+      { requiresFlag: "a2_pinunit", year: "Agosto 23, 1896",
+        text: "Pugad Lawin, Kalookan. Pinunit ng mga Katipunero ang kanilang sedula." },
+      { requiresFlag: "a2_nakaatras", year: "Agosto 30, 1896",
+        text: "Nilusob ng mga Katipunero ang San Juan del Monte. Mahigit isandaan at limampu ang nasawi, kasama ang Kasama." },
+      { requiresFlag: "a2_naitayoAngPanakot", year: "Nobyembre 1896",
+        text: "Kabundukan ng Morong. Hinarap ng mga Katipunero ang mga Kastila sa ilog ng Nangka." },
+      { requiresFlag: "a2_saBalara", year: "1896",
+        text: "Dumating ang dagdag na hukbo ng Espanya. Umatras sina Macario at ang Supremo sa Balara." },
+      { requiresFlag: "a2_saLaguna", year: "Marso 1897",
+        text: "Sa Tejeros, nahati ang himagsikan." },
+      { requiresFlag: "a2_saLaguna", year: "Mayo 10, 1897",
+        text: "Pinatay si Andres Bonifacio ng sarili niyang mga kasama." },
+    ],
+
     hints: {
       count: 3,
       fixed: true,

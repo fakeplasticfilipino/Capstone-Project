@@ -1197,10 +1197,10 @@ async function mananahiStopsHim() {
 const HINT_HIGH = 155; // GROUND_LEVEL + 95: out of reach without a jump
 const HINT_SPOTS = [2500, { x: 8200, y: HINT_HIGH }, { x: 12200, y: HINT_HIGH }];
 
-// Words (a glossary) can still be added the Block 68 way: give ACT_1 a
-// glossary ({ title, hint, entries: [{ id, term, text }] }) and call
-// unlockGlossary(id) where each word is earned. CLAUDE.md, Act data
-// format, has the rest.
+// Words (a glossary): since Block 128 each is earned by the flag of the
+// beat where it first matters (requiresFlag), with no call from the
+// story; unlockGlossary(id) still works for one earned by a deed.
+// CLAUDE.md, Act data format, has the rest.
 
 // Block 108. Points in the story a tester can start from, as a guest,
 // from the title screen opened with ?dev=1 (shell.js), so a block's
@@ -1332,6 +1332,42 @@ window.ACT_1 = {
 
   // The chain is the quest log, so there is nothing to add at the start.
   startingQuests: [],
+
+  // Block 128. Words of the period, each earned by the flag of the beat
+  // where it first matters, and what has happened by now (Mga
+  // Pangyayari), each entry a card or a beat of this act's own, shown
+  // once its flag is set. Both listed in the Talaan on the pause screen.
+  // PLACEHOLDER: ours, until the proponents accept or replace them.
+  glossary: {
+    title: "Talaan",
+    hint: "Matutuklasan mo ang mga salita habang naglalaro.",
+    entries: [
+      { id: "cedula", requiresFlag: "nagpasyangMagtrabaho", term: "Cedula",
+        text: "Papel na binibili taon-taon ng bawat Pilipinong may sapat na gulang sa ilalim ng Espanya, bilang patunay na nagbayad siya ng buwis. Maaaring hulihin ang walang cedula." },
+      { id: "kutsero", requiresFlag: "nakausapAngKutsero", term: "Kutsero",
+        text: "Tagapagmaneho ng kalesa o karwaheng hinihila ng kabayo." },
+      { id: "komedya", requiresFlag: "naitanghalAngDula", term: "Komedya",
+        text: "Dulang patula, tinatawag ding moro-moro, tungkol sa digmaan ng mga kaharian: may prinsipe, prinsesa, at labanan ng espada. Itinatanghal ito tuwing pista." },
+      { id: "katipunan", requiresFlag: "tinanggapSaKatipunan", term: "Katipunan",
+        text: "Pinaikling pangalan ng Kataas-taasang, Kagalang-galangang Katipunan ng mga Anak ng Bayan. KKK ang tawag dito ng mga kasapi." },
+      { id: "guardia_civil", requiresFlag: "naipamigayAngMgaPolyeto", term: "Guardia civil",
+        text: "Mga pulis ng pamahalaang Kastila, na nagbabantay at nanghuhuli sa mga lansangan at bayan." },
+      { id: "balangay", requiresFlag: "lumipasAngIsangTaon", term: "Balangay",
+        text: "Sangay ng Katipunan sa isang pook, may sariling pinuno. Galing ang salita sa sinaunang bangka, at sa pamayanang dala nito." },
+    ],
+  },
+  timeline: [
+    { requiresFlag: "nagpasyangMagtrabaho", year: "1890",
+      text: "Tondo, Maynila. Naghanap ng trabaho si Macario para matulungan si Nanay." },
+    { requiresFlag: "naitanghalAngDula", year: "1890",
+      text: "Unang umarte si Macario sa entablado ng komedya." },
+    { requiresFlag: "nilapitanNgKatipunan", year: "1894",
+      text: "Gumanap si Macario bilang Principe Baldovino." },
+    { requiresFlag: "tinanggapSaKatipunan", year: "1894",
+      text: "Sumapi si Macario sa Katipunan." },
+    { requiresFlag: "lumipasAngIsangTaon", year: "1895",
+      text: "Naging pinuno si Macario ng kanyang balangay sa Katipunan." },
+  ],
 
   // Block 70. The teacher's Talaan papers. Block 94: the three below are
   // the game's own, facts from the general histories, laid when the

@@ -1827,8 +1827,14 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        found.saved === true, found);
     await r.page.evaluate(() => Shell.openPause());
     await r.page.waitForTimeout(150);
-    ok("the pause screen offers the Talaan, counting the papers",
-       await r.page.evaluate(() => document.querySelector("#shell-notebook .lbl").textContent === "Talaan 1/3"));
+    // Block 128: the papers and the words together.
+    const label = await r.page.evaluate(() => {
+      const g = Game.glossary();
+      return { shown: document.querySelector("#shell-notebook .lbl").textContent,
+        want: "Talaan " + (g.found + g.hints.found) + "/" + (g.total + g.hints.total), papers: g.hints.found };
+    });
+    ok("the pause screen offers the Talaan, counting the papers and the words",
+       label.shown === label.want && label.papers === 1, label);
     await r.ctx.close();
 
     r = await resume("tondo", Object.assign({ pahiwatig_0: true }, afterThought), 0, PAPERS);
@@ -2905,6 +2911,21 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
                  doors: DOORWAYS.map((d) => ({ id: d.exit ? d.exit.id : d.npc.id,
                    lit: d.el.classList.contains("doorway-open"), open: doorwayOpen(d) && !enemiesAlive() })) };
       });
+      // Block 128. The Talaan's words and timeline follow the flags: each
+      // shown exactly when its beat's flag is set.
+      const book = await p.page.evaluate(() => {
+        const g = Game.glossary() || { entries: [], timeline: { entries: [] } };
+        const words = ((currentActData.glossary || {}).entries || []).map((e) => ({
+          id: e.id, flag: Boolean(state.flags[e.requiresFlag]),
+          found: Boolean((g.entries.find((w) => w.id === e.id) || {}).found) }));
+        const line = currentActData.timeline || [];
+        const due = line.filter((e) => state.flags[e.requiresFlag]).length;
+        return { words, due, shown: g.timeline ? g.timeline.found : 0, total: line.length };
+      });
+      ok("  and its Talaan shows each word and year exactly when its beat is passed (Block 128): " +
+         book.words.filter((w) => w.found).length + "/" + book.words.length + " words, " +
+         book.shown + "/" + book.total + " years",
+         book.words.length > 0 && book.total > 0 && book.words.every((w) => w.found === w.flag) && book.due === book.shown, book);
       if (pointed.doors.length) {
         ok("  and its doors are lit exactly when open (Block 126)",
            pointed.doors.every((x) => x.lit === x.open), pointed.doors);

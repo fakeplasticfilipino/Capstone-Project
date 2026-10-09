@@ -5912,7 +5912,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.waitForTimeout(150);
     ok("the pause screen offers the Talaan with its count",
        await page.evaluate(() => !document.getElementById("shell-notebook").classList.contains("hidden") &&
-         document.querySelector("#shell-notebook .lbl").textContent === "Talaan 1/2"));
+         document.querySelector("#shell-notebook .lbl").textContent === "Talaan 2/5")); // words and papers (Block 128)
     await page.evaluate(() => Shell.closePause());
 
     const t3 = await page.evaluate(() => {
@@ -7601,10 +7601,11 @@ const visible = (page, sel) => page.evaluate((s) => {
         GUARDS.forEach((g) => { g.disabled = true; });
         posX = 200; posY = floorHeightAt(posX); invulnUntil = performance.now() + 60000;
         assistLevel = level;
-        spawnEnemies([{ id: "w" + level, x: 1400, hp: 9 }]);
+        spawnEnemies([{ id: "w" + level, x: 2400, hp: 9 }]);
         const e = ENEMIES[ENEMIES.length - 1];
+        await new Promise((r) => setTimeout(r, 300)); // past any start-up pause
         const from = e.pos;
-        await new Promise((r) => setTimeout(r, 500));
+        await new Promise((r) => setTimeout(r, 1500));
         const moved = from - e.pos;
         ENEMIES.forEach((x) => hitEnemy(x, 99));
         await new Promise((r) => setTimeout(r, 900));
@@ -7625,6 +7626,52 @@ const visible = (page, sel) => page.evaluate((s) => {
       return row && row.save_state && row.save_state.stats;
     });
     ok("the assists are kept in the save with the counters", saved && saved.assists >= 3, saved);
+    await ctx.close();
+  }
+  if (still()) { // the section above, continued: words by flag and the timeline (items 8, 9)
+    const { ctx, page } = await enterTestRoom();
+    const talaan = await page.evaluate(async () => {
+      currentActData.glossary = { title: "Talaan", hint: "h", entries: [
+        { id: "t_isa", requiresFlag: "__t_isa", term: "Isa", text: "Una." },
+        { id: "t_dalawa", requiresFlag: "__t_dalawa", term: "Dalawa", text: "Ikalawa." },
+      ] };
+      currentActData.timeline = [
+        { requiresFlag: "__t_isa", year: "1890", text: "Unang pangyayari." },
+        { requiresFlag: "__t_dalawa", year: "1894", text: "Ikalawang pangyayari." },
+      ];
+      const before = Game.glossary();
+      state.flags.__t_isa = true;
+      markDirty();
+      await new Promise((r) => setTimeout(r, 300));
+      const toast = document.getElementById("toast").textContent;
+      const after = Game.glossary();
+      // A save that already passed the second beat: earned quietly.
+      applyLoadedState({ save_state: { flags: Object.assign({}, state.flags, { __t_dalawa: true }) } });
+      const restored = Game.glossary();
+      return {
+        before: { words: before.found, events: before.timeline.found, total: before.timeline.total },
+        toast, after: { words: after.found, events: after.timeline.entries },
+        restored: { words: restored.found, events: restored.timeline.found },
+        quiet: document.getElementById("toast").textContent === toast,
+      };
+    });
+    ok("a word with requiresFlag is earned, with its toast, the moment its flag is set (item 9)",
+       talaan.before.words === 0 && talaan.after.words === 1 && /Isa/.test(talaan.toast), talaan);
+    ok("the timeline shows an entry once its flag is set (item 8)",
+       talaan.before.events === 0 && talaan.before.total === 2 &&
+       talaan.after.events.length === 1 && talaan.after.events[0].year === "1890", talaan);
+    ok("a restored save that passed a beat earns its word quietly, and shows its entry",
+       talaan.restored.words === 2 && talaan.restored.events === 2 && talaan.quiet, talaan);
+
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+    const screen = await page.evaluate(async () => {
+      document.getElementById("shell-notebook").click();
+      await new Promise((r) => setTimeout(r, 200));
+      return [...document.querySelectorAll("#shell-notebook-list li")].map((li) => li.textContent);
+    });
+    ok("the pause screen's Talaan lists Mga Pangyayari, the year first",
+       screen.some((s) => /^Mga Pangyayari 2\/2/.test(s)) && screen.some((s) => /^1890Unang pangyayari\./.test(s)), screen);
     await ctx.close();
   }
   if (still()) { // the section above, continued: the Questions report (item 2)

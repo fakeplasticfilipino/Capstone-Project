@@ -711,10 +711,16 @@ const Shell = {
     const book = window.Game && Game.glossary ? Game.glossary() : null;
     btn.classList.toggle("hidden", !book);
     if (!book) return;
-    // An act with papers and no words (Act I since Block 70) counts the
-    // papers, so the button never reads 0/0.
-    const counted = book.total ? book : book.hints;
+    const counted = this._notebookCount(book);
     setLabel(btn, (book.title || "Talaan") + " " + counted.found + "/" + counted.total);
+  },
+
+  // What there is to find: the papers and the words together (Block 128;
+  // before it an act had one or the other). The timeline is not counted:
+  // it fills by playing, not by looking.
+  _notebookCount(book) {
+    const hints = book.hints || { found: 0, total: 0 };
+    return { found: (book.found || 0) + hints.found, total: (book.total || 0) + hints.total };
   },
 
   _openNotebook() {
@@ -722,7 +728,7 @@ const Shell = {
     const book = window.Game && Game.glossary ? Game.glossary() : null;
     if (!book) return;
     document.getElementById("shell-notebook-title").textContent = book.title || "Talaan";
-    const counted = book.total ? book : book.hints;
+    const counted = this._notebookCount(book);
     document.getElementById("shell-notebook-count").textContent = counted.found + " / " + counted.total;
     document.getElementById("shell-notebook-hint").textContent =
       book.found === book.total ? "" : book.hint;
@@ -756,6 +762,15 @@ const Shell = {
       if (book.hints.found < book.hints.total) {
         entry("? ? ?", "May " + (book.hints.total - book.hints.found) +
           " pang nakatago sa daan.", false);
+      }
+    }
+    // Block 128. What has happened by now, in order, the years first.
+    if (book.timeline && book.timeline.total) {
+      heading("Mga Pangyayari " + book.timeline.found + "/" + book.timeline.total);
+      book.timeline.entries.forEach((e) => entry(e.year, e.text, true));
+      if (book.timeline.found < book.timeline.total) {
+        entry("? ? ?", "May " + (book.timeline.total - book.timeline.found) +
+          " pang mangyayari.", false);
       }
     }
     if (book.total) {

@@ -41,6 +41,9 @@ How to read the script:
                            written since (Act I's later additions)
     [BLACK] line           a black card (playIntertitle)
     [HINT] Title: text     a hint for the post-test, found on the road
+    [WORD] Term: text      a word of the period, in the Talaan (Block 128)
+    [TIME] Year: text      an entry of the Talaan's timeline, Mga
+                           Pangyayari (Block 128)
     (stage direction)      what happens, not what is said
 
 Lines of ours are written to the standard in CLAUDE.md, Conventions,
@@ -1161,8 +1164,27 @@ the game fills all three, so the Talaan button is always there. A found paper op
     (under a paper) Naitala ito sa Talaan. Buksan ang Talaan sa pause para basahin ulit.
     (under the last) Nahanap mo na ang lahat ng papel!
 
-and is listed on the pause screen under "Mga Papel". Act I declares no
-words (Block 69).
+and is listed on the pause screen under "Mga Papel". Act I declared no
+words from Block 69 to Block 128.
+
+Block 128: words of the period, each earned by the flag of the beat
+where it first matters, and what has happened by now (Mga
+Pangyayari), each a card or a beat of the act's own, shown once its
+flag is set. Both listed in the Talaan on the pause screen. Ours,
+until the proponents accept or replace them.
+
+  + [WORD] Cedula: Papel na binibili taon-taon ng bawat Pilipinong may sapat na gulang sa ilalim ng Espanya, bilang patunay na nagbayad siya ng buwis. Maaaring hulihin ang walang cedula.   (nagpasyangMagtrabaho)
+  + [WORD] Kutsero: Tagapagmaneho ng kalesa o karwaheng hinihila ng kabayo.   (nakausapAngKutsero)
+  + [WORD] Komedya: Dulang patula, tinatawag ding moro-moro, tungkol sa digmaan ng mga kaharian: may prinsipe, prinsesa, at labanan ng espada. Itinatanghal ito tuwing pista.   (naitanghalAngDula)
+  + [WORD] Katipunan: Pinaikling pangalan ng Kataas-taasang, Kagalang-galangang Katipunan ng mga Anak ng Bayan. KKK ang tawag dito ng mga kasapi.   (tinanggapSaKatipunan)
+  + [WORD] Guardia civil: Mga pulis ng pamahalaang Kastila, na nagbabantay at nanghuhuli sa mga lansangan at bayan.   (naipamigayAngMgaPolyeto)
+  + [WORD] Balangay: Sangay ng Katipunan sa isang pook, may sariling pinuno. Galing ang salita sa sinaunang bangka, at sa pamayanang dala nito.   (lumipasAngIsangTaon)
+
+  + [TIME] 1890: Tondo, Maynila. Naghanap ng trabaho si Macario para matulungan si Nanay.   (nagpasyangMagtrabaho)
+  + [TIME] 1890: Unang umarte si Macario sa entablado ng komedya.   (naitanghalAngDula)
+  + [TIME] 1894: Gumanap si Macario bilang Principe Baldovino.   (nilapitanNgKatipunan)
+  + [TIME] 1894: Sumapi si Macario sa Katipunan.   (tinanggapSaKatipunan)
+  + [TIME] 1895: Naging pinuno si Macario ng kanyang balangay sa Katipunan.   (lumipasAngIsangTaon)
 
 ## Act II, beat by beat
 
@@ -1694,6 +1716,28 @@ its own slot.
     [HINT] Ang Kalayaan: Kalayaan ang pahayagan ng Katipunan. Inilimbag ito noong Marso 1896, at si Emilio Jacinto ang patnugot nito. Nakasulat dito na sa Yokohama, Hapon, ito inilimbag, para linlangin ang mga Kastila. Matapos itong lumabas, libu-libo ang sumapi sa Katipunan.
     [HINT] Ang pagkatuklas: Noong Agosto 19, 1896, ipinagtapat ng isang kasapi, si Teodoro Patiño, ang lihim ng Katipunan kay Padre Mariano Gil, ang kura ng Tondo. Hinalughog ng mga Kastila ang isang imprenta, at nagsimula ang malawakang paghuli.
     [HINT] Ang Sigaw at ang San Juan del Monte: Noong huling linggo ng Agosto 1896, pinunit ng mga Katipunero ang kanilang mga sedula bilang tanda ng paghihimagsik. Noong Agosto 30, 1896, nilusob nila ang polvorin ng mga Kastila sa San Juan del Monte. Mahigit 150 Katipunero ang nasawi.
+
+
+Block 128: words of the period, each earned by the flag of the beat
+where it first matters, and what has happened by now (Mga
+Pangyayari), each a card or a beat of the act's own, shown once its
+flag is set. Both listed in the Talaan on the pause screen. Ours,
+until the proponents accept or replace them.
+
+  + [WORD] Imprenta: Palimbagan: ang lugar at ang makinang ginagamit sa paglilimbag ng mga pahayagan at aklat.   (a2_nakalimbag)
+  + [WORD] Supremo: Ang pinakamataas na pinuno ng Katipunan. Si Andres Bonifacio ang Supremo noong 1896.   (a2_nagtalumpati)
+  + [WORD] Himagsikan: Paglaban ng taong-bayan para palitan ang pamahalaang umaapi sa kanila; rebolusyon.   (a2_pinunit)
+  + [WORD] Polvorin: Imbakan ng pulbura at bala.   (a2_lumusob)
+  + [WORD] Panakot: Taong-dayami na itinatayo sa bukid para takutin ang mga ibon.   (a2_naitayoAngPanakot)
+
+  + [TIME] Agosto 1896: Inilimbag ang ikalawang labas ng Kalayaan, ang pahayagan ng Katipunan.   (a2_nakalimbag)
+  + [TIME] Agosto 1896: Natuklasan ang Katipunan. Daan-daan ang hinuli sa Tondo, at tumakas si Macario patungo sa kabundukan.   (a2_nakatakas)
+  + [TIME] Agosto 23, 1896: Pugad Lawin, Kalookan. Pinunit ng mga Katipunero ang kanilang sedula.   (a2_pinunit)
+  + [TIME] Agosto 30, 1896: Nilusob ng mga Katipunero ang San Juan del Monte. Mahigit isandaan at limampu ang nasawi, kasama ang Kasama.   (a2_nakaatras)
+  + [TIME] Nobyembre 1896: Kabundukan ng Morong. Hinarap ng mga Katipunero ang mga Kastila sa ilog ng Nangka.   (a2_naitayoAngPanakot)
+  + [TIME] 1896: Dumating ang dagdag na hukbo ng Espanya. Umatras sina Macario at ang Supremo sa Balara.   (a2_saBalara)
+  + [TIME] Marso 1897: Sa Tejeros, nahati ang himagsikan.   (a2_saLaguna)
+  + [TIME] Mayo 10, 1897: Pinatay si Andres Bonifacio ng sarili niyang mga kasama.   (a2_saLaguna)
 
 ## Act III, beat by beat
 
@@ -2429,6 +2473,30 @@ teacher's paper replaces its own slot.
     [HINT] Ang Batas sa Sedisyon: Noong Nobyembre 4, 1901, ipinasa ng Komisyon ng Pilipinas ang Batas Bilang 292. Ginawa nitong krimen ang pagsusulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, at ang pagsapi sa mga lihim na samahan.
     [HINT] Ang Republika ng Katagalugan: Noong 1902, itinatag ni Macario Sakay ang Republika ng Katagalugan sa kabundukan ng Morong, at ginawang saligang batas ang mga aral ni Andres Bonifacio. Noong Nobyembre 12, 1902, ipinasa ng mga Amerikano ang Batas sa Bandolerismo: tinawag nilang bandido ang sinumang patuloy na lumalaban.
 
+
+Block 128: words of the period, each earned by the flag of the beat
+where it first matters, and what has happened by now (Mga
+Pangyayari), each a card or a beat of the act's own, shown once its
+flag is set. Both listed in the Talaan on the pause screen. Ours,
+until the proponents accept or replace them.
+
+  + [WORD] Balatkayo: Ibang anyo o damit na isinusuot para hindi makilala.   (a3_nagbihis)
+  + [WORD] Petisyon: Nakasulat na kahilingan sa pamahalaan, na pinipirmahan ng maraming tao.   (a3_pumirma)
+  + [WORD] Sedisyon: Pag-uudyok sa taong-bayan na tumutol o lumaban sa pamahalaan.   (a3_batas)
+  + [WORD] Amnestiya: Pagpapatawad ng pamahalaan sa isang buong pangkat ng mga itinuring na nagkasala, kaya sila pinalalaya.   (a3_pinalaya)
+  + [WORD] Republika: Pamahalaang pinamumunuan ng mga pinunong pinili ng mamamayan, sa halip na ng hari.   (a3_republika)
+  + [WORD] Generalissimo: Ang pinakamataas na heneral, na namumuno sa buong hukbo.   (a3_republika)
+
+  + [TIME] Pebrero 1899: Nabalitaan sa kabundukan: sa Santa Mesa, Maynila, nagsimula ang digmaan laban sa mga Amerikano.   (a3_lumaban)
+  + [TIME] Mayo 1899: Tondo, sa bantay ng mga Amerikano. Nabalitaan ni Macario na pumanaw si Emilio Jacinto.   (a3_nabasaAngSulat)
+  + [TIME] 1899 hanggang 1901: Palipat-lipat si Macario ng bayan, nakabalatkayo, at nagtatag ng mga bagong balangay ng Katipunan.   (a3_balangay)
+  + [TIME] Abril 1901: Libu-libo ang sumuko at nanumpa ng katapatan sa Amerika. Tumanggi si Macario.   (a3_umalisSiIsko)
+  + [TIME] Agosto 1901: Calle Gunao, Quiapo. Itinatag ang Partido Nacionalista, at si Macario ang Kalihim-Heneral nito.   (a3_pumirma)
+  + [TIME] Nobyembre 1901: Ipinasa ng mga Amerikano ang Batas sa Sedisyon.   (a3_batas)
+  + [TIME] Enero 1902: Nahuli si Macario habang nagtatatag ng mga balangay, at ikinulong sa Bilibid.   (a3_nahuli)
+  + [TIME] Hulyo 4, 1902: Lumabas si Macario sa bilangguan, at tumuloy sa kabundukan ng Morong.   (a3_pinalaya)
+  + [TIME] 1902: Kabundukan ng Morong. Itinatag ang Republika ng Katagalugan, at si Macario ang Pangulo at Generalissimo nito.   (a3_republika)
+
 ## Act IV, beat by beat
 
 Block 119, from the proponent's labelled sources (1903 to 1907), which
@@ -3066,6 +3134,31 @@ teacher's paper replaces its own slot.
     [HINT] Ang Manipesto ng 1904: Noong Abril 5, 1904, naglabas si Macario Sakay ng manipesto mula sa kabundukan. Ipinahayag nito na may buong karapatan ang mga Pilipino na ipaglaban ang kanilang kalayaan.
     [HINT] Ang Rekonsentrasyon: Noong 1905, inipon ng mga Amerikano ang mga taga-baryo ng Cavite at Batangas sa mga kampong may bantay. Nagutom ang mga taga-baryo, at naubos ang pagkain at tulong para sa mga lumalaban sa bundok.
     [HINT] Ang Asamblea ng Pilipinas: Noong Hulyo 30, 1907, bumoto ang mga Pilipino sa unang halalan para sa Asamblea ng Pilipinas. Binuksan ito noong Oktubre 16, 1907. Ito ang asambleang ipinangako nang pumayag si Sakay na bumaba mula sa bundok noong 1906.
+
+
+Block 128: words of the period, each earned by the flag of the beat
+where it first matters, and what has happened by now (Mga
+Pangyayari), each a card or a beat of the act's own, shown once its
+flag is set. Both listed in the Talaan on the pause screen. Ours,
+until the proponents accept or replace them.
+
+  + [WORD] Konstabularya: Ang Philippine Constabulary: pulisyang itinatag ng mga Amerikano, binubuo ng mga Pilipino, para tugisin ang mga lumalaban.   (a4_himpilan)
+  + [WORD] Manipesto: Pahayag na isinusulat at ipinakakalat ng isang pinuno o pangkat para ipaalam ang kanilang paninindigan.   (a4_manipesto)
+  + [WORD] Rekonsentrasyon: Sapilitang paglilipat ng mga taga-baryo sa mga kampong may bantay.   (a4_bigas)
+  + [WORD] Asamblea: Kapulungan ng mga kinatawang inihalal ng mamamayan para gumawa ng mga batas.   (a4_gomez)
+  + [WORD] Bandolerismo: Ang krimen ng pagiging bandido o tulisan.   (a4_hatol)
+
+  + [TIME] Mayo 5, 1903: Inilabas ni Sakay ang Sirkular Militar Bilang 1, at inayos ang kanyang hukbo.   (a4_kautusan)
+  + [TIME] Abril 5, 1904: Naglabas si Sakay ng manipesto mula sa kabundukan ng Morong.   (a4_manipesto)
+  + [TIME] Agosto 1904: Inilipat ni Sakay ang kanyang himpilan sa kabundukan ng Di-Masalang.   (a4_lumipat)
+  + [TIME] Huling bahagi ng 1904: Nakuha ng mga tauhan ni Sakay ang bayan ng Tanay, suot ang mga ninakaw na uniporme ng Konstabularya. Hindi sinasabi ng mga tala kung kasama si Sakay.   (a4_tanay)
+  + [TIME] Enero 24, 1905: Sinalakay ng hukbo ni Sakay ang San Francisco de Malabon, Cavite.   (a4_malabon)
+  + [TIME] 1905: Inipon ng mga Amerikano ang mga taga-baryo sa mga kampong may bantay. Nagutom ang mga baryo, at ang mga nasa bundok.   (a4_bigas)
+  + [TIME] 1906: Dumating si Dominador Gómez, dala ang pangako ng Asamblea ng Pilipinas.   (a4_gomez)
+  + [TIME] Hulyo 14, 1906: Bumaba si Sakay sa Maynila, at sinalubong siya ng mga tao.   (a4_bumaba)
+  + [TIME] Hulyo 17, 1906: Sa isang salu-salo sa Cavite, dinakip si Sakay at ang kanyang mga opisyal.   (a4_nahuli)
+  + [TIME] 1906: Hinatulan ng kamatayan si Sakay.   (a4_hatol)
+  + [TIME] Hulyo 30, 1907: Bumoto ang mga Pilipino sa unang halalan para sa Asamblea, habang nasa Bilibid si Sakay.   (a4_dumungaw)
 
 ## Threads left open
 
