@@ -2239,7 +2239,10 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
         if (await line(page)) await page.keyboard.press("e");
         await page.waitForTimeout(100);
       }
-      await page.waitForTimeout(500);
+      // Waited for, not a fixed pause: on a slow CI machine the wave had
+      // not chosen its targets 500ms in (Block 126's run, shard 3).
+      await page.waitForFunction(() => ENEMIES.some((e) => !e.dead && e.target && /^panakot-/.test(e.target.id)),
+        null, { timeout: 8000 }).catch(() => {});
       const straw = await page.evaluate(() => ({ decoys: DECOYS.map((d) => d.id),
         going: ENEMIES.filter((e) => !e.dead && e.target && /^panakot-/.test(e.target.id)).length }));
       ok("the soldiers go for the straw: the three scarecrows are decoys, and some are making for one (Block 120)",
