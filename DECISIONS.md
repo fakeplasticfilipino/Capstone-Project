@@ -5671,6 +5671,16 @@ and the reload never lands past the first unanswered question, so a
 reload is not a way to skip one. The full reset drops the student's
 drafts too: after it, a new try is attempt 1 again.
 
+The skip made visible (item 6). Block 85's hold-to-skip only works on a
+line the save has shown before, and nothing on screen said it existed,
+so the student who needed it most, replaying an act after a failed
+post-test, tapped through every line again. Rather than a new element,
+the hint already under every line changes its words on a line read
+before ("Nabasa na: pindutin nang matagal para lumaktaw"), and the
+controls list in settings names it. A first reading keeps the plain
+"I-tap o pindutin ang E": the dialogue is the lesson, and offering a
+skip on a line never read would invite skipping it.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

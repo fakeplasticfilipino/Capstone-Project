@@ -7443,7 +7443,26 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  if (section("BW", "Block 128: answers kept through a reload")) {
+  if (section("BW", "Block 128: the improvement list")) {
+    // Item 6: a line read before says it can be held to skip.
+    const { ctx, page } = await enterTestRoom();
+    const hints = await page.evaluate(async () => {
+      const lines = [{ speaker: "Tao", text: "Unang beses ito " + Math.random() }];
+      const read = () => document.getElementById("dialogue-continue").textContent;
+      const p1 = playDialogue(lines);
+      const first = read();
+      advanceDialogue(); await p1;
+      const p2 = playDialogue(lines);
+      const again = read();
+      advanceDialogue(); await p2;
+      return { first, again };
+    });
+    ok("a line never read says tap; a line read before says hold to skip (item 6)",
+       hints.first === "I-tap o pindutin ang E" && /matagal para lumaktaw/.test(hints.again), hints);
+    await ctx.close();
+  }
+
+  if (still()) { // the section above, continued: answers kept through a reload (item 10)
     // Three answered, the page reloaded mid-test: the test opens on
     // question four with the three choices still made, and the kept
     // answers go once the try is sent.

@@ -392,7 +392,8 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
                                                    Act I's already)
      5  A demo route for the defense, in           (NOT STARTED)
         docs-private/ (not pushed)
-     6  A mark on a line already read: hold to     (NOT STARTED)
+     6  A mark on a line already read: hold to     (COMPLETE; test.js
+                                                   BW)
         fast-forward (Block 85 built the skip;
         nothing says so)
      7  Difficulty that eases after repeated       (NOT STARTED)

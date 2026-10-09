@@ -51,6 +51,9 @@ const player = document.getElementById("player");
 const dialogueBox = document.getElementById("dialogue-box");
 const dialogueSpeaker = document.getElementById("dialogue-speaker");
 const dialogueText = document.getElementById("dialogue-text");
+const dialogueContinue = document.getElementById("dialogue-continue");
+const DIALOGUE_HINT = "I-tap o pindutin ang E";
+const DIALOGUE_HINT_READ = "Nabasa na: pindutin nang matagal para lumaktaw";
 
 const btnLeft = document.getElementById("btn-left");
 const btnRight = document.getElementById("btn-right");
@@ -2635,6 +2638,10 @@ function showDialogueStep() {
   // (line.sfx, one of SFX_SOURCES), for a crowd that cheers.
   playSfx(line.sfx && SFX_SOURCES[line.sfx] ? line.sfx : "blip");
   dialogueLineWasRead = noteLineRead(line);
+  // Block 128. The skip below was built in Block 85 and nothing said so;
+  // the hint under a line read before now says it can be held.
+  const hint = dialogueLineWasRead ? DIALOGUE_HINT_READ : DIALOGUE_HINT;
+  if (dialogueContinue && dialogueContinue.textContent !== hint) dialogueContinue.textContent = hint;
 }
 
 // =============================================================
