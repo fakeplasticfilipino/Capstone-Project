@@ -382,10 +382,9 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
 
      1  Pilot with students outside the study      (COMPLETE, before
                                                    the list)
-     2  The dashboard reports each question, pre   (IN PROGRESS: built
-                                                   and tested, BW;
-                                                   schema 012 waits
-                                                   for the proponent)
+     2  The dashboard reports each question, pre   (COMPLETE; test.js
+                                                   BW; schema 012
+                                                   applied 9 Oct)
         against post, first attempts (schema 012:
         assessment_scores.answers)
      3  A second, cheaper phone                    (COMPLETE: 3GB,
@@ -563,6 +562,16 @@ Trust this over any memory of a chat.
                                         Before: the test student updated
                                         his own row; after: permission
                                         denied, and 500/10 refused. Reads
+                                        for a student, the teacher and a
+                                        visitor the same before and after
+    db/migrations/012_macario_schema_v12.sql   RUN, 9 Oct 2026, from the
+                                        session, at the proponent's word.
+                                        assessment_scores.answers, each
+                                        test's answers for the Questions
+                                        report (Block 128). As the test
+                                        student, answers as an object
+                                        went in and a list was refused
+                                        (rolled back, no row left). Reads
                                         for a student, the teacher and a
                                         visitor the same before and after
 
