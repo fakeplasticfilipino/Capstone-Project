@@ -9,7 +9,19 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Oct 2026, after Block 127. Block 127: the proponents
+Last updated: 9 Oct 2026, after Block 128. Block 128: twelve
+suggestions agreed item by item (the Improvement list below), all
+done or settled the same day: a test's answers kept through a reload;
+the hint under a line read before says it can be held to skip; the
+dashboard's Questions report, each question pre against post, from the
+answers each test now records (schema 012, applied); difficulty that
+eases, silently, after three and six setbacks in a scene; a timeline
+(Mga Pangyayari) and words of the period in every act's Talaan, ours
+and PLACEHOLDER for the proponents; ART.md's Draw first; a teacher's
+guide linked from the dashboard; a defense demo route kept in
+docs-private/. The pilot and a 3GB phone were done before it; keeping
+Act I's files first was dropped (they are nearly all of them). Both
+suites green (1,510 and more). Block 127: the proponents
 accepted every line of Acts II to IV (the PLACEHOLDER and + marks are
 out), each of Acts II to IV has a built-in trivia card and ten matched
 pre-test and post-test pairs (content/questions.js), and the git history
@@ -324,7 +336,34 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026, Blocks 119 to 126 on 9 Oct 2026. Open:
 
-    Nothing open: Blocks 119 to 126 reported working on 9 Oct 2026.
+    Block 128, on the phone (?dev=1 points named; a guest for the
+    game, the test account and the dashboard for the rest):
+
+    a. A test's answers kept (test account, after the full reset):
+       answer three questions of the pre-test, reload the page. The test
+       opens on question four with the three answers still chosen.
+       Failure: question one, or a choice lost.
+    b. The skip shown (any point, e.g. "dula"): talk to someone twice.
+       The second time the hint under the line reads "Nabasa na:
+       pindutin nang matagal para lumaktaw", and holding skips. Failure:
+       the hint never changes, or a first reading offers the skip.
+    c. The Questions report (dashboard, after the test account has sat a
+       pre-test and a post-test): a table under the roster, each row a
+       question, its share right before and after, the change. Failure:
+       "No test has recorded its answers yet" after a test sat today.
+    d. Difficulty that eases ("polyeto"): get caught three times in a
+       row. The guards visibly walk slower and the meter fills more
+       slowly, with no message; getting past a crate checkpoint, or a
+       new scene, puts them back. Failure: no change after three, or a
+       message on screen.
+    e. The Talaan (pause, then Talaan, at "kasama" and at Act II
+       "laguna"): papers, then Mga Pangyayari with years in order, then
+       Mga Salita; a word arrives with a toast as its beat is passed.
+       The lines are ours: read them against the source book (Next
+       action 3). Failure: an entry for a beat not yet reached.
+    f. The guide (dashboard header, Guide): one page, five sections,
+       Back to the dashboard and Print. Failure: a missing page or
+       style.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -396,8 +435,11 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
      4  Act I's files kept first                   (DROPPED: nearly
                                                    every file is
                                                    Act I's already)
-     5  A demo route for the defense, in           (NOT STARTED)
-        docs-private/ (not pushed)
+     5  A demo route for the defense, in           (COMPLETE:
+        docs-private/ (not pushed)                 docs-private/
+                                                   defense-demo.md, on
+                                                   the proponent's
+                                                   computer only)
      6  A mark on a line already read: hold to     (COMPLETE; test.js
                                                    BW)
         fast-forward (Block 85 built the skip;
@@ -941,6 +983,12 @@ machine, the assessment module.
         out); built-in questions and trivia for Acts II to IV, checked
         in test.js BH; the git history kept; the release run at a
         student's speed green after one check given more time
+    128 the improvement list, twelve items: answers kept through a
+        reload; the skip shown; the Questions report (schema 012); the
+        easing after setbacks; the Talaan's timeline and words in every
+        act (PLACEHOLDER); ART.md, Draw first; the teacher's guide; the
+        demo route (docs-private/); checked in test.js BW and from every
+        story point
 
 ## Blocks remaining
 
