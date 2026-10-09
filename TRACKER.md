@@ -1023,7 +1023,9 @@ read Act I's report beat with only thirty seconds to play it through;
 the game was right), then the piece green again (Block 127). Random play from
 every story point (node _dev/tools/monkey.js, Block 123): 6 Oct 2026,
 three seeds, 150 runs, no error; Block 124, a fourth seed at 40
-seconds a point, 50 runs, no error, the longest idle 22 seconds. Worth
+seconds a point, 50 runs, no error, the longest idle 22 seconds. 9 Oct 2026 (Block 127),
+a fifth seed at 40 seconds, 50 runs, no error; every idle over 13
+seconds was a screen the monkey left open (settings, the bag, pause). Worth
 a run before the pilot too. The
 same night: every person of every story point talked to (no error,
 nothing stuck); every screen measured at 640 by 360, 740 by 360 and 823
