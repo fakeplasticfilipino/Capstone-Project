@@ -358,7 +358,8 @@ Katagalugan's flag, the American soldier and the Constabulary; Act
 IV's eighteen: seven paintings, Gómez, Van Schaick, Villafuerte, de
 Vega, the judge, a Bilibid guard, a woman of Cavite, Isko's son, the
 Katagalugan's fighter, and since Block 120 two townspeople for the
-crowd in Manila). PNGs with transparency; each goes through ART.md's steps.
+crowd in Manila). PNGs with transparency; each goes through ART.md's steps. Ask in the
+order of ART.md, Draw first (Block 128).
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
@@ -413,7 +414,8 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
                                                    the proponents)
     10  A test's answers kept through a reload     (COMPLETE; test.js
                                                    BW)
-    11  ART.md: which owed picture to draw first   (NOT STARTED)
+    11  ART.md: which owed picture to draw first   (COMPLETE: ART.md,
+                                                   Draw first)
     12  A teacher's guide, a page linked from the  (NOT STARTED)
         dashboard
 

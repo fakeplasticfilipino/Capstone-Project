@@ -37,7 +37,9 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 8 Oct 2026, Block 126 (the four buildings that are
+Last updated: 9 Oct 2026, Block 128 (Draw first: the fifty-two
+owed, ranked for the artist; nothing owed changed). Before that, 8 Oct
+2026, Block 126 (the four buildings that are
 gone into, Wanted for the doors, not yet named by the game; the
 layered streets asked for the same day were dropped with the
 parallax). Block 121 (two cosmetic outfits Wanted for
@@ -79,6 +81,55 @@ them, and the unused Tindero file was deleted). Before that, Block 81
 (the Pangulo became the Mabalasig) and Block 80 (the end of Act I: the
 Katipunan's three people, the three who take the pamphlets, and the
 pulungan).
+
+## Draw first
+
+Block 128. The order to ask the artist for the fifty-two below, so each
+delivery takes the most boxes off the screen. Ranked by who sees it:
+first the act the study collects data on, then what is on screen in
+more than one act or in every battle, then each act's own people and
+places, then the briefly seen. Within a tier, the order is a
+suggestion. A picture keeps its full description under Owed; this is
+only the order.
+
+    1  Act I, the study and the pilot (three)
+         pulungan.jpg           the Katipunan's room, the oath and the
+                                end of the act
+         tahian.png             the Mananahi's sewing table
+         silya-barbero.png      the Barbero's chair (Act III too)
+
+    2  On screen in several acts, or in every battle (thirteen)
+         amerikano.png          the American soldier: Act III's and
+                                Act IV's battles and sentries
+         konstable.png          the Constabulary: Morong's battle, the
+                                post, the guards of Act IV
+         isko.png               Macario's man, in Acts II to IV
+         kawal-katagalugan.png  the Republic's fighter, Acts III and IV
+         morong.jpg             the camp at Morong, Acts III and IV
+         imprenta.jpg           the press, where Act II opens
+         palimbagan.png         the press itself, Acts II and IV
+         manlilimbag.png        the printer, Acts II to IV
+         tagapagbalita.png      the messenger, Acts II to IV
+         montalan.png           Acts III and IV
+         carreon.png            Acts III and IV
+         selda.jpg              the cell in Bilibid, Acts III and IV
+         bantay-bilibid.png     its guard, Acts III and IV
+
+    3  Each act's own people and places (twenty-two)
+         Act II   bonifacio.png, jacinto.png, bahay.jpg, pugad-lawin.jpg,
+                  san-juan.jpg, nangka.jpg, balara.jpg, laguna.jpg
+         Act III  burol.jpg, barberya.jpg, calle-gunao.jpg, poblete.png,
+                  alvarez.png, watawat-katagalugan.png
+         Act IV   gomez.png, van-schaick.png, himpilan.jpg, malabon.jpg,
+                  dimasalang.jpg, sala.jpg, hukuman.jpg, patyo.jpg
+
+    4  Seen briefly (fourteen)
+         Act II   dayami.png, panakot.png
+         Act III  bayan.jpg, guro.png, opisyal.png, bagong-nakatira.png,
+                  sundalong-amerikano.png
+         Act IV   anak-ni-isko.png, de-vega.png, villafuerte.png,
+                  hukom.png, taga-cavite.png, taong-bayan-1.png,
+                  taong-bayan-2.png
 
 ## Owed
 
