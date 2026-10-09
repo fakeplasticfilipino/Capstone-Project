@@ -264,8 +264,10 @@ const Assessment = {
       });
     }
 
-    const answers = await this._askAll(items, label);
-    const result = await this._submit(actNumber, testType, items, answers, label, tries.length + 1);
+    const attempt = tries.length + 1;
+    const draftKey = this._draftKey(actNumber, testType, attempt);
+    const answers = await this._askAll(items, label, draftKey);
+    const result = await this._submit(actNumber, testType, items, answers, label, attempt, draftKey);
     this._close();
     return result;
   },
@@ -372,14 +374,16 @@ const Assessment = {
   // than knowledge. Back is offered so an answer can be revised,
   // which matters when the same instrument is being used to claim a
   // learning gain.
-  _askAll(items, label) {
+  _askAll(items, label, draftKey) {
     return new Promise((resolve) => {
-      const answers = {};
-      let index = 0;
+      const kept = this._readDraft(draftKey, items);
+      const answers = kept ? kept.answers : {};
+      let index = kept ? kept.index : 0;
 
       const render = () => {
         const item = items[index];
         const isLast = index === items.length - 1;
+        this._writeDraft(draftKey, answers, index);
 
         this.el.eyebrow.textContent = label;
         this.el.title.textContent = "";
@@ -461,7 +465,7 @@ const Assessment = {
   // try, and shows the score. attempt 1 is written without the column,
   // so a database that has not run schema 006 records a first try
   // exactly as before.
-  async _submit(actNumber, testType, items, answers, label, attempt) {
+  async _submit(actNumber, testType, items, answers, label, attempt, draftKey) {
     const max = items.length;
     const score = items.filter((it) => answers[it.id] === it.correct).length;
     const row = {
@@ -492,6 +496,7 @@ const Assessment = {
       const refused = !saved && /duplicate|unique|23505|attempt/i.test(message);
 
       if (saved || refused) {
+        this._clearDraft(draftKey);
         const pct = this.passingFor(actNumber);
         let note;
         if (testType === "pre") {
@@ -535,6 +540,7 @@ const Assessment = {
       if (retry) continue;
 
       this._addPending(row);
+      this._clearDraft(draftKey);
       await this._message({
         eyebrow: label + (attempt > 1 ? " · Subok " + attempt : ""),
         title: testType === "pre" ? "Tapos na" : result.passed ? "Pumasa!" : "Hindi pumasa",
@@ -556,6 +562,73 @@ const Assessment = {
   // _existingScores reads it, so the same test is not asked again.
   // -----------------------------------------------------------
   PENDING_KEY: "macario_pending_scores",
+
+  // -----------------------------------------------------------
+  // Answers kept through a reload (Block 128)
+  //
+  // A test's answers so far, and the question on screen, kept on the
+  // phone under the student, the act, the test and the attempt, so a
+  // reload or a dropped tab opens the test where it was rather than at
+  // question one with every choice gone. Nothing is recorded until the
+  // answers are sent, as before; this only spares the student the work.
+  // Dropped the moment the try is saved or kept to send later. A kept
+  // answer whose question has changed (the teacher edited the test in
+  // between) or whose choice no longer exists is not restored.
+  // -----------------------------------------------------------
+  DRAFT_KEY: "macario_test_draft",
+
+  _draftKey(actNumber, testType, attempt) {
+    if (!currentUserId) return null;
+    return [currentUserId, actNumber, testType, attempt].join("|");
+  },
+
+  _readDrafts() {
+    try {
+      const all = JSON.parse(localStorage.getItem(this.DRAFT_KEY) || "{}");
+      return all && typeof all === "object" && !Array.isArray(all) ? all : {};
+    } catch (e) {
+      return {};
+    }
+  },
+
+  _readDraft(key, items) {
+    if (!key) return null;
+    const draft = this._readDrafts()[key];
+    if (!draft || typeof draft.answers !== "object" || !draft.answers) return null;
+    const answers = {};
+    items.forEach((item) => {
+      const a = draft.answers[item.id];
+      const n = Array.isArray(item.choices) ? item.choices.length : 0;
+      if (Number.isInteger(a) && a >= 0 && a < n) answers[item.id] = a;
+    });
+    if (!Object.keys(answers).length) return null;
+    // Back to the question he was on, but never past the first he had
+    // not answered, so a question cannot be skipped by a reload.
+    let index = Math.max(0, Math.min(Number(draft.index) || 0, items.length - 1));
+    const firstOpen = items.findIndex((item) => answers[item.id] === undefined);
+    if (firstOpen !== -1 && firstOpen < index) index = firstOpen;
+    return { answers, index };
+  },
+
+  _writeDraft(key, answers, index) {
+    if (!key) return;
+    const all = this._readDrafts();
+    all[key] = { answers, index };
+    try {
+      localStorage.setItem(this.DRAFT_KEY, JSON.stringify(all));
+    } catch (e) { /* private window: the answers live in memory only */ }
+  },
+
+  _clearDraft(key) {
+    if (!key) return;
+    const all = this._readDrafts();
+    if (!(key in all)) return;
+    delete all[key];
+    try {
+      if (Object.keys(all).length) localStorage.setItem(this.DRAFT_KEY, JSON.stringify(all));
+      else localStorage.removeItem(this.DRAFT_KEY);
+    } catch (e) { /* nothing kept to clear */ }
+  },
 
   _readPending() {
     try {
@@ -585,6 +658,11 @@ const Assessment = {
   forgetPending() {
     if (!currentUserId) return;
     this._writePending(this._readPending().filter((r) => r.student_id !== currentUserId));
+    // Block 128. And his half-answered tests: after the wipe a new try is
+    // attempt 1 again, which would pick up the old answers.
+    Object.keys(this._readDrafts())
+      .filter((k) => k.indexOf(currentUserId + "|") === 0)
+      .forEach((k) => this._clearDraft(k));
   },
 
   async flushPending() {

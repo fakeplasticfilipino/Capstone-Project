@@ -5645,6 +5645,32 @@ Block 121); that path stays for an act with none.
 The git history is kept as it is, at the proponent's word: no rewrite,
 S39 closed.
 
+## Block 128: the improvement list, 9 Oct 2026
+
+Twelve suggestions, asked for by the proponent and answered item by
+item (TRACKER.md, Improvement list). Two were already done by the time
+they were answered (the pilot; a second phone, 3GB), one was dropped
+once the code was read (keeping Act I's files first: almost every file
+the game keeps is Act I's, since Acts II to IV's own pictures are owed
+and their returning people use Act I's sheets), and one turned out to
+be built already (Block 85's fast-forward through lines read before),
+so what it needed was a sign that it exists.
+
+A test's answers kept through a reload (item 10). Nothing was lost
+before, since nothing is recorded until the answers are sent, but a
+classroom phone that drops the tab at question nine sent the student
+back to question one with every choice gone, which on a test claiming a
+learning gain reads as the instrument being careless with the student.
+The answers and the question on screen are kept in localStorage
+(macario_test_draft), keyed by student, act, test and attempt, and
+dropped when the try is saved or kept to send later (Scan S3). The
+attempt is in the key so a replay's post-test does not open on the
+failed try's answers. A kept answer is restored only if its question
+still has that choice, since a teacher may edit the test in between,
+and the reload never lands past the first unanswered question, so a
+reload is not a way to skip one. The full reset drops the student's
+drafts too: after it, a new try is attempt 1 again.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

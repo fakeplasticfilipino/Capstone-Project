@@ -401,7 +401,8 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
      8  A timeline in the Talaan (Mga Pangyayari)  (NOT STARTED)
      9  Talaan words in every act, none answering  (NOT STARTED)
         a pre-test item
-    10  A test's answers kept through a reload     (NOT STARTED)
+    10  A test's answers kept through a reload     (COMPLETE; test.js
+                                                   BW)
     11  ART.md: which owed picture to draw first   (NOT STARTED)
     12  A teacher's guide, a page linked from the  (NOT STARTED)
         dashboard

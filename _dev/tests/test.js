@@ -7443,6 +7443,75 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  if (section("BW", "Block 128: answers kept through a reload")) {
+    // Three answered, the page reloaded mid-test: the test opens on
+    // question four with the three choices still made, and the kept
+    // answers go once the try is sent.
+    const { ctx, page } = await newPage(Object.assign(atTestRoom(), { realQuestions: true }), fixtureRoutes());
+    const startTest = async () => {
+      await page.waitForTimeout(700);
+      await page.click("#shell-start");
+      await page.waitForTimeout(400);
+      await page.evaluate(() => { window.__testDone = false; Assessment.runTest(1, "pre").then(() => { window.__testDone = true; }); });
+      await page.waitForFunction(() => document.querySelectorAll(".quiz-choice").length > 0);
+    };
+    await startTest();
+    await page.evaluate(async () => {
+      try { localStorage.removeItem(Assessment.DRAFT_KEY); } catch (e) {}
+      for (let i = 0; i < 3; i++) {
+        document.querySelectorAll(".quiz-choice")[i % 2 ? 2 : 1].click();
+        await new Promise((r) => setTimeout(r, 20));
+        document.getElementById("quiz-btn").click();
+        await new Promise((r) => setTimeout(r, 20));
+      }
+    });
+    const before = await page.evaluate(() => ({
+      progress: document.getElementById("quiz-progress").textContent,
+      kept: localStorage.getItem(Assessment.DRAFT_KEY),
+    }));
+    ok("each answer is kept on the phone as it is chosen", before.progress === "Tanong 4 ng 10" &&
+       before.kept && Object.keys(Object.values(JSON.parse(before.kept))[0].answers).length === 3, before);
+
+    await page.reload();
+    await startTest();
+    const after = await page.evaluate(async () => {
+      const progress = document.getElementById("quiz-progress").textContent;
+      const picked = [];
+      for (let i = 0; i < 3; i++) {
+        document.getElementById("quiz-back").click();
+        await new Promise((r) => setTimeout(r, 20));
+        picked.unshift([...document.querySelectorAll(".quiz-choice")].findIndex((b) => b.classList.contains("selected")));
+      }
+      return { progress, picked };
+    });
+    ok("after a reload the test opens on question four", after.progress === "Tanong 4 ng 10", after);
+    ok("with the three answers still chosen", JSON.stringify(after.picked) === "[1,2,1]", after);
+
+    const sent = await page.evaluate(async () => {
+      for (let i = 0; i < 40 && !window.__testDone; i++) {
+        const choices = document.querySelectorAll(".quiz-choice");
+        if (choices.length && !document.querySelector(".quiz-choice.selected")) choices[0].click();
+        await new Promise((r) => setTimeout(r, 20));
+        document.getElementById("quiz-btn").click();
+        await new Promise((r) => setTimeout(r, 30));
+      }
+      return { done: window.__testDone, kept: localStorage.getItem(Assessment.DRAFT_KEY),
+        rows: __DB.assessment_scores.filter((r) => r.test_type === "pre").length };
+    });
+    ok("once the try is sent, nothing is kept", sent.done && sent.rows === 1 && sent.kept === null, sent);
+
+    const guarded = await page.evaluate(() => {
+      const items = [{ id: "a", choices: [1, 2] }, { id: "b", choices: [1, 2] }, { id: "c", choices: [1, 2] }];
+      Assessment._writeDraft("k", { a: 1, b: 7 }, 2);
+      const r = Assessment._readDraft("k", items);
+      Assessment._clearDraft("k");
+      return r;
+    });
+    ok("a kept choice that no longer exists is dropped, and a reload never skips an unanswered question",
+       guarded && guarded.answers.a === 1 && !("b" in guarded.answers) && guarded.index === 1, guarded);
+    await ctx.close();
+  }
+
   await browser.close();
   server.close();
   if (ONLY && !pass && !fail) {

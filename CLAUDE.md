@@ -405,7 +405,10 @@ writes assessment_scores; get_assessment_items and submit_assessment
 are no longer called. A score that cannot be written (no internet) may
 be kept on the phone (localStorage, macario_pending_scores), counts as
 sat, and is sent on the next login (flushPending, from Acts.syncStart;
-Scan S3). It reports back by resolving a
+Scan S3). A test's answers so far are kept on the phone too
+(macario_test_draft, per student, act, test and attempt), so a reload
+opens the test where it was; dropped once the try is sent or kept
+(Block 128). It reports back by resolving a
 promise and never writes act_progress itself. It is optional: acts.js
 checks window.Assessment before calling it, and the flow collapses to
 playing then completed without it.
