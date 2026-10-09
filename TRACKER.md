@@ -374,6 +374,38 @@ file, docs-private/ and *.pdf and *.docx are gitignored, and the two
 private files were deleted from GitHub. The git history is kept as it
 is, at the proponent's word (9 Oct 2026): no rewrite. (CLOSED)
 
+## Improvement list (Block 128)
+
+Agreed 9 Oct 2026 ("I want to tackle all of them"): twelve suggestions,
+answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
+12, 5.
+
+     1  Pilot with students outside the study      (COMPLETE, before
+                                                   the list)
+     2  The dashboard reports each question, pre   (NOT STARTED)
+        against post, first attempts (schema 012:
+        assessment_scores.answers)
+     3  A second, cheaper phone                    (COMPLETE: 3GB,
+                                                   plays well)
+     4  Act I's files kept first                   (DROPPED: nearly
+                                                   every file is
+                                                   Act I's already)
+     5  A demo route for the defense, in           (NOT STARTED)
+        docs-private/ (not pushed)
+     6  A mark on a line already read: hold to     (NOT STARTED)
+        fast-forward (Block 85 built the skip;
+        nothing says so)
+     7  Difficulty that eases after repeated       (NOT STARTED)
+        setbacks in a scene, silently, the
+        assists kept in the save
+     8  A timeline in the Talaan (Mga Pangyayari)  (NOT STARTED)
+     9  Talaan words in every act, none answering  (NOT STARTED)
+        a pre-test item
+    10  A test's answers kept through a reload     (NOT STARTED)
+    11  ART.md: which owed picture to draw first   (NOT STARTED)
+    12  A teacher's guide, a page linked from the  (NOT STARTED)
+        dashboard
+
 ## Polish list (Block 112)
 
 Agreed 4 Oct 2026 ("fix all of them"): fourteen items from a scan of the
@@ -626,7 +658,7 @@ The paper specifies ten.
 | Usability | (BUILT) Tagalog throughout the game; the teacher dashboard in English. Touch targets 44px on glass, icons beside every label, a three-step text size, a rotate notice in portrait. A guide arrow to the step in hand (Block 125) |
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
-| Compatibility | (PARTIAL) Confirmed on one Android phone. The harness proves the layout at 823 by 412 and 740 by 360 |
+| Compatibility | (BUILT) Confirmed on two Android phones, the cheaper with 3GB of memory (the proponent, 9 Oct 2026). The harness proves the layout at 823 by 412 and 740 by 360 |
 | Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (834 and 514 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser. Since schema v11 (Block 123) a student cannot change any profile (no making oneself a teacher) and a score must lie between 0 and its maximum |
 | Connectivity | (BUILT) |
@@ -920,7 +952,8 @@ Provision student accounts for the session, and pilot with two or three
 students who are not part of the study. A pilot run on a study account
 consumes that student's one attempt, so the two sets must be separate.
 Add the pilot addresses to is_reset_allowed() (a create or replace; no
-migration) and record it here. Never add a study account. (NOT STARTED)
+migration) and record it here. Never add a study account. (COMPLETE,
+the proponent, 9 Oct 2026)
 
 ## Known problems
 
@@ -950,9 +983,10 @@ the site's data, before suspecting the code. Since Block 106 every
 changed file's ?v= is its fingerprint, written by prepare.js and
 checked by the hook and CI. (KNOWN, BY DESIGN OF PAGES)
 
-Only one phone has been tested, a 4GB Android device. The harness covers
-823 by 412 and 740 by 360 in landscape, a floor rather than a survey.
-(PARTIAL)
+Two phones tested: a 4GB Android device, and the cheapest at hand, 3GB,
+which played well (the proponent, 9 Oct 2026). The harness covers 823
+by 412 and 740 by 360 in landscape, a floor rather than a survey.
+(KNOWN)
 
 Dynamic difficulty is seen from Act II on (Block 113): its guards and
 soldiers move at 1.15 times Act I's speed. Act I is the 1.00 multiplier;
