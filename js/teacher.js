@@ -137,6 +137,8 @@ async function initTeacher() {
   if (window.TeacherQuestions) TeacherQuestions.init();
   // Block 70. Nor do the Talaan papers.
   if (window.TeacherTalaan) TeacherTalaan.init();
+  // Block 128. The Questions report, drawn with the roster.
+  if (window.TeacherReport) TeacherReport.init();
 
   await loadClasses(profile.id);
 }
@@ -285,6 +287,7 @@ function drawAct() {
   currentRows = rows;
   renderRoster();
   renderSummary(rows);
+  if (window.TeacherReport) TeacherReport.draw(lastFetch, currentAct);
 }
 
 actPicker.addEventListener("change", () => {
@@ -624,6 +627,12 @@ function exportCsv() {
 // tab or return first) gets an apostrophe in front, so a name typed as
 // "=HYPERLINK(...)" is shown, not run. A plain number is left alone: a
 // negative gain must stay a number.
+// Block 128. The Questions report goes with the roster.
+function hideReport() {
+  const qr = document.getElementById("qr");
+  if (qr) qr.classList.add("hidden");
+}
+
 function csvField(v) {
   let s = v === null || v === undefined ? "" : String(v);
   if (/^[=+\-@\t\r]/.test(s) && !/^-?\d+(\.\d+)?$/.test(s)) s = "'" + s;
@@ -686,6 +695,8 @@ function showLoading() {
   loadingEl.classList.remove("hidden");
   summaryEl.classList.add("hidden");
   rosterSection.classList.add("hidden");
+  hideReport();
+  hideReport();
   noStudentsEl.classList.add("hidden");
   loadErrorEl.classList.add("hidden");
 }

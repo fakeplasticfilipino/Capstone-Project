@@ -497,6 +497,48 @@ input:focus-visible {
   font-size: 12px;
 }
 
+/* Block 128. The Questions report: the roster's table, with room for
+   a question to wrap. */
+#qr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+#qr-table th {
+  background: var(--surface-alt);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  padding: 11px 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#qr-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--grey-soft);
+  font-variant-numeric: tabular-nums;
+  vertical-align: top;
+}
+
+#qr-table th.num,
+#qr-table td.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+#qr-table td.qr-q {
+  min-width: 220px;
+  max-width: 380px;
+}
+
+#qr-table tbody tr:nth-child(even) {
+  background: #fcfbf8;
+}
+
 .gain-positive { color: var(--green); font-weight: 600; }
 .gain-negative { color: var(--red); font-weight: 600; }
 .gain-neutral  { color: var(--text-muted); }

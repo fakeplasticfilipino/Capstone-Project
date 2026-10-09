@@ -382,7 +382,10 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
 
      1  Pilot with students outside the study      (COMPLETE, before
                                                    the list)
-     2  The dashboard reports each question, pre   (NOT STARTED)
+     2  The dashboard reports each question, pre   (IN PROGRESS: built
+                                                   and tested, BW;
+                                                   schema 012 waits
+                                                   for the proponent)
         against post, first attempts (schema 012:
         assessment_scores.answers)
      3  A second, cheaper phone                    (COMPLETE: 3GB,

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACARIO — Teacher Dashboard</title>
-  <link rel="stylesheet" href="css/teacher.css?v=4210540110" />
+  <link rel="stylesheet" href="css/teacher.css?v=3208843092" />
 </head>
 <body>
   <!-- Covers the page until the session and role are confirmed, so a
@@ -150,6 +150,40 @@
         </div>
       </section>
 
+      <!-- Block 128. Each question, pre-test against post-test, from the
+           answers each test recorded (schema 012). Built by
+           js/teacher-report.js from the rows the roster fetched. -->
+      <section id="qr" class="card hidden">
+        <div class="card-head">
+          <div>
+            <h2 class="section-title">Questions Report (<span class="act-name">Act I</span>)</h2>
+            <p class="muted" id="qr-basis"></p>
+          </div>
+          <div>
+            <button id="qr-export" type="button" class="btn-secondary">Export CSV</button>
+          </div>
+        </div>
+        <div class="table-wrap" id="qr-body">
+          <table id="qr-table" class="hidden">
+            <thead>
+              <tr>
+                <th class="num">#</th>
+                <th>Pre-test question</th>
+                <th class="num">Correct</th>
+                <th>Post-test question</th>
+                <th class="num">Correct</th>
+                <th class="num">Change</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div id="qr-empty" class="empty-row">No test has recorded its answers yet. Answers are recorded from 9 Oct 2026 on.</div>
+        </div>
+        <div class="table-notes">
+          <p>Each pre-test question is paired with the post-test question in the same place, as matched pairs are written. <strong>Correct</strong> is the share of the class that answered it right, with the count; <strong>Change</strong> is the post-test share minus the pre-test share, in percentage points. First attempts only, like the gain.</p>
+        </div>
+      </section>
+
       <!-- Class exists but has no enrolled students. -->
       <div id="no-students" class="notice hidden">
         <strong>No students are enrolled in this class.</strong>
@@ -245,8 +279,9 @@
   <script src="content/act2.js?v=4078651816"></script>
   <script src="content/act3.js?v=3723716834"></script>
   <script src="content/act4.js?v=402734124"></script>
-  <script src="js/teacher.js?v=1948900785"></script>
+  <script src="js/teacher.js?v=585432728"></script>
   <script src="js/teacher-questions.js?v=4003821537"></script>
+  <script src="js/teacher-report.js?v=725711950"></script>
   <script src="js/teacher-talaan.js?v=976490959"></script>
 </body>
 </html>

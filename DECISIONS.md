@@ -5681,6 +5681,24 @@ controls list in settings names it. A first reading keeps the plain
 "I-tap o pindutin ang E": the dialogue is the lesson, and offering a
 skip on a line never read would invite skipping it.
 
+The Questions report (item 2, schema 012). The roster says how much a
+class gained, not on what, and a learning gain is usually questioned
+topic by topic. The game already grades each answer (schema 006), so it
+now writes them beside the score, in one nullable jsonb column rather
+than a table of answers: one row per test is already how the policies,
+the one-attempt index and the reset think, and a second table would
+need its own policies, its own place in reset_my_play_data and its own
+delete rules. Each answer keeps the question's text as asked, because a
+teacher may reword a question during the study and the report should
+show what the student saw (a question reworded mid-study is said so on
+the row). The report reads rows the roster already fetched, first
+attempts only, as the gain does, and pairs pre-test question n with
+post-test question n, which is how matched pairs are written. It is its
+own file (js/teacher-report.js), like the questions editor and the
+Talaan papers. A game that meets a database without the column (the
+migration not yet applied, or undone) writes the score again without
+it: the score is the study's data and the answers are commentary on it.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

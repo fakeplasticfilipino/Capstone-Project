@@ -4396,7 +4396,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       return { opened, two };
     });
     ok("the roster opens on the furthest act with objectives, and says which (Polish #1)",
-       acts.opened.act === "1" && acts.opened.names.length === 2 &&
+       acts.opened.act === "1" && acts.opened.names.length === 3 && // the roster, the summary, the Questions report (Block 128)
        acts.opened.names.every((n) => n === "Act I"), acts.opened);
     ok("choosing Act II shows Act II's status and no Act I scores",
        acts.two.names.every((n) => n === "Act II") && acts.two.s1[1] === "Playing" &&
@@ -7514,10 +7514,41 @@ const visible = (page, sel) => page.evaluate((s) => {
         document.getElementById("quiz-btn").click();
         await new Promise((r) => setTimeout(r, 30));
       }
+      const row = __DB.assessment_scores.find((r) => r.test_type === "pre");
+      const answers = Object.values((row && row.answers) || {});
       return { done: window.__testDone, kept: localStorage.getItem(Assessment.DRAFT_KEY),
-        rows: __DB.assessment_scores.filter((r) => r.test_type === "pre").length };
+        rows: __DB.assessment_scores.filter((r) => r.test_type === "pre").length,
+        n: answers.length, score: row && row.score,
+        right: answers.reduce((s, a) => s + a.k, 0),
+        shaped: answers.every((a) => a.o >= 1 && a.o <= 10 && Number.isInteger(a.c) && a.q.length > 5),
+        orders: answers.map((a) => a.o).sort((x, y) => x - y).join() };
     });
     ok("once the try is sent, nothing is kept", sent.done && sent.rows === 1 && sent.kept === null, sent);
+    ok("the score is written with each answer: its place, the choice, right or not, the question (item 2)",
+       sent.n === 10 && sent.shaped && sent.right === sent.score && sent.orders === "1,2,3,4,5,6,7,8,9,10", sent);
+
+    const fallback = await page.evaluate(async () => {
+      // A database without schema 012 refuses the column: the score is
+      // written again without it.
+      const realFrom = sb.from.bind(sb);
+      let calls = 0;
+      sb.from = (name) => {
+        const q = realFrom(name);
+        if (name !== "assessment_scores") return q;
+        const realInsert = q.insert.bind(q);
+        q.insert = (row) => { calls++; return row.answers !== undefined
+          ? Promise.resolve({ error: { code: "PGRST204", message: "Could not find the 'answers' column" } })
+          : realInsert(row); };
+        return q;
+      };
+      const res = await Assessment._insertScore({ student_id: "u1", act_number: 2, test_type: "pre",
+        score: 1, max_score: 2, answers: {} });
+      sb.from = realFrom;
+      const row = __DB.assessment_scores.find((r) => r.act_number === 2);
+      return { calls, error: res.error || null, saved: Boolean(row), hasAnswers: row ? "answers" in row : null };
+    });
+    ok("a database without the answers column still gets the score",
+       fallback.calls === 2 && !fallback.error && fallback.saved && fallback.hasAnswers === false, fallback);
 
     const guarded = await page.evaluate(() => {
       const items = [{ id: "a", choices: [1, 2] }, { id: "b", choices: [1, 2] }, { id: "c", choices: [1, 2] }];
@@ -7528,6 +7559,62 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("a kept choice that no longer exists is dropped, and a reload never skips an unanswered question",
        guarded && guarded.answers.a === 1 && !("b" in guarded.answers) && guarded.index === 1, guarded);
+    await ctx.close();
+  }
+  if (still()) { // the section above, continued: the Questions report (item 2)
+    const ans = (pairs) => Object.fromEntries(pairs.map(([o, k], i) =>
+      ["i" + o, { o, c: k ? 1 : 0, k, q: "Tanong " + o + "?" }]));
+    const seed = {
+      session: { user: { id: "t1" } },
+      profiles: [
+        { id: "t1", role: "teacher", full_name: "Gng. Cruz" },
+        { id: "s1", role: "student", full_name: "mag-aaral01", class_id: "c1" },
+        { id: "s2", role: "student", full_name: "mag-aaral02", class_id: "c1" },
+        { id: "s3", role: "student", full_name: "mag-aaral03", class_id: "c1" },
+      ],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+      game_progress: [],
+      act_progress: [{ student_id: "s1", act_number: 1, status: "completed", objectives_total: 14, objectives_done: 14 }],
+      assessment_scores: [
+        { student_id: "s1", act_number: 1, test_type: "pre", score: 0, max_score: 2, answers: ans([[1, 0], [2, 0]]) },
+        { student_id: "s2", act_number: 1, test_type: "pre", score: 1, max_score: 2, answers: ans([[1, 1], [2, 0]]) },
+        // Before schema 012: no answers, left out of the report.
+        { student_id: "s3", act_number: 1, test_type: "pre", score: 2, max_score: 2 },
+        { student_id: "s1", act_number: 1, test_type: "post", score: 2, max_score: 2, attempt: 1, answers: ans([[1, 1], [2, 1]]) },
+        // A retake: not counted.
+        { student_id: "s2", act_number: 1, test_type: "post", score: 0, max_score: 2, attempt: 1, answers: ans([[1, 1], [2, 0]]) },
+        { student_id: "s2", act_number: 1, test_type: "post", score: 2, max_score: 2, attempt: 2, answers: ans([[1, 1], [2, 1]]) },
+      ],
+    };
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const page = await ctx.newPage();
+    page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+    await page.route("**/supabaseClient.js*", (route) =>
+      route.fulfill({ body: STUB, contentType: "text/javascript" }));
+    await page.route("**/js/vendor/supabase.js*", (route) =>
+      route.fulfill({ body: "", contentType: "text/javascript" }));
+    await page.addInitScript((st) => { window.__TEST = st; }, seed);
+    await page.goto("http://localhost:" + PORT + "/teacher.html");
+    await page.waitForFunction(() => !document.getElementById("qr").classList.contains("hidden"));
+    const qr = await page.evaluate(() => ({
+      basis: document.getElementById("qr-basis").textContent,
+      rows: [...document.querySelectorAll("#qr-table tbody tr")].map((tr) => [...tr.children].map((td) => td.textContent)),
+    }));
+    ok("the Questions report pairs each pre-test question with the post-test one in its place",
+       qr.rows.length === 2 && qr.rows[0][1] === "Tanong 1?" && qr.rows[0][3] === "Tanong 1?", qr);
+    ok("each side counts first attempts that recorded answers, with the change in points",
+       qr.rows[0][2] === "50% (1/2)" && qr.rows[0][4] === "100% (2/2)" && qr.rows[0][5] === "+50" &&
+       qr.rows[1][2] === "0% (0/2)" && qr.rows[1][4] === "50% (1/2)" && qr.rows[1][5] === "+50", qr);
+    ok("and says what it stands on: rows without answers are counted out",
+       qr.basis === "From 2 of 3 pre-tests and 2 of 2 first post-tests that recorded answers.", qr.basis);
+    await page.selectOption("#act-picker", "2");
+    const empty = await page.evaluate(() => ({
+      empty: !document.getElementById("qr-empty").classList.contains("hidden"),
+      table: document.getElementById("qr-table").classList.contains("hidden"),
+      exportOff: document.getElementById("qr-export").disabled,
+    }));
+    ok("an act with no answers says so, with no table and nothing to export",
+       empty.empty && empty.table && empty.exportOff, empty);
     await ctx.close();
   }
 

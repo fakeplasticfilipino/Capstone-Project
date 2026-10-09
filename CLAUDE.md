@@ -183,7 +183,8 @@ off the repository.
     js/                        the engine and its modules, one file each
                                (game, acts, inventory, assessment, shell,
                                teacher, teacher-questions,
-                               teacher-talaan, supabaseClient), and
+                               teacher-talaan, teacher-report
+                               (Block 128), supabaseClient), and
                                asset-manifest.js, the list of every file
                                under assets/, written by a tool (Block 78);
                                js/vendor/ the Supabase library (Block 105)
@@ -1714,6 +1715,11 @@ Tables: profiles, classes, game_progress, act_progress, assessment_items,
 assessment_scores, act_trivia, player_inventory, player_equipment,
 game_sessions, feedback, talaan_entries (schema 007: the teacher's
 Talaan papers, read by anyone including a guest, written by teachers).
+Since schema 012 (Block 128) assessment_scores.answers holds each
+test's answers ({ item id: { o, c, k, q } }), read by the dashboard's
+Questions report (js/teacher-report.js); a row without it is left out
+of the report, and a game meeting a database without the column writes
+the score without it.
 
 Functions. The policy helpers (my_role, my_class_id, is_teacher_of,
 is_teacher_of_student, is_in_teachers_class, is_own_class) live in the

@@ -321,12 +321,14 @@ const Assessment = {
     let items = (rows || [])
       .filter((r) => r && r.question && Array.isArray(r.choices) && r.choices.length)
       .sort((a, b) => Number(a.item_order) - Number(b.item_order))
-      .map((r) => ({ id: String(r.id), question: r.question, choices: r.choices,
-                     correct: Number(r.correct_index) }));
+      .map((r, i) => ({ id: String(r.id), question: r.question, choices: r.choices,
+                     correct: Number(r.correct_index),
+                     order: Number(r.item_order) || i + 1 }));
 
     if (!items.length) {
       items = (this._bank(actNumber)[testType] || []).map((q, i) => ({
         id: "q" + (i + 1), question: q.question, choices: q.choices, correct: Number(q.correct),
+        order: i + 1,
       }));
     }
 
@@ -474,6 +476,7 @@ const Assessment = {
       test_type: testType,
       score,
       max_score: max,
+      answers: this._answerRecord(items, answers),
     };
     if (attempt > 1) row.attempt = attempt;
     const result = this._result(actNumber, testType, Object.assign({ attempt }, row));
@@ -482,7 +485,7 @@ const Assessment = {
       let message = "";
       let saved = false;
       try {
-        const { error } = await sb.from("assessment_scores").insert(row);
+        const { error } = await this._insertScore(row);
         if (error) throw error;
         saved = true;
       } catch (err) {
@@ -550,6 +553,34 @@ const Assessment = {
       });
       return result;
     }
+  },
+
+  // Block 128 (schema 012). Each answer beside the score, for the
+  // dashboard's Questions report: the item's place in the test (o), the
+  // choice (c), whether it was right (k) and the question as it was asked
+  // (q), since a teacher may reword it later.
+  _answerRecord(items, answers) {
+    const out = {};
+    items.forEach((it, i) => {
+      if (answers[it.id] === undefined) return;
+      out[it.id] = { o: it.order || i + 1, c: answers[it.id],
+        k: answers[it.id] === it.correct ? 1 : 0, q: String(it.question || "").slice(0, 600) };
+    });
+    return out;
+  },
+
+  // Writes a score. A database without schema 012 refuses the answers
+  // column; the score is what matters, so it is written again without
+  // it rather than held back.
+  async _insertScore(row) {
+    let res = await sb.from("assessment_scores").insert(row);
+    if (res.error && row.answers !== undefined &&
+        /answers|PGRST204|42703/i.test((res.error.message || "") + " " + (res.error.code || ""))) {
+      const plain = Object.assign({}, row);
+      delete plain.answers;
+      res = await sb.from("assessment_scores").insert(plain);
+    }
+    return res;
   },
 
   // -----------------------------------------------------------
@@ -674,7 +705,7 @@ const Assessment = {
     const left = list.filter((r) => r.student_id !== currentUserId);
     for (const row of mine) {
       try {
-        const { error } = await sb.from("assessment_scores").insert(row);
+        const { error } = await this._insertScore(row);
         if (error && !/duplicate|unique|23505/i.test((error.message || error.code || "") + "")) throw error;
       } catch (err) {
         console.error("kept score not sent yet:", err);
