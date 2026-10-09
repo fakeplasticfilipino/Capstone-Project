@@ -273,10 +273,12 @@ versions should be restored by copying code back from git without a
 reason. The engine never shrank with the content: every mechanic stays
 covered by the harness's own fixture act and item catalogue
 (_dev/tests/test.js, FIXTURE_ACT1_JS and FIXTURE_ITEMS_JS). The
-proponents accepted Act I's lines on 4 Oct 2026 (Block 113).
+proponents accepted Act I's lines on 4 Oct 2026 (Block 113), and Acts
+II to IV's on 9 Oct 2026 (Block 127): their PLACEHOLDER and + marks are
+out, and a line written for them from now on is marked again.
 
 Act II (Block 113) is written, 1896 to 1898, from the proponent's plot,
-its lines ours and marked PLACEHOLDER until accepted; STORY.md, "Act
+its lines ours, accepted in Block 127; STORY.md, "Act
 II, beat by beat", is all of it. Its file wraps everything in a
 function, because the act files share one global scope: a constant
 declared at the top of act2.js under a name act1.js already uses blanks
@@ -287,7 +289,7 @@ act.
 Act III (Block 117) is written the same way, 1899 to 1902, from the
 proponent's plot, revised in Block 118 against the proponent's
 labelled sources: STORY.md, "Act III, beat by beat", every line ours
-and marked PLACEHOLDER, every beat tagged, flags a3_. The Americans
+(accepted in Block 127), every beat tagged, flags a3_. The Americans
 speak short, plain English (the proponent's choice, true to the
 history), and every such line is followed by its Tagalog, in Macario's
 thought, so no student is left out; this is the one exception to
@@ -296,7 +298,7 @@ rule of being given in Tagalog right after.
 
 Act IV (Block 119) is written the same way, 1903 to 1907, from the
 proponent's labelled sources: STORY.md, "Act IV, beat by beat", every
-line ours and marked PLACEHOLDER, every beat tagged, flags a4_. It ends
+line ours (accepted in Block 127), every beat tagged, flags a4_. It ends
 the game: the last card stays black, and the post-test (or, for a guest,
 the end screen) comes up over it.
 
@@ -2045,6 +2047,10 @@ dashboard. A session does not audit, rewrite, rebalance or seed the
 item bank, and does not put the questions on a to-do list: what the
 items say, where the keys sit and what they test is the teacher's
 call. content/questions.js is only the fallback for an empty database.
+At the proponent's word (9 Oct 2026, Block 127) it holds a trivia card
+and ten matched pairs for every act, written by a session; a teacher's
+questions on the dashboard replace them test by test. Change the
+fallback only when the proponent asks.
 
 Assessment items live in the database because the table holds the answer
 key. Item and cosmetic definitions live in code because they hold no

@@ -4390,7 +4390,7 @@ crickets. S43 npm install now turns the pre-commit hook on.
 
 Not for a session: S37 (running reset_test_accounts.sql), S38 (the
 phone), S39 (the history rewrite), S40 (the art), S41 (the source book,
-the written delegation, the pilot accounts), and now running
+the pilot accounts), and now running
 macario_items_v4.sql and the extended health check in Supabase.
 
 Afterwards, the same day, the proponent: the questions are the teacher's. Teachers write and change them on the dashboard, so the item bank is not this project's to audit or fix. db/seeds/macario_items_v4.sql was deleted unrun, S10 to S12 and S16 dropped from the list, and the rule went into CLAUDE.md, Standing decisions. The edits already made to content/questions.js, the fallback, were left as they are.
@@ -5622,6 +5622,28 @@ the defense the engine side was code nothing could use, so it went
 whole (the layers, their check and their tests); the lit doorways and
 the four buildings' pictures stay. Brought back, it is the commit
 "Block 126: lit doorways, and layers that drift behind a street".
+
+## Block 127: Acts II to IV accepted, and their built-in questions, 9 Oct 2026
+
+The proponent approved every line of Acts II to IV. As with Act I in
+Block 113, the PLACEHOLDER marks came out of content/act2.js to act4.js
+and the + out of STORY.md's three chapters, and their open questions
+were closed. Act I's later lines keep their +.
+
+The proponent also asked for default questions for the three acts.
+The questions stay the teacher's (CLAUDE.md, Standing decisions): what
+was added is the built-in fallback, content/questions.js, which a
+teacher's questions on the dashboard replace test by test. Each act has
+a trivia card and ten matched pairs in Act I's shape, drawn from the
+act's own beats and its three Talaan papers, so a student who played
+and read has met every answer; each pair keeps its key in a different
+position, and each trivia card is a fact the act does not test (the
+Katipunan's founding, Jacinto's death, the first presidential order).
+Before this, Acts II to IV skipped their tests ("Walang pagsusulit",
+Block 121); that path stays for an act with none.
+
+The git history is kept as it is, at the proponent's word: no rewrite,
+S39 closed.
 
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 

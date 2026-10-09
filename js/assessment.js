@@ -330,8 +330,8 @@ const Assessment = {
 
     if (!items.length) {
       // No questions for this test: the teacher has not written any and
-      // the built-in bank has none (only Act I ships with questions; the
-      // rest are the teacher's, CLAUDE.md, Standing decisions). Skipped,
+      // the built-in bank has none (every shipped act has built-in
+      // questions since 9 Oct 2026; an act added later may not). Skipped,
       // since an act should not be unreachable because a test that does
       // not exist cannot be taken.
       //

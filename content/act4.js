@@ -6,8 +6,8 @@
 // the world without Macario, and he only hears of it (news, a guard, a
 // black card); [MACARIO] is his, from the sources; [INSERT] is ours.
 // STORY.md, "Act IV, beat by beat", is every line, each beat tagged.
-// Every line here is ours, marked PLACEHOLDER below each block of them,
-// until the proponents accept or replace it. The Americans speak short,
+// Every line here is ours, accepted by the proponents on 9 Oct 2026.
+// The Americans speak short,
 // plain English, given in Tagalog right after (Block 117's rule).
 //
 // The spine: who gets the last word. The law calls him a bandit; he
@@ -234,7 +234,7 @@
 
   // =============================================================
   // Beat 1. Morong, March 1903: Presidential Order No. 1 [MACARIO]; the
-  // words are ours. PLACEHOLDER, every line.
+  // words are ours.
   // =============================================================
   async function theOrder() {
     setCutscene(true);
@@ -261,7 +261,7 @@
 
   // [MACARIO, reported] Military Circular No. 1 and the army organized;
   // a post to raid for guns and uniforms. "Makikita mo rin" is paid at
-  // Tanay. PLACEHOLDER, every line.
+  // Tanay.
   async function toThePost() {
     setCutscene(true);
     await wait(300);
@@ -281,7 +281,7 @@
 
   // =============================================================
   // Beat 2. The raid for guns and uniforms [MACARIO, reported]; how it
-  // goes is ours. PLACEHOLDER, every line.
+  // goes is ours.
   // =============================================================
   async function takeTheGuns() {
     const f = state.flags;
@@ -342,7 +342,7 @@
 
   // =============================================================
   // Beat 3. The manifesto of 5 April 1904 [MACARIO]; the Manlilimbag and
-  // his half a press are ours. PLACEHOLDER, every line.
+  // his half a press are ours.
   // =============================================================
   async function thePress() {
     setCutscene(true);
@@ -402,7 +402,7 @@
   // Beat 4. Late 1904: Tanay taken in stolen Constabulary uniforms
   // [MACARIO, reported]. That he plans the disguise, his last performance,
   // is [INSERT]; whether he was there the record does not say, and the
-  // game does not either. PLACEHOLDER, every line.
+  // game does not either.
   // =============================================================
   async function theLastPerformance() {
     setCutscene(true);
@@ -424,7 +424,6 @@
   // by one (the seventh "three of something" in the game): the line of
   // three, used with E, is the work game's drill, a row of figures
   // saluting, and then what each of them asks, as one scene.
-  // PLACEHOLDER, every line.
   async function drillTheFighters() {
     const f = state.flags;
     if (!f.a4_saDimasalang) return;
@@ -485,7 +484,7 @@
 
   // =============================================================
   // Beat 5. San Francisco de Malabon, 24 January 1905 [MACARIO,
-  // reported]; the battle shown is ours. PLACEHOLDER, every line.
+  // reported]; the battle shown is ours.
   // =============================================================
   // Block 120: a push into the plaza, a wave at the edge of town and one
   // at each stretch of road after it, the officers coming up behind.
@@ -531,7 +530,7 @@
 
   // =============================================================
   // Beat 6. 1905: the reconcentration [CONTEXT], heard of from a woman of
-  // Cavite [INSERT]; he is never in the camps. PLACEHOLDER, every line.
+  // Cavite [INSERT]; he is never in the camps.
   // =============================================================
   async function hunger() {
     setCutscene(true);
@@ -556,7 +555,7 @@
 
   // =============================================================
   // Beat 7. 1906: Ide sends Dominador Gómez [CONTEXT], heard of from the
-  // messenger; the meeting and the terms [MACARIO]. PLACEHOLDER.
+  // messenger; the meeting and the terms [MACARIO].
   // =============================================================
   async function gomezComes() {
     setCutscene(true);
@@ -581,7 +580,7 @@
   }
 
   // [CONTEXT] nothing; the wait for the answer, Montalan's doubt, and the
-  // way down. PLACEHOLDER.
+  // way down.
   async function toManila() {
     setCutscene(true);
     await wait(300);
@@ -606,7 +605,6 @@
   // =============================================================
   // Beat 9. 17 July 1906, Cavite: Colonel Van Schaick's reception; seized
   // and disarmed [MACARIO]. The toast broken at its peak is ours.
-  // PLACEHOLDER, every line.
   // =============================================================
   async function theReception() {
     setCutscene(true);
@@ -658,7 +656,7 @@
   }
 
   // =============================================================
-  // Beat 10. Bilibid, 1906 [MACARIO, reported]. PLACEHOLDER.
+  // Beat 10. Bilibid, 1906 [MACARIO, reported].
   // =============================================================
   async function inBilibid() {
     setCutscene(true);
@@ -681,7 +679,7 @@
   // Beat 11. The Court of First Instance of Cavite [MACARIO]: arraigned
   // for bandolerismo on 17 September, he pleads not guilty; on 21
   // September the plea is changed to guilty, why the record does not say;
-  // before the end of 1906, death for four. PLACEHOLDER, every line.
+  // before the end of 1906, death for four.
   // =============================================================
   async function theCharge() {
     setCutscene(true);
@@ -737,7 +735,7 @@
   // Beat 12. 1907, the cell. The Supreme Court upholds the sentence on
   // 26 July [CONTEXT] and the Assembly is elected on 30 July [CONTEXT]:
   // he hears both through the bars. The guard, the hair and the last
-  // night are [INSERT]. PLACEHOLDER, every line.
+  // night are [INSERT].
   // =============================================================
   async function theVerdict() {
     setCutscene(true);
@@ -789,7 +787,7 @@
   }
 
   // The last night: the father who went out one night and never came
-  // back, the first thing said in the game, answered. PLACEHOLDER.
+  // back, the first thing said in the game, answered.
   async function theLastNight() {
     setCutscene(true);
     await playIntertitle(["Setyembre 12, 1907", "Ang huling gabi"], {
@@ -812,7 +810,7 @@
   // with Lucio de Vega [MACARIO]. The student walks him there; nothing
   // walks for him. His statement: the substance is documented, the
   // wording varies by translation, and this Tagalog is ours. The Assembly
-  // opens 33 days later [CONTEXT], on black. PLACEHOLDER, every line.
+  // opens 33 days later [CONTEXT], on black.
   // =============================================================
   async function theMorning() {
     setCutscene(true);
@@ -858,7 +856,6 @@
   // ---- The Talaan ----------------------------------------------------
   // Three papers of facts of the game's own, on the street in July 1906
   // (fixed, as Acts I to III); a teacher's paper replaces its own slot.
-  // PLACEHOLDER.
   const HINT_SPOTS = [11800, { x: 9600, y: HINT_HIGH }, { x: 6900, y: HINT_HIGH }];
 
   // ---- Story points (?dev=1, Block 108) ---------------------------------
@@ -909,7 +906,7 @@
   const oneLine = (speaker, text, extra) => Object.assign({ lines: [{ speaker, text }] }, extra || {});
 
   // The three fighters drilled for Tanay (drillTheFighters), 1905: what they say through the act, and the rice
-  // shared out by talking to each (n/3). PLACEHOLDER, every line.
+  // shared out by talking to each (n/3).
   const fighterSets = (speaker, n, before, waiting, rice, after) => [
     oneLine(speaker, before, { skipIfFlag: "a4_ensayo" }),
     oneLine(speaker, waiting, { requiresFlag: "a4_ensayo", skipIfFlag: "a4_gutom" }),
@@ -1027,7 +1024,6 @@
         npcs: [
           {
             id: "carreon", x: 1100, label: "Carreón", animation: CARREON,
-            // PLACEHOLDER.
             dialogueSets: [
               oneLine("Carreón", "Ang lagda n'yo, Pangulo. Nasa mesa.", { skipIfFlag: "a4_kautusan" }),
               oneLine("Carreón", "Isang republika, may sarili nang kautusan.", { skipIfFlag: "a4_himpilan" }),
@@ -1036,7 +1032,6 @@
           },
           {
             id: "montalan", x: MONTALAN_X, label: "Montalan", animation: MONTALAN,
-            // PLACEHOLDER.
             dialogueSets: [
               oneLine("Montalan", "Kulang tayo sa baril, Pangulo.", { skipIfFlag: "a4_himpilan" }),
               oneLine("Montalan", "May riple na tayo. At uniporme. Para saan pa rin, hindi ko alam."),
@@ -1101,7 +1096,6 @@
         scripts: [
           { requiresFlag: "a4_kinuha", doneFlag: "a4_himpilan", run: theAlarm },
         ],
-        // PLACEHOLDER, every line.
         arrivalDialogues: [
           {
             requiresFlag: "a4_kautusan", doneFlag: "a4_saHimpilan", x: POST_ENTER_X, facing: -1,
@@ -1152,7 +1146,6 @@
         npcs: [
           {
             id: "montalan", x: MONTALAN_X, label: "Montalan", animation: MONTALAN,
-            // PLACEHOLDER.
             dialogueSets: [
               oneLine("Montalan", "Turuan mo sila, Pangulo. Hindi sila artista.", { skipIfFlag: "a4_malabon" }),
               oneLine("Montalan", "Wala nang dumarating mula sa mga baryo, Pangulo.", { skipIfFlag: "a4_dumatingSiGomez" }),
@@ -1207,7 +1200,6 @@
           },
           {
             // Dominador Gómez, from 1906: the terms [MACARIO].
-            // PLACEHOLDER, every line.
             id: "gomez", x: GOMEZ_X, label: "Gómez", animation: GOMEZ,
             startsHidden: true, revealedByFlag: "a4_dumatingSiGomez",
             dialogueSets: [
@@ -1282,7 +1274,6 @@
         scripts: [
           { requiresFlag: "a4_bumaba", doneFlag: "a4_saCavite", run: toCavite },
         ],
-        // PLACEHOLDER, every line.
         arrivalDialogues: [
           {
             requiresFlag: "a4_gomez", doneFlag: "a4_saMaynila", x: ARRIVE_X, facing: -1,
@@ -1308,7 +1299,7 @@
         npcs: [
           {
             // Isko, Francisco Reyes since 1901, with his son. He kept
-            // looking for Nanay; her fate stays unknown. PLACEHOLDER.
+            // looking for Nanay; her fate stays unknown.
             id: "isko", x: ISKO_X, label: "Isko", animation: P.isko, facesPlayer: true,
             dialogueSets: [
               {
@@ -1332,7 +1323,7 @@
             ],
           },
           {
-            // Maryam. PLACEHOLDER, every line.
+            // Maryam.
             id: "maryam", x: MARYAM_X, label: "Maryam", animation: P.maryam,
             dialogueSets: [
               {
@@ -1352,7 +1343,7 @@
             ],
           },
           {
-            // The three who took the pamphlets, in the crowd. PLACEHOLDER.
+            // The three who took the pamphlets, in the crowd.
             id: "mangingisda", x: CROWD_X[0], label: "Mangingisda", animation: P.mangingisda,
             dialogueSets: [oneLine("Mangingisda", "Pangulo! Bumaba na raw kayo!")],
           },
@@ -1365,7 +1356,7 @@
             dialogueSets: [oneLine("Karpintero", "Sabi ko sa'yo, kilala na kita, Macario.")],
           },
           {
-            // The Mananahi. PLACEHOLDER.
+            // The Mananahi.
             id: "mananahi", x: MANANAHI_X, label: "Mananahi", animation: P.mananahi,
             dialogueSets: [
               {
@@ -1381,8 +1372,7 @@
           },
           {
             // The Kutsero, his first employer: the carriage to Cavite,
-            // waiting where the crowd thins out (Block 120). PLACEHOLDER,
-            // every line.
+            // waiting where the crowd thins out (Block 120).
             id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: P.kutsero,
             dialogueSets: [oneLine("Kutsero", "Ang batang nagsuklay ng kabayo ko. Tingnan mo ngayon.")],
             gift: {
@@ -1422,7 +1412,6 @@
         npcs: [
           {
             id: "van-schaick", x: 920, label: "Van Schaick", animation: VAN_SCHAICK,
-            // PLACEHOLDER.
             dialogueSets: [{
               lines: [
                 { speaker: "Van Schaick", text: "Relax, Mr. Sakay. The war is over." },
@@ -1472,7 +1461,6 @@
         npcs: [
           {
             id: "montalan", x: 700, label: "Montalan", animation: MONTALAN,
-            // PLACEHOLDER, every line.
             dialogueSets: [
               {
                 requiresFlag: "a4_saSelda",

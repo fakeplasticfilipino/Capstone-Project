@@ -36,8 +36,9 @@ How to read the script:
   + Speaker: line          ours, marked PLACEHOLDER in the content file,
                            until the proponents accept or replace it.
                            Act I's were accepted on 4 Oct 2026 (Block
-                           113), so the + is gone from them; those of
-                           Acts II to IV carry it
+                           113), Acts II to IV's on 9 Oct 2026, so the
+                           + is gone from them; it marks only lines
+                           written since (Act I's later additions)
     [BLACK] line           a black card (playIntertitle)
     [HINT] Title: text     a hint for the post-test, found on the road
     (stage direction)      what happens, not what is said
@@ -48,7 +49,9 @@ ours. Since Block 93 their spelling and grammar are corrected, at their
 request, with the wording and the meaning kept (po rather than 'ho,
 'Nay, rin and rito after a vowel, 'yung, no "Okay").
 
-Last updated: 5 Oct 2026, Block 120 (the pacing pass: Act II's press
+Last updated: 9 Oct 2026, Block 127 (Acts II to IV accepted by the
+proponents: the + is out of their chapters and their open questions
+closed). Before that, 5 Oct 2026, Block 120 (the pacing pass: Act II's press
 door nearer home, the scarecrows in the fight, Paris read from a paper
 in Laguna; Act III's Palanan told by Isko, the law in the middle of the
 petition and the last name refused, an empty house, the cell in
@@ -1172,9 +1175,8 @@ shit, not wrapping children in a bubble"; CLAUDE.md, Writing dialogue).
 Macario leaves his mother for a problem at the press, sets nobody to
 watch her because nobody knows she needs it, understands only when he
 has the list, and never gets back to her; nobody learns what became of
-her. The Kasama dies at San Juan del Monte. Every line is ours, marked
-+ here and PLACEHOLDER in content/act2.js, until the proponents accept
-or replace it. Every flag starts with a2_.
+her. The Kasama dies at San Juan del Monte. Every line is ours,
+accepted by the proponents on 9 Oct 2026. Every flag starts with a2_.
 
 Places, in order: imprenta (the Katipunan's press, behind a door at x
 6650 of the street since Block 120, between the Mananahi and the
@@ -1204,11 +1206,11 @@ and on each a catch puts Macario back at the last point he passed
 
 imprenta. Plays by itself the first time a student enters Act II.
 
-  + [BLACK] Tondo, Agosto 1896
+    [BLACK] Tondo, Agosto 1896
 
     (Macario walks to the press.)
 
-  + Jacinto: Dahan-dahan sa diin, Macario. Hinihintay ng bayan ang ikalawang labas.
+    Jacinto: Dahan-dahan sa diin, Macario. Hinihintay ng bayan ang ikalawang labas.
 
 The press (palimbagan, x 210), its button "Gamitin": the work game (as
 the horse in Act I), a sheet under the platen printed a line at each
@@ -1216,37 +1218,37 @@ stroke. The first thing a student does in Act II is print: the second
 issue of Kalayaan, the one the histories say was in hand when the
 Katipunan was found out.
 
-  + (the game) Palimbagan / Diinan ang palimbagan kapag nasa berde ang guhit.
-  + (a good stroke) Malinaw ang limbag!
-  + (a missed one) Kumalat ang tinta!
-  + (the end) n/5 ang malinaw na pahina.
+    (the game) Palimbagan / Diinan ang palimbagan kapag nasa berde ang guhit.
+    (a good stroke) Malinaw ang limbag!
+    (a missed one) Kumalat ang tinta!
+    (the end) n/5 ang malinaw na pahina.
 
 Played once (Block 114); the press afterwards, until the sweep:
 
-  + Macario (sa isip): Tapos na ang limbag ko. Sa iba na ang susunod na pahina.
+    Macario (sa isip): Tapos na ang limbag ko. Sa iba na ang susunod na pahina.
 
 Completes: Maglimbag ng Kalayaan. Then, by itself:
 
-  + Jacinto: Heto. Ang ikalawang labas ng Kalayaan.
-  + Macario: "Inilimbag sa Yokohama" pa rin po?
-  + Jacinto: Doon pa rin. Hanggang ngayon, sa kabilang dagat nila hinahanap ang imprenta.
-  + Jacinto: Hindi sa ilalim ng ilong nila.
-  + Manlilimbag: Ginoo... may usap-usapan sa pagawaan. May kapatid daw na kinabahan, at nagpunta sa kura.
-  + Jacinto: ...
-  + Jacinto: Usap-usapan lang 'yan.
-  + Manlilimbag: Saan ko po itatago ang talaan?
-  + Jacinto: Sa ilalim ng palimbagan. Ang mga pangalan ng kasapi, at kung saan sila nakatira.
-  + Macario (sa isip): Pati ang pangalan ko. Pati ang bahay namin.
-  + Jacinto: Umuwi ka muna, Macario. Ilang gabi ka nang hindi umuuwi.
+    Jacinto: Heto. Ang ikalawang labas ng Kalayaan.
+    Macario: "Inilimbag sa Yokohama" pa rin po?
+    Jacinto: Doon pa rin. Hanggang ngayon, sa kabilang dagat nila hinahanap ang imprenta.
+    Jacinto: Hindi sa ilalim ng ilong nila.
+    Manlilimbag: Ginoo... may usap-usapan sa pagawaan. May kapatid daw na kinabahan, at nagpunta sa kura.
+    Jacinto: ...
+    Jacinto: Usap-usapan lang 'yan.
+    Manlilimbag: Saan ko po itatago ang talaan?
+    Jacinto: Sa ilalim ng palimbagan. Ang mga pangalan ng kasapi, at kung saan sila nakatira.
+    Macario (sa isip): Pati ang pangalan ko. Pati ang bahay namin.
+    Jacinto: Umuwi ka muna, Macario. Ilang gabi ka nang hindi umuuwi.
 
 The rumour of the confession, and the list with where everyone lives,
 are set up here. The others, talked to:
 
-  + Jacinto: Pantay na diin, Macario. Ang malabong letra, hindi mababasa ng bayan.
+    Jacinto: Pantay na diin, Macario. Ang malabong letra, hindi mababasa ng bayan.
     (before the first page)
-  + Jacinto: Umuwi ka na. Hinihintay ka ng nanay mo.
+    Jacinto: Umuwi ka na. Hinihintay ka ng nanay mo.
     (after)
-  + Manlilimbag: Yokohama, ha. Ni hindi ko alam kung saan 'yon.
+    Manlilimbag: Yokohama, ha. Ni hindi ko alam kung saan 'yon.
 
 ### 2. The walk home
 
@@ -1255,19 +1257,19 @@ bahay". No guards yet, but the neighbours are afraid of him already:
 the hints, before the sweep. Each says one line; from the sweep on they
 are indoors.
 
-  + Kutsero: Hindi kita kilala, iho. Umalis ka na.
-  + Mangingisda: Sinunog ko na 'yung ibinigay mo noon. Pasensya na.
-  + Barbero: Sarado kami. May nagtanong tungkol sa'yo kaninang umaga. Hindi ko sinabi kung saan ka nakatira.
-  + Mananahi (pabulong): May kura raw sa Tondo na may alam na. Umalis ka muna, iho, habang kaya mo pa.
-  + Tabakera: Tatlo na ang hinuli sa pagawaan kahapon. Huwag kang lalapit sa akin.
-  + Karpintero: Wala akong kilalang Macario. Wala.
-  + Direktor: Sarado ang entablado hanggang sa susunod na abiso. Mag-ingat ka, iho.
+    Kutsero: Hindi kita kilala, iho. Umalis ka na.
+    Mangingisda: Sinunog ko na 'yung ibinigay mo noon. Pasensya na.
+    Barbero: Sarado kami. May nagtanong tungkol sa'yo kaninang umaga. Hindi ko sinabi kung saan ka nakatira.
+    Mananahi (pabulong): May kura raw sa Tondo na may alam na. Umalis ka muna, iho, habang kaya mo pa.
+    Tabakera: Tatlo na ang hinuli sa pagawaan kahapon. Huwag kang lalapit sa akin.
+    Karpintero: Wala akong kilalang Macario. Wala.
+    Direktor: Sarado ang entablado hanggang sa susunod na abiso. Mag-ingat ka, iho.
 
 Maryam (the question she asked in Act I, answered):
 
-  + Maryam: May mga guardia sa entablado kanina. Hinahanap ka.
-  + Maryam: Sino ba talaga 'yung dalawang lalaki noon, Macario?
-  + Macario: Mas mabuti nang hindi mo alam.
+    Maryam: May mga guardia sa entablado kanina. Hinahanap ka.
+    Maryam: Sino ba talaga 'yung dalawang lalaki noon, Macario?
+    Macario: Mas mabuti nang hindi mo alam.
 
 ### 3. Home, and the knock
 
@@ -1278,65 +1280,65 @@ is hammered. Nobody in the room knows the sweep has begun: Isko brings
 a problem at the press, nothing more, and Macario goes thinking it will
 take an hour.
 
-  + Nanay: Anak! Akala ko kung napaano ka na.
+    Nanay: Anak! Akala ko kung napaano ka na.
 
     (He goes to her.)
 
-  + Nanay: Halika, kumain ka.
-  + Nanay: ...
-  + Nanay: Ano 'to? Tinta?
-  + Macario: Sa entablado po, 'Nay. Pinta sa—
-  + Nanay: Hindi ganyang kulay ang pinta sa entablado, Macario.
-  + Nanay: Noong gabing hinanap kita, may tumawag sa'yo sa pinto. "Pangulo".
-  + Macario: 'Nay...
-  + Nanay: Hindi ako bingi, anak. Hindi rin bulag ang mga kapitbahay.
-  + Nanay: May hinuli na naman daw sa Trozo. Hindi na nakauwi sa pamilya nila.
-  + Nanay: Huwag kang makisama sa mga 'yan, anak.
-  + Nanay: Ganyan din ang tatay mo. Lumabas isang gabi, sabi babalik bago mag-umaga.
-  + Nanay: Hindi ko na siya nakita.
-  + Nanay: Hindi kita kayang mawala, Macario. Ikaw na lang ang natitira sa akin.
-  + Macario: Hindi po ako mawawala, 'Nay.
-  + Macario: Babalik po ako. Pangako.
-  + Nanay: ...
-  + Nanay: Magluluto ako ng sinigang sa Linggo. Umuwi ka.
-  + Macario: Opo, 'Nay. Uuwi p—
+    Nanay: Halika, kumain ka.
+    Nanay: ...
+    Nanay: Ano 'to? Tinta?
+    Macario: Sa entablado po, 'Nay. Pinta sa—
+    Nanay: Hindi ganyang kulay ang pinta sa entablado, Macario.
+    Nanay: Noong gabing hinanap kita, may tumawag sa'yo sa pinto. "Pangulo".
+    Macario: 'Nay...
+    Nanay: Hindi ako bingi, anak. Hindi rin bulag ang mga kapitbahay.
+    Nanay: May hinuli na naman daw sa Trozo. Hindi na nakauwi sa pamilya nila.
+    Nanay: Huwag kang makisama sa mga 'yan, anak.
+    Nanay: Ganyan din ang tatay mo. Lumabas isang gabi, sabi babalik bago mag-umaga.
+    Nanay: Hindi ko na siya nakita.
+    Nanay: Hindi kita kayang mawala, Macario. Ikaw na lang ang natitira sa akin.
+    Macario: Hindi po ako mawawala, 'Nay.
+    Macario: Babalik po ako. Pangako.
+    Nanay: ...
+    Nanay: Magluluto ako ng sinigang sa Linggo. Umuwi ka.
+    Macario: Opo, 'Nay. Uuwi p—
 
     (The door, hammered, three times.)
 
-  + Isko: Pangulo! Pangulo!
-  + Nanay: ...
+    Isko: Pangulo! Pangulo!
+    Nanay: ...
 
     (Isko comes in.)
 
-  + Isko: Pasensya na po sa abala. May problema po sa imprenta.
-  + Isko: Ayaw pong ibigay ng mga manlilimbag 'yung mga papel na ipinalimbag natin.
-  + Isko: Kanina pa raw po sarado ang pinto. Walang sumasagot.
-  + Macario: Hindi ganyan ang mga tao roon.
-  + Macario: Pupuntahan ko.
-  + Isko: Sasama po ako—
-  + Macario: Hindi. Sabihan mo ang mga kapatid sa pulungan. Baka kailanganin ko sila.
-  + Isko: Opo, Pangulo.
+    Isko: Pasensya na po sa abala. May problema po sa imprenta.
+    Isko: Ayaw pong ibigay ng mga manlilimbag 'yung mga papel na ipinalimbag natin.
+    Isko: Kanina pa raw po sarado ang pinto. Walang sumasagot.
+    Macario: Hindi ganyan ang mga tao roon.
+    Macario: Pupuntahan ko.
+    Isko: Sasama po ako—
+    Macario: Hindi. Sabihan mo ang mga kapatid sa pulungan. Baka kailanganin ko sila.
+    Isko: Opo, Pangulo.
 
     (Isko runs out. Macario turns to her.)
 
-  + Nanay: Macario...
-  + Nanay: Kapapangako mo lang.
-  + Macario: Sandali lang po ito, 'Nay. Babalik po ako agad.
+    Nanay: Macario...
+    Nanay: Kapapangako mo lang.
+    Macario: Sandali lang po ito, 'Nay. Babalik po ako agad.
 
     (He goes out of the door.)
 
 Completes: Umuwi sa bahay. Nobody is left with her: nobody thinks she
 needs anyone. If he goes back in before the press:
 
-  + Nanay: Anak, huwag ka nang lumabas. Pakiusap.
+    Nanay: Anak, huwag ka nang lumabas. Pakiusap.
 
 ### 4. The street, in the sweep
 
 tondo, outside Nanay's door. He does not know it is a sweep, only that
 the street is wrong:
 
-  + Macario (sa isip): Bakit ang daming guardia sa kalye?
-  + Macario (sa isip): ...Hindi ako dapat makita.
+    Macario (sa isip): Bakit ang daming guardia sa kalye?
+    Macario (sa isip): ...Hindi ako dapat makita.
 
 Nobody is out. Four guardia civil walk between home and the press
 (2600 to 3000, 3700 to 4150, 4900 to 5250, 5950 to 6300), each with a
@@ -1350,62 +1352,62 @@ search the room (1850 to 2200, 1100 to 1500, 400 to 800), each with
 cover in his beat, and two high shelves (1580 and 860) stand above
 their sight; they catch, not shoot.
 
-  + Macario (sa isip): Bukas ang pinto...
-  + Macario (sa isip): Mga guardia... nauna na sila.
-  + Manlilimbag (pabulong): Pangulo... dito po.
-  + Manlilimbag: Pumasok sila bago pa kami makatakbo. Dinampot nila ang iba.
-  + Manlilimbag: Kinuha na nila ang mga resibo at ang mga sulat. Pero ang talaan... nasa ilalim pa ng palimbagan.
-  + Macario: Kapag nakita nila 'yon...
-  + Manlilimbag: Daan-daang pangalan, Pangulo. Pati ang sa inyo.
-  + Macario: Kukunin ko. Lumabas ka na habang abala sila.
+    Macario (sa isip): Bukas ang pinto...
+    Macario (sa isip): Mga guardia... nauna na sila.
+    Manlilimbag (pabulong): Pangulo... dito po.
+    Manlilimbag: Pumasok sila bago pa kami makatakbo. Dinampot nila ang iba.
+    Manlilimbag: Kinuha na nila ang mga resibo at ang mga sulat. Pero ang talaan... nasa ilalim pa ng palimbagan.
+    Macario: Kapag nakita nila 'yon...
+    Manlilimbag: Daan-daang pangalan, Pangulo. Pati ang sa inyo.
+    Macario: Kukunin ko. Lumabas ka na habang abala sila.
 
 Completes: Bumalik sa imprenta. "The printers will not hand over the
 papers" was the guards, not the printers. At the press, past
 the guards:
 
-  + Macario (sa isip): Nandito... ang talaan ng mga kasapi.
-  + Macario (sa isip): ...
-  + Macario (sa isip): "Macario Sakay. Tondo. Kasama ang ina."
-  + Macario (sa isip): Ang mga resibong kinuha nila... nakasulat din doon ang tirahan namin.
-  + Macario (sa isip): Si Nanay!
-  + Macario (sa isip): Iniwan ko siyang mag-isa.
+    Macario (sa isip): Nandito... ang talaan ng mga kasapi.
+    Macario (sa isip): ...
+    Macario (sa isip): "Macario Sakay. Tondo. Kasama ang ina."
+    Macario (sa isip): Ang mga resibong kinuha nila... nakasulat din doon ang tirahan namin.
+    Macario (sa isip): Si Nanay!
+    Macario (sa isip): Iniwan ko siyang mag-isa.
 
 Completes: Kunin ang talaan ng mga kasapi ("Tumakas sa bintana at
 balikan si Nanay!"). The front door is shut to him now; the back
 window, at the left edge, "Tumakas sa bintana":
 
-  + [BLACK] Gabi na nang makalabas siya sa imprenta.
+    [BLACK] Gabi na nang makalabas siya sa imprenta.
 
 Thoughts and lines around the press:
 
-  + Macario (sa isip): Nasa akin na ang talaan. Sa bintana sa likod ako dadaan.
-  + Macario (sa isip): Hindi ako aalis nang wala ang talaan.
-  + Macario (sa isip): Bintana sa likod. Daan palabas, kung sakaling magkagulo.
-  + Manlilimbag (pabulong): Bilisan n'yo po, Pangulo. Sa ilalim ng palimbagan.
+    Macario (sa isip): Nasa akin na ang talaan. Sa bintana sa likod ako dadaan.
+    Macario (sa isip): Hindi ako aalis nang wala ang talaan.
+    Macario (sa isip): Bintana sa likod. Daan palabas, kung sakaling magkagulo.
+    Manlilimbag (pabulong): Bilisan n'yo po, Pangulo. Sa ilalim ng palimbagan.
 
 ### 6. The night: the chase
 
 tondo, at night, behind the press (x 6800). The street is dark and
 nobody is out. On arrival:
 
-  + Macario (sa isip): Kailangan kong maunahan sila sa bahay.
-  + Macario (sa isip): Wala akong pinabantay sa kanya. Wala ni isa.
+    Macario (sa isip): Kailangan kong maunahan sila sa bahay.
+    Macario (sa isip): Wala akong pinabantay sa kanya. Wala ni isa.
 
 The way home is past two patrols (5950 to 6350, 5000 to 5400), each with
 cover. At x 4550, a long way short of her door, it plays by itself:
 
-  + Macario (sa isip): Malapit na ang bahay...
-  + Macario (sa isip): Konti na lang, 'Nay.
+    Macario (sa isip): Malapit na ang bahay...
+    Macario (sa isip): Konti na lang, 'Nay.
 
     (Two guardia civil come round the corner ahead, between him and
     the house.)
 
-  + Bantay: Hoy, sino ka?!
-  + Macario (sa isip): Hawak ko ang talaan. Hindi ako puwedeng mahuli.
+    Bantay: Hoy, sino ka?!
+    Macario (sa isip): Hawak ko ang talaan. Hindi ako puwedeng mahuli.
 
     (He turns and runs, away from her.)
 
-  + Bantay: Bumalik ka rito!
+    Bantay: Bumalik ka rito!
 
 Completes: Balikan si Nanay. The chase: the two come after him firing,
 and two more on the street ahead (7400 to 7750, 9300 to 9650) turn on
@@ -1414,12 +1416,12 @@ back at the last point of the chase he passed (6000, 8000, 10000). At
 the end of the street (x 11300), the road out of Tondo, "Tumakas sa
 bundok":
 
-  + [BLACK] Tumakas si Macario patungo sa kabundukan.
-  + [BLACK] Hindi na siya nakabalik kay Nanay.
-  + [BLACK] Natuklasan ang Katipunan.
-  + [BLACK] Sa loob ng ilang araw, daan-daan ang hinuli sa Tondo.
-  + [BLACK] Agosto 23, 1896
-  + [BLACK] Pugad Lawin, Kalookan
+    [BLACK] Tumakas si Macario patungo sa kabundukan.
+    [BLACK] Hindi na siya nakabalik kay Nanay.
+    [BLACK] Natuklasan ang Katipunan.
+    [BLACK] Sa loob ng ilang araw, daan-daan ang hinuli sa Tondo.
+    [BLACK] Agosto 23, 1896
+    [BLACK] Pugad Lawin, Kalookan
 
 Completes: Tumakas papunta sa bundok. He never reaches her door, and
 the game never shows what happened to her.
@@ -1428,62 +1430,62 @@ the game never shows what happened to her.
 
 pugad-lawin. Plays by itself on arrival.
 
-  + Isko: Pangulo! Buhay kayo!
-  + Macario: Isko. Si Nanay?
-  + Isko: ...
-  + Isko: Pumunta po ako sa bahay ninyo kinaumagahan. Wala nang tao. Sira ang pinto.
-  + Isko: Walang nakakaalam kung saan siya dinala. O kung... dinala man.
-  + Macario: ...
-  + Macario: Hindi ko siya pinabantayan.
-  + Macario: Inuna ko ang talaan. Ang pangalan ng iba.
-  + Isko: Pangulo...
-  + Bonifacio: Mga kapatid! Alam na ng mga Kastila ang lahat.
-  + Bonifacio: Hinuhuli na nila tayo isa-isa. Kung maghihintay tayo, sa bilangguan tayo mamamatay.
-  + Bonifacio: Kaya ngayon, wala nang atrasan.
-  + Bonifacio: Ilabas ang inyong mga sedula!
+    Isko: Pangulo! Buhay kayo!
+    Macario: Isko. Si Nanay?
+    Isko: ...
+    Isko: Pumunta po ako sa bahay ninyo kinaumagahan. Wala nang tao. Sira ang pinto.
+    Isko: Walang nakakaalam kung saan siya dinala. O kung... dinala man.
+    Macario: ...
+    Macario: Hindi ko siya pinabantayan.
+    Macario: Inuna ko ang talaan. Ang pangalan ng iba.
+    Isko: Pangulo...
+    Bonifacio: Mga kapatid! Alam na ng mga Kastila ang lahat.
+    Bonifacio: Hinuhuli na nila tayo isa-isa. Kung maghihintay tayo, sa bilangguan tayo mamamatay.
+    Bonifacio: Kaya ngayon, wala nang atrasan.
+    Bonifacio: Ilabas ang inyong mga sedula!
 
     (Paper torn, twice.)
 
-  + Katipunero: Punitin! Punitin!
+    Katipunero: Punitin! Punitin!
 
 The cedula is the student's to tear: Bonifacio's button, "Punitin ang
 sedula".
 
-  + Macario (sa isip): Ito ang papel na umubos sa pitaka ni Nanay.
-  + Macario (sa isip): Kung nasaan ka man ngayon, 'Nay... para sa'yo ito.
-  + Macario: Wala nang sedula. Wala nang alipin.
-  + Mga Katipunero: Mabuhay ang Pilipinas!
-  + Bonifacio: Ikaw si Sakay, 'di ba? 'Yung artista.
-  + Macario: Opo, Supremo.
-  + Bonifacio: Napanood kita bilang Baldovino. "Walang bayang mananatiling alipin..."
-  + Bonifacio: Akala ko, linya lang. Ngayon, nakikita kong hindi.
-  + Bonifacio: Sa susunod na linggo, lulusob tayo sa San Juan del Monte. Sumama ka sa akin.
-  + Macario: Opo.
+    Macario (sa isip): Ito ang papel na umubos sa pitaka ni Nanay.
+    Macario (sa isip): Kung nasaan ka man ngayon, 'Nay... para sa'yo ito.
+    Macario: Wala nang sedula. Wala nang alipin.
+    Mga Katipunero: Mabuhay ang Pilipinas!
+    Bonifacio: Ikaw si Sakay, 'di ba? 'Yung artista.
+    Macario: Opo, Supremo.
+    Bonifacio: Napanood kita bilang Baldovino. "Walang bayang mananatiling alipin..."
+    Bonifacio: Akala ko, linya lang. Ngayon, nakikita kong hindi.
+    Bonifacio: Sa susunod na linggo, lulusob tayo sa San Juan del Monte. Sumama ka sa akin.
+    Macario: Opo.
 
-  + [BLACK] Agosto 30, 1896
-  + [BLACK] San Juan del Monte
+    [BLACK] Agosto 30, 1896
+    [BLACK] San Juan del Monte
 
 Completes: Punitin ang sedula. The cedula is the one that emptied
 Nanay's purse in Act I's opening; the line is the one Bonifacio heard
 from the stage (Act I, beat 12). The others there:
 
-  + Isko: Magtatanong-tanong po ako, Pangulo. May makakaalam din kung nasaan siya.
-  + Katipunero: Wala nang sedula. Wala nang atrasan.
-  + Kasama: Akala ko, nahuli ka na sa Tondo, Pangulo.
-  + Bonifacio: Ilabas mo ang sedula mo, kapatid.
+    Isko: Magtatanong-tanong po ako, Pangulo. May makakaalam din kung nasaan siya.
+    Katipunero: Wala nang sedula. Wala nang atrasan.
+    Kasama: Akala ko, nahuli ka na sa Tondo, Pangulo.
+    Bonifacio: Ilabas mo ang sedula mo, kapatid.
     (before)
-  + Bonifacio: Sa susunod na linggo, sa San Juan del Monte.
+    Bonifacio: Sa susunod na linggo, sa San Juan del Monte.
     (after)
 
 ### 8. San Juan del Monte
 
 san-juan. Plays by itself on arrival.
 
-  + Bonifacio: Ang polvorin. Doon nakatago ang pulbura at mga armas ng mga Kastila.
-  + Bonifacio: Kapag nakuha natin 'yan, may baril na tayo.
-  + Kasama: Bolo laban sa riple, Pangulo...
-  + Macario: Mas marami tayo.
-  + Bonifacio: Sugod!
+    Bonifacio: Ang polvorin. Doon nakatago ang pulbura at mga armas ng mga Kastila.
+    Bonifacio: Kapag nakuha natin 'yan, may baril na tayo.
+    Kasama: Bolo laban sa riple, Pangulo...
+    Macario: Mas marami tayo.
+    Bonifacio: Sugod!
 
 The battle, at the proponent's word a big one: fifteen soldiers in
 four waves, from both sides of the screen, with the fight music and
@@ -1492,25 +1494,25 @@ in each of the last two waves is a rifle that fires (bantay). Running
 out of hearts starts the wave again, the fallen staying down. Between
 waves:
 
-  + Macario (sa isip): May kasunod pa...
-  + Bonifacio: Huwag kayong titigil! Malapit na tayo sa polvorin!
-  + Macario (sa isip): Ang dami nila...
+    Macario (sa isip): May kasunod pa...
+    Bonifacio: Huwag kayong titigil! Malapit na tayo sa polvorin!
+    Macario (sa isip): Ang dami nila...
 
 Then a volley, from the right. The Kasama is beside him.
 
-  + Kasama: Pangulo! Dumating ang mga sundalo mula sa Maynila!
-  + Bonifacio: Masyado silang marami! Umatras! Sa ilog!
+    Kasama: Pangulo! Dumating ang mga sundalo mula sa Maynila!
+    Bonifacio: Masyado silang marami! Umatras! Sa ilog!
 
     (A shot. The Kasama is hit.)
 
-  + Kasama: Ah—!
-  + Macario: Kasama!
-  + Kasama: Huwag kang lilingon, Pangulo.
-  + Kasama: Gaya ng una nating lakad. Huwag kang lilingon.
-  + Macario: Hindi kita iiwan—
-  + Kasama: Tumakbo ka na!
+    Kasama: Ah—!
+    Macario: Kasama!
+    Kasama: Huwag kang lilingon, Pangulo.
+    Kasama: Gaya ng una nating lakad. Huwag kang lilingon.
+    Macario: Hindi kita iiwan—
+    Kasama: Tumakbo ka na!
 
-  + [BLACK] Umatras ang mga Katipunero.
+    [BLACK] Umatras ang mga Katipunero.
 
 Completes: Lumusob sa San Juan del Monte. "Huwag kang lilingon" is what
 the Kasama told him the night he led him in to the oath (Act I, beat
@@ -1526,11 +1528,11 @@ Macario and fires until he is punched down; out of hearts, Macario
 starts again at the last line he passed. The river's button reads
 "Tumawid sa ilog".
 
-  + [BLACK] Mahigit isandaan at limampung Katipunero ang nasawi sa San Juan del Monte.
-  + [BLACK] Isa sa kanila ang Kasama.
-  + [BLACK] Nagkawatak-watak ang mga nakaligtas.
-  + [BLACK] Nobyembre 1896
-  + [BLACK] Kabundukan ng Morong
+    [BLACK] Mahigit isandaan at limampung Katipunero ang nasawi sa San Juan del Monte.
+    [BLACK] Isa sa kanila ang Kasama.
+    [BLACK] Nagkawatak-watak ang mga nakaligtas.
+    [BLACK] Nobyembre 1896
+    [BLACK] Kabundukan ng Morong
 
 Completes: Umatras sa ilog.
 
@@ -1538,150 +1540,150 @@ Completes: Umatras sa ilog.
 
 nangka. Plays by itself on arrival.
 
-  + Bonifacio: Nakuha natin ang Montalban. Pero babalik sila, at mas marami.
-  + Bonifacio: Kulang tayo sa tao. Kaya gagawa tayo ng tao.
-  + Macario: Po?
-  + Bonifacio: Dayami, Sakay. Dayami at sombrero.
-  + Bonifacio: Artista ka, 'di ba? Ito ang pinakamalaki mong entablado.
-  + Katipunero: Tatlong bigkis ng dayami ang nasa pampang. Itayo mo, at susuotan namin ng sombrero.
-  + Macario (sa isip): Mga artistang hindi humihinga... Sana maniwala ang mga manonood.
+    Bonifacio: Nakuha natin ang Montalban. Pero babalik sila, at mas marami.
+    Bonifacio: Kulang tayo sa tao. Kaya gagawa tayo ng tao.
+    Macario: Po?
+    Bonifacio: Dayami, Sakay. Dayami at sombrero.
+    Bonifacio: Artista ka, 'di ba? Ito ang pinakamalaki mong entablado.
+    Katipunero: Tatlong bigkis ng dayami ang nasa pampang. Itayo mo, at susuotan namin ng sombrero.
+    Macario (sa isip): Mga artistang hindi humihinga... Sana maniwala ang mga manonood.
 
 Three bundles of straw on the bank (x 1000, 1400, 1800), each with a
 button "Itayo": the bundle becomes a scarecrow in a Katipunan hat
 ("Naitayo ang panakot (n/3)"). Talked to, a scarecrow:
 
-  + Macario (sa isip): Mukha talaga siyang Katipunero. Mas matapang pa nga.
+    Macario (sa isip): Mukha talaga siyang Katipunero. Mas matapang pa nga.
 
 Completes, with the third: Itayo ang mga panakot (3/3). Then, by itself:
 
-  + Katipunero: Ayan na sila! Sa kabilang pampang!
+    Katipunero: Ayan na sila! Sa kabilang pampang!
 
     (Shots, four of them, at straw.)
 
-  + Katipunero: Binabaril nila ang dayami!
-  + Bonifacio: Habang abala sila sa mga panakot, sa gilid tayo lulusob. Sugod!
+    Katipunero: Binabaril nila ang dayami!
+    Bonifacio: Habang abala sila sa mga panakot, sa gilid tayo lulusob. Sugod!
 
 A fight of six, in two waves (the last with a rifle among them). Since
 Block 120 the straw is in the fight too: a soldier nearer a scarecrow
 than Macario goes for it, and two blows bring one down, so while they
 hack at straw he takes them from the side, as Bonifacio said.
 
-  + (a notice) Habang abala sila sa mga panakot, lusubin sila!
-  + Katipunero: Hindi nila alam kung saan kami nanggaling!
-  + Katipunero: Supremo! May dagdag na hukbo mula sa San Mateo!
-  + Bonifacio: Hindi natin sila kaya ngayon. Umatras! Sa Balara!
+    (a notice) Habang abala sila sa mga panakot, lusubin sila!
+    Katipunero: Hindi nila alam kung saan kami nanggaling!
+    Katipunero: Supremo! May dagdag na hukbo mula sa San Mateo!
+    Bonifacio: Hindi natin sila kaya ngayon. Umatras! Sa Balara!
 
-  + [BLACK] Dumating ang dagdag na hukbo ng Espanya.
-  + [BLACK] Umatras sina Macario at ang Supremo sa Balara.
+    [BLACK] Dumating ang dagdag na hukbo ng Espanya.
+    [BLACK] Umatras sina Macario at ang Supremo sa Balara.
 
 Completes: Labanan ang mga Kastila sa ilog. The others there:
 
-  + Katipunero: Tatlong bigkis sa pampang, Pangulo. Itayo mo na.
-  + Katipunero: Mga sundalong hindi kumakain. Gusto ko ang ganyan.
-  + Isko: Hindi ko pa rin matanggap, Pangulo. Ang Kasama...
+    Katipunero: Tatlong bigkis sa pampang, Pangulo. Itayo mo na.
+    Katipunero: Mga sundalong hindi kumakain. Gusto ko ang ganyan.
+    Isko: Hindi ko pa rin matanggap, Pangulo. Ang Kasama...
 
 ### 11. Balara
 
 balara, at night. Plays by itself on arrival: a messenger runs in.
 
-  + Tagapagbalita: Supremo! Balita mula sa Cavite!
-  + Tagapagbalita: Itinaboy ng mga tauhan ni Aguinaldo ang mga Kastila!
-  + Katipunero: Sa Cavite, nananalo sila. Tayo rito, umaatras.
-  + Bonifacio: ...
-  + Bonifacio: Mabuti. Iisang Katipunan lang tayo.
+    Tagapagbalita: Supremo! Balita mula sa Cavite!
+    Tagapagbalita: Itinaboy ng mga tauhan ni Aguinaldo ang mga Kastila!
+    Katipunero: Sa Cavite, nananalo sila. Tayo rito, umaatras.
+    Bonifacio: ...
+    Bonifacio: Mabuti. Iisang Katipunan lang tayo.
 
 Then free. Bonifacio, by the fire:
 
-  + Bonifacio: Hindi ka pa natutulog, Sakay?
-  + Macario: Hindi po ako makatulog, Supremo.
-  + Bonifacio: Saan ka natutong lumaban?
-  + Macario: Sa entablado po. Kahoy na espada.
-  + Bonifacio: Ako rin, alam mo ba? Umarte rin ako sa mga komedya noon.
-  + Bonifacio: Ang pinagkaiba lang, dito, hindi na bumabangon ang namamatay.
-  + Macario: ...
-  + Bonifacio: May naiwan ka ba sa Tondo, Sakay?
-  + Macario: Ang nanay ko po. Hindi ko alam kung buhay pa siya.
-  + Bonifacio: ...
-  + Bonifacio: Lahat tayo may iniwan. Ang tanong lang, may babalikan pa ba tayo.
-  + Bonifacio: Pupunta ako sa Cavite. Kailangang magkaisa ang Katipunan.
-  + Bonifacio: Matulog ka na.
+    Bonifacio: Hindi ka pa natutulog, Sakay?
+    Macario: Hindi po ako makatulog, Supremo.
+    Bonifacio: Saan ka natutong lumaban?
+    Macario: Sa entablado po. Kahoy na espada.
+    Bonifacio: Ako rin, alam mo ba? Umarte rin ako sa mga komedya noon.
+    Bonifacio: Ang pinagkaiba lang, dito, hindi na bumabangon ang namamatay.
+    Macario: ...
+    Bonifacio: May naiwan ka ba sa Tondo, Sakay?
+    Macario: Ang nanay ko po. Hindi ko alam kung buhay pa siya.
+    Bonifacio: ...
+    Bonifacio: Lahat tayo may iniwan. Ang tanong lang, may babalikan pa ba tayo.
+    Bonifacio: Pupunta ako sa Cavite. Kailangang magkaisa ang Katipunan.
+    Bonifacio: Matulog ka na.
 
 Completes: Kausapin ang Supremo. Bonifacio is recorded as having acted
 in amateur theatre; Maryam's "kahoy lang ang mga espada" (Act I, the
 play) and the Katipunero's "dito, hindi kahoy ang mga espada" come back
 in it. He goes to Cavite, and does not come back.
 
-  + [BLACK] Marso 1897, Tejeros.
-  + [BLACK] Nahati ang himagsikan.
-  + [BLACK] Mayo 10, 1897.
-  + [BLACK] Pinatay si Andres Bonifacio ng sarili niyang mga kasama.
-  + [BLACK] Laguna, 1897
+    [BLACK] Marso 1897, Tejeros.
+    [BLACK] Nahati ang himagsikan.
+    [BLACK] Mayo 10, 1897.
+    [BLACK] Pinatay si Andres Bonifacio ng sarili niyang mga kasama.
+    [BLACK] Laguna, 1897
 
 The others there:
 
-  + Katipunero: Kung tutulong lang sana ang Cavite...
-  + Isko: Hindi po ako makatulog. Naririnig ko pa rin ang mga riple.
-  + Bonifacio: Matulog ka na, Sakay.
+    Katipunero: Kung tutulong lang sana ang Cavite...
+    Isko: Hindi po ako makatulog. Naririnig ko pa rin ang mga riple.
+    Bonifacio: Matulog ka na, Sakay.
 
 ### 12. Laguna
 
 laguna. Plays by itself on arrival.
 
-  + Macario: Ginoong Jacinto.
-  + Jacinto: Macario. Buhay ka pa.
-  + Macario: Totoo po ba? Ang Supremo...
-  + Jacinto: Totoo.
-  + Jacinto: Nilitis siya ng mga taga-Cavite, at ipinapatay.
-  + Macario: ...
-  + Jacinto: Sa kanila na ang pamahalaan nila. Pero sa atin pa rin ang Katipunan na itinatag niya.
-  + Macario (sa isip): Hindi ako susunod sa pumatay sa Supremo.
-  + Jacinto: Magpahinga ka muna. Mahaba pa ang laban.
+    Macario: Ginoong Jacinto.
+    Jacinto: Macario. Buhay ka pa.
+    Macario: Totoo po ba? Ang Supremo...
+    Jacinto: Totoo.
+    Jacinto: Nilitis siya ng mga taga-Cavite, at ipinapatay.
+    Macario: ...
+    Jacinto: Sa kanila na ang pamahalaan nila. Pero sa atin pa rin ang Katipunan na itinatag niya.
+    Macario (sa isip): Hindi ako susunod sa pumatay sa Supremo.
+    Jacinto: Magpahinga ka muna. Mahaba pa ang laban.
 
 Completes: Sumama kay Jacinto sa Laguna. The others there:
 
-  + Katipunero: Hindi pa rin ako makapaniwala. Ang Supremo... sa kamay ng kapwa natin.
-  + Isko: Nagtanong-tanong po ako sa mga galing Tondo. Wala pa ring nakakita kay Nanay ninyo.
+    Katipunero: Hindi pa rin ako makapaniwala. Ang Supremo... sa kamay ng kapwa natin.
+    Isko: Nagtanong-tanong po ako sa mga galing Tondo. Wala pa ring nakakita kay Nanay ninyo.
 
 ### 13. The end of Act II
 
 laguna. Jacinto, talked to again:
 
-  + Jacinto: Kakaunti na lang tayo, Macario. Hindi kita pipigilan kung aalis ka.
-  + Macario: Hindi po ako aalis.
-  + Macario: Sa Katipunan ako nanumpa, sa harap ng Mabalasig. Hindi sa kanila.
-  + Jacinto: Kung gayon, dito tayo. Hanggang dulo.
+    Jacinto: Kakaunti na lang tayo, Macario. Hindi kita pipigilan kung aalis ka.
+    Macario: Hindi po ako aalis.
+    Macario: Sa Katipunan ako nanumpa, sa harap ng Mabalasig. Hindi sa kanila.
+    Jacinto: Kung gayon, dito tayo. Hanggang dulo.
 
-  + [BLACK] Disyembre 1897. Sa Biak-na-Bato, lumagda ng kasunduan ang mga pinuno ng himagsikan,
-  + [BLACK] at naglayag sila patungong Hong Kong.
-  + [BLACK] 1898. Dumating ang mga Amerikano.
-  + [BLACK] Hunyo 12, 1898. Idineklara ang kalayaan sa Kawit.
-  + [BLACK] Disyembre 1898
+    [BLACK] Disyembre 1897. Sa Biak-na-Bato, lumagda ng kasunduan ang mga pinuno ng himagsikan,
+    [BLACK] at naglayag sila patungong Hong Kong.
+    [BLACK] 1898. Dumating ang mga Amerikano.
+    [BLACK] Hunyo 12, 1898. Idineklara ang kalayaan sa Kawit.
+    [BLACK] Disyembre 1898
 
     (The last card lifts on the camp. Since Block 120 the treaty of
     Paris [CONTEXT] is not a card: the messenger runs in with a paper
     from Manila, and Jacinto reads it aloud.)
 
-  + Tagapagbalita: Ginoong Jacinto! Galing Maynila. Basahin n'yo po.
-  + Jacinto: ...
-  + Jacinto: "Sa Paris, nilagdaan ang kasunduan. Ipinagbili ng Espanya ang Pilipinas sa Amerika."
-  + Jacinto: "Sa halagang dalawampung milyong dolyar."
-  + Isko: Ipinagbili? Paano nila maipagbibili ang hindi naman sa kanila?
+    Tagapagbalita: Ginoong Jacinto! Galing Maynila. Basahin n'yo po.
+    Jacinto: ...
+    Jacinto: "Sa Paris, nilagdaan ang kasunduan. Ipinagbili ng Espanya ang Pilipinas sa Amerika."
+    Jacinto: "Sa halagang dalawampung milyong dolyar."
+    Isko: Ipinagbili? Paano nila maipagbibili ang hindi naman sa kanila?
 
     (The messenger goes.)
 
-  + Macario (sa isip): Dati, isang sedula ang halaga ko sa mga Kastila.
-  + Macario (sa isip): Ngayon, ipinagbili nila ang buong bayan, na para bang kanila.
-  + Macario (sa isip): At si Nanay... hindi ko pa rin alam kung nasaan siya.
-  + Macario (sa isip): Babalik po ako, 'Nay. Pangako.
-  + Jacinto: Hindi pa tapos, Macario.
-  + Macario: Hindi pa po.
+    Macario (sa isip): Dati, isang sedula ang halaga ko sa mga Kastila.
+    Macario (sa isip): Ngayon, ipinagbili nila ang buong bayan, na para bang kanila.
+    Macario (sa isip): At si Nanay... hindi ko pa rin alam kung nasaan siya.
+    Macario (sa isip): Babalik po ako, 'Nay. Pangako.
+    Jacinto: Hindi pa tapos, Macario.
+    Macario: Hindi pa po.
 
-  + [BLACK] Wakas ng Ikalawang Yugto
+    [BLACK] Wakas ng Ikalawang Yugto
 
 Completes: Kausapin si Jacinto, the last task. Act II is finished, and
 the post-test runs. Afterwards:
 
-  + Jacinto: Hanggang dulo, Macario.
+    Jacinto: Hanggang dulo, Macario.
 
 ### Act II's Talaan
 
@@ -1689,9 +1691,9 @@ Three papers of facts of the game's own, on the street (fixed: x 2600 on
 the road; x 4500 and x 6100 at jump height); a teacher's paper replaces
 its own slot.
 
-  + [HINT] Ang Kalayaan: Kalayaan ang pahayagan ng Katipunan. Inilimbag ito noong Marso 1896, at si Emilio Jacinto ang patnugot nito. Nakasulat dito na sa Yokohama, Hapon, ito inilimbag, para linlangin ang mga Kastila. Matapos itong lumabas, libu-libo ang sumapi sa Katipunan.
-  + [HINT] Ang pagkatuklas: Noong Agosto 19, 1896, ipinagtapat ng isang kasapi, si Teodoro Patiño, ang lihim ng Katipunan kay Padre Mariano Gil, ang kura ng Tondo. Hinalughog ng mga Kastila ang isang imprenta, at nagsimula ang malawakang paghuli.
-  + [HINT] Ang Sigaw at ang San Juan del Monte: Noong huling linggo ng Agosto 1896, pinunit ng mga Katipunero ang kanilang mga sedula bilang tanda ng paghihimagsik. Noong Agosto 30, 1896, nilusob nila ang polvorin ng mga Kastila sa San Juan del Monte. Mahigit 150 Katipunero ang nasawi.
+    [HINT] Ang Kalayaan: Kalayaan ang pahayagan ng Katipunan. Inilimbag ito noong Marso 1896, at si Emilio Jacinto ang patnugot nito. Nakasulat dito na sa Yokohama, Hapon, ito inilimbag, para linlangin ang mga Kastila. Matapos itong lumabas, libu-libo ang sumapi sa Katipunan.
+    [HINT] Ang pagkatuklas: Noong Agosto 19, 1896, ipinagtapat ng isang kasapi, si Teodoro Patiño, ang lihim ng Katipunan kay Padre Mariano Gil, ang kura ng Tondo. Hinalughog ng mga Kastila ang isang imprenta, at nagsimula ang malawakang paghuli.
+    [HINT] Ang Sigaw at ang San Juan del Monte: Noong huling linggo ng Agosto 1896, pinunit ng mga Katipunero ang kanilang mga sedula bilang tanda ng paghihimagsik. Noong Agosto 30, 1896, nilusob nila ang polvorin ng mga Kastila sa San Juan del Monte. Mahigit 150 Katipunero ang nasawi.
 
 ## Act III, beat by beat
 
@@ -1702,8 +1704,7 @@ Macario, who is never shown there and only hears of it secondhand (news,
 a letter, a notice, a black card); [MACARIO] is his, from the sources
 (reported where the sources only report it); [INSERT] is invented for the
 story, plausible but not in the sources. Every line is ours,
-marked + here and PLACEHOLDER in content/act3.js, until the proponents
-accept or replace it. Every flag starts with a3_. At the proponent's
+accepted by the proponents on 9 Oct 2026. Every flag starts with a3_. At the proponent's
 word: the Americans speak short, plain English, true to the history, and
 what they say is given in Tagalog right after (Macario's thought, or an
 interpreter), so no student is left out; Isko surrenders in 1901 to go
@@ -1747,58 +1748,58 @@ soldiers at Santa Mesa, and the war begins; Macario is not there.
 not say where he was), and a runner brings the news. burol, plays by
 itself the first time a student enters Act III.
 
-  + [BLACK] Pebrero 5, 1899
-  + [BLACK] Sa kabundukan, sa labas ng Maynila
+    [BLACK] Pebrero 5, 1899
+    [BLACK] Sa kabundukan, sa labas ng Maynila
 
     (The messenger of Act II runs in.)
 
-  + Tagapagbalita: Pangulo! Balita mula sa Maynila!
-  + Tagapagbalita: Kagabi, sa Santa Mesa, pinaputukan ng isang bantay na Amerikano ang ating mga sundalo.
-  + Tagapagbalita: Sa buong paligid ng Maynila, naglalaban na tayo at ang mga Amerikano.
-  + Isko: Pero kakampi raw natin sila, sabi ng mga heneral.
-  + Macario: Kakampi na bumili sa atin ng dalawampung milyong dolyar.
-  + Macario: ...
-  + Macario: Digmaan na naman, Isko. Bantayan natin ang kampo.
+    Tagapagbalita: Pangulo! Balita mula sa Maynila!
+    Tagapagbalita: Kagabi, sa Santa Mesa, pinaputukan ng isang bantay na Amerikano ang ating mga sundalo.
+    Tagapagbalita: Sa buong paligid ng Maynila, naglalaban na tayo at ang mga Amerikano.
+    Isko: Pero kakampi raw natin sila, sabi ng mga heneral.
+    Macario: Kakampi na bumili sa atin ng dalawampung milyong dolyar.
+    Macario: ...
+    Macario: Digmaan na naman, Isko. Bantayan natin ang kampo.
 
 The lookout over the slope (x 2300), "Sumilip" [INSERT]:
 
-  + Macario (sa isip): May gumagalaw sa ibaba ng burol...
-  + Macario (sa isip): Mga Amerikano. Paakyat dito.
-  + Isko: Pangulo! Natagpuan nila tayo!
-  + Macario: Hindi tayo tatakbo nang hindi lumalaban.
+    Macario (sa isip): May gumagalaw sa ibaba ng burol...
+    Macario (sa isip): Mga Amerikano. Paakyat dito.
+    Isko: Pangulo! Natagpuan nila tayo!
+    Macario: Hindi tayo tatakbo nang hindi lumalaban.
 
 Completes: Bantayan ang kampo. Before it, Isko:
 
-  + Isko: Ikaw ang sumilip, Pangulo. Dito lang ako.
+    Isko: Ikaw ang sumilip, Pangulo. Dito lang ako.
 
 ### 2. The patrol
 
 [MACARIO] He fights on against the Americans. [INSERT] The patrol and
 the battle. burol, straight on.
 
-  + Isko: Ayan na sila!
+    Isko: Ayan na sila!
 
 The battle, at the proponent's word a big one: fifteen Americans in four
 waves, from both sides of the screen (amerikano, hand to hand; a
 sentinela, a rifle, in each of the last two), three hearts on the field.
 Between waves:
 
-  + Macario (sa isip): Hindi sila tumitigil...
-  + Isko: May mga kanyon sila, Pangulo!
-  + Macario (sa isip): Mas marami pa sila kaysa sa mga Kastila...
+    Macario (sa isip): Hindi sila tumitigil...
+    Isko: May mga kanyon sila, Pangulo!
+    Macario (sa isip): Mas marami pa sila kaysa sa mga Kastila...
 
 Then:
 
-  + Isko: May dumarating pa sa ibaba, Pangulo!
-  + Macario: Umatras tayo. Mas kailangan ng bayan ang buhay natin kaysa sa burol na ito.
+    Isko: May dumarating pa sa ibaba, Pangulo!
+    Macario: Umatras tayo. Mas kailangan ng bayan ang buhay natin kaysa sa burol na ito.
 
 [CONTEXT] Manila under American guard, on black.
 
-  + [BLACK] Sa mga sumunod na buwan, bumagsak ang mga linya ng mga Pilipino sa paligid ng Maynila.
-  + [BLACK] Napasailalim sa bantay ng mga Amerikano ang Maynila.
-  + [BLACK] Nagtago si Macario.
-  + [BLACK] Mayo 1899
-  + [BLACK] Tondo
+    [BLACK] Sa mga sumunod na buwan, bumagsak ang mga linya ng mga Pilipino sa paligid ng Maynila.
+    [BLACK] Napasailalim sa bantay ng mga Amerikano ang Maynila.
+    [BLACK] Nagtago si Macario.
+    [BLACK] Mayo 1899
+    [BLACK] Tondo
 
 Completes: Labanan ang mga Amerikano.
 
@@ -1810,26 +1811,26 @@ Laguna, far from Macario, read in a letter.
 tondo, from the east end (x 12500), by day. American sentries at the
 corners. On arrival:
 
-  + Macario (sa isip): Mga Amerikano sa bawat kanto.
-  + Macario (sa isip): Dito ako lumaki. Ngayon, kailangan kong magtago rito.
+    Macario (sa isip): Mga Amerikano sa bawat kanto.
+    Macario (sa isip): Dito ako lumaki. Ngayon, kailangan kong magtago rito.
 
 Isko (x 12200) has a letter from Laguna: his button, "Basahin ang
 sulat". Emilio Jacinto died at Majayjay, Laguna, on 16 April 1899, of
 malaria, aged twenty-three; "Hanggang dulo" is what he said to Macario
 at the end of Act II.
 
-  + Isko: Pangulo... may sulat po. Galing Laguna.
-  + Macario (sa isip): "Abril 16, 1899. Majayjay, Laguna."
-  + Macario (sa isip): "Pumanaw si Ginoong Emilio Jacinto. Malarya ang kumuha sa kanya."
-  + Macario (sa isip): "Dalawampu't tatlong taong gulang."
-  + Macario: ...
-  + Macario (sa isip): "Hanggang dulo," sabi niya.
-  + Isko: Pangulo...
-  + Macario: Hindi pa tapos, Isko. Hindi pa.
+    Isko: Pangulo... may sulat po. Galing Laguna.
+    Macario (sa isip): "Abril 16, 1899. Majayjay, Laguna."
+    Macario (sa isip): "Pumanaw si Ginoong Emilio Jacinto. Malarya ang kumuha sa kanya."
+    Macario (sa isip): "Dalawampu't tatlong taong gulang."
+    Macario: ...
+    Macario (sa isip): "Hanggang dulo," sabi niya.
+    Isko: Pangulo...
+    Macario: Hindi pa tapos, Isko. Hindi pa.
 
 Completes: Basahin ang sulat ni Isko. Afterwards:
 
-  + Isko: Mag-ingat kayo, Pangulo. Hihintayin ko kayo.
+    Isko: Mag-ingat kayo, Pangulo. Hihintayin ko kayo.
 
 ### 4. Maryam's trunk
 
@@ -1840,33 +1841,33 @@ tondo, at the shut entablado (x 13250). Her question from Act I ("Sino
 ba talaga 'yung dalawang lalaki noon?") is answered by the years.
 Before the letter:
 
-  + Maryam: Macario? Buhay ka!
+    Maryam: Macario? Buhay ka!
 
 After it:
 
-  + Maryam: Macario? ...Ikaw nga!
-  + Maryam: Tatlong taon. Wala man lang sulat.
-  + Macario: Walang sulat na ligtas, Maryam.
-  + Maryam: Alam ko na ngayon kung sino 'yung dalawang lalaki noon.
-  + Maryam: Sarado na ang entablado. Binabantayan ng mga Amerikano ang bawat dula.
-  + Macario: Kailangan kong makarating sa barberya nang hindi nila ako nakikilala.
-  + Maryam: ...
-  + Maryam: Artista ka, 'di ba?
-  + Maryam: Nasa akin pa ang baul ng mga damit.
-  + Maryam: Ayan. Magtataho. Walang tumitingin nang dalawang beses sa tindero.
-  + Maryam: Yumuko ka, at huwag kang magmadali. Ang nagmamadali, may itinatago.
-  + Macario: Salamat, Maryam.
-  + Maryam: Huwag kang magpapahuli, ha. Wala na akong ibang kapareha sa entablado.
+    Maryam: Macario? ...Ikaw nga!
+    Maryam: Tatlong taon. Wala man lang sulat.
+    Macario: Walang sulat na ligtas, Maryam.
+    Maryam: Alam ko na ngayon kung sino 'yung dalawang lalaki noon.
+    Maryam: Sarado na ang entablado. Binabantayan ng mga Amerikano ang bawat dula.
+    Macario: Kailangan kong makarating sa barberya nang hindi nila ako nakikilala.
+    Maryam: ...
+    Maryam: Artista ka, 'di ba?
+    Maryam: Nasa akin pa ang baul ng mga damit.
+    Maryam: Ayan. Magtataho. Walang tumitingin nang dalawang beses sa tindero.
+    Maryam: Yumuko ka, at huwag kang magmadali. Ang nagmamadali, may itinatago.
+    Macario: Salamat, Maryam.
+    Maryam: Huwag kang magpapahuli, ha. Wala na akong ibang kapareha sa entablado.
 
 He puts on the disguise (the balatkayo, a taho seller's clothes from the
 theatre's trunk, worn in place of the stage clothes): standing still in
 it a sentry all but never notices him.
 
-  + (a notice) Suot mo ang balatkayo. Tumigil kapag nakatingin ang bantay.
+    (a notice) Suot mo ang balatkayo. Tumigil kapag nakatingin ang bantay.
 
 Completes: Humingi ng tulong kay Maryam. Afterwards:
 
-  + Maryam: Yumuko ka, Macario. Huwag kang magmadali.
+    Maryam: Yumuko ka, Macario. Huwag kang magmadali.
 
 ### 5. Past the sentries
 
@@ -1880,16 +1881,16 @@ On the way, not on the task's path but there to be found:
 
 The Mananahi (x 6400), once:
 
-  + Mananahi: Macario? Iho...
-  + Mananahi: Hinintay ka ng nanay mo. Araw-araw, sa pinto.
-  + Mananahi: Isang umaga, wala na siya. Bukas ang pinto. Walang nakakita.
-  + Macario: ...
-  + Mananahi: Patawarin mo ako. Wala akong nagawa.
-  + Mananahi: Iba na ang nakatira sa bahay ninyo. Puntahan mo, kung kaya mo.
+    Mananahi: Macario? Iho...
+    Mananahi: Hinintay ka ng nanay mo. Araw-araw, sa pinto.
+    Mananahi: Isang umaga, wala na siya. Bukas ang pinto. Walang nakakita.
+    Macario: ...
+    Mananahi: Patawarin mo ako. Wala akong nagawa.
+    Mananahi: Iba na ang nakatira sa bahay ninyo. Puntahan mo, kung kaya mo.
 
 and then:
 
-  + Mananahi: Lampas sa barberya ang bahay ninyo, iho. Mag-ingat ka.
+    Mananahi: Lampas sa barberya ang bahay ninyo, iho. Mag-ingat ka.
 
 (Block 120. The house is on no task's way, so she sends him: without
 her, most students would walk into the barbershop and never meet the
@@ -1897,15 +1898,15 @@ stranger.)
 
 Past the barbershop, at Nanay's house (x 2000), a stranger, once:
 
-  + Bagong Nakatira: Sino'ng hinahanap mo?
-  + Macario: 'Yung dating nakatira rito. Isang babae, mag-isa.
-  + Bagong Nakatira: Wala nang tao rito nang lumipat kami. Sira pa ang pinto noon.
-  + Macario: ...
-  + Macario (sa isip): Babalik po ako, 'Nay. 'Yon ang sabi ko.
+    Bagong Nakatira: Sino'ng hinahanap mo?
+    Macario: 'Yung dating nakatira rito. Isang babae, mag-isa.
+    Bagong Nakatira: Wala nang tao rito nang lumipat kami. Sira pa ang pinto noon.
+    Macario: ...
+    Macario (sa isip): Babalik po ako, 'Nay. 'Yon ang sabi ko.
 
 and then:
 
-  + Bagong Nakatira: Wala na siya rito, ginoo. Pasensya na.
+    Bagong Nakatira: Wala na siya rito, ginoo. Pasensya na.
 
 Nanay's fate is not told, as Act II left it.
 
@@ -1915,19 +1916,19 @@ Nanay's fate is not told, as Act II left it.
 
 barberya, plays by itself on arrival.
 
-  + Barbero: Bukas pa kami, ginoo. Upo ka lang at—
-  + Barbero: ...Macario?
-  + Macario: Magandang araw po.
-  + Barbero: Tatlong taon. Akala ko, patay ka na.
-  + Macario: Muntik na po.
-  + Barbero: Hindi bagay sa'yo ang maging magtataho.
-  + Barbero: Kung magtatago ka, dito ka magtago. Walang naghahanap ng rebelde sa likod ng gunting.
-  + Sundalong Amerikano: Hey, old man. I've been waiting.
-  + Macario (sa isip): Kanina pa raw siya naghihintay.
-  + Barbero (pabulong): Amerikano. Linggo-linggo siyang pumupunta rito.
-  + Barbero: Marunong ka pang humawak ng gunting?
-  + Macario: Hindi kabayo ang mga suki n'yo, 'di po ba?
-  + Barbero: ...Naaalala mo pa.
+    Barbero: Bukas pa kami, ginoo. Upo ka lang at—
+    Barbero: ...Macario?
+    Macario: Magandang araw po.
+    Barbero: Tatlong taon. Akala ko, patay ka na.
+    Macario: Muntik na po.
+    Barbero: Hindi bagay sa'yo ang maging magtataho.
+    Barbero: Kung magtatago ka, dito ka magtago. Walang naghahanap ng rebelde sa likod ng gunting.
+    Sundalong Amerikano: Hey, old man. I've been waiting.
+    Macario (sa isip): Kanina pa raw siya naghihintay.
+    Barbero (pabulong): Amerikano. Linggo-linggo siyang pumupunta rito.
+    Barbero: Marunong ka pang humawak ng gunting?
+    Macario: Hindi kabayo ang mga suki n'yo, 'di po ba?
+    Barbero: ...Naaalala mo pa.
 
 "Hindi kabayo ang mga suki ko" is the Barbero's own line from Act I.
 
@@ -1935,37 +1936,37 @@ Completes: Makarating sa barberya nang hindi nakikilala. The chair
 (x 470), "Gupitin": the barber's haircut once more (Block 114's game),
 on the American, sandy-haired and clean-shaven.
 
-  + Sundalong Amerikano: Just a trim. Short on the sides.
-  + Macario (sa isip): Maikli raw sa gilid.
-  + (the game) Barberya / Gupitin ang buhok na lampas sa guhit.
-  + (a cut inside the line) Sundalong Amerikano: Hey! Easy there, pal! (Dahan-dahan daw!)
-  + (a clean cut) Sundalong Amerikano: Not bad, kid. Not bad at all.
-  + (a rough one) Sundalong Amerikano: Huh. It'll grow back.
-  + (after a clean cut) Macario (sa isip): Hindi raw masama. Hindi talaga masama.
-  + (after a rough one) Macario (sa isip): Tutubo rin naman daw ulit.
-  + Sundalong Amerikano: Say. They tell me the insurrectos are hiding right here in Tondo.
-  + Macario (sa isip): Nagtatago raw ang mga rebelde rito mismo sa Tondo.
-  + Macario: Dito po sa Tondo, ser?
-  + Sundalong Amerikano: Bandits, all of 'em. Here. Keep the change.
-  + Macario (sa isip): Mga bandido raw kaming lahat.
-  + Macario (sa isip): At sa akin na raw ang sukli.
+    Sundalong Amerikano: Just a trim. Short on the sides.
+    Macario (sa isip): Maikli raw sa gilid.
+    (the game) Barberya / Gupitin ang buhok na lampas sa guhit.
+    (a cut inside the line) Sundalong Amerikano: Hey! Easy there, pal! (Dahan-dahan daw!)
+    (a clean cut) Sundalong Amerikano: Not bad, kid. Not bad at all.
+    (a rough one) Sundalong Amerikano: Huh. It'll grow back.
+    (after a clean cut) Macario (sa isip): Hindi raw masama. Hindi talaga masama.
+    (after a rough one) Macario (sa isip): Tutubo rin naman daw ulit.
+    Sundalong Amerikano: Say. They tell me the insurrectos are hiding right here in Tondo.
+    Macario (sa isip): Nagtatago raw ang mga rebelde rito mismo sa Tondo.
+    Macario: Dito po sa Tondo, ser?
+    Sundalong Amerikano: Bandits, all of 'em. Here. Keep the change.
+    Macario (sa isip): Mga bandido raw kaming lahat.
+    Macario (sa isip): At sa akin na raw ang sukli.
 
     (He pays, +10 barya, and goes.)
 
-  + Barbero: Ginupitan mo ang kaaway, at nag-iwan pa siya ng sukli.
-  + Macario: Mamayang gabi po, may darating na iba. Hindi para magpagupit.
-  + Barbero: Alam ko. Ikakandado ko ang pinto.
+    Barbero: Ginupitan mo ang kaaway, at nag-iwan pa siya ng sukli.
+    Macario: Mamayang gabi po, may darating na iba. Hindi para magpagupit.
+    Barbero: Alam ko. Ikakandado ko ang pinto.
 
 Completes: Gupitan ang suki. "Bandits" is the word the Brigandage Act
 will make law at the end of the act. The chair afterwards:
 
-  + Macario (sa isip): Wala nang nakaupo. Tapos na ako rito.
+    Macario (sa isip): Wala nang nakaupo. Tapos na ako rito.
 
 The Barbero, talked to:
 
-  + Barbero: Nandiyan ang silya, Macario. Huwag mo siyang sugatan.
+    Barbero: Nandiyan ang silya, Macario. Huwag mo siyang sugatan.
     (before the cut)
-  + Barbero: Ingatan mo sila, Macario.
+    Barbero: Ingatan mo sila, Macario.
     (that night)
 
 ### 7. That night: the creed
@@ -1976,51 +1977,51 @@ the barbershop and the precepts chosen.
 
 barberya, by itself.
 
-  + [BLACK] Nang gabing iyon.
+    [BLACK] Nang gabing iyon.
 
-  + Macario (sa isip): Tatlong mukhang kilala ko.
-  + Macario (sa isip): Ang tatlong tumanggap ng polyeto noon. At tumanggi sa akin pagkatapos.
+    Macario (sa isip): Tatlong mukhang kilala ko.
+    Macario (sa isip): Ang tatlong tumanggap ng polyeto noon. At tumanggi sa akin pagkatapos.
 
 The mangingisda, the tabakera and the karpintero: in Act I they took the
 pamphlets, in Act II they would not know him. Each has a button, "Ituro
 ang aral": a precept of Bonifacio's creed (Katungkulang Gagawin ng mga
 Z.LL.B.), in today's spelling ("Naituro ang aral (n/3)").
 
-  + Mangingisda: Noon, sinunog ko ang polyetong ibinigay mo. Natakot ako.
-  + Macario: At ngayon?
-  + Mangingisda: Kinuha ng mga Amerikano ang bangka ko. Wala na akong ikatatakot.
-  + Macario: Ito ang unang aral ng Supremo.
-  + Macario: "Ang tunay na pag-ibig sa Diyos ay siya ring pag-ibig sa Tinubuang Lupa, at siya ring pag-ibig sa kapwa."
+    Mangingisda: Noon, sinunog ko ang polyetong ibinigay mo. Natakot ako.
+    Macario: At ngayon?
+    Mangingisda: Kinuha ng mga Amerikano ang bangka ko. Wala na akong ikatatakot.
+    Macario: Ito ang unang aral ng Supremo.
+    Macario: "Ang tunay na pag-ibig sa Diyos ay siya ring pag-ibig sa Tinubuang Lupa, at siya ring pag-ibig sa kapwa."
 
-  + Tabakera: Tatlo ang hinuli sa pagawaan noon. Ako ang hindi lumapit sa'yo.
-  + Tabakera: Ngayon, ako na ang lalapit.
-  + Macario: "Ang tunay na kapurihan at kaginhawahan ay ang mamatay sa pagliligtas at pagtatanggol sa Inang Bayan."
-  + Tabakera: ...Mabigat.
-  + Macario: Mabigat talaga.
+    Tabakera: Tatlo ang hinuli sa pagawaan noon. Ako ang hindi lumapit sa'yo.
+    Tabakera: Ngayon, ako na ang lalapit.
+    Macario: "Ang tunay na kapurihan at kaginhawahan ay ang mamatay sa pagliligtas at pagtatanggol sa Inang Bayan."
+    Tabakera: ...Mabigat.
+    Macario: Mabigat talaga.
 
-  + Karpintero: "Wala akong kilalang Macario," sabi ko noon.
-  + Karpintero: Patawarin mo ako.
-  + Macario: Ito ang huli. "Magtatagumpay ang lahat ng mabuting nais kung may hinahon, tiyaga, katuwiran at pag-asa."
-  + Karpintero: Pag-asa. Matagal ko nang hindi naririnig 'yan.
+    Karpintero: "Wala akong kilalang Macario," sabi ko noon.
+    Karpintero: Patawarin mo ako.
+    Macario: Ito ang huli. "Magtatagumpay ang lahat ng mabuting nais kung may hinahon, tiyaga, katuwiran at pag-asa."
+    Karpintero: Pag-asa. Matagal ko nang hindi naririnig 'yan.
 
 Talked to, before and after:
 
-  + Mangingisda: Handa na ako, Pangulo.
-  + Tabakera: Hindi na ako lalayo ngayon.
-  + Karpintero: Kilala na kita ngayon, Macario.
+    Mangingisda: Handa na ako, Pangulo.
+    Tabakera: Hindi na ako lalayo ngayon.
+    Karpintero: Kilala na kita ngayon, Macario.
 
 With the third, the oath, by itself. Now Macario is the one who swears
 them in, as the Mabalasig swore him in Act I:
 
-  + Macario: Itaas ang inyong kanang kamay.
-  + Macario: Isinusumpa ba ninyong ipagtatanggol ang Inang Bayan, hanggang sa huling hininga?
-  + Mga Bagong Kasapi: Isinusumpa namin.
-  + Macario: Mula ngayon, mga kapatid na kayo.
-  + Barbero: Ang batang nagsuklay noon ng kabayo. Tingnan mo ngayon.
+    Macario: Itaas ang inyong kanang kamay.
+    Macario: Isinusumpa ba ninyong ipagtatanggol ang Inang Bayan, hanggang sa huling hininga?
+    Mga Bagong Kasapi: Isinusumpa namin.
+    Macario: Mula ngayon, mga kapatid na kayo.
+    Barbero: Ang batang nagsuklay noon ng kabayo. Tingnan mo ngayon.
 
-  + [BLACK] Sa sumunod na dalawang taon, palipat-lipat si Macario ng bayan, nakabalatkayo.
-  + [BLACK] Nagtatag siya ng mga bagong balangay ng Katipunan.
-  + [BLACK] Abril 1901
+    [BLACK] Sa sumunod na dalawang taon, palipat-lipat si Macario ng bayan, nakabalatkayo.
+    [BLACK] Nagtatag siya ng mga bagong balangay ng Katipunan.
+    [BLACK] Abril 1901
 
 Completes: Ituro ang aral ng Supremo (3/3). Aguinaldo's capture is no
 longer a card (Block 120): Isko brings it to the town, below.
@@ -2035,59 +2036,59 @@ Isko's surrender.
 bayan, a town plaza. Men queue at an American officer's table. Plays by
 itself:
 
-  + Macario (sa isip): Bakit nakapila ang mga kawal sa harap ng mga Amerikano?
+    Macario (sa isip): Bakit nakapila ang mga kawal sa harap ng mga Amerikano?
 
     (Isko comes up behind him. Since Block 120 Aguinaldo's capture at
     Palanan [CONTEXT] is his news, not a card: the soldiers who took him
     (Macabebe scouts) came disguised as revolutionaries, the disguise
     Macario lives by, turned on the Republic.)
 
-  + Isko: Pangulo... nahuli na raw ang Heneral sa Palanan.
-  + Isko: Mga sundalong nagpanggap na rebolusyonaryo ang humuli sa kanya.
-  + Macario (sa isip): Nagbalatkayo sila. Gaya ko.
-  + Isko: Basahin n'yo po. Sa pader.
+    Isko: Pangulo... nahuli na raw ang Heneral sa Palanan.
+    Isko: Mga sundalong nagpanggap na rebolusyonaryo ang humuli sa kanya.
+    Macario (sa isip): Nagbalatkayo sila. Gaya ko.
+    Isko: Basahin n'yo po. Sa pader.
 
 The proclamation on the wall (x 480), "Basahin": Aguinaldo's of 19 April
 1901, after his oath of allegiance on 1 April, in our words.
 
-  + Macario (sa isip): "Ako, si Emilio Aguinaldo..."
-  + Macario (sa isip): "...ay tumatanggap at kumikilala sa kapangyarihan ng Estados Unidos sa buong Pilipinas."
-  + Macario (sa isip): "...Hinihikayat ko ang lahat na ibaba na ang kanilang mga sandata."
-  + Macario: ...
+    Macario (sa isip): "Ako, si Emilio Aguinaldo..."
+    Macario (sa isip): "...ay tumatanggap at kumikilala sa kapangyarihan ng Estados Unidos sa buong Pilipinas."
+    Macario (sa isip): "...Hinihikayat ko ang lahat na ibaba na ang kanilang mga sandata."
+    Macario: ...
 
 Then, by itself:
 
-  + Isko: Totoo pala, Pangulo. Sumuko na ang Heneral.
-  + Isko: Sabi nila, ang manunumpa sa Amerika, makauuwi na. Walang kulong.
-  + Macario: At ikaw?
-  + Isko: ...
-  + Isko: May anak na po ako, Pangulo. Dalawang taon na. Hindi pa niya ako nakikilala.
-  + Macario: ...
-  + Macario: Umuwi ka.
-  + Isko: Sumama na po kayo. Tapos na.
-  + Macario: Tapos na para kay Aguinaldo. Hindi ako sa kanya nanumpa.
-  + Macario: Ilang beses na tayong pinangakuan ng kapayapaan. Ilang beses na tayong ipinagbili.
-  + Isko: Hahanapin ko pa rin po si Nanay ninyo. Pangako.
-  + Macario: Huwag kang mangako, Isko. Mabigat dalhin.
+    Isko: Totoo pala, Pangulo. Sumuko na ang Heneral.
+    Isko: Sabi nila, ang manunumpa sa Amerika, makauuwi na. Walang kulong.
+    Macario: At ikaw?
+    Isko: ...
+    Isko: May anak na po ako, Pangulo. Dalawang taon na. Hindi pa niya ako nakikilala.
+    Macario: ...
+    Macario: Umuwi ka.
+    Isko: Sumama na po kayo. Tapos na.
+    Macario: Tapos na para kay Aguinaldo. Hindi ako sa kanya nanumpa.
+    Macario: Ilang beses na tayong pinangakuan ng kapayapaan. Ilang beses na tayong ipinagbili.
+    Isko: Hahanapin ko pa rin po si Nanay ninyo. Pangako.
+    Macario: Huwag kang mangako, Isko. Mabigat dalhin.
 
     (Isko walks to the officer's table.)
 
-  + Opisyal: Name?
-  + Isko: Francisco... Francisco Reyes.
-  + Opisyal: Raise your right hand.
-  + Macario (sa isip): Itaas daw ang kanang kamay.
-  + Macario (sa isip): Ang kamay na itinaas niya sa Katipunan.
+    Opisyal: Name?
+    Isko: Francisco... Francisco Reyes.
+    Opisyal: Raise your right hand.
+    Macario (sa isip): Itaas daw ang kanang kamay.
+    Macario (sa isip): Ang kamay na itinaas niya sa Katipunan.
 
-  + [BLACK] Libu-libo ang sumuko at nanumpa ng katapatan sa Amerika.
-  + [BLACK] Tumanggi si Macario.
-  + [BLACK] Agosto 1901
-  + [BLACK] Calle Gunao, Quiapo
+    [BLACK] Libu-libo ang sumuko at nanumpa ng katapatan sa Amerika.
+    [BLACK] Tumanggi si Macario.
+    [BLACK] Agosto 1901
+    [BLACK] Calle Gunao, Quiapo
 
 Completes: Basahin ang proklama. Macario's own promise to Nanay ("Babalik
 po ako. Pangako.", Act II) is the one he could not keep, which is why he
 will not take Isko's. Read again:
 
-  + Macario (sa isip): Nabasa ko na. Ayoko nang basahin ulit.
+    Macario (sa isip): Nabasa ko na. Ayoko nang basahin ulit.
 
 ### 9. Calle Gunao: the founding
 
@@ -2098,51 +2099,51 @@ by legal means and petitions the American authorities. [INSERT] The
 meeting is in a house on the street (the sources give only the street);
 the words and the three who sign are ours. calle-gunao, plays by itself.
 
-  + Álvarez: Sakay. Ang sabi nila, ikaw ang huling Katipunerong ayaw bumaba ng bundok.
-  + Macario: At kayo, Heneral Álvarez? Bumaba na kayo?
-  + Álvarez: Sa ibang daan na kami lalaban.
-  + Poblete: Isang partido, nang hayagan. Hihingin natin sa mga Amerikano ang kalayaan, ayon sa sarili nilang batas.
-  + Macario: Papel laban sa riple.
-  + Álvarez: Papel din ang Kalayaan, 'di ba? Ilang libo ang sumapi dahil doon.
-  + Poblete: Partido Nacionalista. At kailangan namin ng Kalihim-Heneral na kilala ng taga-Tondo.
-  + Álvarez: Ikaw, Sakay.
-  + Macario: ...
-  + Macario (sa isip): Kung may daang walang mamamatay... susubukan ko.
-  + Macario: Tinatanggap ko.
-  + Poblete: Kung gayon, Kalihim-Heneral, kailangan ng petisyon ang mga pirma.
+    Álvarez: Sakay. Ang sabi nila, ikaw ang huling Katipunerong ayaw bumaba ng bundok.
+    Macario: At kayo, Heneral Álvarez? Bumaba na kayo?
+    Álvarez: Sa ibang daan na kami lalaban.
+    Poblete: Isang partido, nang hayagan. Hihingin natin sa mga Amerikano ang kalayaan, ayon sa sarili nilang batas.
+    Macario: Papel laban sa riple.
+    Álvarez: Papel din ang Kalayaan, 'di ba? Ilang libo ang sumapi dahil doon.
+    Poblete: Partido Nacionalista. At kailangan namin ng Kalihim-Heneral na kilala ng taga-Tondo.
+    Álvarez: Ikaw, Sakay.
+    Macario: ...
+    Macario (sa isip): Kung may daang walang mamamatay... susubukan ko.
+    Macario: Tinatanggap ko.
+    Poblete: Kung gayon, Kalihim-Heneral, kailangan ng petisyon ang mga pirma.
 
 Two to sign, each a button, "Papirmahin" ("Pumirma (n/2)"); the third,
 the Guro, means to and is overtaken by the law (Block 120):
 
 The Manlilimbag, from Act II's press:
 
-  + Manlilimbag: Pangulo? ...Buhay pa pala tayong dalawa.
-  + Manlilimbag: Nakalabas ako noong gabi ng paghuli. Hindi lahat.
-  + Macario: Pipirma ka?
-  + Manlilimbag: Ako pa ang maglilimbag ng petisyon, kung papayagan nila.
+    Manlilimbag: Pangulo? ...Buhay pa pala tayong dalawa.
+    Manlilimbag: Nakalabas ako noong gabi ng paghuli. Hindi lahat.
+    Macario: Pipirma ka?
+    Manlilimbag: Ako pa ang maglilimbag ng petisyon, kung papayagan nila.
 
 The direktor, his theatre shut:
 
-  + Direktor: Isinara nila ang entablado ko. Bawal daw ang dulang may watawat.
-  + Direktor: Pipirma ako. Matanda na ako para matakot.
-  + Macario: Salamat po, Direktor.
-  + Direktor: "Walang bayang mananatiling alipin." Sa entablado ko mo 'yan unang sinabi.
+    Direktor: Isinara nila ang entablado ko. Bawal daw ang dulang may watawat.
+    Direktor: Pipirma ako. Matanda na ako para matakot.
+    Macario: Salamat po, Direktor.
+    Direktor: "Walang bayang mananatiling alipin." Sa entablado ko mo 'yan unang sinabi.
 
 A teacher (the Thomasites, American teachers, arrived on the transport
 Thomas in August 1901), talked to before the law; he will sign
 tomorrow:
 
-  + Guro: Ingles na raw ang ituturo sa mga bata. May mga gurong Amerikanong dumating sa barkong Thomas.
-  + Guro: Sa sariling bayan, dayuhan na ang wika natin.
-  + Guro: Pipirma ako. Bukas, pagkatapos ng klase.
+    Guro: Ingles na raw ang ituturo sa mga bata. May mga gurong Amerikanong dumating sa barkong Thomas.
+    Guro: Sa sariling bayan, dayuhan na ang wika natin.
+    Guro: Pipirma ako. Bukas, pagkatapos ng klase.
 
 Talked to, before and after:
 
-  + Álvarez: Kailangan natin ng mga pirma, Kalihim-Heneral.
-  + Álvarez: Kahit ang paghingi, Sakay. Kahit ang paghingi.
-  + Manlilimbag: Ako na ang maglilimbag nito, Pangulo, kung papayagan nila.
-  + Direktor: Matanda na ako para matakot, iho.
-  + Guro: Patawad, Kalihim-Heneral.
+    Álvarez: Kailangan natin ng mga pirma, Kalihim-Heneral.
+    Álvarez: Kahit ang paghingi, Sakay. Kahit ang paghingi.
+    Manlilimbag: Ako na ang maglilimbag nito, Pangulo, kung papayagan nila.
+    Direktor: Matanda na ako para matakot, iho.
+    Guro: Patawad, Kalihim-Heneral.
 
 Completes, with the second name: Papirmahin ang petisyon (2/2), and
 the law arrives at once.
@@ -2156,38 +2157,38 @@ when it is passed; it reaches him as a printed notice Poblete brings
 [INSERT], since Block 120 in the middle of the petition, two names in.
 calle-gunao, by itself.
 
-  + [BLACK] Nobyembre 1901
+    [BLACK] Nobyembre 1901
 
     (Poblete comes in with a printed notice.)
 
-  + Poblete: Sakay. Heneral. Basahin ninyo ito. Nakapaskil na sa buong Maynila.
-  + Macario (sa isip): "Act Number 292. November 4, 1901."
-  + Macario (sa isip): "Any person who advocates independence, by word or in writing, even by peaceful means, shall be punished."
-  + Macario (sa isip): Ang sinumang magsulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, ay paparusahan.
-  + Macario (sa isip): At krimen na rin ang pagsapi sa lihim na samahan.
-  + Álvarez: Kahit ang paghingi.
-  + Poblete: Ang petisyon natin... krimen na.
-  + Macario (sa isip): Noon, sedula ang pinunit namin.
-  + Macario (sa isip): Ngayon, krimen na ang bawat papel namin.
-  + Poblete: May isa pang pirmang kulang, Kalihim-Heneral. Ang guro.
+    Poblete: Sakay. Heneral. Basahin ninyo ito. Nakapaskil na sa buong Maynila.
+    Macario (sa isip): "Act Number 292. November 4, 1901."
+    Macario (sa isip): "Any person who advocates independence, by word or in writing, even by peaceful means, shall be punished."
+    Macario (sa isip): Ang sinumang magsulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, ay paparusahan.
+    Macario (sa isip): At krimen na rin ang pagsapi sa lihim na samahan.
+    Álvarez: Kahit ang paghingi.
+    Poblete: Ang petisyon natin... krimen na.
+    Macario (sa isip): Noon, sedula ang pinunit namin.
+    Macario (sa isip): Ngayon, krimen na ang bawat papel namin.
+    Poblete: May isa pang pirmang kulang, Kalihim-Heneral. Ang guro.
 
 The notice's English is the law's sense in our words, then the Tagalog;
 Macario reads it himself. The task: Kunin ang huling pirma. The Guro,
 "Papirmahin" [INSERT]:
 
-  + Guro: Nabasa ko ang nakapaskil, Kalihim-Heneral.
-  + Guro: Krimen na raw ang pumirma. May tatlo akong anak.
-  + Macario: Hindi kita pipilitin.
-  + Guro: ...Patawad.
+    Guro: Nabasa ko ang nakapaskil, Kalihim-Heneral.
+    Guro: Krimen na raw ang pumirma. May tatlo akong anak.
+    Macario: Hindi kita pipilitin.
+    Guro: ...Patawad.
 
 Then, by itself:
 
-  + Macario (sa isip): Dalawang pirma. Isang batas lang ang kinailangan nila.
-  + Álvarez: Ano ngayon, Kalihim-Heneral?
-  + Macario: Wala nang ibang daan, Heneral.
+    Macario (sa isip): Dalawang pirma. Isang batas lang ang kinailangan nila.
+    Álvarez: Ano ngayon, Kalihim-Heneral?
+    Macario: Wala nang ibang daan, Heneral.
 
-  + [BLACK] Enero 1902
-  + [BLACK] Tondo
+    [BLACK] Enero 1902
+    [BLACK] Tondo
 
 Completes: Kunin ang huling pirma, a step that ends with the name
 refused (Block 120: each step of the act's middle ends worse, not done).
@@ -2199,8 +2200,8 @@ doors, the patrols, the stranger asking.
 
 tondo, at night, from the east end (x 12600). On arrival:
 
-  + Macario (sa isip): Tatlong bahay. Tatlong pamilyang naghihintay ng balita.
-  + Macario (sa isip): Bawal na ang humingi. Bawal na ang magtipon. Kaya sa gabi kami magtitipon.
+    Macario (sa isip): Tatlong bahay. Tatlong pamilyang naghihintay ng balita.
+    Macario (sa isip): Bawal na ang humingi. Bawal na ang magtipon. Kaya sa gabi kami magtitipon.
 
 Four American patrols walk where the sentries stood, each with cover;
 they catch, not shoot. Three doors (x 10900, 8300, 6700), "Kumatok"
@@ -2208,26 +2209,26 @@ they catch, not shoot. Three doors (x 10900, 8300, 6700), "Kumatok"
 the second does not answer: someone got there first, and who, and what
 became of the family, is not said.
 
-  + Macario (pabulong): Anak ng Bayan.
-  + Tinig sa Loob: ...Pasok ang hudyat.
-  + Macario (pabulong): Bukas ng gabi, sa barberya. Tatlo kayo.
-  + Tinig sa Loob: Darating kami.
+    Macario (pabulong): Anak ng Bayan.
+    Tinig sa Loob: ...Pasok ang hudyat.
+    Macario (pabulong): Bukas ng gabi, sa barberya. Tatlo kayo.
+    Tinig sa Loob: Darating kami.
 
-  + Macario (pabulong): Anak ng Bayan.
-  + Macario (sa isip): ...
-  + Macario (sa isip): Walang sumasagot. Bukas ang bintana.
-  + Macario (sa isip): Nauna na sila rito.
+    Macario (pabulong): Anak ng Bayan.
+    Macario (sa isip): ...
+    Macario (sa isip): Walang sumasagot. Bukas ang bintana.
+    Macario (sa isip): Nauna na sila rito.
 
-  + Tinig sa Loob: Akala ko, hindi ka na darating.
-  + Macario (pabulong): Bukas ng gabi. Sa barberya.
-  + Tinig sa Loob: May nagtanong tungkol sa'yo kanina. Isang lalaking hindi taga-rito.
+    Tinig sa Loob: Akala ko, hindi ka na darating.
+    Macario (pabulong): Bukas ng gabi. Sa barberya.
+    Tinig sa Loob: May nagtanong tungkol sa'yo kanina. Isang lalaking hindi taga-rito.
 
 A door knocked on again (the empty one, the second):
 
-  + Macario (sa isip): Naipaalam ko na rito. Sa susunod na bahay.
-  + Macario (sa isip): Wala nang tao rito.
+    Macario (sa isip): Naipaalam ko na rito. Sa susunod na bahay.
+    Macario (sa isip): Wala nang tao rito.
 
-  + (a notice) Pumunta sa barberya.
+    (a notice) Pumunta sa barberya.
 
 Completes: Kumatok sa tatlong bahay (3/3).
 
@@ -2240,44 +2241,44 @@ in the cell (Block 120).
 
 barberya, at night. On arrival:
 
-  + Barbero: Nandito na sila. Tatlo, may piring na.
-  + Barbero: Ikinandado ko ang pinto. Bilisan mo.
+    Barbero: Nandito na sila. Tatlo, may piring na.
+    Barbero: Ikinandado ko ang pinto. Bilisan mo.
 
 Three new members, blindfolded, talked to:
 
-  + Bagong Kasapi: Handa na po kami.
+    Bagong Kasapi: Handa na po kami.
 
 The table (x 620), "Simulan ang panunumpa". At the oath's height, as the
 knock broke in on his promise to Nanay in Act II (the proponent's word:
 the blow lands at the peak):
 
-  + Macario: Alisin ang piring.
-  + Macario: Sa labas ng pintong ito, krimen na ang pumasok dito.
-  + Macario: Kapag nahuli kayo, kulong. O higit pa.
-  + Macario: May aatras ba?
-  + Mga Bagong Kasapi: ...
-  + Macario: Itaas ang inyong kanang kamay.
-  + Macario: Isinusumpa ba ninyong—
+    Macario: Alisin ang piring.
+    Macario: Sa labas ng pintong ito, krimen na ang pumasok dito.
+    Macario: Kapag nahuli kayo, kulong. O higit pa.
+    Macario: May aatras ba?
+    Mga Bagong Kasapi: ...
+    Macario: Itaas ang inyong kanang kamay.
+    Macario: Isinusumpa ba ninyong—
 
     (The door, hammered, three times.)
 
-  + Sundalong Amerikano: Open up! U.S. Army!
-  + Konstable: Buksan n'yo! Konstabularya!
-  + Barbero: Sa likod, Macario! Tumakbo ka!
+    Sundalong Amerikano: Open up! U.S. Army!
+    Konstable: Buksan n'yo! Konstabularya!
+    Barbero: Sa likod, Macario! Tumakbo ka!
 
     (A soldier at the back door, too.)
 
-  + Sundalong Amerikano: Hands up! Don't move!
-  + Macario (sa isip): Itaas daw ang kamay. Huwag gagalaw.
-  + Macario (sa isip): Pati ang likod.
-  + Macario (sa isip): May nagturo.
-  + Barbero: Walang kinalaman dito ang mga batang 'yan!
-  + Konstable: Tumahimik ka, matanda.
-  + Macario: ...
+    Sundalong Amerikano: Hands up! Don't move!
+    Macario (sa isip): Itaas daw ang kamay. Huwag gagalaw.
+    Macario (sa isip): Pati ang likod.
+    Macario (sa isip): May nagturo.
+    Barbero: Walang kinalaman dito ang mga batang 'yan!
+    Konstable: Tumahimik ka, matanda.
+    Macario: ...
 
-  + [BLACK] Enero 1902. Nahuli si Macario Sakay habang nagtatatag ng mga balangay ng Katipunan.
-  + [BLACK] Ikinulong siya sa Bilibid.
-  + [BLACK] Hulyo 4, 1902
+    [BLACK] Enero 1902. Nahuli si Macario Sakay habang nagtatatag ng mga balangay ng Katipunan.
+    [BLACK] Ikinulong siya sa Bilibid.
+    [BLACK] Hulyo 4, 1902
 
 Completes: Panumpain ang mga bagong kasapi. Who informed is not said:
 the record does not say how he was found, and neither does the game.
@@ -2291,23 +2292,23 @@ political prisoners: they reach him from a guard at the bars [INSERT],
 not on cards. selda, Act IV's cell (the room he comes back to in 1906,
 "Bilibid. Muli."), plays by itself.
 
-  + Macario (sa isip): Anim na buwan na sa Bilibid.
+    Macario (sa isip): Anim na buwan na sa Bilibid.
 
     (A guard comes to the bars.)
 
-  + Bantay: Sakay. May balita mula sa Maynila.
-  + Bantay: Idineklara raw ng mga Amerikano na tapos na ang digmaan.
-  + Bantay: Amnestiya sa mga bilanggong pulitikal. Kasama ka sa listahan.
-  + Macario: Tapos na raw ang digmaan.
-  + Bantay: Lumabas ka na, bago pa magbago ang isip nila.
-  + Macario (sa isip): Malaya raw ako. Pero ang bayan?
+    Bantay: Sakay. May balita mula sa Maynila.
+    Bantay: Idineklara raw ng mga Amerikano na tapos na ang digmaan.
+    Bantay: Amnestiya sa mga bilanggong pulitikal. Kasama ka sa listahan.
+    Macario: Tapos na raw ang digmaan.
+    Bantay: Lumabas ka na, bago pa magbago ang isip nila.
+    Macario (sa isip): Malaya raw ako. Pero ang bayan?
 
     (The guard goes. The way out at the top of the log, "Lumabas sa
     Bilibid: pumunta sa kanan"; the gate at the right edge,
     "Lumabas".)
 
-  + [BLACK] Lumabas si Macario sa bilangguan,
-  + [BLACK] at tumuloy sa kabundukan ng Morong.
+    [BLACK] Lumabas si Macario sa bilangguan,
+    [BLACK] at tumuloy sa kabundukan ng Morong.
 
 Completes: Lumabas sa Bilibid. "Pero ang bayan?" is what the vow at
 Morong answers.
@@ -2322,55 +2323,55 @@ has its own flag. [MACARIO, reported] He and his men vow not to cut
 their hair until the country is free. [INSERT] The words, and the young
 fighter who offers to cut it. morong, plays by itself.
 
-  + Montalan: Sakay! Akala namin, nasa Bilibid ka pa.
-  + Macario: Pinalaya nila ako. Tapos na raw ang digmaan.
-  + Carreón: Tapos na raw. Pero nasa lupa pa rin natin sila.
-  + Montalan: May mga tauhan kami rito sa Morong. Kulang lang kami ng pinuno.
-  + Macario (sa isip): Isang Katipunang walang Supremo. Isang republikang walang pangalan.
+    Montalan: Sakay! Akala namin, nasa Bilibid ka pa.
+    Macario: Pinalaya nila ako. Tapos na raw ang digmaan.
+    Carreón: Tapos na raw. Pero nasa lupa pa rin natin sila.
+    Montalan: May mga tauhan kami rito sa Morong. Kulang lang kami ng pinuno.
+    Macario (sa isip): Isang Katipunang walang Supremo. Isang republikang walang pangalan.
 
 Carreón, talked to:
 
-  + Carreón: Kung magtatayo tayo ng pamahalaan, kailangan natin ng saligang batas.
-  + Macario: Mayroon na tayo. Ang mga aral ng Supremo.
-  + Carreón: At ng pangalan.
-  + Macario: Republika ng Katagalugan.
-  + Macario: Hindi ng Amerika. Hindi ng Cavite. Atin.
-  + Carreón: Kung gayon, ikaw ang Pangulo at Heneralisimo. Ako ang Ikalawang Pangulo.
-  + Montalan: At ako ang hahawak sa hukbo.
-  + Carreón: May sarili na rin tayong watawat. Itaas mo, Pangulo.
+    Carreón: Kung magtatayo tayo ng pamahalaan, kailangan natin ng saligang batas.
+    Macario: Mayroon na tayo. Ang mga aral ng Supremo.
+    Carreón: At ng pangalan.
+    Macario: Republika ng Katagalugan.
+    Macario: Hindi ng Amerika. Hindi ng Cavite. Atin.
+    Carreón: Kung gayon, ikaw ang Pangulo at Heneralisimo. Ako ang Ikalawang Pangulo.
+    Montalan: At ako ang hahawak sa hukbo.
+    Carreón: May sarili na rin tayong watawat. Itaas mo, Pangulo.
 
-  + (a notice) Itaas ang watawat ng Republika.
+    (a notice) Itaas ang watawat ng Republika.
 
 The flag (x 1500), "Itaas ang watawat", the Republic's soldiers beside
 it (three, owed, seen since Block 120; "Mga Kawal" speak from them):
 
-  + Macario (sa isip): Hindi watawat ng Kastila. Hindi ng Amerika.
-  + Mga Kawal: Mabuhay ang Republika ng Katagalugan!
+    Macario (sa isip): Hindi watawat ng Kastila. Hindi ng Amerika.
+    Mga Kawal: Mabuhay ang Republika ng Katagalugan!
 
 Before the Republic is named, and after the flag is up:
 
-  + Macario (sa isip): Wala pang republikang magtataas nito.
-  + Macario (sa isip): Nakataas na. Sa amin.
+    Macario (sa isip): Wala pang republikang magtataas nito.
+    Macario (sa isip): Nakataas na. Sa amin.
 
 Then, by itself: a young fighter comes up to him.
 
-  + Batang Kawal: Pangulo, ang haba na ng buhok n'yo. Gugupitan ko po kayo?
-  + Macario: Barbero ako dati, iho.
-  + Macario: Pero ito, hindi ko na gugupitin.
-  + Batang Kawal: Po?
-  + Macario: Hindi tayo magpapagupit hangga't hindi malaya ang bayan.
-  + Montalan: Hanggang sa paglaya!
-  + Mga Kawal: Hanggang sa paglaya!
-  + Macario (sa isip): Tatlong taon akong nagtago sa balatkayo.
-  + Macario (sa isip): Ngayon, makikilala nila ako kahit sa malayo.
+    Batang Kawal: Pangulo, ang haba na ng buhok n'yo. Gugupitan ko po kayo?
+    Macario: Barbero ako dati, iho.
+    Macario: Pero ito, hindi ko na gugupitin.
+    Batang Kawal: Po?
+    Macario: Hindi tayo magpapagupit hangga't hindi malaya ang bayan.
+    Montalan: Hanggang sa paglaya!
+    Mga Kawal: Hanggang sa paglaya!
+    Macario (sa isip): Tatlong taon akong nagtago sa balatkayo.
+    Macario (sa isip): Ngayon, makikilala nila ako kahit sa malayo.
 
 He takes off the disguise and wears his own clothes again. Completes:
 Itatag ang Republika. Talked to:
 
-  + Montalan: Kausapin mo si Carreón. Siya ang marunong sa mga papel.
+    Montalan: Kausapin mo si Carreón. Siya ang marunong sa mga papel.
     (before)
-  + Montalan: Hanggang sa paglaya, Pangulo.
-  + Carreón: Republika ng Katagalugan. Maganda pakinggan, Pangulo.
+    Montalan: Hanggang sa paglaya, Pangulo.
+    Carreón: Republika ng Katagalugan. Maganda pakinggan, Pangulo.
 
 ### 15. The bandits, and the end of Act III
 
@@ -2379,18 +2380,18 @@ banditry, punishable by death; Macario is not there when it is passed,
 and it is the law he will be tried under in 1906. On black.
 [INSERT] The Constabulary's attack on the camp. morong, by itself.
 
-  + [BLACK] Nobyembre 12, 1902
-  + [BLACK] Ipinasa ng mga Amerikano ang Batas sa Bandolerismo.
-  + [BLACK] Ang sinumang patuloy na lumalaban ay hindi na sundalo.
-  + [BLACK] Isa na siyang bandido, at kamatayan ang parusa.
+    [BLACK] Nobyembre 12, 1902
+    [BLACK] Ipinasa ng mga Amerikano ang Batas sa Bandolerismo.
+    [BLACK] Ang sinumang patuloy na lumalaban ay hindi na sundalo.
+    [BLACK] Isa na siyang bandido, at kamatayan ang parusa.
 
-  + Konstable: Mga bandido! Sumuko kayo!
-  + Montalan: Konstabularya. Mga Pilipino rin sila, Pangulo.
-  + Macario: Pilipinong naka-uniporme ng Amerikano.
-  + Macario: Ipagtanggol ang kampo!
-  + Montalan: Ang watawat, Pangulo! Doon sila papunta!
+    Konstable: Mga bandido! Sumuko kayo!
+    Montalan: Konstabularya. Mga Pilipino rin sila, Pangulo.
+    Macario: Pilipinong naka-uniporme ng Amerikano.
+    Macario: Ipagtanggol ang kampo!
+    Montalan: Ang watawat, Pangulo! Doon sila papunta!
 
-  + (a notice) Ipagtanggol ang watawat!
+    (a notice) Ipagtanggol ang watawat!
 
 The second big fight: fifteen of the Philippine Constabulary in four
 waves (konstable, hand to hand; a sentinela, a rifle, in three of
@@ -2399,21 +2400,21 @@ stands by it when the card lifts, a Constable nearer the flag than him
 goes for it, and if it takes eight blows and falls ("Bumagsak ang
 watawat! Ulitin natin.") the wave starts again. Between waves:
 
-  + Carreón: Marami pa sa ibaba!
-  + Macario (sa isip): Kapwa Pilipino ang sinusuntok ko...
-  + Montalan: Huwag kayong aatras!
+    Carreón: Marami pa sa ibaba!
+    Macario (sa isip): Kapwa Pilipino ang sinusuntok ko...
+    Montalan: Huwag kayong aatras!
 
 Then:
 
-  + Montalan: Umatras sila!
-  + Carreón: Babalik sila. Sa susunod, mas marami.
-  + Macario: Hayaan mo silang bumalik.
-  + Macario (sa isip): Noon, tinawag kaming insurekto.
-  + Macario (sa isip): Ngayon, bandido.
-  + Macario (sa isip): Pero kami ang nagbigay ng pangalan sa republikang ito. Hindi nila 'yon mababago.
-  + Macario (sa isip): 'Nay... humahaba na ang buhok ko. Kung makita mo ako, makikilala mo pa kaya ako?
+    Montalan: Umatras sila!
+    Carreón: Babalik sila. Sa susunod, mas marami.
+    Macario: Hayaan mo silang bumalik.
+    Macario (sa isip): Noon, tinawag kaming insurekto.
+    Macario (sa isip): Ngayon, bandido.
+    Macario (sa isip): Pero kami ang nagbigay ng pangalan sa republikang ito. Hindi nila 'yon mababago.
+    Macario (sa isip): 'Nay... humahaba na ang buhok ko. Kung makita mo ako, makikilala mo pa kaya ako?
 
-  + [BLACK] Wakas ng Ikatlong Yugto
+    [BLACK] Wakas ng Ikatlong Yugto
 
 Completes: Ipagtanggol ang kampo, the last task. Act III is finished,
 and the post-test runs.
@@ -2424,9 +2425,9 @@ Three papers of facts of the game's own, on the street by day in 1899
 (fixed: x 11200 on the road; x 9100 and x 7700 at jump height); a
 teacher's paper replaces its own slot.
 
-  + [HINT] Ang Santa Mesa: Noong gabi ng Pebrero 4, 1899, pinaputukan ng isang bantay na Amerikano ang mga sundalong Pilipino sa Santa Mesa, Maynila. Kinabukasan, nagsimula ang Digmaang Pilipino-Amerikano. Napasailalim ang Maynila sa mga Amerikano.
-  + [HINT] Ang Batas sa Sedisyon: Noong Nobyembre 4, 1901, ipinasa ng Komisyon ng Pilipinas ang Batas Bilang 292. Ginawa nitong krimen ang pagsusulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, at ang pagsapi sa mga lihim na samahan.
-  + [HINT] Ang Republika ng Katagalugan: Noong 1902, itinatag ni Macario Sakay ang Republika ng Katagalugan sa kabundukan ng Morong, at ginawang saligang batas ang mga aral ni Andres Bonifacio. Noong Nobyembre 12, 1902, ipinasa ng mga Amerikano ang Batas sa Bandolerismo: tinawag nilang bandido ang sinumang patuloy na lumalaban.
+    [HINT] Ang Santa Mesa: Noong gabi ng Pebrero 4, 1899, pinaputukan ng isang bantay na Amerikano ang mga sundalong Pilipino sa Santa Mesa, Maynila. Kinabukasan, nagsimula ang Digmaang Pilipino-Amerikano. Napasailalim ang Maynila sa mga Amerikano.
+    [HINT] Ang Batas sa Sedisyon: Noong Nobyembre 4, 1901, ipinasa ng Komisyon ng Pilipinas ang Batas Bilang 292. Ginawa nitong krimen ang pagsusulong ng kalayaan, sa salita man o sa sulat, kahit sa mapayapang paraan, at ang pagsapi sa mga lihim na samahan.
+    [HINT] Ang Republika ng Katagalugan: Noong 1902, itinatag ni Macario Sakay ang Republika ng Katagalugan sa kabundukan ng Morong, at ginawang saligang batas ang mga aral ni Andres Bonifacio. Noong Nobyembre 12, 1902, ipinasa ng mga Amerikano ang Batas sa Bandolerismo: tinawag nilang bandido ang sinumang patuloy na lumalaban.
 
 ## Act IV, beat by beat
 
@@ -2435,8 +2436,8 @@ are the source of truth. Each beat is tagged as Act III's are: [CONTEXT]
 happened in the world without Macario, who only hears of it secondhand
 (news, a guard, a black card); [MACARIO] is his, from the sources
 (reported where the sources only report it); [INSERT] is invented for the
-story. Every line is ours, marked + here and PLACEHOLDER in
-content/act4.js, until the proponents accept or replace it. Every flag
+story. Every line is ours, accepted by the
+proponents on 9 Oct 2026. Every flag
 starts with a4_. The Americans speak English, each line given in Tagalog
 after it, as in Act III.
 
@@ -2486,37 +2487,37 @@ pictures owed.
 Circular No. 1; his army organized. [INSERT] The words. morong, plays by
 itself the first time a student enters Act IV.
 
-  + [BLACK] Marso 18, 1903
-  + [BLACK] Kabundukan ng Morong
+    [BLACK] Marso 18, 1903
+    [BLACK] Kabundukan ng Morong
 
-  + Carreón: Pangulo, handa na ang unang kautusan. Lagda n'yo na lang ang kulang.
-  + Macario (sa isip): "Kautusan ng Pangulo, Bilang 1."
-  + Macario (sa isip): Noon, ako ang tumatanggap ng utos. Ngayon, pangalan ko na ang nasa ibaba.
+    Carreón: Pangulo, handa na ang unang kautusan. Lagda n'yo na lang ang kulang.
+    Macario (sa isip): "Kautusan ng Pangulo, Bilang 1."
+    Macario (sa isip): Noon, ako ang tumatanggap ng utos. Ngayon, pangalan ko na ang nasa ibaba.
 
 The table (x 640), "Lagdaan":
 
-  + Macario (sa isip): Macario Sakay, Pangulo ng Republika ng Katagalugan.
+    Macario (sa isip): Macario Sakay, Pangulo ng Republika ng Katagalugan.
 
 Completes: Lagdaan ang unang kautusan. Then, by itself:
 
-  + Montalan: Kalahati ng mga tauhan, walang baril, Pangulo.
-  + Macario: Kung gayon, kukuha tayo.
-  + Montalan: May himpilan ng Konstabularya sa bayan sa ibaba. Puno ng riple, at ng uniporme.
-  + Macario: Uniporme?
-  + Montalan: Para saan ang uniporme, Pangulo?
-  + Macario: Makikita mo rin.
+    Montalan: Kalahati ng mga tauhan, walang baril, Pangulo.
+    Macario: Kung gayon, kukuha tayo.
+    Montalan: May himpilan ng Konstabularya sa bayan sa ibaba. Puno ng riple, at ng uniporme.
+    Macario: Uniporme?
+    Montalan: Para saan ang uniporme, Pangulo?
+    Macario: Makikita mo rin.
 
-  + [BLACK] Mayo 5, 1903. Inilabas ni Sakay ang Sirkular Militar Bilang 1.
-  + [BLACK] Inayos niya ang kanyang hukbo.
-  + [BLACK] Isang himpilan ng Konstabularya, sa gabi.
+    [BLACK] Mayo 5, 1903. Inilabas ni Sakay ang Sirkular Militar Bilang 1.
+    [BLACK] Inayos niya ang kanyang hukbo.
+    [BLACK] Isang himpilan ng Konstabularya, sa gabi.
 
 "Makikita mo rin" is paid at Tanay. Talked to, before and after:
 
-  + Carreón: Ang lagda n'yo, Pangulo. Nasa mesa.
-  + Carreón: Isang republika, may sarili nang kautusan.
-  + Carreón: Papel laban sa batas nila. Gusto ko 'yan, Pangulo.
-  + Montalan: Kulang tayo sa baril, Pangulo.
-  + Montalan: May riple na tayo. At uniporme. Para saan pa rin, hindi ko alam.
+    Carreón: Ang lagda n'yo, Pangulo. Nasa mesa.
+    Carreón: Isang republika, may sarili nang kautusan.
+    Carreón: Papel laban sa batas nila. Gusto ko 'yan, Pangulo.
+    Montalan: Kulang tayo sa baril, Pangulo.
+    Montalan: May riple na tayo. At uniporme. Para saan pa rin, hindi ko alam.
 
 ### 2. The post
 
@@ -2524,21 +2525,21 @@ Completes: Lagdaan ang unang kautusan. Then, by itself:
 [INSERT] The post, the run and the fight. himpilan, at night, in from the
 right. On arrival:
 
-  + Macario (sa isip): Tatlong bantay sa bakuran.
-  + Macario (sa isip): Nasa dulo ang bodega. Huwag akong makita.
+    Macario (sa isip): Tatlong bantay sa bakuran.
+    Macario (sa isip): Nasa dulo ang bodega. Huwag akong makita.
 
 Three of the Constabulary on watch, each with a crate in his beat; they
 catch, not shoot, and a catch puts him back at the last point he passed.
 The storeroom (x 150), "Kunin":
 
-  + Macario (sa isip): Mga riple. At mga uniporme ng Konstabularya.
-  + Macario (sa isip): Isang kasuotan pa para sa baul.
+    Macario (sa isip): Mga riple. At mga uniporme ng Konstabularya.
+    Macario (sa isip): Isang kasuotan pa para sa baul.
 
     (Block 120: the bell is heard, not put on a card. It rings; Montalan
     comes out of the storeroom behind him.)
 
-  + Montalan: Pangulo! Gising na ang buong himpilan!
-  + Macario: Dalhin ang mga riple. Lalaban tayo palabas!
+    Montalan: Pangulo! Gising na ang buong himpilan!
+    Macario: Dalhin ang mga riple. Lalaban tayo palabas!
 
     (The bell again. The three on watch turn on him where they stand.)
 
@@ -2551,17 +2552,17 @@ Konstable hand to hand, a bantay-konstable with a rifle in each of the
 last three waves, three hearts on the field; a lost wave starts again
 at the last stretch reached. Between waves:
 
-  + Montalan: Marami pa sa loob!
-  + Macario (sa isip): Kapwa Pilipino na naman ang kaharap ko.
-  + Montalan: Malapit na ang bakod!
+    Montalan: Marami pa sa loob!
+    Macario (sa isip): Kapwa Pilipino na naman ang kaharap ko.
+    Montalan: Malapit na ang bakod!
 
 Then:
 
-  + Montalan: Nakalabas tayo! Dala ang lahat!
-  + Macario: Bukas, babasahin ng Maynila na ninakawan sila ng mga bandido.
+    Montalan: Nakalabas tayo! Dala ang lahat!
+    Macario: Bukas, babasahin ng Maynila na ninakawan sila ng mga bandido.
 
-  + [BLACK] Abril 5, 1904
-  + [BLACK] Kabundukan ng Morong
+    [BLACK] Abril 5, 1904
+    [BLACK] Kabundukan ng Morong
 
 Completes: Kunin ang mga baril at uniporme.
 
@@ -2571,24 +2572,24 @@ Completes: Kunin ang mga baril at uniporme.
 right to fight for their independence. [INSERT] The Manlilimbag, from
 Acts II and III, and the half a press he saved. morong, by itself.
 
-  + Manlilimbag: Pangulo! Dinala ko ang lumang palimbagan. Kalahati lang ang naisalba ko.
-  + Macario: Sapat na ang kalahati.
-  + Carreón: Ano ang ilalagay natin, Pangulo?
-  + Macario: Na may buong karapatan ang bawat Pilipino na ipaglaban ang kanyang kalayaan.
-  + Macario: Tinawag nila kaming bandido sa batas nila. Sasagutin namin sa papel namin.
+    Manlilimbag: Pangulo! Dinala ko ang lumang palimbagan. Kalahati lang ang naisalba ko.
+    Macario: Sapat na ang kalahati.
+    Carreón: Ano ang ilalagay natin, Pangulo?
+    Macario: Na may buong karapatan ang bawat Pilipino na ipaglaban ang kanyang kalayaan.
+    Macario: Tinawag nila kaming bandido sa batas nila. Sasagutin namin sa papel namin.
 
 The press (x 1500), "Ilimbag": the work game, once, as at Act II's press
 (Palimbagan). Afterwards:
 
-  + Macario (sa isip): "...may buong karapatan ang mga Pilipino na ipaglaban ang kanilang kalayaan."
-  + Manlilimbag: Gaya ng Kalayaan noon, Pangulo. Sa sariling papel.
+    Macario (sa isip): "...may buong karapatan ang mga Pilipino na ipaglaban ang kanilang kalayaan."
+    Manlilimbag: Gaya ng Kalayaan noon, Pangulo. Sa sariling papel.
 
-  + [BLACK] Agosto 1904. Inilipat ni Sakay ang kanyang himpilan sa kabundukan ng Di-Masalang.
+    [BLACK] Agosto 1904. Inilipat ni Sakay ang kanyang himpilan sa kabundukan ng Di-Masalang.
 
 Completes: Ilimbag ang manipesto. Talked to, and the press again:
 
-  + Manlilimbag: Kalahating palimbagan, Pangulo. Pero buong salita.
-  + Macario (sa isip): Nailimbag na. Nasa mga bayan na ito.
+    Manlilimbag: Kalahating palimbagan, Pangulo. Pero buong salita.
+    Macario (sa isip): Nailimbag na. Nasa mga bayan na ito.
 
 ### 4. The last performance
 
@@ -2597,66 +2598,66 @@ disguised in stolen Constabulary uniforms; the sources do not say
 whether Macario was there. [INSERT] He plans the disguise himself: one
 last performance from his stage days. dimasalang, by itself.
 
-  + Montalan: Tanay. May himpilan ng Konstabularya roon, at maraming baril.
-  + Montalan: Pero makikita nila tayong paakyat bago pa tayo makalapit.
-  + Macario: Kaya hindi tayo papasok bilang mga kawal ng Republika.
-  + Macario: Papasok tayo bilang Konstabularya.
-  + Montalan: ...Ang mga uniporme. Ito pala ang ibig mong sabihin.
-  + Montalan: Isang dula?
-  + Macario: Ang huli kong dula, siguro.
+    Montalan: Tanay. May himpilan ng Konstabularya roon, at maraming baril.
+    Montalan: Pero makikita nila tayong paakyat bago pa tayo makalapit.
+    Macario: Kaya hindi tayo papasok bilang mga kawal ng Republika.
+    Macario: Papasok tayo bilang Konstabularya.
+    Montalan: ...Ang mga uniporme. Ito pala ang ibig mong sabihin.
+    Montalan: Isang dula?
+    Macario: Ang huli kong dula, siguro.
 
 Three fighters in the stolen uniforms, drilled together (Block 120;
 once three buttons, "Ituro", the seventh "three of something" in the
 game): the line of three, "Sanayin", is the work game's drill, a row of
 figures who salute smartly on a good stroke and fumble it on a bad one.
 
-  + (the game) Ensayo / Pindutin kapag nasa berde ang guhit: sabay-sabay ang saludo.
-  + (a good stroke) Sabay-sabay!
-  + (a missed one) Magulo ang hanay!
-  + (the end) n/5 ang malinis na saludo.
+    (the game) Ensayo / Pindutin kapag nasa berde ang guhit: sabay-sabay ang saludo.
+    (a good stroke) Sabay-sabay!
+    (a missed one) Magulo ang hanay!
+    (the end) n/5 ang malinis na saludo.
 
 Then what each of them asks, as one scene:
 
-  + Kawal: Ganito po ba sumaludo ang Konstable?
-  + Macario: Masyadong mabagal.
-  + Macario: Sumasaludo ang Konstable na parang may utang sa kanya ang buong mundo.
-  + Kawal: ...Ganito?
-  + Macario: 'Yan.
+    Kawal: Ganito po ba sumaludo ang Konstable?
+    Macario: Masyadong mabagal.
+    Macario: Sumasaludo ang Konstable na parang may utang sa kanya ang buong mundo.
+    Kawal: ...Ganito?
+    Macario: 'Yan.
 
-  + Kawal: Pangulo, ang buhok namin. Walang Konstable na ganito kahaba ang buhok.
-  + Macario: Itali, at itago sa ilalim ng sumbrero.
-  + Kawal: Hindi po namin gugupitin?
-  + Macario: Hindi. Sumumpa tayo.
+    Kawal: Pangulo, ang buhok namin. Walang Konstable na ganito kahaba ang buhok.
+    Macario: Itali, at itago sa ilalim ng sumbrero.
+    Kawal: Hindi po namin gugupitin?
+    Macario: Hindi. Sumumpa tayo.
 
 The Batang Kawal of Act III, who offered to cut his hair:
 
-  + Batang Kawal: Paano po kung kausapin ako ng bantay?
-  + Macario: Huwag kang magpaliwanag. Ang nagpapaliwanag, may itinatago.
-  + Macario (sa isip): Kay Maryam ko natutunan 'yan.
+    Batang Kawal: Paano po kung kausapin ako ng bantay?
+    Macario: Huwag kang magpaliwanag. Ang nagpapaliwanag, may itinatago.
+    Macario (sa isip): Kay Maryam ko natutunan 'yan.
 
 "Ang nagmamadali, may itinatago" was Maryam's in Act III. The line,
 used again:
 
-  + Macario (sa isip): Handa na sila. Wala na akong maituturo pa.
+    Macario (sa isip): Handa na sila. Wala na akong maituturo pa.
 
 Then, by itself:
 
-  + Montalan: Handa na sila, Pangulo.
-  + Macario: Sa Tanay, walang palakpakan. Kung tama ang pagganap, walang makakapansin.
+    Montalan: Handa na sila, Pangulo.
+    Macario: Sa Tanay, walang palakpakan. Kung tama ang pagganap, walang makakapansin.
 
-  + [BLACK] Huling bahagi ng 1904
-  + [BLACK] Pumasok sa bayan ng Tanay ang mga tauhan ni Sakay, suot ang mga ninakaw na uniporme ng Konstabularya.
-  + [BLACK] Nakuha nila ang bayan.
-  + [BLACK] Hindi sinasabi ng mga tala kung kasama si Sakay.
-  + [BLACK] Enero 24, 1905
-  + [BLACK] San Francisco de Malabon, Cavite
+    [BLACK] Huling bahagi ng 1904
+    [BLACK] Pumasok sa bayan ng Tanay ang mga tauhan ni Sakay, suot ang mga ninakaw na uniporme ng Konstabularya.
+    [BLACK] Nakuha nila ang bayan.
+    [BLACK] Hindi sinasabi ng mga tala kung kasama si Sakay.
+    [BLACK] Enero 24, 1905
+    [BLACK] San Francisco de Malabon, Cavite
 
 Completes: Ihanda ang mga kawal. Talked to, before:
 
-  + Kawal: Pangulo, hindi pa po ako nakasuot ng uniporme kahit kailan.
-  + Kawal: Ang uniporme, Pangulo... masikip.
-  + Batang Kawal: Ano po ang sasabihin ko kung tanungin nila ako?
-  + Montalan: Turuan mo sila, Pangulo. Hindi sila artista.
+    Kawal: Pangulo, hindi pa po ako nakasuot ng uniporme kahit kailan.
+    Kawal: Ang uniporme, Pangulo... masikip.
+    Batang Kawal: Ano po ang sasabihin ko kung tanungin nila ako?
+    Montalan: Turuan mo sila, Pangulo. Hindi sila artista.
 
 ### 5. San Francisco de Malabon
 
@@ -2668,10 +2669,10 @@ Block 123 at the proponent's word). [INSERT] The battle shown;
 Villafuerte and de Vega beside him, so the sentence of beat 11 lands.
 malabon, by itself.
 
-  + Montalan: Takipsilim na, Pangulo. Suot pa rin natin ang mga uniporme ng Konstabularya.
-  + Macario: Hanggang hindi tayo nakakalapit sa kuwartel, Konstabularya tayo sa mata nila.
-  + Montalan: Ang garison, Pangulo. Nasa plaza ang mga baril nila.
-  + Macario: Pasok!
+    Montalan: Takipsilim na, Pangulo. Suot pa rin natin ang mga uniporme ng Konstabularya.
+    Macario: Hanggang hindi tayo nakakalapit sa kuwartel, Konstabularya tayo sa mata nila.
+    Montalan: Ang garison, Pangulo. Nasa plaza ang mga baril nila.
+    Macario: Pasok!
 
 The second big fight: fifteen in four waves (the Constabulary first,
 Americans and a rifle among them in the last two), three hearts on the
@@ -2680,19 +2681,19 @@ of town, then one at each stretch of road (x 1200, 2000, and the plaza
 at 2700), Montalan, Villafuerte and de Vega coming up behind ("Sumulong
 sa plaza: pumunta sa kanan" at the top of the log). Between waves:
 
-  + Villafuerte: Pangulo! Sa kaliwa!
-  + De Vega: Ako na rito!
-  + Montalan: Dumating ang mga Amerikano!
-  + Macario (sa isip): Isang bayan pa. Isang bayan pa na hindi nila hawak.
+    Villafuerte: Pangulo! Sa kaliwa!
+    De Vega: Ako na rito!
+    Montalan: Dumating ang mga Amerikano!
+    Macario (sa isip): Isang bayan pa. Isang bayan pa na hindi nila hawak.
 
 Then:
 
-  + De Vega: Kanila na naman ang plaza bukas, Pangulo.
-  + Macario: Pero ngayong gabi, atin.
+    De Vega: Kanila na naman ang plaza bukas, Pangulo.
+    Macario: Pero ngayong gabi, atin.
 
-  + [BLACK] Kinabukasan, nabasa sa Maynila: sinalakay ng mga bandido ang San Francisco de Malabon.
-  + [BLACK] 1905
-  + [BLACK] Kabundukan ng Di-Masalang
+    [BLACK] Kinabukasan, nabasa sa Maynila: sinalakay ng mga bandido ang San Francisco de Malabon.
+    [BLACK] 1905
+    [BLACK] Kabundukan ng Di-Masalang
 
 Completes: Salakayin ang San Francisco de Malabon.
 
@@ -2704,38 +2705,38 @@ his army go hungry. Macario is not in the camps: he hears of them from a
 woman of Cavite [INSERT], and feels them as the food runs out.
 dimasalang, by itself.
 
-  + Taga-Cavite: Ito na lang po ang naitakas ko, Pangulo.
-  + Macario: Nasaan ang iba? Ang mga dating nagdadala sa amin?
-  + Taga-Cavite: Inipon kami ng mga Amerikano. Lahat ng taga-baryo, sa loob ng bakod, may bantay.
-  + Taga-Cavite: Ang hindi pumasok, kalaban daw.
-  + Taga-Cavite: Wala nang magtatanim. Wala nang magdadala sa inyo.
-  + Macario: ...
-  + Macario (sa isip): Hindi kami ang tinamaan nila. Ang mga nagpapakain sa amin.
-  + Macario (sa isip): Isang sako. Tatlong kawal na hindi pa kumakain.
+    Taga-Cavite: Ito na lang po ang naitakas ko, Pangulo.
+    Macario: Nasaan ang iba? Ang mga dating nagdadala sa amin?
+    Taga-Cavite: Inipon kami ng mga Amerikano. Lahat ng taga-baryo, sa loob ng bakod, may bantay.
+    Taga-Cavite: Ang hindi pumasok, kalaban daw.
+    Taga-Cavite: Wala nang magtatanim. Wala nang magdadala sa inyo.
+    Macario: ...
+    Macario (sa isip): Hindi kami ang tinamaan nila. Ang mga nagpapakain sa amin.
+    Macario (sa isip): Isang sako. Tatlong kawal na hindi pa kumakain.
 
-  + (a notice) Hatiin ang bigas sa mga kawal.
+    (a notice) Hatiin ang bigas sa mga kawal.
 
 The three fighters of Tanay, talked to ("Nabigyan ng bigas (n/3)"):
 
-  + Macario: Kunin mo ito.
-  + Kawal: Salamat, Pangulo.
+    Macario: Kunin mo ito.
+    Kawal: Salamat, Pangulo.
 
-  + Kawal: Kayo po, Pangulo? Kumain na kayo?
-  + Macario: Mamaya na ako.
+    Kawal: Kayo po, Pangulo? Kumain na kayo?
+    Macario: Mamaya na ako.
 
-  + Batang Kawal: Pangulo... hindi na kayo kumakain, 'di po ba?
-  + Macario: Kumain ka. Mas kailangan ka ng bayan nang may lakas.
+    Batang Kawal: Pangulo... hindi na kayo kumakain, 'di po ba?
+    Macario: Kumain ka. Mas kailangan ka ng bayan nang may lakas.
 
 Completes: Hatiin ang bigas (3/3). Talked to, between Tanay and the rice,
 and after:
 
-  + Kawal: Sumasaludo pa rin po ako sa salamin ng ilog.
-  + Kawal: Nakatago pa rin po sa sumbrero ang buhok ko.
-  + Batang Kawal: Hindi na po ako nagpapaliwanag, Pangulo.
-  + Kawal: Salamat sa bigas, Pangulo.
-  + Kawal: Mamaya na raw kayo, Pangulo. Lagi n'yo 'yang sinasabi.
-  + Batang Kawal: Busog na po ako, Pangulo. Totoo.
-  + Montalan: Wala nang dumarating mula sa mga baryo, Pangulo.
+    Kawal: Sumasaludo pa rin po ako sa salamin ng ilog.
+    Kawal: Nakatago pa rin po sa sumbrero ang buhok ko.
+    Batang Kawal: Hindi na po ako nagpapaliwanag, Pangulo.
+    Kawal: Salamat sa bigas, Pangulo.
+    Kawal: Mamaya na raw kayo, Pangulo. Lagi n'yo 'yang sinasabi.
+    Batang Kawal: Busog na po ako, Pangulo. Totoo.
+    Montalan: Wala nang dumarating mula sa mga baryo, Pangulo.
 
 ### 7. Gómez
 
@@ -2747,46 +2748,46 @@ the last thing in its way. He agrees to come down on terms: amnesty for
 his men, the right to carry firearms, and leave for himself and his
 officers to go abroad. dimasalang, by itself.
 
-  + [BLACK] 1906
+    [BLACK] 1906
 
-  + Tagapagbalita: Pangulo! May darating. Si Dominador Gómez, ang lider ng mga manggagawa sa Maynila.
-  + Tagapagbalita: Pinahintulutan daw siya ng Gobernador-Heneral na si Ide na makipag-usap sa inyo.
-  + Montalan: Sugo ng Amerikano.
-  + Macario: Pilipinong sugo ng Amerikano. Pakinggan natin.
+    Tagapagbalita: Pangulo! May darating. Si Dominador Gómez, ang lider ng mga manggagawa sa Maynila.
+    Tagapagbalita: Pinahintulutan daw siya ng Gobernador-Heneral na si Ide na makipag-usap sa inyo.
+    Montalan: Sugo ng Amerikano.
+    Macario: Pilipinong sugo ng Amerikano. Pakinggan natin.
 
     (Gómez walks up the slope. Talked to:)
 
-  + Gómez: Heneral Sakay. Malayo ang inakyat ko.
-  + Macario: Pangulo. Hindi Heneral. May Republika kami rito.
-  + Gómez: Pangulo, kung gayon.
-  + Gómez: Nangako ang mga Amerikano ng isang Asamblea. Mga Pilipinong boboto, mga Pilipinong gagawa ng batas.
-  + Gómez: Pero hindi nila ito bubuksan habang may lumalaban pa sa bundok.
-  + Gómez: Kayo na lang ang natitira, Pangulo.
-  + Macario: ...
-  + Montalan: At ang kapalit? Bitayan?
-  + Gómez: Amnestiya. Para sa lahat ng tauhan ninyo.
-  + Macario (sa isip): Isang Asamblea. Mga Pilipinong susulat ng batas sa sariling bayan.
-  + Macario (sa isip): Noon, batas nila ang tumawag sa amin na bandido.
-  + Macario: May mga kondisyon ako.
-  + Macario: Amnestiya sa lahat ng tauhan ko. Karapatang magdala ng baril.
-  + Macario: At pahintulot na makaalis ng bansa, ako at ang aking mga opisyal.
-  + Gómez: Dadalhin ko ang mga ito sa Gobernador-Heneral.
-  + Macario: ...
-  + Macario: Kung para sa Asamblea... bababa ako.
+    Gómez: Heneral Sakay. Malayo ang inakyat ko.
+    Macario: Pangulo. Hindi Heneral. May Republika kami rito.
+    Gómez: Pangulo, kung gayon.
+    Gómez: Nangako ang mga Amerikano ng isang Asamblea. Mga Pilipinong boboto, mga Pilipinong gagawa ng batas.
+    Gómez: Pero hindi nila ito bubuksan habang may lumalaban pa sa bundok.
+    Gómez: Kayo na lang ang natitira, Pangulo.
+    Macario: ...
+    Montalan: At ang kapalit? Bitayan?
+    Gómez: Amnestiya. Para sa lahat ng tauhan ninyo.
+    Macario (sa isip): Isang Asamblea. Mga Pilipinong susulat ng batas sa sariling bayan.
+    Macario (sa isip): Noon, batas nila ang tumawag sa amin na bandido.
+    Macario: May mga kondisyon ako.
+    Macario: Amnestiya sa lahat ng tauhan ko. Karapatang magdala ng baril.
+    Macario: At pahintulot na makaalis ng bansa, ako at ang aking mga opisyal.
+    Gómez: Dadalhin ko ang mga ito sa Gobernador-Heneral.
+    Macario: ...
+    Macario: Kung para sa Asamblea... bababa ako.
 
 Completes: Harapin si Dominador Gómez. Then, by itself:
 
-  + Montalan: Hindi ako nagtitiwala sa kanila, Pangulo.
-  + Macario: Hindi rin ako. Pero kung ako na lang ang nakaharang, aalis ako sa daan.
+    Montalan: Hindi ako nagtitiwala sa kanila, Pangulo.
+    Macario: Hindi rin ako. Pero kung ako na lang ang nakaharang, aalis ako sa daan.
 
-  + [BLACK] Hulyo 14, 1906
-  + [BLACK] Maynila
+    [BLACK] Hulyo 14, 1906
+    [BLACK] Maynila
 
 Talked to, after:
 
-  + Montalan: Sugo ng Amerikano, Pangulo. Mag-ingat ka sa sasabihin niya.
-  + Montalan: Kung bababa ka, bababa kami.
-  + Gómez: Dadalhin ko ang mga kondisyon ninyo, Pangulo.
+    Montalan: Sugo ng Amerikano, Pangulo. Mag-ingat ka sa sasabihin niya.
+    Montalan: Kung bababa ka, bababa kami.
+    Gómez: Dadalhin ko ang mga kondisyon ninyo, Pangulo.
 
 Whether Gómez knew what would happen in Cavite is debated; the game does
 not say.
@@ -2797,72 +2798,72 @@ not say.
 Manila. [INSERT] The crowd, and those who knew him. tondo, by day, from
 the east end (x 12500). On arrival:
 
-  + Macario (sa isip): Apat na taon akong nasa bundok.
-  + Mga Tao: Si Sakay! Si Sakay 'yan!
-  + Mga Tao: Ang haba ng buhok!
-  + Macario (sa isip): Makikilala nila ako kahit sa malayo. 'Yon ang sinabi ko.
+    Macario (sa isip): Apat na taon akong nasa bundok.
+    Mga Tao: Si Sakay! Si Sakay 'yan!
+    Mga Tao: Ang haba ng buhok!
+    Macario (sa isip): Makikilala nila ako kahit sa malayo. 'Yon ang sinabi ko.
 
 That last is his thought at Morong, paid. Since Block 120 the crowd is
 seen: six townspeople (owed, two pictures) along the road from where he
 comes in, "Mga Tao" speaking from the first. Isko (x 11000), with his son
 Andres (owed), once:
 
-  + Isko: Pangulo!
-  + Macario: Isko. ...Francisco Reyes, 'di ba?
-  + Isko: Isko pa rin po, sa inyo.
-  + Isko: Ito po si Andres. Pitong taon na.
-  + Macario: Andres.
-  + Isko: Gaya ng Supremo.
-  + Isko: Hinanap ko po si Nanay ninyo. Sa Tondo, sa Malabon, sa mga ospital.
-  + Isko: Wala po. Walang nakaaalam.
-  + Macario: ...
-  + Macario: Sinabi ko sa'yong huwag kang mangako.
-  + Isko: Kaya nga po hindi ako tumigil.
+    Isko: Pangulo!
+    Macario: Isko. ...Francisco Reyes, 'di ba?
+    Isko: Isko pa rin po, sa inyo.
+    Isko: Ito po si Andres. Pitong taon na.
+    Macario: Andres.
+    Isko: Gaya ng Supremo.
+    Isko: Hinanap ko po si Nanay ninyo. Sa Tondo, sa Malabon, sa mga ospital.
+    Isko: Wala po. Walang nakaaalam.
+    Macario: ...
+    Macario: Sinabi ko sa'yong huwag kang mangako.
+    Isko: Kaya nga po hindi ako tumigil.
 
 and then:
 
-  + Isko: Mag-ingat po kayo sa Cavite, Pangulo.
+    Isko: Mag-ingat po kayo sa Cavite, Pangulo.
 
 Maryam (x 13250), once:
 
-  + Maryam: Macario! Ang haba ng buhok mo.
-  + Maryam: Para kang Sultan sa dula natin.
-  + Macario: Bumaba na ako, Maryam.
-  + Maryam: Tapos na ba ang dula?
-  + Macario: Ang huling eksena, sa Cavite. May salu-salo raw.
-  + Maryam: ...
-  + Maryam: Mag-ingat ka sa mga eksenang hindi mo isinulat.
+    Maryam: Macario! Ang haba ng buhok mo.
+    Maryam: Para kang Sultan sa dula natin.
+    Macario: Bumaba na ako, Maryam.
+    Maryam: Tapos na ba ang dula?
+    Macario: Ang huling eksena, sa Cavite. May salu-salo raw.
+    Maryam: ...
+    Maryam: Mag-ingat ka sa mga eksenang hindi mo isinulat.
 
 and then:
 
-  + Maryam: Mag-ingat ka, Macario.
+    Maryam: Mag-ingat ka, Macario.
 
 The three who took the pamphlets, in the crowd:
 
-  + Mangingisda: Pangulo! Bumaba na raw kayo!
-  + Tabakera: Kung ganyan kahaba ang buhok, ikaw nga 'yan.
-  + Karpintero: Sabi ko sa'yo, kilala na kita, Macario.
+    Mangingisda: Pangulo! Bumaba na raw kayo!
+    Tabakera: Kung ganyan kahaba ang buhok, ikaw nga 'yan.
+    Karpintero: Sabi ko sa'yo, kilala na kita, Macario.
 
 The Mananahi (x 6400), once, and then:
 
-  + Mananahi: Iho... nakita kita.
-  + Mananahi: Sana nakita ka rin niya.
-  + Mananahi: Nandito lang ako, iho.
+    Mananahi: Iho... nakita kita.
+    Mananahi: Sana nakita ka rin niya.
+    Mananahi: Nandito lang ako, iho.
 
 The Kutsero (x 5950), his first employer, with Kabayo and the carriage,
 waiting where the crowd thins out (Block 120; once at x 3300, where he
 stood in Act I, a long empty walk further on):
 
-  + Kutsero: Ang batang nagsuklay ng kabayo ko. Tingnan mo ngayon.
+    Kutsero: Ang batang nagsuklay ng kabayo ko. Tingnan mo ngayon.
 
 His button, "Sumakay":
 
-  + Kutsero: Macario? Ikaw nga.
-  + Kutsero: Sumakay ka. Wala nang bayad.
-  + Macario: Salamat po.
+    Kutsero: Macario? Ikaw nga.
+    Kutsero: Sumakay ka. Wala nang bayad.
+    Macario: Salamat po.
 
-  + [BLACK] Hulyo 17, 1906
-  + [BLACK] Cavite
+    [BLACK] Hulyo 17, 1906
+    [BLACK] Cavite
 
 Completes: Bumaba sa Maynila.
 
@@ -2874,40 +2875,40 @@ there. [INSERT] The words, and the toast broken at its peak, as the knock
 broke Nanay's plea in Act II and the raid the oath in Act III. sala, by
 itself.
 
-  + Van Schaick: Mr. Sakay. Welcome to Cavite.
-  + Macario (sa isip): Maligayang pagdating daw sa Cavite.
-  + Van Schaick: Please. Enjoy the music. You are our guests.
-  + Macario (sa isip): Mga panauhin daw kami.
-  + Montalan (pabulong): Masyadong mabait, Pangulo.
-  + Macario (pabulong): Ngumiti ka. Dula ito para sa kanila.
+    Van Schaick: Mr. Sakay. Welcome to Cavite.
+    Macario (sa isip): Maligayang pagdating daw sa Cavite.
+    Van Schaick: Please. Enjoy the music. You are our guests.
+    Macario (sa isip): Mga panauhin daw kami.
+    Montalan (pabulong): Masyadong mabait, Pangulo.
+    Macario (pabulong): Ngumiti ka. Dula ito para sa kanila.
 
-  + (a notice) Itaas ang baso sa mesa.
+    (a notice) Itaas ang baso sa mesa.
 
 Talked to:
 
-  + Van Schaick: Relax, Mr. Sakay. The war is over.
-  + Macario (sa isip): Magpahinga raw ako. Tapos na raw ang digmaan.
-  + Montalan (pabulong): Hindi ko gusto ang dami ng sundalo sa labas, Pangulo.
+    Van Schaick: Relax, Mr. Sakay. The war is over.
+    Macario (sa isip): Magpahinga raw ako. Tapos na raw ang digmaan.
+    Montalan (pabulong): Hindi ko gusto ang dami ng sundalo sa labas, Pangulo.
 
 The table (x 640), "Itaas ang baso":
 
-  + Van Schaick: A toast. To peace.
-  + Macario (sa isip): Sa kapayapaan daw.
-  + Macario: Sa kapayapaan... at sa Asamblea.
-  + Macario: At sa araw na—
-  + Van Schaick: Now!
+    Van Schaick: A toast. To peace.
+    Macario (sa isip): Sa kapayapaan daw.
+    Macario: Sa kapayapaan... at sa Asamblea.
+    Macario: At sa araw na—
+    Van Schaick: Now!
 
     (Soldiers come in from both doors.)
 
-  + Sundalong Amerikano: Hands up! Drop your weapons!
-  + Macario (sa isip): Itaas daw ang kamay. Ibaba ang sandata.
-  + De Vega: Pangulo!
-  + Macario: Huwag! ...Huwag.
-  + Macario (sa isip): Ilang ulit akong nagbalatkayo para malusutan sila.
-  + Macario (sa isip): Ngayon, sila ang gumanap.
+    Sundalong Amerikano: Hands up! Drop your weapons!
+    Macario (sa isip): Itaas daw ang kamay. Ibaba ang sandata.
+    De Vega: Pangulo!
+    Macario: Huwag! ...Huwag.
+    Macario (sa isip): Ilang ulit akong nagbalatkayo para malusutan sila.
+    Macario (sa isip): Ngayon, sila ang gumanap.
 
-  + [BLACK] Hulyo 17, 1906. Dinakip at dinisarmahan si Sakay at ang kanyang mga opisyal sa salu-salo.
-  + [BLACK] Hulyo 20, 1906. Dinala siya sa Maynila at ikinulong sa Bilibid.
+    [BLACK] Hulyo 17, 1906. Dinakip at dinisarmahan si Sakay at ang kanyang mga opisyal sa salu-salo.
+    [BLACK] Hulyo 20, 1906. Dinala siya sa Maynila at ikinulong sa Bilibid.
 
 Completes: Dumalo sa salu-salo. The soldiers who took Aguinaldo came as
 revolutionaries (Act III); now the trap is a party.
@@ -2917,24 +2918,24 @@ revolutionaries (Act III); now the trap is a party.
 [MACARIO, reported] Imprisoned at Bilibid. [INSERT] Montalan in the next
 cell. selda, by itself.
 
-  + Macario (sa isip): Bilibid. Muli.
-  + Macario (sa isip): Amnestiya ang ipinangako. Rehas ang ibinigay.
+    Macario (sa isip): Bilibid. Muli.
+    Macario (sa isip): Amnestiya ang ipinangako. Rehas ang ibinigay.
 
 Montalan, talked to:
 
-  + Montalan: Amnestiya raw, Sakay.
-  + Macario: Sa papel nila, amnestiya. Sa batas nila, bandido.
-  + Montalan: At ang Asamblea?
-  + Macario: Bubuksan nila. Wala na kasing nakaharang.
+    Montalan: Amnestiya raw, Sakay.
+    Macario: Sa papel nila, amnestiya. Sa batas nila, bandido.
+    Montalan: At ang Asamblea?
+    Macario: Bubuksan nila. Wala na kasing nakaharang.
 
-  + [BLACK] Setyembre 17, 1906
-  + [BLACK] Hukuman ng Unang Dulugan, Cavite
+    [BLACK] Setyembre 17, 1906
+    [BLACK] Hukuman ng Unang Dulugan, Cavite
 
 Completes: Kausapin si Montalan. The window before 1907, and Montalan
 after:
 
-  + Macario (sa isip): Sa labas, ang Maynila. Hindi ko na abot.
-  + Montalan: Hindi nila tayo mapapatahimik, Sakay. Kahit dito.
+    Macario (sa isip): Sa labas, ang Maynila. Hindi ko na abot.
+    Montalan: Hindi nila tayo mapapatahimik, Sakay. Kahit dito.
 
 ### 11. The court
 
@@ -2946,32 +2947,32 @@ Villafuerte and Lucio de Vega. Why the plea changed the record does not
 say, and the game does not either. [INSERT] The judge's words. hukuman,
 by itself.
 
-  + Hukom: Macario Sakay.
-  + Hukom: You are charged with bandolerismo. Brigandage.
-  + Macario (sa isip): Bandolerismo. Pagiging bandido.
-  + Hukom: How do you plead?
-  + Macario (sa isip): Ano raw ang sagot ko.
+    Hukom: Macario Sakay.
+    Hukom: You are charged with bandolerismo. Brigandage.
+    Macario (sa isip): Bandolerismo. Pagiging bandido.
+    Hukom: How do you plead?
+    Macario (sa isip): Ano raw ang sagot ko.
 
 The judge (x 900), "Sumagot":
 
-  + Macario: Hindi ako nagkasala.
-  + Hukom: Not guilty. So noted.
-  + Macario (sa isip): Hindi raw nagkasala. Itinala.
+    Macario: Hindi ako nagkasala.
+    Hukom: Not guilty. So noted.
+    Macario (sa isip): Hindi raw nagkasala. Itinala.
 
-  + [BLACK] Setyembre 21, 1906
-  + [BLACK] Binago ni Sakay at ng kanyang mga kasama ang kanilang sagot: nagkasala.
-  + [BLACK] Hindi sinasabi ng mga tala kung bakit.
-  + [BLACK] Bago matapos ang 1906
+    [BLACK] Setyembre 21, 1906
+    [BLACK] Binago ni Sakay at ng kanyang mga kasama ang kanilang sagot: nagkasala.
+    [BLACK] Hindi sinasabi ng mga tala kung bakit.
+    [BLACK] Bago matapos ang 1906
 
-  + Hukom: The court finds the accused guilty of bandolerismo.
-  + Macario (sa isip): Nagkasala raw kami ng bandolerismo.
-  + Hukom: Macario Sakay. Julian Montalan. León Villafuerte. Lucio de Vega.
-  + Hukom: Sentenced to death by hanging.
-  + Macario (sa isip): Kamatayan. Bibitayin kaming apat.
-  + Macario: ...
+    Hukom: The court finds the accused guilty of bandolerismo.
+    Macario (sa isip): Nagkasala raw kami ng bandolerismo.
+    Hukom: Macario Sakay. Julian Montalan. León Villafuerte. Lucio de Vega.
+    Hukom: Sentenced to death by hanging.
+    Macario (sa isip): Kamatayan. Bibitayin kaming apat.
+    Macario: ...
 
-  + [BLACK] Hulyo 26, 1907
-  + [BLACK] Bilibid
+    [BLACK] Hulyo 26, 1907
+    [BLACK] Bilibid
 
 Completes: Harapin ang hukuman. The Brigandage Act of Act III is the law
 he is tried under.
@@ -2983,42 +2984,42 @@ July the first elections for the Philippine Assembly. Macario is in his
 cell for both and hears of them from a guard. [INSERT] The guard, the
 hair, the last night. selda, by itself.
 
-  + Bantay: Sakay. Galing sa Korte Suprema.
-  + Bantay: Pinagtibay ang hatol. Bibitayin kayo.
-  + De Vega: Wala na palang tutubos.
-  + Macario: ...
+    Bantay: Sakay. Galing sa Korte Suprema.
+    Bantay: Pinagtibay ang hatol. Bibitayin kayo.
+    De Vega: Wala na palang tutubos.
+    Macario: ...
 
 De Vega, talked to:
 
-  + De Vega: Kasama mo ako hanggang dulo, Pangulo.
+    De Vega: Kasama mo ako hanggang dulo, Pangulo.
 
 The window (x 1000), "Dumungaw":
 
-  + [BLACK] Hulyo 30, 1907
+    [BLACK] Hulyo 30, 1907
 
-  + Bantay: Bumoboto na raw sila sa labas. Ang unang halalan ng Asamblea.
-  + Macario (sa isip): Ang Asamblea. Para rito ako bumaba.
-  + Macario (sa isip): Bumoboto sila. At narito ako.
-  + De Vega: Sulit ba, Pangulo?
-  + Macario: Kung may Pilipinong susulat ng batas para sa sariling bayan... oo.
-  + Bantay: Ang haba ng buhok mo, Sakay.
-  + Macario: Sumumpa ako. Hindi ko ito gugupitin hangga't hindi malaya ang bayan.
-  + Bantay: Hindi pa malaya ang bayan.
-  + Macario: Hindi pa nga.
+    Bantay: Bumoboto na raw sila sa labas. Ang unang halalan ng Asamblea.
+    Macario (sa isip): Ang Asamblea. Para rito ako bumaba.
+    Macario (sa isip): Bumoboto sila. At narito ako.
+    De Vega: Sulit ba, Pangulo?
+    Macario: Kung may Pilipinong susulat ng batas para sa sariling bayan... oo.
+    Bantay: Ang haba ng buhok mo, Sakay.
+    Macario: Sumumpa ako. Hindi ko ito gugupitin hangga't hindi malaya ang bayan.
+    Bantay: Hindi pa malaya ang bayan.
+    Macario: Hindi pa nga.
 
 Completes: Dumungaw sa bintana. Then, by itself: the father, the first
 thing said in the game ("inaantay mo pa din tatay mo?"), answered.
 
-  + [BLACK] Setyembre 12, 1907
-  + [BLACK] Ang huling gabi
+    [BLACK] Setyembre 12, 1907
+    [BLACK] Ang huling gabi
 
-  + Macario (sa isip): 'Nay...
-  + Macario (sa isip): Umalis si Tatay isang gabi at hindi na bumalik. Hinintay mo siya.
-  + Macario (sa isip): Hinintay mo rin ako.
-  + Macario (sa isip): ...
-  + Macario (sa isip): Patawad po.
+    Macario (sa isip): 'Nay...
+    Macario (sa isip): Umalis si Tatay isang gabi at hindi na bumalik. Hinintay mo siya.
+    Macario (sa isip): Hinintay mo rin ako.
+    Macario (sa isip): ...
+    Macario (sa isip): Patawad po.
 
-  + [BLACK] Setyembre 13, 1907
+    [BLACK] Setyembre 13, 1907
 
 ### 13. The last morning
 
@@ -3030,28 +3031,28 @@ substance is documented, the wording varies by translation, and this
 Tagalog is ours. [CONTEXT] On 16 October 1907, thirty-three days after,
 the Philippine Assembly opens; on black. patyo, by itself.
 
-  + Macario (sa isip): Alas-otso y medya ng umaga.
-  + Bantay: Oras na, Sakay.
-  + Macario (sa isip): Ilang beses akong umakyat sa entablado.
-  + Macario (sa isip): Ito ang huli.
+    Macario (sa isip): Alas-otso y medya ng umaga.
+    Bantay: Oras na, Sakay.
+    Macario (sa isip): Ilang beses akong umakyat sa entablado.
+    Macario (sa isip): Ito ang huli.
 
 The student walks him across the yard to the scaffold (x 1750, reached);
 nothing walks for him. Completes, at the end: Lumakad sa huling umaga.
 
-  + Macario: Darating ang kamatayan sa ating lahat, maaga man o huli.
-  + Macario: Kaya haharapin ko nang mahinahon ang Panginoong Maykapal.
-  + Macario: Ngunit nais kong sabihin sa inyo: hindi kami mga bandido at magnanakaw, gaya ng paratang sa amin ng mga Amerikano.
-  + Macario: Kami ay mga kasapi ng hukbong rebolusyonaryo na nagtanggol sa ating Inang Bayan, ang Pilipinas.
-  + Macario: Paalam! Mabuhay ang Republika, at nawa'y isilang ang ating kalayaan sa hinaharap!
-  + Macario: Paalam! Mabuhay ang Pilipinas!
+    Macario: Darating ang kamatayan sa ating lahat, maaga man o huli.
+    Macario: Kaya haharapin ko nang mahinahon ang Panginoong Maykapal.
+    Macario: Ngunit nais kong sabihin sa inyo: hindi kami mga bandido at magnanakaw, gaya ng paratang sa amin ng mga Amerikano.
+    Macario: Kami ay mga kasapi ng hukbong rebolusyonaryo na nagtanggol sa ating Inang Bayan, ang Pilipinas.
+    Macario: Paalam! Mabuhay ang Republika, at nawa'y isilang ang ating kalayaan sa hinaharap!
+    Macario: Paalam! Mabuhay ang Pilipinas!
 
-  + [BLACK] Setyembre 13, 1907. Alas-otso y medya ng umaga.
-  + [BLACK] Binitay si Macario Sakay sa Lumang Bilibid, Santa Cruz, Maynila, kasama si Lucio de Vega.
-  + [BLACK] Hindi niya ginupit ang kanyang buhok.
-  + [BLACK] Oktubre 16, 1907. Binuksan ang Asamblea ng Pilipinas.
-  + [BLACK] Tatlumpu't tatlong araw matapos siyang mamatay.
-  + [BLACK] Hindi nalaman kailanman kung ano ang nangyari sa kanyang ina.
-  + [BLACK] Wakas ng Ikaapat na Yugto
+    [BLACK] Setyembre 13, 1907. Alas-otso y medya ng umaga.
+    [BLACK] Binitay si Macario Sakay sa Lumang Bilibid, Santa Cruz, Maynila, kasama si Lucio de Vega.
+    [BLACK] Hindi niya ginupit ang kanyang buhok.
+    [BLACK] Oktubre 16, 1907. Binuksan ang Asamblea ng Pilipinas.
+    [BLACK] Tatlumpu't tatlong araw matapos siyang mamatay.
+    [BLACK] Hindi nalaman kailanman kung ano ang nangyari sa kanyang ina.
+    [BLACK] Wakas ng Ikaapat na Yugto
 
 The screen stays black after the last card: Act IV is finished, and the
 post-test runs (a guest goes back to the title).
@@ -3062,9 +3063,9 @@ Three papers of facts of the game's own, on the street in July 1906
 (fixed: x 11800 on the road; x 9600 and x 6900 at jump height); a
 teacher's paper replaces its own slot.
 
-  + [HINT] Ang Manipesto ng 1904: Noong Abril 5, 1904, naglabas si Macario Sakay ng manipesto mula sa kabundukan. Ipinahayag nito na may buong karapatan ang mga Pilipino na ipaglaban ang kanilang kalayaan.
-  + [HINT] Ang Rekonsentrasyon: Noong 1905, inipon ng mga Amerikano ang mga taga-baryo ng Cavite at Batangas sa mga kampong may bantay. Nagutom ang mga taga-baryo, at naubos ang pagkain at tulong para sa mga lumalaban sa bundok.
-  + [HINT] Ang Asamblea ng Pilipinas: Noong Hulyo 30, 1907, bumoto ang mga Pilipino sa unang halalan para sa Asamblea ng Pilipinas. Binuksan ito noong Oktubre 16, 1907. Ito ang asambleang ipinangako nang pumayag si Sakay na bumaba mula sa bundok noong 1906.
+    [HINT] Ang Manipesto ng 1904: Noong Abril 5, 1904, naglabas si Macario Sakay ng manipesto mula sa kabundukan. Ipinahayag nito na may buong karapatan ang mga Pilipino na ipaglaban ang kanilang kalayaan.
+    [HINT] Ang Rekonsentrasyon: Noong 1905, inipon ng mga Amerikano ang mga taga-baryo ng Cavite at Batangas sa mga kampong may bantay. Nagutom ang mga taga-baryo, at naubos ang pagkain at tulong para sa mga lumalaban sa bundok.
+    [HINT] Ang Asamblea ng Pilipinas: Noong Hulyo 30, 1907, bumoto ang mga Pilipino sa unang halalan para sa Asamblea ng Pilipinas. Binuksan ito noong Oktubre 16, 1907. Ito ang asambleang ipinangako nang pumayag si Sakay na bumaba mula sa bundok noong 1906.
 
 ## Threads left open
 
@@ -3134,54 +3135,11 @@ ending, the years (1890, 1894, 1895), the head of his council, the
 barber's tools, the direktor's pay and the Talaan's three papers. Nothing
 is open in Act I.
 
-Act II (Block 113). Every + line: accept, rewrite or replace. Also:
-
-    The names ours gave: Isko, the Manlilimbag, the Tagapagbalita.
-    Bonifacio and Jacinto speak words of ours; check them against the
-      source book, and Bonifacio's having acted (his amateur theatre).
-    The press: the histories put Kalayaan's printing in early 1896 and
-      the lithographic stone found at the Diario de Manila; the game's
-      press is the Katipunan's own room, raided, so the list under it
-      is ours, and so are the receipts with addresses.
-    Pugad Lawin, 23 August, for the cedulas (the official date and
-      place; Balintawak and 26 August are the older tradition).
-    Nanay's fate, the Kasama's death at San Juan del Monte, and the
-      chase short of her door: ours and the proponent's (a tragedy, not
-      a safe story).
-    The Talaan's three papers of Act II.
-
-Act III (Block 117). Every + line: accept, rewrite or replace. Also:
-
-    The Americans' English lines (the proponent's choice), each given
-      in Tagalog after it; the Sedition Law's English is its sense in
-      our words.
-    Bonifacio's three precepts as Macario teaches them (Katungkulang
-      Gagawin ng mga Z.LL.B.): check the wording against the source.
-    Aguinaldo's proclamation of 19 April 1901, in our words.
-    The notice Poblete brings (ours); the law's text in our words.
-    Jacinto's death: Majayjay, 16 April 1899, malaria, aged twenty-three.
-    The names ours gave: Francisco Reyes (Isko), the Guro, the Opisyal,
-      the Batang Kawal, the Bagong Nakatira.
-    Where he was in February 1899 (the hills outside Manila) and the
-      patrol's battle: ours, the sources being silent.
-    The capture in January 1902 at an oath in the barbershop, the
-      informer unnamed: ours, as the record does not say how.
-    Carreón, Montalan, Álvarez and Poblete speak words of ours; check
-      them.
-    The Talaan's three papers of Act III.
-
-Act IV (Block 119). Every + line: accept, rewrite or replace. Also:
-
-    Sakay's last statement in our Tagalog: the substance is documented,
-      the wording varies by translation; check it against the source.
-    Gómez's, Van Schaick's and the judge's words, ours.
-    The post raided in 1903 and its fight, the Malabon battle shown, the
-      woman of Cavite, the rice, the crowd in Manila, Isko's son Andres,
-      the Kutsero's carriage, the toast, the guard of Bilibid: inserts.
-    Sakay is shown planning Tanay's disguise (the proponent's insert);
-      the cards say the record does not say whether he went.
-    The names ours gave: the Taga-Cavite, the Bantay, Andres.
-    The Talaan's three papers of Act IV.
+Acts II, III and IV (Blocks 113, 117 and 119). The proponents accepted
+every line of ours on 9 Oct 2026, with the names ours gave, the words
+given to the historical figures, the Americans' English, Sakay's last
+statement in our Tagalog and each act's Talaan papers. Nothing is open
+in Acts II to IV.
 
 Act I's play (Block 113, the proponent's direction): the moro-moro now
 ends with the Moorish kingdom's fall and the princess taking the

@@ -6,11 +6,11 @@
 // source of truth: what is [CONTEXT] happened in the world without
 // Macario, and he only hears of it (news, a letter, a notice, a black
 // card); [MACARIO] is his, from the sources; [INSERT] is ours. STORY.md,
-// "Act III, beat by beat", is every line, each beat tagged. Every line here is ours, marked
-// PLACEHOLDER below each block of them, until the proponents accept or
-// replace it. The Americans speak short, plain English (the proponent's
-// choice), and what they say is given in Tagalog right after, by an
-// interpreter or in Macario's thought, so no student is left out.
+// "Act III, beat by beat", is every line, each beat tagged. Every line
+// here is ours, accepted by the proponents on 9 Oct 2026. The
+// Americans speak short, plain English (the proponent's choice), and
+// what they say is given in Tagalog right after, by an interpreter or
+// in Macario's thought, so no student is left out.
 //
 // The spine: whoever controls the words controls the war. A law calls
 // asking for freedom sedition and a soldier a bandit; Macario answers by
@@ -214,7 +214,7 @@
   // =============================================================
   // Beat 1. February 1899, his band in the hills outside Manila [INSERT:
   // the sources do not say where he was]. Santa Mesa is [CONTEXT]: he is
-  // not there, and hears of it from a runner. PLACEHOLDER, every line.
+  // not there, and hears of it from a runner.
   // =============================================================
   async function theNews() {
     setCutscene(true);
@@ -238,7 +238,7 @@
   }
 
   // At the lookout: an American patrol below, coming for the band
-  // [INSERT]. PLACEHOLDER, every line.
+  // [INSERT].
   async function thePatrol() {
     if (state.flags.a3_putok) return;
     setCutscene(true);
@@ -257,7 +257,7 @@
 
   // Beat 2. The patrol, and more behind it [INSERT]: fifteen in four
   // waves, then the retreat, and Manila under American guard, on black
-  // [CONTEXT]. PLACEHOLDER, every line.
+  // [CONTEXT].
   async function theWar() {
     setCutscene(true);
     await wait(300);
@@ -292,7 +292,7 @@
 
   // =============================================================
   // Beat 4. Maryam dresses him from the costume trunk. Granted and worn
-  // as the story does (Inventory.grant, then equip). PLACEHOLDER.
+  // as the story does (Inventory.grant, then equip).
   // =============================================================
   function dressed() {
     state.flags.a3_nagbihis = true;
@@ -306,7 +306,6 @@
 
   // =============================================================
   // Beat 6. The barbershop: the Barbero, and an American in the chair.
-  // PLACEHOLDER, every line.
   // =============================================================
   async function theBarber() {
     setCutscene(true);
@@ -332,7 +331,7 @@
   }
 
   // The chair: the haircut, once, on the American (the barber's game,
-  // game.js, playCutGame, with his own hair). PLACEHOLDER, every line.
+  // game.js, playCutGame, with his own hair).
   async function cutTheAmerican() {
     const f = state.flags;
     if (!f.a3_saBarberya) return;
@@ -383,7 +382,7 @@
 
   // Beat 7. That night: the three who took the pamphlets in Act I come to
   // be sworn. On black, the room turns to night (refreshOnDuty) and they
-  // are there (refreshNpcVisibility). PLACEHOLDER.
+  // are there (refreshNpcVisibility).
   async function thatNight() {
     setCutscene(true);
     await playIntertitle(["Nang gabing iyon."], {
@@ -403,7 +402,7 @@
   }
 
   // Beat 7, the end: the three sworn, the years on the move, Aguinaldo
-  // taken, on black, and a town in April 1901. PLACEHOLDER, every line.
+  // taken, on black, and a town in April 1901.
   async function theFirstChapter() {
     setCutscene(true);
     await wait(300);
@@ -426,7 +425,6 @@
   // =============================================================
   // Beat 8. A town, April 1901: the men in line before an American
   // table, Aguinaldo's proclamation on the wall, and Isko.
-  // PLACEHOLDER, every line.
   // =============================================================
   async function theTown() {
     setCutscene(true);
@@ -440,7 +438,7 @@
     turnPlayer(-1);
     // Block 120. Aguinaldo's capture [CONTEXT], heard from Isko rather
     // than read on a card: the disguise Macario lives by, turned on the
-    // Republic. PLACEHOLDER, every line.
+    // Republic.
     await playDialogue([
       { speaker: "Isko", text: "Pangulo... nahuli na raw ang Heneral sa Palanan." },
       { speaker: "Isko", text: "Mga sundalong nagpanggap na rebolusyonaryo ang humuli sa kanya." },
@@ -451,7 +449,7 @@
     setCutscene(false);
   }
 
-  // The proclamation, read with E. PLACEHOLDER, every line.
+  // The proclamation, read with E.
   async function readTheProclamation() {
     const f = state.flags;
     if (!f.a3_saBayan) return;
@@ -475,7 +473,6 @@
 
   // Isko goes home: a child he has never seen. The hand raised to
   // America is the hand Macario asked to be raised in the oath.
-  // PLACEHOLDER, every line.
   async function iskoGoesHome() {
     setCutscene(true);
     await wait(300);
@@ -514,7 +511,7 @@
   // Beat 9. Calle Gunao, August 1901: the founding of the Partido
   // Nacionalista, Macario its Secretary-General, with Santiago Álvarez
   // and Pascual Poblete [MACARIO]. A house on the street [INSERT: the
-  // sources give only the street]. PLACEHOLDER, every line.
+  // sources give only the street].
   // =============================================================
   async function theFounding() {
     setCutscene(true);
@@ -539,7 +536,7 @@
 
   // Beat 10. November 1901: the Sedition Law. Passed without him
   // [CONTEXT]; Poblete brings the printed notice, and he reads it. The
-  // law's own words in English, then in Tagalog. PLACEHOLDER.
+  // law's own words in English, then in Tagalog.
   //
   // Block 120: it lands in the middle of the petition, after two names,
   // and the third (the Guro) will not sign once it is posted.
@@ -572,7 +569,7 @@
     setCutscene(false);
   }
 
-  // The last name refused, and January 1902. PLACEHOLDER, every line.
+  // The last name refused, and January 1902.
   async function noOtherWay() {
     setCutscene(true);
     await wait(300);
@@ -589,7 +586,7 @@
 
   // =============================================================
   // Beat 11. January 1902, at night: word to three houses, past the
-  // patrols. "Anak ng Bayan" is Act I's password. PLACEHOLDER, every line.
+  // patrols. "Anak ng Bayan" is Act I's password.
   // =============================================================
   const DOOR_LINES = [
     [
@@ -634,7 +631,7 @@
   // =============================================================
   // Beat 12. The oath, and at its height the door broken in. Someone
   // informed; the record does not say who, and neither does the game.
-  // Prison, and the amnesty, on black. PLACEHOLDER, every line.
+  // Prison, and the amnesty, on black.
   // =============================================================
   async function theRaidOnTheOath() {
     setCutscene(true);
@@ -691,7 +688,6 @@
   // the amnesty]. The war declared over and the amnesty [CONTEXT] reach
   // him from a guard at the bars [INSERT]; he walks out himself. Act IV's
   // cell, the same room he comes back to in 1906 ("Bilibid. Muli.").
-  // PLACEHOLDER, every line.
   // =============================================================
   async function theAmnesty() {
     setCutscene(true);
@@ -716,7 +712,7 @@
     setCutscene(false);
   }
 
-  // Out of the gate, on his own feet, and to Morong. PLACEHOLDER.
+  // Out of the gate, on his own feet, and to Morong.
   async function outOfBilibid() {
     const f = state.flags;
     if (!f.a3_saSelda || f.a3_pinalaya) return;
@@ -731,7 +727,7 @@
 
   // =============================================================
   // Beat 13. Morong, 1902: Carreón and Montalan; the Republika ng
-  // Katagalugan, Bonifacio's creed its constitution. PLACEHOLDER.
+  // Katagalugan, Bonifacio's creed its constitution.
   // =============================================================
   async function theMountains() {
     // Block 121. A save from before Block 120 put the arrest straight into
@@ -752,7 +748,6 @@
   }
 
   // The Republic's own flag [MACARIO], raised with E once it is named.
-  // PLACEHOLDER.
   async function raiseTheFlag() {
     const f = state.flags;
     if (!f.a3_itinatag) {
@@ -776,7 +771,6 @@
   }
 
   // The vow [MACARIO, reported]: a young fighter offers to cut his hair.
-  // PLACEHOLDER.
   async function theVow() {
     setCutscene(true);
     await wait(300);
@@ -807,7 +801,6 @@
 
   // Beat 14. November 1902: the Brigandage Act, passed without him, on
   // black [CONTEXT]; the Constabulary at the camp [INSERT]. Then the end.
-  // PLACEHOLDER, every line.
   async function theBandits() {
     setCutscene(true);
     await wait(300);
@@ -859,7 +852,6 @@
   // ---- The Talaan ----------------------------------------------------
   // Three papers of facts of the game's own, on the street by day (fixed,
   // as Acts I and II); a teacher's paper replaces its own slot.
-  // PLACEHOLDER.
   const HINT_SPOTS = [11200, { x: 9100, y: HINT_HIGH }, { x: 7700, y: HINT_HIGH }];
 
   // ---- Story points (?dev=1, Block 108) ---------------------------------
@@ -1112,7 +1104,6 @@
             requiresFlag: "a3_naipaalam", unlessFlag: "a3_nahuli",
             toScene: "barberya", toX: ROOM - 160, toFacing: -1 },
         ],
-        // PLACEHOLDER, every line.
         arrivalDialogues: [
           {
             requiresFlag: "a3_lumaban", unlessFlag: "a3_batas", doneFlag: "a3_saTondo",
@@ -1134,7 +1125,7 @@
         decorations: [],
         npcs: [
           {
-            // Isko, with a letter from Laguna. PLACEHOLDER, every line.
+            // Isko, with a letter from Laguna.
             id: "isko", x: ISKO_X, label: "Isko", animation: P.isko, facesPlayer: true,
             hiddenWhile: [{ requiresFlag: "a3_saBarberya" }],
             dialogueSets: [
@@ -1158,7 +1149,6 @@
           },
           {
             // Maryam, at the shut theatre: the costume trunk.
-            // PLACEHOLDER, every line.
             id: "maryam", x: MARYAM_X, label: "Maryam", animation: P.maryam,
             hiddenWhile: [STREET_NIGHT],
             dialogueSets: [
@@ -1188,7 +1178,6 @@
           },
           {
             // The Mananahi: Nanay waited. Her fate is still unknown.
-            // PLACEHOLDER, every line.
             id: "mananahi", x: MANANAHI_X, label: "Mananahi", animation: P.mananahi,
             hiddenWhile: [STREET_NIGHT],
             dialogueSets: [
@@ -1209,7 +1198,7 @@
             ],
           },
           {
-            // Strangers in Nanay's house. PLACEHOLDER, every line.
+            // Strangers in Nanay's house.
             id: "bagong-nakatira", x: HOME_X, label: "Bagong Nakatira", animation: BAGONG_NAKATIRA,
             hiddenWhile: [STREET_NIGHT],
             dialogueSets: [
@@ -1264,7 +1253,6 @@
             x: ROOM - 160, facing: -1, run: theBarber },
           { requiresFlag: "a3_nagsimula", doneFlag: "a3_nahuli", run: theRaidOnTheOath },
         ],
-        // PLACEHOLDER, every line.
         arrivalDialogues: [
           {
             requiresFlag: "a3_naipaalam", doneFlag: "a3_handaNa", x: ROOM - 160, facing: -1,
@@ -1285,7 +1273,6 @@
           {
             id: "barbero", x: BARBERO_X, label: "Barbero", animation: P.barbero,
             speakers: ["Barbero (pabulong)"],
-            // PLACEHOLDER, every line.
             dialogueSets: [
               oneLine("Barbero", "Nandiyan ang silya, Macario. Huwag mo siyang sugatan.", { skipIfFlag: "a3_nagupitan" }),
               oneLine("Barbero", "Ingatan mo sila, Macario.", { requiresFlag: "a3_nagupitan", skipIfFlag: "a3_naipaalam" }),
@@ -1302,7 +1289,7 @@
             onInteract: cutTheAmerican,
           },
           // That night: the three who took the pamphlets in Act I, taught
-          // the creed one by one. PLACEHOLDER, every line; the precepts
+          // the creed one by one. The precepts
           // are Bonifacio's (Katungkulang Gagawin ng mga Z.LL.B.), in
           // today's spelling.
           {
@@ -1340,7 +1327,7 @@
               { speaker: "Karpintero", text: "Pag-asa. Matagal ko nang hindi naririnig 'yan." },
             ]),
           },
-          // January 1902: three new members, blindfolded. PLACEHOLDER.
+          // January 1902: three new members, blindfolded.
           ...RECRUITS_X.map((x, i) => ({
             id: "bagong-kasapi-" + (i + 1), x, label: "Bagong Kasapi", animation: P.katipunero.idle,
             startsHidden: true, revealedByFlag: "a3_naipaalam", hiddenByFlag: "a3_nahuli",
@@ -1446,14 +1433,13 @@
         npcs: [
           {
             id: "alvarez", x: 560, label: "Álvarez", animation: ALVAREZ,
-            // PLACEHOLDER.
             dialogueSets: [
               oneLine("Álvarez", "Kailangan natin ng mga pirma, Kalihim-Heneral.", { skipIfFlag: "a3_pumirma" }),
               oneLine("Álvarez", "Kahit ang paghingi, Sakay. Kahit ang paghingi."),
             ],
           },
           // Two sign; the third, the Guro, means to and then will not,
-          // once the law is posted (Block 120). PLACEHOLDER, every line.
+          // once the law is posted (Block 120).
           {
             id: "manlilimbag", x: 330, label: "Manlilimbag", animation: MANLILIMBAG,
             dialogueSets: [oneLine("Manlilimbag", "Ako na ang maglilimbag nito, Pangulo, kung papayagan nila.")],
@@ -1539,7 +1525,6 @@
         npcs: [
           {
             id: "montalan", x: 900, label: "Montalan", animation: MONTALAN,
-            // PLACEHOLDER.
             dialogueSets: [
               oneLine("Montalan", "Kausapin mo si Carreón. Siya ang marunong sa mga papel.", { skipIfFlag: "a3_itinatag" }),
               oneLine("Montalan", "Hanggang sa paglaya, Pangulo."),
@@ -1555,7 +1540,6 @@
           },
           {
             id: "carreon", x: 1100, label: "Carreón", animation: CARREON,
-            // PLACEHOLDER, every line.
             dialogueSets: [
               {
                 requiresFlag: "a3_saMorong",

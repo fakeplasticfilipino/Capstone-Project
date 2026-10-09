@@ -6,8 +6,8 @@
 // second, and be the tragedy it is ("we're presenting historical
 // shit, not wrapping children in a bubble"; CLAUDE.md, Writing
 // dialogue, no watered-down narratives). STORY.md, "Act II, beat by
-// beat", is every line. Every line here is ours, marked PLACEHOLDER
-// below each block of them, until the proponents accept or replace it.
+// beat", is every line. Every line here is ours, accepted by the
+// proponents on 9 Oct 2026.
 //
 //   imprenta     Agosto 1896. The act opens at the Katipunan's press:
 //                the second issue of Kalayaan printed (the work game),
@@ -231,7 +231,7 @@
   // =============================================================
   // Beat 1. Agosto 1896, the press: the second issue of Kalayaan, the
   // one the histories say was in hand when the Katipunan was found out. The act opens here, the first thing
-  // the student does is print. PLACEHOLDER, every line.
+  // the student does is print.
   // =============================================================
   async function theFirstPage() {
     setCutscene(true);
@@ -261,7 +261,7 @@
     if (!f.a2_simula) return;
     // Block 114: one round, as every job is now.
     if (f.a2_nakalimbag) {
-      thinkAloud("Tapos na ang limbag ko. Sa iba na ang susunod na pahina."); // PLACEHOLDER
+      thinkAloud("Tapos na ang limbag ko. Sa iba na ang susunod na pahina.");
       return;
     }
     const good = await playWorkGame({
@@ -281,7 +281,7 @@
   }
 
   // After the first round: Kalayaan, "from Yokohama", and the list kept
-  // under the press, with where everyone lives. PLACEHOLDER, every line.
+  // under the press, with where everyone lives.
   async function kalayaan() {
     setCutscene(true);
     await wait(300);
@@ -306,7 +306,6 @@
   // the promise, and before he can finish answering her, Isko at the
   // door: trouble at the press. Nobody knows it is the sweep. He goes on
   // the promise he has just made, sure he will be back in an hour.
-  // PLACEHOLDER, every line.
   // =============================================================
   async function home() {
     setCutscene(true);
@@ -383,7 +382,7 @@
 
   // =============================================================
   // Beat 4. The sweep, the press: the guardia civil got there first. A
-  // printer hiding by the door tells him why. PLACEHOLDER, every line.
+  // printer hiding by the door tells him why.
   // =============================================================
   async function theRaid() {
     setCutscene(true);
@@ -405,7 +404,7 @@
   }
 
   // Beat 5. The list, and what it means: the receipts the guards took
-  // say where he lives. PLACEHOLDER, every line.
+  // say where he lives.
   async function takeTheList() {
     setCutscene(true);
     playSfx("page");
@@ -423,7 +422,7 @@
     showToast("Tumakas sa bintana at balikan si Nanay!", 3200);
   }
 
-  // Out of the back window, onto the street at night. PLACEHOLDER.
+  // Out of the back window, onto the street at night.
   async function outTheWindow() {
     const f = state.flags;
     if (!f.a2_paghuli) {
@@ -442,7 +441,7 @@
   // =============================================================
   // Beat 6. The night, short of home: seen. Started where he stands
   // (the checkpoint at SPOTTED_X runs it), a long way short of her
-  // door. He turns and runs, away from her. PLACEHOLDER, every line.
+  // door. He turns and runs, away from her.
   // =============================================================
   async function spotted() {
     setCutscene(true);
@@ -468,7 +467,7 @@
   }
 
   // The road out of Tondo, at the end of the chase: the mountains, on
-  // black. He never gets back to her. PLACEHOLDER.
+  // black. He never gets back to her.
   async function toTheMountains() {
     if (!state.flags.a2_nakita) return;
     setCutscene(true);
@@ -486,7 +485,6 @@
   // =============================================================
   // Beat 7. Pugad Lawin. Isko went to the house. Then Bonifacio. The
   // cedula is the student's to tear: Bonifacio's gift button.
-  // PLACEHOLDER, every line.
   // =============================================================
   async function theCry() {
     setCutscene(true);
@@ -522,7 +520,7 @@
     setCutscene(false);
   }
 
-  // After the cedula: to San Juan del Monte, on black. PLACEHOLDER.
+  // After the cedula: to San Juan del Monte, on black.
   async function toSanJuan() {
     setCutscene(true);
     await wait(300);
@@ -536,7 +534,7 @@
   // Beat 8. San Juan del Monte: the charge on the powder store. Fifteen
   // soldiers in four waves, then the rifles from Manila, and the Kasama
   // falls. He told Macario "Huwag kang lilingon" the night he led him
-  // in (Act I); he says it again. PLACEHOLDER, every line.
+  // in (Act I); he says it again.
   // =============================================================
   async function theCharge() {
     setCutscene(true);
@@ -609,7 +607,7 @@
   }
 
   // Beat 9. The river, at the left edge, once the retreat is on: across
-  // it, on black, to November and the hills of Morong. PLACEHOLDER.
+  // it, on black, to November and the hills of Morong.
   async function acrossTheRiver() {
     if (!state.flags.a2_lumusob) return;
     setCutscene(true);
@@ -623,7 +621,7 @@
   }
 
   // =============================================================
-  // Beat 10. The Nangka River: the scarecrows. PLACEHOLDER, every line.
+  // Beat 10. The Nangka River: the scarecrows.
   // =============================================================
   async function thePlanOfStraw() {
     setCutscene(true);
@@ -659,7 +657,7 @@
   }
 
   // The Spanish come, and shoot at straw; then the fight, and the
-  // reinforcements. To Balara on black. PLACEHOLDER, every line.
+  // reinforcements. To Balara on black.
   async function theStrawArmy() {
     setCutscene(true);
     await wait(500);
@@ -701,7 +699,6 @@
 
   // =============================================================
   // Beat 11. Balara, the same week, at night: news from Cavite.
-  // PLACEHOLDER, every line.
   // =============================================================
   async function newsFromCavite() {
     setCutscene(true);
@@ -735,7 +732,7 @@
   }
 
   // =============================================================
-  // Beat 12. Laguna: Jacinto. PLACEHOLDER, every line.
+  // Beat 12. Laguna: Jacinto.
   // =============================================================
   async function withJacinto() {
     setCutscene(true);
@@ -760,7 +757,6 @@
   // makes of the last of them; Nanay still not found. The last card is
   // the one that lifts the black the others left (game.js, Block 113).
   // Since Block 120 the sale of the country is a paper read in the camp.
-  // PLACEHOLDER, every line.
   async function theEnd() {
     setCutscene(true);
     await wait(300);
@@ -770,7 +766,7 @@
     await playIntertitle(["Hunyo 12, 1898. Idineklara ang kalayaan sa Kawit."], { startBlack: true, keepBlack: true });
     // Block 120. The treaty of Paris [CONTEXT] reaches the camp as a
     // paper the messenger brings, read aloud by Jacinto, rather than a
-    // card. PLACEHOLDER, every line.
+    // card.
     await playIntertitle(["Disyembre 1898"], { startBlack: true });
     await wait(400);
     placeDecoration("tagapagbalita", viewEdges().left - 80);
@@ -801,7 +797,7 @@
 
   // ---- The Talaan ----------------------------------------------------
   // Three papers of facts of the game's own, on the street (fixed, as
-  // Act I's); a teacher's paper replaces its own slot. PLACEHOLDER.
+  // Act I's); a teacher's paper replaces its own slot.
   const HINT_SPOTS = [2600, { x: 4500, y: HINT_HIGH }, { x: 6100, y: HINT_HIGH }];
 
   // ---- Story points (?dev=1, Block 108) ---------------------------------
@@ -991,7 +987,6 @@
           {
             id: "jacinto", x: JACINTO_PRESS_X, label: "Jacinto", animation: JACINTO,
             hiddenByFlag: "a2_paghuli",
-            // PLACEHOLDER.
             dialogueSets: [
               oneLine("Jacinto", "Pantay na diin, Macario. Ang malabong letra, hindi mababasa ng bayan.",
                 { skipIfFlag: "a2_umuwiNa" }),
@@ -1086,7 +1081,7 @@
             toScene: "imprenta", toX: PRESS_ENTER_X, toFacing: -1 },
         ],
         // On the way to the press, more guards than he has ever seen; out
-        // of the window, the first thing he thinks. PLACEHOLDER.
+        // of the window, the first thing he thinks.
         arrivalDialogues: [
           {
             requiresFlag: "a2_paghuli", unlessFlag: "a2_nakuhaAngListahan", doneFlag: "a2_napansin",
@@ -1120,7 +1115,7 @@
             onInteract: toTheMountains,
           },
           // The neighbours, on the walk home: none will be seen with him.
-          // Indoors once the sweep is on. PLACEHOLDER, every line.
+          // Indoors once the sweep is on.
           {
             id: "kutsero", x: KUTSERO_X, label: "Kutsero", animation: P.kutsero, hiddenWhile: SWEEP,
             dialogueSets: [
@@ -1203,7 +1198,7 @@
         npcs: [
           {
             id: "nanay", x: BAHAY_NANAY_X, label: "Nanay", animation: P.nanay, facesPlayer: true,
-            // PLACEHOLDER. If he goes back in during the sweep.
+            // If he goes back in during the sweep.
             dialogueSets: [
               oneLine("Nanay", "Anak, huwag ka nang lumabas. Pakiusap."),
             ],
@@ -1235,7 +1230,6 @@
           },
           {
             id: "bonifacio", x: 780, label: "Bonifacio", animation: BONIFACIO,
-            // PLACEHOLDER, every line.
             dialogueSets: [
               oneLine("Bonifacio", "Ilabas mo ang sedula mo, kapatid.", { skipIfFlag: "a2_pinunit" }),
               oneLine("Bonifacio", "Sa susunod na linggo, sa San Juan del Monte.", { requiresFlag: "a2_pinunit" }),
@@ -1382,7 +1376,6 @@
         npcs: [
           {
             id: "bonifacio", x: 600, label: "Bonifacio", animation: BONIFACIO,
-            // PLACEHOLDER, every line.
             dialogueSets: [
               {
                 skipIfFlag: "a2_kinausapAngSupremo",
@@ -1445,7 +1438,6 @@
           },
           {
             id: "jacinto", x: LAGUNA_JACINTO_X, label: "Jacinto", animation: JACINTO,
-            // PLACEHOLDER, every line.
             dialogueSets: [
               {
                 requiresFlag: "a2_kayJacinto",

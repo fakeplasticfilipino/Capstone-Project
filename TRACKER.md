@@ -9,8 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Oct 2026, after Block 126; Blocks 119 to 126 reported
-working on the phone the same day. Block 126: the streets felt
+Last updated: 9 Oct 2026, after Block 127. Block 127: the proponents
+accepted every line of Acts II to IV (the PLACEHOLDER and + marks are
+out), each of Acts II to IV has a built-in trivia card and ten matched
+pre-test and post-test pairs (content/questions.js), and the git history
+is kept as it is. Blocks 119 to 126 reported working on the phone the
+same day. Block 126: the streets felt
 like cardboard and nobody could tell which building could be entered.
 Every open door is now lit (a column of warm light, a glow on the wall,
 a pool on the road; brighter in reach and at night, dark while shut or
@@ -331,20 +335,14 @@ PAMPHLET_GUARDS in content/act1.js).
 2. Act I's lines, years and papers: accepted by the proponents on 4 Oct
 2026 (Block 113). Nothing open in Act I.
 
-3. The proponents' review of Act II: every line marked + in STORY.md,
-Act II (PLACEHOLDER in content/act2.js), the names ours gave (Isko, the
-Manlilimbag, the Tagapagbalita), Bonifacio's and Jacinto's words, and
-Act II's three Talaan papers, against the source book (STORY.md, Open
-questions). And Act III's (Block 117) the same way: every + line, the
-Americans' English, Bonifacio's three precepts as taught, Aguinaldo's
-proclamation and the Sedition Law in our words, the names ours gave and
-the Talaan's papers (STORY.md, Open questions). And Act IV's (Block
-119): every + line, Sakay's last statement in our Tagalog, Gómez's and
-Van Schaick's words, the names ours gave and the Talaan's papers
-(STORY.md, Open questions).
+3. Acts II to IV's lines, names, words and Talaan papers: accepted by
+the proponents on 9 Oct 2026. Nothing open in Acts II to IV.
 
-4. The test questions: not ours. Teachers write and change them on the
-dashboard (CLAUDE.md, Standing decisions); nothing here tracks them.
+4. The test questions are the teacher's to write and change on the
+dashboard (CLAUDE.md, Standing decisions). Since 9 Oct 2026, at the
+proponent's word, content/questions.js holds a built-in trivia card
+and ten matched pre-test and post-test pairs for every act, so each
+act has a test before the teacher writes one.
 
 5. Art from the artist: ART.md's Owed list, fifty-two pictures since
 Block 120 (Act I's three: the pulungan's painting, the Mananahi's
@@ -367,18 +365,14 @@ artist for the whole figure side on, standing, arms free of the body.
 
 7. The Scan list (2 Oct 2026, below): worked in Block 110. Left: run
 reset_test_accounts.sql before a full-flow test (S37; it deletes the
-test accounts' play, so on the proponent's word), and S39 to S41 as
+test accounts' play, so on the proponent's word), and S40 and S41 as
 listed there.
 
-8. Privacy of the public repository (30 Sep 2026). Done: the names of
-the team, the resource person and the school are out of every tracked
+8. Privacy of the public repository (30 Sep 2026). The names of the
+team, the resource person and the school are out of every tracked
 file, docs-private/ and *.pdf and *.docx are gitignored, and the two
-private files were deleted from GitHub. Open: they and the names are
-still in the git history (the proposal and the validation form in older
-commits; older README versions), and every commit carries the author
-name and email. Only a history rewrite and a force push purges them, and
-the GitHub username stays in the repository's URL either way. The
-proponent has not yet decided whether to rewrite the history.
+private files were deleted from GitHub. The git history is kept as it
+is, at the proponent's word (9 Oct 2026): no rewrite. (CLOSED)
 
 ## Polish list (Block 112)
 
@@ -430,14 +424,13 @@ Block 110. Status:
                                                                         proponent, Supabase)
     S38          Blocks 98 to 110 not seen on a phone                   (COMPLETE: reported
                                                                         working, 4 Oct 2026)
-    S39          private files and names in the git history             (BLOCKED: the
-                                                                        proponent's decision)
+    S39          private files and names in the git history             (CLOSED: history
+                                                                        kept, 9 Oct 2026)
     S40          the owed pictures (three then, fifty-two since Block 120)  (BLOCKED: the artist)
     S41          the years, every + line, the Talaan papers, the        (the years, lines
-                 written delegation, the pilot accounts                 and papers accepted
-                                                                        4 Oct 2026; the
-                                                                        delegation and the
-                                                                        pilot accounts
+                 pilot accounts                                         and papers accepted
+                                                                        4 and 9 Oct 2026;
+                                                                        the pilot accounts
                                                                         BLOCKED: the
                                                                         proponents)
     S42          music re-encoded, 3.9 MB to 2.9 MB; gabi.wav kept      (COMPLETE)
@@ -457,17 +450,9 @@ Final defense with student data collection, confirmed. Grade 8 students
 at the partner school play the game and sit both tests. School
 approval is secured.
 
-Parental consent was waived by the guidance office and the resource
-person, on the grounds that the session runs about an hour and that
-identifiable results stay with the teacher while the proponents receive
-only aggregate figures. Get that waiver in writing and keep it with the
-validation form. A panel asking about consent wants a document, not a
-recollection.
-
 Data collection covers Act I. Acts II to IV are written (Blocks 113,
-117, 119), but their lines wait on the proponents and they have no
-questions of their own yet (the teacher's). Act I quality and the
-assessment instrument therefore outrank Acts II to IV entirely.
+117, 119) and accepted, with built-in questions (9 Oct 2026). Act I
+quality and the assessment instrument outrank Acts II to IV entirely.
 
 Freeze the software roughly ten days before the defense, to leave room
 for scheduling the session, running it, and analysing what comes back.
@@ -475,21 +460,15 @@ for scheduling the session, running it, and analysing what comes back.
 Students are identified by a code, never by name. create_accounts.js
 issues mag-aaral01 through however many the session needs, with a
 matching coded email, and the teacher keeps the code to name mapping on
-paper. The database therefore holds nothing identifying, which is what
-makes the consent waiver's premise literally true: this Supabase project
-is owned by the proponents, and row level security does not restrict a
-project owner. Numbering must stay stable once the accounts exist,
-because the code is the student's identity for the whole study.
+paper. The database therefore holds nothing identifying, which matters
+because this Supabase project is owned by the proponents, and row level
+security does not restrict a project owner. Numbering must stay stable
+once the accounts exist, because the code is the student's identity for the whole study.
 
-Content authority: the resource person has left the assessment questions
-and the storyline to the proponents, and has confirmed it a second time
-by declining to complete the instrument validation form and telling them
-to make the game. The condition is the whole of what she asked for: both
-stay faithful to the source material she provided, as historically
-accurate as the available data allows. That makes the Act I rewrite and
-the item bank writing tasks rather than approval loops, but the source
-is the standard both will be judged against, and there is no external
-reviewer standing between a wrong item and the defense. The source is a
+Content authority: the assessment questions and the storyline are the
+proponents', and both stay faithful to the source material the resource
+person provided, as historically accurate as the available data allows.
+The source is the standard both will be judged against. The source is a
 physical book, not a file; the proponents work through it with the
 session at the time. Do not go looking for it on disk.
 
@@ -623,7 +602,7 @@ The paper specifies seventeen.
 | Combat Mechanics | (BUILT) Punch on a tap, takedown from behind, a shot on a hold, each animated; enemies that fight back; blows with a flash, slide, stagger, topple and fade for every body. Act I ships a dash through the enemy, the opening fight with the three siga and the play's fight (four soldiers, real walk and sword art); the pamphlet run's guards can be taken down from behind. Acts II to IV have two battles of fifteen each, in waves, some with decoys to defend or ground to take (Block 120) |
 | Stealth Mechanics | (BUILT) Patrols, a detection meter, a sight cone, hide spots, platforms out of sight, guards that turn hostile and shoot. Act I's pamphlet run uses patrols, the meter, the cone, crates and catches; Acts II to IV add long stealth runs with checkpoints and riflemen who fire (the sentinela, the Constabulary on guard) |
 | Interaction System | (BUILT) Dialogue, gifts, NPC reach edge to edge, scenery to use (the sewing table), the work game and the barber's haircut (Block 114), tutorials that wait for the task, NPCs that open the shop |
-| Narrative Delivery | (BUILT) Scene scripts that play by themselves, black cards, arrival dialogues. All four acts use them; the lines of Acts II to IV await the proponents' review |
+| Narrative Delivery | (BUILT) Scene scripts that play by themselves, black cards, arrival dialogues. All four acts use them; every act's lines accepted by the proponents (Acts II to IV on 9 Oct 2026) |
 | Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113, Act III (1.30) and Act IV (1.45) |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (the lagundi, sold since Block 121) |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. The story hands over the stage clothes (Block 82) and Act III's disguise (Block 117), each slowing detection while still; the corner shop sells the lagundi, the anting-anting (a fourth heart) and the pulbura (a faster shot) since Block 121; the rest verified against the fixture |
@@ -900,19 +879,23 @@ machine, the assessment module.
     126 lit doorways (every open exit and door-NPC, drawn by the
         engine); the four buildings Wanted from the artist; parallax
         built and dropped (no time for its art)
+    127 Acts II to IV accepted (the PLACEHOLDER and + marks taken
+        out); built-in questions and trivia for Acts II to IV; the
+        git history kept
 
 ## Blocks remaining
 
 Act I's lines and history checked by the proponents. (COMPLETE, 4 Oct
 2026)
 
-Act II's, Act III's and Act IV's lines checked by the proponents (Next
-action, 3). (NOT STARTED)
+Act II's, Act III's and Act IV's lines checked by the proponents.
+(COMPLETE, 9 Oct 2026)
 
 Act II written (Block 113). (COMPLETE) Act III written (Block 117).
-(COMPLETE) Act IV written (Block 119). (COMPLETE) An act without questions skips its
-tests, saying so once (Block 121), which is deliberate; the questions are the
-teacher's.
+(COMPLETE) Act IV written (Block 119). (COMPLETE) Built-in questions
+for Acts II to IV (9 Oct 2026). (COMPLETE) An act without questions
+would skip its tests, saying so once (Block 121); every shipped act now
+has them.
 
 Real items for Sandata, Anting-anting and Damit: three sold since Block
 121 (COMPLETE). Cosmetic outfits: two asked of the artist (ART.md,
@@ -928,14 +911,6 @@ Block 85.
 ## Blocked on other people
 
 These do not depend on any block. Start them before writing more code.
-
-Get the resource person's delegation in writing. One paragraph is
-enough: that she reviewed the scope, delegated the assessment items and
-the storyline to the proponents, and trusts them to stay faithful to the
-source material she provided. It replaces the instrument validation form
-she declined to complete; without it a panel asking who checked the
-questions is told a story rather than shown a document. Keep it with
-the consent waiver. (NOT STARTED)
 
 The art in ART.md, from the artist. (NOT STARTED)
 
@@ -1106,7 +1081,7 @@ Document how the assessment items were validated, given that no external
 validation form exists: written from the source material, matched pre
 and post pairs on the same topic and difficulty with the key in a
 different position, and the trivia card checked so it cannot hand a
-pre-test answer. Her written delegation sits alongside. (NOT STARTED)
+pre-test answer. (NOT STARTED)
 
 Document grading honestly (stated in DECISIONS.md, Block 121, and under
 Objective 2, above): since Block 68 the game grades the tests
