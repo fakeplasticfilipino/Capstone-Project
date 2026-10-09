@@ -9,7 +9,8 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 8 Oct 2026, after Block 126. Block 126: the streets felt
+Last updated: 9 Oct 2026, after Block 126; Blocks 119 to 126 reported
+working on the phone the same day. Block 126: the streets felt
 like cardboard and nobody could tell which building could be entered.
 Every open door is now lit (a column of warm light, a glow on the wall,
 a pool on the road; brighter in reach and at night, dark while shut or
@@ -293,8 +294,8 @@ from the harness and screenshots (23 Sep 2026). The proponent reported
 Blocks 80 to 85 working on the phone on 30 Sep 2026, and accepted
 Blocks 86 to 89 from the desktop browser the same day. On 1 Oct 2026
 the proponent tested Blocks 90 to 97 on the phone and reported no
-fault, on 4 Oct 2026 Blocks 98 to 112, and on 5 Oct 2026 Blocks 113
-to 118.
+fault, on 4 Oct 2026 Blocks 98 to 112, on 5 Oct 2026 Blocks 113
+to 118, and on 9 Oct 2026 Blocks 119 to 126.
 
 Versions: since Block 106 every ?v= is the file's fingerprint, written
 by node _dev/tools/prepare.js before each commit and checked by the
@@ -317,102 +318,9 @@ pilot all the same, since a jump skips what comes before it. Write the block's o
 and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
-Oct 2026. Open:
+Oct 2026, Blocks 119 to 126 on 9 Oct 2026. Open:
 
-    Block 126, lit doorways. Act II (?dev=1, Pauwi kay Nanay): on the street,
-      Nanay's door at the arrow has a warm column of light and a pool on
-      the road, brighter as Macario reaches it; the press door further
-      on too. Act III (?dev=1, Tondo, 1902: ang tatlong bahay): each door glows
-      until knocked on, then goes dark. Inside a room (the barbershop,
-      the bahay) the way out at the edge is lit. Failure: a lit door
-      that will not open, a door that opens with no light, light drawn
-      in front of a person, or a light left on in a fight.
-
-    Block 125, the guide. Any act, any point (?dev=1): once a beat
-      hands the world back, a green arrow with a name tab bobs over
-      the next person or thing to use (Act I's first job: "Kutsero");
-      walk away and it becomes a tab at the screen's edge, "Kutsero
-      15m", pointing the way. Inside a room whose step is elsewhere
-      (the entablado after the play), the arrow stands over the door,
-      "Lumabas". It is gone during any dialogue, card, fight or
-      tutorial, and back after. Failure: no arrow when free to walk, an
-      arrow at someone the step is not about, an arrow over a talking
-      scene, or the arrow drawn behind a tree.
-
-    Block 123, the overnight pass. Dashboard (teacher.html): Ave.
-      post-test reads "n = ..., first attempt". The questions editor
-      still saves (Saved...) and the test plays. Act II (?dev=1,
-      Pugad Lawin): Bonifacio says "Sa susunod na linggo". Act III
-      (?dev=1, the barbershop): "Kanina pa raw siya naghihintay." after
-      the American's first line, a thought giving his verdict after
-      the cut, "At sa akin na raw ang sukli."; the raid: "Itaas daw ang
-      kamay. Huwag gagalaw." Act IV (?dev=1, Malabon): Montalan,
-      "Takipsilim na, Pangulo. Suot pa rin natin ang mga uniporme ng
-      Konstabularya." before the garrison. The pre-test on the phone:
-      the four answers two to a row, Susunod visible without scrolling.
-      Settings with many finished tasks: Bumalik stays on screen; the
-      password panel's I-save and Bumalik side by side. Login on
-      the phone as usual: no change
-      to see (the failure path is the harness's, section BU). Failure:
-      an English line with no Tagalog after it, a question save that
-      says Saved and changes nothing, or a student opening in the wrong
-      act.
-
-    Block 121, the audit. Act I: no coins button until Nanay has her
-      savings; after, the coins open Tindahan with three: Dahon ng
-      Lagundi (5), Anting-anting (50), Pinong Pulbura (90), each tile
-      a symbol, no picture. Buy and wear the anting-anting: four hearts.
-      (Block 122) Settings as a student: Palitan ang password asks
-      for the current one first; a wrong one says "Mali ang kasalukuyan
-      mong password." and changes nothing.
-      Act IV (?dev=1, Malabon): chase an enemy of the first wave far to
-      the right; when it falls, the next wave comes where he stands, no
-      "pumunta sa kanan" pulling him back. Act II to
-      IV as a student with no questions written: "Walang pagsusulit"
-      before the act, nothing after it. Failure: a shop button in Act I
-      before the gift, a coins button that opens empty, a fight that
-      waits behind him, or a password changed without the current one.
-
-    Block 120, the pacing pass. Act II ("Pauwi kay Nanay"): the press
-      door is now between the Mananahi and the tabakera, the walks
-      shorter; at the Nangka ("Ilog Nangka") the soldiers go for the
-      scarecrows, which topple after two blows; Laguna's end, the
-      messenger's paper, Jacinto reading Paris aloud. Act III: in the
-      town, Isko tells of Palanan; at Calle Gunao ("ang petisyon") two
-      sign, the law arrives, and the Guro ("ang huling pirma") refuses;
-      the second door at night does not answer; after the raid, a cell
-      in Bilibid ("ang amnestiya"), the guard, and the gate on the right;
-      at Morong the soldiers stand by the flag, and in the last fight a
-      Constable reaching the flag hacks at it (eight blows and the wave
-      starts again). Act IV: the bell rings (no card), Montalan comes
-      out, the three watchmen fire; the fight moves right to the fence
-      with "Lumaban palabas" at the top of the log; Tanay's line of three
-      ("Sanayin"), a row of figures saluting; Malabon pushes right into
-      the plaza; Manila shows six dashed townspeople and the Kutsero with
-      Kabayo at about the Mananahi. Failure: a fight that never moves
-      on, a decoy that never falls or never stands again, a black card
-      where a scene should be, or a line said behind black.
-    Block 119, Act IV. ?dev=1 lists thirteen points under Ang Mapait
-      na Ani; each opens its place with its task in the log. From Ang
-      simula: "Marso 18, 1903" at Morong, sign the order at the table;
-      Montalan, "Makikita mo rin"; the post at night, three guards, the
-      storeroom at the left end, the bell and fifteen in four waves;
-      April 1904, the Manlilimbag's press (the work game, once);
-      Di-Masalang, three taught for Tanay (the hair kept under the hat),
-      the cards saying the record does not say whether he went; Malabon,
-      fifteen; the woman of Cavite and the rice; 1906, Gómez and the three
-      terms; Manila, the crowd, Isko and his son, the Kutsero's
-      "Sumakay"; the toast broken at "At sa araw na—"; Bilibid (a stone
-      floor), Montalan; the court, "Hindi ako nagkasala", the plea
-      changed on black, the sentence; 1907, the window, the election
-      heard; the last night; the yard: walk him to the scaffold yourself,
-      his statement, the cards, "Wakas ng Ikaapat na Yugto", and the
-      screen stays black under the end card (a guest: Wakas, back to the
-      title). New people and places are dashed boxes or dark walls:
-      expected. Failure: Macario anywhere a [CONTEXT] event happens, an
-      English line with no Tagalog after it, a black screen with nothing
-      happening (before the end), the scaffold reached with nothing
-      said, or the scene coming back after the last card.
+    Nothing open: Blocks 119 to 126 reported working on 9 Oct 2026.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
