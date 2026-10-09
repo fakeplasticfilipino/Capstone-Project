@@ -2885,9 +2885,14 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       // fights won) until the world is the student's again; the guide then
       // points where the step in hand is done (GUIDE_AT), or shows nothing
       // for a step that names nowhere.
-      const free = await playOn(p.page, "Shell.state !== 'playing' || (!cutscenePlaying && !inDialogue && " +
+      // questAnnounceReady and no tutorial, as updateGuide itself asks.
+      const free = await playOn(p.page, "Shell.state !== 'playing' || (questAnnounceReady && !tutorial && " +
+        "!cutscenePlaying && !inDialogue && " +
         "!enemiesAlive() && (!sceneScriptsRunning.size || advanceGoal) && !blackout.classList.contains('visible') && " +
-        "document.getElementById('intertitle').classList.contains('hidden'))", 30000);
+        "document.getElementById('intertitle').classList.contains('hidden'))",
+        // A beat at a student's speed (Act I's report and its year on)
+        // outlasts thirty seconds of pressing through.
+        SPEED > 1 ? 30000 : 150000);
       await p.page.waitForTimeout(250);
       const pointed = await p.page.evaluate(() => {
         const t = guideTarget();

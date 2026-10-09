@@ -588,7 +588,8 @@ Objective 3, integrated assessment. (COMPLETE) Pre-tests and post-tests
 graded in the game (Block 68, with a pass mark and a replay for a failed
 post-test), in-game performance scoring, optional feedback, and the
 teacher dashboard, which also edits the questions and the Talaan papers.
-Act I's items are seeded and built in (content/questions.js).
+Every act's items are built in (content/questions.js; Acts II to IV
+since Block 127), and Act I's are also seeded in the database.
 
 ## Functional requirements
 
@@ -880,8 +881,9 @@ machine, the assessment module.
         engine); the four buildings Wanted from the artist; parallax
         built and dropped (no time for its art)
     127 Acts II to IV accepted (the PLACEHOLDER and + marks taken
-        out); built-in questions and trivia for Acts II to IV; the
-        git history kept
+        out); built-in questions and trivia for Acts II to IV, checked
+        in test.js BH; the git history kept; the release run at a
+        student's speed green after one check given more time
 
 ## Blocks remaining
 
@@ -1016,7 +1018,9 @@ Playwright package.json pins, and the harness says which path
 it wanted if it is still missing. A Playwright update needs it again.
 There run.js runs everything in about two minutes, and at a student's
 speed (--real) in about four and a half. Last full run at a student's
-speed: 6 Oct 2026, 1,348 passed, 0 failed (Block 123, after its last change). Random play from
+speed: 9 Oct 2026, 1,440 checks, one failing and fixed (verify:jumps
+read Act I's report beat with only thirty seconds to play it through;
+the game was right), then the piece green again (Block 127). Random play from
 every story point (node _dev/tools/monkey.js, Block 123): 6 Oct 2026,
 three seeds, 150 runs, no error; Block 124, a fourth seed at 40
 seconds a point, 50 runs, no error, the longest idle 22 seconds. Worth

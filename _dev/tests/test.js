@@ -5490,6 +5490,34 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the game grades it itself: every right answer counted, the score recorded",
        pre.result.score === 10 && pre.result.max === 10 && pre.rows.length === 1 &&
        pre.rows[0].score === 10 && pre.rows[0].attempt === undefined, pre);
+    // Block 127: Acts II to IV carry their own bank too, so a student
+    // there meets a trivia card and a real test, not "Walang pagsusulit".
+    const later = await page.evaluate(async () => {
+      const out = {};
+      for (const n of [2, 3, 4]) {
+        const t = Assessment.runTrivia(n);
+        for (let i = 0; i < 40 && document.getElementById("quiz").classList.contains("hidden"); i++)
+          await new Promise((r) => setTimeout(r, 25));
+        const card = document.getElementById("quiz-question").textContent;
+        document.getElementById("quiz-btn").click();
+        await t;
+        const bank = QUESTIONS[n].pre;
+        const key = new Map(bank.map((q) => [q.question, q.correct]));
+        const p = Assessment.runTest(n, "pre");
+        const seen = await __drive(p, (q) => key.get(q));
+        const r = await p;
+        out[n] = { card: card === QUESTIONS[n].trivia, asked: seen.questions.length,
+                   first: seen.questions[0] === bank[0].question, score: r.score, max: r.max };
+      }
+      // Their rows taken out again, in place, so the checks after count
+      // Act I's alone.
+      const rows = __DB.assessment_scores;
+      for (let i = rows.length - 1; i >= 0; i--) if (rows[i].act_number !== 1) rows.splice(i, 1);
+      return out;
+    });
+    ok("Acts II to IV: the built-in trivia card, then ten questions of the act's own, graded (Block 127)",
+       [2, 3, 4].every((n) => later[n].card && later[n].asked === 10 && later[n].first &&
+         later[n].score === 10 && later[n].max === 10), later);
     const again = await page.evaluate(async () => {
       const p = Assessment.runTest(1, "pre");
       const seen = await __drive(p, () => 0);

@@ -41,8 +41,9 @@ of date.
 In short: every system is built and covered by automated tests, and the
 game runs on a real Android phone. All four acts are written and
 playable from their openings to their ends, each closing with its
-post-test; Act I's lines are accepted by the proponents, and those of
-Acts II to IV are waiting on their review. Act I's people are all drawn;
+post-test; every act's lines are accepted by the proponents, and every
+act ships its own trivia card and test questions, which a teacher may
+replace from the dashboard. Act I's people are all drawn;
 fifty-two pictures across the four acts (rooms, places, the people of Acts
 II to IV and their fighters) are still placeholder boxes until the
 artist's drawings arrive (ART.md).
