@@ -1336,6 +1336,12 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       document.getElementById("player").classList.contains("outfit-tinted")));
     const pb2b = await readConversation(page, 2);
     ok("and Maryam teases", pb2b.lines.length === 1 && /iskrip/.test(pb2b.lines[0]), pb2b.lines);
+    // The scene's doneFlag is set when its script resolves, a moment after
+    // the last line closes: waited for, not read at once (CI's machines are
+    // slower; Block 129).
+    for (let i = 0; i < 30 && !(await page.evaluate(() => state.flags.naitanghalAngBaldovino === true)); i++) {
+      await page.waitForTimeout(100);
+    }
     ok("the play is saved before anyone comes", await page.evaluate(() => state.flags.naitanghalAngBaldovino === true));
 
     console.log("\nThe Katipunan asks");
@@ -1580,7 +1586,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     });
     ok("the guards and their crates are gone, it is still night, and the Kasama walks up from the edge of the screen",
        after3.guards === 0 && after3.crates === 0 && after3.night && after3.npcHidden && after3.coming &&
-       after3.from >= after3.edge - 30 && after3.exits === 0, after3);
+       // Polled every 50ms, and the walk is ten times as fast in the suite
+       // (TEST_SPEED): he may be some way in by the time he is seen.
+       after3.from >= after3.edge - 150 && after3.exits === 0, after3);
     const fetch = await readConversation(page, 4);
     ok("he asks whether the three are done, and takes him back",
        fetch.lines.length === 3 && /^Kasama: Tapos na ang tatlo/.test(fetch.lines[0]) && /pulungan/.test(fetch.lines[2]), fetch.lines);
