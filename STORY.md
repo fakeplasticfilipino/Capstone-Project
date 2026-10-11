@@ -289,12 +289,14 @@ with the file name on it.
     Maryam         the company's leading lady; plays the princess.
                    The proponent's still (Block 101), facing the front, a
                    head wrap and a woven skirt; standing still.
-    Sultan         in the play, Maryam's father. The proponent's still
-                   (Block 101): a plumed turban, a red cape, a kampilan.
-                   Stands, and marches on and off, animated from it.
-    Mga Kawal      in the play, the Sultan's soldiers. The proponent's
-                   still (Block 101): a turban, a kris and a shield.
-                   March, strike and flinch, animated from it.
+    Sultan         in the play, Maryam's father. The artist's still
+                   (Block 129): a plumed turban, a dark coat, a red cape
+                   to the ground, his sword in its scabbard. Stands,
+                   walks on and off, and since Block 129 fights Don
+                   Rodrigo himself, the sword raised over his head.
+    Mga Kawal      in the play, the Sultan's soldiers. The artist's
+                   still (Block 129): a turban and a wavy kris. Walk,
+                   strike with the kris over the head, and flinch.
     Mga Manonood   the audience. Heard, never seen.
     Katipunero     the older of two men of the Katipunan who find
                    Macario in the wings, and at his oath. Real art
@@ -614,7 +616,8 @@ The first scene. (Macario on his mark beside Maryam.)
 
 The fight. The Sultan walks off; four soldiers come in from the right
 wing, one after another, and the student fights them ("Pindutin ang
-Atake para lumaban!"). Two punches drop each one. The hearts show; no
+Atake para lumaban!"). Two punches drop each one; each strikes with
+his kris raised over his head (Block 129). The hearts show; no
 gun on a stage. Running out of hearts starts the fight again with the
 fallen ones still down. The fight music (intense.mp3) plays until the
 last one falls.
@@ -623,6 +626,16 @@ last one falls.
     back to a stage of fallen soldiers; Block 93.)
 
     Sultan: Natalo... ang lahat ng aking kawal?
+  + Sultan: Kung gayon, ako mismo ang haharap sa iyo!
+
+Block 129. The Sultan fights Don Rodrigo himself, alone, his sword in
+its scabbard (the swords are wood), raised over his head and brought
+down: three blows drop him, and he falls and fades like the kawal, the
+fight music up again. Running out of hearts starts his fight again.
+
+    (Macario walks back to his mark; the Sultan walks back on from the
+    right wing, beaten, to his mark.)
+
   + Macario: Bumagsak na ang iyong kaharian, Sultan. Ibaba mo ang iyong kampilan.
   + Sultan: ...
 
@@ -1509,6 +1522,9 @@ san-juan. Plays by itself on arrival.
     Macario: Mas marami tayo.
     Bonifacio: Sugod!
 
+    (Bonifacio throws his fist up over his head; Block 129. Then he and
+    the Kasama run on ahead.)
+
 The battle, at the proponent's word a big one: fifteen soldiers in
 four waves, from both sides of the screen, with the fight music and
 four hearts on the field. Most charge with the bayonet (sundalo); one
@@ -1584,6 +1600,8 @@ Completes, with the third: Itayo ang mga panakot (3/3). Then, by itself:
 
     Katipunero: Binabaril nila ang dayami!
     Bonifacio: Habang abala sila sa mga panakot, sa gilid tayo lulusob. Sugod!
+
+    (His fist up over his head again; Block 129.)
 
 A fight of six, in two waves (the last with a rifle among them). Since
 Block 120 the straw is in the fight too: a soldier nearer a scarecrow

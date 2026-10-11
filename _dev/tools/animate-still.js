@@ -58,6 +58,14 @@
 //   hit      4 frames: the head snaps back, the body tips back, the far
 //            foot steps back to catch him, and he comes upright. Frame 1,
 //            leaning furthest back, is the knockoutFrame.
+//   slash    8 frames, once, timed as attack (Block 129): a blade in the
+//            hand (traced into the arm outline) raised over the head
+//            through 0 to 2, brought over the top and down on 3 with a
+//            pale arc along the path of its point (joints.tip), followed
+//            through and recovered. Needs the arm and the tip.
+//   rally    8 frames, once (Block 129): the fist thrown up over the head
+//            and held, for a leader's "Sugod!"; a decoration's
+//            gestureAnimation. Needs the arm.
 //
 // A new motion (a wave, a gesture while talking) is added here once and
 // is then every rig's to use.
@@ -67,6 +75,17 @@
 // third), and legSplit, the x between the legs of a figure drawn
 // three-quarter, cuts each whole leg as its own part for the march
 // instead of copying one leg as the far one.
+//
+// Block 129 added, for an arm that holds a blade: armClear (outlines
+// where the arm hangs clear of the body, so nothing is filled in behind
+// it there), legColour (beside sideColour: the colour that may fill a
+// hole the arm leaves below the waist), joints.tip, and a sheet's own
+// arms ([shoulder, arm] per frame) for a blade held the other way round
+// (the Sultan's scabbard trails behind his hand). The still is drawn
+// with a margin round it (PAD), so a raised arm is never cut off, and a
+// still delivered much larger than 540 tall is cropped and shrunk by
+// area averaging first, so the bilinear puppet never shrinks pixel art
+// by three.
 //
 // Every sheet a rig writes shares one cell, sized from every frame
 // drawn, so nothing is clipped and all of them take one set of numbers;
@@ -92,6 +111,8 @@ const { blankLayer, dropSpecks, compose, move, turn, apply, Canvas, sheet } = re
 
 const ROOT = path.join(__dirname, "..", "..");
 const FAR_SHADE = 0.6;
+// The margin round the still, in its own pixels (Block 129); set in main.
+let PAD = 0;
 
 function inPolygon(pts, x, y) {
   let inside = false;
@@ -215,10 +236,37 @@ function splitStill(still, rig) {
     // from that cloth alone, so it reads as cloth rather than a smudge of
     // it and the trousers; the rest, from whatever is around it.
     body.d.forEach((_, i) => { if (i % 4 === 3 && armMask[i >> 2]) body.d[i] = d[i]; });
+    // Block 129. Where the arm hangs clear of him (a blade's point, a
+    // hilt out behind the hand: armClear, one outline or a list) there
+    // is nothing behind it to fill, so the hole is left empty there.
+    const clear = !outlines.armClear ? []
+      : typeof outlines.armClear[0][0] === "number" ? [outlines.armClear] : outlines.armClear;
+    if (clear.length) {
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          if (armMask[y * W + x] && clear.some((c) => inPolygon(c, x, y))) {
+            body.d[at(x, y) + 3] = 0;
+            armMask[y * W + x] = 0;
+          }
+        }
+      }
+    }
     if (outlines.overLegs) {
       fillHoles(body, (x, y) => armMask[y * W + x] && overLegs(x, y), overLegs);
     }
-    fillHoles(body, (x, y) => armMask[y * W + x] && !overLegs(x, y));
+    // Block 129. Above the waist, behind a forearm, is his side: with a
+    // sideColour, only that lends colour there, so the skin of the
+    // elbow above cannot run down into it.
+    const side = rig.sideColour;
+    if (side) {
+      fillHoles(body, (x, y) => armMask[y * W + x] && !overLegs(x, y) && y < cuts.torsoBottom,
+        (x, y) => { const i = at(x, y); return side(d[i], d[i + 1], d[i + 2]); });
+    }
+    // And below it, with a legColour, only the trousers lend theirs, so a
+    // hand's edge left outside the outline cannot either.
+    const leg = rig.legColour;
+    fillHoles(body, (x, y) => armMask[y * W + x] && !overLegs(x, y) && !(side && y < cuts.torsoBottom),
+      leg && ((x, y) => { const i = at(x, y); return y < cuts.torsoBottom || leg(d[i], d[i + 1], d[i + 2]); }));
     dropSpecks(body, 40);
   }
 
@@ -334,7 +382,10 @@ function drawPose(parts, rig, pose, W, H) {
   const scaled = (leg) => ({ thigh: leg.thigh * k0, knee: leg.knee * k0 });
   const near = legMaps(scaled(p.near)), far = legMaps(scaled(p.far));
   const drop = parts.split ? 0 : rig.ground - Math.max(lowestSole(near), lowestSole(far));
-  const S = { a: scale, b: 0, c: 0, d: scale, e: 0, f: 0 };
+  // Block 129. Drawn PAD still pixels in from the left and the top, so
+  // an arm raised over his head or a blade thrown out is never cut off
+  // by a still cropped close to him.
+  const S = { a: scale, b: 0, c: 0, d: scale, e: PAD * scale, f: PAD * scale };
   const ride = compose(S, move(p.push * unit, drop));
   // bob lifts everything above the legs, in pixels of a 540 still.
   const up = compose(ride, move(0, -p.bob * unit));
@@ -361,10 +412,39 @@ function drawPose(parts, rig, pose, W, H) {
   if (parts.hasArm) {
     const arm = compose(sleeve, turn(joints.elbow[0], joints.elbow[1], p.arm));
     if (p.streaks) drawStreaks(cv, apply(arm, joints.fist), p.streaks, scale * unit);
+    if (p.arc) {
+      // Block 129. Where the blade has been since the pose before: the
+      // arm turned forward over the top (the positive way round, back,
+      // up, then forward) from arc.from to this pose.
+      const sweep = ((p.shoulder - p.arc.from.shoulder) % 360 + 360) % 360;
+      const armAt = (t) => compose(
+        compose(body, turn(joints.shoulder[0], joints.shoulder[1], p.arc.from.shoulder + sweep * t)),
+        turn(joints.elbow[0], joints.elbow[1], p.arc.from.arm + (p.arm - p.arc.from.arm) * t));
+      drawArc(cv, armAt, joints, p.arc.strength, scale * unit);
+    }
     cv.draw(parts.arm, arm);
   }
   if (parts.hasSleeve) cv.draw(parts.sleeve, sleeve);
   return cv;
+}
+
+// Block 129. The slash's arc: a pale band where the outer half of the
+// blade has passed, faint where the swing began and strongest at the
+// blade, the comic-strip sign of a cut. armAt(t) is the arm's map at a
+// point t of the swing, 0 its start and 1 this frame.
+function drawArc(cv, armAt, joints, strength, k) {
+  const STEPS = 40, at = [];
+  for (let s = 0; s < STEPS; s++) {
+    const m = armAt(s / (STEPS - 1));
+    const [fx, fy] = apply(m, joints.fist), [tx, ty] = apply(m, joints.tip);
+    at.push({ mid: [fx + (tx - fx) * 0.5, fy + (ty - fy) * 0.5], tip: [tx, ty] });
+  }
+  for (let s = 1; s < STEPS; s++) {
+    const t = s / (STEPS - 1), a = 0.7 * strength * Math.pow(t, 1.3);
+    if (a < 0.03) continue;
+    const quad = [at[s - 1].mid, at[s - 1].tip, at[s].tip, at[s].mid];
+    cv.fill((x, y) => inPolygon(quad, x, y), [255, 250, 232], a, boxOf(quad).map((v, i) => v + (i < 2 ? -1 : 1)));
+  }
 }
 
 // Three pale streaks trailing the fist, above and below the arm, the
@@ -476,6 +556,45 @@ const MOTIONS = {
       { lean: 2, head: 0, shoulder: -8, arm: -4, push: 4 },
     ],
   },
+  // Block 129. The overhead slash, for a fighter with a blade in his
+  // hand (the kawal's kris, the Sultan's kampilan, Bonifacio's sword),
+  // the blade traced into the arm outline: 0 to 2 he raises it over his
+  // head and lets it hang back behind him (the red !), 3 brings it over
+  // the top and down in front of him with a pale arc along the path of
+  // its point, 4 and 5 follow through low, 6 and 7 come back. The same
+  // timing as attack. Needs the arm and joints.tip, the blade's point.
+  slash: {
+    fps: 10, needsArm: true, needsTip: true,
+    poses: [
+      { lean: -4, head: -2, shoulder: 80, arm: -5, push: -3 },
+      { lean: -8, head: -4, shoulder: 150, arm: -30, push: -6, near: { thigh: 6, knee: 10 } },
+      { lean: -11, head: -5, shoulder: 205, arm: -60, push: -8, near: { thigh: 8, knee: 14 } },
+      { lean: 13, head: 4, shoulder: -95, arm: 35, push: 26, ...LUNGE,
+        arc: { from: { shoulder: 205, arm: -60 }, strength: 1 } },
+      { lean: 14, head: 4, shoulder: -55, arm: 20, push: 28, ...LUNGE,
+        arc: { from: { shoulder: -95, arm: 35 }, strength: 0.6 } },
+      { lean: 13, head: 3, shoulder: -15, arm: 15, push: 28, ...LUNGE },
+      { lean: 6, head: 1, shoulder: 10, arm: 8, push: 14, near: { thigh: 12, knee: 10 }, far: { thigh: -10, knee: 4 } },
+      { lean: 2, head: 0, shoulder: 4, arm: 2, push: 4 },
+    ],
+  },
+  // Block 129. The rally: the fist thrown up over his head and held,
+  // shaken once, then brought part way down, for a leader's "Sugod!"
+  // (Bonifacio, whose sword is not drawn in his hand). Played once, as
+  // a decoration's gestureAnimation (playGesture in game.js).
+  rally: {
+    fps: 8, needsArm: true,
+    poses: [
+      { lean: 1, head: -1, shoulder: -45, arm: -10 },
+      { lean: 2, head: -3, shoulder: -110, arm: -15, breathe: 0.01 },
+      { lean: 3, head: -5, shoulder: -160, arm: -15, breathe: 0.02 },
+      { lean: 3, head: -6, shoulder: -172, arm: -8, breathe: 0.02 },
+      { lean: 3, head: -6, shoulder: -165, arm: -18, breathe: 0.02 },
+      { lean: 3, head: -6, shoulder: -172, arm: -8, breathe: 0.02 },
+      { lean: 2, head: -3, shoulder: -120, arm: -20, breathe: 0.01 },
+      { lean: 1, head: -1, shoulder: -50, arm: -10 },
+    ],
+  },
   hit: {
     fps: 12, knockoutFrame: 1,
     poses: [
@@ -506,6 +625,17 @@ function debugParts(parts, W, H) {
   return cv;
 }
 
+// Block 129. A sheet may give its own [shoulder, arm] for every frame of
+// its motion (arms), for a blade held another way round than the motion
+// assumes (the Sultan's scabbard trails behind his hand): those replace
+// the motion's, and an arc runs from the frame before's.
+function withArms(pose, arms, i) {
+  if (!arms) return pose;
+  const out = Object.assign({}, pose, { shoulder: arms[i][0], arm: arms[i][1] });
+  if (pose.arc) out.arc = Object.assign({}, pose.arc, { from: { shoulder: arms[i - 1][0], arm: arms[i - 1][1] } });
+  return out;
+}
+
 function main() {
   const args = process.argv.slice(2);
   const name = args.find((a) => !a.startsWith("--"));
@@ -518,12 +648,15 @@ function main() {
   const stillPath = path.resolve(ROOT, rig.still);
   const still = asLayer(decodePng(stillPath), rig.mirror);
   const parts = splitStill(still, rig);
-  const W = Math.ceil(still.w * rig.scale), H = Math.ceil(still.h * rig.scale);
+  PAD = Math.round(still.h * 0.5);
+  const W = Math.ceil((still.w + 2 * PAD) * rig.scale), H = Math.ceil((still.h + PAD) * rig.scale);
 
   if (args.includes("--debug")) {
     const out = path.join(os.tmpdir(), name + "-parts.png");
-    const cv = debugParts(parts, still.w, still.h);
-    fs.writeFileSync(out, encodePng(still.w, still.h, cv.crop(0, 0, still.w, still.h)));
+    // Wide enough for the arm and the sleeve, drawn to the right of him.
+    const DW = still.w + 400;
+    const cv = debugParts(parts, DW, still.h);
+    fs.writeFileSync(out, encodePng(DW, still.h, cv.crop(0, 0, DW, still.h)));
     console.log("wrote " + out);
     return;
   }
@@ -531,12 +664,16 @@ function main() {
   rig.sheets.forEach((s) => {
     if (!MOTIONS[s.motion]) throw new Error("no motion " + s.motion + "; there are " + Object.keys(MOTIONS).join(", "));
     if (MOTIONS[s.motion].needsArm && !parts.hasArm) throw new Error(s.motion + " needs the rig's arm outline");
+    if (MOTIONS[s.motion].needsTip && !rig.joints.tip) throw new Error(s.motion + " needs the rig's joints.tip, the blade's point");
+    if (s.arms && s.arms.length !== MOTIONS[s.motion].poses.length) {
+      throw new Error(s.file + ": arms has " + s.arms.length + " frames; " + s.motion + " has " + MOTIONS[s.motion].poses.length);
+    }
   });
 
   // One cell for every sheet: every frame of every sheet drawn, and the
   // cell the box around all of them, a few pixels spare, so a fist drawn
   // back or thrown out is never cut off.
-  const drawn = rig.sheets.map((s) => MOTIONS[s.motion].poses.map((pose) => drawPose(parts, rig, pose, W, H)));
+  const drawn = rig.sheets.map((s) => MOTIONS[s.motion].poses.map((pose, i) => drawPose(parts, rig, withArms(pose, s.arms, i), W, H)));
   let x0 = W, x1 = 0, y0 = H;
   drawn.flat().forEach((cv) => {
     for (let y = 0; y < H; y++) {
@@ -558,10 +695,10 @@ function main() {
   // The numbers: his height in the still, standing, whatever a frame
   // does, so he is one size; and headroom for the breath and the lean
   // that lift his hair above that. One set for every sheet.
-  const top = Math.round(rig.top * rig.scale) - CELL.y;
+  const top = Math.round((rig.top + PAD) * rig.scale) - CELL.y;
   console.log("every sheet: columns: 4, contentTop: " + top +
     ", contentHeight: " + Math.round((rig.ground + 1 - rig.top) * rig.scale) +
-    ", footX: " + Math.round(rig.footX * rig.scale - CELL.x) + ", headroom: " + top);
+    ", footX: " + Math.round((rig.footX + PAD) * rig.scale - CELL.x) + ", headroom: " + top);
   rig.sheets.forEach((s) => {
     const m = MOTIONS[s.motion];
     console.log("  " + path.posix.join(path.dirname(rig.still).replace(/\\/g, "/"), s.file) + "  " + s.motion +

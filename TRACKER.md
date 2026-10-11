@@ -232,8 +232,9 @@ walk back, the retreat), each restarting a catch at the last point
 passed; the cedula is torn with Bonifacio's button; San Juan del Monte
 is fifteen soldiers in four waves; the Nangka is three scarecrows and
 six soldiers; it ends with Jacinto in Laguna and 1897 and 1898 on
-black. Its paintings, Isko,
-Jacinto, Bonifacio, the printer, the messenger, the press and the straw
+black. Bonifacio is the artist's
+since Block 129, and raises his fist at "Sugod!". Its paintings, Isko,
+Jacinto, the printer, the messenger, the press and the straw
 are owed (ART.md), drawn as placeholders. The soldiers are the bantay's
 art (the sundalo of the enemy catalogue).
 
@@ -285,17 +286,19 @@ bantay-konstable) and scenes place them by type.
 Art: Macario's idle, walk, jump, punch and shot are the artist's; so
 are the street paintings, the inside of the entablado, the Mananahi,
 and the stills of the bantay, the three siga, the direktor, the
-Katipunero and the Kasama. The proponent drew Kabayo, Nanay, the
-Kutsero, the Barbero, Maryam, the Sultan, the kawal, the Mabalasig and
-the three who take the pamphlets (Blocks 100 to 102). Since Block 113
+Katipunero, the Kasama, and since Block 129 Bonifacio and the side-on
+Sultan and kawal, who strike with the slash (the blade over the head),
+the Sultan fighting Don Rodrigo himself. The proponent drew Kabayo,
+Nanay, the Kutsero, the Barbero, Maryam, the Mabalasig and the three
+who take the pamphlets (Blocks 100 to 102). Since Block 113
 the people who return in Acts II to IV are described once, in
 content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): fifty-two pictures, Act I's three (the
+in code. Still owed (ART.md): fifty-one pictures, Act I's three (the
 Barbero's chair, the Mananahi's sewing table, the pulungan's painting),
-Act II's fifteen, Act III's sixteen and Act IV's eighteen. No picture is made or borrowed
+Act II's fourteen, Act III's sixteen and Act IV's eighteen. No picture is made or borrowed
 for what is not drawn (CLAUDE.md, Conventions).
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
@@ -365,6 +368,26 @@ Oct 2026, Blocks 119 to 126 on 9 Oct 2026. Open:
        Back to the dashboard and Print. Failure: a missing page or
        style.
 
+    Block 129, on the phone:
+
+    a. The play ("dula"): four kawal come on, side on, each raising his
+       kris over his head and slashing down with a pale arc. Then the
+       Sultan says "Kung gayon, ako mismo ang haharap sa iyo!" and
+       fights alone, swinging his sheathed sword overhead; three blows
+       drop him; he walks back on from the right and the scene ends as
+       before. Failure: a box instead of a man, a blade cut off at the
+       edge, a fight that never ends, or him fading and never coming
+       back. A flat dark patch on his coat while he swings is known.
+    b. Principe Baldovino ("baldovino"): the two kawal there slash the
+       same way. Failure: the old shield.
+    c. Act II, Pugad Lawin and San Juan del Monte ("sedula",
+       "sanjuan"): Bonifacio is drawn (not a box), turns to face
+       Macario, and at "Sugod!" throws his fist up before he runs off;
+       again at the Nangka ("panakot"). Failure: a box, or him running off with no
+       gesture.
+    d. Speed: the play's fight on the cheaper phone stays as smooth as
+       before. Failure: a stutter when the kawal come on.
+
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
 stroke, and whether students find the Kasama and the three who take
@@ -386,10 +409,10 @@ proponent's word, content/questions.js holds a built-in trivia card
 and ten matched pre-test and post-test pairs for every act, so each
 act has a test before the teacher writes one.
 
-5. Art from the artist: ART.md's Owed list, fifty-two pictures since
-Block 120 (Act I's three: the pulungan's painting, the Mananahi's
-sewing table and the Barbero's chair; Act II's fifteen: seven
-paintings, Isko, Jacinto, Bonifacio, a printer, a messenger, the press,
+5. Art from the artist: ART.md's Owed list, fifty-one pictures since
+Block 129 (Act I's three: the pulungan's painting, the Mananahi's
+sewing table and the Barbero's chair; Act II's fourteen: seven
+paintings, Isko, Jacinto, a printer, a messenger, the press,
 the straw and the scarecrow; Act III's sixteen: five paintings,
 Álvarez, Poblete, Carreón, Montalan, a teacher, an American officer,
 the American in the barber's chair, the stranger in Nanay's house, the
@@ -398,7 +421,8 @@ IV's eighteen: seven paintings, Gómez, Van Schaick, Villafuerte, de
 Vega, the judge, a Bilibid guard, a woman of Cavite, Isko's son, the
 Katagalugan's fighter, and since Block 120 two townspeople for the
 crowd in Manila). PNGs with transparency; each goes through ART.md's steps. Ask in the
-order of ART.md, Draw first (Block 128).
+order of ART.md, Draw first (Block 128). Also asked for (ART.md,
+Wanted, Block 129): Bonifacio with his sword drawn, for his slash.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
@@ -989,6 +1013,12 @@ machine, the assessment module.
         act (PLACEHOLDER); ART.md, Draw first; the teacher's guide; the
         demo route (docs-private/); checked in test.js BW and from every
         story point
+    129 the artist's stills of Bonifacio, the Sultan and the kawal,
+        animated; the slash (a blade over the head) for the kawal and
+        the Sultan, who now fights Don Rodrigo himself (one new line,
+        PLACEHOLDER); Bonifacio's fist at "Sugod!" (playGesture); the
+        animate tool's margin, armClear, legColour and arms; checked in
+        verify_new_scene.js act1 and act2
 
 ## Blocks remaining
 
@@ -1011,7 +1041,7 @@ Wanted), on sale once drawn (BLOCKED, the artist).
 The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
 Block 85 except two. The item bank, one of them, is the teacher's
 (Block 110). Act I's people are all drawn since Block 102; what is still owed,
-fifty-two pictures across the four acts, is ART.md's list (BLOCKED, the
+fifty-one pictures across the four acts, is ART.md's list (BLOCKED, the
 artist). The list: DECISIONS.md,
 Block 85.
 

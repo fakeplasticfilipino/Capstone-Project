@@ -60,7 +60,17 @@
   const owed = (folder, name) => ({ src: `assets/sprites/${folder}/${name}.png`, frames: 1, fps: 1 });
   const ISKO = P.isko; // content/people.js since Block 117
   const JACINTO = owed("characters", "jacinto");
-  const BONIFACIO = owed("characters", "bonifacio");
+  // Block 129. Bonifacio is the artist's still (bonifacio-still.png),
+  // animated by _dev/tools/animate-still.js (rig _dev/rigs/bonifacio.js):
+  // the calm idle, the walk, and at "Sugod!" his fist thrown up over his
+  // head (sugod, played once by playGesture). His sword is drawn only as
+  // a hilt at his hip, so he has no slash until it is drawn (ART.md).
+  const BONIFACIO_CELL = { columns: 4, contentTop: 57, contentHeight: 296, footX: 94, headroom: 57 };
+  const BONIFACIO = {
+    idle: { src: "assets/sprites/characters/bonifacio.png", frames: 8, fps: 4, ...BONIFACIO_CELL },
+    walk: { src: "assets/sprites/characters/bonifacio-walk.png", frames: 8, fps: 12, ...BONIFACIO_CELL },
+    sugod: { src: "assets/sprites/characters/bonifacio-sugod.png", frames: 8, fps: 8, ...BONIFACIO_CELL },
+  };
   const MANLILIMBAG = owed("characters", "manlilimbag");
   const TAGAPAGBALITA = owed("characters", "tagapagbalita");
   const PALIMBAGAN = owed("scenery", "palimbagan");
@@ -548,6 +558,7 @@
       { speaker: "Macario", text: "Mas marami tayo." },
       { speaker: "Bonifacio", text: "Sugod!" },
     ]);
+    await playGesture("bonifacio-sj"); // Block 129: his fist up, then the charge
     await Promise.all([
       moveDecoration("bonifacio-sj", 1500, 420),
       moveDecoration("kasama-sj", 1560, 420),
@@ -673,6 +684,7 @@
       { speaker: "Katipunero", text: "Binabaril nila ang dayami!" },
       { speaker: "Bonifacio", text: "Habang abala sila sa mga panakot, sa gilid tayo lulusob. Sugod!" },
     ]);
+    await playGesture("bonifacio-ng"); // Block 129
     setCutscene(false);
     // Block 120: the straw is in the fight, not only in the cutscene. A
     // soldier nearer a scarecrow than Macario goes for it, two blows to
@@ -1267,7 +1279,7 @@
             dialogueSets: [oneLine("Katipunero", "Wala nang sedula. Wala nang atrasan.")],
           },
           {
-            id: "bonifacio", x: 780, label: "Bonifacio", animation: BONIFACIO,
+            id: "bonifacio", x: 780, label: "Bonifacio", animation: BONIFACIO.idle, facesPlayer: true,
             dialogueSets: [
               oneLine("Bonifacio", "Ilabas mo ang sedula mo, kapatid.", { skipIfFlag: "a2_pinunit" }),
               oneLine("Bonifacio", "Sa susunod na linggo, sa San Juan del Monte.", { requiresFlag: "a2_pinunit" }),
@@ -1334,7 +1346,8 @@
           { id: "puso-sj-4", x: 3500, type: "heart" },
         ],
         decorations: [
-          { id: "bonifacio-sj", x: 450, hidden: true, animation: BONIFACIO, faceMovement: true, speakers: ["Bonifacio"] },
+          { id: "bonifacio-sj", x: 450, hidden: true, animation: BONIFACIO.idle, walkAnimation: BONIFACIO.walk,
+            gestureAnimation: BONIFACIO.sugod, faceMovement: true, speakers: ["Bonifacio"] },
           { id: "kasama-sj", x: 760, hidden: true, animation: P.kasama.idle, walkAnimation: P.kasama.walk,
             faceMovement: true, speakers: ["Kasama"] },
         ],
@@ -1365,7 +1378,8 @@
           { doneFlag: "a2_planoNgPanakot", x: 500, facing: 1, run: thePlanOfStraw },
         ],
         decorations: [
-          { id: "bonifacio-ng", x: 330, animation: BONIFACIO, speakers: ["Bonifacio"] },
+          { id: "bonifacio-ng", x: 330, animation: BONIFACIO.idle, gestureAnimation: BONIFACIO.sugod,
+            speakers: ["Bonifacio"] },
         ],
         npcs: [
           {
@@ -1413,7 +1427,7 @@
         ],
         npcs: [
           {
-            id: "bonifacio", x: 600, label: "Bonifacio", animation: BONIFACIO,
+            id: "bonifacio", x: 600, label: "Bonifacio", animation: BONIFACIO.idle, facesPlayer: true,
             dialogueSets: [
               {
                 skipIfFlag: "a2_kinausapAngSupremo",

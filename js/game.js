@@ -1554,6 +1554,24 @@ function buildDecorations(token) {
         token, 0, { playing: () => dec.moving });
     }
 
+    // Block 129. gestureAnimation, a sheet played once by playGesture (a
+    // leader's fist raised at "Sugod!"): a third sprite in the same body,
+    // shown only while it plays, its frame read from the clock.
+    dec.gestureSpriteEl = null;
+    dec.gestureStart = 0;
+    if (dec.gestureAnimation) {
+      const gestureEl = document.createElement("div");
+      gestureEl.className = "sprite npc-sprite npc-anim-sprite";
+      gestureEl.style.display = "none";
+      if (dec.facing === -1) gestureEl.style.transform = "scaleX(-1)";
+      el.appendChild(gestureEl);
+      dec.gestureSpriteEl = gestureEl;
+      const sheet = dec.gestureAnimation;
+      setupNpcAnimation(sheet, gestureEl, dec.displayHeight || DISPLAY_HEIGHT, token, 0, {
+        frameAt: (now) => (dec.gestureStart ? ((now - dec.gestureStart) * sheet.fps * TEST_SPEED) / 1000 : 0),
+      });
+    }
+
     actElements.push(el);
     decorationEls.push(el);
   });
@@ -5672,6 +5690,7 @@ function moveDecoration(id, toX, pxPerSecond) {
     const flip = toX < from0 ? "scaleX(-1)" : "";
     dec.spriteEl.style.transform = flip;
     if (dec.walkSpriteEl) dec.walkSpriteEl.style.transform = flip;
+    if (dec.gestureSpriteEl) dec.gestureSpriteEl.style.transform = flip;
   }
   dec.moving = true;
   // Block 53. The walk sheet in, the idle sheet out, for the length of
@@ -5713,6 +5732,30 @@ function playerX() {
 function viewEdges() {
   const left = lastCameraX === null ? 0 : lastCameraX;
   return { left, right: left + (viewportWidth || measureViewport()) };
+}
+
+// Block 129. Plays a decoration's gestureAnimation once, in place of its
+// standing sheet, and resolves when the last frame has shown; then he
+// stands again. A decoration without one resolves at once. Script time,
+// so the harness's TEST_SPEED shortens it like a wait.
+function playGesture(id) {
+  const dec = ((currentScene && currentScene.decorations) || []).find((d) => d.id === id);
+  if (!dec || !dec.gestureSpriteEl) return Promise.resolve();
+  const sheet = dec.gestureAnimation;
+  const show = (on) => {
+    dec.gestureSpriteEl.style.display = on ? "" : "none";
+    if (dec.spriteEl) dec.spriteEl.style.display = on ? "none" : "";
+    if (dec.walkSpriteEl && on) dec.walkSpriteEl.style.display = "none";
+  };
+  dec.gestureStart = performance.now();
+  show(true);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      dec.gestureStart = 0;
+      if (dec.gestureSpriteEl.isConnected) show(false);
+      resolve();
+    }, (sheet.frames / sheet.fps) * 1000 / TEST_SPEED);
+  });
 }
 
 function placeDecoration(id, x) {

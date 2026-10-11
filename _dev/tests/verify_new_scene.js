@@ -800,19 +800,21 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("Kabayo is the proponent's horse, its twelve-frame sheet opening (Block 100)",
        kabayo.open && kabayo.frames === 12 && kabayo.same, kabayo);
 
-    // Block 101. The proponent's seven stills: the side-on ones animated
-    // (Nanay, the Mabalasig), the three-quarter ones marching (the Sultan,
-    // the kawal), the front ones still (the Kutsero, the Barbero, Maryam).
+    // Block 101. The proponent's stills: the side-on ones animated (Nanay,
+    // the Mabalasig), the front ones still (the Kutsero, the Barbero,
+    // Maryam). Block 129: the Sultan and the kawal are the artist's side-on
+    // stills now, each with a walk, the slash and a flinch.
     const cast = await page.evaluate(async () => {
-      const k = window.ENEMY_TYPES.kawal;
+      const k = window.ENEMY_TYPES.kawal, su = window.ENEMY_TYPES.sultan;
       const sheets = { NANAY, NANAY_WALK, MABALASIG, sultan: SULTAN.idle, sultanWalk: SULTAN.walk,
+        sultanAttack: su.attackAnimation, sultanHit: su.hitAnimation,
         KUTSERO, BARBERO, MARYAM, kawalWalk: k.animation, kawalAttack: k.attackAnimation, kawalHit: k.hitAnimation };
       await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
       return Object.fromEntries(Object.entries(sheets).map(([n, s]) => [n, !s.failed && s.frameHeight > 0 && s.frames]));
     });
     ok("the proponent's seven new characters, every sheet opening, side-on ones animated, front ones still (Block 101)",
        Object.values(cast).every(Boolean) && cast.NANAY === 8 && cast.NANAY_WALK === 8 && cast.MABALASIG === 8 &&
-         cast.sultanWalk === 8 && cast.KUTSERO === 1 && cast.BARBERO === 1 && cast.MARYAM === 1, cast);
+         cast.sultanWalk === 8 && cast.sultanAttack === 8 && cast.kawalAttack === 8 && cast.KUTSERO === 1 && cast.BARBERO === 1 && cast.MARYAM === 1, cast);
 
     const c1 = await readConversation(page, 3);
     ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
@@ -1163,27 +1165,50 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("they are the catalogue's kawal: its sheets and its hp (Block 76)",
        kawal.every((e) => e.type === "kawal" && e.kind === "enemy" && e.hp === 2 &&
          /kawal-walk.png$/.test(e.walk) && /kawal-attack.png$/.test(e.sword)), kawal);
+    // Block 129. The Sultan comes back to his fallen soldiers and fights
+    // Don Rodrigo himself: the catalogue's sultan, three blows.
+    await page.evaluate(() => { ENEMIES.forEach((e) => hitEnemy(e, 99)); });
+    const sDuel = await readConversation(page, 2);
+    ok("the Sultan comes back to his fallen soldiers and says he will face him himself (Block 129)",
+       sDuel.lines.length === 2 && /Natalo/.test(sDuel.lines[0]) && /ako mismo/.test(sDuel.lines[1]), sDuel.lines);
+    let duel;
+    for (let i = 0; i < 60; i++) {
+      duel = await page.evaluate(() => ({ n: ENEMIES.filter((e) => !e.dead).length,
+        e: ENEMIES.filter((e) => !e.dead).map((e) => ({ type: e.type, hp: e.hp, sword: e.attackAnimation && e.attackAnimation.src })),
+        cut: cutscenePlaying, dec: document.getElementById("dec-sultan").style.display }));
+      if (duel.n) break;
+      await page.waitForTimeout(100);
+    }
+    ok("he fights alone, the catalogue's sultan, three blows, his decoration gone meanwhile (Block 129)",
+       duel.n === 1 && duel.e[0].type === "sultan" && duel.e[0].hp === 3 && /sultan-attack.png$/.test(duel.e[0].sword) &&
+         !duel.cut && duel.dec === "none", duel);
     // Block 93. The fight leaves him at the stage's edge; he walks back to
     // his mark before the Sultan returns, and stands (not stuck in the walk)
     // while they talk. The box is at the top on the stage. The Sultan's
-    // bust, missing while he borrowed the soldiers' small sheet, is his own
-    // art since Block 101.
+    // bust is his own art since Block 101.
     await page.evaluate(() => { posX = 1000; ENEMIES.forEach((e) => hitEnemy(e, 99)); });
     for (let i = 0; i < 100 && !(await line(page)); i++) await page.waitForTimeout(100);
     await page.waitForTimeout(300);
     const markBack = await page.evaluate(() => ({ x: posX, anim: currentAnim, facing,
       top: document.body.classList.contains("dialogue-top") && dialogueBox.getBoundingClientRect().top < 5,
       bust: document.getElementById("dialogue-portrait-right").classList.contains("shown") }));
-    ok("after the fight he walks back to his mark, faces the Sultan and stands; the box is at the top; the Sultan's own bust (Blocks 93, 101)",
-       markBack.x === 440 && markBack.anim === "idle" && markBack.facing === 1 && markBack.top && markBack.bust, markBack);
+    ok("after the fight he walks back to his mark, faces the Sultan and stands; the box is at the top (Block 93)",
+       markBack.x === 440 && markBack.anim === "idle" && markBack.facing === 1 && markBack.top, markBack);
     // Block 113: the kingdom falls (the moro-moro's own ending), in two
     // parts with the kampilan dropped between them.
-    const s3a = await readConversation(page, 3);
+    // The Sultan's own bust on his own line (Block 101), the second here
+    // since Block 129 put Macario's first.
+    const s3m = await readConversation(page, 1);
+    for (let i = 0; i < 40 && !/^Sultan:/.test((await line(page)) || ""); i++) await page.waitForTimeout(50);
+    ok("the Sultan's own bust on his line (Block 101)", await page.evaluate(() =>
+      document.getElementById("dialogue-portrait-right").classList.contains("shown")));
+    const s3s = await readConversation(page, 1);
+    const s3a = { lines: s3m.lines.concat(s3s.lines) };
     const s3b = await readConversation(page, 5);
     const s3 = { lines: s3a.lines.concat(s3b.lines) };
-    ok("the Sultan comes back to his fallen soldiers, his kingdom falls, Maryam leaves him, and the crowd cheers (Block 113)",
-       s3.lines.length === 8 && /Bumagsak na ang iyong kaharian/.test(s3.lines[1]) &&
-       /tatanggapin ko ang kanyang pananampalataya/.test(s3.lines[5]) && /^Mga Manonood:/.test(s3.lines[7]), s3.lines);
+    ok("beaten, the Sultan walks back on; his kingdom falls, Maryam leaves him, and the crowd cheers (Blocks 113, 129)",
+       s3.lines.length === 7 && /Bumagsak na ang iyong kaharian/.test(s3.lines[0]) &&
+       /tatanggapin ko ang kanyang pananampalataya/.test(s3.lines[4]) && /^Mga Manonood:/.test(s3.lines[6]), s3.lines);
     ok("the curtain closes", await waitIntertitle(page, true, 3000) &&
        (await intertitle(page)).lines[0] === "Nagsara ang telon.");
     await waitIntertitle(page, false, 12000);
@@ -2311,6 +2336,29 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       ok("a reload mid-charge at San Juan del Monte plays the charge again",
          c.lines[0] === "Bonifacio: Ang polvorin. Doon nakatago ang pulbura at mga armas ng mga Kastila." &&
          await a2.page.evaluate(() => Acts.current === 2 && currentSceneId === "san-juan" && Math.round(posX) === 600), c.lines);
+      // Block 129. Bonifacio is the artist's now, and at "Sugod!" his fist
+      // goes up (playGesture: the sugod sheet shown, then his idle again)
+      // before he runs on.
+      const watch = a2.page.evaluate(() => new Promise((resolve) => {
+        const dec = currentScene.decorations.find((d) => d.id === "bonifacio-sj");
+        let seen = false;
+        const t0 = performance.now();
+        const tick = () => {
+          if (dec.gestureSpriteEl && dec.gestureSpriteEl.style.display === "") seen = true;
+          if (seen && dec.gestureSpriteEl.style.display === "none") {
+            return resolve({ seen, back: dec.spriteEl.style.display !== "none" || dec.moving,
+              sheet: !dec.gestureAnimation.failed && dec.gestureAnimation.frames,
+              idle: !dec.animation.failed && /bonifacio.png$/.test(dec.animation.src) });
+          }
+          if (performance.now() - t0 > 20000) return resolve({ seen, timedOut: true });
+          requestAnimationFrame(tick);
+        };
+        tick();
+      }));
+      await readLines(a2.page, 3);
+      const sugod = await watch;
+      ok("Bonifacio's own art, and his fist raised at Sugod before the charge (Block 129)",
+         sugod.seen && sugod.back && sugod.sheet === 8 && sugod.idle, sugod);
       await a2.ctx.close();
     }
   }

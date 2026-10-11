@@ -37,7 +37,11 @@ Stand-ins below, as the big siga is.
 
 Status markers: (NOT STARTED), (IN PROGRESS), (COMPLETE).
 
-Last updated: 9 Oct 2026, Block 128 (Draw first: the fifty-two
+Last updated: 12 Oct 2026, Block 129 (fifty-one owed: Bonifacio
+arrived as one still, and the artist's side-on stills of the Sultan and
+the kawal replaced the proponent's; all three animated by
+animate-still.js; Bonifacio with his sword drawn is Wanted). Before
+that, 9 Oct 2026, Block 128 (Draw first: the fifty-two
 owed, ranked for the artist; nothing owed changed). Before that, 8 Oct
 2026, Block 126 (the four buildings that are
 gone into, Wanted for the doors, not yet named by the game; the
@@ -84,7 +88,7 @@ pulungan).
 
 ## Draw first
 
-Block 128. The order to ask the artist for the fifty-two below, so each
+Block 128. The order to ask the artist for the fifty-one below, so each
 delivery takes the most boxes off the screen. Ranked by who sees it:
 first the act the study collects data on, then what is on screen in
 more than one act or in every battle, then each act's own people and
@@ -115,9 +119,9 @@ only the order.
          selda.jpg              the cell in Bilibid, Acts III and IV
          bantay-bilibid.png     its guard, Acts III and IV
 
-    3  Each act's own people and places (twenty-two)
-         Act II   bonifacio.png, jacinto.png, bahay.jpg, pugad-lawin.jpg,
-                  san-juan.jpg, nangka.jpg, balara.jpg, laguna.jpg
+    3  Each act's own people and places (twenty-one)
+         Act II   jacinto.png, bahay.jpg, pugad-lawin.jpg, san-juan.jpg,
+                  nangka.jpg, balara.jpg, laguna.jpg
          Act III  burol.jpg, barberya.jpg, calle-gunao.jpg, poblete.png,
                   alvarez.png, watawat-katagalugan.png
          Act IV   gomez.png, van-schaick.png, himpilan.jpg, malabon.jpg,
@@ -195,10 +199,6 @@ animate-still.js can move them; the things are stills.
     assets/backgrounds/act2/laguna.jpg
         Jacinto's camp in Laguna, 1897: by day, among trees.
         (NOT STARTED)
-
-    assets/sprites/characters/bonifacio.png
-        Andres Bonifacio, the Supremo, 1896: side on, standing; he walks
-        (charges) at San Juan del Monte. (NOT STARTED)
 
     assets/sprites/characters/jacinto.png
         Emilio Jacinto, about twenty, the Katipunan's writer: side on,
@@ -417,9 +417,13 @@ forgotten.
         (siga-N, -walk, -attack, -hit; Blocks 96, 98), the direktor
         (direktor.png, breathing only, Block 98), the Katipunero and
         the Kasama (their idle and -walk, Block 98), Nanay (her idle and
-        walk), the Mabalasig (idle), the Sultan (idle and a march) and
-        the kawal (march, a thrust and a flinch; Block 101, from the
-        proponent's stills). Made from the
+        walk), the Mabalasig (idle; Block 101, from the proponent's
+        still), the Sultan (idle, walk, the slash and a flinch), the
+        kawal (walk, the slash and a flinch) and Bonifacio (idle, walk
+        and his fist raised at "Sugod!", bonifacio-sugod.png; Block 129,
+        from the artist's stills, the big ones cropped and shrunk to
+        about 540 tall first). Where a sleeve leaves the body, the coat
+        behind it is filled flat (the Sultan's, while he swings). Made from the
         artist's stills (<name>-still.png) by _dev/tools/animate-still.js
         and a rig each in _dev/rigs/, as the bantay's are by
         animate-bantay.js; the stills themselves are the artist's.
@@ -489,6 +493,18 @@ scene until it arrives.
         the picture plus an exit at its door), so the door in the
         picture and the doorway the student walks into are the same
         place. (NOT STARTED)
+
+Block 129: only the hilt of Bonifacio's sword is drawn, at his hip, so
+he raises his fist at "Sugod!" rather than his sword. With the sword in
+his hand he would swing it as the kawal and the Sultan do (the slash),
+at both charges.
+
+    assets/sprites/characters/bonifacio-still.png (a second still)
+        Bonifacio as delivered (side on, facing right, the same clothes
+        and size), but with his sword drawn and held low in his near
+        hand, the blade forward and clear of his body, on a transparent
+        background. It replaces the still under the same name; his rig
+        is traced again and gains the slash. (NOT STARTED)
 
 ## No picture, by design
 

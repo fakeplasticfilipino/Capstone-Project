@@ -5756,6 +5756,70 @@ them (the green line, Ituloy muna, Hindi naipasa), so a teacher can
 match the screen to the page. prepare.js stamps it like the other two
 pages.
 
+## Block 129: three stills from the artist, and a sword attack, 12 Oct 2026
+
+The artist delivered three stills, dropped into assets/ by the
+proponent: Bonifacio (owed since Block 113), and side-on redraws of the
+Sultan and the kawal, whose three-quarter stills (the proponent's,
+Block 101) only marched and thrust. The proponent asked for a sword
+attack for "everyone with a sword", the Sultan fighting included, and
+chose the overhead slash.
+
+One motion, slash, added to animate-still.js's library rather than a
+tool per character (Consistency): the blade is traced into the arm, so
+it moves with the hand, and the timing is attack's, so game.js's red !
+and dash need nothing new. The swing goes over the top (the shoulder
+turned the positive way round, back, up, forward), and the arc is drawn
+along the path of the blade's point between the windup and the blow,
+as a band rather than dots, which at a phone's size read as nothing.
+The punch's streaks were the model.
+
+Blades raised four things the tool had never met. A swung arm leaves
+the body over empty air (the hilt behind the hand, the blade past the
+trousers), and the hole-filler painted those as blobs on the body:
+armClear names where nothing is behind. The forearm's hole filled with
+the elbow's skin: sideColour, already used behind the sleeve, now also
+governs the hole above the waist, and legColour, new, below it. A
+raised blade left the canvas, which was the still's own size: the tool
+now draws with a margin (PAD). And the Sultan holds his sword by the
+scabbard, the long end trailing behind his hand, so the motion's angles
+would have struck with the pommel: a sheet may give its own [shoulder,
+arm] per frame (arms), worked out from where the scabbard points.
+
+The new stills of the kawal and Bonifacio were about 1300 pixels tall,
+and the puppet samples bilinearly, which would shimmer pixel art shrunk
+by three; they were cropped and shrunk by area averaging to about 540
+tall, like every earlier still, and the originals kept in
+docs-private/art-delivered/. Bonifacio's came on black with no
+transparency; key-black.py's flood at its threshold of 32 ate his black
+hair and his scabbard, and the background was in fact no brighter than
+1, so it was flooded at 2 (in node: no Python on the proponent's
+computer). A raised blade also widens the one cell all of a rig's
+sheets share: at 0.75 the kawal's three sheets were three and a half
+times the pixels of the old ones, too much for four on a low-end
+phone's stage, so these rigs draw at 0.55, about the siga's size.
+
+Bonifacio's sword is drawn only as its hilt. Swinging a hilt, or making
+a blade, is out (no art that is not the artist's), so at the
+proponent's choice he raises his fist at both "Sugod!" lines (rally,
+played by playGesture, a decoration's third sheet beside its idle and
+walk), and a still with the sword drawn is in ART.md, Wanted. The
+Kasama's and the Mabalasig's sheathed bolos were left, at the
+proponent's word.
+
+The Sultan's fight: after his kawal, he says one line of ours ("Kung
+gayon, ako mismo ang haharap sa iyo!", PLACEHOLDER) and is the
+catalogue's sultan, hp 3, one more than a kawal, so the play's last
+fight is its hardest. A beaten enemy fades and the engine keeps where
+he fell to itself, so rather than reach into ENEMIES the actor walks
+back on from the wing to give up his kingdom, as he already did after
+his kawal; the scene from there is unchanged. The sword stays in its
+scabbard: Maryam has already said the swords are wood.
+
+Known: while the Sultan's sleeve moves, his coat behind it is a flat
+dark fill, since the sleeve covers most of his narrow coat; it shows
+for the swing only.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

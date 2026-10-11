@@ -915,7 +915,9 @@ holds its first frame otherwise, and faceMovement turns the art toward
 where he is walking (art assumed to face right) and leaves it there
 when he stops. Block 53 added walkAnimation for a character with both:
 animation is shown standing, walkAnimation only while moveDecoration
-carries it, two sprites in one body swapped on the change.
+carries it, two sprites in one body swapped on the change. Block 129
+added gestureAnimation, a third, shown only while playGesture(id)
+plays it once.
 
 arrivalDialogues are conversations nobody starts: they open the moment a
 fade into the scene (Acts.gotoScene) finishes. The first entry whose
@@ -1138,6 +1140,10 @@ of them plain globals in game.js, like addQuest:
                                  (Block 82). Show what can be shown:
                                  an action the game can play is not
                                  put on a black card
+    playGesture(id)              Block 129: a decoration's
+                                 gestureAnimation played once in place
+                                 of its standing sheet (Bonifacio's fist
+                                 at "Sugod!"); resolves when it ends
     runSceneScript()             plays the scene's pending script now,
                                  for a script a gift or a conversation
                                  unlocks mid-scene (Block 57)
@@ -1258,7 +1264,10 @@ to hand), sentinela (a rifle; a guard) and konstable (the Philippine
 Constabulary, hand to hand; Block 117) have their own pictures, owed:
 the placeholder box until drawn (Block 118, the art rule under
 Conventions). Act IV adds bantay-konstable (Block 119), the
-Constabulary on guard with a rifle, on the konstable's picture.
+Constabulary on guard with a rifle, on the konstable's picture. Block
+129 adds sultan, the play's Sultan when he fights Don Rodrigo himself
+(hp 3, the slash), his cell SULTAN_CELL beside the kawal's, read by
+content/act1.js for his idle and walk.
 
 A placement's own fields win over its type's, so a sentry can see
 further than the rest of his kind without a second type. A placement
@@ -1643,7 +1652,13 @@ looped), attack (the fist drawn back through the red ! and thrown on
 the dash; 8, once; needs the arm), hit (the flinch; 4, knockoutFrame 1),
 and since Block 101 march (the walk of a figure drawn three-quarter,
 each leg lifted in turn; 8, looped) and thrust (a strike with the whole
-body behind a held blade, for full hands; 8, once, timed as attack). A
+body behind a held blade, for full hands; 8, once, timed as attack);
+since Block 129 slash (a blade in the hand raised over the head
+through the red !, brought over the top and down with a pale arc behind
+its point; 8, once, timed as attack; needs the arm and joints.tip, the
+blade's point, the blade traced into the arm outline) and rally (the
+fist thrown up over the head and held, a leader's "Sugod!"; 8, once,
+played as a decoration's gestureAnimation). A
 rig picks the ones it needs: an NPC who stands and talks takes idle,
 one a cutscene walks on idle and walk, an enemy all four. A new motion
 (a wave, a gesture) is added to MOTIONS once and is then every rig's.
@@ -1665,14 +1680,26 @@ mirror). A prop held still in the hands (the Mabalasig's paper, the
 Sultan's kampilan, the kawal's kris) is fine with no arm parts, the
 blade traced as overLegs where it crosses the legs (filled over the
 trousers, clear beyond them, or the blade breaks off when a leg
-moves). A prop that must move with the arm (the bantay's rifle) needs
+moves). A blade that swings (Block 129) is in the arm outline instead,
+with armClear outlines where it hangs clear of the body (nothing is
+filled behind it there), sideColour and legColour naming what may fill
+the hole it leaves above and below the waist, and, for a blade held
+the other way round (the Sultan's scabbard trails behind his hand), the
+sheet's own arms: [shoulder, arm] for each frame. A blade or a sword
+that is not drawn in the hand (Bonifacio's, only its hilt at his hip)
+is not swung: ask the artist. A prop that must move with the arm (the bantay's rifle) needs
 its own part and rules, as animate-bantay.js has, so say so before
 promising it.
 
 The steps:
 
   1. Save the still as assets/sprites/<folder>/<name>-still.png
-     (characters/ for anyone who talks, enemies/ for a fighter).
+     (characters/ for anyone who talks, enemies/ for a fighter). One
+     delivered much larger (Block 129: the kawal and Bonifacio, 1500
+     tall) is cropped to the figure and shrunk by area averaging to
+     about 540 tall first, and one on black is flooded out from the
+     edges (key-black.py's way) through the darkest values only, so
+     black hair stays. The original is kept in docs-private/.
   2. Copy _dev/rigs/siga-2.js to _dev/rigs/<name>.js and set still,
      mirror and the sheet files. Trace the rest on the still: top,
      ground and footX; the joints; the cuts; the outlines (sleeve and
@@ -2464,7 +2491,9 @@ look, by system:
                                           its own tool), 101 (seven
                                           more; march, thrust,
                                           legSplit, stride; the calm
-                                          idle)
+                                          idle), 129 (the slash and the
+                                          rally, armClear, arms, the
+                                          margin; the Sultan fights)
     enemy catalogue                       Block 76 (Blocks 73 and 74's
                                           test room removed in 95)
     these files compacted                 Block 79

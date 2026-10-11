@@ -54,7 +54,11 @@ const SIGA_CELLS = {
   2: { columns: 4, contentTop: 7, contentHeight: 405, footX: 149, headroom: 7 },
   3: { columns: 4, contentTop: 8, contentHeight: 401, footX: 136, headroom: 8 },
 };
-const KAWAL_CELL = { columns: 4, contentTop: 6, contentHeight: 366, footX: 113, headroom: 6 };
+// Block 129. The kawal's and the Sultan's cells (_dev/tools/animate-still.js,
+// rigs kawal and sultan): tall headroom for the blade raised over the
+// head. content/act1.js reads SULTAN_CELL for his idle and his walk.
+const KAWAL_CELL = { columns: 4, contentTop: 103, contentHeight: 296, footX: 188, headroom: 103 };
+const SULTAN_CELL = { columns: 4, contentTop: 68, contentHeight: 281, footX: 172, headroom: 68 };
 const sigaFighter = (n, size, hp) => ({
   kind: "enemy",
   hp,
@@ -107,20 +111,35 @@ window.ENEMY_TYPES = {
     },
   },
 
-  // The Sultan's soldier in the play (Block 59). Since Block 101 the
-  // proponent's still (kawal-still.png), a turban, a kris and a shield,
-  // drawn three-quarter, animated by _dev/tools/animate-still.js (rig
-  // _dev/rigs/kawal.js): he marches (each leg lifted in turn), strikes
-  // with the thrust, his whole body behind the blade since both hands are
-  // full (frames 0 to 2 the red !, 3 the blow, as the siga's punch), and
-  // flinches with the hit. One cell for all three.
+  // The Sultan's soldier in the play (Block 59). Since Block 129 the
+  // artist's still (kawal-still.png, delivered as moro.png), side on, a
+  // turban and a wavy kris in his hand, animated by
+  // _dev/tools/animate-still.js (rig _dev/rigs/kawal.js): he walks,
+  // strikes with the slash, the kris raised over his head through frames
+  // 0 to 2 (the red !) and brought down on 3 (the blow, as the siga's
+  // punch), and flinches with the hit. One cell for all three.
   kawal: {
     kind: "enemy",
     hp: 2,
-    animation: { src: "assets/sprites/enemies/kawal-walk.png", frames: 8, fps: 10, ...KAWAL_CELL },
+    animation: { src: "assets/sprites/enemies/kawal-walk.png", frames: 8, fps: 12, ...KAWAL_CELL },
     attackAnimation: { src: "assets/sprites/enemies/kawal-attack.png", frames: 8, fps: 10, ...KAWAL_CELL },
     hitAnimation: {
       src: "assets/sprites/enemies/kawal-hit.png", frames: 4, fps: 12, ...KAWAL_CELL, knockoutFrame: 1,
+    },
+  },
+
+  // Block 129. The Sultan of the play, when his kawal are down: he
+  // fights Don Rodrigo himself, the sword still in its scabbard (the
+  // play's swords are wood). The artist's still (sultan-still.png), rig
+  // _dev/rigs/sultan.js: his walk, the slash and the flinch, in his cell.
+  // Three blows to bring down, one more than a kawal.
+  sultan: {
+    kind: "enemy",
+    hp: 3,
+    animation: { src: "assets/sprites/characters/sultan-walk.png", frames: 8, fps: 12, ...SULTAN_CELL },
+    attackAnimation: { src: "assets/sprites/characters/sultan-attack.png", frames: 8, fps: 10, ...SULTAN_CELL },
+    hitAnimation: {
+      src: "assets/sprites/characters/sultan-hit.png", frames: 4, fps: 12, ...SULTAN_CELL, knockoutFrame: 1,
     },
   },
 

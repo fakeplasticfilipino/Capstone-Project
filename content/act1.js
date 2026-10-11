@@ -134,17 +134,17 @@ const KABAYO = window.PEOPLE.kabayo;
 // nod only, so his cane stays on the ground. He never walks.
 const DIREKTOR = window.PEOPLE.direktor;
 
-// The play's cast (Block 101, the proponent's stills). Maryam faces the
-// front and stands still. The Sultan is drawn three-quarter, with his
-// kampilan: the calm idle, and the march (each leg lifted in turn) when
-// he walks on and off, from _dev/rigs/sultan.js. His soldiers are the
-// "kawal" of the enemy catalogue (content/enemies.js), where their
-// sheets and numbers are.
+// The play's cast. Maryam faces the front and stands still (Block 101,
+// the proponent's still). The Sultan is the artist's still since Block
+// 129, side on, his sword in its scabbard: the calm idle, and the walk
+// when he walks on and off, from _dev/rigs/sultan.js; his cell
+// (SULTAN_CELL) is in content/enemies.js, beside the "sultan" he becomes
+// when he fights. His soldiers are the "kawal" of the enemy catalogue,
+// where their sheets and numbers are.
 const MARYAM = window.PEOPLE.maryam;
-const SULTAN_CELL = { columns: 4, contentTop: 8, contentHeight: 383, footX: 87, headroom: 8 };
 const SULTAN = {
   idle: { src: "assets/sprites/characters/sultan.png", frames: 8, fps: 4, ...SULTAN_CELL },
-  walk: { src: "assets/sprites/characters/sultan-walk.png", frames: 8, fps: 10, ...SULTAN_CELL },
+  walk: { src: "assets/sprites/characters/sultan-walk.png", frames: 8, fps: 12, ...SULTAN_CELL },
 };
 
 // Block 80. The Katipunan's people and the three who take the pamphlets:
@@ -575,6 +575,27 @@ async function thePlay() {
   showDecoration("sultan", true);
   turnPlayer(1);
   await moveDecoration("sultan", SULTAN_MARK, 200);
+  await playDialogue([
+    { speaker: "Sultan", text: "Natalo... ang lahat ng aking kawal?" },
+    { speaker: "Sultan", text: "Kung gayon, ako mismo ang haharap sa iyo!" }, // PLACEHOLDER
+  ]);
+
+  // Block 129. Then he fights Don Rodrigo himself, the sword still in
+  // its scabbard (the swords are wood, Maryam said): the "sultan" of the
+  // enemy catalogue, standing where he stood. Beaten, he falls and fades
+  // like everyone who fights, and the actor walks back on from the wing
+  // to give up his kingdom, as he came back after his kawal.
+  showDecoration("sultan", false);
+  setCutscene(false);
+  setMusic("assets/audio/music/intense.mp3");
+  await spawnEnemies([{ type: "sultan", id: "sultan-laban", x: SULTAN_MARK - 40 }]);
+  setMusic(null);
+  setCutscene(true);
+  placeDecoration("sultan", STAGE_WIDTH + 100);
+  await movePlayer(STAGE_PLAY_X, 220);
+  showDecoration("sultan", true);
+  turnPlayer(1);
+  await moveDecoration("sultan", SULTAN_MARK, 160);
   // Block 113, at the proponent's word ("include the part where the
   // muslim kingdom fell"): the moro-moro ends as the plays of the
   // period ended, not with a father's blessing. The Moorish kingdom
@@ -583,7 +604,6 @@ async function thePlay() {
   // is the genre, a Spanish-era stage teaching who wins. PLACEHOLDER,
   // every line from here to the crowd.
   await playDialogue([
-    { speaker: "Sultan", text: "Natalo... ang lahat ng aking kawal?" },
     { speaker: "Macario", text: "Bumagsak na ang iyong kaharian, Sultan. Ibaba mo ang iyong kampilan." },
     { speaker: "Sultan", text: "..." },
   ]);
@@ -1953,8 +1973,8 @@ window.ACT_1 = {
       ],
       decorations: [
         // The Sultan: off stage in the right wing until he walks on. He
-        // marches while he walks, stands with the idle, and turns the
-        // way he goes (Block 101).
+        // walks, stands with the idle, and turns the way he goes (Blocks
+        // 101, 129).
         { id: "sultan", x: STAGE_WIDTH + 100, hidden: true,
           animation: SULTAN.idle, walkAnimation: SULTAN.walk, faceMovement: true },
         // Block 80. The Katipunan's two men, in the right wing until they
