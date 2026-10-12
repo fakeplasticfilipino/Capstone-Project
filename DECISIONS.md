@@ -5820,6 +5820,17 @@ Known: while the Sultan's sleeve moves, his coat behind it is a flat
 dark fill, since the sleeve covers most of his narrow coat; it shows
 for the swing only.
 
+## Block 130: the paper's title made flat, 12 Oct 2026
+
+The proponent, from the phone: the title of a Talaan paper (the card
+that opens when one is picked up) was unreadable. The card's title
+borrows the menu heading's class, and the pixel theme gives every such
+heading a 3px ink shadow, which is right for cream letters on the dark
+screens and wrong for dark letters on the card's light paper, where
+the shadow doubles every stroke. #page-card-title now sets no shadow;
+being an id it outranks the class, so every other heading keeps its
+own. Checked by the computed style in a browser.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

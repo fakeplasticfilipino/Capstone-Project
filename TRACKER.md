@@ -388,6 +388,10 @@ Oct 2026, Blocks 119 to 126 on 9 Oct 2026. Open:
     d. Speed: the play's fight on the cheaper phone stays as smooth as
        before. Failure: a stutter when the kawal come on.
 
+    Block 130, on the phone: pick up a Talaan paper on Act I's street.
+    Its title (e.g. ANG KOMEDYA) is flat dark letters on the paper, no
+    shadow, readable. Failure: the doubled, smeared title.
+
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
 stroke, and whether students find the Kasama and the three who take
@@ -1019,6 +1023,9 @@ machine, the assessment module.
         PLACEHOLDER); Bonifacio's fist at "Sugod!" (playGesture); the
         animate tool's margin, armClear, legColour and arms; checked in
         verify_new_scene.js act1 and act2
+    130 the Talaan paper's title flat, with no shadow: on the light
+        paper the heading's ink shadow made it unreadable (the
+        proponent, on the phone)
 
 ## Blocks remaining
 

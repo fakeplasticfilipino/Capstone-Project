@@ -3611,6 +3611,10 @@ body.text-lg .intertitle-line { font-size: 36px; }
 #page-card-title {
   color: #2b1d10;
   margin: 4px 0 8px;
+  /* Flat, like the rest of the paper (Block 130): the heading's ink
+     shadow is for cream on a dark screen, and on this light paper it
+     smeared the dark title into something unreadable. */
+  text-shadow: none;
 }
 
 #page-card-text {
