@@ -413,7 +413,8 @@ proponent's word, content/questions.js holds a built-in trivia card
 and ten matched pre-test and post-test pairs for every act, so each
 act has a test before the teacher writes one.
 
-5. Art from the artist: ART.md's Owed list, fifty-one pictures since
+5. Art from the artist: ART.md (Backgrounds, Sprites, Props, by act,
+since Block 131 written for the artist), fifty-one pictures since
 Block 129 (Act I's three: the pulungan's painting, the Mananahi's
 sewing table and the Barbero's chair; Act II's fourteen: seven
 paintings, Isko, Jacinto, a printer, a messenger, the press,
@@ -424,9 +425,9 @@ Katagalugan's flag, the American soldier and the Constabulary; Act
 IV's eighteen: seven paintings, Gómez, Van Schaick, Villafuerte, de
 Vega, the judge, a Bilibid guard, a woman of Cavite, Isko's son, the
 Katagalugan's fighter, and since Block 120 two townspeople for the
-crowd in Manila). PNGs with transparency; each goes through ART.md's steps. Ask in the
-order of ART.md, Draw first (Block 128). Also asked for (ART.md,
-Wanted, Block 129): Bonifacio with his sword drawn, for his slash.
+crowd in Manila). PNGs with transparency. Ask act by act, Act I first, as ART.md is
+ordered. Also asked for (ART.md, Also wanted): Bonifacio with his sword
+drawn, for his slash.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
@@ -701,7 +702,7 @@ corner shop sells three items bought with barya, the lagundi (a heal),
 the anting-anting (a fourth heart) and the pulbura (a faster shot),
 open once Act I's savings are given. No cosmetic is sold: one worn
 without its sheets would draw Macario as the placeholder box, so two
-outfits are asked of the artist (ART.md, Wanted) and go on sale when
+outfits are asked of the artist (ART.md, Also wanted) and go on sale when
 drawn. What remains is art, not code.
 
 Stated for the defense (Block 121): since schema 006 (Block 68, the
@@ -734,7 +735,7 @@ The paper specifies seventeen.
 | Dynamic Difficulty | (BUILT) Guard and enemy speed scaled by act, 1.00 to 1.45. Verified against the harness fixture; seen in Act II (1.15) since Block 113, Act III (1.30) and Act IV (1.45). Since Block 128 it also eases for the student: after 3 setbacks in a scene the guards and enemies slow to 0.85 and the meter fills at 0.7, after 6 to 0.7 and 0.5, cleared by progress, silent, counted as assists in the save |
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (the lagundi, sold since Block 121) |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. The story hands over the stage clothes (Block 82) and Act III's disguise (Block 117), each slowing detection while still; the corner shop sells the lagundi, the anting-anting (a fourth heart) and the pulbura (a faster shot) since Block 121; the rest verified against the fixture |
-| Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No cosmetic outfit ships until the artist draws one (two asked for, ART.md, Wanted); verified against the fixture |
+| Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No cosmetic outfit ships until the artist draws one (two asked for, ART.md, Also wanted); verified against the fixture |
 | Trivia | (BUILT) Act I built in and editable; Acts II to IV have none yet (the teacher's, on the dashboard) |
 | Act Assessment | (BUILT) Act I built in and editable; a 75% pass mark and a replay before another post-test try. Acts II to IV have none yet (the teacher's) |
 | Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded, not scored |
@@ -1026,6 +1027,10 @@ machine, the assessment module.
     130 the Talaan paper's title flat, with no shadow: on the light
         paper the heading's ink shadow made it unreadable (the
         proponent, on the phone)
+    131 ART.md rewritten for the artist: Backgrounds, Sprites, Props,
+        each by act, then COMPLETED; pixel sizes for the paintings;
+        "Also wanted" for what the game does not name yet; the check
+        in lib/checks.js reads the new layout
 
 ## Blocks remaining
 
@@ -1186,7 +1191,7 @@ the real content: Act I end to end as a student, to the post-test
 opening; Acts II, III and IV end to end as a guest; reloads mid-beat, old saves, a
 guest going on from Act I into Act II, every story point of ?dev=1 and
 its floor; and checks that every line of the content is in STORY.md,
-that ART.md's Owed list matches the disk, that the asset manifest
+that ART.md's owed art matches the disk, that the asset manifest
 matches assets/ and every picture in it opens, and that every sheet has
 been through shrink-sprites.js. Anything other than "0 failed" is a
 regression. Under test the story runs ten times faster (Block 115);

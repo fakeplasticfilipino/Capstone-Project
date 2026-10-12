@@ -23,7 +23,7 @@
 //
 // Prints every missing picture and who uses it. verify_new_scene.js
 // runs the same search (require("./missing-art.js").findArt) and fails
-// if ART.md's "Owed" list and the files on disk disagree.
+// if ART.md's owed art (Backgrounds, Sprites, Props) and the files on disk disagree.
 //
 // Depends on nothing outside Node.
 // =============================================================

@@ -5831,6 +5831,25 @@ the shadow doubles every stroke. #page-card-title now sets no shadow;
 being an id it outranks the class, so every other heading keeps its
 own. Checked by the computed style in a browser.
 
+## Block 131: ART.md written for the artist, 12 Oct 2026
+
+The proponent: the artists could not follow ART.md. It had grown into
+a log for the team (a history paragraph per block, Owed in the order
+pictures were named, Draw first, Stand-ins, Wanted, No picture by
+design) in the engine's words (displayHeight, x 5440, world widths).
+At the proponent's word it is now four parts, Backgrounds, Sprites,
+Props and COMPLETED, the first three sorted by act, Act I first since
+it is the act the study tests. A short note at the top says how to
+draw each kind; the paintings' sizes are given in pixels to draw,
+from the stage painting (1672 by 940 for a room the game makes 1180
+wide), so a scene 3200 wide is about 4500 by 940. Pictures the game
+does not name yet (the outfits, the buildings, Bonifacio with his
+sword) stay under each act as "Also wanted", and lib/checks.js skips
+those lines when it matches the owed art against the disk, as it
+skipped the old Wanted section. The history went: it is in this file,
+block by block. A person who returns in later acts is listed under
+the act where he first appears, with the acts he is in.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

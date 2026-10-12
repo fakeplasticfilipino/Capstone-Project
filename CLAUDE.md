@@ -27,8 +27,9 @@ CHECK ART.md FROM TIME TO TIME: at the start of any session that adds
 or changes content or art, whenever a picture arrives from the artist,
 whenever content names a new picture, and before the pilot. Run
 node _dev/tools/missing-art.js to see what is missing and who uses it.
-verify_new_scene.js fails if ART.md's Owed list and the files on disk
-disagree, so a change that names a new picture, or brings one in, is
+verify_new_scene.js fails if ART.md's owed art (its Backgrounds,
+Sprites and Props, sorted by act, outside "Also wanted"; Block 131) and
+the files on disk disagree, so a change that names a new picture, or brings one in, is
 not finished until ART.md says so.
 
 ## Source of truth
@@ -328,7 +329,8 @@ the flags and the objective chain, written out and agreed.
      #6), or a floor drawn by the engine, ground: { floor } (kahoy,
      kawayan, damo, bato; Blocks 114, 119), for a room or a field; people in assets/sprites/characters/, animated from one still
      by animate-still.js where drawn side on; every picture not yet
-     drawn in ART.md, Owed (missing-art.js lists them).
+     drawn in ART.md, under Backgrounds, Sprites or Props and its act
+     (missing-art.js lists them).
   4. Fighters as types in content/enemies.js (Enemy data format), never
      a second kind of behaviour (Consistency).
   5. Speakers: an NPC is matched by its label; a decoration that speaks
@@ -1397,7 +1399,7 @@ with and never tops them up: barya below that were spent in the shop,
 on things he keeps. The general stock since Block 121 is three items,
 none story-given: lagundi (a consumable heal, 5), the anting-anting
 (maxHealthBonus, 50) and the pulbura (projectileSpeedMult, 90). No
-cosmetic is sold until its sheets are drawn (ART.md, Wanted): one worn
+cosmetic is sold until its sheets are drawn (ART.md, Also wanted): one worn
 without them would draw Macario as the placeholder box.
 
 Effects are deliberately small and few. A faster projectile, one extra
@@ -1725,8 +1727,7 @@ The steps:
      size on screen is the content's displayHeight, not the sheet's.
   7. node _dev/tools/prepare.js (the sheets were shrunk as they were
      written, Block 106; this fingerprints them and stamps the content
-     file), move the picture out of ART.md's Owed (or into
-     its Stand-ins), add a check to verify_new_scene.js that the sheets
+     file), move the picture's line in ART.md to COMPLETED, add a check to verify_new_scene.js that the sheets
      load, and run both suites.
 
 A rig's numbers are its picture's: a still replaced by the artist
@@ -2468,7 +2469,8 @@ look, by system:
                                           52 to 59, 80 (the ending),
                                           81 (checked against the
                                           histories; the guarded run)
-    STORY.md and ART.md                   Blocks 61, 77
+    STORY.md and ART.md                   Blocks 61, 77, 131 (ART.md
+                                          written for the artist)
     loading, retries, service worker      Blocks 62, 78
     run, jump, dust, apple game, rewards  Blocks 57, 63, 65, 67
     the work game and the jobs            Blocks 89, 90, 94 (the

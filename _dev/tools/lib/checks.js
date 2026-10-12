@@ -10,7 +10,7 @@
 //   syntax     every script the site or the tools load compiles
 //   story      every line and black card of content/act1.js is in
 //              STORY.md (Block 61)
-//   art        ART.md's Owed list is exactly the art that is missing
+//   art        ART.md's owed art (Backgrounds, Sprites, Props) is exactly the art that is missing
 //              (Block 77)
 //   manifest   js/asset-manifest.js lists exactly assets/, each file
 //              with its current fingerprint (Blocks 78, 106)
@@ -261,11 +261,23 @@ function art() {
   const { findArt } = require(path.join(ROOT, "_dev", "tools", "missing-art.js"));
   const missing = findArt().filter((a) => !a.exists).map((a) => a.file);
   const md = read("ART.md").replace(/\r\n/g, "\n");
-  const owed = (md.split("\n## Owed")[1] || "").split("\n## ")[0];
+  // Block 131: ART.md is written for the artist, owed art in three
+  // parts (Backgrounds, Sprites, Props) sorted by act, then COMPLETED.
+  // What is owed is every path in the three parts, except the lines
+  // under an act's "Also wanted", which the game does not name yet.
+  let part = null, extra = false;
+  const owedLines = [];
+  for (const line of md.split("\n")) {
+    if (line.startsWith("## ")) { part = line.slice(3).trim(); extra = false; continue; }
+    if (line.startsWith("### ")) { extra = false; continue; }
+    if (/^Also wanted/.test(line)) { extra = true; continue; }
+    if (["Backgrounds", "Sprites", "Props"].includes(part) && !extra) owedLines.push(line);
+  }
+  const owed = owedLines.join("\n");
   const listed = [...new Set([...owed.matchAll(/assets\/\S+\.(?:png|jpe?g)/gi)].map((m) => m[0]))];
   const unlisted = missing.filter((f) => !listed.includes(f));
   const arrived = listed.filter((f) => !missing.includes(f));
-  return { name: "ART.md's Owed list is exactly the art still missing (" + missing.length + ")",
+  return { name: "ART.md's owed art is exactly the art still missing (" + missing.length + ")",
            ok: unlisted.length === 0 && arrived.length === 0, detail: { unlisted, arrived }, missing };
 }
 
