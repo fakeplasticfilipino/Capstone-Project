@@ -1357,7 +1357,7 @@ window.ACT_1 = {
   // where it first matters, and what has happened by now (Mga
   // Pangyayari), each entry a card or a beat of this act's own, shown
   // once its flag is set. Both listed in the Talaan on the pause screen.
-  // PLACEHOLDER: ours, until the proponents accept or replace them.
+  // Accepted by the proponents on 13 Oct 2026.
   glossary: {
     title: "Talaan",
     hint: "Matutuklasan mo ang mga salita habang naglalaro.",

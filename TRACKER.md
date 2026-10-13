@@ -341,60 +341,8 @@ pilot all the same, since a jump skips what comes before it. Write the block's o
 and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
-Oct 2026, Blocks 119 to 126 on 9 Oct 2026. Open:
-
-    Block 128, on the phone (?dev=1 points named; a guest for the
-    game, the test account and the dashboard for the rest):
-
-    a. A test's answers kept (test account, after the full reset):
-       answer three questions of the pre-test, reload the page. The test
-       opens on question four with the three answers still chosen.
-       Failure: question one, or a choice lost.
-    b. The skip shown (any point, e.g. "dula"): talk to someone twice.
-       The second time the hint under the line reads "Nabasa na:
-       pindutin nang matagal para lumaktaw", and holding skips. Failure:
-       the hint never changes, or a first reading offers the skip.
-    c. The Questions report (dashboard, after the test account has sat a
-       pre-test and a post-test): a table under the roster, each row a
-       question, its share right before and after, the change. Failure:
-       "No test has recorded its answers yet" after a test sat today.
-    d. Difficulty that eases ("polyeto"): get caught three times in a
-       row. The guards visibly walk slower and the meter fills more
-       slowly, with no message; getting past a crate checkpoint, or a
-       new scene, puts them back. Failure: no change after three, or a
-       message on screen.
-    e. The Talaan (pause, then Talaan, at "kasama" and at Act II
-       "laguna"): papers, then Mga Pangyayari with years in order, then
-       Mga Salita; a word arrives with a toast as its beat is passed.
-       The lines are ours: read them against the source book (Next
-       action 3). Failure: an entry for a beat not yet reached.
-    f. The guide (dashboard header, Guide): one page, five sections,
-       Back to the dashboard and Print. Failure: a missing page or
-       style.
-
-    Block 129, on the phone:
-
-    a. The play ("dula"): four kawal come on, side on, each raising his
-       kris over his head and slashing down with a pale arc. Then the
-       Sultan says "Kung gayon, ako mismo ang haharap sa iyo!" and
-       fights alone, swinging his sheathed sword overhead; three blows
-       drop him; he walks back on from the right and the scene ends as
-       before. Failure: a box instead of a man, a blade cut off at the
-       edge, a fight that never ends, or him fading and never coming
-       back. A flat dark patch on his coat while he swings is known.
-    b. Principe Baldovino ("baldovino"): the two kawal there slash the
-       same way. Failure: the old shield.
-    c. Act II, Pugad Lawin and San Juan del Monte ("sedula",
-       "sanjuan"): Bonifacio is drawn (not a box), turns to face
-       Macario, and at "Sugod!" throws his fist up before he runs off;
-       again at the Nangka ("panakot"). Failure: a box, or him running off with no
-       gesture.
-    d. Speed: the play's fight on the cheaper phone stays as smooth as
-       before. Failure: a stutter when the kawal come on.
-
-    Block 130, on the phone: pick up a Talaan paper on Act I's street.
-    Its title (e.g. ANG KOMEDYA) is flat dark letters on the paper, no
-    shadow, readable. Failure: the doubled, smeared title.
+Oct 2026, Blocks 119 to 126 on 9 Oct 2026, Blocks 128 to 131 on 13
+Oct 2026. Open: nothing.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -406,10 +354,8 @@ PAMPHLET_GUARDS in content/act1.js).
 2026 (Block 113). Nothing open in Act I.
 
 3. Acts II to IV's lines, names, words and Talaan papers: accepted by
-the proponents on 9 Oct 2026. Open since Block 128, for every act: the
-Talaan's new words and timeline (STORY.md, each act's Talaan, the
-lines marked + as [WORD] and [TIME]; PLACEHOLDER in the content), to
-be read against the source book and accepted, reworded or cut.
+the proponents on 9 Oct 2026; the Talaan's words and timeline (Block
+128) checked and accepted on 13 Oct 2026. Nothing open.
 
 4. The test questions are the teacher's to write and change on the
 dashboard (CLAUDE.md, Standing decisions). Since 9 Oct 2026, at the
@@ -500,8 +446,8 @@ answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
 
 Agreed 4 Oct 2026 ("fix all of them"): fourteen items from a scan of the
 whole repository, for smooth work on Acts II to IV. #1 to #13
-(COMPLETE); #14, leaked password protection, is a switch in the
-Supabase dashboard (Authentication) for the proponent (NOT STARTED).
+(COMPLETE); #14, leaked password protection, needs a paid Supabase
+plan (DROPPED, 13 Oct 2026).
 Why each was built as it was: DECISIONS.md, Block 112.
 
 ## Loading list (Block 105)

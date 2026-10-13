@@ -981,7 +981,7 @@
 
     // Block 128. Words of the period and what has happened by now, as
     // Act I's: each earned or shown by the flag of its beat.
-    // PLACEHOLDER: ours, until the proponents accept or replace them.
+    // Accepted by the proponents on 13 Oct 2026.
     glossary: {
       title: "Talaan",
       hint: "Matutuklasan mo ang mga salita habang naglalaro.",
