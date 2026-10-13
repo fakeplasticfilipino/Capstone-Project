@@ -9,7 +9,11 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Oct 2026, after Block 128. Block 128: twelve
+Last updated: 13 Oct 2026, after Block 131. Block 131: ART.md
+rewritten for the artist (Backgrounds, Sprites, Props, by act, then
+COMPLETED). Block 130: the Talaan paper's title flat, with no shadow.
+Block 129: the artist's Bonifacio, Sultan and kawal, animated, with
+the overhead slash and Bonifacio's fist at "Sugod!". Block 128: twelve
 suggestions agreed item by item (the Improvement list below), all
 done or settled the same day: a test's answers kept through a reload;
 the hint under a line read before says it can be held to skip; the
@@ -31,7 +35,7 @@ like cardboard and nobody could tell which building could be entered.
 Every open door is now lit (a column of warm light, a glow on the wall,
 a pool on the road; brighter in reach and at night, dark while shut or
 in a fight); the four enterable buildings are asked of the artist
-(ART.md, Wanted). A parallax of layered streets was built and taken out
+(ART.md, Also wanted). A parallax of layered streets was built and taken out
 the same day at the proponent's word (no time for the art). Block 125: the guide is
 back, at the proponent's word ("I'm absolutely lost playing this
 without them"), for everyone and with no way to turn it off: an arrow
