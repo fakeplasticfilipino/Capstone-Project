@@ -8335,7 +8335,7 @@ authForm.addEventListener("submit", async (e) => {
   authStatus.textContent = "Naglo-load...";
   authStatus.className = "";
 
-  const email = authEmail.value.trim();
+  const email = loginEmail(authEmail.value);
   const password = authPassword.value;
 
   try {
@@ -8354,9 +8354,23 @@ authForm.addEventListener("submit", async (e) => {
   }
 });
 
+// Block 132. A student types the code the teacher printed (rizal-07);
+// the account behind it is <code>@example.com, made by the dashboard
+// (db/functions/create-students). "Rizal 7", "rizal7" and "RIZAL-07"
+// all mean rizal-07, since a code read off a slip is retyped loosely.
+// Anything with an @ is an email as before, and anything else (the
+// older mag-aaral01) is used as it is, with the domain added.
+function loginEmail(typed) {
+  const t = String(typed || "").trim().toLowerCase();
+  if (!t || t.includes("@")) return t;
+  const m = /^([a-z]+)[\s-]*0*(\d+)$/.exec(t);
+  const code = m ? m[1] + "-" + m[2].padStart(2, "0") : t;
+  return code + "@example.com";
+}
+
 function authErrorText(err) {
   const m = ((err && (err.message || err.code)) || "") + "";
-  if (/invalid login|credentials|invalid_grant|password/i.test(m)) return "Mali ang email o password. Subukan ulit.";
+  if (/invalid login|credentials|invalid_grant|password/i.test(m)) return "Mali ang code o password. Subukan ulit.";
   if (/fetch|network|offline|timeout|failed to/i.test(m) || (typeof navigator !== "undefined" && navigator.onLine === false)) {
     return "Walang koneksyon sa internet. Subukan ulit kapag may internet na.";
   }

@@ -190,7 +190,8 @@ off the repository.
                                (game, acts, inventory, assessment, shell,
                                teacher, teacher-questions,
                                teacher-talaan, teacher-report
-                               (Block 128), supabaseClient), and
+                               (Block 128), teacher-accounts (Block
+                               132), supabaseClient), and
                                asset-manifest.js, the list of every file
                                under assets/, written by a tool (Block 78);
                                js/vendor/ the Supabase library (Block 105)
@@ -223,7 +224,10 @@ off the repository.
       items/                   inventory and shop tile pictures
       audio/music/, audio/sfx/
       fonts/                   the two woff2 faces and their licences
-    db/                        migrations/, seeds/, scripts/ (Database)
+    db/                        migrations/, seeds/, scripts/ (Database),
+                               functions/ (the create-students Edge
+                               Function, Block 132; deployed with the
+                               connector, not served by the game)
     _dev/tests/                the harness and its fixtures; run.js runs
                                both suites in pieces side by side
                                (Block 115)
@@ -1775,10 +1779,22 @@ schema private since schema v9, out of the API's reach; a policy or
 function written by hand names them private.my_role() and so on. In
 public: can_reset_my_data and reset_my_play_data (the in-game reset,
 called by RPC), is_reset_allowed, handle_new_user (the trigger that
-makes a profile for a new account), and get_assessment_items and
+makes a profile for a new account; since schema v13, once applied,
+always a student, a teacher being made one by the service role), and
+get_assessment_items and
 submit_assessment, unused since Block 68. Since schema v8 only the
 owner and the service roles may call the last three (handle_new_user
 also the auth service).
+
+Edge Functions (Block 132): create-students, the account maker,
+source in db/functions/create-students/index.ts, deployed with the
+connector's deploy_edge_function and verify_jwt false (it checks the
+caller's token itself; the publishable key is not a JWT). A change to
+it is a deploy, and a write like any other: the proponent's yes first,
+and a line in TRACKER.md's Run log. Public sign-up must stay off
+(Authentication, Sign In / Providers): any teacher account may write
+every act's questions, so an account a stranger could make would be
+one that could.
 
 WORKING ON THE LIVE DATABASE (the proponent, 3 Oct 2026: "databases can
 be sensitive"). A session may have a Supabase connector. It holds real
@@ -2082,6 +2098,21 @@ Class assignment is administrator-assigned. Students cannot self-register.
 The join_code column exists but no student-facing join screen is built.
 This is a deliberate change from the proposal's User Authentication
 requirement and is the right one for supervised classroom sessions.
+
+Since Block 132 (the instructor's request) the teacher makes her own
+class's accounts from the dashboard (Students): a code start and a
+count, and the create-students Edge Function makes <start>-01,
+<start>-02 and so on, students enrolled in her class, each with six
+random digits as its password, numbered on from the last. Six, not
+four: Supabase refuses under six, and four digits would let any
+classmate guess into someone's one pre-test. The passwords are shown
+once, as slips to print and a spreadsheet, and kept nowhere readable;
+a forgotten one is replaced from the student card. The function is
+the only thing outside the proponent's computer that holds the
+secret key, and checks the caller is a teacher who owns the class.
+The game's login takes the code (game.js, loginEmail: "Rizal 7" is
+rizal-07@example.com); an email still works. create_accounts.js
+(gitignored) stays for teachers and for a fresh database.
 
 Passwords are issued by the administrator, and a student may change
 theirs in settings (a panelist's suggestion; Block 68, kept in Block
@@ -2558,6 +2589,9 @@ look, by system:
                                           doors, GUIDE_AT)
     lit doorways                          Block 126 (the buildings
                                           wanted; parallax dropped)
+    accounts from the dashboard; its      Block 132 (create-students,
+      tabs; the code at the login         slips, the student card,
+                                          schema v13)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

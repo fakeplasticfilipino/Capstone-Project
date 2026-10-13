@@ -9,7 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 13 Oct 2026, after Block 131. Block 131: ART.md
+Last updated: 14 Oct 2026, after Block 132. Block 132: a teacher
+makes her class's accounts on the dashboard (printable slips, six-digit
+passwords, a code at the login), and the dashboard is five tabs;
+schema v13 written for open sign-up, waiting. Block 131: ART.md
 rewritten for the artist (Backgrounds, Sprites, Props, by act, then
 COMPLETED). Block 130: the Talaan paper's title flat, with no shadow.
 Block 129: the artist's Bonifacio, Sultan and kawal, animated, with
@@ -342,7 +345,30 @@ and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026, Blocks 119 to 126 on 9 Oct 2026, Blocks 128 to 131 on 13
-Oct 2026. Open: nothing.
+Oct 2026. Open:
+
+    Block 132, on a laptop (the dashboard, as the test teacher) and
+    the phone (the login):
+
+    a. The tabs: Overview, Students, Questions report, Edit tests,
+       Talaan papers; one shown at a time; a reload stays on it.
+       Failure: two panels at once, or a reload back on Overview.
+    b. Accounts: Students, code start "rizal" (or another), How many 2,
+       Create accounts. Two slips (rizal-01, rizal-02, six digits
+       each) and both in the roster. Print login slips prints only
+       the slips. Failure: an error, or a slip with no password.
+    c. The login: on the phone, log in with "Rizal 1" and its six
+       digits. The game opens as that student. Failure: "Mali ang
+       code o password".
+    d. A new password: tap rizal-01, Give a new password. The old one
+       stops working and the new one logs in. Failure: either does
+       not.
+    e. The student card and Needs attention read in plain sentences,
+       and every "?" says what its column means. Failure: a raw word
+       (pretest, completed) or a "?" with nothing behind it.
+
+    Before the study: apply schema v13 and switch off "Allow new
+    users to sign up" (Supabase, Authentication, Sign In / Providers).
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -596,6 +622,19 @@ Trust this over any memory of a chat.
                                         denied, and 500/10 refused. Reads
                                         for a student, the teacher and a
                                         visitor the same before and after
+    db/migrations/013_macario_schema_v13.sql   NOT RUN. Written 14 Oct
+                                        2026 (Block 132): handle_new_user
+                                        always makes a student. Waits for
+                                        the proponent's yes; with it,
+                                        public sign-up switched off in the
+                                        dashboard (the proponent's switch)
+    db/functions/create-students               DEPLOYED, 14 Oct 2026, from
+                                        the session at the proponent's
+                                        word (version 1, verify_jwt
+                                        false). Probed: no token and the
+                                        publishable key as a token are
+                                        both refused (401); the
+                                        preflight answers 200
     db/migrations/012_macario_schema_v12.sql   RUN, 9 Oct 2026, from the
                                         session, at the proponent's word.
                                         assessment_scores.answers, each
@@ -981,6 +1020,13 @@ machine, the assessment module.
         each by act, then COMPLETED; pixel sizes for the paintings;
         "Also wanted" for what the game does not name yet; the check
         in lib/checks.js reads the new layout
+    132 accounts from the dashboard (the create-students Edge
+        Function: n accounts <start>-NN with six-digit passwords,
+        shown once as printable slips; a new password from the student
+        card); the game's login takes the code; the dashboard in five
+        tabs with Getting started, Needs attention, the student card
+        and a "?" on every column; schema v13 written (a new account
+        is always a student), not yet applied; test.js BX
 
 ## Blocks remaining
 

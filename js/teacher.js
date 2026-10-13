@@ -23,6 +23,15 @@
 // read (schema v4). Searching and sorting happen on rows already fetched;
 // nothing here adds a query or widens one beyond the teacher's own class.
 //
+// THE TABS (Block 132)
+// The page was one long scroll; it is now five tabs, one job each
+// (Overview, Students, Questions report, Edit tests, Talaan papers),
+// with the act chosen once at the top for all of them. The overview
+// adds Getting started (three steps, each ticked once done) and Needs
+// attention; a row opens the student card, the numbers in sentences
+// and a new password (js/teacher-accounts.js). Nothing it reports is
+// computed differently: the same four queries feed every tab.
+//
 // SECURITY NOTE
 // The role check below is a usability guard, not the security
 // boundary. What actually prevents one teacher reading another
@@ -63,8 +72,11 @@ const noClassEl = document.getElementById("no-class");
 const noStudentsEl = document.getElementById("no-students");
 const loadErrorEl = document.getElementById("load-error");
 const loadingEl = document.getElementById("loading");
+const attentionEl = document.getElementById("attention");
+const stepsEl = document.getElementById("start-steps");
 
 let teacherProfile = null;
+let currentStudents = [];
 let classesById = new Map();
 let currentClassId = null;
 let currentRows = [];
@@ -78,16 +90,73 @@ let sortKey = "name";
 let sortDir = 1; // 1 ascending, -1 descending
 
 // act_progress.status, in the order a student moves through it, so
-// sorting by status sorts by how far along each student is.
+// sorting by status sorts by how far along each student is. Block 132:
+// each label is what a teacher would say, and words says it in a
+// sentence for the student card.
 const STATUS = {
-  none:      { label: "Not started",          pill: "pill-none",    order: 0 },
-  locked:    { label: "Locked",               pill: "pill-locked",  order: 1 },
-  trivia:    { label: "Trivia",               pill: "pill-test",    order: 2 },
-  pretest:   { label: "Pre-test",             pill: "pill-test",    order: 3 },
-  playing:   { label: "Playing",              pill: "pill-playing", order: 4 },
-  posttest:  { label: "Post-test",            pill: "pill-test",    order: 5 },
-  completed: { label: "Completed",            pill: "pill-done",    order: 6 },
+  none:      { label: "Not started",  pill: "pill-none",    order: 0, words: "has not started this act" },
+  locked:    { label: "Locked",       pill: "pill-locked",  order: 1, words: "has not reached this act yet (the act before it comes first)" },
+  trivia:    { label: "Trivia card",  pill: "pill-test",    order: 2, words: "is reading the trivia card before the pre-test" },
+  pretest:   { label: "Pre-test",     pill: "pill-test",    order: 3, words: "is taking the pre-test" },
+  playing:   { label: "Playing",      pill: "pill-playing", order: 4, words: "is playing the act" },
+  posttest:  { label: "Post-test",    pill: "pill-test",    order: 5, words: "is taking the post-test" },
+  completed: { label: "Finished",     pill: "pill-done",    order: 6, words: "has finished the act" },
 };
+
+// Block 132. Who "Needs attention" names as away: started, not finished,
+// and not seen for this long.
+const AWAY_DAYS = 3;
+
+// The game's pass mark for an act's post-test (js/assessment.js,
+// passingFor), read from the same content the game reads.
+function passMark(act) {
+  const bank = (window.QUESTIONS && window.QUESTIONS[act]) || {};
+  const p = Number(bank.passing);
+  return p > 0 && p <= 1 ? p : 0.75;
+}
+
+// =============================================================
+// Tabs (Block 132)
+// =============================================================
+
+const TABS = ["overview", "students", "report", "tests", "talaan"];
+const tabsEl = document.getElementById("tabs");
+let currentTab = "overview";
+// An editor the teacher has typed in is never switched to another act
+// behind her back; one she has not touched follows the page's act.
+const editorTouched = { tests: false, talaan: false };
+
+function showTab(name) {
+  if (!TABS.includes(name)) name = "overview";
+  currentTab = name;
+  tabsEl.querySelectorAll("[data-tab]").forEach((b) => {
+    b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false");
+  });
+  TABS.forEach((t) => {
+    document.getElementById("tab-" + t).classList.toggle("hidden", t !== name);
+  });
+  if (location.hash !== "#" + name) history.replaceState(null, "", "#" + name);
+  if (name === "tests" || name === "talaan") followAct(name);
+}
+
+function followAct(tab) {
+  if (editorTouched[tab] || currentAct === null) return;
+  const sel = document.getElementById(tab === "tests" ? "qe-act" : "tl-act");
+  const want = String(currentAct);
+  if (!sel || sel.value === want || ![...sel.options].some((o) => o.value === want)) return;
+  sel.value = want;
+  sel.dispatchEvent(new Event("change"));
+}
+
+tabsEl.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-tab]");
+  if (b) showTab(b.dataset.tab);
+});
+document.querySelectorAll(".step-go").forEach((b) =>
+  b.addEventListener("click", () => showTab(b.dataset.go)));
+document.getElementById("qe-list").addEventListener("input", () => { editorTouched.tests = true; });
+document.getElementById("tl-list").addEventListener("input", () => { editorTouched.talaan = true; });
+window.addEventListener("hashchange", () => showTab(location.hash.slice(1)));
 
 // =============================================================
 // Access gate
@@ -132,6 +201,8 @@ async function initTeacher() {
 
   gate.classList.add("hidden");
   dash.classList.remove("hidden");
+  tabsEl.classList.remove("hidden");
+  showTab(location.hash.slice(1));
 
   // Block 68. The question editor does not depend on a class.
   if (window.TeacherQuestions) TeacherQuestions.init();
@@ -214,9 +285,17 @@ async function loadRoster(classId) {
     return;
   }
 
+  currentStudents = students || [];
+  // Block 132. The accounts card belongs to the class, not to its
+  // students: it is how the first ones are made.
+  if (window.TeacherAccounts) TeacherAccounts.show(cls, currentStudents);
+
   if (!students || students.length === 0) {
+    lastFetch = null;
+    currentRows = [];
     loadingEl.classList.add("hidden");
     noStudentsEl.classList.remove("hidden");
+    renderSteps();
     return;
   }
 
@@ -272,6 +351,8 @@ async function loadRoster(classId) {
   loadErrorEl.classList.add("hidden");
   summaryEl.classList.remove("hidden");
   rosterSection.classList.remove("hidden");
+  attentionEl.classList.remove("hidden");
+  renderSteps();
 }
 
 // Builds the rows for the act chosen and draws them, with the act's name
@@ -287,7 +368,9 @@ function drawAct() {
   currentRows = rows;
   renderRoster();
   renderSummary(rows);
+  renderAttention(rows);
   if (window.TeacherReport) TeacherReport.draw(lastFetch, currentAct);
+  document.getElementById("qr-wait").classList.add("hidden");
 }
 
 actPicker.addEventListener("change", () => {
@@ -356,6 +439,7 @@ function buildRoster(students, progress, acts, scores, actNumber) {
       : null;
 
     return {
+      id: student.id,
       name: student.full_name || "(no name)",
       status,
       objectivesDone: row ? row.objectives_done : null,
@@ -394,8 +478,19 @@ function renderRoster() {
 
   rows.forEach((row) => {
     const tr = document.createElement("tr");
+    // Block 132. The whole row opens the student card, and the name is
+    // a button so a keyboard reaches it too.
+    tr.className = "row-open";
+    tr.addEventListener("click", () => openStudent(row.id));
 
-    tr.appendChild(cell(row.name, "cell-name"));
+    const nameTd = document.createElement("td");
+    nameTd.className = "cell-name";
+    const nameBtn = document.createElement("button");
+    nameBtn.type = "button";
+    nameBtn.className = "name-btn";
+    nameBtn.textContent = row.name;
+    nameTd.appendChild(nameBtn);
+    tr.appendChild(nameTd);
     tr.appendChild(statusCell(row.status));
     tr.appendChild(cell(
       row.currentAct !== null ? "Act " + row.currentAct : null,
@@ -524,6 +619,159 @@ function renderSummary(rows) {
 function percentOf(part, whole) {
   return whole ? Math.round((part / whole) * 100) + "%" : "0%";
 }
+
+// =============================================================
+// Getting started, Needs attention, the student card (Block 132)
+// =============================================================
+
+// Accounts made: the class has students. Slips printed: remembered on
+// this browser (a device preference, like the game's settings), or
+// taken as done once anyone has played, since a student who logged in
+// had a slip. Played: anyone has a save.
+function slipsKey() { return "macario_slips_printed_" + currentClassId; }
+
+function markSlipsPrinted() {
+  try { localStorage.setItem(slipsKey(), "1"); } catch (e) { /* private window */ }
+  renderSteps();
+}
+
+function renderSteps() {
+  const made = currentStudents.length > 0;
+  const played = Boolean(lastFetch && lastFetch.progress.length);
+  let printed = played;
+  try { printed = printed || localStorage.getItem(slipsKey()) === "1"; } catch (e) { /* none */ }
+  const done = { "step-accounts": made, "step-slips": made && printed, "step-play": played };
+  Object.keys(done).forEach((id) => document.getElementById(id).classList.toggle("step-done", done[id]));
+  stepsEl.classList.toggle("hidden", made && printed && played);
+}
+
+function renderAttention(rows) {
+  const body = document.getElementById("attention-body");
+  body.innerHTML = "";
+  const pass = passMark(currentAct) * 100;
+  const now = Date.now();
+  const groups = [
+    { title: "Not started yet", why: "has not opened the game", rows: rows.filter((r) => !r.hasPlayed) },
+    { title: "Below the pass mark (" + Math.round(pass) + "%)", why: "may replay the act and take the post-test again",
+      rows: rows.filter((r) => r.postPct !== null && r.postPct < pass) },
+    { title: "Not seen for " + AWAY_DAYS + " days", why: "started but has not finished",
+      rows: rows.filter((r) => r.hasPlayed && r.status !== "completed" && r.lastActive &&
+        now - new Date(r.lastActive).getTime() > AWAY_DAYS * 86400000) },
+  ].filter((g) => g.rows.length);
+
+  if (!groups.length) {
+    const p = document.createElement("p");
+    p.className = "muted";
+    p.textContent = "Nobody needs attention for " + ACT_NAMES[currentAct] + " right now.";
+    body.appendChild(p);
+    return;
+  }
+  groups.forEach((g) => {
+    const box = document.createElement("div");
+    box.className = "attention-group";
+    const h = document.createElement("h3");
+    h.textContent = g.title + " · " + g.rows.length;
+    const why = document.createElement("p");
+    why.className = "muted";
+    why.textContent = "Each " + g.why + ".";
+    const list = document.createElement("div");
+    list.className = "chips";
+    g.rows.forEach((r) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = r.name;
+      b.addEventListener("click", () => openStudent(r.id));
+      list.appendChild(b);
+    });
+    box.append(h, why, list);
+    body.appendChild(box);
+  });
+}
+
+const cardEl = document.getElementById("student-card");
+let cardStudentId = null;
+
+// One student's numbers, said in sentences. Everything is text, never
+// HTML: a code is whatever the account was made with.
+function studentLines(r) {
+  const act = ACT_NAMES[currentAct];
+  const lines = [];
+  lines.push(act + ": " + r.name + " " + (STATUS[r.status] || STATUS.none).words + ".");
+  if (r.objectivesTotal) lines.push("Story steps done: " + r.objectivesDone + " of " + r.objectivesTotal + ".");
+  lines.push(r.pre
+    ? "Pre-test: " + fraction(r.pre) + " (" + Math.round(r.prePct) + "%)."
+    : "Pre-test: not taken yet.");
+  if (r.post) {
+    const first = r.firstPostPct !== null ? Math.round(r.firstPostPct) + "%" : "";
+    lines.push(r.post.tries > 1
+      ? "Post-test: " + r.post.tries + " tries. First " + first + ", latest " + fraction(r.post) + " (" + Math.round(r.postPct) + "%)."
+      : "Post-test: " + fraction(r.post) + " (" + Math.round(r.postPct) + "%).");
+    const pass = passMark(currentAct) * 100;
+    if (r.postPct < pass) lines.push("Below the pass mark of " + Math.round(pass) + "%: the student may replay the act and try again.");
+  } else {
+    lines.push("Post-test: not taken yet.");
+  }
+  if (r.gain !== null) {
+    lines.push("Gain: " + signed(r.gain) + " points from the pre-test to the first post-test" +
+      (Math.round(r.gain) > 0 ? ", so the act taught something." : Math.round(r.gain) < 0 ? ", lower than before." : ", no change."));
+  }
+  if (r.performance !== null) {
+    lines.push("Performance: " + r.performance.toFixed(1) + " of 100 (half for finishing, a quarter each for avoiding damage and staying unseen).");
+  }
+  if (r.elapsed) lines.push("Time in this act: " + formatDuration(r.elapsed) + ".");
+  lines.push(r.lastActive ? "Last active: " + formatDate(r.lastActive) + "." : "Has not logged in yet.");
+  lines.push("Acts finished: " + r.actsCompleted + " of " + TOTAL_ACTS + ".");
+  return lines;
+}
+
+function openStudent(id) {
+  const r = currentRows.find((x) => x.id === id) ||
+    (() => {
+      const s = currentStudents.find((x) => x.id === id);
+      return s ? buildRoster([s], [], [], [], currentAct)[0] : null;
+    })();
+  if (!r) return;
+  cardStudentId = id;
+  document.getElementById("sc-name").textContent = r.name;
+  const ul = document.getElementById("sc-lines");
+  ul.innerHTML = "";
+  studentLines(r).forEach((t) => {
+    const li = document.createElement("li");
+    li.textContent = t;
+    ul.appendChild(li);
+  });
+  const status = document.getElementById("sc-reset-status");
+  status.textContent = "";
+  status.className = "qe-status";
+  document.getElementById("sc-reset").disabled = !window.TeacherAccounts;
+  cardEl.classList.remove("hidden");
+  document.getElementById("sc-close").focus();
+}
+
+function closeStudent() {
+  cardEl.classList.add("hidden");
+  cardStudentId = null;
+}
+
+document.getElementById("sc-close").addEventListener("click", closeStudent);
+cardEl.addEventListener("click", (e) => { if (e.target === cardEl) closeStudent(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !cardEl.classList.contains("hidden")) closeStudent();
+});
+document.getElementById("sc-reset").addEventListener("click", () => {
+  if (cardStudentId && window.TeacherAccounts) {
+    TeacherAccounts.resetPassword(cardStudentId, document.getElementById("sc-name").textContent);
+  }
+});
+
+// What js/teacher-accounts.js reads of the page, and the reload it asks
+// for once accounts are made.
+window.TeacherDash = {
+  classId: () => currentClassId,
+  reload: () => (currentClassId ? loadRoster(currentClassId) : Promise.resolve()),
+  markSlipsPrinted,
+};
 
 // =============================================================
 // Cell helpers
@@ -695,8 +943,9 @@ function showLoading() {
   loadingEl.classList.remove("hidden");
   summaryEl.classList.add("hidden");
   rosterSection.classList.add("hidden");
+  attentionEl.classList.add("hidden");
   hideReport();
-  hideReport();
+  document.getElementById("qr-wait").classList.remove("hidden");
   noStudentsEl.classList.add("hidden");
   loadErrorEl.classList.add("hidden");
 }
@@ -709,7 +958,7 @@ function showLoadError(message, error) {
   noStudentsEl.classList.add("hidden");
 
   toolbarEl.classList.add("hidden");
-  loadErrorEl.textContent = message + " See the browser console for details.";
+  loadErrorEl.textContent = message + " Check the internet connection, then reload the page.";
 
   // Surface the single most likely cause rather than leaving the
   // teacher with a bare failure message.

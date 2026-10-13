@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACARIO — Teacher Dashboard</title>
-  <link rel="stylesheet" href="css/teacher.css?v=792872769" />
+  <link rel="stylesheet" href="css/teacher.css?v=4221560835" />
 </head>
 <body>
   <!-- Covers the page until the session and role are confirmed, so a
@@ -38,7 +38,7 @@
     </header>
 
     <main id="dash-body">
-      <!-- The class in view, and the controls that act on it. -->
+      <!-- The class in view, and the act every tab describes. -->
       <section id="toolbar" class="hidden">
         <div class="toolbar-title">
           <p class="eyebrow">Class</p>
@@ -52,144 +52,37 @@
         </div>
         <div class="toolbar-actions">
           <span id="updated-at" class="muted"></span>
-          <!-- Which act the roster's status, objectives, tests, gain and
-               time describe. Defaults to the furthest act with
+          <!-- Block 132. One act for the whole page: the overview, the
+               roster, the Questions report, and the act the test and
+               Talaan editors open on. Defaults to the furthest act with
                objectives that a student in the class has begun. -->
-          <label for="act-picker" class="sr-only">Act</label>
+          <label for="act-picker" class="act-picker-label">Showing</label>
           <select id="act-picker">
             <option value="1">Act I</option>
             <option value="2">Act II</option>
             <option value="3">Act III</option>
             <option value="4">Act IV</option>
           </select>
-          <button id="export-btn" type="button" class="btn-secondary">Download CSV</button>
           <button id="refresh-btn" type="button" class="btn-secondary">Refresh</button>
         </div>
       </section>
 
+      <!-- Block 132. One job to a tab. The tab shown is kept in the
+           address (#students and so on), so a reload stays on it. -->
+      <nav id="tabs" class="hidden" role="tablist" aria-label="Dashboard sections">
+        <button type="button" role="tab" data-tab="overview" aria-selected="true">Overview</button>
+        <button type="button" role="tab" data-tab="students" aria-selected="false">Students</button>
+        <button type="button" role="tab" data-tab="report" aria-selected="false">Questions report</button>
+        <button type="button" role="tab" data-tab="tests" aria-selected="false">Edit tests</button>
+        <button type="button" role="tab" data-tab="talaan" aria-selected="false">Talaan papers</button>
+      </nav>
+
       <!-- Shown when the teacher owns no classes at all. -->
       <div id="no-class" class="notice hidden">
-        <strong>No class is assigned to this account.</strong>
+        <strong>No class is linked to this account yet.</strong>
         <span class="notice-sub">
-          Create a class row in Supabase with teacher_id set to this
-          account, then reload.
-        </span>
-      </div>
-
-      <!-- Class-level summary figures. Each carries its own n, because an
-           average over three students and one over forty read the same
-           otherwise. -->
-      <section id="summary" class="hidden" aria-label="Class summary">
-        <div class="stat">
-          <span class="stat-label">Students</span>
-          <span class="stat-value" id="stat-students">—</span>
-          <span class="stat-sub" id="stat-students-sub">enrolled in the class</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Started</span>
-          <span class="stat-value" id="stat-started">—</span>
-          <span class="stat-sub" id="stat-started-sub"></span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Finished <span class="act-name">Act I</span></span>
-          <span class="stat-value" id="stat-done">—</span>
-          <span class="stat-sub" id="stat-done-sub"></span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Ave. pre-test</span>
-          <span class="stat-value" id="stat-pre">—</span>
-          <span class="stat-sub" id="stat-pre-sub"></span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Ave. post-test</span>
-          <span class="stat-value" id="stat-post">—</span>
-          <span class="stat-sub" id="stat-post-sub"></span>
-        </div>
-        <div class="stat stat-accent">
-          <span class="stat-label">Ave. gain</span>
-          <span class="stat-value" id="stat-gain">—</span>
-          <span class="stat-sub" id="stat-gain-sub"></span>
-        </div>
-      </section>
-
-      <!-- Roster. -->
-      <section id="roster-section" class="card hidden">
-        <div class="card-head">
-          <div>
-            <h2 class="section-title">Student Roster</h2>
-            <p class="muted" id="roster-count"></p>
-          </div>
-          <div class="search">
-            <label for="roster-search" class="sr-only">Search students</label>
-            <input id="roster-search" type="search" placeholder="Search students" autocomplete="off" />
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table id="roster">
-            <thead>
-              <tr>
-                <th data-sort="name" aria-sort="ascending"><button type="button">Student</button></th>
-                <th data-sort="status"><button type="button">Status (<span class="act-name">Act I</span>)</button></th>
-                <th data-sort="currentAct"><button type="button">Act</button></th>
-                <th data-sort="objectives" class="num"><button type="button">Objectives</button></th>
-                <th data-sort="prePct" class="num"><button type="button">Pre-test</button></th>
-                <th data-sort="postPct" class="num"><button type="button">Post-test</button></th>
-                <th data-sort="gain" class="num"><button type="button">Gain</button></th>
-                <th data-sort="performance" class="num"><button type="button">Performance</button></th>
-                <th data-sort="elapsed" class="num"><button type="button">Time</button></th>
-                <th data-sort="lastActive"><button type="button">Last active</button></th>
-              </tr>
-            </thead>
-            <tbody id="roster-body"></tbody>
-          </table>
-          <div id="no-match" class="empty-row hidden">No students match the search.</div>
-        </div>
-        <div class="table-notes">
-          <p><strong>Gain</strong> is the first post-test minus the pre-test, in percent, for the act chosen above. Where a student took the post-test more than once, the Post-test column shows the latest attempt and the gain of the latest is the smaller line under the Gain. The class's average post-test above is of first attempts, like the gain.</p>
-          <p><strong>Performance</strong> (0 to 100) = 50 × completion + 25 × survival + 25 × stealth. Time is recorded but not scored.</p>
-          <p>A dash (—) means no data yet.</p>
-        </div>
-      </section>
-
-      <!-- Block 128. Each question, pre-test against post-test, from the
-           answers each test recorded (schema 012). Built by
-           js/teacher-report.js from the rows the roster fetched. -->
-      <section id="qr" class="card hidden">
-        <div class="card-head">
-          <div>
-            <h2 class="section-title">Questions Report (<span class="act-name">Act I</span>)</h2>
-            <p class="muted" id="qr-basis"></p>
-          </div>
-          <div>
-            <button id="qr-export" type="button" class="btn-secondary">Export CSV</button>
-          </div>
-        </div>
-        <div class="table-wrap" id="qr-body">
-          <table id="qr-table" class="hidden">
-            <thead>
-              <tr>
-                <th class="num">#</th>
-                <th>Pre-test question</th>
-                <th class="num">Correct</th>
-                <th>Post-test question</th>
-                <th class="num">Correct</th>
-                <th class="num">Change</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-          <div id="qr-empty" class="empty-row">No test has recorded its answers yet. Answers are recorded from 9 Oct 2026 on.</div>
-        </div>
-        <div class="table-notes">
-          <p>Each pre-test question is paired with the post-test question in the same place, as matched pairs are written. <strong>Correct</strong> is the share of the class that answered it right, with the count; <strong>Change</strong> is the post-test share minus the pre-test share, in percentage points. First attempts only, like the gain.</p>
-        </div>
-      </section>
-
-      <!-- Class exists but has no enrolled students. -->
-      <div id="no-students" class="notice hidden">
-        <strong>No students are enrolled in this class.</strong>
-        <span class="notice-sub">
-          Set profiles.class_id for the students who belong to this class.
+          Ask the game's administrator to set up your class, then reload
+          this page. You can still edit the tests and the Talaan papers.
         </span>
       </div>
 
@@ -201,70 +94,283 @@
         Loading data...
       </div>
 
-      <!-- Block 68. The questions and answers of each test, and the trivia
-           card, editable by the teacher. Built by js/teacher-questions.js.
-           Saved to assessment_items and act_trivia (schema 006); the game
-           uses them in place of its built-in bank (content/questions.js). -->
-      <section id="qe" class="card">
-        <div class="card-head">
-          <div>
-            <h2 class="section-title">Test Questions and Answers</h2>
-            <p class="muted">Edit each test's questions and correct answers, and the trivia card shown before the pre-test.</p>
-          </div>
-          <div class="qe-pickers">
-            <label for="qe-act" class="sr-only">Act</label>
-            <select id="qe-act">
-              <option value="1">Act I</option>
-              <option value="2">Act II</option>
-              <option value="3">Act III</option>
-              <option value="4">Act IV</option>
-            </select>
-            <label for="qe-type" class="sr-only">Test</label>
-            <select id="qe-type">
-              <option value="pre">Pre-test</option>
-              <option value="post">Post-test</option>
-              <option value="trivia">Trivia card</option>
-            </select>
-          </div>
-        </div>
-        <div class="qe-body">
-          <p id="qe-source" class="muted"></p>
-          <div id="qe-list"></div>
-          <div class="qe-actions">
-            <button id="qe-add" type="button" class="btn-secondary">+ Add a question</button>
-            <button id="qe-defaults" type="button" class="btn-secondary">Restore defaults</button>
-            <button id="qe-save" type="button" class="btn-primary">Save</button>
-          </div>
-          <p id="qe-status" class="qe-status"></p>
-          <p class="table-notes">Warning: changing questions after students have answered affects the comparison between pre-test and post-test. Pre-test and post-test items should be matched pairs: the same topic and difficulty, in different words.</p>
-        </div>
-      </section>
+      <!-- ================= Overview ================= -->
+      <div id="tab-overview" class="tab-panel" role="tabpanel">
+        <!-- Block 132. The three things a class needs before its first
+             session, each ticked once it is done. Hidden once all are. -->
+        <section id="start-steps" class="card hidden" aria-label="Getting started">
+          <h2 class="section-title">Getting started</h2>
+          <ol class="steps">
+            <li id="step-accounts"><span class="step-mark" aria-hidden="true"></span>
+              <div><strong>Make your students' accounts.</strong>
+              <span class="muted">Under Students: choose how many, and the game makes a code and a password for each.</span></div>
+              <button type="button" class="btn-secondary step-go" data-go="students">Go to Students</button></li>
+            <li id="step-slips"><span class="step-mark" aria-hidden="true"></span>
+              <div><strong>Print the login slips</strong> and hand one to each student.
+              <span class="muted">Write each student's name on their slip. The game never stores names.</span></div></li>
+            <li id="step-play"><span class="step-mark" aria-hidden="true"></span>
+              <div><strong>Students log in and play.</strong>
+              <span class="muted">They type the code on their slip (for example rizal-07) and the password. Their progress shows here.</span></div></li>
+          </ol>
+        </section>
 
-      <!-- Block 70. The Talaan papers: up to three per act, written by the
-           teacher, laid by the game at three places fixed in the act's
-           content. Built by js/teacher-talaan.js; saved to talaan_entries
-           (schema 007). -->
-      <section id="tl" class="card">
+        <!-- Class-level summary figures. Each carries its own n, because an
+             average over three students and one over forty read the same
+             otherwise. -->
+        <section id="summary" class="hidden" aria-label="Class summary">
+          <div class="stat">
+            <span class="stat-label">Students</span>
+            <span class="stat-value" id="stat-students">—</span>
+            <span class="stat-sub" id="stat-students-sub">in the class</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Started</span>
+            <span class="stat-value" id="stat-started">—</span>
+            <span class="stat-sub" id="stat-started-sub"></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Finished <span class="act-name">Act I</span></span>
+            <span class="stat-value" id="stat-done">—</span>
+            <span class="stat-sub" id="stat-done-sub"></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Average pre-test <span class="tip" tabindex="0" data-tip="The test before playing the act: what the class knew beforehand.">?</span></span>
+            <span class="stat-value" id="stat-pre">—</span>
+            <span class="stat-sub" id="stat-pre-sub"></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Average post-test <span class="tip" tabindex="0" data-tip="The test after the act, each student's first try.">?</span></span>
+            <span class="stat-value" id="stat-post">—</span>
+            <span class="stat-sub" id="stat-post-sub"></span>
+          </div>
+          <div class="stat stat-accent">
+            <span class="stat-label">Average gain <span class="tip" tabindex="0" data-tip="Post-test minus pre-test, in percentage points. Above zero means the class learned from the act.">?</span></span>
+            <span class="stat-value" id="stat-gain">—</span>
+            <span class="stat-sub" id="stat-gain-sub"></span>
+          </div>
+        </section>
+
+        <!-- Block 132. Who to look at, for the act shown. -->
+        <section id="attention" class="card hidden">
+          <div class="card-head">
+            <div>
+              <h2 class="section-title">Needs attention (<span class="act-name">Act I</span>)</h2>
+              <p class="muted">Tap a name to see that student's results.</p>
+            </div>
+          </div>
+          <div id="attention-body" class="attention-body"></div>
+        </section>
+      </div>
+
+      <!-- ================= Students ================= -->
+      <div id="tab-students" class="tab-panel hidden" role="tabpanel">
+        <!-- Block 132. Accounts made from here, through the create-students
+             function (db/functions/create-students), never the browser:
+             it needs the project's secret key. Built by
+             js/teacher-accounts.js. -->
+        <section id="acct" class="card hidden">
+          <div class="card-head">
+            <div>
+              <h2 class="section-title">Student accounts</h2>
+              <p class="muted">Each new student gets a code and a six-digit password. Students can change their password in the game's settings.</p>
+            </div>
+          </div>
+          <div class="acct-form">
+            <label>Code start
+              <input id="acct-prefix" type="text" maxlength="12" autocomplete="off" spellcheck="false" placeholder="rizal" />
+            </label>
+            <label>How many
+              <input id="acct-count" type="number" min="1" max="60" value="40" />
+            </label>
+            <button id="acct-create" type="button" class="btn-primary">Create accounts</button>
+          </div>
+          <p id="acct-hint" class="muted acct-hint"></p>
+          <p id="acct-status" class="qe-status"></p>
+          <!-- The passwords just made. Shown once: they are not stored
+               anywhere they can be read back. -->
+          <div id="acct-result" class="hidden">
+            <p class="acct-warn"><strong>Print or save these now.</strong> The passwords are shown only this once. A forgotten one can be replaced from the student's row below.</p>
+            <div class="qe-actions">
+              <button id="acct-print" type="button" class="btn-primary">Print login slips</button>
+              <button id="acct-csv" type="button" class="btn-secondary">Download as a spreadsheet</button>
+            </div>
+            <div id="acct-slips" class="slips"></div>
+          </div>
+        </section>
+
+        <!-- Class exists but has no enrolled students. -->
+        <div id="no-students" class="notice hidden">
+          <strong>No students in this class yet.</strong>
+          <span class="notice-sub">
+            Make their accounts above. Each one appears here as soon as it is made.
+          </span>
+        </div>
+
+        <!-- Roster. -->
+        <section id="roster-section" class="card hidden">
+          <div class="card-head">
+            <div>
+              <h2 class="section-title">Student Roster</h2>
+              <p class="muted" id="roster-count"></p>
+            </div>
+            <div class="search">
+              <label for="roster-search" class="sr-only">Search students</label>
+              <input id="roster-search" type="search" placeholder="Search students" autocomplete="off" />
+              <button id="export-btn" type="button" class="btn-secondary">Download CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="roster">
+              <thead>
+                <tr>
+                  <th data-sort="name" aria-sort="ascending"><button type="button">Student</button></th>
+                  <th data-sort="status"><button type="button">Status (<span class="act-name">Act I</span>)</button></th>
+                  <th data-sort="currentAct"><button type="button">Act</button><span class="tip" tabindex="0" data-tip="The act the student is in now, and how many of the four they have finished.">?</span></th>
+                  <th data-sort="objectives" class="num"><button type="button">Objectives</button><span class="tip" tabindex="0" data-tip="Steps of the story done in this act, out of all of them.">?</span></th>
+                  <th data-sort="prePct" class="num"><button type="button">Pre-test</button><span class="tip" tabindex="0" data-tip="Score on the test before the act.">?</span></th>
+                  <th data-sort="postPct" class="num"><button type="button">Post-test</button><span class="tip" tabindex="0" data-tip="Score on the test after the act. If taken more than once, the latest try.">?</span></th>
+                  <th data-sort="gain" class="num"><button type="button">Gain</button><span class="tip" tabindex="0" data-tip="First post-test minus pre-test, in percentage points.">?</span></th>
+                  <th data-sort="performance" class="num"><button type="button">Performance</button><span class="tip" tabindex="0" data-tip="0 to 100 for how the act was played: half for finishing it, a quarter for avoiding damage, a quarter for staying unseen.">?</span></th>
+                  <th data-sort="elapsed" class="num"><button type="button">Time</button><span class="tip" tabindex="0" data-tip="Time spent playing this act. Not scored.">?</span></th>
+                  <th data-sort="lastActive"><button type="button">Last active</button></th>
+                </tr>
+              </thead>
+              <tbody id="roster-body"></tbody>
+            </table>
+            <div id="no-match" class="empty-row hidden">No students match the search.</div>
+          </div>
+          <div class="table-notes">
+            <p>Tap a student to see their results in words and to give them a new password. A dash (—) means no data yet.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= Questions report ================= -->
+      <div id="tab-report" class="tab-panel hidden" role="tabpanel">
+        <!-- Block 128. Each question, pre-test against post-test, from the
+             answers each test recorded (schema 012). Built by
+             js/teacher-report.js from the rows the roster fetched. -->
+        <section id="qr" class="card hidden">
+          <div class="card-head">
+            <div>
+              <h2 class="section-title">Questions Report (<span class="act-name">Act I</span>)</h2>
+              <p class="muted" id="qr-basis"></p>
+            </div>
+            <div>
+              <button id="qr-export" type="button" class="btn-secondary">Export CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap" id="qr-body">
+            <table id="qr-table" class="hidden">
+              <thead>
+                <tr>
+                  <th class="num">#</th>
+                  <th>Pre-test question</th>
+                  <th class="num">Correct</th>
+                  <th>Post-test question</th>
+                  <th class="num">Correct</th>
+                  <th class="num">Change</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div id="qr-empty" class="empty-row">No test has recorded its answers yet. Answers are recorded from 9 Oct 2026 on.</div>
+          </div>
+          <div class="table-notes">
+            <p>Which topics the act taught well. Each pre-test question sits beside the post-test question in the same place. <strong>Correct</strong> is the share of the class that answered it right; <strong>Change</strong> is how much that share went up or down, in percentage points. First tries only.</p>
+          </div>
+        </section>
+        <div id="qr-wait" class="notice">The report appears once the class's results have loaded.</div>
+      </div>
+
+      <!-- ================= Edit tests ================= -->
+      <div id="tab-tests" class="tab-panel hidden" role="tabpanel">
+        <!-- Block 68. The questions and answers of each test, and the trivia
+             card, editable by the teacher. Built by js/teacher-questions.js.
+             Saved to assessment_items and act_trivia (schema 006); the game
+             uses them in place of its built-in bank (content/questions.js). -->
+        <section id="qe" class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="section-title">Test Questions and Answers</h2>
+              <p class="muted">Edit each test's questions and correct answers, and the trivia card shown before the pre-test. Tick the circle beside the correct answer.</p>
+            </div>
+            <div class="qe-pickers">
+              <label for="qe-act" class="sr-only">Act</label>
+              <select id="qe-act">
+                <option value="1">Act I</option>
+                <option value="2">Act II</option>
+                <option value="3">Act III</option>
+                <option value="4">Act IV</option>
+              </select>
+              <label for="qe-type" class="sr-only">Test</label>
+              <select id="qe-type">
+                <option value="pre">Pre-test</option>
+                <option value="post">Post-test</option>
+                <option value="trivia">Trivia card</option>
+              </select>
+            </div>
+          </div>
+          <div class="qe-body">
+            <p id="qe-source" class="muted"></p>
+            <div id="qe-list"></div>
+            <div class="qe-actions">
+              <button id="qe-add" type="button" class="btn-secondary">+ Add a question</button>
+              <button id="qe-defaults" type="button" class="btn-secondary">Restore defaults</button>
+              <button id="qe-save" type="button" class="btn-primary">Save</button>
+            </div>
+            <p id="qe-status" class="qe-status"></p>
+            <p class="table-notes">Edit before a session, not during one: changing questions after students have answered makes the pre-test and post-test harder to compare. Pre-test and post-test questions should be matched pairs: the same topic and difficulty, in different words.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================= Talaan papers ================= -->
+      <div id="tab-talaan" class="tab-panel hidden" role="tabpanel">
+        <!-- Block 70. The Talaan papers: up to three per act, written by the
+             teacher, laid by the game at three places fixed in the act's
+             content. Built by js/teacher-talaan.js; saved to talaan_entries
+             (schema 007). -->
+        <section id="tl" class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="section-title">Talaan Papers</h2>
+              <p class="muted">Up to three papers students find on the road and keep in the Talaan. Where each one lies is fixed by the game; you write what it says.</p>
+            </div>
+            <div class="qe-pickers">
+              <label for="tl-act" class="sr-only">Act</label>
+              <select id="tl-act"></select>
+            </div>
+          </div>
+          <div class="qe-body">
+            <div id="tl-list"></div>
+            <div class="qe-actions">
+              <button id="tl-save" type="button" class="btn-primary">Save</button>
+            </div>
+            <p id="tl-status" class="qe-status"></p>
+            <p class="table-notes">Students see the papers in Tagalog or English, exactly as you type them. A paper that gives away a post-test answer word for word turns the post-test into a reading check.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Block 132. One student's results in words, and a new password. -->
+    <div id="student-card" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="sc-name">
+      <div class="modal-box">
         <div class="card-head">
           <div>
-            <h2 class="section-title">Talaan Papers</h2>
-            <p class="muted">Up to three papers students find on the road and keep in the Talaan. Where each one lies is fixed by the game; you write what it says.</p>
+            <p class="eyebrow">Student</p>
+            <h2 id="sc-name" class="section-title"></h2>
           </div>
-          <div class="qe-pickers">
-            <label for="tl-act" class="sr-only">Act</label>
-            <select id="tl-act"></select>
-          </div>
+          <button id="sc-close" type="button" class="btn-secondary">Close</button>
         </div>
-        <div class="qe-body">
-          <div id="tl-list"></div>
-          <div class="qe-actions">
-            <button id="tl-save" type="button" class="btn-primary">Save</button>
-          </div>
-          <p id="tl-status" class="qe-status"></p>
-          <p class="table-notes">Students see the papers in Tagalog or English, exactly as you type them. A paper that gives away a post-test answer word for word turns the post-test into a reading check.</p>
+        <ul id="sc-lines" class="sc-lines"></ul>
+        <div class="sc-reset">
+          <button id="sc-reset" type="button" class="btn-secondary">Give a new password</button>
+          <p id="sc-reset-status" class="qe-status"></p>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   </div>
 
   <script src="js/vendor/supabase.js?v=4202140866"></script>
@@ -280,7 +386,10 @@
   <script src="content/act2.js?v=3773850007"></script>
   <script src="content/act3.js?v=696066676"></script>
   <script src="content/act4.js?v=2638377822"></script>
-  <script src="js/teacher.js?v=585432728"></script>
+  <!-- Block 132. Before teacher.js, which may reach it before the next
+       script tag is parsed (its first awaits can resolve on microtasks). -->
+  <script src="js/teacher-accounts.js?v=928438796"></script>
+  <script src="js/teacher.js?v=2742852485"></script>
   <script src="js/teacher-questions.js?v=4003821537"></script>
   <script src="js/teacher-report.js?v=725711950"></script>
   <script src="js/teacher-talaan.js?v=976490959"></script>

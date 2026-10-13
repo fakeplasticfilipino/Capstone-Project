@@ -171,6 +171,41 @@
 
       return Promise.resolve({ data: null, error: null });
     },
+    // Block 132. The create-students function, as the dashboard calls it.
+    // "create" makes the profiles the live function would (enrolled,
+    // numbered on), "reset" a new password; __TEST.fnError makes it
+    // refuse with that word, the way supabase-js hands a refusal back.
+    functions: {
+      invoke(name, opts) {
+        const body = (opts && opts.body) || {};
+        window.__CALLS.push({ fn: name, body });
+        if (T.fnError) {
+          const word = T.fnError;
+          return Promise.resolve({ data: null, error: { message: "Edge Function returned a non-2xx status code",
+            context: { json: () => Promise.resolve({ error: word }) } } });
+        }
+        if (body.action === "create") {
+          db.profiles = db.profiles || [];
+          const re = new RegExp("^" + body.prefix + "-(\\d+)$");
+          let next = db.profiles.reduce((m, p) => {
+            const k = re.exec(p.full_name || "");
+            return k ? Math.max(m, Number(k[1])) : m;
+          }, 0) + 1;
+          const accounts = [];
+          for (let i = 0; i < body.count; i++, next++) {
+            const code = body.prefix + "-" + String(next).padStart(2, "0");
+            db.profiles.push({ id: "new-" + code, role: "student", full_name: code, class_id: body.class_id });
+            accounts.push({ code, password: String(100000 + next) });
+          }
+          return Promise.resolve({ data: { accounts }, error: null });
+        }
+        if (body.action === "reset") {
+          const p = (db.profiles || []).find((x) => x.id === body.student_id);
+          return Promise.resolve({ data: { code: p ? p.full_name : "", password: "654321" }, error: null });
+        }
+        return Promise.resolve({ data: null, error: { message: "BAD_ACTION" } });
+      },
+    },
     auth: {
       getSession() { return Promise.resolve({ data: { session } }); },
       onAuthStateChange(cb) {

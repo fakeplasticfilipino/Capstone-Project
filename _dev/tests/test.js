@@ -4339,13 +4339,15 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("performance counts completed acts only, not a stub act's 0 (S1)",
        first.rows[0][7] === "82.5", first.rows[0]);
     ok("each row shows status, objectives, scores, gain and play time",
-       first.rows[0][1] === "Completed" && first.rows[0][3] === "7/7" &&
+       first.rows[0][1] === "Finished" && first.rows[0][3] === "7/7" &&
        first.rows[0][4].startsWith("40%") && first.rows[0][5].startsWith("90%") &&
        first.rows[0][6] === "+50%" && first.rows[0][7] === "82.5" && first.rows[0][8] === "38m" &&
        first.rows[2][8] === "1h 15m", first.rows);
     ok("a student who never played reads as not started, with dashes",
        first.rows[3][1] === "Not started" && first.rows[3][4] === "—", first.rows[3]);
 
+    // Block 132: the roster is under the Students tab.
+    await page.click('#tabs [data-tab="students"]');
     await page.fill("#roster-search", "03");
     await page.waitForTimeout(100);
     const searched = await page.evaluate(() => ({
@@ -4396,7 +4398,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       return { opened, two };
     });
     ok("the roster opens on the furthest act with objectives, and says which (Polish #1)",
-       acts.opened.act === "1" && acts.opened.names.length === 3 && // the roster, the summary, the Questions report (Block 128)
+       acts.opened.act === "1" && acts.opened.names.length === 4 && // the roster, the summary, the Questions report (Block 128), Needs attention (Block 132)
        acts.opened.names.every((n) => n === "Act I"), acts.opened);
     ok("choosing Act II shows Act II's status and no Act I scores",
        acts.two.names.every((n) => n === "Act II") && acts.two.s1[1] === "Playing" &&
@@ -5758,7 +5760,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.route("**/js/vendor/supabase.js*", (route) =>
       route.fulfill({ body: "", contentType: "text/javascript" }));
     await page.addInitScript((st) => { window.__TEST = st; }, seed);
-    await page.goto("http://localhost:" + PORT + "/teacher.html");
+    await page.goto("http://localhost:" + PORT + "/teacher.html#tests"); // Block 132: the editor is a tab
     await page.waitForTimeout(600);
 
     const post = await page.evaluate(() => [...document.querySelectorAll("#roster-body tr")][0].children[5].textContent);
@@ -6036,7 +6038,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.route("**/js/vendor/supabase.js*", (route) =>
       route.fulfill({ body: "", contentType: "text/javascript" }));
     await page.addInitScript((st) => { window.__TEST = st; }, seed);
-    await page.goto("http://localhost:" + PORT + "/teacher.html");
+    await page.goto("http://localhost:" + PORT + "/teacher.html#talaan"); // Block 132: a tab
     await page.waitForTimeout(600);
 
     const e0 = await page.evaluate(() => ({
@@ -7042,7 +7044,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the login button reads Mag-log in (S18)",
        (await page.textContent("#auth-submit")).trim() === "Mag-log in" && await visible(page, "#auth-overlay"));
     const said = await page.evaluate(() => authErrorText({ message: "Invalid login credentials" }));
-    ok("a wrong password is said in Tagalog (S18)", /Mali ang email o password/.test(said), said);
+    ok("a wrong password is said in Tagalog (S18)", /Mali ang code o password/.test(said), said);
     await page.click("#auth-back");
     await page.waitForTimeout(200);
     ok("Bumalik in the login box goes back to the title screen (S21)",
@@ -7741,6 +7743,161 @@ const visible = (page, sel) => page.evaluate((s) => {
        guide.path.endsWith("/teacher-guide.html") && guide.sections.length === 5 &&
        guide.back === "teacher.html" && missing.length === 0, { guide, missing });
     await ctx.close();
+  }
+
+  if (section("BX", "Block 132: accounts from the dashboard, its tabs, and a code at the login")) {
+    // A class with no students yet: the teacher makes them here, through
+    // the create-students function (stubbed in sb-stub.js), and the rest
+    // of the page fills in from them.
+    const seed = {
+      session: { user: { id: "t1" } },
+      profiles: [{ id: "t1", role: "teacher", full_name: "Gng. Cruz" }],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+    };
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const page = await ctx.newPage();
+    page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+    await page.route("**/supabaseClient.js*", (route) =>
+      route.fulfill({ body: STUB, contentType: "text/javascript" }));
+    await page.route("**/js/vendor/supabase.js*", (route) =>
+      route.fulfill({ body: "", contentType: "text/javascript" }));
+    await page.addInitScript((st) => { window.__TEST = st; window.__CALLS = []; }, seed);
+    await page.goto("http://localhost:" + PORT + "/teacher.html");
+    await page.waitForFunction(() => !document.getElementById("acct").classList.contains("hidden"));
+
+    const tabsAt = async () => page.evaluate(() => ({
+      shown: [...document.querySelectorAll(".tab-panel")].filter((p) => !p.classList.contains("hidden")).map((p) => p.id),
+      selected: [...document.querySelectorAll("#tabs [aria-selected=true]")].map((b) => b.dataset.tab),
+      hash: location.hash,
+    }));
+    const opened = await tabsAt();
+    ok("the dashboard opens on the Overview tab, one panel shown",
+       opened.shown.join() === "tab-overview" && opened.selected.join() === "overview", opened);
+    const steps0 = await page.evaluate(() => ({
+      shown: !document.getElementById("start-steps").classList.contains("hidden"),
+      done: ["step-accounts", "step-slips", "step-play"].map((id) => document.getElementById(id).classList.contains("step-done")),
+    }));
+    ok("with no students, Getting started is shown and nothing is ticked",
+       steps0.shown && steps0.done.every((d) => !d), steps0);
+
+    await page.click('#start-steps .step-go[data-go="students"]');
+    const st = await page.evaluate(() => ({
+      tab: [...document.querySelectorAll(".tab-panel")].filter((p) => !p.classList.contains("hidden")).map((p) => p.id).join(),
+      hash: location.hash,
+      none: !document.getElementById("no-students").classList.contains("hidden"),
+      prefix: document.getElementById("acct-prefix").value,
+      hint: document.getElementById("acct-hint").textContent,
+    }));
+    ok("Go to Students opens that tab, kept in the address, with the accounts card and a plain notice",
+       st.tab === "tab-students" && st.hash === "#students" && st.none &&
+       /Make their accounts above/.test(await page.textContent("#no-students")), st);
+    ok("the code start is offered from the class name, and the hint says the codes to come",
+       st.prefix === "rizal" && /rizal-01, rizal-02/.test(st.hint), st);
+
+    await page.fill("#acct-prefix", "Rizal 8!");
+    ok("the code start keeps letters only, lowercased",
+       (await page.inputValue("#acct-prefix")) === "rizal", await page.inputValue("#acct-prefix"));
+
+    await page.fill("#acct-count", "3");
+    await page.click("#acct-create");
+    await page.waitForFunction(() => document.querySelectorAll("#acct-slips .slip").length === 3);
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 3);
+    const made = await page.evaluate(() => ({
+      call: __CALLS.find((c) => c.fn),
+      slips: [...document.querySelectorAll("#acct-slips .slip")].map((s) =>
+        [...s.querySelectorAll(".slip-v")].map((v) => v.textContent)),
+      status: document.getElementById("acct-status").textContent,
+      rows: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[0].textContent),
+      noStudents: document.getElementById("no-students").classList.contains("hidden"),
+      warn: document.querySelector("#acct-result .acct-warn").textContent,
+    }));
+    ok("Create asks the function for this class, this start and this many",
+       made.call && made.call.fn === "create-students" && made.call.body.action === "create" &&
+       made.call.body.class_id === "c1" && made.call.body.prefix === "rizal" && made.call.body.count === 3, made.call);
+    ok("each account is a slip: the class, the code, the password and a line for the name",
+       made.slips.length === 3 && made.slips[0][0] === "MAC8-RIZAL" && made.slips[0][1] === "rizal-01" &&
+       /^\d{6}$/.test(made.slips[0][2]) && made.slips[0][3] === "" && made.slips[2][1] === "rizal-03", made.slips);
+    ok("the passwords are said to be shown once, and the roster fills in from the new accounts",
+       /shown only this once/.test(made.warn) && /3 accounts made/.test(made.status) &&
+       made.rows.join() === "rizal-01,rizal-02,rizal-03" && made.noStudents, made);
+    const hint2 = await page.textContent("#acct-hint");
+    ok("the next batch numbers on from the last", /rizal-04, rizal-05/.test(hint2), hint2);
+
+    const [download] = await Promise.all([page.waitForEvent("download"), page.click("#acct-csv")]);
+    const csv = require("fs").readFileSync(await download.path(), "utf8").replace(/^\ufeff/, "").split(/\r\n/);
+    ok("the accounts download as a spreadsheet: code, password, a column for the name",
+       csv[0] === "code,password,name" && csv.length === 4 && /^rizal-01,\d{6},$/.test(csv[1]), csv);
+
+    // A refusal from the function is said in plain words.
+    await page.evaluate(() => { window.__TEST.fnError = "PREFIX_IN_USE"; });
+    // The stub reads __TEST at call time through T, the same object.
+    await page.click("#acct-create");
+    await page.waitForFunction(() => /Another class/.test(document.getElementById("acct-status").textContent));
+    ok("a start another class uses is refused, in words a teacher reads", true);
+    await page.evaluate(() => { delete window.__TEST.fnError; });
+
+    // The student card, and a new password from it.
+    await page.click("#roster-body tr:nth-child(2) .name-btn");
+    const card = await page.evaluate(() => ({
+      shown: !document.getElementById("student-card").classList.contains("hidden"),
+      name: document.getElementById("sc-name").textContent,
+      lines: [...document.querySelectorAll("#sc-lines li")].map((l) => l.textContent),
+    }));
+    ok("tapping a student opens their card, the results in sentences",
+       card.shown && card.name === "rizal-02" && /has not started this act/.test(card.lines[0]) &&
+       card.lines.some((l) => l === "Pre-test: not taken yet.") && card.lines.some((l) => /Has not logged in yet/.test(l)), card);
+    page.once("dialog", (d) => d.accept());
+    await page.click("#sc-reset");
+    await page.waitForFunction(() => /654321/.test(document.getElementById("sc-reset-status").textContent));
+    const reset = await page.evaluate(() => ({
+      call: __CALLS.filter((c) => c.fn).pop(),
+      slip: [...document.querySelectorAll("#acct-slips .slip")].map((s) => s.querySelectorAll(".slip-v")[1].textContent + ":" + s.querySelectorAll(".slip-v")[2].textContent),
+    }));
+    ok("Give a new password asks the function for that student, says it, and adds it to the slips",
+       reset.call.body.action === "reset" && reset.call.body.student_id === "new-rizal-02" &&
+       reset.slip.filter((s) => s.startsWith("rizal-02:")).join() === "rizal-02:654321", reset);
+    await page.keyboard.press("Escape");
+    ok("Escape closes the card",
+       await page.evaluate(() => document.getElementById("student-card").classList.contains("hidden")));
+
+    await page.click('#tabs [data-tab="overview"]');
+    const over = await page.evaluate(() => ({
+      attention: [...document.querySelectorAll("#attention-body .attention-group")].map((g) =>
+        g.querySelector("h3").textContent + ":" + [...g.querySelectorAll(".chip")].map((c) => c.textContent).join("|")),
+      steps: ["step-accounts", "step-slips", "step-play"].map((id) => document.getElementById(id).classList.contains("step-done")),
+      stepsShown: !document.getElementById("start-steps").classList.contains("hidden"),
+      label: document.querySelector("#roster-body tr .pill") && document.querySelector("#roster-body tr .pill").textContent,
+    }));
+    ok("Needs attention names who has not started; the steps tick accounts and slips, not play",
+       over.attention.length === 1 && over.attention[0] === "Not started yet · 3:rizal-01|rizal-02|rizal-03" &&
+       over.steps.join() === "true,true,false" && over.stepsShown && over.label === "Not started", over);
+
+    for (const t of ["report", "tests", "talaan"]) {
+      await page.click('#tabs [data-tab="' + t + '"]');
+      const at = await tabsAt();
+      ok("the " + t + " tab shows only its panel and is kept in the address",
+         at.shown.join() === "tab-" + t && at.hash === "#" + t, at);
+    }
+    await page.reload();
+    await page.waitForFunction(() => !document.getElementById("dash").classList.contains("hidden"));
+    ok("a reload stays on the tab in the address", (await tabsAt()).shown.join() === "tab-talaan");
+    await ctx.close();
+
+    // The game's login takes the code on the slip, however it is typed.
+    const g = await newPage({ session: null });
+    await g.page.waitForTimeout(300);
+    const emails = await g.page.evaluate(() =>
+      ["rizal-07", "Rizal 7", "RIZAL07", " rizal-7 ", "rizal-12", "mag-aaral01", "hi@example.com", "Guro@Example.com"].map(loginEmail));
+    ok("a code at the login is its account's address; an email stays an email",
+       JSON.stringify(emails) === JSON.stringify(["rizal-07@example.com", "rizal-07@example.com", "rizal-07@example.com",
+         "rizal-07@example.com", "rizal-12@example.com", "mag-aaral01@example.com", "hi@example.com", "guro@example.com"]), emails);
+    const field = await g.page.evaluate(() => {
+      const f = document.getElementById("auth-email");
+      return { type: f.type, ph: f.placeholder };
+    });
+    ok("the login field asks for a code, as text, not an email field",
+       field.type === "text" && /Code/.test(field.ph), field);
+    await g.ctx.close();
   }
 
   await browser.close();

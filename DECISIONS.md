@@ -5850,6 +5850,69 @@ skipped the old Wanted section. The history went: it is in this file,
 block by block. A person who returns in later acts is listed under
 the act where he first appears, with the acts he is in.
 
+## Block 132: accounts from the dashboard, and the dashboard in tabs, 14 Oct 2026
+
+The instructor asked that a teacher be able to make her students'
+accounts herself, numbered (student 1, 2, 3), with a short password
+they change later; and the proponent asked for a dashboard easier to
+read. Both agreed as planned on 13 Oct 2026.
+
+Accounts. Making a login needs the project's secret key, and a key in
+a page is a key for anyone, so the dashboard cannot do it; until now
+it was create_accounts.js on the proponent's computer. An Edge
+Function holds the key on Supabase's side and does two fixed things
+for the signed-in teacher's own class: make n accounts, and give one
+student a new password. It checks the caller's token itself, then the
+role, then that classes.teacher_id is the caller, so a student, a
+stranger or another class's teacher is refused before anything
+changes. The codes are a start the teacher types once (suggested from
+the class name, letters only) and a two-digit number, numbered on from
+the highest that exists, and a start another class uses is refused,
+or two classes would share codes. Names stay off the database
+(Privacy): the code is full_name, the email <code>@example.com, and
+each slip has a line where the teacher writes the name by hand.
+
+Six digits rather than the four suggested. Supabase refuses a
+password under six characters; and four digits are 10,000 tries
+against codes every classmate can guess, which is one student's one
+pre-test taken by another. Six is still easy to copy off a slip, and
+the password change in settings (Block 122) is there for anyone who
+wants their own. The passwords are shown once and kept nowhere
+readable: Supabase stores a hash, and the page forgets them on reload.
+That is why the card says so first, and why a forgotten password is a
+new one rather than a lookup.
+
+The login takes the code: anything without an @ is made an address,
+and a code typed loosely off a slip ("Rizal 7", "RIZAL07") is read as
+rizal-07, which is why the start is letters only. An email still
+works, so the test accounts and any earlier account are unchanged.
+
+Found on the way: public sign-up was on, and handle_new_user took the
+role from what the sign-up sent. Anyone with the publishable key could
+have signed up as a teacher, and any teacher may write every act's
+questions, trivia and papers (those policies check the role, not a
+class), and now could make accounts too. Nobody had (two accounts
+exist, both ours). Schema v13 makes the trigger always make a student;
+the other half, sign-up switched off in the Supabase dashboard, is the
+proponent's switch. The function and the script use the secret key and
+work with sign-up off.
+
+The dashboard. It was one long page (figures, roster, questions report,
+editor, papers) with its help in paragraphs under the tables and its
+empty states in the developer's words (set profiles.class_id). It is
+now five tabs, one job each, with the act chosen once at the top for
+all of them, kept in the address so a reload stays put. Overview adds
+Getting started (make accounts, print slips, students play; each
+ticked once done, and hidden when all are) and Needs attention (not
+started, below the pass mark, not seen in three days), each name a way
+into the student card, which says a student's numbers in sentences and
+holds the new password. Every column and figure has a "?" with its
+meaning in one line. Status reads as a teacher would say it (Finished,
+Trivia card). Nothing is computed differently: the same four queries
+feed every tab, and the CSV and the report are as they were. The
+editors follow the page's act only until the teacher types in one,
+since neither tracks unsaved changes and switching would lose them.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -895,3 +895,336 @@ input:focus-visible {
 .tl-title {
   margin-bottom: 8px;
 }
+
+/* =============================================================
+   Block 132. Tabs, Getting started, Needs attention, the "?" tips,
+   the student card, and the accounts card with its printable slips.
+   ============================================================= */
+
+.act-picker-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+#act-picker {
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--green);
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+#tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 22px;
+  overflow-x: auto;
+}
+
+#tabs button {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+#tabs button:hover { color: var(--text); }
+
+#tabs button[aria-selected="true"] {
+  color: var(--wood);
+  border-bottom-color: var(--green);
+}
+
+.tab-panel > .card,
+.tab-panel > .notice,
+.tab-panel > #summary {
+  margin-bottom: 22px;
+}
+
+/* Getting started */
+#start-steps { padding: 18px 20px; }
+
+.steps {
+  list-style: none;
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.steps li > div { flex: 1; min-width: 220px; }
+.steps li .muted { display: block; }
+
+.step-mark {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  background: var(--surface);
+}
+
+.steps li { counter-increment: step; }
+.step-mark::before {
+  content: counter(step);
+  display: block;
+  text-align: center;
+  line-height: 22px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.step-done .step-mark { background: var(--green); border-color: var(--green); }
+.step-done .step-mark::before { content: "\2713"; color: #fff; }
+.step-done strong { text-decoration: line-through; color: var(--text-muted); }
+.step-done .step-go { display: none; }
+
+/* The "?" beside a figure or a column: its meaning on hover or focus. */
+.tip {
+  position: relative;
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: var(--grey-soft);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 17px;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: help;
+  vertical-align: 1px;
+}
+
+.tip:hover::after,
+.tip:focus::after {
+  content: attr(data-tip);
+  position: absolute;
+  z-index: 20;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  background: var(--wood-deep);
+  color: #f5efe0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  white-space: normal;
+  box-shadow: var(--shadow);
+}
+
+th.num .tip:hover::after,
+th.num .tip:focus::after { left: auto; right: 0; transform: none; }
+
+/* Needs attention */
+.attention-body {
+  padding: 16px 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.attention-group h3 { font-size: 14px; }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.chip {
+  background: var(--amber-soft);
+  color: var(--amber);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chip:hover { border-color: var(--amber); }
+
+/* A roster row opens the student card. */
+#roster tbody tr.row-open { cursor: pointer; }
+
+.name-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.name-btn:hover { color: var(--green); }
+
+/* The student card */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(42, 36, 29, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-box {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.sc-lines {
+  padding: 16px 20px 6px 38px;
+  display: grid;
+  gap: 6px;
+}
+
+.sc-reset {
+  padding: 12px 20px 18px;
+  border-top: 1px solid var(--border);
+}
+
+/* The accounts card */
+.acct-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 18px 20px 6px;
+}
+
+.acct-form label {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.acct-form input {
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  padding: 7px 10px;
+  font-size: 15px;
+  font-family: inherit;
+  width: 160px;
+}
+
+.acct-form input[type="number"] { width: 90px; }
+
+.acct-hint,
+#acct-status { padding: 0 20px; }
+
+#acct-result { padding: 10px 20px 20px; }
+
+.acct-warn {
+  background: var(--amber-soft);
+  color: var(--amber);
+  border-radius: 7px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.slips {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.slip {
+  border: 1.5px dashed var(--border-strong);
+  border-radius: 6px;
+  padding: 10px 12px;
+  break-inside: avoid;
+  font-size: 14px;
+}
+
+.slip-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.slip-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.slip-k { color: var(--text-muted); }
+.slip-line .slip-v { font-family: ui-monospace, Consolas, monospace; font-size: 16px; font-weight: 700; }
+
+.slip-name .slip-v {
+  flex: 1;
+  border-bottom: 1px solid var(--text-faint);
+  margin-left: 8px;
+}
+
+.slip-how {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Print the slips only, when asked for them. */
+@media print {
+  body.printing-slips #dash-header,
+  body.printing-slips #toolbar,
+  body.printing-slips #tabs,
+  body.printing-slips .tab-panel > :not(#acct),
+  body.printing-slips #acct > :not(#acct-result),
+  body.printing-slips #acct-result > :not(.slips),
+  body.printing-slips .tab-panel:not(#tab-students),
+  body.printing-slips .notice,
+  body.printing-slips .modal { display: none !important; }
+  body.printing-slips #acct { border: none; box-shadow: none; }
+  body.printing-slips .slips { grid-template-columns: repeat(3, 1fr); }
+  #tabs, .modal, .tip { display: none !important; }
+}
+
+/* Block 132. A header with a "?" keeps both on one line: the sort button
+   shrinks to its words and the tip sits after it. */
+#roster thead th { white-space: nowrap; }
+#roster thead th.num { text-align: right; }
+#roster thead th .tip { margin: 0 10px 0 -4px; }
+#roster th button { display: inline-flex; width: auto; }
