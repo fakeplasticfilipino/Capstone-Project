@@ -5892,7 +5892,8 @@ role from what the sign-up sent. Anyone with the publishable key could
 have signed up as a teacher, and any teacher may write every act's
 questions, trivia and papers (those policies check the role, not a
 class), and now could make accounts too. Nobody had (two accounts
-exist, both ours). Schema v13 makes the trigger always make a student;
+exist, both ours). Schema v13, applied the same day, makes the
+trigger always make a student;
 the other half, sign-up switched off in the Supabase dashboard, is the
 proponent's switch. The function and the script use the secret key and
 work with sign-up off.

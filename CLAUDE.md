@@ -1779,8 +1779,8 @@ schema private since schema v9, out of the API's reach; a policy or
 function written by hand names them private.my_role() and so on. In
 public: can_reset_my_data and reset_my_play_data (the in-game reset,
 called by RPC), is_reset_allowed, handle_new_user (the trigger that
-makes a profile for a new account; since schema v13, once applied,
-always a student, a teacher being made one by the service role), and
+makes a profile for a new account; since schema v13 always a
+student, a teacher being made one by the service role), and
 get_assessment_items and
 submit_assessment, unused since Block 68. Since schema v8 only the
 owner and the service roles may call the last three (handle_new_user

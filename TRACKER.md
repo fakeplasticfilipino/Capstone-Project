@@ -12,7 +12,7 @@ Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 Last updated: 14 Oct 2026, after Block 132. Block 132: a teacher
 makes her class's accounts on the dashboard (printable slips, six-digit
 passwords, a code at the login), and the dashboard is five tabs;
-schema v13 written for open sign-up, waiting. Block 131: ART.md
+schema v13 applied (a new account is always a student). Block 131: ART.md
 rewritten for the artist (Backgrounds, Sprites, Props, by act, then
 COMPLETED). Block 130: the Talaan paper's title flat, with no shadow.
 Block 129: the artist's Bonifacio, Sultan and kawal, animated, with
@@ -367,8 +367,9 @@ Oct 2026. Open:
        and every "?" says what its column means. Failure: a raw word
        (pretest, completed) or a "?" with nothing behind it.
 
-    Before the study: apply schema v13 and switch off "Allow new
-    users to sign up" (Supabase, Authentication, Sign In / Providers).
+    Before the study: switch off "Allow new users to sign up"
+    (Supabase, Authentication, Sign In / Providers). Schema v13 is
+    applied, so a sign-up is only ever a student with no class.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -622,12 +623,17 @@ Trust this over any memory of a chat.
                                         denied, and 500/10 refused. Reads
                                         for a student, the teacher and a
                                         visitor the same before and after
-    db/migrations/013_macario_schema_v13.sql   NOT RUN. Written 14 Oct
-                                        2026 (Block 132): handle_new_user
-                                        always makes a student. Waits for
-                                        the proponent's yes; with it,
-                                        public sign-up switched off in the
-                                        dashboard (the proponent's switch)
+    db/migrations/013_macario_schema_v13.sql   RUN, 14 Oct 2026, from the
+                                        session, at the proponent's word.
+                                        handle_new_user always makes a
+                                        student (Block 132). Checked: the
+                                        body sets 'student' and reads no
+                                        role; the v8 execute grants
+                                        unchanged; still 2 profiles.
+                                        create_accounts.js (local) now
+                                        sets a teacher's role itself.
+                                        Public sign-up still to be
+                                        switched off (the proponent)
     db/functions/create-students               DEPLOYED, 14 Oct 2026, from
                                         the session at the proponent's
                                         word (version 1, verify_jwt
@@ -1025,8 +1031,8 @@ machine, the assessment module.
         shown once as printable slips; a new password from the student
         card); the game's login takes the code; the dashboard in five
         tabs with Getting started, Needs attention, the student card
-        and a "?" on every column; schema v13 written (a new account
-        is always a student), not yet applied; test.js BX
+        and a "?" on every column; schema v13 applied (a new account
+        is always a student); test.js BX
 
 ## Blocks remaining
 
