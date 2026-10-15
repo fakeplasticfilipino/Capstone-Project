@@ -3712,6 +3712,10 @@ const visible = (page, sel) => page.evaluate((s) => {
         if (document.querySelector(".enemy-windup")) window.__sawWindup = true;
       });
       watch.observe(document.body, { attributes: true, attributeFilter: ["class"], subtree: true });
+      // 15 Oct 2026: on a busy CI machine the enemy can already be lit up
+      // when the watch begins, and no class then changes to be seen; a
+      // tell already showing is a tell.
+      if (document.querySelector(".enemy-windup")) window.__sawWindup = true;
       // 6 Oct 2026: read the moment the blow lands, within a generous
       // bound, not at a fixed ATTACK_TELL_MS + 400: on a busy CI machine
       // the dash after the tell finished a few frames past that and the
