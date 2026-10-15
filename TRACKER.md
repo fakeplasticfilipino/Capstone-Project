@@ -9,133 +9,19 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 15 Oct 2026, after Block 134. Block 134: the new street
-of Block 133 taken out at the proponent's word ("the new ones aren't
-good at all"): the old four paintings back, night the tint again, and
-the street's paintings standing on the bottom of the screen so everyone
-walks on the painted road instead of the dirt strip, which did not fit.
-Public sign-up switched off by the proponent. Block 133: the artists'
-Drive folder put in, overnight at the proponent's word: Act II's seven
-places and the pulungan painted; Isko, Jacinto, the printer, the
+Last updated: 15 Oct 2026, after Block 134, and a tidy of these files.
+Block 134: the new street of Block 133 taken out at the proponent's word
+(the old four paintings back, night the tint again), and the street's
+paintings standing on the bottom of the screen so everyone walks on the
+painted road. Block 133: the artists' Drive folder put in: Act II's
+seven places and the pulungan painted; Isko, Jacinto, the printer, the
 messenger, Álvarez, Carreón, Montalan and Poblete keyed from black and
-animated. Thirty-five pictures still owed. Block 132: a teacher
-makes her class's accounts on the dashboard (printable slips, six-digit
-passwords, a code at the login), and the dashboard is five tabs;
-schema v13 applied (a new account is always a student). Block 131: ART.md
-rewritten for the artist (Backgrounds, Sprites, Props, by act, then
-COMPLETED). Block 130: the Talaan paper's title flat, with no shadow.
-Block 129: the artist's Bonifacio, Sultan and kawal, animated, with
-the overhead slash and Bonifacio's fist at "Sugod!". Block 128: twelve
-suggestions agreed item by item (the Improvement list below), all
-done or settled the same day: a test's answers kept through a reload;
-the hint under a line read before says it can be held to skip; the
-dashboard's Questions report, each question pre against post, from the
-answers each test now records (schema 012, applied); difficulty that
-eases, silently, after three and six setbacks in a scene; a timeline
-(Mga Pangyayari) and words of the period in every act's Talaan, ours
-and PLACEHOLDER for the proponents; ART.md's Draw first; a teacher's
-guide linked from the dashboard; a defense demo route kept in
-docs-private/. The pilot and a 3GB phone were done before it; keeping
-Act I's files first was dropped (they are nearly all of them). Both
-suites green (1,510 and more). Block 127: the proponents
-accepted every line of Acts II to IV (the PLACEHOLDER and + marks are
-out), each of Acts II to IV has a built-in trivia card and ten matched
-pre-test and post-test pairs (content/questions.js), and the git history
-is kept as it is. Blocks 119 to 126 reported working on the phone the
-same day. Block 126: the streets felt
-like cardboard and nobody could tell which building could be entered.
-Every open door is now lit (a column of warm light, a glow on the wall,
-a pool on the road; brighter in reach and at night, dark while shut or
-in a fight); the four enterable buildings are asked of the artist
-(ART.md, Also wanted). A parallax of layered streets was built and taken out
-the same day at the proponent's word (no time for the art). Block 125: the guide is
-back, at the proponent's word ("I'm absolutely lost playing this
-without them"), for everyone and with no way to turn it off: an arrow
-with a name over whoever or wherever the step in hand is done, a tab at
-the screen's edge with the distance when it is off screen, and the door
-on the way when it is in another scene. Every objective of the four
-acts names its place (guide); the content check, test.js AW and a
-check from every story point (52) cover it. Both suites 1,409 green.
-Block 124: an hour's pass
-on my own, nothing in the game changed: prepare.js now fails on a flag
-that content waits on and nothing sets (a typo that would silently stop
-a beat), monkey.js counts the enemy catalogue's warnings, and a read of
-all four acts against the rules (flag prefixes, the English lines, the
-story both ways, items, the Talaan, the contract) found nothing else.
-Both suites 1,348 green before it. Block 123: an overnight
-pass at the proponent's word (work on, no questions): the release run
-at a student's speed made green again (the checks waited by fixed
-silences a black card outlasts; the game was right), the dashboard's
-average post-test made the first attempts' like the gain, a question
-save that can no longer leave a test empty, "Sa makalawa" made "Sa
-susunod na linggo" (Act II, a week), five English lines of Act
-III given their Tagalog, and a login whose reads fail tried again and
-then stopped, never putting a student into the wrong act (and what he
-carries read again too); an act's end that cannot be written said, with
-a reload, instead of a next-act button that did nothing; Escape no
-longer opens the pause screen (and the Talaan) in the middle of a test;
-the save sent the moment the phone leaves the page; the test's answers
-two to a row in landscape, so Susunod is on screen without scrolling;
-settings' Bumalik kept on screen, the password panel's buttons in a row. Schema v11 applied the same day at the
-proponent's word (Run log), and Malabon's raid told in the stolen
-uniforms, as the Constabulary's report of 1905 has it. The drafts for
-the paper are on the proponent's computer (Claude outputs/). Block 122: the password
-change offered to every student again (a panelist's suggestion), with
-the current password asked first; the trackers read through against
-the build. Block 121: the audit of 5
-Oct 2026, fifteen items, all approved: a fight that moves always goes
-on to the right, at once if he is already past the point; the shop
-sells three things (lagundi, the anting-anting, the pulbura), shut
-while Act I saves for Nanay; a failed save is sent again; a replay
-takes back only its own act's items and gives back no barya; an act
-entered with no row plays on; one "Walang pagsusulit" per act; the
-password change for test accounts only (undone in Block 122); and the small ones (an old
-Act III save, a catch in the grace window, the reset's kept scores,
-the CSV, CI on Markdown). Block 120: the pacing pass,
-twelve changes from a read of the whole game, all approved: what was
-told on black and could be shown is shown (the post's bell, the
-amnesty in a cell in Bilibid, Paris read in Laguna, Palanan told by
-Isko); the long walks shortened (Act II's press door, Act IV's
-Kutsero) and the stranger in Nanay's house pointed to; Act III's middle
-made to go wrong (the law mid-petition, the last name refused, an empty
-house); Tanay's three buttons one drill; and the battles given a goal
-each (the scarecrows and the flag as decoys, the fight out of the post,
-the push into Malabon's plaza), the crowd and the Republic's soldiers
-seen as placeholders. Block 119: Act IV written,
-1903 to 1907, end to end, from the proponent's labelled sources: the
-first presidential order, a Constabulary post raided for guns and
-uniforms, the manifesto, the costume for Tanay (whether he went left
-unsaid), San Francisco de Malabon, the reconcentration heard of and the
-rice shared out, Gómez and the terms, Manila, the reception in Cavite,
-Bilibid, the court, the Assembly elected without him, and the last
-morning, walked by the student; two battles of fifteen; a stone floor
-for Bilibid. The game now has all four acts. The same day, every tracker read
-through against the build (TRACKER, ART, STORY, CLAUDE, README) and
-the stale lines brought up to date. Block 118: Act III revised
-against the proponent's labelled sources (the source of truth): Santa
-Mesa heard of from a runner, not shown, the opening fight a patrol in
-the hills; Macario at the Partido Nacionalista's founding and its
-Secretary-General, with Álvarez and Poblete; the Sedition Law read from
-a notice; President and Generalissimo, and the Republic's own flag;
-every beat tagged [CONTEXT], [MACARIO] or [INSERT]. No art borrowed or
-made for anyone not drawn: the tinted stand-ins removed, the fighters
-placeholders. Block 117: Act III written,
-1899 to 1902, end to end (Santa Mesa and the war, Manila under guard,
-the haircut on an American, the creed, Isko's surrender, the Sedition
-Law, the capture, the Republika ng Katagalugan and the vow, the
-Brigandage Act; two battles of fifteen; the Americans in English, each
-line given in Tagalog). Block 116 (4 Oct): a guest who
-finishes Act I plays on into Act II, with no tests and nothing saved.
-Block 115: the suites in pieces, the story fast-forwarded under test and
-run side by side (both suites, 1,348 checks since Block 123, in about two minutes; CI
-in four shards, about two and a half). Block 114: a floor drawn for each
-place, each job played once, the barber's game a haircut on a customer
-drawn in pixels. Block 113: Act II written, 1896 to 1898, as a tragedy;
-the detection meter twice as fast; Act I's lines accepted by the
-proponents. The proponent reported Blocks 98 to 112 working on the
-phone on 4 Oct 2026, and Blocks 113 to 118 on 5 Oct 2026. Earlier blocks: the Blocks list below, and
-DECISIONS.md. Both suites green locally and on CI. Everything is
-committed and pushed to main.
+animated. Block 132: a teacher makes her class's accounts on the
+dashboard (printable slips, six-digit passwords, a code at the login),
+the dashboard in five tabs, schema v13 applied and public sign-up
+switched off. Every block before: the Blocks list below, and
+DECISIONS.md. Both suites green locally and on CI (1,538 checks).
+Everything is committed and pushed to main.
 
 A new session, on any device: git pull first; read CLAUDE.md, then
 this file's Start here and Next action, then STORY.md before touching
@@ -454,10 +340,9 @@ artist for the whole figure side on, standing, arms free of the body.
 6. Then the remaining polish and the pilot. All four acts are written
 (Block 119).
 
-7. The Scan list (2 Oct 2026, below): worked in Block 110. Left: run
-reset_test_accounts.sql before a full-flow test (S37; it deletes the
-test accounts' play, so on the proponent's word), and S40 and S41 as
-listed there.
+7. Before a full-flow test, run db/scripts/reset_test_accounts.sql (Scan
+S37): it deletes the test accounts' play, so it is the proponent's to
+run, and its date goes in the Run log.
 
 8. Privacy of the public repository (30 Sep 2026). The names of the
 team, the resource person and the school are out of every tracked
@@ -465,121 +350,23 @@ file, docs-private/ and *.pdf and *.docx are gitignored, and the two
 private files were deleted from GitHub. The git history is kept as it
 is, at the proponent's word (9 Oct 2026): no rewrite. (CLOSED)
 
-## Improvement list (Block 128)
+## Finished lists
 
-Agreed 9 Oct 2026 ("I want to tackle all of them"): twelve suggestions,
-answered item by item. Worked in this order: 10, 6, 2, 7, 8, 9, 11,
-12, 5.
+Each was agreed item by item and worked to the end; what was built and
+why is in DECISIONS.md under its block.
 
-     1  Pilot with students outside the study      (COMPLETE, before
-                                                   the list)
-     2  The dashboard reports each question, pre   (COMPLETE; test.js
-                                                   BW; schema 012
-                                                   applied 9 Oct)
-        against post, first attempts (schema 012:
-        assessment_scores.answers)
-     3  A second, cheaper phone                    (COMPLETE: 3GB,
-                                                   plays well)
-     4  Act I's files kept first                   (DROPPED: nearly
-                                                   every file is
-                                                   Act I's already)
-     5  A demo route for the defense, in           (COMPLETE:
-        docs-private/ (not pushed)                 docs-private/
-                                                   defense-demo.md, on
-                                                   the proponent's
-                                                   computer only)
-     6  A mark on a line already read: hold to     (COMPLETE; test.js
-                                                   BW)
-        fast-forward (Block 85 built the skip;
-        nothing says so)
-     7  Difficulty that eases after repeated       (COMPLETE; test.js
-                                                   BW)
-        setbacks in a scene, silently, the
-        assists kept in the save
-     8  A timeline in the Talaan (Mga Pangyayari)  (COMPLETE; lines
-                                                   PLACEHOLDER, for
-                                                   the proponents)
-     9  Talaan words in every act, none answering  (COMPLETE; lines
-        a post-test item word for word             PLACEHOLDER, for
-                                                   the proponents)
-    10  A test's answers kept through a reload     (COMPLETE; test.js
-                                                   BW)
-    11  ART.md: which owed picture to draw first   (COMPLETE: ART.md,
-                                                   Draw first)
-    12  A teacher's guide, a page linked from the  (COMPLETE:
-                                                   teacher-guide.html;
-                                                   test.js BW)
-        dashboard
-
-## Polish list (Block 112)
-
-Agreed 4 Oct 2026 ("fix all of them"): fourteen items from a scan of the
-whole repository, for smooth work on Acts II to IV. #1 to #13
-(COMPLETE); #14, leaked password protection, needs a paid Supabase
-plan (DROPPED, 13 Oct 2026).
-Why each was built as it was: DECISIONS.md, Block 112.
-
-## Loading list (Block 105)
-
-Agreed 2 Oct 2026, after a presentation failed to load: nine items, all
-(COMPLETE). A, the Supabase library in the repository; B, the road and
-the default backdrop drawn from the versioned picture; C, the whole game
-kept on the phone after one visit; D, music and sounds served from the
-phone; E, three seconds for a crawling connection; F, the title screen's
-line; G, a guest with no internet (checked, nothing to change); H, the
-sheets shrunk to a quarter; I, .claude/ gitignored. Why: DECISIONS.md,
-Block 105.
-
-## Scan list (2 Oct 2026)
-
-A read of every tracked file, 43 findings, worked in Block 110 (2 and 3
-Oct 2026) at the proponent's word. What was built and why: DECISIONS.md,
-Block 110. Status:
-
-    S1 to S9     the bugs: the dashboard's performance, the quiz's      (COMPLETE)
-                 Back label, a score kept offline, a guest's ending,
-                 ?dev=1 with a student signed in, the shop button, a
-                 replay's stage clothes, a script that throws, saves
-                 out of order
-    S10 to S12   the item bank                                          (DROPPED: the
-                                                                        questions are the
-                                                                        teacher's)
-    S13 to S15   the dashboard: first post-test's gain, a warning      (COMPLETE)
-                 before editing a test students have sat, CSV
-    S16          the item bank                                          (DROPPED, as S10)
-    S17 to S22   the page's name and language, the login in Tagalog,    (COMPLETE)
-                 the controls list, the corner buttons (an exception,
-                 recorded), Bumalik from the login, two repeat lines
-                 (ours, + in STORY.md)
-    S23 to S25   the apple game kept on purpose; intertitle.wav gone;   (COMPLETE)
-                 blank lines
-    S26 to S35   documents and comments brought up to date; the         (COMPLETE; the health
-                 health check covers v5 to v7                           check NOT RUN)
-    S36          CLAUDE.md: history moved to DECISIONS.md; the rest     (COMPLETE, a light
-                 is the formats every session needs                     pass)
-    S37          reset_test_accounts.sql not recorded as run            (BLOCKED: the
-                                                                        proponent, Supabase)
-    S38          Blocks 98 to 110 not seen on a phone                   (COMPLETE: reported
-                                                                        working, 4 Oct 2026)
-    S39          private files and names in the git history             (CLOSED: history
-                                                                        kept, 9 Oct 2026)
-    S40          the owed pictures (three then, fifty-two since Block 120)  (BLOCKED: the artist)
-    S41          the years, every + line, the Talaan papers, the        (the years, lines
-                 pilot accounts                                         and papers accepted
-                                                                        4 and 9 Oct 2026;
-                                                                        the pilot accounts
-                                                                        BLOCKED: the
-                                                                        proponents)
-    S42          music re-encoded, 3.9 MB to 2.9 MB; gabi.wav kept      (COMPLETE)
-                 (an MP3 loop has a gap)
-    S43          npm install turns the pre-commit hook on               (COMPLETE)
-
-## Act I polish list (Block 93)
-
-Agreed 30 Sep 2026: seventeen items, all (COMPLETE) except the missing
-sprites, which wait on the artist (ART.md; BLOCKED). Tested on the phone
-1 Oct 2026. The list and why each was built as it was: DECISIONS.md,
-Block 93.
+    Improvement list, 9 Oct 2026     twelve items, Block 128 (COMPLETE;
+                                     4 dropped, Act I's files first)
+    Polish list, 4 Oct 2026          fourteen items, Block 112 (COMPLETE;
+                                     14 dropped, a paid plan)
+    Loading list, 2 Oct 2026         nine items, Block 105 (COMPLETE)
+    Scan list, 2 Oct 2026            43 items, Block 110 (COMPLETE; S37,
+                                     the test-account reset, is Next
+                                     action 7; the item bank's, S10 to
+                                     S12 and S16, dropped: the
+                                     questions are the teacher's)
+    Act I polish list, 30 Sep 2026   seventeen items, Block 93 (COMPLETE)
+    The feel pass, 30 Sep 2026       twelve items, Block 85 (COMPLETE)
 
 ## The milestone
 
@@ -725,10 +512,10 @@ framework is complete. Act I is playable from the opening to its end,
 fourteen objectives on one street, in the entablado and in the
 pulungan, and completes into its post-test (Block 80). Act II is
 playable end to end, fourteen objectives in eight places (Block 113),
-its art owed. Act III is playable end to end, fifteen objectives in
-seven places (Blocks 117, 120), its art owed. Act IV is playable end to end,
-thirteen objectives in nine places (Block 119), its art owed; its last
-card ends the game.
+its places and people painted since Block 133. Act III is playable end
+to end, fifteen objectives in seven places (Blocks 117, 120), most of
+its art owed. Act IV is playable end to end, thirteen objectives in nine
+places (Block 119), its art owed; its last card ends the game.
 
 Objective 2, gameplay mechanics: dynamic difficulty, health, equipment,
 cosmetic rewards. (IN PROGRESS) All four are built and tested against
@@ -773,8 +560,8 @@ The paper specifies seventeen.
 | Health System | (BUILT) Health, damage, invulnerability, respawn without a game over, hazards, heart pickups, healing items (the lagundi, sold since Block 121) |
 | Equipment System | (BUILT) Sandata, Anting-anting and Damit slots, stacking consumables, quest items, granting and buying, stock per seller. The story hands over the stage clothes (Block 82) and Act III's disguise (Block 117), each slowing detection while still; the corner shop sells the lagundi, the anting-anting (a fourth heart) and the pulbura (a faster shot) since Block 121; the rest verified against the fixture |
 | Cosmetic Reward | (BUILT) Currency awarded per act and scaled by performance, a shop, the Damit slot and sprite swap. No cosmetic outfit ships until the artist draws one (two asked for, ART.md, Also wanted); verified against the fixture |
-| Trivia | (BUILT) Act I built in and editable; Acts II to IV have none yet (the teacher's, on the dashboard) |
-| Act Assessment | (BUILT) Act I built in and editable; a 75% pass mark and a replay before another post-test try. Acts II to IV have none yet (the teacher's) |
+| Trivia | (BUILT) A trivia card built in for every act (Act I's since Block 68, Acts II to IV's since Block 127), each editable by the teacher on the dashboard |
+| Act Assessment | (BUILT) Ten matched pre-test and post-test pairs built in for every act, editable by the teacher; a 75% pass mark and a replay before another post-test try; the dashboard's Questions report pairs each question pre against post (Block 128) |
 | Performance Scoring | (BUILT) Weighted sum, 50 completion and 25 each for survival and stealth. Time recorded, not scored |
 | Progress Tracking | (BUILT) Completion, scores and attempts, damage taken, detections, play time |
 | Teacher Monitoring | (BUILT) Class roster and summary per class, scoped by RLS, searchable and sortable; basic summaries, no charts, by decision. Also the questions editor and the Talaan papers |
@@ -792,7 +579,7 @@ The paper specifies ten.
 | Accessibility | (BUILT) Runs in Chrome on Android, confirmed on a real device |
 | Online Functionality | (BUILT) A guest can also play with no internet once the game is kept on the phone (Block 105) |
 | Compatibility | (BUILT) Confirmed on two Android phones, the cheaper with 3GB of memory (the proponent, 9 Oct 2026). The harness proves the layout at 823 by 412 and 740 by 360 |
-| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (834 and 514 checks), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
+| Maintainability | (BUILT) Layers with a strict dependency direction, documented in CLAUDE.md, and two suites (1,538 checks between them), run in pieces side by side (Block 115). Characters animated from one still by one tool and a rig each |
 | Data Integrity | (BUILT) Row level security and unique constraints. A score cannot be changed or deleted from a browser. Since Block 68 the game grades tests itself (the instructor's decision), so the answer key is readable in the browser. Since schema v11 (Block 123) a student cannot change any profile (no making oneself a teacher) and a score must lie between 0 and its maximum |
 | Connectivity | (BUILT) |
 | Readability | (BUILT) Plus a text size setting the paper does not ask for |
@@ -1084,28 +871,11 @@ machine, the assessment module.
 
 ## Blocks remaining
 
-Act I's lines and history checked by the proponents. (COMPLETE, 4 Oct
-2026)
-
-Act II's, Act III's and Act IV's lines checked by the proponents.
-(COMPLETE, 9 Oct 2026)
-
-Act II written (Block 113). (COMPLETE) Act III written (Block 117).
-(COMPLETE) Act IV written (Block 119). (COMPLETE) Built-in questions
-for Acts II to IV (9 Oct 2026). (COMPLETE) An act without questions
-would skip its tests, saying so once (Block 121); every shipped act now
-has them.
-
-Real items for Sandata, Anting-anting and Damit: three sold since Block
-121 (COMPLETE). Cosmetic outfits: two asked of the artist (ART.md,
-Wanted), on sale once drawn (BLOCKED, the artist).
-
-The feel pass, agreed 30 Sep 2026: twelve items, all (COMPLETE) in
-Block 85 except two. The item bank, one of them, is the teacher's
-(Block 110). Act I's people are all drawn since Block 102; what is still owed,
-fifty-one pictures across the four acts, is ART.md's list (BLOCKED, the
-artist). The list: DECISIONS.md,
-Block 85.
+Every act is written, accepted and has its built-in questions (Acts I to
+IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
+the art, ART.md (thirty-five pictures; BLOCKED, the artist), and the
+two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
+BLOCKED, the artist).
 
 ## Blocked on other people
 
@@ -1166,14 +936,13 @@ light report page for laptops and projectors. (BY DESIGN)
 ## Deferred
 
 The game_progress.is_night column is no longer written (Block 91); it can
-be dropped in a later migration. A student-facing join screen (join_code exists; classes are assigned by
-the administrator). Multiple save slots. Per-question item analysis
-(the roster exports as CSV since Block 110). An offline queue for a
-student's saves, and save conflicts (a guest plays offline since Block
-105, and a test score can wait on the phone since Block 110; a
-student's play still needs the internet). Persisting
-partial test answers (a reload mid-test asks the questions again;
-nothing is recorded until submission, so nothing is lost).
+be dropped in a later migration (a database write: the proponent's yes).
+A student-facing join screen (join_code exists; classes are made by the
+teacher and the administrator). Multiple save slots. An offline queue
+for a student's saves, and save conflicts (a guest plays offline since
+Block 105, a test score can wait on the phone since Block 110 and a
+test's answers since Block 128; a student's play still needs the
+internet).
 
 ## Verification
 
@@ -1204,7 +973,9 @@ Windows computer, 1 Oct 2026): install Git and Node.js LTS (winget
 install Git.Git and OpenJS.NodeJS.LTS, or the installers), sign Git in
 to GitHub on the first push, then npm install and npx playwright install
 chromium from the repository root. Python is not needed for anything
-but the optional art scripts (key-black.py and the like, with Pillow).
+but the optional art scripts (key-black.py and make-shadow-tree.py with
+Pillow, make-sfx.py with numpy); Python 3.12 and Pillow are installed on
+the proponent's computer since 15 Oct 2026.
 On that computer Playwright's own downloader timed out every time while
 curl fetched the same file at full speed; the fix was to download the
 headless shell by hand and unzip it where Playwright looks:
@@ -1232,11 +1003,11 @@ by 412 (all fit since Block 123's layout fixes); memory flat across four
 rounds of every scene of Acts II to IV; the stealth stretches and the
 battles at 60 frames a second with the CPU slowed six times.
 
-test.js (834 checks) drives the shipping index.html with a stubbed
+test.js (899 checks) drives the shipping index.html with a stubbed
 Supabase client in headless Chromium at 823 by 412, phone landscape,
 against its own fixture act and item catalogue, so every engine system
 stays tested whatever Act I ships. Its sections are the inventory of
-what is covered. verify_new_scene.js (514 checks, ten parts) drives
+what is covered. verify_new_scene.js (639 checks, ten parts) drives
 the real content: Act I end to end as a student, to the post-test
 opening; Acts II, III and IV end to end as a guest; reloads mid-beat, old saves, a
 guest going on from Act I into Act II, every story point of ?dev=1 and
@@ -1267,7 +1038,7 @@ in CLAUDE.md, Pitfalls.
 ## Documentation debt
 
 For the paper and the defense, tracked apart from code. Every item is
-drafted (6 Oct 2026) in Claude outputs/defense-drafts.md, with the ERD
+drafted (6 Oct 2026) in Claude outputs/paper/defense-drafts.md, with the ERD
 in erd.md, on the proponent's computer only (gitignored); what is left
 is putting each into the paper.
 

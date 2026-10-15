@@ -170,6 +170,20 @@ hair and clothes survive:
 It needs Pillow and is dev-time only. Measure the PNG with
 measure-sprite.js afterwards, and point the content at the PNG.
 
+On Windows the command is python (Python 3.12, installed 15 Oct 2026)
+rather than python3. --threshold=N sets how dark counts as background
+(32 by default; 2 for a delivery whose black is exact, or dark hair goes).
+
+## A still delivered on black
+
+One figure on black rather than a sheet (the artists' Drive folder,
+Block 133) goes through key-still.js, which also crops it to the figure
+and shrinks it to 548 tall for a rig:
+
+    node _dev/tools/key-still.js docs-private/art-delivered/<date>/<name>.png assets/sprites/characters/<name>-still.png
+
+Then the rig (CLAUDE.md, Animating a character from one still).
+
 ## Animating a character from one still
 
     node _dev/tools/animate-still.js <name> --debug

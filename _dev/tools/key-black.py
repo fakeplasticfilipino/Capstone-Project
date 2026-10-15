@@ -18,6 +18,12 @@ does; this runs once per delivered sheet, not at play time):
     python3 _dev/tools/key-black.py "assets/sprites/enemies/kawal-walk.jpg" --columns=4 --rows=3
 
 writes assets/sprites/enemies/kawal-walk.png beside the original, which is kept.
+--threshold=N changes how dark counts as background (default 32); a
+delivery whose black is exact (the Drive folder of Block 133, no pixel
+above 1) wants 2, or the flood eats black hair.
+
+One still rather than a sheet, delivered on black: _dev/tools/key-still.js
+(node), which also crops it to the figure and shrinks it for a rig.
 Then measure the PNG with measure-sprite.js like any other sheet.
 
 The better fix is a PNG export from the artist with transparency; this
@@ -31,7 +37,7 @@ from PIL import Image
 THRESHOLD = 32  # max(r, g, b) at or below this counts as background
 
 
-def key(path, columns, rows):
+def key(path, columns, rows, threshold=THRESHOLD):
     src = Image.open(path).convert("RGB")
     w, h = src.size
     cw, ch = w // columns, h // rows
@@ -43,7 +49,7 @@ def key(path, columns, rows):
             r, g, b = px[x, y]
             op[x, y] = (r, g, b, 255)
 
-    dark = lambda x, y: max(px[x, y]) <= THRESHOLD
+    dark = lambda x, y: max(px[x, y]) <= threshold
     for cy in range(rows):
         for cx in range(columns):
             x0, y0 = cx * cw, cy * ch
@@ -70,5 +76,7 @@ def key(path, columns, rows):
 
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    opts = dict(a[2:].split("=") for a in sys.argv[1:] if a.startswith("--"))
-    key(args[0], int(opts["columns"]), int(opts["rows"]))
+    opts = dict(a[2:].split("=", 1) for a in sys.argv[1:] if a.startswith("--") and "=" in a)
+    if not args or "columns" not in opts or "rows" not in opts:
+        sys.exit(__doc__)
+    key(args[0], int(opts["columns"]), int(opts["rows"]), int(opts.get("threshold", THRESHOLD)))

@@ -16,11 +16,15 @@ How to draw them:
                   given, the floor or ground along the bottom. JPG.
                   "One screen" is about 1680 by 940 pixels, the size of
                   the stage painting already in the game. Not tiled or
-                  repeated: one painting, drawn once.
+                  repeated: one painting, drawn once. Paintings meant to
+                  stand side by side (a street, a field in two parts) are
+                  all the same size and shape, the ground at the same
+                  height in each, or they cannot be laid at one scale.
 
     Sprites       one person, one picture: the whole body, standing,
                   side on, facing right, on a transparent background
-                  (PNG), about 500 pixels tall or more. One picture per
+                  (PNG, not on black or white), about 500 pixels tall or
+                  more. One picture per
                   person is enough; the game makes the walk and the
                   fight from it. Someone who fights or walks needs his
                   arms hanging free of his body and his feet showing.
@@ -47,8 +51,10 @@ For the team: node _dev/tools/missing-art.js lists what the game asks
 for and does not have. prepare.js checks that every file listed in
 Backgrounds, Sprites and Props (outside "Also wanted") is missing, and
 that every missing one is listed; when a picture arrives, move its line
-to COMPLETED. How a still is turned into sheets: CLAUDE.md, Animating a
-character from one still.
+to COMPLETED. A still delivered on black: node _dev/tools/key-still.js;
+a sheet on black: _dev/tools/key-black.py. How a still is turned into
+sheets: CLAUDE.md, Animating a character from one still. Originals are
+kept in docs-private/art-delivered/.
 
 ## Backgrounds
 

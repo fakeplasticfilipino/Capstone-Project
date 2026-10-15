@@ -237,7 +237,9 @@ off the repository.
     _dev/hooks/                pre-commit: prepare.js --check (Block 106)
     _dev/rigs/                 one rig per character animated from a
                                still by animate-still.js (Block 97)
-    _dev/tools/                measure-sprite.js, key-black.py,
+    _dev/tools/                measure-sprite.js, key-black.py (a sheet
+                               on black), key-still.js (a still on
+                               black, cropped and shrunk; Block 133),
                                make-shadow-tree.py,
                                animate-bantay.js, preview-sheet.js,
                                lib/png.js (Block 75), animate-still.js
@@ -255,9 +257,10 @@ off the repository.
                                make-combat-sfx.js, make-fun-sfx.js,
                                make-scene-sfx.js (Block 81), and
                                create_accounts.js (gitignored)
-    docs-private/              gitignored; the proposal, the validation
-                               form and old screenshots, kept on the
-                               proponent's computer only
+    docs-private/              gitignored, on the proponent's computer
+                               only: documents/ (the proposal, the
+                               validation form) and art-delivered/ (the
+                               artists' originals, by date)
 
 Asset names are lowercase and hyphenated, with no spaces, and named for
 what is drawn, not for who delivered it or when: a new character is
@@ -1616,14 +1619,15 @@ on, and an onion skin of all the frames at the end. With
 --from=content/act1.js it reads the numbers from the content itself.
 
 A still delivered on black with no alpha (the artist's Drive folder,
-Block 133: max channel at most 1) is keyed in node the way Block 129
-keyed Bonifacio's: flooded out from the edges through values of 2 or
-less, cropped to the figure, shrunk by area averaging to about 548
-tall, the edge kept or dropped by how much of it the figure covers.
+Block 133: max channel at most 1) goes through node
+_dev/tools/key-still.js: flooded out from the edges through values of
+2 or less, cropped to the figure, shrunk by area averaging to 548 tall.
 The originals go to docs-private/art-delivered/.
 
 A sheet delivered as a JPEG has no alpha channel and would draw inside
-a black rectangle. _dev/tools/key-black.py (Pillow, dev-time only) floods the
+a black rectangle. _dev/tools/key-black.py (Python 3.12 and Pillow, on
+the proponent's computer since 15 Oct 2026; --threshold=2 for exact
+black) floods the
 black background out from each cell's edges into a PNG beside the
 original; the PNG is what the content names and what measure-sprite.js
 measures. A PNG export from the artist is still the better fix.
