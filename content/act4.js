@@ -57,10 +57,10 @@
 
   // ---- Art ------------------------------------------------------------
   const owed = (folder, name) => ({ src: `assets/sprites/${folder}/${name}.png`, frames: 1, fps: 1 });
-  const CARREON = owed("characters", "carreon");           // Act III's, owed
-  const MONTALAN = owed("characters", "montalan");         // Act III's, owed
-  const MANLILIMBAG = owed("characters", "manlilimbag");   // Act II's, owed
-  const TAGAPAGBALITA = owed("characters", "tagapagbalita"); // Act II's, owed
+  const CARREON = P.carreon;              // content/people.js since Block 133
+  const MONTALAN = P.montalan;
+  const MANLILIMBAG = P.manlilimbag;
+  const TAGAPAGBALITA = P.tagapagbalita;
   const PALIMBAGAN = owed("scenery", "palimbagan");        // Act II's, owed
   const KAWAL = owed("characters", "kawal-katagalugan");
   const GOMEZ = owed("characters", "gomez");
@@ -1063,11 +1063,11 @@
           { doneFlag: "a4_simula", x: 400, facing: 1, run: theOrder },
         ],
         decorations: [
-          { id: "manlilimbag-lakad", x: -120, hidden: true, animation: MANLILIMBAG, faceMovement: true },
+          { id: "manlilimbag-lakad", x: -120, hidden: true, animation: MANLILIMBAG, walkAnimation: P.manlilimbagWalk, faceMovement: true },
         ],
         npcs: [
           {
-            id: "carreon", x: 1100, label: "Carreón", animation: CARREON,
+            id: "carreon", x: 1100, label: "Carreón", animation: CARREON, facesPlayer: true,
             dialogueSets: [
               oneLine("Carreón", "Ang lagda n'yo, Pangulo. Nasa mesa.", { skipIfFlag: "a4_kautusan" }),
               oneLine("Carreón", "Isang republika, may sarili nang kautusan.", { skipIfFlag: "a4_himpilan" }),
@@ -1075,7 +1075,7 @@
             ],
           },
           {
-            id: "montalan", x: MONTALAN_X, label: "Montalan", animation: MONTALAN,
+            id: "montalan", x: MONTALAN_X, label: "Montalan", animation: MONTALAN, facesPlayer: true,
             dialogueSets: [
               oneLine("Montalan", "Kulang tayo sa baril, Pangulo.", { skipIfFlag: "a4_himpilan" }),
               oneLine("Montalan", "May riple na tayo. At uniporme. Para saan pa rin, hindi ko alam."),
@@ -1091,7 +1091,7 @@
             onInteract: signTheOrder,
           },
           {
-            id: "manlilimbag", x: 400 - MEETS, label: "Manlilimbag", animation: MANLILIMBAG,
+            id: "manlilimbag", x: 400 - MEETS, label: "Manlilimbag", animation: MANLILIMBAG, facesPlayer: true,
             startsHidden: true, revealedByFlag: "a4_saManipesto",
             dialogueSets: [oneLine("Manlilimbag", "Kalahating palimbagan, Pangulo. Pero buong salita.")],
           },
@@ -1150,7 +1150,7 @@
           },
         ],
         decorations: [
-          { id: "montalan-h", x: -120, hidden: true, animation: MONTALAN, speakers: ["Montalan"] },
+          { id: "montalan-h", x: -120, hidden: true, animation: MONTALAN, walkAnimation: P.montalanWalk, speakers: ["Montalan"] },
         ],
         npcs: [
           {
@@ -1181,7 +1181,7 @@
           { requiresFlag: "a4_manipesto", doneFlag: "a4_saDimasalang", x: 400, facing: 1, run: theLastPerformance },
         ],
         decorations: [
-          { id: "tagapagbalita", x: FIELD + 80, hidden: true, animation: TAGAPAGBALITA,
+          { id: "tagapagbalita", x: FIELD + 80, hidden: true, animation: TAGAPAGBALITA, walkAnimation: P.tagapagbalitaWalk,
             faceMovement: true, speakers: ["Tagapagbalita"] },
           { id: "taga-cavite", x: -120, hidden: true, animation: TAGA_CAVITE, faceMovement: true,
             speakers: ["Taga-Cavite"] },
@@ -1189,7 +1189,7 @@
         ],
         npcs: [
           {
-            id: "montalan", x: MONTALAN_X, label: "Montalan", animation: MONTALAN,
+            id: "montalan", x: MONTALAN_X, label: "Montalan", animation: MONTALAN, facesPlayer: true,
             dialogueSets: [
               oneLine("Montalan", "Turuan mo sila, Pangulo. Hindi sila artista.", { skipIfFlag: "a4_malabon" }),
               oneLine("Montalan", "Wala nang dumarating mula sa mga baryo, Pangulo.", { skipIfFlag: "a4_dumatingSiGomez" }),
@@ -1298,7 +1298,7 @@
           { id: "puso-sf-3", x: 2600, type: "heart" },
         ],
         decorations: [
-          { id: "montalan-m", x: 220, animation: MONTALAN, speakers: ["Montalan"] },
+          { id: "montalan-m", x: 220, animation: MONTALAN, walkAnimation: P.montalanWalk, speakers: ["Montalan"] },
           { id: "villafuerte-m", x: 120, animation: VILLAFUERTE, speakers: ["Villafuerte"] },
           { id: "de-vega-m", x: 40, animation: DE_VEGA, speakers: ["De Vega"] },
         ],
@@ -1464,7 +1464,7 @@
             }],
           },
           {
-            id: "montalan", x: 380, label: "Montalan", animation: MONTALAN,
+            id: "montalan", x: 380, label: "Montalan", animation: MONTALAN, facesPlayer: true,
             speakers: ["Montalan (pabulong)"],
             dialogueSets: [oneLine("Montalan (pabulong)", "Hindi ko gusto ang dami ng sundalo sa labas, Pangulo.")],
           },
@@ -1504,7 +1504,7 @@
         ],
         npcs: [
           {
-            id: "montalan", x: 700, label: "Montalan", animation: MONTALAN,
+            id: "montalan", x: 700, label: "Montalan", animation: MONTALAN, facesPlayer: true,
             dialogueSets: [
               {
                 requiresFlag: "a4_saSelda",

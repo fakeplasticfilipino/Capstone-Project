@@ -54,92 +54,11 @@ character from one still.
 
 ### Act I
 
-    assets/backgrounds/act1/pulungan.jpg
-        The Katipunan's secret meeting room in Tondo, 1894. One screen.
-        What happens: Macario, a young actor, is led in blindfolded.
-        The blindfold comes off and the first thing he sees is a room
-        hung with black curtains and a warning written on the wall. He
-        is challenged to turn back, answers three questions, leaps a
-        fire and signs the oath in his own blood. A year later the same
-        room is where his own council meets and the men call him
-        Pangulo, while his mother waits outside the door.
-        Mood: secret, solemn, a little frightening; candlelight in the
-        dark. A table, the warning on the wall, a way out at the left
-        (the back door to the street). (NOT STARTED)
+Nothing needed.
 
 ### Act II
 
-    assets/backgrounds/act2/bahay.jpg
-        Macario and his mother's home in Tondo, August 1896. One screen.
-        What happens: his mother sees ink on his hands and begs him not
-        to disappear the way his father did. He promises to come back,
-        and before he has finished, the door is hammered: a friend
-        calling him to the printing press. He leaves her there, and he
-        never sees her again.
-        Mood: poor but cared for, quiet, the last safe place in the
-        game. One room, a table, the door on the right. (NOT STARTED)
-
-    assets/backgrounds/act2/imprenta.jpg
-        The Katipunan's hidden printing press in Tondo, 1896. About
-        3700 by 940.
-        What happens: Act II opens here, Macario printing the second
-        issue of the Katipunan's newspaper, Kalayaan. Later the same
-        day the Spanish guards raid it; he sneaks between them, hiding
-        behind cover and on high shelves, to reach the list of members,
-        finds his own name and his mother's address on it, and escapes
-        through the back window.
-        Mood: busy and hopeful at first, then searched and dangerous.
-        Stacks of paper, crates, two high shelves a person could climb,
-        the back window at the left edge. (NOT STARTED)
-
-    assets/backgrounds/act2/pugad-lawin.jpg
-        Pugad Lawin, Kalookan, 23 August 1896. One screen.
-        What happens: the Katipunan's men gather with Bonifacio and tear
-        up their cedulas, the tax papers that marked them as Spain's
-        subjects: the start of the revolution. Macario tears his own,
-        thinking of his mother, who spent her last coins on hers.
-        Mood: defiant, a crowd in the open, the moment before war. A
-        clearing in the hills, a yard and a hut. (NOT STARTED)
-
-    assets/backgrounds/act2/san-juan.jpg
-        San Juan del Monte, 30 August 1896. About 6000 by 940.
-        What happens: the first big battle. The Katipuneros charge the
-        Spanish powder store (El Polvorin); Macario fights wave after
-        wave of soldiers. His companion from the oath, the Kasama, is
-        shot beside him. Then he has to retreat across the field,
-        sneaking past riflemen, to the river at the left.
-        Mood: open ground, smoke, a battle the Katipunan loses. The
-        powder store toward the right, the river at the left edge,
-        cover to hide behind along the way. (NOT STARTED)
-
-    assets/backgrounds/act2/nangka.jpg
-        The Nangka River, in the hills of Morong, November 1896. About
-        3400 by 940.
-        What happens: outnumbered, Macario sets up straw scarecrows in
-        Katipunan hats on the bank to fool the Spanish. The soldiers
-        fire at the straw and attack it, and he and Bonifacio take them
-        from the side.
-        Mood: a trick, a small win in a losing war. A riverbank; the
-        far side, on the right, is where the Spanish come from.
-        (NOT STARTED)
-
-    assets/backgrounds/act2/balara.jpg
-        The Katipunan's camp at Balara, 1897. One screen.
-        What happens: a night by the fire after the retreat. Bonifacio
-        talks with Macario about the family he too left behind. Soon
-        after, Bonifacio leaves for Cavite and is killed by his own
-        side.
-        Mood: tired, quiet, a last talk. A campfire, tents or a hut.
-        Draw it by day; the game makes it night. (NOT STARTED)
-
-    assets/backgrounds/act2/laguna.jpg
-        Emilio Jacinto's camp in Laguna, 1897 to 1898. One screen.
-        What happens: after Bonifacio's death, Macario stays with
-        Jacinto, the Katipunan's young writer. A messenger brings a
-        newspaper from Manila: Spain has sold the country to America
-        for twenty million dollars. Act II ends here.
-        Mood: grief, then bitterness. A camp among trees, by day.
-        (NOT STARTED)
+Nothing needed.
 
 ### Act III
 
@@ -281,36 +200,7 @@ Nothing needed.
 
 ### Act II
 
-    assets/sprites/characters/isko.png
-        Isko: one of the young men sworn into the Katipunan at the end
-        of Act I, and from then on Macario's friend and right-hand man.
-        In Act II he is the one who knocks on the door and calls
-        Macario away from his mother. In Act III he surrenders to go
-        home to the child he has never met; in Act IV he is in the crowd
-        in Manila with his son, and tells Macario he searched for his
-        mother and never found her. In Acts II to IV, a few years older
-        each act (1896 to 1906). Side on; he runs on and off.
-        (NOT STARTED)
-
-    assets/sprites/characters/jacinto.png
-        Emilio Jacinto: the Katipunan's writer, about twenty, the
-        "brains of the Katipunan". After Bonifacio's death Macario stays
-        with him in Laguna; he reads aloud the news that Spain has sold
-        the country. Act II only (in Act III Macario learns he has
-        died). Side on, standing. (NOT STARTED)
-
-    assets/sprites/characters/manlilimbag.png
-        The Manlilimbag: the Katipunan's printer, who works the press
-        with Macario in Act II. In Act III he is at the founding of the
-        Partido Nacionalista; in Act IV he has saved half a press and
-        prints Macario's manifesto in the mountains. In Acts II to IV.
-        Side on; he walks. (NOT STARTED)
-
-    assets/sprites/characters/tagapagbalita.png
-        The Tagapagbalita: a messenger who runs between camps with news
-        and papers: the news at Balara, the newspaper from Manila, the
-        start of the American war, the offer of talks. In Acts II to
-        IV. Side on; he runs in. (NOT STARTED)
+Nothing needed.
 
 Also wanted (not in the game yet):
 
@@ -330,31 +220,6 @@ Also wanted (not in the game yet):
         macario-idle.png and macario-walk.png, so they fit.
 
 ### Act III
-
-    assets/sprites/characters/alvarez.png
-        Santiago Álvarez: a general of the Katipunan's revolution, who
-        in 1901 helps found the Partido Nacionalista with Macario and
-        names him its Secretary-General: the old fighters now trying
-        to win freedom by law instead of by war. Side on, standing.
-        (NOT STARTED)
-
-    assets/sprites/characters/carreon.png
-        Francisco Carreón: an old Katipunero who had been with
-        Bonifacio, Vice President of the Republika ng Katagalugan.
-        Macario's elder and adviser at Morong. In Acts III and IV. Side
-        on, standing. (NOT STARTED)
-
-    assets/sprites/characters/montalan.png
-        Julian Montalan: the general who leads the Katagalugan's army.
-        He fights beside Macario at the post and at Malabon, is
-        arrested with him at the reception, and is in the next cell in
-        Bilibid. In Acts III and IV. Side on, standing. (NOT STARTED)
-
-    assets/sprites/characters/poblete.png
-        Pascual Poblete: a writer and newspaperman, a founder of the
-        Partido Nacionalista with Macario. He is the one who walks in
-        with the printed Sedition Law, which makes their petition a
-        crime. Side on; he walks in. (NOT STARTED)
 
     assets/sprites/characters/guro.png
         The Guro: a Filipino teacher at the Partido Nacionalista's
@@ -551,7 +416,11 @@ Done and in the game. Nothing here needs drawing.
     Backgrounds
         Act I     the street (street-01 to street-04), the road
                   (ground-lupa), the inside of the theatre
-                  (entablado-inside)
+                  (entablado-inside), the Katipunan's secret room
+                  (pulungan)
+        Act II    home (bahay), the press (imprenta), Pugad Lawin,
+                  San Juan del Monte (san-juan-1 and 2), the Nangka
+                  (nangka-1 and 2), Balara, Laguna
 
     Sprites
         Macario   idle, walk, jump, punch, shot
@@ -561,7 +430,9 @@ Done and in the game. Nothing here needs drawing.
                   Kasama, the Mabalasig, the three who take the
                   pamphlets (the mangingisda, the tabakera, the
                   karpintero), the guardia civil (bantay)
-        Act II    Bonifacio
+        Act II    Bonifacio, Isko, Jacinto, the Manlilimbag, the
+                  Tagapagbalita
+        Act III   Álvarez, Carreón, Montalan, Poblete
 
     Props
         none yet

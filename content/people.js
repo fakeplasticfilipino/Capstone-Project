@@ -28,6 +28,13 @@
   // stops.
   const NANAY_CELL = { columns: 4, contentTop: 13, contentHeight: 396, footX: 67, headroom: 13 };
 
+  // Block 133. One cell each for a standing sheet and its walk, as the
+  // tool printed them.
+  const ISKO_CELL = { columns: 4, contentTop: 5, contentHeight: 295, footX: 90, headroom: 5 };
+  const MANLILIMBAG_CELL = { columns: 4, contentTop: 6, contentHeight: 295, footX: 80, headroom: 6 };
+  const TAGAPAGBALITA_CELL = { columns: 4, contentTop: 6, contentHeight: 295, footX: 73, headroom: 6 };
+  const MONTALAN_CELL = { columns: 4, contentTop: 12, contentHeight: 296, footX: 84, headroom: 12 };
+
   // The Katipunero and the Kasama (Block 98): the artist's stills,
   // animated by animate-still.js (rigs katipunero.js, kasama.js):
   // standing with a breath, a sway and a nod; walking when a scene walks
@@ -71,9 +78,29 @@
     kasama: stillAnimated("kasama",
       { columns: 4, contentTop: 8, contentHeight: 404, footX: 119, headroom: 8 }),
 
-    // Isko (Block 113), Macario's man in Acts II and III, owed (ART.md):
-    // a placeholder box until drawn. Here since Block 117, as he returns.
-    isko: { src: "assets/sprites/characters/isko.png", frames: 1, fps: 1 },
+    // Block 133. The artist's stills of the people who return in Acts II
+    // to IV, delivered on black and keyed (Block 129's way), animated by
+    // animate-still.js (rigs isko.js, manlilimbag.js, tagapagbalita.js,
+    // montalan.js, carreon.js): each standing sheet, and a walk for those
+    // a scene walks on or off (the name with Walk), one cell for both.
+    // Isko, Macario's man in Acts II to IV (Block 113; here since 117).
+    isko: { src: "assets/sprites/characters/isko.png", frames: 8, fps: 4, ...ISKO_CELL },
+    iskoWalk: { src: "assets/sprites/characters/isko-walk.png", frames: 8, fps: 12, ...ISKO_CELL },
+    // The Katipunan's printer, Acts II to IV.
+    manlilimbag: { src: "assets/sprites/characters/manlilimbag.png", frames: 8, fps: 4, ...MANLILIMBAG_CELL },
+    manlilimbagWalk: { src: "assets/sprites/characters/manlilimbag-walk.png", frames: 8, fps: 12, ...MANLILIMBAG_CELL },
+    // The messenger, Acts II to IV.
+    tagapagbalita: { src: "assets/sprites/characters/tagapagbalita.png", frames: 8, fps: 4, ...TAGAPAGBALITA_CELL },
+    tagapagbalitaWalk: { src: "assets/sprites/characters/tagapagbalita-walk.png", frames: 8, fps: 12, ...TAGAPAGBALITA_CELL },
+    // Julian Montalan, the Katagalugan's general, Acts III and IV.
+    montalan: { src: "assets/sprites/characters/montalan.png", frames: 8, fps: 4, ...MONTALAN_CELL },
+    montalanWalk: { src: "assets/sprites/characters/montalan-walk.png", frames: 8, fps: 12, ...MONTALAN_CELL },
+    // Francisco Carreón, the Katagalugan's Vice President, Acts III and
+    // IV: he only stands.
+    carreon: {
+      src: "assets/sprites/characters/carreon.png", frames: 8, fps: 4, columns: 4,
+      contentTop: 5, contentHeight: 297, footX: 32, headroom: 5,
+    },
 
     // The Kutsero's horse (Block 100): the proponent's still of a saddled
     // bay, animated by _dev/tools/animate-kabayo.js to dip his head and

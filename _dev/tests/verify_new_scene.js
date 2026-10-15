@@ -816,6 +816,25 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        Object.values(cast).every(Boolean) && cast.NANAY === 8 && cast.NANAY_WALK === 8 && cast.MABALASIG === 8 &&
          cast.sultanWalk === 8 && cast.sultanAttack === 8 && cast.kawalAttack === 8 && cast.KUTSERO === 1 && cast.BARBERO === 1 && cast.MARYAM === 1, cast);
 
+    // Block 133. The artist's people of Acts II to IV, keyed from black and
+    // animated: each standing sheet, and a walk for those a scene walks on.
+    const later = await page.evaluate(async () => {
+      const P = window.PEOPLE;
+      const find = (act, id) => window["ACT_" + act].scenes
+        .flatMap((s) => (s.npcs || []).concat(s.decorations || [])).find((n) => n.id === id);
+      const sheets = { isko: P.isko, iskoWalk: P.iskoWalk, manlilimbag: P.manlilimbag,
+        manlilimbagWalk: P.manlilimbagWalk, tagapagbalita: P.tagapagbalita, tagapagbalitaWalk: P.tagapagbalitaWalk,
+        montalan: P.montalan, montalanWalk: P.montalanWalk, carreon: P.carreon,
+        jacinto: find(2, "jacinto").animation, alvarez: find(3, "alvarez").animation, poblete: find(3, "poblete").animation };
+      await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
+      const walked = [find(2, "isko-bahay"), find(2, "tagapagbalita"), find(4, "manlilimbag-lakad"), find(4, "montalan-h")]
+        .every((d) => d.walkAnimation && /-walk\.png$/.test(d.walkAnimation.src));
+      return { open: Object.fromEntries(Object.entries(sheets).map(([n, s]) => [n, !s.failed && s.frameHeight > 0 && s.frames])),
+        walked, faces: find(3, "carreon").facesPlayer === true && find(2, "jacinto").facesPlayer === true };
+    });
+    ok("the artist's people of Acts II to IV: every sheet opening, eight frames each, the walked ones walking (Block 133)",
+       Object.values(later.open).every((f) => f === 8) && later.walked && later.faces, later);
+
     const c1 = await readConversation(page, 3);
     ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
     ok("Macario faces the siga, behind him on the left", c1.facings.every((f) => f === -1), c1.facings);
@@ -1408,8 +1427,11 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
         owed: tile && tile.classList.contains("backdrop-owed") && /pulungan\.jpg/.test(tile.textContent),
         src: document.getElementById("skyline").style.getPropertyValue("--skyline-src") };
     });
-    ok("the room: the Kasama, the Mabalasig and the Katipunero, its owed painting drawn as a dark wall named for the file",
-       pulungan.ids === "kasama,mabalasig,katipunero" && pulungan.x === 120 && pulungan.owed && pulungan.src === "", pulungan);
+    // Block 133: the artist's painting arrived; until then it was owed, a
+    // dark wall named for the file (Block 80).
+    ok("the room: the Kasama, the Mabalasig and the Katipunero, before the artist's painting of it (Block 133)",
+       pulungan.ids === "kasama,mabalasig,katipunero" && pulungan.x === 120 && !pulungan.owed &&
+         /pulungan.jpg/.test(pulungan.src), pulungan);
     ok("the task is to join", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.join]));
     // Block 81. The rite, in the histories' order.
     const o1 = await readConversation(page, 10);

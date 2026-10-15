@@ -59,7 +59,10 @@
   // ---- Art ------------------------------------------------------------
   const owed = (folder, name) => ({ src: `assets/sprites/${folder}/${name}.png`, frames: 1, fps: 1 });
   const ISKO = P.isko; // content/people.js since Block 117
-  const JACINTO = owed("characters", "jacinto");
+  // Block 133: the artist's still, animated (rig _dev/rigs/jacinto.js),
+  // standing only.
+  const JACINTO = { src: "assets/sprites/characters/jacinto.png", frames: 8, fps: 4, columns: 4,
+    contentTop: 5, contentHeight: 296, footX: 28, headroom: 5 };
   // Block 129. Bonifacio is the artist's still (bonifacio-still.png),
   // animated by _dev/tools/animate-still.js (rig _dev/rigs/bonifacio.js):
   // the calm idle, the walk, and at "Sugod!" his fist thrown up over his
@@ -71,8 +74,8 @@
     walk: { src: "assets/sprites/characters/bonifacio-walk.png", frames: 8, fps: 12, ...BONIFACIO_CELL },
     sugod: { src: "assets/sprites/characters/bonifacio-sugod.png", frames: 8, fps: 8, ...BONIFACIO_CELL },
   };
-  const MANLILIMBAG = owed("characters", "manlilimbag");
-  const TAGAPAGBALITA = owed("characters", "tagapagbalita");
+  const MANLILIMBAG = P.manlilimbag; // content/people.js since Block 133
+  const TAGAPAGBALITA = P.tagapagbalita; // content/people.js since Block 133
   const PALIMBAGAN = owed("scenery", "palimbagan");
   const DAYAMI = owed("scenery", "dayami");
   const PANAKOT = owed("scenery", "panakot");
@@ -981,7 +984,7 @@
     scenes: [
       {
         // Beats 1, 4 and 5. The Katipunan's press, and the act's first
-        // scene. Its painting is owed. March: Jacinto and the printer, the
+        // scene. Its painting is the artist's (Block 133). March: Jacinto and the printer, the
         // press used with E. August: three guardia civil searching it
         // (they catch, not shoot), two shelves above their sight, the
         // list under the press, the window out at the left edge.
@@ -1035,7 +1038,7 @@
             onInteract: outTheWindow,
           },
           {
-            id: "jacinto", x: JACINTO_PRESS_X, label: "Jacinto", animation: JACINTO,
+            id: "jacinto", x: JACINTO_PRESS_X, label: "Jacinto", animation: JACINTO, facesPlayer: true,
             hiddenByFlag: "a2_paghuli",
             dialogueSets: [
               oneLine("Jacinto", "Pantay na diin, Macario. Ang malabong letra, hindi mababasa ng bayan.",
@@ -1044,7 +1047,7 @@
             ],
           },
           {
-            id: "manlilimbag", x: PRINTER_X, label: "Manlilimbag", animation: MANLILIMBAG,
+            id: "manlilimbag", x: PRINTER_X, label: "Manlilimbag", animation: MANLILIMBAG, facesPlayer: true,
             hiddenByFlag: "a2_paghuli",
             dialogueSets: [
               oneLine("Manlilimbag", "Yokohama, ha. Ni hindi ko alam kung saan 'yon."),
@@ -1225,7 +1228,7 @@
         ],
       },
       {
-        // Beat 2. Home, one room; its painting is owed. Reached from the
+        // Beat 2. Home, one room; its painting is the artist's (Block 133). Reached from the
         // street on the walk home, and (if he goes back in) in the sweep.
         id: "bahay",
         worldWidth: ROOM,
@@ -1243,7 +1246,7 @@
             x: ROOM - 160, facing: -1, run: home },
         ],
         decorations: [
-          { id: "isko-bahay", x: ROOM + 60, hidden: true, animation: ISKO, faceMovement: true },
+          { id: "isko-bahay", x: ROOM + 60, hidden: true, animation: ISKO, walkAnimation: P.iskoWalk, faceMovement: true },
         ],
         npcs: [
           {
@@ -1316,11 +1319,17 @@
         // Beats 8 and 9. San Juan del Monte, 30 August 1896. The charge
         // (theCharge), the Kasama's death, then the rifles in the field
         // between Macario and the river, and the river at the left edge.
-        // Its painting is owed. A reload in the retreat starts at the last
+        // Its painting is the artist's (Block 133). A reload in the retreat starts at the last
         // line of rifles he passed.
         id: "san-juan",
         worldWidth: BATTLE_WIDTH,
-        backdrop: { src: "assets/backgrounds/act2/san-juan.jpg" },
+        // Block 133: the artist's two paintings, the town and then the
+        // powder store. The join is at 2400, clear of the retreat's
+        // checkpoints (a tree stands on every join); the store is the
+        // left of the second painting, so the field ending at 4200 shows it.
+        panels: ["assets/backgrounds/act2/san-juan-1.jpg", "assets/backgrounds/act2/san-juan-2.jpg"],
+        panelWidth: 2400,
+        panelSky: "#4a8fd6",
         ground: { floor: "damo" }, // Block 114
         dangerous: true,
         startX: RETREAT_START,
@@ -1366,10 +1375,15 @@
         // Beats 10 and 11. The Nangka River, November 1896. Three
         // bundles of straw on the bank; each raised is a scarecrow in a
         // Katipunan hat (the bundle hidden, the scarecrow shown, from the
-        // flags, so a reload keeps them). Its painting is owed.
+        // flags, so a reload keeps them). Its painting is the artist's (Block 133).
         id: "nangka",
         worldWidth: RIVER_WIDTH,
-        backdrop: { src: "assets/backgrounds/act2/nangka.jpg" },
+        // Block 133: the artist's river, then the fields beside it. Two
+        // more fields came with them and are kept aside: two panels
+        // already cover the bank.
+        panels: ["assets/backgrounds/act2/nangka-1.jpg", "assets/backgrounds/act2/nangka-2.jpg"],
+        panelWidth: RIVER_WIDTH / 2,
+        panelSky: "#4a8fd6",
         ground: { floor: "damo" }, // Block 114
         dangerous: true,
         startX: 500,
@@ -1410,7 +1424,7 @@
       },
       {
         // Beat 11. Balara, at night. The messenger on arrival; Bonifacio
-        // by the fire. Its painting is owed.
+        // by the fire. Its painting is the artist's (Block 133).
         id: "balara",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/balara.jpg" },
@@ -1423,7 +1437,7 @@
             run: newsFromCavite },
         ],
         decorations: [
-          { id: "tagapagbalita", x: ROOM + 80, hidden: true, animation: TAGAPAGBALITA, faceMovement: true },
+          { id: "tagapagbalita", x: ROOM + 80, hidden: true, animation: TAGAPAGBALITA, walkAnimation: P.tagapagbalitaWalk, faceMovement: true },
         ],
         npcs: [
           {
@@ -1480,7 +1494,7 @@
           { requiresFlag: "a2_saLaguna", doneFlag: "a2_kayJacinto", x: 450, facing: 1, run: withJacinto },
         ],
         decorations: [
-          { id: "tagapagbalita", x: -120, hidden: true, animation: TAGAPAGBALITA, faceMovement: true,
+          { id: "tagapagbalita", x: -120, hidden: true, animation: TAGAPAGBALITA, walkAnimation: P.tagapagbalitaWalk, faceMovement: true,
             speakers: ["Tagapagbalita"] },
         ],
         npcs: [
@@ -1489,7 +1503,7 @@
             dialogueSets: [oneLine("Katipunero", "Hindi pa rin ako makapaniwala. Ang Supremo... sa kamay ng kapwa natin.")],
           },
           {
-            id: "jacinto", x: LAGUNA_JACINTO_X, label: "Jacinto", animation: JACINTO,
+            id: "jacinto", x: LAGUNA_JACINTO_X, label: "Jacinto", animation: JACINTO, facesPlayer: true,
             dialogueSets: [
               {
                 requiresFlag: "a2_kayJacinto",

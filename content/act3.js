@@ -71,19 +71,23 @@
 
   // ---- Art ------------------------------------------------------------
   const owed = (folder, name) => ({ src: `assets/sprites/${folder}/${name}.png`, frames: 1, fps: 1 });
-  const ALVAREZ = owed("characters", "alvarez");
-  const CARREON = owed("characters", "carreon");
-  const MONTALAN = owed("characters", "montalan");
+  // Block 133: the artist's stills, animated (rigs _dev/rigs/alvarez.js,
+  // poblete.js); Álvarez stands, Poblete, drawn mid-stride, only breathes.
+  const ALVAREZ = { src: "assets/sprites/characters/alvarez.png", frames: 8, fps: 4, columns: 4,
+    contentTop: 6, contentHeight: 296, footX: 28, headroom: 6 };
+  const CARREON = P.carreon; // content/people.js since Block 133
+  const MONTALAN = P.montalan;
   const GURO = owed("characters", "guro");
   const OPISYAL = owed("characters", "opisyal");
-  const POBLETE = owed("characters", "poblete");
-  const TAGAPAGBALITA = owed("characters", "tagapagbalita"); // Act II's, owed
+  const POBLETE = { src: "assets/sprites/characters/poblete.png", frames: 8, fps: 4, columns: 4,
+    contentTop: 7, contentHeight: 295, footX: 71, headroom: 7 };
+  const TAGAPAGBALITA = P.tagapagbalita;
   const WATAWAT = owed("scenery", "watawat-katagalugan");
   const AMERIKANO = owed("enemies", "amerikano");
   const KONSTABLE = owed("enemies", "konstable");
   const SUKI_AMERIKANO = owed("characters", "sundalong-amerikano");
   const BAGONG_NAKATIRA = owed("characters", "bagong-nakatira");
-  const MANLILIMBAG = owed("characters", "manlilimbag"); // Act II's, owed
+  const MANLILIMBAG = P.manlilimbag;
   const SILYA = owed("scenery", "silya-barbero"); // Act I's chair, owed
   // Block 120: Bilibid's guard (Act IV's, owed), and the Republic's
   // soldiers at Morong, seen beside its flag (Act IV's Kawal, owed).
@@ -1080,7 +1084,7 @@
           { id: "puso-sm-3", x: 2600, type: "heart" },
         ],
         decorations: [
-          { id: "tagapagbalita", x: BATTLE_WIDTH + 80, hidden: true, animation: TAGAPAGBALITA,
+          { id: "tagapagbalita", x: BATTLE_WIDTH + 80, hidden: true, animation: TAGAPAGBALITA, walkAnimation: P.tagapagbalitaWalk,
             faceMovement: true, speakers: ["Tagapagbalita"] },
         ],
         npcs: [
@@ -1437,7 +1441,7 @@
           { requiresFlag: "a3_balangay", doneFlag: "a3_saBayan", x: 250, facing: 1, run: theTown },
         ],
         decorations: [
-          { id: "isko-bayan", x: -120, hidden: true, animation: P.isko, faceMovement: true, speakers: ["Isko"] },
+          { id: "isko-bayan", x: -120, hidden: true, animation: P.isko, walkAnimation: P.iskoWalk, faceMovement: true, speakers: ["Isko"] },
           { id: "opisyal", x: MESA_X + 60, animation: OPISYAL, facing: -1, speakers: ["Opisyal"] },
           { id: "pila-1", x: MESA_X - 240, animation: P.katipunero.idle },
           { id: "pila-2", x: MESA_X - 330, animation: P.katipunero.idle },
@@ -1474,7 +1478,7 @@
         ],
         npcs: [
           {
-            id: "alvarez", x: 560, label: "Álvarez", animation: ALVAREZ,
+            id: "alvarez", x: 560, label: "Álvarez", animation: ALVAREZ, facesPlayer: true,
             dialogueSets: [
               oneLine("Álvarez", "Kailangan natin ng mga pirma, Kalihim-Heneral.", { skipIfFlag: "a3_pumirma" }),
               oneLine("Álvarez", "Kahit ang paghingi, Sakay. Kahit ang paghingi."),
@@ -1483,7 +1487,7 @@
           // Two sign; the third, the Guro, means to and then will not,
           // once the law is posted (Block 120).
           {
-            id: "manlilimbag", x: 330, label: "Manlilimbag", animation: MANLILIMBAG,
+            id: "manlilimbag", x: 330, label: "Manlilimbag", animation: MANLILIMBAG, facesPlayer: true,
             dialogueSets: [oneLine("Manlilimbag", "Ako na ang maglilimbag nito, Pangulo, kung papayagan nila.")],
             gift: sign(0, [
               { speaker: "Manlilimbag", text: "Pangulo? ...Buhay pa pala tayong dalawa." },
@@ -1566,7 +1570,7 @@
         ],
         npcs: [
           {
-            id: "montalan", x: 900, label: "Montalan", animation: MONTALAN,
+            id: "montalan", x: 900, label: "Montalan", animation: MONTALAN, facesPlayer: true,
             dialogueSets: [
               oneLine("Montalan", "Kausapin mo si Carreón. Siya ang marunong sa mga papel.", { skipIfFlag: "a3_itinatag" }),
               oneLine("Montalan", "Hanggang sa paglaya, Pangulo."),
@@ -1581,7 +1585,7 @@
             onInteract: raiseTheFlag,
           },
           {
-            id: "carreon", x: 1100, label: "Carreón", animation: CARREON,
+            id: "carreon", x: 1100, label: "Carreón", animation: CARREON, facesPlayer: true,
             dialogueSets: [
               {
                 requiresFlag: "a3_saMorong",

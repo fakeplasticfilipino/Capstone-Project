@@ -219,7 +219,7 @@ const KASAMA_X = 12500;
 
 // Block 80. The secret room, one screen wide like the entablado: the way
 // out on the left, where he came in, the Kasama by it, the Mabalasig and
-// the Katipunero at the far end. Its picture is owed (ART.md).
+// the Katipunero at the far end. Its painting is the artist's (Block 133).
 const PULUNGAN_WIDTH = 1180;
 const PULUNGAN_ENTER_X = 120;
 const PULUNGAN_KASAMA_X = 300;
@@ -2041,8 +2041,7 @@ window.ACT_1 = {
     {
       // Block 80. The Katipunan's secret room, reached only with the
       // Kasama, once, through a black card (intoThePulungan). One screen
-      // wide. Its picture is owed (ART.md), so the engine draws a dark
-      // room with the file name on it until it arrives, over floorboards
+      // wide. Its painting is the artist's (Block 133), over floorboards
       // (Block 114); a painting with its own floor sets ground: false. The way out stays shut until he is sworn in. Since Block 81
       // it is the back way ("Sa likod ka dadaan"), onto the street short
       // of the mangingisda, facing the three and the guardia civil.
