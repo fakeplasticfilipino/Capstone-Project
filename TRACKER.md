@@ -9,17 +9,16 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 15 Oct 2026, after Block 134. Block 134: Tondo's new
-street looked wrong (a house twice the church's size beside it): each
-painting is now drawn at one height, its own width, fading into the
-next, the trees where they were. Public sign-up switched off by the
-proponent. Block 133: the artists'
+Last updated: 15 Oct 2026, after Block 134. Block 134: the new street
+of Block 133 taken out at the proponent's word ("the new ones aren't
+good at all"): the old four paintings back, night the tint again, and
+the street's paintings standing on the bottom of the screen so everyone
+walks on the painted road instead of the dirt strip, which did not fit.
+Public sign-up switched off by the proponent. Block 133: the artists'
 Drive folder put in, overnight at the proponent's word: Act II's seven
 places and the pulungan painted; Isko, Jacinto, the printer, the
 messenger, Álvarez, Carreón, Montalan and Poblete keyed from black and
-animated; Tondo's street replaced with the new set, and its own night
-paintings laid at night instead of the tint. Thirty-five pictures still
-owed. Block 132: a teacher
+animated. Thirty-five pictures still owed. Block 132: a teacher
 makes her class's accounts on the dashboard (printable slips, six-digit
 passwords, a code at the login), and the dashboard is five tabs;
 schema v13 applied (a new account is always a student). Block 131: ART.md
@@ -175,10 +174,10 @@ internet.
 Acts II to IV are written (Blocks 113, 117, 119), below Act I's list. Act I, rewritten in Block 52 against the
 proponents' script and built forward since, and since Block 80 it has
 an ending. STORY.md has it beat by beat, with every line. It is one
-street ten paintings long (14500px, the artist's set of Block 133,
-street-01..05, 09 and 10 with the barber row at the Barbero and the
-theatre at the entablado, and their night paintings at night; a
-silhouette tree over each join; keep anyone a student
+street ten paintings long (14500px, street-01..04.jpg in order, twice,
+then 01 and 02, standing on the bottom of the screen with their own
+painted road under everyone's feet since Block 134; a silhouette tree
+over each join; keep anyone a student
 must reach 90px clear of a multiple of 1450), the inside of the
 entablado, which only the direktor (and later the four-year card) takes
 Macario into, and the pulungan, the Katipunan's secret room, which only
@@ -311,7 +310,7 @@ and the stills of the bantay, the three siga, the direktor, the
 Katipunero, the Kasama, and since Block 129 Bonifacio and the side-on
 Sultan and kawal, who strike with the slash (the blade over the head),
 the Sultan fighting Don Rodrigo himself; and since Block 133 Act II's
-places, the pulungan, the new street by day and night, Isko, Jacinto,
+places, the pulungan, Isko, Jacinto,
 the printer, the messenger, Álvarez, Carreón, Montalan and Poblete. The proponent drew Kabayo,
 Nanay, the Kutsero, the Barbero, Maryam, the Mabalasig and the three
 who take the pamphlets (Blocks 100 to 102). Since Block 113
@@ -367,14 +366,6 @@ Oct 2026. Open:
 
     Block 133, on the phone (?dev=1 points named):
 
-    a. The street ("trabaho"): walk it end to end. Ten paintings, the
-       pier first, the barber row behind the Barbero, the theatre behind
-       the direktor at the far end, a tree over every join. Failure: a
-       grey box, or the theatre somewhere else.
-    b. The night (Act I "polyeto", Act II "gabi", Act III "gabi"): the
-       street is the night paintings (lit windows, stars), not a tinted
-       day. Failure: the day paintings dimmed blue, or a day painting
-       among the night ones.
     c. Act II's places ("simula", "bahay", "sedula", "sanjuan",
        "panakot", "balara", "laguna") and Act I's pulungan ("kasama",
        then follow him in): each a painting, the people standing on its
@@ -414,14 +405,12 @@ Oct 2026. Open:
     v13 applied, so a sign-up could only ever have been a student with
     no class.
 
-    Block 134, on the phone ("trabaho", then walk the street): every
-    building at one scale (no house towering over the church beside
-    it), the paintings blending softly into each other, the barber row
-    behind the Barbero, the theatre behind the direktor; at night
-    ("polyeto") the same. Failure: a hard seam or a gap of sky colour
-    between two paintings, a building cut off at the top, or a stutter
-    while walking on the cheaper phone (the street is seventeen
-    paintings now, each fading in).
+    Block 134, on the phone ("trabaho", then walk the street; "polyeto"
+    for the night; Acts II to IV's street too): the old street is back,
+    its own sandy road reaching the bottom of the screen with everyone
+    walking on it, no brown strip below; at night the same street
+    darkened. Failure: a strip of another colour under the road, a gap
+    at the bottom, or anyone standing in the sky.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -452,8 +441,8 @@ Katagalugan's fighter, a Bilibid guard, the American soldier, the
 Constabulary and the Katagalugan's flag; Act IV's fifteen: six
 paintings, Gómez, Van Schaick, Villafuerte, de Vega, the judge, a
 woman of Cavite, Isko's son and two townspeople for the crowd in
-Manila). Also wanted since Block 133: the street's missing paintings
-6 to 8, and the night of 7 to 10. The Drive folder's unnamed
+Manila). The Drive folder's new street (October 12) was tried and
+taken out (Block 134). Its unnamed
 side-profile figure (October 12) and a second Jacinto were set aside:
 which character, and which Jacinto, is the proponent's call. PNGs with transparency. Ask act by act, Act I first, as ART.md is
 ordered. Also asked for (ART.md, Also wanted): Bonifacio with his sword
@@ -1088,10 +1077,10 @@ machine, the assessment module.
         is always a student); test.js BX
     133 the artists' Drive folder (15 Oct): Act II's paintings and the
         pulungan; eight stills keyed from black and animated (rigs);
-        the new street in its slots, nightPanels for its night
-    134 the street at one scale: placed paintings ({ src, x, width },
-        600 tall at their own widths, each fading in over the last),
-        the trees still every 1450 so nobody moved
+        (and the new street, taken out in 134)
+    134 the old street back at the proponent's word, night the tint
+        again; the street's paintings on their own painted road
+        (ground: false on a panelled scene stands them on the bottom)
 
 ## Blocks remaining
 

@@ -128,21 +128,13 @@ const panels = (page) => page.evaluate(async () => {
   const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
   const trees = [...document.querySelectorAll(".shadow-tree")];
   const joins = panelJoins(scene);
-  // Block 134: a placed painting is { src, x, width }.
-  const srcs = [...new Set(scene.panels.map((p) => (typeof p === "object" ? p.src : p)))];
-  const sizes = await Promise.all(srcs.map((src) => new Promise((resolve) => {
+  const srcs = [...new Set(scene.panels)];
+  const widths = await Promise.all(srcs.map((src) => new Promise((resolve) => {
     const img = new Image();
-    img.onload = () => resolve([img.naturalWidth, img.naturalHeight]);
-    img.onerror = () => resolve([0, 0]);
+    img.onload = () => resolve(img.naturalWidth);
+    img.onerror = () => resolve(0);
     img.src = assetUrl(src);
   })));
-  const widths = sizes.map((s) => s[0]);
-  // Block 134: every placed painting drawn the same height, within a few
-  // pixels of its own shape.
-  const widthsHeights = (list) => list.every((p) => {
-    const s = sizes[srcs.indexOf(p.src)];
-    return s && s[0] > 0 && Math.abs(p.width * s[1] / s[0] - 600) <= 4;
-  });
   // Half the widest trunk at head height plus a margin, either side of a
   // join. It grew with the trees in Block 50: they are thicker now, so
   // the ground a person must stay off is wider than it was.
@@ -156,13 +148,7 @@ const panels = (page) => page.evaluate(async () => {
       if (Math.abs(hx + PICKUP_SIZE / 2 - x) < TRUNK + PICKUP_SIZE / 2) blocked.push("paper " + hx); });
   });
   return {
-    tiles: tiles.length, expectedTiles: typeof scene.panels[0] === "object" ? scene.panels.length
-      : Math.ceil(WORLD_WIDTH / (scene.panelWidth || PANEL_WIDTH)),
-    // Block 134: placed paintings cover the whole road, no gap between two.
-    covered: (() => { if (typeof scene.panels[0] !== "object") return true;
-      let end = 0; for (const p of scene.panels) { if (p.x > end) return false; end = Math.max(end, p.x + p.width); }
-      return end >= WORLD_WIDTH; })(),
-    oneHeight: typeof scene.panels[0] !== "object" || widthsHeights(scene.panels),
+    tiles: tiles.length, expectedTiles: Math.ceil(WORLD_WIDTH / (scene.panelWidth || PANEL_WIDTH)),
     joins, treesAt: trees.map((t) => parseFloat(t.style.left) + SHADOW_TREE_WIDTH / 2),
     treeZ: trees.length ? +getComputedStyle(trees[0]).zIndex : null,
     playerZ: +getComputedStyle(document.getElementById("player")).zIndex,
@@ -172,7 +158,9 @@ const panels = (page) => page.evaluate(async () => {
     srcs, order: tiles.map((t) => (t.style.backgroundImage.match(/street-\d+|tondo/) || ["?"])[0]),
     noneMirrored: tiles.every((t) => !t.classList.contains("skyline-tile-mirrored")),
     // Block 46: the picture stands on the floor, whole, with sky above it.
-    onFloor: tiles.every((t) => getComputedStyle(t).bottom === GROUND_LEVEL + "px" &&
+    // Block 134: or on the bottom of the screen, for a street that paints
+    // its own road (ground: false).
+    onFloor: tiles.every((t) => getComputedStyle(t).bottom === (scene.ground === false ? "0px" : GROUND_LEVEL + "px") &&
       /^100%( auto)?$/.test(getComputedStyle(t).backgroundSize)),
     sky: tiles.length ? getComputedStyle(tiles[0]).backgroundColor : null,
   };
@@ -756,11 +744,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("and the card fades away by itself", await waitIntertitle(page, false, 12000));
 
     const p0 = await panels(page);
-    // Block 133: the artist's new street, one painting a panel, the barber
-    // row (10) at the Barbero's panel and the theatre (4) at the entablado's.
-    ok("the street is the artist's paintings at one height, the barber row and the theatre in place, a tree every 1450 (Blocks 133, 134)",
-       p0.tiles === p0.expectedTiles && p0.loaded && p0.covered &&
-       p0.oneHeight && p0.order[6] === "street-10" && p0.order[p0.order.length - 1] === "street-04" &&
+    ok("the street is ten paintings long, the four in order and again, a tree over each join",
+       p0.tiles === 10 && p0.loaded &&
+       JSON.stringify(p0.order) === JSON.stringify(["01", "02", "03", "04", "01", "02", "03", "04", "01", "02"].map((n) => "street-" + n)) &&
        p0.joins.length === 9 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
     ok("the road is 14500 wide", await page.evaluate(() => WORLD_WIDTH === 14500));
 
@@ -1522,7 +1508,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const p1 = await panels(page);
     ok("nobody stands behind a tree", p1.blocked.length === 0, p1.blocked);
     const night = await page.evaluate(() => ({
-      sky: (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || ""))),
+      sky: document.getElementById("skyline").classList.contains("night-tint"),
       road: document.getElementById("ground-tiles").classList.contains("night-tint"),
       music: musicSrc }));
     ok("night on the run: the street and road darkened, crickets for music (Block 85)",
@@ -1618,7 +1604,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       for (let i = 0; i < 80 && !dec.moving; i++) await new Promise((r) => setTimeout(r, 50));
       const from = dec.currentX, edge = viewEdges().right;
       return { guards: GUARDS.length, crates: document.querySelectorAll("#world .hide-spot").length,
-        night: (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || ""))),
+        night: document.getElementById("skyline").classList.contains("night-tint"),
         npcHidden: NPCS.find((n) => n.id === "kasama").hidden, coming: dec.moving, from, edge,
         exits: (currentScene.exits || []).length };
     });
@@ -1813,7 +1799,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     r = await resume("tondo", roundsOver);
     await r.page.waitForTimeout(500);
     const wayBack = await r.page.evaluate(() => ({ guards: GUARDS.length,
-      night: (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || ""))),
+      night: document.getElementById("skyline").classList.contains("night-tint"),
       kasama: NPCS.find((n) => n.id === "kasama").hidden, cut: cutscenePlaying }));
     const wl = await log(r.page);
     ok("a reload on the street before the report: no guards, still night, the Kasama at his spot, the task the report",
@@ -2227,7 +2213,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       await press(page, 100);
       ok("out of the window, into the night street", await playOn(page, "currentSceneId === 'tondo' && inDialogue", 30000));
       c = await readLines(page, 3);
-      const night = await page.evaluate(() => ({ night: (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || ""))),
+      const night = await page.evaluate(() => ({ night: document.getElementById("skyline").classList.contains("night-tint"),
         x: Math.round(posX), out: NPCS.filter((n) => !n.hidden && !n.scenery).map((n) => n.id) }));
       ok("he left nobody with her; the street is dark and nobody is out",
          c.lines[1] === "Macario (sa isip): Wala akong pinabantay sa kanya. Wala ni isa." && night.night && night.out.length === 0 && night.x === 6800,
@@ -2575,7 +2561,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        c.lines.includes("Guro: Krimen na raw ang pumirma. May tatlo akong anak.") &&
        c.lines.includes("Macario: Wala nang ibang daan, Heneral."), c.lines);
     ok("January 1902: Tondo at night", await waitForScene(page, "tondo", 20000) &&
-       await page.evaluate(() => (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || "")))));
+       await page.evaluate(() => document.getElementById("skyline").classList.contains("night-tint")));
     await readLines(page, 2);
     await playOn(page, "state.flags.a3_saGabi === true && !cutscenePlaying", 20000);
     await settle(page);
@@ -2695,7 +2681,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("signed; Montalan wants guns, and uniforms: \"Makikita mo rin\"",
        c.lines.includes("Macario: Makikita mo rin.") && await page.evaluate(() => state.flags.a4_kautusan === true), c.lines);
     ok("on black to the Constabulary's post, at night", await waitForScene(page, "himpilan", 30000) &&
-       await page.evaluate(() => (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || "")))));
+       await page.evaluate(() => document.getElementById("skyline").classList.contains("night-tint")));
     c = await readLines(page, 2);
     await settle(page);
     ok("three of the Constabulary on watch, the task the storeroom",

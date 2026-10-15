@@ -79,10 +79,14 @@
   // ---- The street ---------------------------------------------------
   // Act I's street, by day in July 1906. Joins at every multiple of 1450;
   // anyone a student must reach is 90 or more clear.
+  const STREET_PAINTINGS = [
+    "assets/backgrounds/act1/street-01.jpg",
+    "assets/backgrounds/act1/street-02.jpg",
+    "assets/backgrounds/act1/street-03.jpg",
+    "assets/backgrounds/act1/street-04.jpg",
+  ];
   const PANEL = 1450;
-  // Block 133: the street and its night, from content/people.js.
-  const STREET_PANELS = window.STREET.day;
-  const STREET_NIGHT_PANELS = window.STREET.night;
+  const STREET_PANELS = Array.from({ length: 10 }, (_, i) => STREET_PAINTINGS[i % 4]);
   const STREET_WIDTH = 10 * PANEL;
   const STREET_SKY = "#51a6ea";
   const ARRIVE_X = 12500;       // into Manila from the east
@@ -1307,8 +1311,7 @@
         id: "tondo",
         worldWidth: STREET_WIDTH,
         panels: STREET_PANELS,
-        nightPanels: STREET_NIGHT_PANELS, // Block 133
-        nightPanelSky: window.STREET.nightSky,
+        ground: false, // Block 134: the paintings' own road, not the dirt strip
         panelSky: STREET_SKY,
         startX: ARRIVE_X,
         hintSpots: HINT_SPOTS,

@@ -64,16 +64,21 @@
 // (Block 50). Block 57 made the street ten paintings long at the
 // proponent's direction, which with four paintings means the four in
 // order, twice, and then the first two again.
-// Block 133: the artist's new street, one painting to each panel, and
-// its night (content/people.js, window.STREET).
-const STREET_PANELS = window.STREET.day;
-const STREET_NIGHT_PANELS = window.STREET.night;
+const STREET_PAINTINGS = [
+  "assets/backgrounds/act1/street-01.jpg",
+  "assets/backgrounds/act1/street-02.jpg",
+  "assets/backgrounds/act1/street-03.jpg",
+  "assets/backgrounds/act1/street-04.jpg",
+];
+const STREET_PANEL_COUNT = 10;
+const STREET_PANELS = Array.from({ length: STREET_PANEL_COUNT },
+  (_, i) => STREET_PAINTINGS[i % STREET_PAINTINGS.length]);
 
 // One panel's width in the world (game.js, PANEL_WIDTH). The joins, and
 // the trees over them, are at every multiple of it; everyone a student
 // must reach stands at least 90px clear of one (CLAUDE.md, Block 50).
 const PANEL = 1450;
-const STREET_WIDTH = 10 * PANEL; // 14500: ten panels' worth, a tree every 1450 (Block 57)
+const STREET_WIDTH = STREET_PANEL_COUNT * PANEL; // 14500
 
 // Block 46. The sky above a painting on a tall screen: the average of
 // the four paintings' top rows.
@@ -1424,8 +1429,7 @@ window.ACT_1 = {
       id: "tondo",
       worldWidth: STREET_WIDTH,
       panels: STREET_PANELS,
-      nightPanels: STREET_NIGHT_PANELS, // Block 133
-      nightPanelSky: window.STREET.nightSky,
+      ground: false, // Block 134: the paintings' own road, not the dirt strip
       panelSky: STREET_SKY,
       startX: STREET_SPOT,
       hintSpots: HINT_SPOTS,

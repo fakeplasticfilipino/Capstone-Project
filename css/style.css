@@ -270,6 +270,13 @@ html, body {
   background-repeat: no-repeat;
 }
 
+/* Block 134. A street whose paintings paint their own road (ground: false;
+   game.js, panels-own-floor) stands them on the bottom of the screen, so
+   the characters walk on the painted road, not on a dirt strip below it. */
+#skyline.panels-own-floor .skyline-panel {
+  bottom: 0;
+}
+
 /* Block 126. A door that is open, lit (game.js, LIT DOORWAYS): a warm
    light rising from the threshold and a pool of it on the road, drawn
    with gradients, behind the people. Dark until open; brighter in reach;

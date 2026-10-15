@@ -219,10 +219,8 @@ off the repository.
                                (Blocks 73, 75)
       sprites/scenery/         things on the street that are used, not
                                talked to (empty)
-      backgrounds/act1/        the street, street-01..05, -09, -10.jpg
-                               and their nights street-01..06-night.jpg
-                               (Block 133), entablado-inside.jpg,
-                               pulungan.jpg, ground-lupa.jpg
+      backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
+                               pulungan.jpg (Block 133), ground-lupa.jpg
       backgrounds/act2/        the artist's paintings of Act II's places
                                (Block 133; two panels each for san-juan
                                and nangka)
@@ -637,16 +635,11 @@ Scene shape:
                                                  (the stage; Block 93)
       backdrop: { src },                         optional; own picture, drawn once
       panels: ["assets/...jpg", ...],            optional; paintings side by
-           | [{ src, x, width }, ...],           or placed (Block 134)
       panelWidth: 1450,                          side, a shadow tree at each
       mirrorPanels: true,                        join (Block 43); flip every
                                                  second one (Block 45)
       panelSky: "#72a8d0",                       colour above the pictures
                                                  (Block 46)
-      nightPanels: ["...night.jpg", ...],        optional; laid instead of
-      nightPanelSky: "#02153a",                  panels while the scene is
-                                                 night, and no tint on them
-                                                 (Block 133)
       ground: false | { src } | { floor },       optional; hides the dirt strip,
                                                  or lays the scene's own road
                                                  (Polish #6), or a floor of
@@ -906,16 +899,11 @@ panel width and its own shape, standing on the floor (the panel starts at
 --ground-level), and panelSky fills whatever is above its top edge on a
 tall screen.
 
-Placed panels (Block 134). A panel may instead be { src, x, width }:
-drawn where it says at that width (its painting's own shape at one
-height, so every painting on the road shares a scale), each after the
-first fading in over the one before it across PANEL_FEATHER (140). The
-trees still stand every panelWidth (default 1450) as decoration, where
-the content has kept everyone clear, and no longer hide a seam. Tondo's
-street is placed (content/people.js, window.STREET: seventeen paintings
-600 tall); its nightPanels are placed the same way, at the same x and
-width. The placed list must cover the road with no gap
-(verify_new_scene.js reads it).
+ground: false on a panelled scene (Block 134; Tondo's street in every
+act) also stands the paintings on the bottom of the screen instead of on
+--ground-level (game.js, panels-own-floor), so everyone walks on the
+road the paintings paint rather than on the dirt strip, which did not
+match them.
 
 Lit doorways (Block 126). Every exit, and every NPC with doorway, is
 lit while open (game.js, LIT DOORWAYS): a column of warm light the
@@ -2621,8 +2609,9 @@ look, by system:
       tabs; the code at the login         slips, the student card,
                                           schema v13)
     the artist's Drive delivery of 15     Block 133 (Act II's paintings,
-      Oct: paintings, people, the         nine people keyed from black,
-      street and its night                the street's slots, nightPanels)
+      Oct: paintings, people; the         nine people keyed from black),
+      new street tried and taken out      134 (the old street back, its
+                                          own painted road)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

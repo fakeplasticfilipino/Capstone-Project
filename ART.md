@@ -56,18 +56,6 @@ character from one still.
 
 Nothing needed.
 
-Also wanted (not in the game yet):
-
-    assets/backgrounds/act1/street-06.jpg
-    assets/backgrounds/act1/street-07.jpg
-    assets/backgrounds/act1/street-08.jpg
-        Tondo's street, the three paintings between 5 and 9 that the
-        numbering leaves out (1 to 5, 9 and 10 arrived), in the same
-        style and size. And the night versions still missing:
-        street-07-night.jpg to street-10-night.jpg (6's night arrived
-        before its day). Until then the street repeats the others,
-        and the night repeats its own paintings.
-
 ### Act II
 
 Nothing needed.
@@ -366,8 +354,11 @@ Also wanted (not in the game yet):
 
 Also wanted (not in the game yet):
 
-    (The front of the theatre is now in the street's own painting,
-    street-04, since Block 133.)
+    assets/sprites/scenery/entablado-harap.png
+        The front of the theatre (the entablado) on the street, a
+        building seen from the front, where Macario first goes on stage
+        and later becomes the company's lead actor. Its door drawn open
+        with warm light inside, so it reads as a way in.
 
 ### Act II
 
@@ -408,8 +399,11 @@ Also wanted (not in the game yet):
 
 Also wanted (not in the game yet):
 
-    (The barbershop's row is now in the street's own painting,
-    street-10, since Block 133.)
+    assets/sprites/scenery/barberya.png
+        The barbershop on the street, seen from the front: the shop
+        where Macario hides in plain sight and holds secret meetings.
+        Its door drawn open with warm light inside, so it reads as a
+        way in.
 
 ### Act IV
 
@@ -420,8 +414,7 @@ Nothing needed.
 Done and in the game. Nothing here needs drawing.
 
     Backgrounds
-        Act I     the street (street-01 to 05, 09 and 10) and its
-                  night (street-01-night to 06-night), the road
+        Act I     the street (street-01 to street-04), the road
                   (ground-lupa), the inside of the theatre
                   (entablado-inside), the Katipunan's secret room
                   (pulungan)

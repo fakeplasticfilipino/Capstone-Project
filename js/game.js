@@ -1044,6 +1044,11 @@ function loadScene(sceneId) {
   document
     .getElementById("ground-tiles")
     .classList.toggle("ground-hidden", scene.ground === false);
+  // Block 134. Paintings that paint their own road (ground: false on a
+  // panelled scene, Tondo's street) stand on the bottom of the screen
+  // rather than on the dirt strip, so everyone walks on the painted road.
+  skylineEl.classList.toggle("panels-own-floor",
+    scene.ground === false && Array.isArray(scene.panels) && scene.panels.length > 0);
   // Polish list #6. A scene may lay its own road (ground: { src }), for an
   // act whose ground is not Tondo's dirt; every other scene gets the
   // default back. A picture that is owed (not in the manifest) is not
@@ -1236,7 +1241,6 @@ function buildSkylineTiles() {
 // =============================================================
 
 const PANEL_WIDTH = 1450;       // world px; about one phone screen and a bit
-const PANEL_FEATHER = 140;      // world px a placed painting fades in over (Block 134)
 const SHADOW_TREE_WIDTH = 440;  // must match .shadow-tree's CSS width
 
 // Where the trees stand: every join between two panels, and never at the
@@ -1254,31 +1258,7 @@ function buildPanelBackdrop(scene) {
   layer.classList.add("skyline-tiled");
   const width = scene.panelWidth || PANEL_WIDTH;
 
-  // Block 134. Placed paintings: a panel may be { src, x, width }, drawn
-  // where it says at its own width, so paintings of different shapes are
-  // all drawn at one height (one scale) rather than each stretched to
-  // the same width. Each after the first fades in over the one before it
-  // across PANEL_FEATHER, since their edges no longer meet under a tree;
-  // the trees still stand every panelWidth (panelJoins), where the
-  // content has kept everyone clear of them.
-  if (typeof scene.panels[0] === "object") {
-    scene.panels.forEach((p, i) => {
-      const tile = document.createElement("div");
-      tile.className = "skyline-tile skyline-panel skyline-placed";
-      tile.style.left = p.x + "px";
-      tile.style.width = p.width + "px";
-      if (i > 0) {
-        const fade = `linear-gradient(to right, transparent 0, #000 ${PANEL_FEATHER}px)`;
-        tile.style.webkitMaskImage = fade;
-        tile.style.maskImage = fade;
-      }
-      tile.dataset.panel = String(i);
-      layer.appendChild(tile);
-      actElements.push(tile);
-    });
-  }
-
-  for (let i = 0, x = 0; typeof scene.panels[0] !== "object" && x < WORLD_WIDTH; i++, x += width) {
+  for (let i = 0, x = 0; x < WORLD_WIDTH; i++, x += width) {
     const tile = document.createElement("div");
     // Block 45. mirrorPanels flips every second panel, as Block 26 did
     // for Tondo's tiles: a flipped copy meets its neighbour at the same
@@ -1290,11 +1270,20 @@ function buildPanelBackdrop(scene) {
     // One pixel of overlap, as with Tondo's tiles, so two fractional
     // edges never leave a hairline of the layer showing through.
     tile.style.width = width + 1 + "px";
-    tile.dataset.panel = String(i);
+    const panelSrc = scene.panels[i % scene.panels.length];
+    // Block 62. Asked for through the loader too, so the painting is
+    // retried on a bad connection and a scene change waits for it. The
+    // background below is the same URL, so it is drawn from that one
+    // download.
+    loadImage(panelSrc);
+    tile.style.backgroundImage = `url("${assetUrl(panelSrc)}")`;
+    // Block 46. The whole picture stands on the floor (.skyline-panel):
+    // anything above its top edge is panelSky, so the sky carries on up
+    // a tall screen instead of ending in the page's own colour.
+    if (scene.panelSky) tile.style.backgroundColor = scene.panelSky;
     layer.appendChild(tile);
     actElements.push(tile);
   }
-  paintPanels(scene);
 
   panelJoins(scene).forEach((x, i) => {
     // The tree's shade on the painting, behind everyone: it softens the
@@ -1322,37 +1311,6 @@ function buildPanelBackdrop(scene) {
     if (scene.greyFilter) tree.classList.add("grey-filter");
     world.appendChild(tree);
     actElements.push(tree);
-  });
-}
-
-// Block 133. Which paintings the panels show: the day's, or while the
-// scene is night (sceneNight) its nightPanels, the artist's own night
-// versions, in place of Block 85's tint on the day ones. Called when the
-// panels are laid and again by applyNight, so a login whose save turns
-// the scene to night (refreshOnDuty) swaps the pictures on the tiles
-// already laid rather than building the street again. Writes only what
-// changed: an image is set again only when its painting does.
-function paintPanels(scene) {
-  if (!scene || !Array.isArray(scene.panels) || !scene.panels.length) return;
-  const night = Boolean(sceneNight(scene)) && Array.isArray(scene.nightPanels) && scene.nightPanels.length > 0;
-  const list = night ? scene.nightPanels : scene.panels;
-  const sky = night ? scene.nightPanelSky : scene.panelSky;
-  document.querySelectorAll("#skyline .skyline-panel").forEach((tile) => {
-    const entry = list[Number(tile.dataset.panel) % list.length];
-    // Block 134: a placed painting is { src, x, width }.
-    const src = typeof entry === "object" ? entry.src : entry;
-    if (tile.dataset.src === src) return;
-    tile.dataset.src = src;
-    // Block 62. Asked for through the loader too, so the painting is
-    // retried on a bad connection and a scene change waits for it. The
-    // background below is the same URL, so it is drawn from that one
-    // download.
-    loadImage(src);
-    tile.style.backgroundImage = `url("${assetUrl(src)}")`;
-    // Block 46. The whole picture stands on the floor (.skyline-panel):
-    // anything above its top edge is panelSky, so the sky carries on up
-    // a tall screen instead of ending in the page's own colour.
-    tile.style.backgroundColor = sky || "";
   });
 }
 
@@ -3175,11 +3133,7 @@ function sceneTrack(scene) {
 
 function applyNight(scene) {
   const on = Boolean(sceneNight(scene));
-  // Block 133. A street with paintings of its own night is not tinted:
-  // its panels change instead (paintPanels). The road still is.
-  const ownNight = Boolean(scene && Array.isArray(scene.nightPanels) && scene.nightPanels.length);
-  document.getElementById("skyline").classList.toggle("night-tint", on && !ownNight);
-  paintPanels(scene);
+  document.getElementById("skyline").classList.toggle("night-tint", on);
   document.getElementById("ground-tiles").classList.toggle("night-tint", on);
   world.classList.toggle("night-scene", on); // Block 126: the doorways' light
 }
