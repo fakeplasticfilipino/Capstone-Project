@@ -219,8 +219,13 @@ off the repository.
                                (Blocks 73, 75)
       sprites/scenery/         things on the street that are used, not
                                talked to (empty)
-      backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
-                               ground-lupa.jpg
+      backgrounds/act1/        the street, street-01..05, -09, -10.jpg
+                               and their nights street-01..06-night.jpg
+                               (Block 133), entablado-inside.jpg,
+                               pulungan.jpg, ground-lupa.jpg
+      backgrounds/act2/        the artist's paintings of Act II's places
+                               (Block 133; two panels each for san-juan
+                               and nangka)
       items/                   inventory and shop tile pictures
       audio/music/, audio/sfx/
       fonts/                   the two woff2 faces and their licences
@@ -637,6 +642,10 @@ Scene shape:
                                                  second one (Block 45)
       panelSky: "#72a8d0",                       colour above the pictures
                                                  (Block 46)
+      nightPanels: ["...night.jpg", ...],        optional; laid instead of
+      nightPanelSky: "#02153a",                  panels while the scene is
+                                                 night, and no tint on them
+                                                 (Block 133)
       ground: false | { src } | { floor },       optional; hides the dirt strip,
                                                  or lays the scene's own road
                                                  (Polish #6), or a floor of
@@ -1605,6 +1614,13 @@ _dev/tools/preview-sheet.js on it (Block 75): every frame numbered,
 with the ground, the top, the headroom line, footX and the muzzle drawn
 on, and an onion skin of all the frames at the end. With
 --from=content/act1.js it reads the numbers from the content itself.
+
+A still delivered on black with no alpha (the artist's Drive folder,
+Block 133: max channel at most 1) is keyed in node the way Block 129
+keyed Bonifacio's: flooded out from the edges through values of 2 or
+less, cropped to the figure, shrunk by area averaging to about 548
+tall, the edge kept or dropped by how much of it the figure covers.
+The originals go to docs-private/art-delivered/.
 
 A sheet delivered as a JPEG has no alpha channel and would draw inside
 a black rectangle. _dev/tools/key-black.py (Pillow, dev-time only) floods the
@@ -2592,6 +2608,9 @@ look, by system:
     accounts from the dashboard; its      Block 132 (create-students,
       tabs; the code at the login         slips, the student card,
                                           schema v13)
+    the artist's Drive delivery of 15     Block 133 (Act II's paintings,
+      Oct: paintings, people, the         nine people keyed from black,
+      street and its night                the street's slots, nightPanels)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

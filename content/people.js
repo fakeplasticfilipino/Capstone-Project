@@ -49,6 +49,26 @@
   const frontStill = (name, contentTop, contentHeight, footX) =>
     ({ src: `assets/sprites/characters/${name}.png`, frames: 1, fps: 1, contentTop, contentHeight, footX });
 
+  // Block 133. Tondo's street, which every act walks: the artist's
+  // paintings of 12 October 2026, one to each of its ten panels (1450
+  // wide each; game.js, buildPanelBackdrop), and their night versions,
+  // laid instead while a scene is night (nightPanels). The artist
+  // numbered them 1 to 5, 9 and 10; 4 is the theatre's front and 10 the
+  // row with the barbershop, so they stand in the slots where the
+  // entablado (panel 10) and the Barbero (panel 4) already are, and
+  // nobody on the street had to move. Six to eight were not delivered,
+  // so 2, 5 and 3 fill those slots again. Night has 1 to 6, the sixth
+  // with no day painting yet; the theatre's night (4) is panel 10's.
+  const day = (n) => "assets/backgrounds/act1/street-" + n + ".jpg";
+  const night = (n) => "assets/backgrounds/act1/street-" + n + "-night.jpg";
+  window.STREET = {
+    day: ["01", "02", "03", "10", "05", "09", "02", "05", "03", "04"].map(day),
+    night: ["01", "02", "03", "06", "05", "03", "02", "06", "05", "04"].map(night),
+    // The night paintings' own sky at their top edge, measured, for the
+    // strip above them on a tall screen (panelSky's night twin).
+    nightSky: "#02153a",
+  };
+
   window.PEOPLE = {
     nanay: { src: "assets/sprites/characters/nanay.png", frames: 8, fps: 4, ...NANAY_CELL },
     nanayWalk: { src: "assets/sprites/characters/nanay-walk.png", frames: 8, fps: 12, ...NANAY_CELL },

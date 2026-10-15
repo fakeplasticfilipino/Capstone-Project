@@ -9,7 +9,13 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 14 Oct 2026, after Block 132. Block 132: a teacher
+Last updated: 15 Oct 2026, after Block 133. Block 133: the artists'
+Drive folder put in, overnight at the proponent's word: Act II's seven
+places and the pulungan painted; Isko, Jacinto, the printer, the
+messenger, Álvarez, Carreón, Montalan and Poblete keyed from black and
+animated; Tondo's street replaced with the new set, and its own night
+paintings laid at night instead of the tint. Thirty-five pictures still
+owed. Block 132: a teacher
 makes her class's accounts on the dashboard (printable slips, six-digit
 passwords, a code at the login), and the dashboard is five tabs;
 schema v13 applied (a new account is always a student). Block 131: ART.md
@@ -165,8 +171,10 @@ internet.
 Acts II to IV are written (Blocks 113, 117, 119), below Act I's list. Act I, rewritten in Block 52 against the
 proponents' script and built forward since, and since Block 80 it has
 an ending. STORY.md has it beat by beat, with every line. It is one
-street ten paintings long (14500px, street-01..04.jpg in order, twice,
-then 01 and 02, a silhouette tree over each join; keep anyone a student
+street ten paintings long (14500px, the artist's set of Block 133,
+street-01..05, 09 and 10 with the barber row at the Barbero and the
+theatre at the entablado, and their night paintings at night; a
+silhouette tree over each join; keep anyone a student
 must reach 90px clear of a multiple of 1450), the inside of the
 entablado, which only the direktor (and later the four-year card) takes
 Macario into, and the pulungan, the Katipunan's secret room, which only
@@ -240,9 +248,10 @@ passed; the cedula is torn with Bonifacio's button; San Juan del Monte
 is fifteen soldiers in four waves; the Nangka is three scarecrows and
 six soldiers; it ends with Jacinto in Laguna and 1897 and 1898 on
 black. Bonifacio is the artist's
-since Block 129, and raises his fist at "Sugod!". Its paintings, Isko,
-Jacinto, the printer, the messenger, the press and the straw
-are owed (ART.md), drawn as placeholders. The soldiers are the bantay's
+since Block 129, and raises his fist at "Sugod!". Since Block 133 its
+paintings, Isko, Jacinto, the printer and the messenger are the
+artist's too; the press and the straw are owed (ART.md), drawn as
+placeholders. The soldiers are the bantay's
 art (the sundalo of the enemy catalogue).
 
 Act III, Ang Republika sa Lilim (Blocks 117, 118), 1899 to 1902, from
@@ -264,7 +273,9 @@ Nacionalista's Secretary-General, three doors), Isko's surrender, the
 Sedition Law read from a notice, the capture at an oath, the Republika
 ng Katagalugan with its flag, Macario its President and Generalissimo,
 and the vow not to cut their hair. Nanay's fate stays unknown. Its
-paintings, its new people, its flag and its fighters are owed (ART.md):
+paintings, its flag, its fighters and most of its new people are owed
+(ART.md; Álvarez, Carreón, Montalan and Poblete are the artist's since
+Block 133):
 placeholders until drawn.
 
 Act IV, Ang Mapait na Ani (Block 119), 1903 to 1907, from the
@@ -295,7 +306,9 @@ are the street paintings, the inside of the entablado, the Mananahi,
 and the stills of the bantay, the three siga, the direktor, the
 Katipunero, the Kasama, and since Block 129 Bonifacio and the side-on
 Sultan and kawal, who strike with the slash (the blade over the head),
-the Sultan fighting Don Rodrigo himself. The proponent drew Kabayo,
+the Sultan fighting Don Rodrigo himself; and since Block 133 Act II's
+places, the pulungan, the new street by day and night, Isko, Jacinto,
+the printer, the messenger, Álvarez, Carreón, Montalan and Poblete. The proponent drew Kabayo,
 Nanay, the Kutsero, the Barbero, Maryam, the Mabalasig and the three
 who take the pamphlets (Blocks 100 to 102). Since Block 113
 the people who return in Acts II to IV are described once, in
@@ -303,9 +316,10 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): fifty-one pictures, Act I's three (the
-Barbero's chair, the Mananahi's sewing table, the pulungan's painting),
-Act II's fourteen, Act III's sixteen and Act IV's eighteen. No picture is made or borrowed
+in code. Still owed (ART.md): thirty-five pictures, Act I's two (the
+Barbero's chair, the Mananahi's sewing table), Act II's three (the
+press, the straw, the scarecrow), Act III's fifteen and Act IV's
+fifteen. No picture is made or borrowed
 for what is not drawn (CLAUDE.md, Conventions).
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
@@ -346,6 +360,31 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026, Blocks 119 to 126 on 9 Oct 2026, Blocks 128 to 131 on 13
 Oct 2026. Open:
+
+    Block 133, on the phone (?dev=1 points named):
+
+    a. The street ("trabaho"): walk it end to end. Ten paintings, the
+       pier first, the barber row behind the Barbero, the theatre behind
+       the direktor at the far end, a tree over every join. Failure: a
+       grey box, or the theatre somewhere else.
+    b. The night (Act I "polyeto", Act II "gabi", Act III "gabi"): the
+       street is the night paintings (lit windows, stars), not a tinted
+       day. Failure: the day paintings dimmed blue, or a day painting
+       among the night ones.
+    c. Act II's places ("simula", "bahay", "sedula", "sanjuan",
+       "panakot", "balara", "laguna") and Act I's pulungan ("kasama",
+       then follow him in): each a painting, the people standing on its
+       floor. Failure: a dark wall with a file name.
+    d. The people: Isko ("bahay", he runs in and out on a walk),
+       Jacinto and the printer ("simula"), the messenger ("balara", he
+       runs in), and in Act III Álvarez, Poblete ("gunao"), Carreón and
+       Montalan ("morong"): each drawn, breathing, turning to face
+       Macario; nobody a box. Known: Poblete is drawn mid-stride and
+       glides when he walks in; Isko's waist smudges a little as he
+       walks. Failure: a box, a cut-off hand or blade, a foot that
+       slides badly.
+    e. Speed on the cheaper phone: the street and San Juan del Monte as
+       smooth as before. Failure: a stutter on the street.
 
     Block 132, on a laptop (the dashboard, as the test teacher) and
     the phone (the login):
@@ -391,18 +430,19 @@ and ten matched pre-test and post-test pairs for every act, so each
 act has a test before the teacher writes one.
 
 5. Art from the artist: ART.md (Backgrounds, Sprites, Props, by act,
-since Block 131 written for the artist), fifty-one pictures since
-Block 129 (Act I's three: the pulungan's painting, the Mananahi's
-sewing table and the Barbero's chair; Act II's fourteen: seven
-paintings, Isko, Jacinto, a printer, a messenger, the press,
-the straw and the scarecrow; Act III's sixteen: five paintings,
-Álvarez, Poblete, Carreón, Montalan, a teacher, an American officer,
-the American in the barber's chair, the stranger in Nanay's house, the
-Katagalugan's flag, the American soldier and the Constabulary; Act
-IV's eighteen: seven paintings, Gómez, Van Schaick, Villafuerte, de
-Vega, the judge, a Bilibid guard, a woman of Cavite, Isko's son, the
-Katagalugan's fighter, and since Block 120 two townspeople for the
-crowd in Manila). PNGs with transparency. Ask act by act, Act I first, as ART.md is
+since Block 131 written for the artist), thirty-five pictures since
+Block 133 (Act I's two: the Mananahi's sewing table and the Barbero's
+chair; Act II's three: the press, the straw and the scarecrow; Act
+III's fifteen: six paintings, a teacher, an American officer, the
+American in the barber's chair, the stranger in Nanay's house, the
+Katagalugan's fighter, a Bilibid guard, the American soldier, the
+Constabulary and the Katagalugan's flag; Act IV's fifteen: six
+paintings, Gómez, Van Schaick, Villafuerte, de Vega, the judge, a
+woman of Cavite, Isko's son and two townspeople for the crowd in
+Manila). Also wanted since Block 133: the street's missing paintings
+6 to 8, and the night of 7 to 10. The Drive folder's unnamed
+side-profile figure (October 12) and a second Jacinto were set aside:
+which character, and which Jacinto, is the proponent's call. PNGs with transparency. Ask act by act, Act I first, as ART.md is
 ordered. Also asked for (ART.md, Also wanted): Bonifacio with his sword
 drawn, for his slash.
 A character delivered as one still rather than a sheet is animated by
@@ -1033,6 +1073,9 @@ machine, the assessment module.
         tabs with Getting started, Needs attention, the student card
         and a "?" on every column; schema v13 applied (a new account
         is always a student); test.js BX
+    133 the artists' Drive folder (15 Oct): Act II's paintings and the
+        pulungan; eight stills keyed from black and animated (rigs);
+        the new street in its slots, nightPanels for its night
 
 ## Blocks remaining
 

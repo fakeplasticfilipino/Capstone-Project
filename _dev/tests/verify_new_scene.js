@@ -742,9 +742,11 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("and the card fades away by itself", await waitIntertitle(page, false, 12000));
 
     const p0 = await panels(page);
-    ok("the street is ten paintings long, the four in order and again, a tree over each join",
+    // Block 133: the artist's new street, one painting a panel, the barber
+    // row (10) at the Barbero's panel and the theatre (4) at the entablado's.
+    ok("the street is ten paintings long, the artist's set in its slots, a tree over each join (Block 133)",
        p0.tiles === 10 && p0.loaded &&
-       JSON.stringify(p0.order) === JSON.stringify(["01", "02", "03", "04", "01", "02", "03", "04", "01", "02"].map((n) => "street-" + n)) &&
+       JSON.stringify(p0.order) === JSON.stringify(["01", "02", "03", "10", "05", "09", "02", "05", "03", "04"].map((n) => "street-" + n)) &&
        p0.joins.length === 9 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
     ok("the road is 14500 wide", await page.evaluate(() => WORLD_WIDTH === 14500));
 
@@ -1506,7 +1508,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const p1 = await panels(page);
     ok("nobody stands behind a tree", p1.blocked.length === 0, p1.blocked);
     const night = await page.evaluate(() => ({
-      sky: document.getElementById("skyline").classList.contains("night-tint"),
+      sky: (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || ""))),
       road: document.getElementById("ground-tiles").classList.contains("night-tint"),
       music: musicSrc }));
     ok("night on the run: the street and road darkened, crickets for music (Block 85)",
@@ -1602,7 +1604,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       for (let i = 0; i < 80 && !dec.moving; i++) await new Promise((r) => setTimeout(r, 50));
       const from = dec.currentX, edge = viewEdges().right;
       return { guards: GUARDS.length, crates: document.querySelectorAll("#world .hide-spot").length,
-        night: document.getElementById("skyline").classList.contains("night-tint"),
+        night: (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || ""))),
         npcHidden: NPCS.find((n) => n.id === "kasama").hidden, coming: dec.moving, from, edge,
         exits: (currentScene.exits || []).length };
     });
@@ -1797,7 +1799,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     r = await resume("tondo", roundsOver);
     await r.page.waitForTimeout(500);
     const wayBack = await r.page.evaluate(() => ({ guards: GUARDS.length,
-      night: document.getElementById("skyline").classList.contains("night-tint"),
+      night: (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || ""))),
       kasama: NPCS.find((n) => n.id === "kasama").hidden, cut: cutscenePlaying }));
     const wl = await log(r.page);
     ok("a reload on the street before the report: no guards, still night, the Kasama at his spot, the task the report",
@@ -2211,7 +2213,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       await press(page, 100);
       ok("out of the window, into the night street", await playOn(page, "currentSceneId === 'tondo' && inDialogue", 30000));
       c = await readLines(page, 3);
-      const night = await page.evaluate(() => ({ night: document.getElementById("skyline").classList.contains("night-tint"),
+      const night = await page.evaluate(() => ({ night: (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || ""))),
         x: Math.round(posX), out: NPCS.filter((n) => !n.hidden && !n.scenery).map((n) => n.id) }));
       ok("he left nobody with her; the street is dark and nobody is out",
          c.lines[1] === "Macario (sa isip): Wala akong pinabantay sa kanya. Wala ni isa." && night.night && night.out.length === 0 && night.x === 6800,
@@ -2559,7 +2561,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        c.lines.includes("Guro: Krimen na raw ang pumirma. May tatlo akong anak.") &&
        c.lines.includes("Macario: Wala nang ibang daan, Heneral."), c.lines);
     ok("January 1902: Tondo at night", await waitForScene(page, "tondo", 20000) &&
-       await page.evaluate(() => document.getElementById("skyline").classList.contains("night-tint")));
+       await page.evaluate(() => (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || "")))));
     await readLines(page, 2);
     await playOn(page, "state.flags.a3_saGabi === true && !cutscenePlaying", 20000);
     await settle(page);
@@ -2679,7 +2681,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("signed; Montalan wants guns, and uniforms: \"Makikita mo rin\"",
        c.lines.includes("Macario: Makikita mo rin.") && await page.evaluate(() => state.flags.a4_kautusan === true), c.lines);
     ok("on black to the Constabulary's post, at night", await waitForScene(page, "himpilan", 30000) &&
-       await page.evaluate(() => document.getElementById("skyline").classList.contains("night-tint")));
+       await page.evaluate(() => (document.getElementById("skyline").classList.contains("night-tint") || [...document.querySelectorAll("#skyline .skyline-panel")].some((p) => /-night.jpg$/.test(p.dataset.src || "")))));
     c = await readLines(page, 2);
     await settle(page);
     ok("three of the Constabulary on watch, the task the storeroom",

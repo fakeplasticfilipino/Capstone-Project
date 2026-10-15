@@ -1265,20 +1265,11 @@ function buildPanelBackdrop(scene) {
     // One pixel of overlap, as with Tondo's tiles, so two fractional
     // edges never leave a hairline of the layer showing through.
     tile.style.width = width + 1 + "px";
-    const panelSrc = scene.panels[i % scene.panels.length];
-    // Block 62. Asked for through the loader too, so the painting is
-    // retried on a bad connection and a scene change waits for it. The
-    // background below is the same URL, so it is drawn from that one
-    // download.
-    loadImage(panelSrc);
-    tile.style.backgroundImage = `url("${assetUrl(panelSrc)}")`;
-    // Block 46. The whole picture stands on the floor (.skyline-panel):
-    // anything above its top edge is panelSky, so the sky carries on up
-    // a tall screen instead of ending in the page's own colour.
-    if (scene.panelSky) tile.style.backgroundColor = scene.panelSky;
+    tile.dataset.panel = String(i);
     layer.appendChild(tile);
     actElements.push(tile);
   }
+  paintPanels(scene);
 
   panelJoins(scene).forEach((x, i) => {
     // The tree's shade on the painting, behind everyone: it softens the
@@ -1306,6 +1297,35 @@ function buildPanelBackdrop(scene) {
     if (scene.greyFilter) tree.classList.add("grey-filter");
     world.appendChild(tree);
     actElements.push(tree);
+  });
+}
+
+// Block 133. Which paintings the panels show: the day's, or while the
+// scene is night (sceneNight) its nightPanels, the artist's own night
+// versions, in place of Block 85's tint on the day ones. Called when the
+// panels are laid and again by applyNight, so a login whose save turns
+// the scene to night (refreshOnDuty) swaps the pictures on the tiles
+// already laid rather than building the street again. Writes only what
+// changed: an image is set again only when its painting does.
+function paintPanels(scene) {
+  if (!scene || !Array.isArray(scene.panels) || !scene.panels.length) return;
+  const night = Boolean(sceneNight(scene)) && Array.isArray(scene.nightPanels) && scene.nightPanels.length > 0;
+  const list = night ? scene.nightPanels : scene.panels;
+  const sky = night ? scene.nightPanelSky : scene.panelSky;
+  document.querySelectorAll("#skyline .skyline-panel").forEach((tile) => {
+    const src = list[Number(tile.dataset.panel) % list.length];
+    if (tile.dataset.src === src) return;
+    tile.dataset.src = src;
+    // Block 62. Asked for through the loader too, so the painting is
+    // retried on a bad connection and a scene change waits for it. The
+    // background below is the same URL, so it is drawn from that one
+    // download.
+    loadImage(src);
+    tile.style.backgroundImage = `url("${assetUrl(src)}")`;
+    // Block 46. The whole picture stands on the floor (.skyline-panel):
+    // anything above its top edge is panelSky, so the sky carries on up
+    // a tall screen instead of ending in the page's own colour.
+    tile.style.backgroundColor = sky || "";
   });
 }
 
@@ -3128,7 +3148,11 @@ function sceneTrack(scene) {
 
 function applyNight(scene) {
   const on = Boolean(sceneNight(scene));
-  document.getElementById("skyline").classList.toggle("night-tint", on);
+  // Block 133. A street with paintings of its own night is not tinted:
+  // its panels change instead (paintPanels). The road still is.
+  const ownNight = Boolean(scene && Array.isArray(scene.nightPanels) && scene.nightPanels.length);
+  document.getElementById("skyline").classList.toggle("night-tint", on && !ownNight);
+  paintPanels(scene);
   document.getElementById("ground-tiles").classList.toggle("night-tint", on);
   world.classList.toggle("night-scene", on); // Block 126: the doorways' light
 }

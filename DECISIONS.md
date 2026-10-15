@@ -5914,6 +5914,63 @@ feed every tab, and the CSV and the report are as they were. The
 editors follow the page's act only until the teacher types in one,
 since neither tracks unsaved changes and switching would lose them.
 
+## Block 133: the artist's Drive folder, 15 Oct 2026
+
+The proponent shared the artists' Google Drive folder and went to sleep
+with one question asked: the folder held a new Tondo street, by day and
+by night, and the answer was to replace the street with it. Everything
+else was decided in the session, as the overnight rule allows.
+
+Act II's places, and the pulungan. Each painting is the scene's backdrop
+as the entablado's is, re-encoded as JPEG (the two PNGs were 2.7 MB each).
+San Juan del Monte and the Nangka came as several paintings each, so
+they are panels: San Juan's two at 2400 wide, the join clear of the
+retreat's checkpoints (a tree stands on every join, and the content check
+failed at 2100); the Nangka's river and the first field at 1200 each, the
+width that still fills a phone's screen. The Nangka's two further fields
+were kept aside in docs-private rather than shipped unseen: every file in
+assets/ is downloaded to every phone.
+
+The people. Nine stills, every one on black with no transparency (the
+background no brighter than 1), keyed as Bonifacio's was in Block 129:
+flooded from the edges through values of 2 or less, so dark hair stays,
+cropped and shrunk by area averaging to 548 tall. Bonifacio's was the
+still already in the game, and was left. Each has a rig: Isko, the
+printer, the messenger and Montalan an idle and a walk, since scenes walk
+them on; Jacinto, Álvarez and Carreón an idle; Poblete, drawn mid-stride,
+breathe only, since a stride cannot become a standing breath or a walk
+without new art. Isko's arm is cut so his hand swings; the messenger's
+was cut too and put back, since the papers in his hand left a hole across
+his trousers that no fill hid, so his hand, his papers and his satchel
+stay on his body, as the Mabalasig's paper does. The printer's apron and
+Montalan's blade are cloth over the legs. Those who return are in
+content/people.js; who talks turns to Macario (facesPlayer, Block 99), and
+who a scene walks on has the walk.
+
+The street. Seven day paintings numbered 1 to 5, 9 and 10, and six night
+ones, 1 to 6. The plan said "in their numbered order, people moved where
+needed"; the theatre's front is 4 and the barbershop's row 10, the very
+slots of the Barbero (panel 4) and the entablado (panel 10) swapped, so
+the two paintings were swapped instead and nobody moved, in four acts'
+worth of positions, story points and guide checks. The missing 6 to 8 are
+filled with 2, 5 and 3, and asked for in ART.md. Defined once, for all
+four acts, in content/people.js (window.STREET), which every page already
+loads before the acts.
+
+The night. Block 85 darkened the day paintings with a filter; the artist
+has now painted the night. A scene may declare nightPanels (and
+nightPanelSky, measured from their top edge), laid instead of panels while
+it is night, with no tint on them (the road keeps its tint). paintPanels
+sets the tiles' pictures, at build and again from applyNight, so a login
+whose save turns the street to night swaps the pictures on the laid tiles
+rather than building the street again, and it writes a tile only when its
+painting changes. The night set has no barber row or 9, so the night
+street repeats its own six in an order of its own; panel 10 is the
+theatre's night in both.
+
+Six story checks read night from the tint; they now read it from the tint
+or the night paintings, and the street's order check names the new set.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every
