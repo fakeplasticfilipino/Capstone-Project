@@ -50,20 +50,66 @@
     ({ src: `assets/sprites/characters/${name}.png`, frames: 1, fps: 1, contentTop, contentHeight, footX });
 
   // Block 133. Tondo's street, which every act walks: the artist's
-  // paintings of 12 October 2026, one to each of its ten panels (1450
-  // wide each; game.js, buildPanelBackdrop), and their night versions,
-  // laid instead while a scene is night (nightPanels). The artist
-  // numbered them 1 to 5, 9 and 10; 4 is the theatre's front and 10 the
-  // row with the barbershop, so they stand in the slots where the
-  // entablado (panel 10) and the Barbero (panel 4) already are, and
-  // nobody on the street had to move. Six to eight were not delivered,
-  // so 2, 5 and 3 fill those slots again. Night has 1 to 6, the sixth
-  // with no day painting yet; the theatre's night (4) is panel 10's.
+  // paintings of 12 October 2026 and their night versions, laid instead
+  // while a scene is night (nightPanels). The artist numbered them 1 to
+  // 5, 9 and 10; 4 is the theatre's front and 10 the row with the
+  // barbershop.
+  //
+  // Block 134. They came in very different shapes (5 is nearly square,
+  // 4 nearly three times as wide as tall), and stretched each to one
+  // 1450 panel they were drawn at scales a factor of two apart: a house
+  // twice the size of the church beside it. So each is placed (game.js,
+  // buildPanelBackdrop): drawn 600 tall at its own width, one scale for
+  // the whole street, each fading in over the one before it. The trees
+  // still stand every 1450 (panelWidth), where the content keeps everyone
+  // clear, so nobody on the street moved. The barber row stands over the
+  // Barbero (it spans 4700 to 5906) and the theatre ends the street over
+  // the entablado. Night versions share their day painting's shape; the
+  // barber row and 9 have none, so they take 3's and 6's night.
+  // Widths are each painting's own shape at 600 tall (the delivered
+  // sizes: 1 1752x832, 2 1472x1008, 3 1584x928, 4 1992x736, 5 1312x1120,
+  // 9 1520x960, 10 1704x848).
   const day = (n) => "assets/backgrounds/act1/street-" + n + ".jpg";
   const night = (n) => "assets/backgrounds/act1/street-" + n + "-night.jpg";
   window.STREET = {
-    day: ["01", "02", "03", "10", "05", "09", "02", "05", "03", "04"].map(day),
-    night: ["01", "02", "03", "06", "05", "03", "02", "06", "05", "04"].map(night),
+    day: [
+      { src: day("01"), x: 0, width: 1263 },
+      { src: day("02"), x: 1123, width: 876 },
+      { src: day("03"), x: 1859, width: 1024 },
+      { src: day("05"), x: 2743, width: 703 },
+      { src: day("09"), x: 3306, width: 950 },
+      { src: day("05"), x: 4116, width: 703 },
+      { src: day("10"), x: 4700, width: 1206 },
+      { src: day("02"), x: 5766, width: 876 },
+      { src: day("03"), x: 6502, width: 1024 },
+      { src: day("05"), x: 7386, width: 703 },
+      { src: day("01"), x: 7949, width: 1263 },
+      { src: day("09"), x: 9072, width: 950 },
+      { src: day("02"), x: 9882, width: 876 },
+      { src: day("03"), x: 10618, width: 1024 },
+      { src: day("05"), x: 11502, width: 703 },
+      { src: day("09"), x: 12065, width: 950 },
+      { src: day("04"), x: 12876, width: 1624 },
+    ],
+    night: [
+      { src: night("01"), x: 0, width: 1263 },
+      { src: night("02"), x: 1123, width: 876 },
+      { src: night("03"), x: 1859, width: 1024 },
+      { src: night("05"), x: 2743, width: 703 },
+      { src: night("06"), x: 3306, width: 950 },
+      { src: night("05"), x: 4116, width: 703 },
+      { src: night("03"), x: 4700, width: 1206 },
+      { src: night("02"), x: 5766, width: 876 },
+      { src: night("03"), x: 6502, width: 1024 },
+      { src: night("05"), x: 7386, width: 703 },
+      { src: night("01"), x: 7949, width: 1263 },
+      { src: night("06"), x: 9072, width: 950 },
+      { src: night("02"), x: 9882, width: 876 },
+      { src: night("03"), x: 10618, width: 1024 },
+      { src: night("05"), x: 11502, width: 703 },
+      { src: night("06"), x: 12065, width: 950 },
+      { src: night("04"), x: 12876, width: 1624 },
+    ],
     // The night paintings' own sky at their top edge, measured, for the
     // strip above them on a tall screen (panelSky's night twin).
     nightSky: "#02153a",

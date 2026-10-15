@@ -68,13 +68,12 @@
 // its night (content/people.js, window.STREET).
 const STREET_PANELS = window.STREET.day;
 const STREET_NIGHT_PANELS = window.STREET.night;
-const STREET_PANEL_COUNT = STREET_PANELS.length; // 10
 
 // One panel's width in the world (game.js, PANEL_WIDTH). The joins, and
 // the trees over them, are at every multiple of it; everyone a student
 // must reach stands at least 90px clear of one (CLAUDE.md, Block 50).
 const PANEL = 1450;
-const STREET_WIDTH = STREET_PANEL_COUNT * PANEL; // 14500
+const STREET_WIDTH = 10 * PANEL; // 14500: ten panels' worth, a tree every 1450 (Block 57)
 
 // Block 46. The sky above a painting on a tall screen: the average of
 // the four paintings' top rows.

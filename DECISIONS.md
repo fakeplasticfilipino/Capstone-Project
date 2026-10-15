@@ -5971,6 +5971,37 @@ theatre's night in both.
 Six story checks read night from the tint; they now read it from the tint
 or the night paintings, and the street's order check names the new set.
 
+## Block 134: the street at one scale, 15 Oct 2026
+
+The proponent: the Tondo map did not look right, with no idea what to do
+about it. Seen along its length, Block 133's street drew each painting
+stretched to one 1450 panel, and the paintings came in very different
+shapes: 5 nearly square (1312 by 1120), 4 nearly three times as wide as
+tall (1992 by 736). Stretched to one width, they were drawn at scales a
+factor of two apart: a house twice the size of the church beside it, a
+row of shops shrunk to toys, the horizon jumping at every tree.
+
+The fix is one height for all of them (600, which fills a phone's
+backdrop with the top of the sky to spare) and each its own width. That
+breaks the old rule that joins fall every 1450 under a tree, and the
+street's content in four acts was placed around those trees: the gaps
+where a join may stand are narrow, and no order of the seven paintings at
+their own widths lands its joins in them without repeating the pier four
+times (searched). Moving people was the other way, across four acts'
+positions, story points and guide checks, and was not taken.
+
+So the paintings are placed (scene.panels entries { src, x, width }) and
+fade into each other across 140 pixels (a CSS mask), and the trees stay
+every 1450 as they were, as the nearest trees on the street rather than
+as seam covers. Nobody moved; the content check is unchanged. Seventeen
+paintings make the street, the barber row spanning 4700 to 5906 over the
+Barbero and the theatre ending it over the entablado. The night versions
+share their day paintings' shapes and are placed at the same x and width;
+the barber row and 9 have no night, so they take 3's and 6's.
+
+To watch: seventeen tiles with a mask each instead of ten plain ones, on
+the cheaper phone (TRACKER, Next action).
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -65,8 +65,8 @@ Also wanted (not in the game yet):
         numbering leaves out (1 to 5, 9 and 10 arrived), in the same
         style and size. And the night versions still missing:
         street-07-night.jpg to street-10-night.jpg (6's night arrived
-        before its day). Until then the street repeats 2, 5 and 3 in
-        those places, and the night repeats its own paintings.
+        before its day). Until then the street repeats the others,
+        and the night repeats its own paintings.
 
 ### Act II
 

@@ -637,6 +637,7 @@ Scene shape:
                                                  (the stage; Block 93)
       backdrop: { src },                         optional; own picture, drawn once
       panels: ["assets/...jpg", ...],            optional; paintings side by
+           | [{ src, x, width }, ...],           or placed (Block 134)
       panelWidth: 1450,                          side, a shadow tree at each
       mirrorPanels: true,                        join (Block 43); flip every
                                                  second one (Block 45)
@@ -904,6 +905,17 @@ does not use it since Block 46. Each picture is drawn whole, its full
 panel width and its own shape, standing on the floor (the panel starts at
 --ground-level), and panelSky fills whatever is above its top edge on a
 tall screen.
+
+Placed panels (Block 134). A panel may instead be { src, x, width }:
+drawn where it says at that width (its painting's own shape at one
+height, so every painting on the road shares a scale), each after the
+first fading in over the one before it across PANEL_FEATHER (140). The
+trees still stand every panelWidth (default 1450) as decoration, where
+the content has kept everyone clear, and no longer hide a seam. Tondo's
+street is placed (content/people.js, window.STREET: seventeen paintings
+600 tall); its nightPanels are placed the same way, at the same x and
+width. The placed list must cover the road with no gap
+(verify_new_scene.js reads it).
 
 Lit doorways (Block 126). Every exit, and every NPC with doorway, is
 lit while open (game.js, LIT DOORWAYS): a column of warm light the

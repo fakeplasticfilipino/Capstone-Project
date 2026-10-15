@@ -1236,6 +1236,7 @@ function buildSkylineTiles() {
 // =============================================================
 
 const PANEL_WIDTH = 1450;       // world px; about one phone screen and a bit
+const PANEL_FEATHER = 140;      // world px a placed painting fades in over (Block 134)
 const SHADOW_TREE_WIDTH = 440;  // must match .shadow-tree's CSS width
 
 // Where the trees stand: every join between two panels, and never at the
@@ -1253,7 +1254,31 @@ function buildPanelBackdrop(scene) {
   layer.classList.add("skyline-tiled");
   const width = scene.panelWidth || PANEL_WIDTH;
 
-  for (let i = 0, x = 0; x < WORLD_WIDTH; i++, x += width) {
+  // Block 134. Placed paintings: a panel may be { src, x, width }, drawn
+  // where it says at its own width, so paintings of different shapes are
+  // all drawn at one height (one scale) rather than each stretched to
+  // the same width. Each after the first fades in over the one before it
+  // across PANEL_FEATHER, since their edges no longer meet under a tree;
+  // the trees still stand every panelWidth (panelJoins), where the
+  // content has kept everyone clear of them.
+  if (typeof scene.panels[0] === "object") {
+    scene.panels.forEach((p, i) => {
+      const tile = document.createElement("div");
+      tile.className = "skyline-tile skyline-panel skyline-placed";
+      tile.style.left = p.x + "px";
+      tile.style.width = p.width + "px";
+      if (i > 0) {
+        const fade = `linear-gradient(to right, transparent 0, #000 ${PANEL_FEATHER}px)`;
+        tile.style.webkitMaskImage = fade;
+        tile.style.maskImage = fade;
+      }
+      tile.dataset.panel = String(i);
+      layer.appendChild(tile);
+      actElements.push(tile);
+    });
+  }
+
+  for (let i = 0, x = 0; typeof scene.panels[0] !== "object" && x < WORLD_WIDTH; i++, x += width) {
     const tile = document.createElement("div");
     // Block 45. mirrorPanels flips every second panel, as Block 26 did
     // for Tondo's tiles: a flipped copy meets its neighbour at the same
@@ -1313,7 +1338,9 @@ function paintPanels(scene) {
   const list = night ? scene.nightPanels : scene.panels;
   const sky = night ? scene.nightPanelSky : scene.panelSky;
   document.querySelectorAll("#skyline .skyline-panel").forEach((tile) => {
-    const src = list[Number(tile.dataset.panel) % list.length];
+    const entry = list[Number(tile.dataset.panel) % list.length];
+    // Block 134: a placed painting is { src, x, width }.
+    const src = typeof entry === "object" ? entry.src : entry;
     if (tile.dataset.src === src) return;
     tile.dataset.src = src;
     // Block 62. Asked for through the loader too, so the painting is

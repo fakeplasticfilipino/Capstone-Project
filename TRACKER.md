@@ -9,7 +9,11 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 15 Oct 2026, after Block 133. Block 133: the artists'
+Last updated: 15 Oct 2026, after Block 134. Block 134: Tondo's new
+street looked wrong (a house twice the church's size beside it): each
+painting is now drawn at one height, its own width, fading into the
+next, the trees where they were. Public sign-up switched off by the
+proponent. Block 133: the artists'
 Drive folder put in, overnight at the proponent's word: Act II's seven
 places and the pulungan painted; Isko, Jacinto, the printer, the
 messenger, Álvarez, Carreón, Montalan and Poblete keyed from black and
@@ -406,9 +410,18 @@ Oct 2026. Open:
        and every "?" says what its column means. Failure: a raw word
        (pretest, completed) or a "?" with nothing behind it.
 
-    Before the study: switch off "Allow new users to sign up"
-    (Supabase, Authentication, Sign In / Providers). Schema v13 is
-    applied, so a sign-up is only ever a student with no class.
+    Public sign-up switched off by the proponent, 15 Oct 2026; schema
+    v13 applied, so a sign-up could only ever have been a student with
+    no class.
+
+    Block 134, on the phone ("trabaho", then walk the street): every
+    building at one scale (no house towering over the church beside
+    it), the paintings blending softly into each other, the barber row
+    behind the Barbero, the theatre behind the direktor; at night
+    ("polyeto") the same. Failure: a hard seam or a gap of sky colour
+    between two paintings, a building cut off at the top, or a stutter
+    while walking on the cheaper phone (the street is seventeen
+    paintings now, each fading in).
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -672,8 +685,8 @@ Trust this over any memory of a chat.
                                         unchanged; still 2 profiles.
                                         create_accounts.js (local) now
                                         sets a teacher's role itself.
-                                        Public sign-up still to be
-                                        switched off (the proponent)
+                                        Public sign-up switched off
+                                        by the proponent, 15 Oct 2026
     db/functions/create-students               DEPLOYED, 14 Oct 2026, from
                                         the session at the proponent's
                                         word (version 1, verify_jwt
@@ -1076,6 +1089,9 @@ machine, the assessment module.
     133 the artists' Drive folder (15 Oct): Act II's paintings and the
         pulungan; eight stills keyed from black and animated (rigs);
         the new street in its slots, nightPanels for its night
+    134 the street at one scale: placed paintings ({ src, x, width },
+        600 tall at their own widths, each fading in over the last),
+        the trees still every 1450 so nobody moved
 
 ## Blocks remaining
 

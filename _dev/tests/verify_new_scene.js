@@ -128,13 +128,21 @@ const panels = (page) => page.evaluate(async () => {
   const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
   const trees = [...document.querySelectorAll(".shadow-tree")];
   const joins = panelJoins(scene);
-  const srcs = [...new Set(scene.panels)];
-  const widths = await Promise.all(srcs.map((src) => new Promise((resolve) => {
+  // Block 134: a placed painting is { src, x, width }.
+  const srcs = [...new Set(scene.panels.map((p) => (typeof p === "object" ? p.src : p)))];
+  const sizes = await Promise.all(srcs.map((src) => new Promise((resolve) => {
     const img = new Image();
-    img.onload = () => resolve(img.naturalWidth);
-    img.onerror = () => resolve(0);
+    img.onload = () => resolve([img.naturalWidth, img.naturalHeight]);
+    img.onerror = () => resolve([0, 0]);
     img.src = assetUrl(src);
   })));
+  const widths = sizes.map((s) => s[0]);
+  // Block 134: every placed painting drawn the same height, within a few
+  // pixels of its own shape.
+  const widthsHeights = (list) => list.every((p) => {
+    const s = sizes[srcs.indexOf(p.src)];
+    return s && s[0] > 0 && Math.abs(p.width * s[1] / s[0] - 600) <= 4;
+  });
   // Half the widest trunk at head height plus a margin, either side of a
   // join. It grew with the trees in Block 50: they are thicker now, so
   // the ground a person must stay off is wider than it was.
@@ -148,7 +156,13 @@ const panels = (page) => page.evaluate(async () => {
       if (Math.abs(hx + PICKUP_SIZE / 2 - x) < TRUNK + PICKUP_SIZE / 2) blocked.push("paper " + hx); });
   });
   return {
-    tiles: tiles.length, expectedTiles: Math.ceil(WORLD_WIDTH / (scene.panelWidth || PANEL_WIDTH)),
+    tiles: tiles.length, expectedTiles: typeof scene.panels[0] === "object" ? scene.panels.length
+      : Math.ceil(WORLD_WIDTH / (scene.panelWidth || PANEL_WIDTH)),
+    // Block 134: placed paintings cover the whole road, no gap between two.
+    covered: (() => { if (typeof scene.panels[0] !== "object") return true;
+      let end = 0; for (const p of scene.panels) { if (p.x > end) return false; end = Math.max(end, p.x + p.width); }
+      return end >= WORLD_WIDTH; })(),
+    oneHeight: typeof scene.panels[0] !== "object" || widthsHeights(scene.panels),
     joins, treesAt: trees.map((t) => parseFloat(t.style.left) + SHADOW_TREE_WIDTH / 2),
     treeZ: trees.length ? +getComputedStyle(trees[0]).zIndex : null,
     playerZ: +getComputedStyle(document.getElementById("player")).zIndex,
@@ -744,9 +758,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const p0 = await panels(page);
     // Block 133: the artist's new street, one painting a panel, the barber
     // row (10) at the Barbero's panel and the theatre (4) at the entablado's.
-    ok("the street is ten paintings long, the artist's set in its slots, a tree over each join (Block 133)",
-       p0.tiles === 10 && p0.loaded &&
-       JSON.stringify(p0.order) === JSON.stringify(["01", "02", "03", "10", "05", "09", "02", "05", "03", "04"].map((n) => "street-" + n)) &&
+    ok("the street is the artist's paintings at one height, the barber row and the theatre in place, a tree every 1450 (Blocks 133, 134)",
+       p0.tiles === p0.expectedTiles && p0.loaded && p0.covered &&
+       p0.oneHeight && p0.order[6] === "street-10" && p0.order[p0.order.length - 1] === "street-04" &&
        p0.joins.length === 9 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
     ok("the road is 14500 wide", await page.evaluate(() => WORLD_WIDTH === 14500));
 
