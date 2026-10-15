@@ -33,6 +33,13 @@ How to draw them:
 Every picture is in the same painted pixel style as Macario and the
 street, in the Philippines of the year given.
 
+Each entry says what the picture is, what happens there or what the
+person does in the story, and the mood of the moment, so the picture
+fits the scene it is for. Where a detail is needed for the game to
+work (a door on the right, a window at the left edge), it is said.
+For people, the entry says who they are and what they do, not how they
+look: the proponent has the references for that.
+
 "Also wanted" under an act is extra: the game does not use those
 pictures yet, but will once they are drawn.
 
@@ -48,106 +55,223 @@ character from one still.
 ### Act I
 
     assets/backgrounds/act1/pulungan.jpg
-        The Katipunan's secret room in Tondo, 1894, where Macario takes
-        the oath: a dim room hung with black curtains, a warning written
-        on the wall, a table. One screen. (NOT STARTED)
+        The Katipunan's secret meeting room in Tondo, 1894. One screen.
+        What happens: Macario, a young actor, is led in blindfolded.
+        The blindfold comes off and the first thing he sees is a room
+        hung with black curtains and a warning written on the wall. He
+        is challenged to turn back, answers three questions, leaps a
+        fire and signs the oath in his own blood. A year later the same
+        room is where his own council meets and the men call him
+        Pangulo, while his mother waits outside the door.
+        Mood: secret, solemn, a little frightening; candlelight in the
+        dark. A table, the warning on the wall, a way out at the left
+        (the back door to the street). (NOT STARTED)
 
 ### Act II
 
     assets/backgrounds/act2/bahay.jpg
-        Macario and his mother's home in Tondo, 1896: one poor room, a
-        table, the door on the right. One screen. (NOT STARTED)
+        Macario and his mother's home in Tondo, August 1896. One screen.
+        What happens: his mother sees ink on his hands and begs him not
+        to disappear the way his father did. He promises to come back,
+        and before he has finished, the door is hammered: a friend
+        calling him to the printing press. He leaves her there, and he
+        never sees her again.
+        Mood: poor but cared for, quiet, the last safe place in the
+        game. One room, a table, the door on the right. (NOT STARTED)
 
     assets/backgrounds/act2/imprenta.jpg
-        The Katipunan's hidden printing press, 1896: a room behind an
-        ordinary door, stacks of paper, high shelves, a back window at
-        the left edge. About 3700 by 940. (NOT STARTED)
+        The Katipunan's hidden printing press in Tondo, 1896. About
+        3700 by 940.
+        What happens: Act II opens here, Macario printing the second
+        issue of the Katipunan's newspaper, Kalayaan. Later the same
+        day the Spanish guards raid it; he sneaks between them, hiding
+        behind cover and on high shelves, to reach the list of members,
+        finds his own name and his mother's address on it, and escapes
+        through the back window.
+        Mood: busy and hopeful at first, then searched and dangerous.
+        Stacks of paper, crates, two high shelves a person could climb,
+        the back window at the left edge. (NOT STARTED)
 
     assets/backgrounds/act2/pugad-lawin.jpg
-        Pugad Lawin, Kalookan, August 1896: a clearing in the hills, a
-        yard and a hut, where the cedulas were torn. One screen.
-        (NOT STARTED)
+        Pugad Lawin, Kalookan, 23 August 1896. One screen.
+        What happens: the Katipunan's men gather with Bonifacio and tear
+        up their cedulas, the tax papers that marked them as Spain's
+        subjects: the start of the revolution. Macario tears his own,
+        thinking of his mother, who spent her last coins on hers.
+        Mood: defiant, a crowd in the open, the moment before war. A
+        clearing in the hills, a yard and a hut. (NOT STARTED)
 
     assets/backgrounds/act2/san-juan.jpg
-        San Juan del Monte, August 1896: open ground before the Spanish
-        powder store (El Polvorin), a river behind. A battlefield, about
-        6000 by 940. (NOT STARTED)
+        San Juan del Monte, 30 August 1896. About 6000 by 940.
+        What happens: the first big battle. The Katipuneros charge the
+        Spanish powder store (El Polvorin); Macario fights wave after
+        wave of soldiers. His companion from the oath, the Kasama, is
+        shot beside him. Then he has to retreat across the field,
+        sneaking past riflemen, to the river at the left.
+        Mood: open ground, smoke, a battle the Katipunan loses. The
+        powder store toward the right, the river at the left edge,
+        cover to hide behind along the way. (NOT STARTED)
 
     assets/backgrounds/act2/nangka.jpg
-        The Nangka River in the hills of Morong, November 1896: a
-        riverbank, the far side where the Spanish come from. About 3400
-        by 940. (NOT STARTED)
+        The Nangka River, in the hills of Morong, November 1896. About
+        3400 by 940.
+        What happens: outnumbered, Macario sets up straw scarecrows in
+        Katipunan hats on the bank to fool the Spanish. The soldiers
+        fire at the straw and attack it, and he and Bonifacio take them
+        from the side.
+        Mood: a trick, a small win in a losing war. A riverbank; the
+        far side, on the right, is where the Spanish come from.
+        (NOT STARTED)
 
     assets/backgrounds/act2/balara.jpg
-        The Katipunan's camp at Balara, 1897: a fire, tents or a hut.
-        Drawn by day; the game makes it night. One screen. (NOT STARTED)
+        The Katipunan's camp at Balara, 1897. One screen.
+        What happens: a night by the fire after the retreat. Bonifacio
+        talks with Macario about the family he too left behind. Soon
+        after, Bonifacio leaves for Cavite and is killed by his own
+        side.
+        Mood: tired, quiet, a last talk. A campfire, tents or a hut.
+        Draw it by day; the game makes it night. (NOT STARTED)
 
     assets/backgrounds/act2/laguna.jpg
-        Emilio Jacinto's camp in Laguna, 1897: by day, among trees. One
-        screen. (NOT STARTED)
+        Emilio Jacinto's camp in Laguna, 1897 to 1898. One screen.
+        What happens: after Bonifacio's death, Macario stays with
+        Jacinto, the Katipunan's young writer. A messenger brings a
+        newspaper from Manila: Spain has sold the country to America
+        for twenty million dollars. Act II ends here.
+        Mood: grief, then bitterness. A camp among trees, by day.
+        (NOT STARTED)
 
 ### Act III
 
     assets/backgrounds/act3/burol.jpg
-        Macario's camp in the hills outside Manila, February 1899: a
-        slope, a lookout, the city far below. About 4500 by 940.
-        (NOT STARTED)
+        Macario's band's camp in the hills outside Manila, February
+        1899. About 4500 by 940.
+        What happens: Act III opens here. A runner brings the news that
+        the war with the Americans has begun at Santa Mesa. Macario
+        keeps watch from a lookout, then fights a big battle against an
+        American patrol.
+        Mood: a new war beginning, the city far below. A slope, a
+        lookout toward the middle, room to fight. (NOT STARTED)
 
     assets/backgrounds/act3/barberya.jpg
-        The barbershop in Tondo, 1899: one room, a barber's chair, a
-        mirror, the door on the right. Drawn by day; the game makes it
-        night for the secret meetings. One screen. (NOT STARTED)
-
-    assets/backgrounds/act3/bayan.jpg
-        A town plaza, April 1901: a wall with a printed proclamation on
-        it, and on the right an American officer's table where men line
-        up to surrender. One screen. (NOT STARTED)
-
-    assets/backgrounds/act3/calle-gunao.jpg
-        A house on Calle Gunao, Quiapo, August 1901: a sala where the
-        Partido Nacionalista meets, papers on a table. One screen.
+        The Barbero's shop in Tondo, 1899 to 1902. One screen.
+        What happens: Macario, in disguise, cuts an American soldier's
+        hair in the barber's chair. At night the shop becomes a secret
+        meeting place: he teaches Bonifacio's creed to three old
+        friends and swears in new members. During an oath in 1902 the
+        door is hammered and he is arrested.
+        Mood: an ordinary shop by day, a hiding place by night. One
+        room, the barber's chair, a mirror, a table, the door on the
+        right. Draw it by day; the game makes it night.
         (NOT STARTED)
 
+    assets/backgrounds/act3/bayan.jpg
+        A town plaza, April 1901. One screen.
+        What happens: President Aguinaldo has been captured and has
+        called on everyone to surrender. His proclamation is posted on
+        a wall, and men queue at an American officer's table to give up
+        their arms. Macario's friend Isko joins the queue, to go home
+        to a child he has never seen. Macario refuses.
+        Mood: defeat, people giving up. A wall with the proclamation
+        on the left, the officer's table on the right. (NOT STARTED)
+
+    assets/backgrounds/act3/calle-gunao.jpg
+        A house on Calle Gunao, Quiapo, August to November 1901. One
+        screen.
+        What happens: the founding of the Partido Nacionalista, which
+        asks the Americans for independence by peaceful means; Macario
+        becomes its Secretary-General and gathers signatures for a
+        petition. Then a new law, the Sedition Law, makes even asking
+        for freedom a crime, and the last man refuses to sign.
+        Mood: hopeful and respectable at first, then the hope taken
+        away. A sala, papers on a table. (NOT STARTED)
+
     assets/backgrounds/act3/morong.jpg
-        The camp in the mountains of Morong, 1902: huts among trees on a
-        slope. About 4500 by 940. Act IV opens here too. (NOT STARTED)
+        The camp in the mountains of Morong, 1902 to 1904. About 4500
+        by 940.
+        What happens: Macario founds the Republika ng Katagalugan, is
+        named its President, raises its flag, and he and his men swear
+        not to cut their hair until the country is free. Then the
+        Constabulary attacks the camp and he defends the flag. Act IV
+        opens here too: he signs his first orders as President and
+        prints a manifesto.
+        Mood: proud, a republic in the hills. Huts among trees on a
+        slope, an open place in the middle for the flag, room to fight.
+        (NOT STARTED)
 
     assets/backgrounds/act4/selda.jpg
-        A cell in Bilibid prison, 1902 (and again in 1906 to 1907, in
-        Act IV): stone walls, bars, a small barred window on the right,
-        a door out at the right edge. The game draws the stone floor.
-        One screen. (NOT STARTED)
+        A cell in Bilibid prison, Manila, 1902, and again 1906 to 1907.
+        One screen.
+        What happens: in 1902 a guard tells Macario through the bars
+        that the war is declared over and he is freed under an amnesty.
+        In 1906 he is back, sentenced to death. Through the window he
+        hears that the Assembly has been elected without him, and on
+        his last night he thinks of the father who never came home.
+        Mood: cold and closed in, the window the only light. Stone
+        walls, bars, a small barred window on the right, a way out at
+        the right edge. The game draws the stone floor. (NOT STARTED)
 
 ### Act IV
 
     assets/backgrounds/act4/himpilan.jpg
-        A Constabulary post in a town below the mountains, 1903: a yard
-        with a fence, a storeroom at the left end. Drawn by day; the
-        game makes it night. About 3700 by 940. (NOT STARTED)
+        A Constabulary post in a town below the mountains, 1903. About
+        3700 by 940.
+        What happens: Macario's men raid the post at night for guns and
+        uniforms. He sneaks past the watchmen to the storeroom; a bell
+        rings, and he fights his way back out to the fence where he
+        came in.
+        Mood: tense, a night raid. A yard with a fence on the right
+        (the way in and out), crates to hide behind, the storeroom at
+        the left end. Draw it by day; the game makes it night.
+        (NOT STARTED)
 
     assets/backgrounds/act4/dimasalang.jpg
-        Sakay's camp in the Di-Masalang mountains, Rizal, 1904 to 1906:
-        huts among trees on a slope, poorer and thinner than Morong's.
-        About 4500 by 940. (NOT STARTED)
+        Sakay's camp in the Di-Masalang mountains, Rizal, 1904 to 1906.
+        About 4500 by 940.
+        What happens: he drills three men in stolen Constabulary
+        uniforms for the raid on Tanay. Later, the Americans herd the
+        villagers into guarded camps, the food stops coming, and he
+        shares out the last sack of rice. Dominador Gómez climbs up to
+        the camp with the offer that brings him down from the
+        mountains.
+        Mood: at first busy, then hungry and worn. Huts among trees on a
+        slope, poorer and thinner than Morong's, a path up the slope.
+        (NOT STARTED)
 
     assets/backgrounds/act4/malabon.jpg
-        San Francisco de Malabon, Cavite, January 1905: a town plaza, a
-        church, the garrison's building. A battlefield, about 4500 by
-        940. (NOT STARTED)
+        San Francisco de Malabon, Cavite, 24 January 1905. About 4500
+        by 940.
+        What happens: his men march in at dusk disguised as government
+        troops and rush the garrison for its guns. The player pushes
+        through the town street by street to the plaza.
+        Mood: a battle in a town, the Republic at its strongest. The
+        edge of town on the left, the plaza with a church and the
+        garrison's building on the right. (NOT STARTED)
 
     assets/backgrounds/act4/sala.jpg
-        The hall in Cavite where the American colonel's reception was
-        held, July 1906: a large room, a table laid for a meal, doors at
-        both ends. One screen. (NOT STARTED)
+        The hall in Cavite, 17 July 1906. One screen.
+        What happens: after coming down from the mountains, Macario and
+        his officers are guests at a reception given by an American
+        colonel. At the toast, soldiers come in from both doors and
+        arrest them. The party was a trap.
+        Mood: polite and festive, until it is not. A large room, a
+        table laid for a meal, a door at each end. (NOT STARTED)
 
     assets/backgrounds/act4/hukuman.jpg
-        The Court of First Instance of Cavite, 1906: a judge's bench on
-        the right, a rail, benches. One screen. (NOT STARTED)
+        The Court of First Instance of Cavite, 1906. One screen.
+        What happens: Macario is tried as a bandit under the Brigandage
+        Act and sentenced to death with his officers.
+        Mood: formal, cold, the outcome already decided. The judge's
+        bench on the right, a rail, benches. (NOT STARTED)
 
     assets/backgrounds/act4/patyo.jpg
-        The yard of Old Bilibid Prison, Manila, September 1907, morning:
-        stone walls, the scaffold toward the right end. About 3400 by
-        940. (NOT STARTED)
+        The yard of Old Bilibid Prison, Manila, 13 September 1907,
+        morning. About 3400 by 940.
+        What happens: the last scene of the game. The player walks
+        Macario across the yard to the scaffold, where he says that he
+        and his men were never bandits.
+        Mood: quiet, early light, dignified rather than gruesome. Stone
+        walls, the scaffold toward the right end. (NOT STARTED)
 
 ## Sprites
 
@@ -158,94 +282,132 @@ Nothing needed.
 ### Act II
 
     assets/sprites/characters/isko.png
-        Isko, a young Katipunero, Macario's friend and right-hand man:
-        side on; he runs on and off. In Acts II to IV, older each act
-        (1896 to 1906). (NOT STARTED)
+        Isko: one of the young men sworn into the Katipunan at the end
+        of Act I, and from then on Macario's friend and right-hand man.
+        In Act II he is the one who knocks on the door and calls
+        Macario away from his mother. In Act III he surrenders to go
+        home to the child he has never met; in Act IV he is in the crowd
+        in Manila with his son, and tells Macario he searched for his
+        mother and never found her. In Acts II to IV, a few years older
+        each act (1896 to 1906). Side on; he runs on and off.
+        (NOT STARTED)
 
     assets/sprites/characters/jacinto.png
-        Emilio Jacinto, about twenty, the Katipunan's writer, 1897: side
-        on, standing. (NOT STARTED)
+        Emilio Jacinto: the Katipunan's writer, about twenty, the
+        "brains of the Katipunan". After Bonifacio's death Macario stays
+        with him in Laguna; he reads aloud the news that Spain has sold
+        the country. Act II only (in Act III Macario learns he has
+        died). Side on, standing. (NOT STARTED)
 
     assets/sprites/characters/manlilimbag.png
-        A printer, ink on his apron: side on; he walks. In Acts II to
-        IV. (NOT STARTED)
+        The Manlilimbag: the Katipunan's printer, who works the press
+        with Macario in Act II. In Act III he is at the founding of the
+        Partido Nacionalista; in Act IV he has saved half a press and
+        prints Macario's manifesto in the mountains. In Acts II to IV.
+        Side on; he walks. (NOT STARTED)
 
     assets/sprites/characters/tagapagbalita.png
-        A messenger: side on; he runs in. In Acts II to IV.
-        (NOT STARTED)
+        The Tagapagbalita: a messenger who runs between camps with news
+        and papers: the news at Balara, the newspaper from Manila, the
+        start of the American war, the offer of talks. In Acts II to
+        IV. Side on; he runs in. (NOT STARTED)
 
 Also wanted (not in the game yet):
 
     assets/sprites/characters/bonifacio-still.png (a second version)
-        Andres Bonifacio exactly as already drawn, but with his sword
-        drawn and held low in his near hand, the blade pointing forward
-        and clear of his body. With it he swings his sword at the
-        charges instead of raising his fist.
+        Andres Bonifacio, the Supremo of the Katipunan, exactly as
+        already drawn, but with his sword drawn and held low in his
+        near hand, the blade pointing forward and clear of his body.
+        With it he swings his sword at the charges (San Juan del Monte,
+        the Nangka River) instead of raising his fist.
 
     assets/sprites/player/macario-katipunero-idle.png
     assets/sprites/player/macario-katipunero-walk.png
-        Macario as a Katipunero of 1896, an outfit sold in the game's
-        shop: white camisa de chino, red trousers rolled at the shin, a
-        red kerchief at the neck, a bolo at the hip. The same poses,
-        frame counts and cell sizes as macario-idle.png and
-        macario-walk.png, so they fit.
+        Macario dressed as a Katipunero of 1896, an outfit a student
+        can buy in the game's shop as a reward: white camisa de chino,
+        red trousers rolled at the shin, a red kerchief at the neck, a
+        bolo at the hip. The same poses, frame counts and cell sizes as
+        macario-idle.png and macario-walk.png, so they fit.
 
 ### Act III
 
     assets/sprites/characters/alvarez.png
-        Santiago Álvarez, a Katipunan general, about thirty, in a coat,
-        1901: side on, standing. (NOT STARTED)
+        Santiago Álvarez: a general of the Katipunan's revolution, who
+        in 1901 helps found the Partido Nacionalista with Macario and
+        names him its Secretary-General: the old fighters now trying
+        to win freedom by law instead of by war. Side on, standing.
+        (NOT STARTED)
 
     assets/sprites/characters/carreon.png
-        Francisco Carreón, an old Katipunero, Vice President of the
-        Republika ng Katagalugan: side on, standing, long hair. In Acts
-        III and IV. (NOT STARTED)
+        Francisco Carreón: an old Katipunero who had been with
+        Bonifacio, Vice President of the Republika ng Katagalugan.
+        Macario's elder and adviser at Morong. In Acts III and IV. Side
+        on, standing. (NOT STARTED)
 
     assets/sprites/characters/montalan.png
-        Julian Montalan, the Katagalugan's general: side on, standing,
-        long hair, a bolo. In Acts III and IV. (NOT STARTED)
+        Julian Montalan: the general who leads the Katagalugan's army.
+        He fights beside Macario at the post and at Malabon, is
+        arrested with him at the reception, and is in the next cell in
+        Bilibid. In Acts III and IV. Side on, standing. (NOT STARTED)
 
     assets/sprites/characters/poblete.png
-        Pascual Poblete, a writer, founder of the Partido Nacionalista,
-        1901, an older man in a coat: side on; he walks in.
-        (NOT STARTED)
+        Pascual Poblete: a writer and newspaperman, a founder of the
+        Partido Nacionalista with Macario. He is the one who walks in
+        with the printed Sedition Law, which makes their petition a
+        crime. Side on; he walks in. (NOT STARTED)
 
     assets/sprites/characters/guro.png
-        A Filipino teacher, 1901, a man in a barong: standing; may face
-        the front. (NOT STARTED)
+        The Guro: a Filipino teacher at the Partido Nacionalista's
+        meeting, worried that the children will now be taught only in
+        English. He means to sign the petition, and once the Sedition
+        Law makes signing a crime he refuses: he has three children.
+        Standing; may face the front.
+        (NOT STARTED)
 
     assets/sprites/characters/opisyal.png
-        An American officer, 1901, in khaki with a campaign hat, seated
-        at a table. (NOT STARTED)
+        The Opisyal: an American army officer in the town plaza in
+        1901, who takes the surrender of the men in the queue, Isko
+        among them. Seated at a table. (NOT STARTED)
 
     assets/sprites/characters/sundalong-amerikano.png
-        An American private in a barber's chair, sandy hair, no hat, a
-        barber's cape over him: side on, seated; he also walks out.
-        (NOT STARTED)
+        An American private, a customer at the barbershop, whose hair
+        Macario cuts while in disguise. He calls the rebels hiding in
+        Tondo "bandits", not knowing who is holding the scissors. Side on, seated
+        in the barber's chair with a barber's cape over him; he also
+        walks out. (NOT STARTED)
 
     assets/sprites/characters/bagong-nakatira.png
-        A woman, a stranger now living in Macario's mother's house,
-        1899: standing; may face the front. (NOT STARTED)
+        The Bagong Nakatira: a stranger now living in the house where
+        Macario's mother lived. The house was empty when her family
+        moved in, its door broken; she does not know where the woman
+        before her went. This is how Macario finds his mother gone.
+        Standing; may face the front. (NOT STARTED)
 
     assets/sprites/characters/kawal-katagalugan.png
-        A fighter of the Republika ng Katagalugan, 1902 to 1906: long
-        hair tied back, poor clothes, a bolo: standing. In Acts III and
-        IV. (NOT STARTED)
+        A fighter of the Republika ng Katagalugan, 1902 to 1906: one of
+        the men who swear with Macario not to cut their hair until the
+        country is free. Three stand by the flag at Morong; in Act IV
+        three are drilled in stolen uniforms for Tanay and share the
+        last rice. Standing. In Acts III and IV. (NOT STARTED)
 
     assets/sprites/characters/bantay-bilibid.png
-        A Filipino guard of Bilibid prison, 1902 to 1907, in a guard's
-        uniform: side on; he walks to the cell. In Acts III and IV.
-        (NOT STARTED)
+        A Filipino guard of Bilibid prison, 1902 to 1907. He brings the
+        news through the bars: the amnesty in 1902, the Assembly
+        elections in 1907. Side on; he
+        walks to the cell. In Acts III and IV. (NOT STARTED)
 
     assets/sprites/enemies/amerikano.png
-        An American soldier, 1899 to 1906: campaign hat, blue shirt,
-        khaki trousers, a Krag rifle with a bayonet. Side on; he fights
-        hand to hand and stands guard with the rifle. In Acts III and
-        IV. (NOT STARTED)
+        An American soldier of the Philippine-American War, 1899 to
+        1906: the enemy in Act III's first battle, the sentries Macario
+        sneaks past in Tondo, and the soldiers at Malabon. Armed with a
+        rifle and bayonet. Side on; he fights hand to hand and stands
+        guard with the rifle. In Acts III and IV. (NOT STARTED)
 
     assets/sprites/enemies/konstable.png
         A man of the Philippine Constabulary, 1902 to 1906: a Filipino
-        in the Americans' khaki uniform and hat, a rifle. Side on; he
+        serving the Americans' police force, sent against Macario's
+        Republic. He attacks the camp at Morong, guards the post Macario
+        raids, and defends Malabon. Armed with a rifle. Side on; he
         fights hand to hand and stands guard. In Acts III and IV.
         (NOT STARTED)
 
@@ -253,80 +415,104 @@ Also wanted (not in the game yet):
 
     assets/sprites/player/macario-heneral-idle.png
     assets/sprites/player/macario-heneral-walk.png
-        Macario as President of the Republika ng Katagalugan, 1902 to
-        1906, an outfit sold in the shop: a dark buttoned uniform, a
-        sash, long hair worn loose. The same poses, frame counts and
+        Macario as President and Generalissimo of the Republika ng
+        Katagalugan, 1902 to 1906, an outfit a student can buy in the
+        shop: a dark buttoned uniform, a sash, long hair worn loose (the
+        hair he swore not to cut). The same poses, frame counts and
         cell sizes as macario-idle.png and macario-walk.png.
 
 ### Act IV
 
     assets/sprites/characters/gomez.png
-        Dominador Gómez, a labour leader, 1906: a man in his forties in
-        a coat and hat, side on; he walks up a slope. (NOT STARTED)
+        Dominador Gómez: a labour leader sent by the American governor
+        to talk Macario down from the mountains. He promises that the
+        Philippine Assembly can open once the last fighter surrenders,
+        and Macario agrees on terms. Whether Gómez knew of the trap
+        that followed is still debated. Side on; he walks up a slope.
+        (NOT STARTED)
 
     assets/sprites/characters/van-schaick.png
-        Colonel Louis Van Schaick, an American officer, 1906, in dress
-        uniform: standing. (NOT STARTED)
+        Colonel Louis Van Schaick: the American officer who hosts the
+        reception in Cavite in 1906, where Macario and his officers are
+        arrested at the toast. Standing. (NOT STARTED)
 
     assets/sprites/characters/villafuerte.png
-        León Villafuerte, one of Sakay's officers: side on, standing,
-        long hair. (NOT STARTED)
+        León Villafuerte: one of Macario's officers, beside him at
+        Malabon and at the reception, and sentenced with him. Side on,
+        standing. (NOT STARTED)
 
     assets/sprites/characters/de-vega.png
-        Lucio de Vega, one of Sakay's officers: side on, long hair; he
-        walks. (NOT STARTED)
+        Lucio de Vega: one of Macario's officers, sentenced with him and
+        hanged beside him on the last morning; he speaks to Macario in
+        the cell. Side on; he walks. (NOT STARTED)
 
     assets/sprites/characters/hukom.png
-        The judge of the Court of First Instance of Cavite, 1906, an
-        American in a dark suit, seated at the bench. (NOT STARTED)
+        The Hukom: the American judge of the Court of First Instance of
+        Cavite, who tries Macario as a bandit and sentences him to death.
+        Seated at the bench. (NOT STARTED)
 
     assets/sprites/characters/taga-cavite.png
-        A woman of Cavite, 1905, thin, a small sack of rice on her hip:
-        side on; she walks into the camp. (NOT STARTED)
+        The Taga-Cavite: a woman of Cavite who escapes the American
+        camps where the villagers have been herded, and brings Macario's
+        starving army the little rice she could carry. Through her the
+        player learns what the camps are doing to the people. Side on;
+        she walks into the camp. (NOT STARTED)
 
     assets/sprites/characters/anak-ni-isko.png
-        Andres, Isko's son, about seven years old, 1906: standing beside
-        his father. (NOT STARTED)
+        Andres: Isko's son, about seven years old, 1906, the child Isko
+        surrendered to go home to. He stands
+        beside his father in the crowd in Manila. (NOT STARTED)
 
     assets/sprites/characters/taong-bayan-1.png
     assets/sprites/characters/taong-bayan-2.png
-        The crowd in Manila, July 1906: two townspeople of Tondo, a man
-        (1) and a woman (2), plain clothes, standing; may face the front.
-        Each is repeated along the street. (NOT STARTED)
+        The crowd in Manila, July 1906: ordinary people of Tondo who
+        line the street to see Macario come down from the mountains,
+        and who know him by his long hair. A man (1) and a woman (2),
+        standing; may face the front. Each is repeated along the street.
+        (NOT STARTED)
 
 ## Props
 
 ### Act I
 
     assets/sprites/scenery/tahian.png
-        The seamstress's sewing table, on the street beside her.
-        About two thirds of Macario's height. (NOT STARTED)
+        The Mananahi's sewing table, on the street beside her: where
+        Macario, a boy looking for work, helps her sew for a few coins
+        before she sends him to the theatre with the costumes. About
+        two thirds of Macario's height. (NOT STARTED)
 
     assets/sprites/scenery/silya-barbero.png
-        The barber's chair, on the street beside him. About two thirds
-        of Macario's height. Seen in Act III too. (NOT STARTED)
+        The Barbero's chair, set out on the street beside him: where
+        Macario, as a boy, cuts his first customer's hair. In Act III
+        the same chair is inside the barbershop. About two thirds of
+        Macario's height. (NOT STARTED)
 
 Also wanted (not in the game yet):
 
     assets/sprites/scenery/entablado-harap.png
         The front of the theatre (the entablado) on the street, a
-        building seen from the front, its door drawn open with warm
-        light inside so it reads as a way in.
+        building seen from the front, where Macario first goes on stage
+        and later becomes the company's lead actor. Its door drawn open
+        with warm light inside, so it reads as a way in.
 
 ### Act II
 
     assets/sprites/scenery/palimbagan.png
-        The Katipunan's hand printing press. A little shorter than
-        Macario. Seen in Act IV too. (NOT STARTED)
+        The Katipunan's hand printing press, on which Macario prints the
+        newspaper Kalayaan at the start of Act II, and in Act IV prints
+        his manifesto in the mountains. A little shorter than Macario.
+        (NOT STARTED)
 
     assets/sprites/scenery/dayami.png
-        A bundle of straw on a riverbank. About half Macario's height.
-        (NOT STARTED)
+        A bundle of straw on the bank of the Nangka River, before
+        Macario raises it as a scarecrow to fool the Spanish. About half
+        Macario's height. (NOT STARTED)
 
     assets/sprites/scenery/panakot.png
-        The same straw bundle raised as a scarecrow, standing like a man,
-        wearing a salakot with a red band. Macario's height.
-        (NOT STARTED)
+        The same straw bundle raised as a scarecrow, standing like a
+        Katipunero, wearing a salakot with a red band, so that from the
+        far bank the Spanish take it for a man and attack it. Macario's
+        height. (NOT STARTED)
 
 Also wanted (not in the game yet):
 
@@ -334,20 +520,25 @@ Also wanted (not in the game yet):
     assets/sprites/scenery/imprenta.png
         Two buildings on the street, each seen from the front, its door
         drawn open with warm light inside so it reads as a way in:
-        Macario's mother's house (bahay-nanay) and the house that hides
-        the printing press (imprenta).
+        Macario's mother's house (bahay-nanay), where Act II's promise
+        is made, and the ordinary-looking house that hides the
+        Katipunan's printing press (imprenta).
 
 ### Act III
 
     assets/sprites/scenery/watawat-katagalugan.png
-        The flag of the Republika ng Katagalugan on its pole. Taller
-        than Macario. (NOT STARTED)
+        The flag of the Republika ng Katagalugan on its pole, raised by
+        Macario at Morong when he founds the Republic, and the flag he
+        defends when the Constabulary attacks the camp. Taller than
+        Macario. (NOT STARTED)
 
 Also wanted (not in the game yet):
 
     assets/sprites/scenery/barberya.png
-        The barbershop on the street, seen from the front, its door
-        drawn open with warm light inside so it reads as a way in.
+        The barbershop on the street, seen from the front: the shop
+        where Macario hides in plain sight and holds secret meetings.
+        Its door drawn open with warm light inside, so it reads as a
+        way in.
 
 ### Act IV
 
