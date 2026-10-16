@@ -9,9 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 17 Oct 2026, after Block 139. Block 139: the strip under
-the feet is each painting's own floor carried on (its bottom rows,
-mirrored and stretched), so nobody floats above a thin painted road.
+Last updated: 17 Oct 2026, after Block 140. Block 140: the strip under
+the feet is a ground the engine draws in the colours of each painting's
+bottom edge (Block 139's mirror of the painting taken out as ugly), so
+nobody floats above a thin painted road and no floor of ours clashes.
 Block 138: six rooms
 asked of the artist again (ART.md, Also wanted under Backgrounds): the
 press, the house, the barbershop, Calle Gunao, the hall and the court
@@ -259,12 +260,12 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 Oct 2026, Blocks 119 to 126 on 9 Oct 2026, Blocks 128 to 131 on 13
 Oct 2026. Open:
 
-    Block 139, on the phone and on a computer (?dev=1, any point):
-       everyone stands on the painted road or floor, which runs on
-       under their feet to the screen's edge (Tondo, "3:morong",
-       "4:tanay", "4:malabon", "2:bahay"). Failure: feet above the
-       road, a fence or house reflected under it, or a seam that does
-       not meet the painting.
+    Block 140, on the phone and on a computer (?dev=1, any point):
+       everyone stands where the painted road or floor meets a plain
+       ground of its own colour, speckled, darker toward the screen's
+       edge (Tondo, "3:morong", "4:tanay", "4:malabon", "2:bahay").
+       Failure: feet above the road, a colour that does not meet the
+       painting, or stripes.
 
     Block 137, on the phone (?dev=1, any point; these most):
 
@@ -939,8 +940,8 @@ machine, the assessment module.
         the press 1800 long, San Juan's town laid twice
     138 six rooms painted too close asked for again (ART.md); a scale
         for every background
-    139 the painting's own floor under the feet (a flipped, stretched
-        copy of its bottom rows); nobody floats above a thin road
+    139 the painting mirrored under the feet (taken out in 140, ugly)
+    140 a ground drawn in each painting's bottom colours under the feet
 
 ## Blocks remaining
 

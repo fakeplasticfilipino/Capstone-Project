@@ -6145,6 +6145,23 @@ artist's floor, shown again, as mirrorPanels shows a painting again.
 The night tint and greyFilter reach it, being in #skyline. Seen at the
 phone's size and at a computer's (1440 by 770) in every scene.
 
+## Block 140: a ground drawn in the painting's colours, 17 Oct 2026
+
+The proponent, of Block 139's mirrored floor: it looks really ugly;
+make something from scratch, based on the lowest bottom of the
+background. So the strip under the feet is drawn by the engine, as the
+floors of Block 114 are, and only its colours come from the painting:
+the picture's bottom 2% of rows read once through a canvas
+(groundColours, cached per picture), averaged into 24 colours across its
+width and each smoothed with its neighbours, so a post or a tuft at the
+edge does not become a stripe; laid as a gradient left to right (turned
+round under a mirrored panel), so the ground under each stretch of road
+is that road's colour and meets it with no seam; a tile of darker and
+lighter pixel specks and short ruts over it (groundSpeckle, no colour of
+its own); and a shade to 30% darker toward the screen's edge. Before the
+painting loads the strip is a plain earth. Night and greyFilter reach it
+in #skyline. Seen in every scene at a phone's size and a computer's.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

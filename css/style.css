@@ -270,24 +270,22 @@ html, body {
   background-repeat: no-repeat;
 }
 
-/* Block 139. A painting with its own floor (ground: false; game.js,
+/* Blocks 139, 140. A painting with its own floor (ground: false; game.js,
    own-floor and buildFloorBelow) stands on --ground-level like every
-   other, and below it a copy of itself flipped about its bottom edge
-   carries its floor on under the feet; #skyline clips the rest. A
-   backdrop stands on the floor too, rather than running behind it. */
+   other, a backdrop too rather than running behind the floor, and under
+   it a ground drawn in the colours of its bottom edge (set by game.js
+   once the painting has loaded; until then a plain earth). */
 #skyline.own-floor .skyline-tile {
   bottom: var(--ground-level);
 }
-#skyline.own-floor .skyline-floor {
-  background-color: transparent;
-  transform-origin: center bottom;
-  /* Mirrored and stretched threefold: only the painting's bottom 20px are
-     carried down, the road itself, never the fence or the houses a thin
-     painted road ends at, which a plain mirror reflected like water. */
-  transform: scaleY(-3);
-}
-#skyline.own-floor .skyline-floor.skyline-tile-mirrored {
-  transform: scale(-1, -3);
+.skyline-floor {
+  position: absolute;
+  bottom: 0;
+  height: var(--ground-level);
+  background-color: #5a4a33;
+  background-repeat: repeat, no-repeat, no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
 }
 
 /* Block 126. A door that is open, lit (game.js, LIT DOORWAYS): a warm

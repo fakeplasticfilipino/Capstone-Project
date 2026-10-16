@@ -906,17 +906,17 @@ one width were drawn at scales up to twice apart, Block 134). The trees
 stand on the joins as ever, and the content check reads the same widths.
 
 ground: false (every painted scene since Block 137) hides the strip of
-ours, which under a painted floor made two floors, and since Block 139
-lays the painting's own floor under the feet instead (game.js, own-floor
-and buildFloorBelow): the painting, panel or backdrop, stands on
---ground-level, and below it a copy of its own element, flipped about
-its bottom edge and stretched threefold (style.css, .skyline-floor),
-shows its bottom 20 or so rows carried down to the screen's edge. The
-feet stand on the seam, on the painted road. A plain mirror reflected
-the fence and houses a thin painted road ends at, like water; standing
-the paintings on the bottom of the screen (Block 134) left the feet
-above a thin road. A check counting a scene's paintings excludes
-.skyline-floor.
+ours, which under a painted floor made two floors, and since Block 140
+lays a ground drawn in the painting's own colours instead (game.js,
+own-floor, buildFloorBelow, groundColours, groundSpeckle): the
+painting, panel or backdrop, stands on --ground-level, and the strip
+below it (.skyline-floor) is the painting's bottom rows averaged into
+GROUND_COLUMNS colours left to right, a speckle of pixels over them and
+a shade toward the screen's edge. The feet stand where the painted road
+meets it. Drawn by design, like FLOORS. Tried and taken out: standing
+the paintings on the bottom of the screen (Block 134; feet above a thin
+road) and mirroring the painting down (Block 139; ugly). A check
+counting a scene's paintings excludes .skyline-floor.
 
 A painting is drawn as tall as its scene's length makes it (a backdrop
 covers worldWidth; panels' widths are their shapes times one height),
@@ -2618,9 +2618,9 @@ look, by system:
                                           paintings' own floors; the
                                           press and San Juan resized),
                                           138 (six rooms asked again,
-                                          drawn too close), 139 (the
-                                          painting's floor carried on
-                                          under the feet)
+                                          drawn too close), 139, 140
+                                          (a ground in each painting's
+                                          own colours under the feet)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

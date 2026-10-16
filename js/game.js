@@ -1044,13 +1044,13 @@ function loadScene(sceneId) {
   document
     .getElementById("ground-tiles")
     .classList.toggle("ground-hidden", scene.ground === false);
-  // Block 139. A painting that paints its own floor (ground: false)
-  // stands on --ground-level as ever, and the strip under the feet is its
-  // own floor carried on, the painting's bottom rows mirrored down
-  // (buildFloorBelow), so everyone stands on the painted road, not on a
-  // floor of ours (Block 137's two floors) nor above the painting's edge
-  // (Block 134's, which stood the paintings on the bottom of the screen
-  // and left the feet over a thin painted road).
+  // Blocks 139, 140. A painting that paints its own floor (ground: false)
+  // stands on --ground-level as ever, and the strip under the feet is a
+  // ground drawn in the colours of the painting's bottom edge
+  // (buildFloorBelow), so everyone stands where the painted road meets
+  // it, not on a floor that does not match (Block 137's two floors) nor
+  // above the painting's edge (Block 134's, which stood the paintings on
+  // the bottom of the screen and left the feet over a thin painted road).
   skylineEl.classList.toggle("own-floor", scene.ground === false);
   // Polish list #6. A scene may lay its own road (ground: { src }), for an
   // act whose ground is not Tondo's dirt; every other scene gets the
@@ -1195,7 +1195,7 @@ function buildSkylineTiles() {
     }
     layer.appendChild(tile);
     actElements.push(tile);
-    if (!tile.classList.contains("backdrop-owed")) buildFloorBelow(tile);
+    if (!tile.classList.contains("backdrop-owed")) buildFloorBelow(tile, backdrop.src);
     return;
   }
 
@@ -1266,19 +1266,100 @@ function panelWidthAt(scene, i) {
   return scene.panelWidth || PANEL_WIDTH;
 }
 
-// Block 139. Under a painting with its own floor (ground: false), the
-// strip the feet stand on is that floor carried on: a copy of the
-// painting's own element, the same box and so the same size and crop,
-// flipped about its bottom edge and stretched threefold (style.css,
-// .skyline-floor). #skyline clips at the screen's bottom, so only the
-// painting's bottom rows show (a third of --ground-level of them),
-// mirrored, meeting it row for row. The artist's own floor, no picture of ours.
-function buildFloorBelow(tile) {
+// Block 140. Under a painting with its own floor (ground: false), the
+// strip the feet stand on is a ground the engine draws, in the colours
+// of the painting's own bottom edge: the last rows of the picture read
+// once (groundColours), averaged into GROUND_COLUMNS colours across it,
+// laid as a gradient left to right so the ground under each stretch of
+// road is that road's colour, with a speckle of pixels over it
+// (groundSpeckle) and a shade toward the screen's edge. Drawn by design,
+// like FLOORS; not a picture. (Block 139 mirrored the painting itself
+// down, which the proponent found ugly.)
+const GROUND_COLUMNS = 24;
+
+function buildFloorBelow(tile, src) {
   if (!currentScene || currentScene.ground !== false) return;
-  const floor = tile.cloneNode(false);
-  floor.classList.add("skyline-floor");
+  const floor = document.createElement("div");
+  floor.className = "skyline-floor";
+  floor.style.left = tile.style.left;
+  floor.style.width = tile.style.width;
   tile.parentNode.appendChild(floor);
   actElements.push(floor);
+  const reversed = tile.classList.contains("skyline-tile-mirrored");
+  loadImage(src).then((img) => {
+    const colours = img && groundColours(src, img);
+    if (!colours || !floor.isConnected) return;
+    const list = reversed ? colours.slice().reverse() : colours;
+    const stops = list.map((c, i) => c + " " + ((i + 0.5) / list.length * 100).toFixed(1) + "%");
+    const speck = groundSpeckle();
+    floor.style.backgroundImage = speck.image +
+      ", linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%)" +
+      ", linear-gradient(to right, " + stops.join(", ") + ")";
+    floor.style.backgroundSize = speck.size + ", 100% 100%, 100% 100%";
+  });
+}
+
+// The painting's bottom rows (2% of its height), averaged column by
+// column into GROUND_COLUMNS colours, each smoothed with its neighbours
+// so a post or a tuft at the edge does not become a stripe. Read once per
+// picture, at its own size, through a canvas; null if the browser will
+// not read it.
+function groundColours(src, img) {
+  const cache = groundColours.cache || (groundColours.cache = {});
+  if (src in cache) return cache[src];
+  let out = null;
+  try {
+    const w = img.naturalWidth, rows = Math.max(2, Math.round(img.naturalHeight * 0.02));
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = rows;
+    const g = canvas.getContext("2d");
+    g.drawImage(img, 0, img.naturalHeight - rows, w, rows, 0, 0, w, rows);
+    const data = g.getImageData(0, 0, w, rows).data;
+    const sums = [];
+    for (let i = 0; i < GROUND_COLUMNS; i++) sums.push([0, 0, 0, 0]);
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < w; x++) {
+        const s = sums[Math.min(GROUND_COLUMNS - 1, Math.floor(x / w * GROUND_COLUMNS))];
+        const k = (y * w + x) * 4;
+        s[0] += data[k]; s[1] += data[k + 1]; s[2] += data[k + 2]; s[3]++;
+      }
+    }
+    out = sums.map((_, i) => {
+      let r = 0, gg = 0, b = 0, n = 0;
+      for (let j = Math.max(0, i - 1); j <= Math.min(GROUND_COLUMNS - 1, i + 1); j++) {
+        r += sums[j][0]; gg += sums[j][1]; b += sums[j][2]; n += sums[j][3];
+      }
+      return "rgb(" + Math.round(r / n) + ", " + Math.round(gg / n) + ", " + Math.round(b / n) + ")";
+    });
+  } catch (e) {
+    out = null;
+  }
+  return (cache[src] = out);
+}
+
+// The ground's grain: a tile of pixels, only darker and lighter specks
+// and short ruts on nothing, so the colour under it is the painting's.
+function groundSpeckle() {
+  if (groundSpeckle.cached) return groundSpeckle.cached;
+  let seed = 11;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  let rects = "";
+  const px = (x, y, w, h, c) => { rects += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`; };
+  const W = 48, H = 30;
+  for (let i = 0; i < 70; i++) px(Math.floor(rnd() * W), Math.floor(rnd() * H), 1, 1, "rgba(0,0,0,0.18)");
+  for (let i = 0; i < 40; i++) px(Math.floor(rnd() * W), Math.floor(rnd() * H), 1, 1, "rgba(255,255,255,0.12)");
+  for (let i = 0; i < 10; i++) px(Math.floor(rnd() * (W - 6)), Math.floor(rnd() * H), 3 + Math.floor(rnd() * 4), 1, "rgba(0,0,0,0.12)");
+  for (let i = 0; i < 6; i++) {
+    const x = Math.floor(rnd() * (W - 2)), y = Math.floor(rnd() * (H - 1));
+    px(x, y, 2, 1, "rgba(255,255,255,0.16)");
+    px(x, y + 1, 2, 1, "rgba(0,0,0,0.22)");
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" shape-rendering="crispEdges">${rects}</svg>`;
+  return (groundSpeckle.cached = {
+    image: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
+    size: `${W * FLOOR_SCALE}px ${H * FLOOR_SCALE}px`,
+  });
 }
 
 function buildPanelBackdrop(scene) {
@@ -1311,7 +1392,7 @@ function buildPanelBackdrop(scene) {
     if (scene.panelSky) tile.style.backgroundColor = scene.panelSky;
     layer.appendChild(tile);
     actElements.push(tile);
-    buildFloorBelow(tile);
+    buildFloorBelow(tile, panelSrc);
   }
 
   panelJoins(scene).forEach((x, i) => {
