@@ -9,28 +9,19 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 16 Oct 2026, after Block 137. Block 137: every painted
-scene on its painting's own floor (no strip of ours under it), the
-press 1800 long and San Juan's town laid twice, so neither painting is
-drawn too big. Block 136: Act IV's six
-places painted (the post, Di-Masalang and Malabon two paintings each,
-the hall, the court, Bilibid's yard), and four of Act II's rooms
-replaced by the artist's cropped versions. Seventeen pictures owed, all
-people and props. Block 135: the Drive
-folder's Act III art put in: the hill camp, the barbershop, the plaza,
-Calle Gunao, Morong and the Bilibid cell painted (two-painting scenes at
-one height, panelWidths, San Juan and the Nangka too); the Guro, the
-Opisyal, the Bagong Nakatira, a standing Poblete, the Bilibid guard, the
-Katagalugan's fighter and the American soldier keyed and animated.
-Before it, 15 Oct 2026, Block 134 and a
-tidy of these files.
-Block 134: the new street of Block 133 taken out at the proponent's word
-(the old four paintings back, night the tint again), and the street's
-paintings standing on the bottom of the screen so everyone walks on the
-painted road. Block 133: the artists' Drive folder put in: Act II's
-seven places and the pulungan painted; Isko, Jacinto, the printer, the
-messenger, Álvarez, Carreón, Montalan and Poblete keyed from black and
-animated. Block 132: a teacher makes her class's accounts on the
+Last updated: 16 Oct 2026, after Block 138. Block 138: six rooms
+asked of the artist again (ART.md, Also wanted under Backgrounds): the
+press, the house, the barbershop, Calle Gunao, the hall and the court
+are painted too close, their furniture far bigger than the people, which
+no size on screen can mend; ART.md now gives every background a scale.
+Block 137: every painted scene on its painting's own floor (no strip of
+ours under it), the press 1800 long and San Juan's town laid twice, so
+neither is drawn too big. Block 136: Act IV's six places painted, and
+four of Act II's rooms replaced by the artist's cropped versions.
+Blocks 133 to 135 (15 and 16 Oct 2026): the artist's Drive folder, Acts
+II and III's places and sixteen people keyed and animated, the old
+street kept (Block 134). Seventeen pictures owed, all people and props,
+and six rooms wanted again. Block 132: a teacher makes her class's accounts on the
 dashboard (printable slips, six-digit passwords, a code at the login),
 the dashboard in five tabs, schema v13 applied and public sign-up
 switched off. Every block before: the Blocks list below, and
@@ -382,7 +373,11 @@ chair; Act II's three: the press, the straw and the scarecrow; Act
 III's three: the American in the barber's chair, the Constabulary and
 the Katagalugan's flag; Act IV's nine: Gómez, Van Schaick, Villafuerte, de Vega, the judge, a
 woman of Cavite, Isko's son and two townspeople for the crowd in
-Manila). The Drive folder's new street (October 12) was tried and
+Manila). Since Block 138 six rooms are asked for again, drawn at the
+people's scale (ART.md, Also wanted under Backgrounds, with the scale
+for every painting): the press, the house, the barbershop, Calle Gunao,
+the hall (with 1906's flags) and the court; tell the artist, and send
+ART.md's "How to draw them". The Drive folder's new street (October 12) was tried and
 taken out (Block 134). Its unnamed
 side-profile figure (October 12), a second Jacinto, the barbershop's
 night and a second cell (October 16) were set aside: which character,
@@ -932,12 +927,15 @@ machine, the assessment module.
         the artist; the post's night painted, not tinted
     137 every painted scene on its own painted floor (ground: false);
         the press 1800 long, San Juan's town laid twice
+    138 six rooms painted too close asked for again (ART.md); a scale
+        for every background
 
 ## Blocks remaining
 
 Every act is written, accepted and has its built-in questions (Acts I to
 IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
-the art, ART.md (seventeen pictures; BLOCKED, the artist), and the
+the art, ART.md (seventeen pictures, and six rooms drawn again;
+BLOCKED, the artist), and the
 two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
 BLOCKED, the artist).
 
@@ -957,6 +955,11 @@ the proponent, 9 Oct 2026)
 ## Known problems
 
 Art still owed: ART.md. (KNOWN)
+
+Six rooms are painted too close, their furniture up to twice the
+people's size: the press, the house, the barbershop, Calle Gunao, the
+hall, the court (Block 138). Asked again of the artist; the paintings
+stay until the new ones come. (BLOCKED, the artist)
 
 Loading on a slow connection: fixed in Blocks 62 and 78 (a student
 cannot go in with art missing), and in Block 105 (the game kept whole on

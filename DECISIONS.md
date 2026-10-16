@@ -6097,6 +6097,29 @@ before the store, all at 589. Bilibid's yard (1.23 times), the hills
 Nangka a little small (0.74), since growing it would lengthen the walk
 along the river.
 
+## Block 138: six rooms asked for again, 16 Oct 2026
+
+The proponent, after Block 137: some are still too big, the press
+above all, and it seems to be in the painting itself. It is. Each
+painting was measured against Macario (134 of the 589 the phone shows,
+a quarter of the screen): every outdoor place, the pulungan (its painted
+people are ours in size), the theatre, the cell, the yard, the plaza,
+the post, Malabon and Morong are at the people's scale. Six rooms are
+painted close up: the press about twice too big (the table at his
+chest), the barbershop 1.8, the house 1.6, Calle Gunao and the hall
+1.5, the court 1.4. Their size on screen cannot mend that: drawn
+smaller to match the people they would fill half the screen with a band
+above, and drawing the people bigger in those rooms alone would change
+the jump, the guards' sight and the shelves, and no other scene would
+match. A painting of ours is out (Block 118). So ART.md asks for the
+six again, under Also wanted (the art check reads only what is missing),
+with a scale for every background in the way to draw them: a man at the
+front a quarter of the height (about 215 in 940), a door about 300, a
+table top about 100, the feet about 100 above the bottom edge. The
+paintings in the game stay until the new ones arrive under the same
+names. The hall's banner is asked for as 1906's flags, since a new
+painting is being made anyway.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

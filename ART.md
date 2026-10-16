@@ -14,8 +14,16 @@ How to draw them:
 
     Backgrounds   a painting of the whole place, as wide as the size
                   given, the floor or ground along the bottom. JPG.
-                  "One screen" is about 1680 by 940 pixels, the size of
-                  the stage painting already in the game. Not tiled or
+                  "One screen" is about 1900 by 940 pixels. Draw the
+                  place at the people's size: in a painting 940 tall, a
+                  grown man standing at the front is about 215 pixels
+                  tall (a quarter of the height), a door about 300, a
+                  table top about 100 above the floor, and the people's
+                  feet stand about 100 above the bottom edge, so the
+                  floor or road fills the bottom 150 or more. A room
+                  painted closer than that cannot be fixed by the game:
+                  its furniture is too big for the people in it
+                  (Block 138). Not tiled or
                   repeated: one painting, drawn once. Paintings meant to
                   stand side by side (a street, a field in two parts) are
                   all the same size and shape, the ground at the same
@@ -45,7 +53,9 @@ For people, the entry says who they are and what they do, not how they
 look: the proponent has the references for that.
 
 "Also wanted" under an act is extra: the game does not use those
-pictures yet, but will once they are drawn.
+pictures yet, but will once they are drawn. Under Backgrounds it is a
+painting the game has but wants drawn again, saved under the same name
+to replace it.
 
 For the team: node _dev/tools/missing-art.js lists what the game asks
 for and does not have. prepare.js checks that every file listed in
@@ -64,15 +74,143 @@ Nothing needed.
 
 ### Act II
 
-Nothing needed.
+Nothing missing.
+
+Also wanted, drawn again (the painting in the game now is drawn too
+close: the furniture is far bigger than the people in it; Block 138):
+
+    assets/backgrounds/act2/imprenta.jpg
+        The Katipunan's hidden printing press in Tondo, 1896. About
+        2900 by 940.
+        What happens: Act II opens here, Macario printing the second
+        issue of the Katipunan's newspaper, Kalayaan. Later the same
+        day the Spanish guards raid it; he sneaks between them, hiding
+        behind cover and on high shelves, to reach the list of members,
+        finds his own name and his mother's address on it, and escapes
+        through the back window.
+        Mood: busy and hopeful at first, then searched and dangerous.
+        The press at the left, stacks of paper, crates, two high shelves
+        a person could climb, the back window at the left edge, the door
+        out at the right edge. Now: the table reaches Macario's chest and
+        the press is two and a half times his height (about twice too
+        big).
+        Scale: the room as the game's people see it, from further
+        back than the painting in the game now. A grown man standing on
+        the floor at the front is about 215 pixels tall (a quarter of
+        the picture's height), a door about 300, a table top about 100
+        above the floor; the floor runs along the bottom 150 pixels or
+        more, and the people's feet stand about 100 above the bottom
+        edge.
+        (NOT STARTED)
+
+    assets/backgrounds/act2/bahay.jpg
+        Macario and his mother's home in Tondo, August 1896. One screen.
+        What happens: his mother sees ink on his hands and begs him not
+        to disappear the way his father did. He promises to come back,
+        and before he has finished, the door is hammered: a friend
+        calling him to the printing press. He leaves her there, and he
+        never sees her again.
+        Mood: poor but cared for, quiet, the last safe place in the
+        game. One room, a table, the door on the right. Now: the table
+        at his waist, the door twice his height (about 1.6 times too
+        big).
+        Scale: the room as the game's people see it, from further
+        back than the painting in the game now. A grown man standing on
+        the floor at the front is about 215 pixels tall (a quarter of
+        the picture's height), a door about 300, a table top about 100
+        above the floor; the floor runs along the bottom 150 pixels or
+        more, and the people's feet stand about 100 above the bottom
+        edge.
+        (NOT STARTED)
 
 ### Act III
 
-Nothing needed.
+Nothing missing.
+
+Also wanted, drawn again (the painting in the game now is drawn too
+close: the furniture is far bigger than the people in it; Block 138):
+
+    assets/backgrounds/act3/barberya.jpg
+        The Barbero's shop in Tondo, 1899 to 1902. One screen.
+        What happens: Macario, in disguise, cuts an American soldier's
+        hair in the barber's chair. At night the shop becomes a secret
+        meeting place: he teaches Bonifacio's creed to three old
+        friends and swears in new members. During an oath in 1902 the
+        door is hammered and he is arrested.
+        Mood: an ordinary shop by day, a hiding place by night. One
+        room, the barber's chair, a mirror, a table, the door on the
+        right. By day; the game makes it night. Now: the counter as tall
+        as he is (about 1.8 times too big).
+        Scale: the room as the game's people see it, from further
+        back than the painting in the game now. A grown man standing on
+        the floor at the front is about 215 pixels tall (a quarter of
+        the picture's height), a door about 300, a table top about 100
+        above the floor; the floor runs along the bottom 150 pixels or
+        more, and the people's feet stand about 100 above the bottom
+        edge.
+        (NOT STARTED)
+
+    assets/backgrounds/act3/calle-gunao.jpg
+        A house on Calle Gunao, Quiapo, August to November 1901. One
+        screen.
+        What happens: the founding of the Partido Nacionalista, which
+        asks the Americans for independence by peaceful means; Macario
+        becomes its Secretary-General and gathers signatures for a
+        petition. Then a new law, the Sedition Law, makes even asking
+        for freedom a crime, and the last man refuses to sign.
+        Mood: hopeful and respectable at first, then the hope taken
+        away. A sala, papers on a table. Now: the table near his waist
+        (about 1.5 times too big).
+        Scale: the room as the game's people see it, from further
+        back than the painting in the game now. A grown man standing on
+        the floor at the front is about 215 pixels tall (a quarter of
+        the picture's height), a door about 300, a table top about 100
+        above the floor; the floor runs along the bottom 150 pixels or
+        more, and the people's feet stand about 100 above the bottom
+        edge.
+        (NOT STARTED)
 
 ### Act IV
 
-Nothing needed.
+Nothing missing.
+
+Also wanted, drawn again (the painting in the game now is drawn too
+close: the furniture is far bigger than the people in it; Block 138):
+
+    assets/backgrounds/act4/sala.jpg
+        The hall in Cavite, 17 July 1906. One screen.
+        What happens: after coming down from the mountains, Macario and
+        his officers are guests at a reception given by an American
+        colonel. At the toast, soldiers come in from both doors and
+        arrest them. The party was a trap.
+        Mood: polite and festive, until it is not. A large room, a
+        table laid for a meal, a door at each end. The flags of 1906 (the
+        American one; not Spain's). Now: the chairs as tall as he is
+        (about 1.5 times too big).
+        Scale: the room as the game's people see it, from further
+        back than the painting in the game now. A grown man standing on
+        the floor at the front is about 215 pixels tall (a quarter of
+        the picture's height), a door about 300, a table top about 100
+        above the floor; the floor runs along the bottom 150 pixels or
+        more, and the people's feet stand about 100 above the bottom
+        edge.
+        (NOT STARTED)
+
+    assets/backgrounds/act4/hukuman.jpg
+        The Court of First Instance of Cavite, 1906. One screen.
+        What happens: Macario is tried as a bandit under the Brigandage
+        Act and sentenced to death with his officers.
+        Mood: formal, cold, the outcome already decided. The judge's
+        bench on the right, a rail, benches. Now: the rail at his chest
+        (about 1.4 times too big).
+        Scale: the room as the game's people see it, from further
+        back than the painting in the game now. A grown man standing on
+        the floor at the front is about 215 pixels tall (a quarter of
+        the picture's height), a door about 300, a table top about 100
+        above the floor; the floor runs along the bottom 150 pixels or
+        more, and the people's feet stand about 100 above the bottom
+        edge.
+        (NOT STARTED)
 
 ## Sprites
 

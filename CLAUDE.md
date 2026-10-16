@@ -918,7 +918,10 @@ covers worldWidth; panels' widths are their shapes times one height),
 and on the phone the world is about 590 tall. A scene much longer than
 its paintings draws them too big (Block 137: the press at 2600 was half
 as big again as its people). Size a scene to its paintings, or lay them
-again (San Juan's town twice, mirrored), rather than stretch them.
+again (San Juan's town twice, mirrored), rather than stretch them. A
+painting drawn too close (a room whose furniture dwarfs the people at
+any size; Block 138) is not fixed in code: ART.md asks for it again
+under Also wanted, same name, and it replaces the old when it comes.
 
 Lit doorways (Block 126). Every exit, and every NPC with doorway, is
 lit while open (game.js, LIT DOORWAYS): a column of warm light the
@@ -2608,7 +2611,9 @@ look, by system:
                                           136 (Act IV's places; Act
                                           II's rooms cropped), 137 (the
                                           paintings' own floors; the
-                                          press and San Juan resized)
+                                          press and San Juan resized),
+                                          138 (six rooms asked again,
+                                          drawn too close)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,
