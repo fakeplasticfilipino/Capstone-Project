@@ -1329,7 +1329,7 @@
         // checkpoints (a tree stands on every join); the store is the
         // left of the second painting, so the field ending at 4200 shows it.
         panels: ["assets/backgrounds/act2/san-juan-1.jpg", "assets/backgrounds/act2/san-juan-2.jpg"],
-        panelWidth: 2400,
+        panelWidths: [1616, 2584], // Block 135: one height
         panelSky: "#4a8fd6",
         ground: { floor: "damo" }, // Block 114
         dangerous: true,
@@ -1383,7 +1383,7 @@
         // more fields came with them and are kept aside: two panels
         // already cover the bank.
         panels: ["assets/backgrounds/act2/nangka-1.jpg", "assets/backgrounds/act2/nangka-2.jpg"],
-        panelWidth: RIVER_WIDTH / 2,
+        panelWidths: [1266, 1134], // Block 135: one height
         panelSky: "#4a8fd6",
         ground: { floor: "damo" }, // Block 114
         dangerous: true,

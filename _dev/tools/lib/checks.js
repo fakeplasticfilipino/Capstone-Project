@@ -164,8 +164,10 @@ function content() {
       }
       // Shadow trees stand at every multiple of the panel width.
       if (Array.isArray(s.panels) && s.panels.length) {
-        const w = s.panelWidth || PANEL_WIDTH;
-        for (let x = w; x < (s.worldWidth || 0); x += w) {
+        // Block 135: or each panel its own width (panelWidths).
+        const wAt = (i) => (Array.isArray(s.panelWidths) && s.panelWidths.length
+          ? s.panelWidths[i % s.panelWidths.length] : s.panelWidth || PANEL_WIDTH);
+        for (let i = 0, x = wAt(0); x < (s.worldWidth || 0); i++, x += wAt(i)) {
           for (const n of s.npcs || []) {
             if (n.scenery) continue;
             if (n.x < x + TRUNK && n.x + NPC_WIDTH > x - TRUNK) problems.push(at + ": " + n.id + " stands behind the tree at " + x);

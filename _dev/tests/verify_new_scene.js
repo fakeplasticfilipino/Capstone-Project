@@ -837,6 +837,26 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("the artist's people of Acts II to IV: every sheet opening, eight frames each, the walked ones walking (Block 133)",
        Object.values(later.open).every((f) => f === 8) && later.walked && later.faces, later);
 
+    // Block 135. Act III's people and the American soldier, and Act III's
+    // two-painting scenes laid at one height.
+    const act3 = await page.evaluate(async () => {
+      const P = window.PEOPLE, T = window.ENEMY_TYPES;
+      const find = (act, id) => window["ACT_" + act].scenes
+        .flatMap((s) => (s.npcs || []).concat(s.decorations || [])).find((n) => n.id === id);
+      const sheets = { guro: find(3, "guro").animation, opisyal: find(3, "opisyal").animation,
+        nakatira: find(3, "bagong-nakatira").animation, poblete: find(3, "poblete").animation,
+        pobleteWalk: find(3, "poblete-pinto").walkAnimation, bantay: P.bantayBilibid, bantayWalk: P.bantayBilibidWalk,
+        kawal: P.kawalKatagalugan, walk: T.amerikano.animation, attack: T.amerikano.attackAnimation,
+        hit: T.amerikano.hitAnimation, sentry: T.sentinela.animation };
+      await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
+      const scene = (id) => window.ACT_3.scenes.find((s) => s.id === id);
+      const sum = (s) => s.panelWidths.reduce((a, b) => a + b, 0);
+      return { open: Object.fromEntries(Object.entries(sheets).map(([n, s]) => [n, !s.failed && s.frameHeight > 0 && s.frames])),
+        widths: ["burol", "morong"].every((id) => sum(scene(id)) === scene(id).worldWidth && scene(id).panels.length === 2) };
+    });
+    ok("Act III's people and the American soldier: every sheet opening; the hills and Morong two paintings at one height (Block 135)",
+       Object.entries(act3.open).every(([n, f]) => f === (n === "hit" ? 4 : 8)) && act3.widths, act3);
+
     const c1 = await readConversation(page, 3);
     ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
     ok("Macario faces the siga, behind him on the left", c1.facings.every((f) => f === -1), c1.facings);
@@ -2438,11 +2458,12 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("on arrival: Americans on every corner", c.lines[0] === "Macario (sa isip): Mga Amerikano sa bawat kanto.", c.lines);
     ok("Tondo, May 1899: the task is Isko's letter, and four American sentries walk the street",
        await stepIs(page, "Basahin ang sulat ni Isko") && (await on(page, "sentinela-araw-")) === 4 &&
-       // Block 118: their picture is owed, so each is the placeholder box
-       // naming it; no art borrowed.
+       // Block 135: the artist's American soldier, drawn (no placeholder
+       // box), on his own sheet; no tint (Block 118).
        await page.evaluate(() => {
          const g = GUARDS.find((x) => x.id === "sentinela-araw-1");
-         return Boolean(g && /amerikano\.png/.test(g.el.textContent) && !g.el.style.getPropertyValue("--body-tint"));
+         const drawn = g && [...g.el.querySelectorAll("*")].some((e) => /amerikano(-walk)?\.png/.test(e.style.backgroundImage));
+         return Boolean(g && drawn && !/amerikano\.png/.test(g.el.textContent) && !g.el.style.getPropertyValue("--body-tint"));
        }));
     await quiet(page);
     await walkTo(page, 12320);

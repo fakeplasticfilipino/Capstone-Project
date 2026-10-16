@@ -77,22 +77,30 @@
     contentTop: 6, contentHeight: 296, footX: 28, headroom: 6 };
   const CARREON = P.carreon; // content/people.js since Block 133
   const MONTALAN = P.montalan;
-  const GURO = owed("characters", "guro");
-  const OPISYAL = owed("characters", "opisyal");
-  const POBLETE = { src: "assets/sprites/characters/poblete.png", frames: 8, fps: 4, columns: 4,
-    contentTop: 7, contentHeight: 295, footX: 71, headroom: 7 };
+  // Block 135: the artist's stills, animated (rigs guro.js, opisyal.js,
+  // bagong-nakatira.js), standing; the officer is drawn standing, so he
+  // stands behind his table.
+  const GURO = { src: "assets/sprites/characters/guro.png", frames: 8, fps: 4, columns: 4,
+    contentTop: 7, contentHeight: 297, footX: 48, headroom: 7 };
+  const OPISYAL = { src: "assets/sprites/characters/opisyal.png", frames: 8, fps: 4, columns: 4,
+    contentTop: 6, contentHeight: 297, footX: 37, headroom: 6 };
+  // Block 135: the artist's second Poblete, standing, with a walk.
+  const POBLETE_CELL = { columns: 4, contentTop: 15, contentHeight: 297, footX: 91, headroom: 15 };
+  const POBLETE = { src: "assets/sprites/characters/poblete.png", frames: 8, fps: 4, ...POBLETE_CELL };
+  const POBLETE_WALK = { src: "assets/sprites/characters/poblete-walk.png", frames: 8, fps: 12, ...POBLETE_CELL };
   const TAGAPAGBALITA = P.tagapagbalita;
   const WATAWAT = owed("scenery", "watawat-katagalugan");
   const AMERIKANO = owed("enemies", "amerikano");
   const KONSTABLE = owed("enemies", "konstable");
   const SUKI_AMERIKANO = owed("characters", "sundalong-amerikano");
-  const BAGONG_NAKATIRA = owed("characters", "bagong-nakatira");
+  const BAGONG_NAKATIRA = { src: "assets/sprites/characters/bagong-nakatira.png", frames: 8, fps: 4, columns: 4,
+    contentTop: 6, contentHeight: 297, footX: 46, headroom: 6 };
   const MANLILIMBAG = P.manlilimbag;
   const SILYA = owed("scenery", "silya-barbero"); // Act I's chair, owed
   // Block 120: Bilibid's guard (Act IV's, owed), and the Republic's
   // soldiers at Morong, seen beside its flag (Act IV's Kawal, owed).
-  const BANTAY_BILIBID = owed("characters", "bantay-bilibid");
-  const KAWAL = owed("characters", "kawal-katagalugan");
+  const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
+  const KAWAL = P.kawalKatagalugan; // content/people.js since Block 135
 
   // ---- The street ---------------------------------------------------
   // Act I's street. Joins at every multiple of 1450 (5800, 7250, 8700,
@@ -1070,7 +1078,12 @@
         // and the battle. Its painting is owed.
         id: "burol",
         worldWidth: BATTLE_WIDTH,
-        backdrop: { src: "assets/backgrounds/act3/burol.jpg" },
+        // Block 135: two paintings of different shapes, each as wide as its
+        // own shape needs to stand at one height with the other, so the
+        // scene has one scale; the tree stands on the join.
+        panels: ["assets/backgrounds/act3/burol-1.jpg", "assets/backgrounds/act3/burol-2.jpg"],
+        panelWidths: [1848, 1352],
+        panelSky: "#4a8fd6",
         ground: { floor: "damo" },
         dangerous: true,
         startX: 400,
@@ -1246,7 +1259,7 @@
           },
           {
             // Strangers in Nanay's house.
-            id: "bagong-nakatira", x: HOME_X, label: "Bagong Nakatira", animation: BAGONG_NAKATIRA,
+            id: "bagong-nakatira", x: HOME_X, label: "Bagong Nakatira", animation: BAGONG_NAKATIRA, facesPlayer: true,
             hiddenWhile: [STREET_NIGHT],
             dialogueSets: [
               {
@@ -1412,7 +1425,7 @@
           { requiresFlag: "a3_nahuli", doneFlag: "a3_saSelda", x: 300, facing: 1, run: theAmnesty },
         ],
         decorations: [
-          { id: "bantay", x: ROOM + 60, hidden: true, animation: BANTAY_BILIBID, faceMovement: true,
+          { id: "bantay", x: ROOM + 60, hidden: true, animation: BANTAY_BILIBID, walkAnimation: P.bantayBilibidWalk, faceMovement: true,
             speakers: ["Bantay"] },
         ],
         npcs: [
@@ -1475,7 +1488,7 @@
         decorations: [
           // Poblete, standing at the meeting, and coming in in November.
           { id: "poblete", x: 680, animation: POBLETE, facing: -1, speakers: ["Poblete"] },
-          { id: "poblete-pinto", x: ROOM + 80, hidden: true, animation: POBLETE, faceMovement: true },
+          { id: "poblete-pinto", x: ROOM + 80, hidden: true, animation: POBLETE, walkAnimation: POBLETE_WALK, faceMovement: true },
         ],
         npcs: [
           {
@@ -1508,7 +1521,7 @@
             ]),
           },
           {
-            id: "guro", x: 980, label: "Guro", animation: GURO,
+            id: "guro", x: 980, label: "Guro", animation: GURO, facesPlayer: true,
             dialogueSets: [
               {
                 skipIfFlag: "a3_batas",
@@ -1541,7 +1554,12 @@
         // flag; the vow; the Constabulary's attack.
         id: "morong",
         worldWidth: BATTLE_WIDTH,
-        backdrop: { src: "assets/backgrounds/act3/morong.jpg" },
+        // Block 135: two paintings of different shapes, each as wide as its
+        // own shape needs to stand at one height with the other, so the
+        // scene has one scale; the tree stands on the join.
+        panels: ["assets/backgrounds/act3/morong-1.jpg", "assets/backgrounds/act3/morong-2.jpg"],
+        panelWidths: [1696, 1504],
+        panelSky: "#4a8fd6",
         ground: { floor: "damo" },
         dangerous: true,
         startX: 400,

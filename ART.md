@@ -68,73 +68,7 @@ Nothing needed.
 
 ### Act III
 
-    assets/backgrounds/act3/burol.jpg
-        Macario's band's camp in the hills outside Manila, February
-        1899. About 4500 by 940.
-        What happens: Act III opens here. A runner brings the news that
-        the war with the Americans has begun at Santa Mesa. Macario
-        keeps watch from a lookout, then fights a big battle against an
-        American patrol.
-        Mood: a new war beginning, the city far below. A slope, a
-        lookout toward the middle, room to fight. (NOT STARTED)
-
-    assets/backgrounds/act3/barberya.jpg
-        The Barbero's shop in Tondo, 1899 to 1902. One screen.
-        What happens: Macario, in disguise, cuts an American soldier's
-        hair in the barber's chair. At night the shop becomes a secret
-        meeting place: he teaches Bonifacio's creed to three old
-        friends and swears in new members. During an oath in 1902 the
-        door is hammered and he is arrested.
-        Mood: an ordinary shop by day, a hiding place by night. One
-        room, the barber's chair, a mirror, a table, the door on the
-        right. Draw it by day; the game makes it night.
-        (NOT STARTED)
-
-    assets/backgrounds/act3/bayan.jpg
-        A town plaza, April 1901. One screen.
-        What happens: President Aguinaldo has been captured and has
-        called on everyone to surrender. His proclamation is posted on
-        a wall, and men queue at an American officer's table to give up
-        their arms. Macario's friend Isko joins the queue, to go home
-        to a child he has never seen. Macario refuses.
-        Mood: defeat, people giving up. A wall with the proclamation
-        on the left, the officer's table on the right. (NOT STARTED)
-
-    assets/backgrounds/act3/calle-gunao.jpg
-        A house on Calle Gunao, Quiapo, August to November 1901. One
-        screen.
-        What happens: the founding of the Partido Nacionalista, which
-        asks the Americans for independence by peaceful means; Macario
-        becomes its Secretary-General and gathers signatures for a
-        petition. Then a new law, the Sedition Law, makes even asking
-        for freedom a crime, and the last man refuses to sign.
-        Mood: hopeful and respectable at first, then the hope taken
-        away. A sala, papers on a table. (NOT STARTED)
-
-    assets/backgrounds/act3/morong.jpg
-        The camp in the mountains of Morong, 1902 to 1904. About 4500
-        by 940.
-        What happens: Macario founds the Republika ng Katagalugan, is
-        named its President, raises its flag, and he and his men swear
-        not to cut their hair until the country is free. Then the
-        Constabulary attacks the camp and he defends the flag. Act IV
-        opens here too: he signs his first orders as President and
-        prints a manifesto.
-        Mood: proud, a republic in the hills. Huts among trees on a
-        slope, an open place in the middle for the flag, room to fight.
-        (NOT STARTED)
-
-    assets/backgrounds/act4/selda.jpg
-        A cell in Bilibid prison, Manila, 1902, and again 1906 to 1907.
-        One screen.
-        What happens: in 1902 a guard tells Macario through the bars
-        that the war is declared over and he is freed under an amnesty.
-        In 1906 he is back, sentenced to death. Through the window he
-        hears that the Assembly has been elected without him, and on
-        his last night he thinks of the father who never came home.
-        Mood: cold and closed in, the window the only light. Stone
-        walls, bars, a small barred window on the right, a way out at
-        the right edge. The game draws the stone floor. (NOT STARTED)
+Nothing needed.
 
 ### Act IV
 
@@ -227,52 +161,14 @@ Also wanted (not in the game yet):
 
 ### Act III
 
-    assets/sprites/characters/guro.png
-        The Guro: a Filipino teacher at the Partido Nacionalista's
-        meeting, worried that the children will now be taught only in
-        English. He means to sign the petition, and once the Sedition
-        Law makes signing a crime he refuses: he has three children.
-        Standing; may face the front.
-        (NOT STARTED)
-
-    assets/sprites/characters/opisyal.png
-        The Opisyal: an American army officer in the town plaza in
-        1901, who takes the surrender of the men in the queue, Isko
-        among them. Seated at a table. (NOT STARTED)
-
     assets/sprites/characters/sundalong-amerikano.png
         An American private, a customer at the barbershop, whose hair
         Macario cuts while in disguise. He calls the rebels hiding in
         Tondo "bandits", not knowing who is holding the scissors. Side on, seated
         in the barber's chair with a barber's cape over him; he also
-        walks out. (NOT STARTED)
-
-    assets/sprites/characters/bagong-nakatira.png
-        The Bagong Nakatira: a stranger now living in the house where
-        Macario's mother lived. The house was empty when her family
-        moved in, its door broken; she does not know where the woman
-        before her went. This is how Macario finds his mother gone.
-        Standing; may face the front. (NOT STARTED)
-
-    assets/sprites/characters/kawal-katagalugan.png
-        A fighter of the Republika ng Katagalugan, 1902 to 1906: one of
-        the men who swear with Macario not to cut their hair until the
-        country is free. Three stand by the flag at Morong; in Act IV
-        three are drilled in stolen uniforms for Tanay and share the
-        last rice. Standing. In Acts III and IV. (NOT STARTED)
-
-    assets/sprites/characters/bantay-bilibid.png
-        A Filipino guard of Bilibid prison, 1902 to 1907. He brings the
-        news through the bars: the amnesty in 1902, the Assembly
-        elections in 1907. Side on; he
-        walks to the cell. In Acts III and IV. (NOT STARTED)
-
-    assets/sprites/enemies/amerikano.png
-        An American soldier of the Philippine-American War, 1899 to
-        1906: the enemy in Act III's first battle, the sentries Macario
-        sneaks past in Tondo, and the soldiers at Malabon. Armed with a
-        rifle and bayonet. Side on; he fights hand to hand and stands
-        guard with the rifle. In Acts III and IV. (NOT STARTED)
+        walks out. (The soldier delivered on 16 October as
+        Act3_SundalongAmericano.png is standing with a rifle, so he is
+        the fighter, amerikano, instead.) (NOT STARTED)
 
     assets/sprites/enemies/konstable.png
         A man of the Philippine Constabulary, 1902 to 1906: a Filipino
@@ -283,6 +179,13 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
 Also wanted (not in the game yet):
+
+    assets/sprites/enemies/amerikano-still.png (a second version)
+        The American soldier as delivered, redrawn for 1899 to 1902: the
+        one in the game wears the round steel helmet, pack and puttees of
+        1917, twenty years later. The Philippine-American War's
+        soldiers wore a broad-brimmed campaign hat and a blue shirt. The
+        same pose, so the game's animation fits him again.
 
     assets/sprites/player/macario-heneral-idle.png
     assets/sprites/player/macario-heneral-walk.png
@@ -427,6 +330,9 @@ Done and in the game. Nothing here needs drawing.
         Act II    home (bahay), the press (imprenta), Pugad Lawin,
                   San Juan del Monte (san-juan-1 and 2), the Nangka
                   (nangka-1 and 2), Balara, Laguna
+        Act III   the hill camp (burol-1 and 2), the barbershop, the
+                  plaza (bayan), Calle Gunao, Morong (morong-1 and 2),
+                  the cell in Bilibid (selda, Acts III and IV)
 
     Sprites
         Macario   idle, walk, jump, punch, shot
@@ -438,7 +344,10 @@ Done and in the game. Nothing here needs drawing.
                   karpintero), the guardia civil (bantay)
         Act II    Bonifacio, Isko, Jacinto, the Manlilimbag, the
                   Tagapagbalita
-        Act III   Álvarez, Carreón, Montalan, Poblete
+        Act III   Álvarez, Carreón, Montalan, Poblete (standing, since
+                  Block 135), the Guro, the Opisyal, the Bagong
+                  Nakatira, the Katagalugan's fighter, the Bilibid
+                  guard, the American soldier (amerikano)
 
     Props
         none yet

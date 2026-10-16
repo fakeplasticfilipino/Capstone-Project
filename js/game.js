@@ -1246,19 +1246,28 @@ const SHADOW_TREE_WIDTH = 440;  // must match .shadow-tree's CSS width
 // Where the trees stand: every join between two panels, and never at the
 // very end of the world, where there is nothing to join.
 function panelJoins(scene) {
-  const width = scene.panelWidth || PANEL_WIDTH;
   const joins = [];
-  for (let x = width; x < (scene.worldWidth || WORLD_WIDTH) - 1; x += width) joins.push(x);
+  const end = (scene.worldWidth || WORLD_WIDTH) - 1;
+  for (let i = 0, x = panelWidthAt(scene, 0); x < end; i++, x += panelWidthAt(scene, i)) joins.push(x);
   return joins;
+}
+
+// Block 135. A scene of a few paintings of different shapes may give each
+// panel its own width (panelWidths, one per painting, in order), worked
+// out so all of them stand at one height: one scale for the scene, a tree
+// still over every join. Without it every panel is panelWidth wide.
+function panelWidthAt(scene, i) {
+  const list = scene.panelWidths;
+  if (Array.isArray(list) && list.length) return list[i % list.length];
+  return scene.panelWidth || PANEL_WIDTH;
 }
 
 function buildPanelBackdrop(scene) {
   const layer = document.getElementById("skyline");
   if (!layer) return;
   layer.classList.add("skyline-tiled");
-  const width = scene.panelWidth || PANEL_WIDTH;
 
-  for (let i = 0, x = 0; x < WORLD_WIDTH; i++, x += width) {
+  for (let i = 0, x = 0, width = panelWidthAt(scene, 0); x < WORLD_WIDTH; i++, x += width, width = panelWidthAt(scene, i)) {
     const tile = document.createElement("div");
     // Block 45. mirrorPanels flips every second panel, as Block 26 did
     // for Tondo's tiles: a flipped copy meets its neighbour at the same

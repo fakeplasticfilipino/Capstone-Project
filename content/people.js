@@ -34,6 +34,7 @@
   const MANLILIMBAG_CELL = { columns: 4, contentTop: 6, contentHeight: 295, footX: 80, headroom: 6 };
   const TAGAPAGBALITA_CELL = { columns: 4, contentTop: 6, contentHeight: 295, footX: 73, headroom: 6 };
   const MONTALAN_CELL = { columns: 4, contentTop: 12, contentHeight: 296, footX: 84, headroom: 12 };
+  const BILIBID_CELL = { columns: 4, contentTop: 5, contentHeight: 297, footX: 84, headroom: 5 };
 
   // The Katipunero and the Kasama (Block 98): the artist's stills,
   // animated by animate-still.js (rigs katipunero.js, kasama.js):
@@ -95,6 +96,15 @@
     // Julian Montalan, the Katagalugan's general, Acts III and IV.
     montalan: { src: "assets/sprites/characters/montalan.png", frames: 8, fps: 4, ...MONTALAN_CELL },
     montalanWalk: { src: "assets/sprites/characters/montalan-walk.png", frames: 8, fps: 12, ...MONTALAN_CELL },
+    // Block 135. A Filipino guard of Bilibid, Acts III and IV (rig
+    // bantay-bilibid.js), who walks to the cell; and a fighter of the
+    // Katagalugan, Acts III and IV (rig kawal-katagalugan.js), who stands.
+    bantayBilibid: { src: "assets/sprites/characters/bantay-bilibid.png", frames: 8, fps: 4, ...BILIBID_CELL },
+    bantayBilibidWalk: { src: "assets/sprites/characters/bantay-bilibid-walk.png", frames: 8, fps: 12, ...BILIBID_CELL },
+    kawalKatagalugan: {
+      src: "assets/sprites/characters/kawal-katagalugan.png", frames: 8, fps: 4, columns: 4,
+      contentTop: 5, contentHeight: 297, footX: 58, headroom: 5,
+    },
     // Francisco Carreón, the Katagalugan's Vice President, Acts III and
     // IV: he only stands.
     carreon: {

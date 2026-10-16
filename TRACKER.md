@@ -9,7 +9,14 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 15 Oct 2026, after Block 134, and a tidy of these files.
+Last updated: 16 Oct 2026, after Block 135. Block 135: the Drive
+folder's Act III art put in: the hill camp, the barbershop, the plaza,
+Calle Gunao, Morong and the Bilibid cell painted (two-painting scenes at
+one height, panelWidths, San Juan and the Nangka too); the Guro, the
+Opisyal, the Bagong Nakatira, a standing Poblete, the Bilibid guard, the
+Katagalugan's fighter and the American soldier keyed and animated.
+Twenty-three pictures still owed. Before it, 15 Oct 2026, Block 134 and a
+tidy of these files.
 Block 134: the new street of Block 133 taken out at the proponent's word
 (the old four paintings back, night the tint again), and the street's
 paintings standing on the bottom of the screen so everyone walks on the
@@ -205,9 +212,10 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): thirty-five pictures, Act I's two (the
+in code. Still owed (ART.md): twenty-three pictures, Act I's two (the
 Barbero's chair, the Mananahi's sewing table), Act II's three (the
-press, the straw, the scarecrow), Act III's fifteen and Act IV's
+press, the straw, the scarecrow), Act III's three (the American in the
+barber's chair, the Constabulary, the Katagalugan's flag) and Act IV's
 fifteen. No picture is made or borrowed
 for what is not drawn (CLAUDE.md, Conventions).
 
@@ -249,6 +257,24 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026, Blocks 119 to 126 on 9 Oct 2026, Blocks 128 to 131 on 13
 Oct 2026. Open:
+
+    Block 135, on the phone (?dev=1, Act III points):
+
+    a. The places: "simula" and "labanan" (the hills, two paintings),
+       "barberya" and "aral" (the barbershop, the night the tint),
+       "proklama" (the plaza), "gunao" (Calle Gunao), "bilibid" (the
+       cell, Act IV's too), "morong" (two paintings). Each a painting,
+       one scale across the tree, the people on its floor. Failure: a
+       dark wall, or a painting much bigger than its neighbour.
+    b. The people: the Bagong Nakatira ("balatkayo", walk to Nanay's
+       house), the Guro and Poblete walking in with the law ("gunao",
+       "batas"), the Opisyal standing behind his table ("proklama"),
+       the Bilibid guard walking to the bars ("bilibid"), the fighters
+       by the flag ("morong"). Failure: a box, or a smear across a
+       guard's legs as he walks.
+    c. The American soldier: the battle in the hills ("labanan"), the
+       sentries in Tondo ("tondo"): walking, lunging with the bayonet,
+       flinching. Known: his 1917 kit (asked again of the artist).
 
     Block 133, on the phone (?dev=1 points named):
 
@@ -318,19 +344,19 @@ and ten matched pre-test and post-test pairs for every act, so each
 act has a test before the teacher writes one.
 
 5. Art from the artist: ART.md (Backgrounds, Sprites, Props, by act,
-since Block 131 written for the artist), thirty-five pictures since
-Block 133 (Act I's two: the Mananahi's sewing table and the Barbero's
+since Block 131 written for the artist), twenty-three pictures since
+Block 135 (Act I's two: the Mananahi's sewing table and the Barbero's
 chair; Act II's three: the press, the straw and the scarecrow; Act
-III's fifteen: six paintings, a teacher, an American officer, the
-American in the barber's chair, the stranger in Nanay's house, the
-Katagalugan's fighter, a Bilibid guard, the American soldier, the
-Constabulary and the Katagalugan's flag; Act IV's fifteen: six
+III's three: the American in the barber's chair, the Constabulary and
+the Katagalugan's flag; Act IV's fifteen: six
 paintings, Gómez, Van Schaick, Villafuerte, de Vega, the judge, a
 woman of Cavite, Isko's son and two townspeople for the crowd in
 Manila). The Drive folder's new street (October 12) was tried and
 taken out (Block 134). Its unnamed
-side-profile figure (October 12) and a second Jacinto were set aside:
-which character, and which Jacinto, is the proponent's call. PNGs with transparency. Ask act by act, Act I first, as ART.md is
+side-profile figure (October 12), a second Jacinto, the barbershop's
+night and a second cell (October 16) were set aside: which character,
+and whether the night paintings are wanted, is the proponent's call.
+Asked again (ART.md): the American soldier in 1899's kit, not 1917's. PNGs with transparency. Ask act by act, Act I first, as ART.md is
 ordered. Also asked for (ART.md, Also wanted): Bonifacio with his sword
 drawn, for his slash.
 A character delivered as one still rather than a sheet is animated by
@@ -868,12 +894,15 @@ machine, the assessment module.
     134 the old street back at the proponent's word, night the tint
         again; the street's paintings on their own painted road
         (ground: false on a panelled scene stands them on the bottom)
+    135 Act III's art from the Drive folder: six places, seven people
+        and the American soldier; panelWidths, one height for a
+        scene's paintings
 
 ## Blocks remaining
 
 Every act is written, accepted and has its built-in questions (Acts I to
 IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
-the art, ART.md (thirty-five pictures; BLOCKED, the artist), and the
+the art, ART.md (twenty-three pictures; BLOCKED, the artist), and the
 two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
 BLOCKED, the artist).
 

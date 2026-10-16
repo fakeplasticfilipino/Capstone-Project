@@ -221,9 +221,9 @@ off the repository.
                                talked to (empty)
       backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
                                pulungan.jpg (Block 133), ground-lupa.jpg
-      backgrounds/act2/        the artist's paintings of Act II's places
-                               (Block 133; two panels each for san-juan
-                               and nangka)
+      backgrounds/act2/,       the artist's paintings of each act's
+        act3/, act4/           places (Blocks 133, 135; two panels each
+                               for san-juan, nangka, burol and morong)
       items/                   inventory and shop tile pictures
       audio/music/, audio/sfx/
       fonts/                   the two woff2 faces and their licences
@@ -643,6 +643,10 @@ Scene shape:
                                                  second one (Block 45)
       panelSky: "#72a8d0",                       colour above the pictures
                                                  (Block 46)
+      panelWidths: [1848, 1352],                 optional; each panel its own
+                                                 width, so paintings of
+                                                 different shapes stand at
+                                                 one height (Block 135)
       ground: false | { src } | { floor },       optional; hides the dirt strip,
                                                  or lays the scene's own road
                                                  (Polish #6), or a floor of
@@ -901,6 +905,13 @@ does not use it since Block 46. Each picture is drawn whole, its full
 panel width and its own shape, standing on the floor (the panel starts at
 --ground-level), and panelSky fills whatever is above its top edge on a
 tall screen.
+
+panelWidths (Block 135) gives each panel its own width, in order, in
+place of panelWidth: for a scene of a few paintings of different shapes,
+each width is its painting's shape times one shared height, the widths
+summing to worldWidth, so the scene has one scale (paintings stretched to
+one width were drawn at scales up to twice apart, Block 134). The trees
+stand on the joins as ever, and the content check reads the same widths.
 
 ground: false on a panelled scene (Block 134; Tondo's street in every
 act) also stands the paintings on the bottom of the screen instead of on
@@ -2615,7 +2626,9 @@ look, by system:
     the artist's Drive delivery of 15     Block 133 (Act II's paintings,
       Oct: paintings, people; the         nine people keyed from black),
       new street tried and taken out      134 (the old street back, its
-                                          own painted road)
+                                          own painted road), 135 (Act
+                                          III's places and people, the
+                                          American soldier, panelWidths)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

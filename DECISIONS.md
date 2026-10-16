@@ -5997,6 +5997,45 @@ paint is the road everyone walks on, in all four acts. Nothing is drawn
 or borrowed for it. The night tint still darkens it, since it is the
 paintings.
 
+## Block 135: Act III from the Drive folder, 16 Oct 2026
+
+The proponent: the Drive folder has more sprites, mostly characters;
+say what cannot be added. New since Block 133: ten Act III paintings and
+seven people.
+
+Places. The hill camp and Morong came as two paintings each, of
+different shapes (2.66 and 1.95 wide to one tall; 3.15 and 2.80). Block
+134 found that stretching paintings of different shapes to one width
+draws them at different scales, so a scene may now give each panel its
+own width (panelWidths): each painting's shape times one height, summing
+to the scene's width, the tree still on the join. San Juan del Monte and
+the Nangka (Block 133), whose two paintings were stretched to one width
+each, take the same treatment. The barbershop came by day and by night;
+the night painting is set aside, since the proponent prefers night as the
+tint (Block 134). The cell came twice, nearly the same; one is used for
+Bilibid in Acts III and IV. The plaza and Calle Gunao are single
+backdrops.
+
+People, keyed from black with key-still.js and animated: the Guro, the
+Opisyal and the Bagong Nakatira stand; Poblete, delivered again
+standing, replaces Block 133's mid-stride still and now walks in; the
+Bilibid guard walks to the cell; the Katagalugan's fighter stands. The
+guard's rifle and the fighter's are cloth over the legs, traced tight
+(traced wide, the cloth took the trousers with it and left a smear
+behind the striding legs).
+
+What could not go in as drawn. The American soldier is drawn standing
+with a rifle, and the game's sundalong-amerikano is the private in the
+barber's chair under a cape, so that picture stays owed and the soldier
+is the fighter, amerikano, instead: walk, a bayonet lunge (thrust, for
+full hands) and a flinch, and the sentinela's standing sheet and walk.
+He wears the steel helmet, pack and puttees of 1917, not the campaign hat
+of the Philippine-American War; ART.md asks for him again in 1899's kit.
+The Opisyal is drawn standing where the script has him seated; he stands
+behind the table. Morong's first painting has a flag painted on its pole,
+near where Macario raises the Katagalugan's own (owed) flag. The
+October 12 side-profile figure is still unnamed.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -62,7 +62,7 @@
   const MANLILIMBAG = P.manlilimbag;
   const TAGAPAGBALITA = P.tagapagbalita;
   const PALIMBAGAN = owed("scenery", "palimbagan");        // Act II's, owed
-  const KAWAL = owed("characters", "kawal-katagalugan");
+  const KAWAL = P.kawalKatagalugan; // content/people.js since Block 135
   const GOMEZ = owed("characters", "gomez");
   const TAGA_CAVITE = owed("characters", "taga-cavite");
   const ANAK_NI_ISKO = owed("characters", "anak-ni-isko");
@@ -70,7 +70,7 @@
   const VILLAFUERTE = owed("characters", "villafuerte");
   const DE_VEGA = owed("characters", "de-vega");
   const HUKOM = owed("characters", "hukom");
-  const BANTAY_BILIBID = owed("characters", "bantay-bilibid");
+  const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
   const AMERIKANO = owed("enemies", "amerikano");          // Act III's, owed
   // Block 120. The crowd in Manila, seen and not only heard: two
   // townspeople, owed, placeholders until drawn.
@@ -1051,7 +1051,12 @@
         // painting (owed): the first order in 1903, the manifesto in 1904.
         id: "morong",
         worldWidth: FIELD,
-        backdrop: { src: "assets/backgrounds/act3/morong.jpg" },
+        // Block 135: two paintings of different shapes, each as wide as its
+        // own shape needs to stand at one height with the other, so the
+        // scene has one scale; the tree stands on the join.
+        panels: ["assets/backgrounds/act3/morong-1.jpg", "assets/backgrounds/act3/morong-2.jpg"],
+        panelWidths: [1696, 1504],
+        panelSky: "#4a8fd6",
         ground: { floor: "damo" },
         noRanged: true,
         startX: 400,
@@ -1208,7 +1213,7 @@
             onInteract: drillTheFighters,
           },
           {
-            id: "kawal-1", x: KAWAL_X[0], label: "Kawal", animation: KAWAL,
+            id: "kawal-1", x: KAWAL_X[0], label: "Kawal", animation: KAWAL, facesPlayer: true,
             dialogueSets: fighterSets("Kawal", 0,
               "Pangulo, hindi pa po ako nakasuot ng uniporme kahit kailan.",
               "Sumasaludo pa rin po ako sa salamin ng ilog.",
@@ -1219,7 +1224,7 @@
               "Salamat sa bigas, Pangulo."),
           },
           {
-            id: "kawal-2", x: KAWAL_X[1], label: "Kawal", animation: KAWAL,
+            id: "kawal-2", x: KAWAL_X[1], label: "Kawal", animation: KAWAL, facesPlayer: true,
             dialogueSets: fighterSets("Kawal", 1,
               "Ang uniporme, Pangulo... masikip.",
               "Nakatago pa rin po sa sumbrero ang buhok ko.",
@@ -1500,7 +1505,7 @@
           { requiresFlag: "a4_nahuli", doneFlag: "a4_saSelda", x: 300, facing: 1, run: inBilibid },
         ],
         decorations: [
-          { id: "bantay", x: ROOM + 60, hidden: true, animation: BANTAY_BILIBID, faceMovement: true,
+          { id: "bantay", x: ROOM + 60, hidden: true, animation: BANTAY_BILIBID, walkAnimation: P.bantayBilibidWalk, faceMovement: true,
             speakers: ["Bantay"] },
         ],
         npcs: [
