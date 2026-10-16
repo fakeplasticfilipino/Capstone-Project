@@ -281,13 +281,9 @@ Block 44 lists where each one went.
 
 ## Act I's content
 
-Act I has been reset twice on purpose (a first draft written ahead of
-the source material, rolled back to Nanay alone; then Block 52's rewrite
-against the proponents' own script) and built forward one verified
-passage at a time since. STORY.md is what it contains now, line by line;
-DECISIONS.md keeps the history of each reset and why. None of the old
-versions should be restored by copying code back from git without a
-reason. The engine never shrank with the content: every mechanic stays
+STORY.md is what Act I contains, line by line; DECISIONS.md keeps the
+history of its two resets (Blocks 19, 52). No old version is restored
+by copying code back from git without a reason. The engine never shrank with the content: every mechanic stays
 covered by the harness's own fixture act and item catalogue
 (_dev/tests/test.js, FIXTURE_ACT1_JS and FIXTURE_ITEMS_JS). The
 proponents accepted Act I's lines on 4 Oct 2026 (Block 113), and Acts
@@ -458,10 +454,8 @@ because it is the first file everything else loads after.
 Every button in the game is an icon plus a label, so writing a button's
 text means writing its .lbl span rather than the button. setLabel does
 that, and builds the span when a button carries an icon without one,
-because the old fallback of writing the button directly turned a markup
-mistake into an icon that vanished the first time the label changed.
-That is not hypothetical: it is what happened to the quiz button, whose
-label has never been in index.html.
+because writing the button directly makes its icon vanish the first
+time the label changes (the quiz button's, once).
 
 Load order in index.html, which is load bearing:
 
@@ -847,14 +841,9 @@ or moved is a guide to write and a line of that table to check. A
 room's way out (wayOut, Block 93) is still said at the top of the log
 as well.
 
-An act with an empty objectives array can never complete, which is how
-Acts II through IV were kept from reporting progress they had not made
-while they were stubs.
-That also means the act after it stays locked, which is correct. The
-same mechanism works one objective at a time: an objective whose flag
-nothing in content ever sets keeps the act from finishing without
-needing to be left out of the array, which is how Act I was held open
-through Blocks 19 to 36.
+An act with an empty objectives array can never complete, and the act
+after it stays locked. An objective whose flag nothing sets holds an act
+open the same way (the content check now fails on one, Block 124).
 
 greyFilter reuses whatever backdrop #skyline already has (the scene's
 panels since Block 43, else the scene's backdrop, else DEFAULT_SKYLINE_SRC,
@@ -1400,11 +1389,10 @@ A cosmetic's sheets take the sprite sheet shape below. An outfit replaces
 whichever of the three it declares and leaves the rest alone, so a skin
 that only redraws the walk cycle is a complete outfit.
 
-An earlier draft of this section named the effect projectileCooldown. There
-is no cooldown in the engine and never was: the limiter is one projectile in
-flight at a time. The built effect is projectileSpeedMult, which scales
-PROJECTILE_SPEED, and because a faster spear also clears that limiter sooner
-it makes the throw both quicker and more frequent from one lever.
+There is no shot cooldown: the limiter is one projectile in flight at a
+time. projectileSpeedMult scales PROJECTILE_SPEED, and a faster shot also
+clears that limiter sooner, so it makes the throw both quicker and more
+frequent from one lever.
 
 stillDetectionMult (Block 32) scales how fast a guard's meter fills
 while Macario stands still on the ground, and only slows it: a value of 1
@@ -1467,22 +1455,13 @@ missing. Any NPC, guard or decoration without real art falls back to the
 dashed placeholder box naming the file, same as any other missing image,
 so referencing an icon PNG would fill the screen with those.
 
-Unicode and emoji were the cheaper option and were rejected on a render
-rather than on principle: the crossed swords fell back to a thin
-monochrome cross, the up arrow drew as a blue emoji tile, and the
-speech bubble stayed full colour, so one row of buttons carried three
-different presentations. Font coverage on a low-end Android is a
-different set again, and the failure would only have shown up with the
-phone in hand.
+Unicode and emoji were tried and rejected: they rendered three
+different ways in one row of buttons, and a low-end Android's fonts
+differ again.
 
 The icon and the label are pointer-events: none, so the BUTTON is
-always the hit target. Without that a tap lands on the icon; the
-listeners are on the buttons, so the event still bubbles and the game
-still works, which is exactly how it would have shipped unnoticed, the
-same way the dead Atake button did. It broke the harness immediately,
-because a check that clicks refuses a button whose hit target is a
-child. It also keeps every e.target in this codebase pointing at a
-button rather than at an svg inside one.
+always the hit target and every e.target is a button, not an svg inside
+one; a check that clicks refuses a button whose hit target is a child.
 
 Two places take a badge rather than a pictogram. Quiz answers get
 A B C D, because there is no icon for an arbitrary sentence and four
@@ -2325,10 +2304,7 @@ would be answered by a student who wants to leave, which is worse than no
 data.
 
 Items are granted on entering the act whose content names them, through
-grantedOnAct and Inventory.grantForAct. Block 10 has no shop, and an
-equipment system a student cannot reach during the only act with content
-would close a requirement on paper and demonstrate nothing. Block 11's
-purchase path sits beside this rather than replacing it.
+grantedOnAct and Inventory.grantForAct, beside the shop's purchase path.
 
 The grant runs from both Acts.syncStart and Acts.enterAct. A fresh student
 logging into Act I never reaches enterAct, so the login path needs its own
@@ -2365,19 +2341,18 @@ remainder is paid on completion. A student is paid for what they finish
 and paid again for how well they did it.
 
 Paying during the act rather than only at the end is what makes the shop
-reachable inside one class period. Act I has five objectives, so a student
-holds 50 before the outpost is over, which is the price of the cheaper
-outfit. Data collection covers Act I only, so an award that arrived after
-the post-test would never be spent by anyone in the study.
+reachable inside one class period. An act that counts barya as a story
+goal (Act I's savings for Nanay) pays nothing per step
+(objectiveCurrency: false) and everything on completion.
 
 Nothing new is stored to keep the drip idempotent. The amount already paid
 is the per-objective rate times objectives_done, which act_progress
 already holds, so a reload cannot be paid twice.
 
-Outfit prices are set against what one act pays. 50 and 90, against an
-award of 50 to 100, so every student who completes an act can afford the
-cheaper one and a strong run affords the better one. A shop that is a
-locked door to a student who struggled contradicts the no-game-over rule.
+Prices are set against what one act pays (50 to 100): the shop's three
+items cost 5, 50 and 90, so every student who completes an act can afford
+something and a strong run the dearest. A shop that is a locked door to a
+student who struggled contradicts the no-game-over rule.
 
 Purchases are optimistic and refunded on a failed write, like equipping.
 Being charged for an item the database never recorded is the one failure
@@ -2439,14 +2414,9 @@ right tool when an account is wedged or when several need clearing at
 once.
 
 Touch targets are 44px MEASURED ON GLASS, which after --zoom of 0.7
-means 63 CSS pixels for a height and the diameters already recorded for
-the control cluster. That arithmetic had only ever been done for the
-control cluster. Everything on a screen was still stated as 44 CSS
-pixels, which is 30.8 rendered: the four answers to a test item, every
-menu button, the text size choices, the shop rows, and the pause
-button, which was 44 everywhere. All of them now clear 44 on the
-device, and checks measure the rendered element rather than the
-stylesheet.
+means 63 CSS pixels: the test's answers, every menu button, the text
+size choices, the shop rows, the corner buttons and the controls. Checks
+measure the rendered element rather than the stylesheet.
 
 Those overrides sit at the END of style.css rather than in the
 phone-landscape block at the top, because several of the elements are
@@ -2458,12 +2428,9 @@ The camera is one number, --zoom in style.css, and the visible world is
 always screen size divided by it. 1.75 on desktop, 0.7 on a phone in
 landscape.
 
-The phone number came from the jump rather than from taste. JUMP_VELOCITY
-of 14 against GRAVITY of 0.8 puts Macario's head 370 world pixels up at the
-apex. At zoom 1 that was 90% of the screen height, so a single jump reached
-the top and the world read as a corridor with a ceiling. At 0.7 it is 63%.
-1.75, 1.25 and 1 were each tried on the device and each still read as
-zoomed in, menus included, because every screen in this game lives inside
+The phone's 0.7 came from the jump: JUMP_VELOCITY of 14 against GRAVITY
+of 0.8 puts Macario's head 370 world pixels up, 63% of the screen at 0.7
+(90% at 1, a corridor with a ceiling). Every screen lives inside
 #app-scale and scales with this number.
 
 Below 1 the zoom shrinks rather than magnifies, and the controls shrink
@@ -2477,11 +2444,8 @@ stylesheet, and one jumps and measures the headroom, so neither can ship
 wrong.
 
 Every placeholder box is DISPLAY_HEIGHT tall and 70% of that wide, at all
-four call sites: the player, animated NPCs, static-image NPCs and guards.
-The last two were 80 by 112 until the camera was pulled back far enough to
-show Macario standing next to somebody, at which point he was visibly a
-head taller than every character in the game. A placeholder is a stand-in
-for a sprite, so it has to occupy the space that sprite will.
+four call sites (the player, animated NPCs, static-image NPCs, guards): a
+stand-in for a sprite occupies the space that sprite will.
 
 Portrait shows a rotate notice, and its visibility is pure CSS. There is no
 JavaScript state that can leave it up on a screen that has already been
@@ -2704,12 +2668,10 @@ Adding a filename to .gitignore does not untrack an already committed file.
 
 #mobile-controls is pointer-events: none, so taps land on the world between
 the buttons rather than on the invisible bar holding them. Every cluster
-inside it therefore has to set pointer-events: auto. .action-cluster did
-not, and Atake and Talon did nothing at all on a phone for four blocks.
-Nobody caught it because a desktop plays with J and Space, and the harness
-drove keys too. Any new cluster added to that bar needs the same line, and
-any new on-screen button needs a check that clicks it rather than one that
-reads its style.
+inside it therefore has to set pointer-events: auto (Atake and Talon were
+dead on a phone for four blocks without it, unseen on a desktop's keys).
+Any new on-screen button needs a check that clicks it rather than one
+that reads its style.
 
 An icon inside a button becomes the hit target unless it is set to
 pointer-events: none. The listeners are on the buttons, so the tap
@@ -2776,28 +2738,17 @@ writes the Tagalog and the em dashes back mangled (Block 110, caught
 in test.js before a commit). Use the Edit tool, or a node script with
 fs and "utf8".
 
-Seeding a save with objective flags already true and then loading it
-against the REAL content/act1.js (rather than through the harness's
-enterTestRoom(), which routes to its own fixture act; the name is the
-harness's, older than the game's Test Room, which Block 95 removed) can auto-complete the act
-before the test gets to do anything. checkObjectives() runs on entry and
-compares the seeded flags against whatever objectives the loaded act
-actually declares. When content/act1.js declared exactly one objective
-(after the reset, before Block 19), a seed written for the old
-five-objective act read as "1 of 1 done" the instant the real content
-loaded; the
-same trap applies to any seed that sets every flag the real act currently
-declares. The act silently finishes and jumps to the real post-test
-before #btn-pause or anything else in the test ever becomes visible. Every
-_dev/tests/test.js call site that seeds atTestRoom()-shaped flags now passes
-fixtureRoutes() to newPage() for exactly this reason (see Decisions on
-record); a new call site that skips it and seeds those flags against the
-real content will hang on a `page.click` timeout with no other clue why.
+A save seeded with every objective flag of the act that loads finishes
+that act the moment it is entered (checkObjectives runs on entry) and
+jumps to the post-test before the check can do anything. Every
+_dev/tests/test.js call site that seeds the fixture's flags passes
+fixtureRoutes() to newPage(), so the fixture act loads (enterTestRoom,
+the harness's name); one that skips it hangs on a page.click timeout with
+no other clue why.
 
 A character missing on a real phone while a fresh headless run of the
-same files shows it is a stale cached file, not the code (Block 13,
-now in DECISIONS.md, Moved from CLAUDE.md). Test in a private tab
-first. Since Block 106 prepare.js --check fails on a stale ?v=.
+same files shows it is a stale cached file, not the code. Test in a
+private tab first; prepare.js --check fails on a stale ?v=.
 
 Any new element that represents a character in the world must be
 built through mountBody and bodySprite (or bodyPlaceholder), moved
