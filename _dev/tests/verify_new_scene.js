@@ -2222,7 +2222,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
             const r = { ms: Math.round(performance.now() - start), alert: Math.round(g.alert * 100) / 100, rate: GUARD_ALERT_RATE };
             g.alert = 0;
             equipEffects.stillDetectionMult = keep;
-            posX = 2450;
+            posX = 1680; // PRESS_ENTER_X (Block 137)
             resolve(r);
             return;
           }
@@ -2246,7 +2246,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
          c.lines.includes("Macario (sa isip): \"Macario Sakay. Tondo. Kasama ang ina.\"") &&
          c.lines.includes("Macario (sa isip): Si Nanay!") &&
          c.lines[c.lines.length - 1] === "Macario (sa isip): Iniwan ko siyang mag-isa." && await stepIs(page, "Balikan si Nanay"), c.lines);
-      ok("the front door is shut to him now", await page.evaluate(() => { posX = 2500; return true; }) &&
+      ok("the front door is shut to him now", await page.evaluate(() => { posX = 1760; return true; }) &&
          await page.evaluate(() => new Promise((r) => setTimeout(() => r(btnInteract.classList.contains("hidden") ||
            !/Lumabas/.test(btnInteract.textContent)), 200))));
       await press(page, 100);
@@ -2628,7 +2628,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        cutOff > 0 && c.lines[cutOff + 1] === "Sundalong Amerikano: Open up! U.S. Army!" &&
        c.lines.includes("Macario (sa isip): May nagturo."), c.lines);
     ok("prison, and the card lifts on a cell in Bilibid, July 1902 (Block 120)", await waitForScene(page, "selda", 30000) &&
-       await page.evaluate(() => document.getElementById("ground-tiles").dataset.floor === "bato"));
+       await page.evaluate(() => document.getElementById("ground-tiles").classList.contains("ground-hidden"))); // Block 137: the painting's floor
     // The guard walks the length of the cell to the bars between the first
     // line and his: about five seconds at a student's speed (6 Oct 2026).
     c = await readLines(page, 8, 9000);
@@ -2879,7 +2879,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("seized at the toast, at its peak", cut > 0 && c.lines[cut + 1] === "Van Schaick: Now!" &&
        c.lines.includes("Macario (sa isip): Ngayon, sila ang gumanap."), c.lines);
     ok("Bilibid", await waitForScene(page, "selda", 30000) &&
-       await page.evaluate(() => document.getElementById("ground-tiles").dataset.floor === "bato"));
+       await page.evaluate(() => document.getElementById("ground-tiles").classList.contains("ground-hidden"))); // Block 137: the painting's floor
     await readLines(page, 2);
     await playOn(page, "state.flags.a4_saSelda === true && !cutscenePlaying", 20000);
     await settle(page);
@@ -3006,7 +3006,10 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
         guest: Game.isGuest(),
         log: document.getElementById("quest-list").textContent,
         written: __DB.game_progress.length,
-        // Block 114: the floor the scene names, drawn, or the dirt.
+        // Block 114: the floor the scene names, drawn, or the dirt; since
+        // Block 137 none at all where the painting has its own (ground: false).
+        own: currentScene.ground === false,
+        hidden: document.getElementById("ground-tiles").classList.contains("ground-hidden"),
         floorWanted: (currentScene.ground && currentScene.ground.floor) || "",
         floor: document.getElementById("ground-tiles").dataset.floor || "",
         floorDrawn: /^url\("data:image\/svg/.test(document.getElementById("ground-tiles").style.getPropertyValue("--ground-src")),
@@ -3059,8 +3062,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
          " (Block 125)", free && pointed.label === want && pointed.shown === (want !== null), pointed);
       ok("starting at " + j.id + " opens " + j.scene + " with \"" + j.task + "\" in hand, writing nothing",
          at.scene === j.scene && at.act === j.n && at.guest && at.log.includes(j.task) && at.written === 0, at);
-      ok("  and its ground is " + (at.floorWanted || "the dirt") + " (Block 114)",
-         at.floor === at.floorWanted && at.floorDrawn === Boolean(at.floorWanted), at);
+      ok("  and its ground is " + (at.own ? "the painting's own (Block 137)" : (at.floorWanted || "the dirt") + " (Block 114)"),
+         at.own ? at.hidden : !at.hidden && at.floor === at.floorWanted && at.floorDrawn === Boolean(at.floorWanted), at);
       await p.ctx.close();
     }
   }

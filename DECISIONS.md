@@ -6065,6 +6065,38 @@ proponent keeps it. Two PNGs (the court, the yard) were re-encoded as
 JPEG, as every painting is. Seventeen pictures are owed, all people and
 props.
 
+## Block 137: one floor, and paintings at their own size, 16 Oct 2026
+
+The proponent: sometimes there is a ground in the game and a ground in
+the map, so the ground looks to be behind Macario; and some backgrounds
+may be far too big. Every scene of every act was photographed at a
+phone's size and each painting's drawn size measured.
+
+Two floors. Every painting paints a floor, and nineteen scenes laid a
+strip of ours (Block 114's floors, or the dirt) along the bottom as
+well. Feet stand on the strip's top edge, so the painted floor showed
+between the wall and the strip, behind him. Every painted scene now
+declares ground: false, as Tondo's street has since Block 134: the strip
+is gone and everyone walks on the painted floor (a backdrop already ran
+to the bottom of the screen; panels stand on it with panels-own-floor).
+Malabon's and Di-Masalang's paintings have only a thin band of road, so
+people there stand at the foot of the painted fence; more road is the
+artist's to give. The floors stay in the engine for a scene whose
+painting is owed.
+
+Too big. A backdrop covers its scene's whole length and panels share
+one height across it, so a scene longer than its paintings draws them
+bigger. On the phone the world is about 590 tall: the press (2600 long)
+was drawn 937 tall, Macario knee-high to the furniture, and San Juan
+(4200) 772. The press is now 1800 (drawn 649), the guards, hiding
+places, shelves and points on its right moved in with it, three guards
+still; a press room laid twice would show two presses. San Juan keeps
+its 4200 and its retreat: its town is laid twice, the second mirrored,
+before the store, all at 589. Bilibid's yard (1.23 times), the hills
+(1.18) and Malabon (1.12) are a little big and left as they are, and the
+Nangka a little small (0.74), since growing it would lengthen the walk
+along the river.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

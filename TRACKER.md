@@ -9,7 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 16 Oct 2026, after Block 136. Block 136: Act IV's six
+Last updated: 16 Oct 2026, after Block 137. Block 137: every painted
+scene on its painting's own floor (no strip of ours under it), the
+press 1800 long and San Juan's town laid twice, so neither painting is
+drawn too big. Block 136: Act IV's six
 places painted (the post, Di-Masalang and Malabon two paintings each,
 the hall, the court, Bilibid's yard), and four of Act II's rooms
 replaced by the artist's cropped versions. Seventeen pictures owed, all
@@ -261,6 +264,19 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026, Blocks 119 to 126 on 9 Oct 2026, Blocks 128 to 131 on 13
 Oct 2026. Open:
+
+    Block 137, on the phone (?dev=1, any point; these most):
+
+    a. Rooms ("2:bahay", "3:barberya", "4:salusalo", "4:hukuman",
+       "4:bilibid") and fields ("2:sedula", "2:sanjuan", "3:morong",
+       "4:tanay"): everyone stands on the painted floor, no strip of
+       planks, grass or stone below it. Failure: two floors, or feet
+       floating above the painted one.
+    b. The press ("2:ronda"): the room at its size, and the three
+       guards still passable (shelves, hiding places). Failure: a catch
+       that cannot be avoided.
+    c. San Juan ("2:sanjuan", "2:atras"): the town twice, the second
+       mirrored behind a tree, then the store. Failure: a seam.
 
     Block 136, on the phone (?dev=1, Act IV and Act II points):
 
@@ -914,6 +930,8 @@ machine, the assessment module.
         scene's paintings
     136 Act IV's six places painted; four of Act II's rooms cropped by
         the artist; the post's night painted, not tinted
+    137 every painted scene on its own painted floor (ground: false);
+        the press 1800 long, San Juan's town laid twice
 
 ## Blocks remaining
 

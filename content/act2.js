@@ -150,20 +150,23 @@
   // under it the list) on the left, the back window at the left edge.
   // August: three guards, crates and paper to hide behind, and two high
   // shelves (platforms) a guard cannot see onto.
-  const PRESS_WIDTH = 2600;
-  const PRESS_ENTER_X = 2450;
+  // Block 137: 1800, the painting at about its own size (at 2600 it was
+  // drawn half as big again as everyone in it); the guards, crates,
+  // shelves and points on the right moved in with it.
+  const PRESS_WIDTH = 1800;
+  const PRESS_ENTER_X = 1680;
   const PRESS_X = 210;
   const WINDOW_X = 10;
   const JACINTO_PRESS_X = 700;
   const PRINTER_X = 440;
-  const HIDING_PRINTER_X = 2330;
+  const HIDING_PRINTER_X = 1590;
   const PRESS_GUARDS = [
-    { beat: [1850, 2200], hide: 2030, facing: -1 },
-    { beat: [1100, 1500], hide: 1300, facing: 1 },
-    { beat: [400, 800], hide: 600, facing: -1 },
+    { beat: [1280, 1500], hide: 1390, facing: -1 },
+    { beat: [780, 1060], hide: 920, facing: 1 },
+    { beat: [370, 620], hide: 495, facing: -1 },
   ];
-  const PRESS_SHELVES = [{ x: 1580, y: 100, width: 220 }, { x: 860, y: 100, width: 200 }];
-  const PRESS_CHECKPOINTS = [1750, 1000];
+  const PRESS_SHELVES = [{ x: 1100, y: 100, width: 200 }, { x: 590, y: 100, width: 180 }];
+  const PRESS_CHECKPOINTS = [1200, 700];
 
   const BATTLE_WIDTH = 4200;    // San Juan del Monte
   const RIVER_WIDTH = 2400;     // the Nangka
@@ -991,7 +994,7 @@
         id: "imprenta",
         worldWidth: PRESS_WIDTH,
         backdrop: { src: "assets/backgrounds/act2/imprenta.jpg" },
-        ground: { floor: "kahoy" }, // Block 114
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: PRESS_ENTER_X,
         exits: [
@@ -1234,7 +1237,7 @@
         id: "bahay",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/bahay.jpg" },
-        ground: { floor: "kawayan" }, // Block 114
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: ROOM - 160,
         wayOut: "Lumabas ng bahay: pumunta sa kanan",
@@ -1265,7 +1268,7 @@
         id: "pugad-lawin",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/pugad-lawin.jpg" },
-        ground: { floor: "damo" }, // Block 114
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 330,
         scripts: [
@@ -1325,13 +1328,18 @@
         id: "san-juan",
         worldWidth: BATTLE_WIDTH,
         // Block 133: the artist's two paintings, the town and then the
-        // powder store. The join is at 1719 (panelWidths), clear of the retreat's
+        // powder store. The joins (1312, 2624) stand clear of the retreat's
         // checkpoints (a tree stands on every join); the store is the
         // left of the second painting, so the field ending at 4200 shows it.
-        panels: ["assets/backgrounds/act2/san-juan-1.jpg", "assets/backgrounds/act2/san-juan-2.jpg"],
-        panelWidths: [1719, 2481], // Block 135: one height; Block 136: the first cropped
+        // Block 137: drawn at the screen's height the two paintings are
+        // 3205 long, so the town is laid twice (the second mirrored)
+        // before the store, rather than both stretched half as big again.
+        panels: ["assets/backgrounds/act2/san-juan-1.jpg", "assets/backgrounds/act2/san-juan-1.jpg",
+          "assets/backgrounds/act2/san-juan-2.jpg"],
+        panelWidths: [1312, 1312, 1893],
+        mirrorPanels: true,
         panelSky: "#4a8fd6",
-        ground: { floor: "damo" }, // Block 114
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         dangerous: true,
         startX: RETREAT_START,
         scripts: [
@@ -1385,7 +1393,7 @@
         panels: ["assets/backgrounds/act2/nangka-1.jpg", "assets/backgrounds/act2/nangka-2.jpg"],
         panelWidths: [1266, 1134], // Block 135: one height
         panelSky: "#4a8fd6",
-        ground: { floor: "damo" }, // Block 114
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         dangerous: true,
         startX: 500,
         scripts: [
@@ -1429,6 +1437,7 @@
         id: "balara",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/balara.jpg" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         night: { music: NIGHT },
         noRanged: true,
         startX: 400,
@@ -1487,7 +1496,7 @@
         id: "laguna",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act2/laguna.jpg" },
-        ground: { floor: "damo" }, // Block 114
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 450,
         scripts: [

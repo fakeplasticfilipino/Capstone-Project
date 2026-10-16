@@ -1058,7 +1058,7 @@
         panels: ["assets/backgrounds/act3/morong-1.jpg", "assets/backgrounds/act3/morong-2.jpg"],
         panelWidths: [1696, 1504],
         panelSky: "#4a8fd6",
-        ground: { floor: "damo" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 400,
         scripts: [
@@ -1184,7 +1184,7 @@
         panels: ["assets/backgrounds/act4/dimasalang-2.jpg", "assets/backgrounds/act4/dimasalang-1.jpg"],
         panelWidths: [1839, 1361],
         panelSky: "#609aca",
-        ground: { floor: "damo" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 400,
         scripts: [
@@ -1303,6 +1303,7 @@
         panels: ["assets/backgrounds/act4/malabon-1.jpg", "assets/backgrounds/act4/malabon-2.jpg"],
         panelWidths: [1999, 1201],
         panelSky: "#434888",
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         dangerous: true,
         startX: 400,
         checkpoints: reached(PLAZA_X, "a4_plaza", "a4_tanay"), // Block 120
@@ -1457,7 +1458,7 @@
         id: "sala",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act4/sala.jpg" },
-        ground: { floor: "kahoy" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 150,
         scripts: [
@@ -1507,7 +1508,7 @@
         id: "selda",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act4/selda.jpg" },
-        ground: { floor: "bato" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 300,
         scripts: [
@@ -1562,7 +1563,7 @@
         id: "hukuman",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act4/hukuman.jpg" },
-        ground: { floor: "kahoy" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 300,
         scripts: [
@@ -1592,7 +1593,7 @@
         id: "patyo",
         worldWidth: YARD_WIDTH,
         backdrop: { src: "assets/backgrounds/act4/patyo.jpg" },
-        ground: { floor: "bato" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 200,
         checkpoints: [

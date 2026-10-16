@@ -1084,7 +1084,7 @@
         panels: ["assets/backgrounds/act3/burol-1.jpg", "assets/backgrounds/act3/burol-2.jpg"],
         panelWidths: [1848, 1352],
         panelSky: "#4a8fd6",
-        ground: { floor: "damo" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         dangerous: true,
         startX: 400,
         scripts: [
@@ -1297,7 +1297,7 @@
         id: "barberya",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act3/barberya.jpg" },
-        ground: { floor: "kahoy" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         night: { requiresFlag: "a3_gabiSaBarberya", music: NIGHT },
         noRanged: true,
         startX: ROOM - 160,
@@ -1417,7 +1417,7 @@
         id: "selda",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act4/selda.jpg" },
-        ground: { floor: "bato" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 300,
         wayOut: "Lumabas sa Bilibid: pumunta sa kanan",
@@ -1448,6 +1448,7 @@
         id: "bayan",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act3/bayan.jpg" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 250,
         scripts: [
@@ -1477,7 +1478,7 @@
         id: "calle-gunao",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act3/calle-gunao.jpg" },
-        ground: { floor: "kahoy" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         noRanged: true,
         startX: 150,
         scripts: [
@@ -1560,7 +1561,7 @@
         panels: ["assets/backgrounds/act3/morong-1.jpg", "assets/backgrounds/act3/morong-2.jpg"],
         panelWidths: [1696, 1504],
         panelSky: "#4a8fd6",
-        ground: { floor: "damo" },
+        ground: false, // Block 137: the painting's own floor, not a strip of ours
         dangerous: true,
         startX: 400,
         scripts: [

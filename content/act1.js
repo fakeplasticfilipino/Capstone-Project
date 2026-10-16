@@ -2049,7 +2049,7 @@ window.ACT_1 = {
       id: "pulungan",
       worldWidth: PULUNGAN_WIDTH,
       backdrop: { src: "assets/backgrounds/act1/pulungan.jpg" },
-      ground: { floor: "kahoy" }, // Block 114
+      ground: false, // Block 137: the painting's own floor, not a strip of ours
       noRanged: true,
       startX: PULUNGAN_ENTER_X,
       wayOut: "Lumabas sa likod: pumunta sa kaliwa", // Block 93

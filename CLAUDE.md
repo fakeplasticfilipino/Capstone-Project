@@ -868,9 +868,11 @@ game.js draws itself, FLOORS: kahoy (floorboards: the pulungan, the
 press), kawayan (split bamboo: a nipa house), damo (grass over earth: a
 field, a camp) and bato (flagstones: Bilibid; Block 119). Each is a small tile of pixels built as an SVG
 in a data: URL, so it is never downloaded, versioned or owed, drawn at
-FLOOR_SCALE with the pixels kept sharp (.ground-floor). A scene that
-is not Tondo's street names one; prepare.js fails on a floor name
-FLOORS does not have. A picture (src) wins over a floor when both are
+FLOOR_SCALE with the pixels kept sharp (.ground-floor). Since Block
+137 no shipped scene uses one: every scene has the artist's painting,
+which paints its own floor, and declares ground: false (below). A
+floor is for a scene whose painting is owed; prepare.js fails on a
+floor name FLOORS does not have. A picture (src) wins over a floor when both are
 given and the picture exists. All of these are cleared on every load,
 so a scene without them gets the default backdrop and the dirt back.
 
@@ -907,7 +909,16 @@ ground: false on a panelled scene (Block 134; Tondo's street in every
 act) also stands the paintings on the bottom of the screen instead of on
 --ground-level (game.js, panels-own-floor), so everyone walks on the
 road the paintings paint rather than on the dirt strip, which did not
-match them.
+match them. Since Block 137 every painted scene declares it, rooms and
+backdrops too: a strip of ours under a painted floor made two floors,
+the painted one seeming to lie behind Macario.
+
+A painting is drawn as tall as its scene's length makes it (a backdrop
+covers worldWidth; panels' widths are their shapes times one height),
+and on the phone the world is about 590 tall. A scene much longer than
+its paintings draws them too big (Block 137: the press at 2600 was half
+as big again as its people). Size a scene to its paintings, or lay them
+again (San Juan's town twice, mirrored), rather than stretch them.
 
 Lit doorways (Block 126). Every exit, and every NPC with doorway, is
 lit while open (game.js, LIT DOORWAYS): a column of warm light the
@@ -2595,7 +2606,9 @@ look, by system:
                                           III's places and people, the
                                           American soldier, panelWidths),
                                           136 (Act IV's places; Act
-                                          II's rooms cropped)
+                                          II's rooms cropped), 137 (the
+                                          paintings' own floors; the
+                                          press and San Juan resized)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,
