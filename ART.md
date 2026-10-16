@@ -53,9 +53,9 @@ For people, the entry says who they are and what they do, not how they
 look: the proponent has the references for that.
 
 "Also wanted" under an act is extra: the game does not use those
-pictures yet, but will once they are drawn. Under Backgrounds it is a
-painting the game has but wants drawn again, saved under the same name
-to replace it.
+pictures yet, but will once they are drawn. A picture that came but did
+not fit (drawn too close, the wrong year) is taken out of the game and
+listed here as owed again, so what is missing is plain (Block 141).
 
 For the team: node _dev/tools/missing-art.js lists what the game asks
 for and does not have. prepare.js checks that every file listed in
@@ -74,11 +74,6 @@ Nothing needed.
 
 ### Act II
 
-Nothing missing.
-
-Also wanted, drawn again (the painting in the game now is drawn too
-close: the furniture is far bigger than the people in it; Block 138):
-
     assets/backgrounds/act2/imprenta.jpg
         The Katipunan's hidden printing press in Tondo, 1896. About
         2900 by 940.
@@ -91,11 +86,11 @@ close: the furniture is far bigger than the people in it; Block 138):
         Mood: busy and hopeful at first, then searched and dangerous.
         The press at the left, stacks of paper, crates, two high shelves
         a person could climb, the back window at the left edge, the door
-        out at the right edge. Now: the table reaches Macario's chest and
+        out at the right edge. As first delivered: the table reaches Macario's chest and
         the press is two and a half times his height (about twice too
         big).
         Scale: the room as the game's people see it, from further
-        back than the painting in the game now. A grown man standing on
+        back than the painting first delivered. A grown man standing on
         the floor at the front is about 215 pixels tall (a quarter of
         the picture's height), a door about 300, a table top about 100
         above the floor; the floor runs along the bottom 150 pixels or
@@ -111,7 +106,7 @@ close: the furniture is far bigger than the people in it; Block 138):
         calling him to the printing press. He leaves her there, and he
         never sees her again.
         Mood: poor but cared for, quiet, the last safe place in the
-        game. One room, a table, the door on the right. Now: the table
+        game. One room, a table, the door on the right. As first delivered: the table
         at his waist, the door twice his height (about 1.6 times too
         big).
         Scale: the room as the game's people see it, from further
@@ -125,11 +120,6 @@ close: the furniture is far bigger than the people in it; Block 138):
 
 ### Act III
 
-Nothing missing.
-
-Also wanted, drawn again (the painting in the game now is drawn too
-close: the furniture is far bigger than the people in it; Block 138):
-
     assets/backgrounds/act3/barberya.jpg
         The Barbero's shop in Tondo, 1899 to 1902. One screen.
         What happens: Macario, in disguise, cuts an American soldier's
@@ -139,7 +129,7 @@ close: the furniture is far bigger than the people in it; Block 138):
         door is hammered and he is arrested.
         Mood: an ordinary shop by day, a hiding place by night. One
         room, the barber's chair, a mirror, a table, the door on the
-        right. By day; the game makes it night. Now: the counter as tall
+        right. By day; the game makes it night. As first delivered: the counter as tall
         as he is (about 1.8 times too big).
         Scale: the room as the game's people see it, from further
         back than the painting in the game now. A grown man standing on
@@ -159,7 +149,7 @@ close: the furniture is far bigger than the people in it; Block 138):
         petition. Then a new law, the Sedition Law, makes even asking
         for freedom a crime, and the last man refuses to sign.
         Mood: hopeful and respectable at first, then the hope taken
-        away. A sala, papers on a table. Now: the table near his waist
+        away. A sala, papers on a table. As first delivered: the table near his waist
         (about 1.5 times too big).
         Scale: the room as the game's people see it, from further
         back than the painting in the game now. A grown man standing on
@@ -172,11 +162,6 @@ close: the furniture is far bigger than the people in it; Block 138):
 
 ### Act IV
 
-Nothing missing.
-
-Also wanted, drawn again (the painting in the game now is drawn too
-close: the furniture is far bigger than the people in it; Block 138):
-
     assets/backgrounds/act4/sala.jpg
         The hall in Cavite, 17 July 1906. One screen.
         What happens: after coming down from the mountains, Macario and
@@ -185,7 +170,7 @@ close: the furniture is far bigger than the people in it; Block 138):
         arrest them. The party was a trap.
         Mood: polite and festive, until it is not. A large room, a
         table laid for a meal, a door at each end. The flags of 1906 (the
-        American one; not Spain's). Now: the chairs as tall as he is
+        American one; not Spain's). As first delivered: the chairs as tall as he is
         (about 1.5 times too big).
         Scale: the room as the game's people see it, from further
         back than the painting in the game now. A grown man standing on
@@ -201,7 +186,7 @@ close: the furniture is far bigger than the people in it; Block 138):
         What happens: Macario is tried as a bandit under the Brigandage
         Act and sentenced to death with his officers.
         Mood: formal, cold, the outcome already decided. The judge's
-        bench on the right, a rail, benches. Now: the rail at his chest
+        bench on the right, a rail, benches. As first delivered: the rail at his chest
         (about 1.4 times too big).
         Scale: the room as the game's people see it, from further
         back than the painting in the game now. A grown man standing on
@@ -246,9 +231,18 @@ Also wanted (not in the game yet):
         Macario cuts while in disguise. He calls the rebels hiding in
         Tondo "bandits", not knowing who is holding the scissors. Side on, seated
         in the barber's chair with a barber's cape over him; he also
-        walks out. (The soldier delivered on 16 October as
-        Act3_SundalongAmericano.png is standing with a rifle, so he is
-        the fighter, amerikano, instead.) (NOT STARTED)
+        walks out. (NOT STARTED)
+
+    assets/sprites/enemies/amerikano.png
+        An American soldier of the Philippine-American War, 1899 to
+        1906: the enemy in Act III's first battle, the sentries Macario
+        sneaks past in Tondo, and the soldiers at Malabon. Armed with a
+        rifle and bayonet. Side on; he fights hand to hand and stands
+        guard with the rifle. In Acts III and IV. The kit of 1899: a
+        broad-brimmed campaign hat and a blue shirt (the soldier
+        delivered on 16 October wore the steel helmet, pack and puttees
+        of 1917 and was taken out; the same pose is welcome, so the
+        game's animation fits him). (NOT STARTED)
 
     assets/sprites/enemies/konstable.png
         A man of the Philippine Constabulary, 1902 to 1906: a Filipino
@@ -259,13 +253,6 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
 Also wanted (not in the game yet):
-
-    assets/sprites/enemies/amerikano-still.png (a second version)
-        The American soldier as delivered, redrawn for 1899 to 1902: the
-        one in the game wears the round steel helmet, pack and puttees of
-        1917, twenty years later. The Philippine-American War's
-        soldiers wore a broad-brimmed campaign hat and a blue shirt. The
-        same pose, so the game's animation fits him again.
 
     assets/sprites/player/macario-heneral-idle.png
     assets/sprites/player/macario-heneral-walk.png
@@ -407,16 +394,15 @@ Done and in the game. Nothing here needs drawing.
                   (ground-lupa), the inside of the theatre
                   (entablado-inside), the Katipunan's secret room
                   (pulungan)
-        Act II    home (bahay), the press (imprenta), Pugad Lawin,
+        Act II    Pugad Lawin,
                   San Juan del Monte (san-juan-1 and 2), the Nangka
                   (nangka-1 and 2), Balara, Laguna
-        Act III   the hill camp (burol-1 and 2), the barbershop, the
-                  plaza (bayan), Calle Gunao, Morong (morong-1 and 2),
+        Act III   the hill camp (burol-1 and 2), the plaza (bayan),
+                  Morong (morong-1 and 2),
                   the cell in Bilibid (selda, Acts III and IV)
         Act IV    the Constabulary's post (himpilan-1 and 2),
                   Di-Masalang (dimasalang-1 and 2), Malabon
-                  (malabon-1 and 2), the hall (sala), the court
-                  (hukuman), Bilibid's yard (patyo)
+                  (malabon-1 and 2), Bilibid's yard (patyo)
 
     Sprites
         Macario   idle, walk, jump, punch, shot
@@ -431,7 +417,7 @@ Done and in the game. Nothing here needs drawing.
         Act III   Álvarez, Carreón, Montalan, Poblete (standing, since
                   Block 135), the Guro, the Opisyal, the Bagong
                   Nakatira, the Katagalugan's fighter, the Bilibid
-                  guard, the American soldier (amerikano)
+                  guard
 
     Props
         none yet

@@ -925,8 +925,15 @@ its paintings draws them too big (Block 137: the press at 2600 was half
 as big again as its people). Size a scene to its paintings, or lay them
 again (San Juan's town twice, mirrored), rather than stretch them. A
 painting drawn too close (a room whose furniture dwarfs the people at
-any size; Block 138) is not fixed in code: ART.md asks for it again
-under Also wanted, same name, and it replaces the old when it comes.
+any size; Block 138) is not fixed in code.
+
+A PICTURE THAT DOES NOT FIT IS TAKEN OUT (the proponent, 17 Oct 2026,
+Block 141). Art that came but is wrong for the game (drawn too close,
+the wrong year, the wrong pose) is removed from assets/ (the original
+kept in docs-private/art-delivered/), its rig with it, and listed in
+ART.md as owed again, saying what was wrong, so the placeholder shows
+what is missing. It is not kept in the game while a new one is asked
+for.
 
 Lit doorways (Block 126). Every exit, and every NPC with doorway, is
 lit while open (game.js, LIT DOORWAYS): a column of warm light the
@@ -2620,7 +2627,9 @@ look, by system:
                                           138 (six rooms asked again,
                                           drawn too close), 139, 140
                                           (a ground in each painting's
-                                          own colours under the feet)
+                                          own colours under the feet),
+                                          141 (pictures that do not fit
+                                          taken out, owed again)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

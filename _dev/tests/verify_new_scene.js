@@ -848,8 +848,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       const sheets = { guro: find(3, "guro").animation, opisyal: find(3, "opisyal").animation,
         nakatira: find(3, "bagong-nakatira").animation, poblete: find(3, "poblete").animation,
         pobleteWalk: find(3, "poblete-pinto").walkAnimation, bantay: P.bantayBilibid, bantayWalk: P.bantayBilibidWalk,
-        kawal: P.kawalKatagalugan, walk: T.amerikano.animation, attack: T.amerikano.attackAnimation,
-        hit: T.amerikano.hitAnimation, sentry: T.sentinela.animation };
+        kawal: P.kawalKatagalugan }; // Block 141: the soldier's picture owed again
       await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
       const scene = (id) => window.ACT_3.scenes.find((s) => s.id === id);
       const sum = (s) => s.panelWidths.reduce((a, b) => a + b, 0);
@@ -863,7 +862,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     // manifest and opening, the two-painting scenes at one height.
     const act4 = await page.evaluate(async () => {
       const scenes = window.ACT_4.scenes.filter((s) => s.id !== "tondo");
-      const srcs = scenes.flatMap((s) => s.panels || (s.backdrop ? [s.backdrop.src] : []));
+      // Block 141: the hall and the court taken out, owed again.
+      const srcs = scenes.flatMap((s) => s.panels || (s.backdrop ? [s.backdrop.src] : []))
+        .filter((s) => !/act4\/(sala|hukuman)\.jpg$/.test(s));
       const opens = await Promise.all(srcs.map((src) => new Promise((res) => {
         const im = new Image(); im.onload = () => res(im.naturalWidth > 0); im.onerror = () => res(false);
         im.src = assetUrl(src);
@@ -876,7 +877,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
         }) };
     });
     ok("Act IV's places: every painting opening; the post, Di-Masalang and Malabon two paintings at one height (Block 136)",
-       act4.srcs === 12 && act4.expected && act4.opens && act4.widths, act4);
+       act4.srcs === 10 && act4.expected && act4.opens && act4.widths, act4);
 
     const c1 = await readConversation(page, 3);
     ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
@@ -2479,12 +2480,11 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("on arrival: Americans on every corner", c.lines[0] === "Macario (sa isip): Mga Amerikano sa bawat kanto.", c.lines);
     ok("Tondo, May 1899: the task is Isko's letter, and four American sentries walk the street",
        await stepIs(page, "Basahin ang sulat ni Isko") && (await on(page, "sentinela-araw-")) === 4 &&
-       // Block 135: the artist's American soldier, drawn (no placeholder
-       // box), on his own sheet; no tint (Block 118).
+       // Block 141: their picture is owed again, so each is the
+       // placeholder box naming it; no art borrowed (Block 118).
        await page.evaluate(() => {
          const g = GUARDS.find((x) => x.id === "sentinela-araw-1");
-         const drawn = g && [...g.el.querySelectorAll("*")].some((e) => /amerikano(-walk)?\.png/.test(e.style.backgroundImage));
-         return Boolean(g && drawn && !/amerikano\.png/.test(g.el.textContent) && !g.el.style.getPropertyValue("--body-tint"));
+         return Boolean(g && /amerikano\.png/.test(g.el.textContent) && !g.el.style.getPropertyValue("--body-tint"));
        }));
     await quiet(page);
     await walkTo(page, 12320);

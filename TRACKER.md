@@ -9,7 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 17 Oct 2026, after Block 140. Block 140: the strip under
+Last updated: 17 Oct 2026, after Block 141. Block 141: pictures that do
+not fit taken out of the game and owed again (ART.md): the six rooms
+painted too close and the American soldier in 1917's kit; twenty-four
+pictures owed. Block 140: the strip under
 the feet is a ground the engine draws in the colours of each painting's
 bottom edge (Block 139's mirror of the painting taken out as ugly), so
 nobody floats above a thin painted road and no floor of ours clashes.
@@ -24,8 +27,7 @@ neither is drawn too big. Block 136: Act IV's six places painted, and
 four of Act II's rooms replaced by the artist's cropped versions.
 Blocks 133 to 135 (15 and 16 Oct 2026): the artist's Drive folder, Acts
 II and III's places and sixteen people keyed and animated, the old
-street kept (Block 134). Seventeen pictures owed, all people and props,
-and six rooms wanted again. Block 132: a teacher makes her class's accounts on the
+street kept (Block 134). Block 132: a teacher makes her class's accounts on the
 dashboard (printable slips, six-digit passwords, a code at the login),
 the dashboard in five tabs, schema v13 applied and public sign-up
 switched off. Every block before: the Blocks list below, and
@@ -306,9 +308,8 @@ Oct 2026. Open:
        the Bilibid guard walking to the bars ("bilibid"), the fighters
        by the flag ("morong"). Failure: a box, or a smear across a
        guard's legs as he walks.
-    c. The American soldier: the battle in the hills ("labanan"), the
-       sentries in Tondo ("tondo"): walking, lunging with the bayonet,
-       flinching. Known: his 1917 kit (asked again of the artist).
+    (The American soldier was taken out in Block 141: the placeholder
+    box until his 1899 picture comes.)
 
     Block 133, on the phone (?dev=1 points named):
 
@@ -378,22 +379,24 @@ and ten matched pre-test and post-test pairs for every act, so each
 act has a test before the teacher writes one.
 
 5. Art from the artist: ART.md (Backgrounds, Sprites, Props, by act,
-since Block 131 written for the artist), seventeen pictures since
-Block 136 (Act I's two: the Mananahi's sewing table and the Barbero's
-chair; Act II's three: the press, the straw and the scarecrow; Act
-III's three: the American in the barber's chair, the Constabulary and
-the Katagalugan's flag; Act IV's nine: Gómez, Van Schaick, Villafuerte, de Vega, the judge, a
+since Block 131 written for the artist), twenty-four pictures since
+Block 141 (six rooms: the press, the house, the barbershop, Calle
+Gunao, the hall, the court; Act I's two: the Mananahi's sewing table
+and the Barbero's chair; Act II's three: the press, the straw and the
+scarecrow; Act III's four: the American soldier, the American in the
+barber's chair, the Constabulary and the Katagalugan's flag; Act IV's
+nine: Gómez, Van Schaick, Villafuerte, de Vega, the judge, a
 woman of Cavite, Isko's son and two townspeople for the crowd in
-Manila). Since Block 138 six rooms are asked for again, drawn at the
-people's scale (ART.md, Also wanted under Backgrounds, with the scale
-for every painting): the press, the house, the barbershop, Calle Gunao,
-the hall (with 1906's flags) and the court; tell the artist, and send
-ART.md's "How to draw them". The Drive folder's new street (October 12) was tried and
+Manila). The six rooms came drawn too close and the soldier in 1917's
+kit; both were taken out (Block 141) and are asked for again with what
+was wrong (the rooms at the people's scale, the hall with 1906's flags,
+the soldier in 1899's kit): tell the artist, and send ART.md's "How to
+draw them". The Drive folder's new street (October 12) was tried and
 taken out (Block 134). Its unnamed
 side-profile figure (October 12), a second Jacinto, the barbershop's
 night and a second cell (October 16) were set aside: which character,
 and whether the night paintings are wanted, is the proponent's call.
-Asked again (ART.md): the American soldier in 1899's kit, not 1917's. PNGs with transparency. Ask act by act, Act I first, as ART.md is
+PNGs with transparency. Ask act by act, Act I first, as ART.md is
 ordered. Also asked for (ART.md, Also wanted): Bonifacio with his sword
 drawn, for his slash.
 A character delivered as one still rather than a sheet is animated by
@@ -942,13 +945,14 @@ machine, the assessment module.
         for every background
     139 the painting mirrored under the feet (taken out in 140, ugly)
     140 a ground drawn in each painting's bottom colours under the feet
+    141 pictures that do not fit taken out, owed again: six rooms, the
+        1917 soldier
 
 ## Blocks remaining
 
 Every act is written, accepted and has its built-in questions (Acts I to
 IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
-the art, ART.md (seventeen pictures, and six rooms drawn again;
-BLOCKED, the artist), and the
+the art, ART.md (twenty-four pictures; BLOCKED, the artist), and the
 two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
 BLOCKED, the artist).
 
@@ -969,10 +973,9 @@ the proponent, 9 Oct 2026)
 
 Art still owed: ART.md. (KNOWN)
 
-Six rooms are painted too close, their furniture up to twice the
-people's size: the press, the house, the barbershop, Calle Gunao, the
-hall, the court (Block 138). Asked again of the artist; the paintings
-stay until the new ones come. (BLOCKED, the artist)
+Six rooms and the American soldier are the placeholder until the
+artist redraws them (Block 141: taken out as not fitting). (BLOCKED,
+the artist)
 
 Loading on a slow connection: fixed in Blocks 62 and 78 (a student
 cannot go in with art missing), and in Block 105 (the game kept whole on

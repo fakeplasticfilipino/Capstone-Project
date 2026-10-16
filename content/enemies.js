@@ -188,19 +188,12 @@ window.ENEMY_TYPES = {
 (function () {
   const T = window.ENEMY_TYPES;
   const owed = (name) => ({ src: "assets/sprites/enemies/" + name + ".png", frames: 1, fps: 1 });
-  // Block 135: the artist's American soldier (amerikano-still.png, rig
-  // _dev/rigs/amerikano.js): he walks, lunges with the bayonet (thrust,
-  // frames 0 to 2 the red !, 3 the blow) and flinches; the sentry stands
-  // on his standing sheet and walks his beat on the walk.
-  const AMERIKANO_CELL = { columns: 4, contentTop: 6, contentHeight: 297, footX: 80, headroom: 6 };
-  const amerikano = (pose, frames, fps) =>
-    ({ src: "assets/sprites/enemies/amerikano" + pose + ".png", frames, fps, ...AMERIKANO_CELL });
-  T.amerikano = { kind: "enemy", hp: 2, animation: amerikano("-walk", 8, 12),
-    attackAnimation: amerikano("-attack", 8, 10),
-    hitAnimation: Object.assign(amerikano("-hit", 4, 12), { knockoutFrame: 1 }) };
-  T.sentinela = { kind: "guard", shoots: true, hp: 2, speed: 1.3, detectRadius: 260,
-    animation: amerikano("", 8, 4), walkAnimation: amerikano("-walk", 8, 12),
-    hitAnimation: Object.assign(amerikano("-hit", 4, 12), { knockoutFrame: 1 }) };
+  // Block 141: the soldier delivered on 16 October (Block 135) wore 1917's
+  // kit and was taken out at the proponent's word, so the picture is owed
+  // again: drawn as the placeholder until the artist's 1899 soldier comes,
+  // whose sheets are then made from his still as Block 135's were.
+  T.amerikano = { kind: "enemy", hp: 2, animation: owed("amerikano") };
+  T.sentinela = { kind: "guard", shoots: true, hp: 2, speed: 1.3, detectRadius: 260, animation: owed("amerikano") };
   T.konstable = { kind: "enemy", hp: 2, animation: owed("konstable") };
   // Block 119. The Constabulary on guard with a rifle, Act IV: on watch
   // at a post (catching rather than shooting where a scene says shoots:

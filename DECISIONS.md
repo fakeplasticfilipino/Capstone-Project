@@ -6162,6 +6162,20 @@ its own); and a shade to 30% darker toward the screen's edge. Before the
 painting loads the strip is a plain earth. Night and greyFilter reach it
 in #skyline. Seen in every scene at a phone's size and a computer's.
 
+## Block 141: pictures that do not fit taken out, 17 Oct 2026
+
+The proponent: for problematic sprites and backgrounds, remove them
+completely, so we know what is missing. Taken out of assets/ and owed
+again in ART.md (the originals stay in docs-private/art-delivered/): the
+six rooms painted too close (Block 138: the press, the house, the
+barbershop, Calle Gunao, the hall and the court), which now draw Block
+80's dark wall with the file name; and the American soldier of Block 135
+in 1917's kit, with his sheets and his rig (a rig's numbers are its
+picture's), so amerikano and sentinela are the placeholder box again, as
+before Block 135. The ground under an owed room's wall is plain earth
+(buildFloorBelow runs for it too). Twenty-four pictures owed. The rule
+is in CLAUDE.md (Act data format, after panelWidths).
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

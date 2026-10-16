@@ -1195,7 +1195,7 @@ function buildSkylineTiles() {
     }
     layer.appendChild(tile);
     actElements.push(tile);
-    if (!tile.classList.contains("backdrop-owed")) buildFloorBelow(tile, backdrop.src);
+    buildFloorBelow(tile, backdrop.src); // an owed one: plain earth under the wall
     return;
   }
 

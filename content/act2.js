@@ -987,7 +987,7 @@
     scenes: [
       {
         // Beats 1, 4 and 5. The Katipunan's press, and the act's first
-        // scene. Its painting is the artist's (Block 133). March: Jacinto and the printer, the
+        // scene. Its painting is owed again (Block 141). March: Jacinto and the printer, the
         // press used with E. August: three guardia civil searching it
         // (they catch, not shoot), two shelves above their sight, the
         // list under the press, the window out at the left edge.
