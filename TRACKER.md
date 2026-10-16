@@ -9,13 +9,17 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 16 Oct 2026, after Block 135. Block 135: the Drive
+Last updated: 16 Oct 2026, after Block 136. Block 136: Act IV's six
+places painted (the post, Di-Masalang and Malabon two paintings each,
+the hall, the court, Bilibid's yard), and four of Act II's rooms
+replaced by the artist's cropped versions. Seventeen pictures owed, all
+people and props. Block 135: the Drive
 folder's Act III art put in: the hill camp, the barbershop, the plaza,
 Calle Gunao, Morong and the Bilibid cell painted (two-painting scenes at
 one height, panelWidths, San Juan and the Nangka too); the Guro, the
 Opisyal, the Bagong Nakatira, a standing Poblete, the Bilibid guard, the
 Katagalugan's fighter and the American soldier keyed and animated.
-Twenty-three pictures still owed. Before it, 15 Oct 2026, Block 134 and a
+Before it, 15 Oct 2026, Block 134 and a
 tidy of these files.
 Block 134: the new street of Block 133 taken out at the proponent's word
 (the old four paintings back, night the tint again), and the street's
@@ -212,11 +216,11 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): twenty-three pictures, Act I's two (the
+in code. Still owed (ART.md): seventeen pictures, Act I's two (the
 Barbero's chair, the Mananahi's sewing table), Act II's three (the
 press, the straw, the scarecrow), Act III's three (the American in the
 barber's chair, the Constabulary, the Katagalugan's flag) and Act IV's
-fifteen. No picture is made or borrowed
+nine (people only, since Block 136). No picture is made or borrowed
 for what is not drawn (CLAUDE.md, Conventions).
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
@@ -257,6 +261,18 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026, Blocks 119 to 126 on 9 Oct 2026, Blocks 128 to 131 on 13
 Oct 2026. Open:
+
+    Block 136, on the phone (?dev=1, Act IV and Act II points):
+
+    a. Act IV's places: "himpilan" (the post at night, two paintings,
+       everyone on the painted road), "tanay", "bigas", "gomez"
+       (Di-Masalang, two), "malabon" (two), "salusalo" (the hall),
+       "hukuman" (the court), "umaga" (the yard, the scaffold where he
+       stops). Failure: a dark wall, a painting much bigger than its
+       neighbour, the post near black, or someone behind a tree.
+    b. Act II's rooms: "bahay", "simula" (the press), "sedula" (Pugad
+       Lawin), "sanjuan": the painted floor meets the game's floor with
+       no dark band between. Failure: a gap or a doubled floor.
 
     Block 135, on the phone (?dev=1, Act III points):
 
@@ -344,12 +360,11 @@ and ten matched pre-test and post-test pairs for every act, so each
 act has a test before the teacher writes one.
 
 5. Art from the artist: ART.md (Backgrounds, Sprites, Props, by act,
-since Block 131 written for the artist), twenty-three pictures since
-Block 135 (Act I's two: the Mananahi's sewing table and the Barbero's
+since Block 131 written for the artist), seventeen pictures since
+Block 136 (Act I's two: the Mananahi's sewing table and the Barbero's
 chair; Act II's three: the press, the straw and the scarecrow; Act
 III's three: the American in the barber's chair, the Constabulary and
-the Katagalugan's flag; Act IV's fifteen: six
-paintings, Gómez, Van Schaick, Villafuerte, de Vega, the judge, a
+the Katagalugan's flag; Act IV's nine: Gómez, Van Schaick, Villafuerte, de Vega, the judge, a
 woman of Cavite, Isko's son and two townspeople for the crowd in
 Manila). The Drive folder's new street (October 12) was tried and
 taken out (Block 134). Its unnamed
@@ -897,12 +912,14 @@ machine, the assessment module.
     135 Act III's art from the Drive folder: six places, seven people
         and the American soldier; panelWidths, one height for a
         scene's paintings
+    136 Act IV's six places painted; four of Act II's rooms cropped by
+        the artist; the post's night painted, not tinted
 
 ## Blocks remaining
 
 Every act is written, accepted and has its built-in questions (Acts I to
 IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
-the art, ART.md (twenty-three pictures; BLOCKED, the artist), and the
+the art, ART.md (seventeen pictures; BLOCKED, the artist), and the
 two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
 BLOCKED, the artist).
 

@@ -1325,11 +1325,11 @@
         id: "san-juan",
         worldWidth: BATTLE_WIDTH,
         // Block 133: the artist's two paintings, the town and then the
-        // powder store. The join is at 2400, clear of the retreat's
+        // powder store. The join is at 1719 (panelWidths), clear of the retreat's
         // checkpoints (a tree stands on every join); the store is the
         // left of the second painting, so the field ending at 4200 shows it.
         panels: ["assets/backgrounds/act2/san-juan-1.jpg", "assets/backgrounds/act2/san-juan-2.jpg"],
-        panelWidths: [1616, 2584], // Block 135: one height
+        panelWidths: [1719, 2481], // Block 135: one height; Block 136: the first cropped
         panelSky: "#4a8fd6",
         ground: { floor: "damo" }, // Block 114
         dangerous: true,

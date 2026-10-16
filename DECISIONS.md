@@ -6036,6 +6036,35 @@ behind the table. Morong's first painting has a flag painted on its pole,
 near where Macario raises the Katagalugan's own (owed) flag. The
 October 12 side-profile figure is still unnamed.
 
+## Block 136: Act IV's places from the Drive folder, 16 Oct 2026
+
+The artist sorted the Drive folder into one folder of backgrounds per
+act. New: nine Act IV paintings, every Act IV place that was owed, and
+four of Act II's again (the house, the press, Pugad Lawin, the first
+of San Juan), the same pictures with the painted floor along the bottom
+cut off, so the engine's floor is the only one. Those four replace the
+old (San Juan's widths taken again for the shorter first painting,
+1719 and 2481); the rest of the folders are copies of what was already in.
+
+The post, Di-Masalang and Malabon came as two paintings each and are
+laid as Block 135's are, at one height (panelWidths). Di-Masalang's are
+in the other order, the open camp first, and its third soldier moved
+from 1700 to 1650, both to keep the tree clear of the line of three;
+Malabon's second checkpoint moved from 2000 to 1850, off the join. The
+post is painted at night, so it is no longer tinted (Block 85's night
+would have darkened a dark painting to near black): its night is its
+music, and its paintings paint their own road (ground: false), since a
+daylit dirt strip under a night painting did not match. ART.md had
+asked for it by day.
+
+The hall, the court and Bilibid's yard are single backdrops. The yard's
+scaffold is painted with its platform over SCAFFOLD_X, so nothing moved;
+the yard has a crowd and soldiers painted in, behind the game's people.
+The hall shows a Spanish banner beside the American flag in 1906; the
+proponent keeps it. Two PNGs (the court, the yard) were re-encoded as
+JPEG, as every painting is. Seventeen pictures are owed, all people and
+props.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

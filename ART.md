@@ -72,65 +72,7 @@ Nothing needed.
 
 ### Act IV
 
-    assets/backgrounds/act4/himpilan.jpg
-        A Constabulary post in a town below the mountains, 1903. About
-        3700 by 940.
-        What happens: Macario's men raid the post at night for guns and
-        uniforms. He sneaks past the watchmen to the storeroom; a bell
-        rings, and he fights his way back out to the fence where he
-        came in.
-        Mood: tense, a night raid. A yard with a fence on the right
-        (the way in and out), crates to hide behind, the storeroom at
-        the left end. Draw it by day; the game makes it night.
-        (NOT STARTED)
-
-    assets/backgrounds/act4/dimasalang.jpg
-        Sakay's camp in the Di-Masalang mountains, Rizal, 1904 to 1906.
-        About 4500 by 940.
-        What happens: he drills three men in stolen Constabulary
-        uniforms for the raid on Tanay. Later, the Americans herd the
-        villagers into guarded camps, the food stops coming, and he
-        shares out the last sack of rice. Dominador Gómez climbs up to
-        the camp with the offer that brings him down from the
-        mountains.
-        Mood: at first busy, then hungry and worn. Huts among trees on a
-        slope, poorer and thinner than Morong's, a path up the slope.
-        (NOT STARTED)
-
-    assets/backgrounds/act4/malabon.jpg
-        San Francisco de Malabon, Cavite, 24 January 1905. About 4500
-        by 940.
-        What happens: his men march in at dusk disguised as government
-        troops and rush the garrison for its guns. The player pushes
-        through the town street by street to the plaza.
-        Mood: a battle in a town, the Republic at its strongest. The
-        edge of town on the left, the plaza with a church and the
-        garrison's building on the right. (NOT STARTED)
-
-    assets/backgrounds/act4/sala.jpg
-        The hall in Cavite, 17 July 1906. One screen.
-        What happens: after coming down from the mountains, Macario and
-        his officers are guests at a reception given by an American
-        colonel. At the toast, soldiers come in from both doors and
-        arrest them. The party was a trap.
-        Mood: polite and festive, until it is not. A large room, a
-        table laid for a meal, a door at each end. (NOT STARTED)
-
-    assets/backgrounds/act4/hukuman.jpg
-        The Court of First Instance of Cavite, 1906. One screen.
-        What happens: Macario is tried as a bandit under the Brigandage
-        Act and sentenced to death with his officers.
-        Mood: formal, cold, the outcome already decided. The judge's
-        bench on the right, a rail, benches. (NOT STARTED)
-
-    assets/backgrounds/act4/patyo.jpg
-        The yard of Old Bilibid Prison, Manila, 13 September 1907,
-        morning. About 3400 by 940.
-        What happens: the last scene of the game. The player walks
-        Macario across the yard to the scaffold, where he says that he
-        and his men were never bandits.
-        Mood: quiet, early light, dignified rather than gruesome. Stone
-        walls, the scaffold toward the right end. (NOT STARTED)
+Nothing needed.
 
 ## Sprites
 
@@ -333,6 +275,10 @@ Done and in the game. Nothing here needs drawing.
         Act III   the hill camp (burol-1 and 2), the barbershop, the
                   plaza (bayan), Calle Gunao, Morong (morong-1 and 2),
                   the cell in Bilibid (selda, Acts III and IV)
+        Act IV    the Constabulary's post (himpilan-1 and 2),
+                  Di-Masalang (dimasalang-1 and 2), Malabon
+                  (malabon-1 and 2), the hall (sala), the court
+                  (hukuman), Bilibid's yard (patyo)
 
     Sprites
         Macario   idle, walk, jump, punch, shot

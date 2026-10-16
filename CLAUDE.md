@@ -222,8 +222,9 @@ off the repository.
       backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
                                pulungan.jpg (Block 133), ground-lupa.jpg
       backgrounds/act2/,       the artist's paintings of each act's
-        act3/, act4/           places (Blocks 133, 135; two panels each
-                               for san-juan, nangka, burol and morong)
+        act3/, act4/           places (Blocks 133, 135, 136; two panels
+                               each for san-juan, nangka, burol, morong,
+                               himpilan, dimasalang and malabon)
       items/                   inventory and shop tile pictures
       audio/music/, audio/sfx/
       fonts/                   the two woff2 faces and their licences
@@ -2592,7 +2593,9 @@ look, by system:
       new street tried and taken out      134 (the old street back, its
                                           own painted road), 135 (Act
                                           III's places and people, the
-                                          American soldier, panelWidths)
+                                          American soldier, panelWidths),
+                                          136 (Act IV's places; Act
+                                          II's rooms cropped)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

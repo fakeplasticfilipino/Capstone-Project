@@ -126,11 +126,12 @@
   const FENCE_X = POST_ENTER_X;
   const LABAS_FLAGS = FIGHT_OUT_X.map((_, i) => "a4_labas" + (i + 1));
   // Malabon: the push from the edge of town into the plaza.
-  const PLAZA_X = [1200, 2000, 2700];
+  // Block 136: the second clear of the join of Malabon's two paintings.
+  const PLAZA_X = [1200, 1850, 2700];
   const PLAZA_FLAGS = PLAZA_X.map((_, i) => "a4_plaza" + (i + 1));
 
   const MONTALAN_X = 900;
-  const KAWAL_X = [1300, 1500, 1700];
+  const KAWAL_X = [1300, 1500, 1650]; // Block 136: the last clear of the tree at 1839
   const HANAY_X = 1150;         // the line of three, drilled (Block 120)
   const GOMEZ_X = 2100;
 
@@ -1114,12 +1115,17 @@
       },
       {
         // Beat 2. A post of the Constabulary in a town below the
-        // mountains, 1903, at night [INSERT: the place]. Its painting is
-        // owed. In from the right; the storeroom at the left.
+        // mountains, 1903, at night [INSERT: the place]. In from the
+        // right; the storeroom at the left. Block 136: the artist's two
+        // paintings, painted at night, so the scene is not tinted again
+        // (music, not night); they paint their own road (ground: false).
         id: "himpilan",
         worldWidth: POST_WIDTH,
-        backdrop: { src: "assets/backgrounds/act4/himpilan.jpg" },
-        night: { music: NIGHT },
+        panels: ["assets/backgrounds/act4/himpilan-1.jpg", "assets/backgrounds/act4/himpilan-2.jpg"],
+        panelWidths: [1190, 1410],
+        panelSky: "#06173f",
+        ground: false,
+        music: NIGHT,
         startX: POST_ENTER_X,
         guards: POST_GUARDS.map((g, i) => ({
           type: "bantay-konstable", id: "konstable-bantay-" + (i + 1), shoots: false,
@@ -1171,10 +1177,13 @@
       },
       {
         // Beats 4, 6 and 7. The camp in the Di-Masalang mountains, from
-        // August 1904. Its painting is owed.
+        // August 1904. Block 136: the artist's two paintings, the open
+        // camp first, so the join stands clear of the line of three.
         id: "dimasalang",
         worldWidth: FIELD,
-        backdrop: { src: "assets/backgrounds/act4/dimasalang.jpg" },
+        panels: ["assets/backgrounds/act4/dimasalang-2.jpg", "assets/backgrounds/act4/dimasalang-1.jpg"],
+        panelWidths: [1839, 1361],
+        panelSky: "#609aca",
         ground: { floor: "damo" },
         noRanged: true,
         startX: 400,
@@ -1286,11 +1295,14 @@
         ],
       },
       {
-        // Beat 5. San Francisco de Malabon, Cavite, 24 January 1905. Its
-        // painting is owed. Villafuerte and de Vega fight beside him.
+        // Beat 5. San Francisco de Malabon, Cavite, 24 January 1905.
+        // Villafuerte and de Vega fight beside him. Block 136: the
+        // artist's two paintings, the town and its church, then the post.
         id: "malabon",
         worldWidth: FIELD,
-        backdrop: { src: "assets/backgrounds/act4/malabon.jpg" },
+        panels: ["assets/backgrounds/act4/malabon-1.jpg", "assets/backgrounds/act4/malabon-2.jpg"],
+        panelWidths: [1999, 1201],
+        panelSky: "#434888",
         dangerous: true,
         startX: 400,
         checkpoints: reached(PLAZA_X, "a4_plaza", "a4_tanay"), // Block 120
@@ -1441,7 +1453,7 @@
       },
       {
         // Beat 9. The hall in Cavite, 17 July 1906, Colonel Louis Van
-        // Schaick's reception. Its painting is owed.
+        // Schaick's reception.
         id: "sala",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act4/sala.jpg" },
@@ -1546,8 +1558,7 @@
         ],
       },
       {
-        // Beat 11. The Court of First Instance of Cavite, 1906. Its
-        // painting is owed.
+        // Beat 11. The Court of First Instance of Cavite, 1906.
         id: "hukuman",
         worldWidth: ROOM,
         backdrop: { src: "assets/backgrounds/act4/hukuman.jpg" },
@@ -1575,7 +1586,8 @@
       },
       {
         // Beat 13. The yard of Old Bilibid, Santa Cruz, Manila, 13
-        // September 1907; the scaffold is the painting's (owed). He walks
+        // September 1907; the scaffold is the painting's, its platform
+        // over SCAFFOLD_X (Block 136). He walks
         // there himself (the checkpoint runs the statement).
         id: "patyo",
         worldWidth: YARD_WIDTH,

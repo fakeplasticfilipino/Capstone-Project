@@ -857,6 +857,25 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("Act III's people and the American soldier: every sheet opening; the hills and Morong two paintings at one height (Block 135)",
        Object.entries(act3.open).every(([n, f]) => f === (n === "hit" ? 4 : 8)) && act3.widths, act3);
 
+    // Block 136. Act IV's places, painted: every scene's pictures in the
+    // manifest and opening, the two-painting scenes at one height.
+    const act4 = await page.evaluate(async () => {
+      const scenes = window.ACT_4.scenes.filter((s) => s.id !== "tondo");
+      const srcs = scenes.flatMap((s) => s.panels || (s.backdrop ? [s.backdrop.src] : []));
+      const opens = await Promise.all(srcs.map((src) => new Promise((res) => {
+        const im = new Image(); im.onload = () => res(im.naturalWidth > 0); im.onerror = () => res(false);
+        im.src = assetUrl(src);
+      })));
+      const sum = (s) => s.panelWidths.reduce((a, b) => a + b, 0);
+      return { srcs: srcs.length, expected: srcs.every((s) => assetExpected(s) !== false), opens: opens.every(Boolean),
+        widths: ["himpilan", "dimasalang", "malabon"].every((id) => {
+          const s = scenes.find((x) => x.id === id);
+          return s.panels.length === 2 && sum(s) === s.worldWidth;
+        }) };
+    });
+    ok("Act IV's places: every painting opening; the post, Di-Masalang and Malabon two paintings at one height (Block 136)",
+       act4.srcs === 12 && act4.expected && act4.opens && act4.widths, act4);
+
     const c1 = await readConversation(page, 3);
     ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
     ok("Macario faces the siga, behind him on the left", c1.facings.every((f) => f === -1), c1.facings);
@@ -2701,8 +2720,12 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     c = await readLines(page, 7, 3000);
     ok("signed; Montalan wants guns, and uniforms: \"Makikita mo rin\"",
        c.lines.includes("Macario: Makikita mo rin.") && await page.evaluate(() => state.flags.a4_kautusan === true), c.lines);
+    // Block 136: the post's two paintings are painted at night, so the
+    // scene is not tinted again; night is its music.
     ok("on black to the Constabulary's post, at night", await waitForScene(page, "himpilan", 30000) &&
-       await page.evaluate(() => document.getElementById("skyline").classList.contains("night-tint")));
+       await page.evaluate(() => document.querySelectorAll("#skyline .skyline-panel").length === 2 &&
+         !document.getElementById("skyline").classList.contains("night-tint") &&
+         sceneTrack(currentScene) === "assets/audio/music/gabi.wav"));
     c = await readLines(page, 2);
     await settle(page);
     ok("three of the Constabulary on watch, the task the storeroom",
