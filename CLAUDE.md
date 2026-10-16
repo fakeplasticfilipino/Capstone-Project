@@ -905,13 +905,18 @@ summing to worldWidth, so the scene has one scale (paintings stretched to
 one width were drawn at scales up to twice apart, Block 134). The trees
 stand on the joins as ever, and the content check reads the same widths.
 
-ground: false on a panelled scene (Block 134; Tondo's street in every
-act) also stands the paintings on the bottom of the screen instead of on
---ground-level (game.js, panels-own-floor), so everyone walks on the
-road the paintings paint rather than on the dirt strip, which did not
-match them. Since Block 137 every painted scene declares it, rooms and
-backdrops too: a strip of ours under a painted floor made two floors,
-the painted one seeming to lie behind Macario.
+ground: false (every painted scene since Block 137) hides the strip of
+ours, which under a painted floor made two floors, and since Block 139
+lays the painting's own floor under the feet instead (game.js, own-floor
+and buildFloorBelow): the painting, panel or backdrop, stands on
+--ground-level, and below it a copy of its own element, flipped about
+its bottom edge and stretched threefold (style.css, .skyline-floor),
+shows its bottom 20 or so rows carried down to the screen's edge. The
+feet stand on the seam, on the painted road. A plain mirror reflected
+the fence and houses a thin painted road ends at, like water; standing
+the paintings on the bottom of the screen (Block 134) left the feet
+above a thin road. A check counting a scene's paintings excludes
+.skyline-floor.
 
 A painting is drawn as tall as its scene's length makes it (a backdrop
 covers worldWidth; panels' widths are their shapes times one height),
@@ -2613,7 +2618,9 @@ look, by system:
                                           paintings' own floors; the
                                           press and San Juan resized),
                                           138 (six rooms asked again,
-                                          drawn too close)
+                                          drawn too close), 139 (the
+                                          painting's floor carried on
+                                          under the feet)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

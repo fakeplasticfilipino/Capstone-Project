@@ -125,7 +125,7 @@ const log = (page) => page.evaluate(() => {
 // whether anyone the student has to reach stands behind a trunk.
 const panels = (page) => page.evaluate(async () => {
   const scene = currentScene;
-  const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
+  const tiles = [...document.querySelectorAll("#skyline .skyline-panel:not(.skyline-floor)")];
   const trees = [...document.querySelectorAll(".shadow-tree")];
   const joins = panelJoins(scene);
   const srcs = [...new Set(scene.panels)];
@@ -158,10 +158,12 @@ const panels = (page) => page.evaluate(async () => {
     srcs, order: tiles.map((t) => (t.style.backgroundImage.match(/street-\d+|tondo/) || ["?"])[0]),
     noneMirrored: tiles.every((t) => !t.classList.contains("skyline-tile-mirrored")),
     // Block 46: the picture stands on the floor, whole, with sky above it.
-    // Block 134: or on the bottom of the screen, for a street that paints
-    // its own road (ground: false).
-    onFloor: tiles.every((t) => getComputedStyle(t).bottom === (scene.ground === false ? "0px" : GROUND_LEVEL + "px") &&
-      /^100%( auto)?$/.test(getComputedStyle(t).backgroundSize)),
+    // Block 139: a street that paints its own road (ground: false) stands
+    // there too, its road carried on under the feet by a flipped copy of
+    // each painting (.skyline-floor), one per painting.
+    onFloor: tiles.every((t) => getComputedStyle(t).bottom === GROUND_LEVEL + "px" &&
+      /^100%( auto)?$/.test(getComputedStyle(t).backgroundSize)) &&
+      document.querySelectorAll("#skyline .skyline-floor").length === (scene.ground === false ? tiles.length : 0),
     sky: tiles.length ? getComputedStyle(tiles[0]).backgroundColor : null,
   };
 });
@@ -2723,7 +2725,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     // Block 136: the post's two paintings are painted at night, so the
     // scene is not tinted again; night is its music.
     ok("on black to the Constabulary's post, at night", await waitForScene(page, "himpilan", 30000) &&
-       await page.evaluate(() => document.querySelectorAll("#skyline .skyline-panel").length === 2 &&
+       await page.evaluate(() => document.querySelectorAll("#skyline .skyline-panel:not(.skyline-floor)").length === 2 &&
          !document.getElementById("skyline").classList.contains("night-tint") &&
          sceneTrack(currentScene) === "assets/audio/music/gabi.wav"));
     c = await readLines(page, 2);

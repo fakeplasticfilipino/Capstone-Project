@@ -6120,6 +6120,31 @@ paintings in the game stay until the new ones arrive under the same
 names. The hall's banner is asked for as 1906's flags, since a new
 painting is being made anyway.
 
+## Block 139: the painting's own floor under the feet, 17 Oct 2026
+
+The proponent, with a screenshot of Tondo on a computer: Macario is
+floating in the air; introduce a ground that looks like the ground in
+the background. Block 134 stood a painting with its own road on the
+bottom of the screen, and Block 137 did the same for every painted
+scene, but the feet stand --ground-level (60) above the bottom, and
+many paintings paint a road thinner than that: he stood at its far
+edge, in front of the fence, as if in the air.
+
+The paintings stand on --ground-level again, and the 60 under them is
+each painting's own floor: a copy of the painting's element, the same
+box and so the same size and crop, flipped about its bottom edge
+(buildFloorBelow; #skyline clips it at the screen's edge). The feet are
+on the seam, the painted road both behind and in front of them, as in
+any side-on game. Tried first: a plain mirror, which on a thin road
+showed the fence and houses reflected like water; mirrored from 24 above
+the edge, worse. Kept: the mirror stretched threefold, so only the
+bottom 20 rows of each painting, the road itself, are carried down; a
+tuft of grass at a painting's edge comes out tall, which reads as grass
+in the foreground. Nothing is drawn or borrowed (Block 118): it is the
+artist's floor, shown again, as mirrorPanels shows a painting again.
+The night tint and greyFilter reach it, being in #skyline. Seen at the
+phone's size and at a computer's (1440 by 770) in every scene.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

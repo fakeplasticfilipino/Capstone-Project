@@ -1044,11 +1044,14 @@ function loadScene(sceneId) {
   document
     .getElementById("ground-tiles")
     .classList.toggle("ground-hidden", scene.ground === false);
-  // Block 134. Paintings that paint their own road (ground: false on a
-  // panelled scene, Tondo's street) stand on the bottom of the screen
-  // rather than on the dirt strip, so everyone walks on the painted road.
-  skylineEl.classList.toggle("panels-own-floor",
-    scene.ground === false && Array.isArray(scene.panels) && scene.panels.length > 0);
+  // Block 139. A painting that paints its own floor (ground: false)
+  // stands on --ground-level as ever, and the strip under the feet is its
+  // own floor carried on, the painting's bottom rows mirrored down
+  // (buildFloorBelow), so everyone stands on the painted road, not on a
+  // floor of ours (Block 137's two floors) nor above the painting's edge
+  // (Block 134's, which stood the paintings on the bottom of the screen
+  // and left the feet over a thin painted road).
+  skylineEl.classList.toggle("own-floor", scene.ground === false);
   // Polish list #6. A scene may lay its own road (ground: { src }), for an
   // act whose ground is not Tondo's dirt; every other scene gets the
   // default back. A picture that is owed (not in the manifest) is not
@@ -1192,6 +1195,7 @@ function buildSkylineTiles() {
     }
     layer.appendChild(tile);
     actElements.push(tile);
+    if (!tile.classList.contains("backdrop-owed")) buildFloorBelow(tile);
     return;
   }
 
@@ -1262,6 +1266,21 @@ function panelWidthAt(scene, i) {
   return scene.panelWidth || PANEL_WIDTH;
 }
 
+// Block 139. Under a painting with its own floor (ground: false), the
+// strip the feet stand on is that floor carried on: a copy of the
+// painting's own element, the same box and so the same size and crop,
+// flipped about its bottom edge and stretched threefold (style.css,
+// .skyline-floor). #skyline clips at the screen's bottom, so only the
+// painting's bottom rows show (a third of --ground-level of them),
+// mirrored, meeting it row for row. The artist's own floor, no picture of ours.
+function buildFloorBelow(tile) {
+  if (!currentScene || currentScene.ground !== false) return;
+  const floor = tile.cloneNode(false);
+  floor.classList.add("skyline-floor");
+  tile.parentNode.appendChild(floor);
+  actElements.push(floor);
+}
+
 function buildPanelBackdrop(scene) {
   const layer = document.getElementById("skyline");
   if (!layer) return;
@@ -1292,6 +1311,7 @@ function buildPanelBackdrop(scene) {
     if (scene.panelSky) tile.style.backgroundColor = scene.panelSky;
     layer.appendChild(tile);
     actElements.push(tile);
+    buildFloorBelow(tile);
   }
 
   panelJoins(scene).forEach((x, i) => {

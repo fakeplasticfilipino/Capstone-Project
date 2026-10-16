@@ -3546,9 +3546,11 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.waitForTimeout(2600);
     const inside = await page.evaluate(() => {
       const sky = document.getElementById("skyline");
-      const tiles = sky.querySelectorAll(".skyline-tile");
+      // Block 139: the painting, and under it its floor carried on (a
+      // flipped copy, .skyline-floor), since this room declares ground: false.
+      const tiles = sky.querySelectorAll(".skyline-tile:not(.skyline-floor)");
       return {
-        room: currentRoom, posX,
+        room: currentRoom, posX, floors: sky.querySelectorAll(".skyline-floor").length,
         src: sky.style.getPropertyValue("--skyline-src"),
         tiles: tiles.length, mirrored: sky.querySelectorAll(".skyline-tile-mirrored").length,
         size: tiles[0] && tiles[0].style.backgroundSize,
@@ -3560,7 +3562,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a scene's backdrop replaces the shared picture", /nanay\.png/.test(inside.src), inside);
     ok("drawn once, covering, not tiled or mirrored",
        inside.tiles === 1 && inside.mirrored === 0 && inside.size === "cover" && inside.tileWidth >= 1176, inside);
-    ok("ground: false hides the dirt strip", inside.ground === "none", inside);
+    ok("ground: false hides the dirt strip, and the painting's own floor is carried on under the feet (Block 139)",
+       inside.ground === "none" && inside.floors === 1, inside);
 
     await page.evaluate(() => { posX = 60; });
     await page.waitForTimeout(150);
