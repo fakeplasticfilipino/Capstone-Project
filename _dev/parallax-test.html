@@ -123,7 +123,7 @@
 <div id="panel">
   <button id="btn-parallax" aria-pressed="true">Parallax: on</button>
   <button id="btn-front" aria-pressed="true">Foreground: on</button>
-  <button id="btn-tondo" aria-pressed="false">Tondo art: off</button>
+  <button id="btn-tondo" aria-pressed="true">Tondo art: on</button>
   <button data-time="day" aria-pressed="true">Day</button>
   <button data-time="dusk" aria-pressed="false">Dusk</button>
   <button data-time="night" aria-pressed="false">Night</button>
@@ -372,7 +372,10 @@ function buildLayers() {
       : art === null ? layer.draw(width, viewH) : "";
     el.style.backgroundImage = art ? `url("${art.src}")` : "";
     el.style.backgroundSize = art ? `auto ${art.height * 100}%` : "";
-    el.style.backgroundPosition = art ? `left bottom ${art.lift}px` : "";
+    // A picture with empty rows under its ground (art.trim, measured when
+    // it loads) is lowered by them, so its ground meets the road.
+    const lift = art ? art.lift - (art.trim || 0) * art.height * viewH : 0;
+    el.style.backgroundPosition = art ? `${art.offset || 0}px bottom ${lift.toFixed(1)}px` : "";
     el.style.filter = art ? art.haze : "";
     if (keep) el.appendChild(keep);
     layerEls[layer.id] = el;
@@ -390,10 +393,14 @@ function buildLayers() {
 const TONDO_ART = {
   // sky, clouds, the bay: replaces sky + mountains
   sky: { src: "parallax-art/tondo-nature.png", height: 1, lift: 0, haze: "" },
-  // the tree line, smaller and paler so it reads as behind the houses:
-  // replaces hills + trees
-  hills: { src: "parallax-art/tondo-trees.png", height: 0.62, lift: GROUND_LEVEL + 4,
-           haze: "saturate(0.75) brightness(1.08) contrast(0.9)" },
+  // The tree line twice, the usual way to get two depths from one
+  // picture: a far copy, small and pale, slow; and a near copy just
+  // behind the houses, taller than their roofs (as real trees are),
+  // nearly as clear as the street.
+  hills: { src: "parallax-art/tondo-trees.png", height: 0.5, lift: GROUND_LEVEL + 40,
+           haze: "saturate(0.6) brightness(1.12) contrast(0.8)" },
+  trees: { src: "parallax-art/tondo-trees.png", height: 0.95, lift: GROUND_LEVEL + 10,
+           haze: "saturate(1.1) contrast(1.05)", offset: 700 },
 };
 
 // The Tondo street, built from the buildings cropped out of the
@@ -405,10 +412,31 @@ const TONDO_STREET = [
   { name: "bahay-kubo", x: 150 },
   { name: "tienda", x: 700 },
   { name: "bahay-na-bato", x: 1200 },
-  { name: "palengke", x: 1850 },
-  { name: "simbahan", x: 2550 },
-  { name: "bahay-balkonahe", x: 3250 },
-  { name: "bahay-kubo", x: 3850 },
+  { name: "palengke", x: 1900 },
+  { name: "simbahan", x: 2580 },
+  { name: "bahay-balkonahe", x: 3300 },
+];
+
+// The props cropped out of the props sheet (parallax-art/props/), drawn
+// over the buildings at their own scale: the sheet drew a barrel about
+// as tall as a house's door, so they are brought down to a person's size.
+const PROP_SCALE = 0.48;
+const TONDO_PROPS = [
+  { name: "palumpong", x: 0 },
+  { name: "palayok", x: 560 },
+  { name: "poste-ilaw", x: 655 },
+  { name: "kahon", x: 1090 },
+  { name: "halaman", x: 1235 },
+  { name: "halaman", x: 1640 },
+  { name: "bakod-sawali", x: 1730 },
+  { name: "bariles", x: 1760 },
+  { name: "kariton", x: 2260 },
+  { name: "poste-ilaw", x: 2530 },
+  { name: "bakod-kahoy", x: 3090 },
+  { name: "basket", x: 3120 },
+  { name: "bangko", x: 3830 },
+  { name: "sampayan", x: 3950 },
+  { name: "bakod-kawayan", x: 4125 },
 ];
 const ROAD_SRC = "../assets/backgrounds/act1/ground-lupa.jpg";
 
@@ -418,16 +446,40 @@ function drawTondoStreet() {
     html += `<img class="building" src="parallax-art/buildings/${b.name}.png" alt=""
       style="left:${b.x}px;bottom:${GROUND_LEVEL + 6}px;transform:scale(${BUILDING_SCALE})">`;
   }
+  for (const p of TONDO_PROPS) {
+    html += `<img class="building" src="parallax-art/props/${p.name}.png" alt=""
+      style="left:${p.x}px;bottom:${GROUND_LEVEL + 4}px;transform:scale(${PROP_SCALE})">`;
+  }
   return html;
 }
-const HIDDEN_BY = { far: "sky", trees: "hills" };
+const HIDDEN_BY = { far: "sky" };
 const artLoaded = {};
-let tondo = false;
+let tondo = true; // the painted Tondo by default; the button shows the drawn first version
 
 for (const [id, { src }] of Object.entries(TONDO_ART)) {
   const img = new Image();
-  img.onload = () => { artLoaded[id] = true; if (tondo) buildLayers(); };
+  img.onload = () => {
+    TONDO_ART[id].trim = emptyBelow(img);
+    artLoaded[id] = true;
+    if (tondo) buildLayers();
+  };
   img.src = src;
+}
+
+// The share of a picture's height that is empty under its ground: the
+// rows below the last one that is at least half opaque.
+function emptyBelow(img) {
+  const c = document.createElement("canvas");
+  c.width = img.naturalWidth; c.height = img.naturalHeight;
+  const g = c.getContext("2d");
+  g.drawImage(img, 0, 0);
+  const { data } = g.getImageData(0, 0, c.width, c.height);
+  for (let y = c.height - 1; y >= 0; y--) {
+    let solid = 0;
+    for (let x = 0; x < c.width; x += 4) if (data[(y * c.width + x) * 4 + 3] > 128) solid++;
+    if (solid > c.width / 8) return (c.height - 1 - y) / c.height;
+  }
+  return 0;
 }
 
 // The picture for a layer in this scene: its TONDO_ART entry, "" for a
@@ -455,7 +507,8 @@ fetch("../js/game.js").then((r) => r.text()).then((code) => {
 }).catch(() => {});
 
 function drawTondoFront(width) {
-  let html = "";
+  // The drawn grass tufts and posts first, the shadow trees over them.
+  let html = drawFront(width, viewH);
   for (let i = 0, x = 500; x < width; i++) {
     html += `<div class="shadow-tree" style="left:${x}px;background-image:${shadowTrees[i % shadowTrees.length].replace(/"/g, "&quot;")}"></div>`;
     x += SHADOW_TREE_SPACING[i % SHADOW_TREE_SPACING.length];
