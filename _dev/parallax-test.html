@@ -50,6 +50,12 @@
 
   html, body { margin: 0; height: 100%; background: #22170f; color: #f5efe0;
     font: 14px/1.4 system-ui, sans-serif; overflow: hidden; }
+  /* The game's zoom (css/style.css): the world is shown at 1.75 on a
+     desktop and 0.7 on a phone held sideways, so sizes here match it. */
+  :root { --zoom: 1.75; }
+  @media (orientation: landscape) and (max-height: 500px) { :root { --zoom: 0.7; } }
+  #app-scale { width: calc(100% / var(--zoom)); height: calc(100% / var(--zoom));
+    transform: scale(var(--zoom)); transform-origin: top left; }
   #viewport { position: relative; width: 100%; height: 100%; overflow: hidden;
     background: linear-gradient(var(--sky-top), var(--sky-bottom)); }
   .layer { position: absolute; left: 0; top: 0; height: 100%; will-change: transform; }
@@ -81,6 +87,9 @@
   .front { fill: var(--front); }
   .front-line { stroke: var(--front); fill: none; }
 
+  .road-strip { position: absolute; left: 0; right: 0; bottom: 0;
+    background-repeat: repeat-x; background-size: auto 100%; }
+  .building { position: absolute; transform-origin: left bottom; }
   #macario { position: absolute; left: 0; bottom: 0; background-repeat: no-repeat;
     image-rendering: auto; }
 
@@ -98,7 +107,7 @@
 </style>
 </head>
 <body>
-<div id="viewport">
+<div id="app-scale"><div id="viewport">
   <div class="layer" id="layer-sky"></div>
   <div class="layer" id="layer-far"></div>
   <div class="layer" id="layer-hills"></div>
@@ -106,7 +115,7 @@
   <div class="layer" id="layer-street"><div id="macario"></div></div>
   <div class="layer" id="layer-front"></div>
   <div id="tint"></div>
-</div>
+</div></div>
 
 <div id="panel">
   <button id="btn-parallax" aria-pressed="true">Parallax: on</button>
@@ -355,7 +364,8 @@ function buildLayers() {
     if (layer.id === "sky") skyWidth = width;
     const keep = layer.id === "street" ? macarioEl : null;
     const art = sceneArt(layer.id);
-    el.innerHTML = art === null ? layer.draw(width, viewH) : "";
+    el.innerHTML = tondo && layer.id === "street" ? drawTondoStreet()
+      : art === null ? layer.draw(width, viewH) : "";
     el.style.backgroundImage = art ? `url("${art.src}")` : "";
     el.style.backgroundSize = art ? `auto ${art.height * 100}%` : "";
     el.style.backgroundPosition = art ? `left bottom ${art.lift}px` : "";
@@ -378,11 +388,34 @@ const TONDO_ART = {
   sky: { src: "parallax-art/tondo-nature.png", height: 1, lift: 0, haze: "" },
   // the tree line, smaller and paler so it reads as behind the houses:
   // replaces hills + trees
-  hills: { src: "parallax-art/tondo-trees.png", height: 0.62, lift: GROUND_LEVEL + 10,
+  hills: { src: "parallax-art/tondo-trees.png", height: 0.62, lift: GROUND_LEVEL + 4,
            haze: "saturate(0.75) brightness(1.08) contrast(0.9)" },
-  // street-01 with its sky cut out
-  street: { src: "parallax-art/tondo-houses.png", height: 1, lift: 0, haze: "" },
 };
+
+// The Tondo street, built from the buildings cropped out of the
+// artist's sheet (parallax-art/buildings/), all drawn at one scale so
+// they keep the sizes the sheet gave them. x is each building's left edge
+// in the world; the road is Tondo's dirt, as in the game (GROUND_SRC).
+const BUILDING_SCALE = 1.1;
+const TONDO_STREET = [
+  { name: "bahay-kubo", x: 150 },
+  { name: "tienda", x: 700 },
+  { name: "bahay-na-bato", x: 1200 },
+  { name: "palengke", x: 1850 },
+  { name: "simbahan", x: 2550 },
+  { name: "bahay-balkonahe", x: 3250 },
+  { name: "bahay-kubo", x: 3850 },
+];
+const ROAD_SRC = "../assets/backgrounds/act1/ground-lupa.jpg";
+
+function drawTondoStreet() {
+  let html = `<div class="road-strip" style="height:${GROUND_LEVEL + 14}px;background-image:url('${ROAD_SRC}')"></div>`;
+  for (const b of TONDO_STREET) {
+    html += `<img class="building" src="parallax-art/buildings/${b.name}.png" alt=""
+      style="left:${b.x}px;bottom:${GROUND_LEVEL + 6}px;transform:scale(${BUILDING_SCALE})">`;
+  }
+  return html;
+}
 const HIDDEN_BY = { far: "sky", trees: "hills" };
 const artLoaded = {};
 let tondo = false;
