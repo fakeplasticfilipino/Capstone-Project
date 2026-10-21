@@ -46,7 +46,7 @@ plaza) do not scroll, so they keep one painting each.
 ### To make
 
     tondo-doors.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
+        (Attach the file _dev/parallax-art/buildings/bahay-na-bato.png)
         Refer to the attached image and use the same art style, size
         and finish. Make a sprite sheet of five separate buildings of
         Tondo, Manila, in 1896, arranged in a grid with wide empty space
@@ -164,7 +164,7 @@ plaza) do not scroll, so they keep one painting each.
         landscape, largest size.
 
     garrison.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
+        (Attach the file _dev/parallax-art/buildings/bahay-na-bato.png)
         Refer to the attached image and use the same art style, size
         and finish. Make a sprite sheet of separate pieces of the
         Spanish powder magazine (polvorín) at San Juan del Monte in
@@ -182,7 +182,7 @@ plaza) do not scroll, so they keep one painting each.
         Landscape, largest size.
 
     rural.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
+        (Attach the file _dev/parallax-art/buildings/bahay-na-bato.png)
         Refer to the attached image and use the same art style, size
         and finish. Make a sprite sheet of separate pieces of a farm by
         the Nangka River east of Manila in 1896, arranged in a grid with
@@ -207,7 +207,7 @@ plaza) do not scroll, so they keep one painting each.
         sky: transparent above the far bank. Wide landscape.
 
     camp.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
+        (Attach the file _dev/parallax-art/buildings/bahay-na-bato.png)
         Refer to the attached image and use the same art style, size
         and finish. Make a sprite sheet of separate pieces of a hidden
         rebel camp in the mountains of the Philippines in 1902, arranged
@@ -226,7 +226,7 @@ plaza) do not scroll, so they keep one painting each.
         size.
 
     post.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
+        (Attach the file _dev/parallax-art/buildings/bahay-na-bato.png)
         Refer to the attached image and use the same art style, size
         and finish. Make a sprite sheet of separate pieces of a
         Philippine Constabulary post in a town in 1904, drawn by day,
@@ -243,7 +243,7 @@ plaza) do not scroll, so they keep one painting each.
         Transparent background. Landscape, largest size.
 
     town.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
+        (Attach the file _dev/parallax-art/buildings/bahay-na-bato.png)
         Refer to the attached image and use the same art style, size
         and finish. Make a sprite sheet of separate buildings of the
         town of San Francisco de Malabon, Cavite, in 1905, drawn by day,
@@ -260,7 +260,7 @@ plaza) do not scroll, so they keep one painting each.
         largest size.
 
     bilibid.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
+        (Attach the file _dev/parallax-art/buildings/bahay-na-bato.png)
         Refer to the attached image and use the same art style, size
         and finish. Make a sprite sheet of separate pieces of the yard
         of Bilibid Prison, Manila, in 1907, arranged in a grid with wide
@@ -539,7 +539,7 @@ Also wanted (not in the game yet):
 ### Act I
 
     assets/sprites/scenery/tahian.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
+        (Attach the file _dev/parallax-art/props/kariton.png)
         Refer to the attached image and use the same art style. Draw
         one small wooden sewing table of 1890, seen from the side, with
         cloth, thread, scissors and a pincushion on it, nothing else in
@@ -547,7 +547,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/scenery/silya-barbero.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
+        (Attach the file _dev/parallax-art/props/kariton.png)
         Refer to the attached image and use the same art style. Draw
         one simple wooden barber's chair of 1890 with a high back and
         armrests, seen from the side, nothing else in the picture.
@@ -562,7 +562,7 @@ Also wanted (not in the game yet):
 ### Act II
 
     assets/sprites/scenery/palimbagan.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
+        (Attach the file _dev/parallax-art/props/kariton.png)
         Refer to the attached image and use the same art style. Draw
         one wooden hand printing press of 1896, a little shorter than a
         man, with a sheet of paper on it, seen from the side, nothing
@@ -570,7 +570,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/scenery/dayami.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
+        (Attach the file _dev/parallax-art/props/kariton.png)
         Refer to the attached image and use the same art style. Draw
         one bundle of dry rice straw tied with a cord, lying on the
         ground, seen from the side, nothing else in the picture.
@@ -578,7 +578,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/scenery/panakot.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
+        (Attach the file _dev/parallax-art/props/kariton.png)
         Refer to the attached image and use the same art style. Draw a
         straw bundle raised on a pole as a scarecrow shaped like a
         standing man, as tall as a man, wearing a salakot with a red
@@ -597,7 +597,7 @@ Also wanted (not in the game yet):
 ### Act III
 
     assets/sprites/scenery/watawat-katagalugan.png
-        (Attach the file _dev/parallax-art/tondo-props.png, and the
+        (Attach the file _dev/parallax-art/props/kariton.png, and the
         proponent's picture of the flag)
         Refer to the attached images and use the art style of the
         first. Draw the flag of the Republika ng Katagalugan, exactly as
