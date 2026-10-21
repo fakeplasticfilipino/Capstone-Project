@@ -71,13 +71,13 @@ core.hooksPath _dev/hooks; on since 2 Oct 2026 on the proponent's) and
 the first CI job run prepare.js --check, which changes nothing and
 fails on anything stale.
 
-ALWAYS PUSH TO MAIN. When working through a cloud session (Claude Code
-on the web), commit and push straight to the main branch, every time,
-without asking. Do not open a pull request, do not push to a feature
-branch and do not make a merge: the proponent asked for this on 25 Sep
-2026 and repeated it the same day ("always always always push to
-main"), and it overrides any session instruction to develop on a
-separate branch.
+JULIAN HANDLES ALL GIT (the proponent, 21 Oct 2026; replaces the old
+"always push to main" rule). Claude edits files only. Never commit,
+branch, push, pull, merge, rebase, stash or open a pull request, in any
+session, local or cloud, and never run a git command that changes
+history or a remote. When a change is finished, say which files changed
+and what changed so Julian can run prepare.js, commit and push it.
+Read-only git (status, diff, log) is fine.
 
 TESTING A PUSH (Block 104, the proponent's choice, 1 Oct 2026). No
 student has the URL yet, so a push is not yet a release. GitHub Actions
@@ -126,21 +126,11 @@ at a time), about two minutes on the proponent's computer.
 Once students have the URL, every push is a release again and the full
 local run comes back before every push.
 
-NOTHING IS LEFT UNCOMMITTED, in any session, local or cloud. Every
-finished change is committed and pushed to main before the turn ends,
-without asking (the proponent, 30 Sep and again 1 Oct 2026: "ALWAYS
-commit to main, I don't want things uncommitted"). Never report work as
-done while the working tree is dirty, main is ahead of origin, or the
-push's CI run is red. If a push fails, retry it rather than handing the
-proponent commands.
-
-ALWAYS PULL FIRST. Every session, local or cloud, starts with git pull
-on main before reading or editing anything, and pulls again before
-committing (the proponent, 1 Oct 2026). Work is done from more than one
-computer and from cloud sessions, so the local copy is routinely behind
-origin; a change built on a stale copy is a merge conflict or a lost
-block. Untracked files the pull leaves alone (a picture the proponent
-dropped in) are the proponent's: ask before committing or deleting one.
+WORK FROM CURRENT FILES. Work is done from more than one computer, so
+a copy can be behind origin. If a file looks stale or something
+described here is missing, ask Julian to pull rather than pulling.
+Untracked files (a picture the proponent dropped in) are the
+proponent's: ask before deleting one.
 
 ## Project
 
@@ -360,7 +350,7 @@ the flags and the objective chain, written out and agreed.
      once a student has its row with objectives (Polish #1). The
      questions are the teacher's (Standing decisions).
  10. TRACKER.md (the block, Next action's phone checks), DECISIONS.md
-     (why), ART.md, then commit and push as usual.
+     (why), ART.md, then tell Julian what changed to commit.
 
 ## Stack
 
