@@ -6176,6 +6176,56 @@ before Block 135. The ground under an owed room's wall is plain earth
 (buildFloorBelow runs for it too). Twenty-four pictures owed. The rule
 is in CLAUDE.md (Act data format, after panelWidths).
 
+## Block 142: outdoor scenes in layers (planned), 21 Oct 2026
+
+The proponent wanted a new background system. A test page was built
+first, apart from the game (_dev/parallax-test.html, nothing in js/ or
+content/ touched), and taken through several rounds with the proponent:
+
+  - Layers that slide at different rates (sky 0, far 0.1, trees 0.3 and
+    0.6, the road 1, a foreground 1.25), drawn first as shapes in code.
+  - Painted layers for Tondo, made with ChatGPT, which is now the
+    project's art producer: a sky and bay, a tree line, and the old
+    street painting with its sky cut out. The cut-out was rejected
+    ("horrible"): a painting cut apart leaves holes and ragged edges.
+  - So the street became a kit of parts: six buildings from one sprite
+    sheet and thirteen props from another, each cropped out and placed
+    by x along a road. One sheet per kit rather than one picture per
+    building (the proponent's idea), so the pieces share style, light
+    and scale. Separate pieces also end the seams (nothing repeats) and
+    let a painted door stand exactly on its doorway, which Block 126
+    asked for and could not get from the paintings.
+  - The trees first looked "on a separate island": the bay showed
+    between their grass and the road, and the picture had empty rows
+    under its grass. The test now measures those rows when the picture
+    loads and lowers it to meet the road.
+  - The trees then looked too far away: small, hazy and slow all at
+    once, a jump from the houses straight to a distant forest. The tree
+    line is now used twice, a small pale copy at 0.3 and a large one,
+    taller than the roofs, at 0.6, the usual way to get two depths from
+    one picture.
+  - The shadow trees became the foreground, read from game.js rather
+    than copied, with the drawn grass under them.
+
+The proponent then chose (decision card, of three put to them) to give
+every outdoor scene that scrolls this system before the freeze, not
+Tondo alone: tondo (all four acts), san-juan, nangka, burol, morong,
+himpilan, dimasalang, malabon and patyo. Rooms, and outdoor places one
+screen wide (Pugad Lawin, Balara, Laguna, the plaza), do not scroll and
+keep one painting each. Kits are shared (one camp kit for burol, morong
+and dimasalang; one mountain range for four scenes), so the art is
+seventeen pictures, each with its own prompt in ART.md, Outdoor layers.
+
+ART.md was rewritten the same day at the proponent's word that the
+artists read only the entry in front of them: every picture is its file
+name, what to attach, and one whole prompt. No shared instructions.
+
+The engine work (layers back from the Block 126 commit, a scene's
+buildings behind its people, the shadow trees as the foreground) waits
+for the proponent's go-ahead; the to-do list is in TRACKER.md, Block
+142. Also from this day: the proponent handles all git (CLAUDE.md,
+Deployment), so a session edits files and says what changed.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

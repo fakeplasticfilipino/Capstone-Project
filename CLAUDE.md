@@ -933,6 +933,24 @@ anyone fights. Gradients the engine draws, not art. (A parallax of
 layered streets was built and taken out the same day, Block 126: no
 time for the art it needs.)
 
+Outdoor layers (Block 142, PLANNED, not built yet; its to-do list is in
+TRACKER.md, Block 142). Every outdoor scene that scrolls (tondo,
+san-juan, nangka, burol, morong, himpilan, dimasalang, malabon, patyo)
+is to be rebuilt as a stack, back to front: a nature picture (sky and
+far distance, rate about 0.1), a tree line twice (small and pale at
+0.3, tall at 0.6, lowered by its empty bottom rows to meet the road),
+the scene's buildings and props (pictures placed by x behind the
+people, one scale per kit, a door's picture standing on its exit), the
+ground strip (a picture: dirt, grass or stone), and the foreground
+(the shadow trees and grass, at about 1.25). Anything a student
+reaches stays at rate 1. Rooms and outdoor places one screen wide keep
+one painting. The art is made with ChatGPT from ART.md's prompts (one
+whole prompt per picture, Outdoor layers) and arrives in
+_dev/parallax-art/; kits come as one sprite sheet each and are cropped
+into pieces. _dev/parallax-test.html is the working model: open it
+through the local server (it reads the shadow trees out of game.js).
+Nothing of it is in the game until the engine work is approved.
+
 An exit is a doorway: a zone on the road, x and width like a hazard,
 reached edge to edge like an NPC. The interact button reads its label
 (default Pasok), and E calls Acts.gotoScene(toScene, { x: toX, facing:

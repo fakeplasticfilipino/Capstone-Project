@@ -9,7 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 17 Oct 2026, after Block 141. Block 141: pictures that do
+Last updated: 21 Oct 2026, Block 142 planned: every outdoor scene that
+scrolls rebuilt in layers (a sky, tree lines, buildings and props placed
+along the road, the shadow trees in front), the art made with ChatGPT
+from ART.md's prompts; its to-do list is below, Block 142. The proponent
+handles all git now: a session edits files and says what changed.
+17 Oct 2026, Block 141: pictures that do
 not fit taken out of the game and owed again (ART.md): the six rooms
 painted too close and the American soldier in 1917's kit; twenty-four
 pictures owed. Block 140: the strip under
@@ -31,10 +36,11 @@ street kept (Block 134). Block 132: a teacher makes her class's accounts on the
 dashboard (printable slips, six-digit passwords, a code at the login),
 the dashboard in five tabs, schema v13 applied and public sign-up
 switched off. Every block before: the Blocks list below, and
-DECISIONS.md. Both suites green locally and on CI (1,538 checks).
-Everything is committed and pushed to main.
+DECISIONS.md. Both suites green locally and on CI (1,538 checks) as
+of Block 141.
 
-A new session, on any device: git pull first; read CLAUDE.md, then
+A new session, on any device: ask the proponent to pull if a file looks
+stale (a session runs no git; CLAUDE.md, Deployment); read CLAUDE.md, then
 this file's Start here and Next action, then STORY.md before touching
 content; look at the last CI run (the Actions tab) to know the build
 was green when this file was written; and check for pictures the
@@ -244,9 +250,70 @@ hook and CI, so there is no list to keep here. The Supabase library is
 supabase-js 2.117.2 (js/vendor/supabase.js). sw.js carries no version:
 the browser checks it on every visit.
 
+## Block 142: outdoor scenes in layers (IN PROGRESS)
+
+The plan the proponent chose on 21 Oct 2026 (DECISIONS.md, Block 142).
+Target: done by the code freeze, 12 Nov 2026. The test page that shows
+how it looks: _dev/parallax-test.html (Tondo, built from the first art
+in _dev/parallax-art/). Who: the proponent makes the art with ChatGPT
+and commits; a session does the rest and says what changed.
+
+Art (prompts in ART.md, Outdoor layers; saved in _dev/parallax-art/),
+in this order:
+
+    [x] tondo-nature, tondo-trees (lowland), tondo-houses, tondo-props
+    [ ] tondo-doors (the buildings Macario goes into)
+    [ ] dirt-ground
+    [ ] sierra-nature, mountain-trees, camp, grass-ground
+    [ ] garrison, rural, river
+    [ ] post, sierra-night-nature
+    [ ] town, cavite-dusk-nature
+    [ ] bilibid, bilibid-sky-nature, stone-ground
+    [ ] manila-view-nature
+
+Engine (game.js; the approach walked through with the proponent before
+it is written):
+
+    [ ] layers back from the Block 126 commit ("Block 126: lit
+        doorways, and layers that drift behind a street"): a scene's
+        pictures behind the road, each at its rate of the camera
+    [ ] a scene's buildings: pictures behind the people, placed by x at
+        one scale per kit, a door's picture on its exit
+    [ ] the shadow trees as a foreground layer, the grass under them;
+        the ground strip from a picture (dirt, grass, stone)
+    [ ] the tree line twice (far and pale, near and tall), lowered to
+        meet the road by its empty rows, as the test page does
+    [ ] the content check and test.js cover layers and buildings
+    [ ] the art moved from _dev/parallax-art/ into assets/ (layers in
+        assets/backgrounds/layers/, kits cropped into
+        assets/sprites/buildings/), sheets kept in
+        docs-private/art-delivered/
+
+Scenes:
+
+    [ ] tondo, one layout shared by Acts I to IV, each door's building
+        on its exit: Nanay's house 2000, the pulungan's back door 4100,
+        the barberya 5260, the press 6650, Act III's doors 6700, 8300
+        and 10900, the mountain road 11300, the entablado 13600
+    [ ] san-juan, nangka (Act II)
+    [ ] burol, morong (Act III; morong again in Act IV)
+    [ ] himpilan, dimasalang, malabon, patyo (Act IV)
+    [ ] in every scene: cover, hide spots, hazards and guard posts
+        checked against the new buildings (the paintings placed some)
+
+Finish:
+
+    [ ] both suites in full at a student's speed (run.js --real), and
+        every outdoor scene seen on the phone (?dev=1)
+    [ ] the old street and field paintings out of assets/ (kept in
+        docs-private/art-delivered/), COMPLETED in ART.md updated
+
+Dates: art and engine by 25 Oct; Tondo by 28 Oct; the other eight
+scenes 29 Oct to 7 Nov; testing 8 to 11 Nov; freeze 12 Nov.
+
 ## Next action
 
-In order.
+Block 142 (above) comes first. Then, in order.
 
 1. Every new block is seen on the phone before it is called done: in
 landscape, from a private tab, after the push, with the sound on,
@@ -952,6 +1019,7 @@ machine, the assessment module.
 
 Every act is written, accepted and has its built-in questions (Acts I to
 IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
+Block 142, every outdoor scene in layers (IN PROGRESS, its list above);
 the art, ART.md (twenty-four pictures; BLOCKED, the artist), and the
 two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
 BLOCKED, the artist).
