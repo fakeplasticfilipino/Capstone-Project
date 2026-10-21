@@ -53,6 +53,8 @@
   #viewport { position: relative; width: 100%; height: 100%; overflow: hidden;
     background: linear-gradient(var(--sky-top), var(--sky-bottom)); }
   .layer { position: absolute; left: 0; top: 0; height: 100%; will-change: transform; }
+  .layer { background-repeat: repeat-x; background-size: auto 100%;
+    background-position: left bottom; }
   .layer svg { position: absolute; left: 0; bottom: 0; display: block; }
   #tint { position: absolute; inset: 0; background: var(--tint); pointer-events: none; }
   #layer-front svg { filter: blur(1.5px); }
@@ -109,6 +111,7 @@
 <div id="panel">
   <button id="btn-parallax" aria-pressed="true">Parallax: on</button>
   <button id="btn-front" aria-pressed="true">Foreground: on</button>
+  <button id="btn-tondo" aria-pressed="false">Tondo art: off</button>
   <button data-time="day" aria-pressed="true">Day</button>
   <button data-time="dusk" aria-pressed="false">Dusk</button>
   <button data-time="night" aria-pressed="false">Night</button>
@@ -351,11 +354,52 @@ function buildLayers() {
     el.style.width = width + "px";
     if (layer.id === "sky") skyWidth = width;
     const keep = layer.id === "street" ? macarioEl : null;
-    el.innerHTML = layer.draw(width, viewH);
+    const art = sceneArt(layer.id);
+    el.innerHTML = art === null ? layer.draw(width, viewH) : "";
+    el.style.backgroundImage = art ? `url("${art.src}")` : "";
+    el.style.backgroundSize = art ? `auto ${art.height * 100}%` : "";
+    el.style.backgroundPosition = art ? `left bottom ${art.lift}px` : "";
+    el.style.filter = art ? art.haze : "";
     if (keep) el.appendChild(keep);
     layerEls[layer.id] = el;
   }
   lastCameraX = null;
+}
+
+// --- Painted layers (the Tondo button) ------------------------------------
+// Pictures dropped in _dev/parallax-art/ replace the drawn layers they name;
+// one that is missing leaves the drawn layer in its place. Each is laid
+// across its layer at the screen's full height, repeated left to right,
+// bottom-anchored like the game's paintings.
+// height: the share of the screen the picture is drawn at; lift: how far
+// above the bottom it stands; haze: a filter that pushes it back.
+const TONDO_ART = {
+  // sky, clouds, the bay: replaces sky + mountains
+  sky: { src: "parallax-art/tondo-nature.png", height: 1, lift: 0, haze: "" },
+  // the tree line, smaller and paler so it reads as behind the houses:
+  // replaces hills + trees
+  hills: { src: "parallax-art/tondo-trees.png", height: 0.62, lift: GROUND_LEVEL + 10,
+           haze: "saturate(0.75) brightness(1.08) contrast(0.9)" },
+  // street-01 with its sky cut out
+  street: { src: "parallax-art/tondo-houses.png", height: 1, lift: 0, haze: "" },
+};
+const HIDDEN_BY = { far: "sky", trees: "hills" };
+const artLoaded = {};
+let tondo = false;
+
+for (const [id, { src }] of Object.entries(TONDO_ART)) {
+  const img = new Image();
+  img.onload = () => { artLoaded[id] = true; if (tondo) buildLayers(); };
+  img.src = src;
+}
+
+// The picture for a layer in this scene: its TONDO_ART entry, "" for a
+// layer hidden behind a picture, or null to draw it.
+function sceneArt(id) {
+  if (!tondo) return null;
+  if (artLoaded[id]) return TONDO_ART[id];
+  if (HIDDEN_BY[id] && artLoaded[HIDDEN_BY[id]]) return "";
+  return null;
 }
 
 // --- Macario ------------------------------------------------------------
@@ -404,6 +448,13 @@ btnParallax.addEventListener("click", () => {
   btnParallax.setAttribute("aria-pressed", parallaxOn);
   btnParallax.textContent = "Parallax: " + (parallaxOn ? "on" : "off");
   lastCameraX = null;
+});
+const btnTondo = document.getElementById("btn-tondo");
+btnTondo.addEventListener("click", () => {
+  tondo = !tondo;
+  btnTondo.setAttribute("aria-pressed", tondo);
+  btnTondo.textContent = "Tondo art: " + (tondo ? "on" : "off");
+  buildLayers();
 });
 const btnFront = document.getElementById("btn-front");
 btnFront.addEventListener("click", () => {
