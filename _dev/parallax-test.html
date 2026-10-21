@@ -392,15 +392,15 @@ function buildLayers() {
 // above the bottom it stands; haze: a filter that pushes it back.
 const TONDO_ART = {
   // sky, clouds, the bay: replaces sky + mountains
-  sky: { src: "parallax-art/tondo-nature.png", height: 1, lift: 0, haze: "" },
+  sky: { src: "parallax-art/tondo-nature.png?v=2", height: 1, lift: 0, haze: "", trim: 0 },
   // The tree line twice, the usual way to get two depths from one
   // picture: a far copy, small and pale, slow; and a near copy just
   // behind the houses, taller than their roofs (as real trees are),
   // nearly as clear as the street.
-  hills: { src: "parallax-art/tondo-trees.png", height: 0.5, lift: GROUND_LEVEL + 40,
-           haze: "saturate(0.6) brightness(1.12) contrast(0.8)" },
-  trees: { src: "parallax-art/tondo-trees.png", height: 0.95, lift: GROUND_LEVEL + 10,
-           haze: "saturate(1.1) contrast(1.05)", offset: 700 },
+  hills: { src: "parallax-art/tondo-trees.png?v=2", height: 0.5, lift: GROUND_LEVEL + 40,
+           haze: "saturate(0.6) brightness(1.12) contrast(0.8)", trim: 0.07 },
+  trees: { src: "parallax-art/tondo-trees.png?v=2", height: 0.95, lift: GROUND_LEVEL + 10,
+           haze: "saturate(1.1) contrast(1.05)", offset: 700, trim: 0.07 },
 };
 
 // The Tondo street, built from the buildings cropped out of the
@@ -459,7 +459,9 @@ let tondo = true; // the painted Tondo by default; the button shows the drawn fi
 for (const [id, { src }] of Object.entries(TONDO_ART)) {
   const img = new Image();
   img.onload = () => {
-    TONDO_ART[id].trim = emptyBelow(img);
+    // Opened straight from the folder (file://), the browser will not let
+    // a page read a picture's pixels, so the trim written above stays.
+    try { TONDO_ART[id].trim = emptyBelow(img); } catch (e) {}
     artLoaded[id] = true;
     if (tondo) buildLayers();
   };
@@ -498,18 +500,25 @@ function sceneArt(id) {
 const SHADOW_TREE_BOX = { width: 440, height: 1200 }; // SHADOW_TREE_WIDTH, its svg's height
 const SHADOW_TREE_SPACING = [1150, 1500, 1300, 1700]; // world px between trees, repeating
 let shadowTrees = [];
+function useShadowTrees(svgs) {
+  shadowTrees = svgs.map((svg) => 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")');
+  if (tondo) buildLayers();
+}
 fetch("../js/game.js").then((r) => r.text()).then((code) => {
   const m = code.match(/const SHADOW_TREE_SVGS = (\[[\s\S]*?\n\]);/);
-  if (!m) return;
-  shadowTrees = JSON.parse(m[1].replace(/,\s*\]$/, "]")).map(
-    (svg) => 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")');
-  if (tondo) buildLayers();
-}).catch(() => {});
+  if (m) useShadowTrees(JSON.parse(m[1].replace(/,\s*\]$/, "]")));
+}).catch(() => {
+  // file:// cannot fetch; parallax-art/shadow-trees.js is a copy of the list.
+  const s = document.createElement("script");
+  s.src = "parallax-art/shadow-trees.js";
+  s.onload = () => useShadowTrees(window.SHADOW_TREE_SVGS);
+  document.head.appendChild(s);
+});
 
 function drawTondoFront(width) {
   // The drawn grass tufts and posts first, the shadow trees over them.
   let html = drawFront(width, viewH);
-  for (let i = 0, x = 500; x < width; i++) {
+  for (let i = 0, x = 1000; x < width; i++) {
     html += `<div class="shadow-tree" style="left:${x}px;background-image:${shadowTrees[i % shadowTrees.length].replace(/"/g, "&quot;")}"></div>`;
     x += SHADOW_TREE_SPACING[i % SHADOW_TREE_SPACING.length];
   }
