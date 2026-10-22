@@ -10,21 +10,66 @@ For the team: the artist reads only the entries. Each one stands alone
 picture can carry are asked for in one picture (22 Oct 2026, the
 proponent): a sheet of several pieces, cropped by the team into the
 files each entry's "Cut into" names. An entry named without a folder
-(dirt-ground.jpg, garrison.png) is Block 142's outdoor layers: saved in
-_dev/parallax-art/ until the game is built to use them, so prepare.js
-does not count them; it checks that every assets/ file in Backgrounds,
-Sprites and Props (outside "Also wanted") is missing and every missing
-one is listed. Which scene uses which layers: the table at the end.
-When a picture arrives, move its line to COMPLETED. Originals are kept
-in docs-private/art-delivered/. node _dev/tools/missing-art.js lists
-what the game asks for and does not have. A still delivered on black:
-node _dev/tools/key-still.js; a sheet on black: _dev/tools/key-black.py.
+(dirt-ground.jpg, garrison.png) is Block 142's outdoor layers, saved in
+_dev/parallax-art/, or a room kit (room-walls.png, bahay-kit.png), cut
+into _dev/room-art/; both wait there until the game is built to use
+them, so prepare.js does not count them. A kit entry's "Takes the place
+of" line names the room painting the game still asks for, which keeps
+prepare.js's count right until the room is built from the kit; it checks
+that every assets/ file in Backgrounds, Sprites and Props (outside "Also
+wanted") is missing and every missing one is listed. Which scene uses
+which layers: the table at the end. When a picture arrives, move its
+line to COMPLETED. Originals are kept in docs-private/art-delivered/.
+node _dev/tools/missing-art.js lists what the game asks for and does not
+have. A still delivered on black: node _dev/tools/key-still.js; a sheet
+on black: _dev/tools/key-black.py.
 
 ## Backgrounds
 
 ### Act I
 
-Nothing needed.
+    room-walls.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sheet of four separate pieces of the back wall of
+        a room, arranged in a row with wide empty space between them so
+        none touch. Each piece seen straight on (flat, no perspective,
+        no side walls, no floor, no ceiling corners), tall and narrow,
+        from the floor line at the bottom up to a ceiling beam across
+        the top, with a plain vertical post along its left edge and an
+        identical post along its right edge, so copies can be set side
+        by side into a long wall. Nothing on the walls: no windows,
+        doors, shelves, pictures, lamps or furniture. (1) Rough wide
+        wooden planks between dark wooden posts, a tie beam at the top,
+        as inside a working house in Tondo, 1896. (2) Woven split-bamboo
+        matting (sawali) between bamboo posts, a bamboo beam at the top,
+        as inside a poor nipa house. (3) Big grey-brown stone blocks
+        with dark wooden posts, as inside an old prison cell. (4)
+        Smooth white lime plaster above a dark polished wooden panel
+        along the bottom, between wooden pilasters, as inside a
+        respectable town house around 1900. Soft, even daylight. No
+        people. Transparent background. Landscape, largest size.
+        Cut into (_dev/room-art/): wall-tabla.png (1),
+        wall-sawali.png (2), wall-bato.png (3), wall-palitada.png (4)
+        (NOT STARTED)
+
+    room-floors.png
+        (Attach the file _dev/parallax-art/dirt-ground.png)
+        Refer to the attached image: a strip of ground seen from the
+        side for a 2D side-scrolling game. Use the same art style and
+        make a sheet of five strips of indoor floor in the same shape,
+        one above the other with wide empty space between them, each a
+        long flat band seen from the side and a little from above, with
+        the same pattern from end to end so it can repeat, the boards or
+        stones running left to right: (1) worn wooden stage boards, (2)
+        rough wide floorboards, (3) split bamboo slats, (4) worn stone
+        flagstones, (5) polished dark hardwood boards. No furniture, no
+        people, no shadows. Transparent background. Landscape, largest
+        size.
+        Cut into (_dev/room-art/): floor-entablado.png (1),
+        floor-tabla.png (2), floor-kawayan.png (3), floor-bato.png (4),
+        floor-narra.png (5)
+        (NOT STARTED)
 
 ### Act II
 
@@ -71,36 +116,6 @@ Nothing needed.
         sky: transparent above the far bank. Wide landscape.
         (NOT STARTED)
 
-    assets/backgrounds/act2/imprenta.jpg
-        (Attach pulungan.jpg from the folder assets/backgrounds/act1)
-        Refer to the attached image and use the same art style. Paint
-        the Katipunan's hidden printing press inside a house in Tondo,
-        1896, as one wide room seen straight on from the side like a
-        stage set, the camera far back: a grown man standing at the
-        front would be a quarter of the picture's height, a door a
-        third of it, a table top at his hip, and the floor fills the
-        bottom sixth. A wooden hand press at the left, stacks of paper
-        and type cases, crates, two tall wooden shelves a person could
-        climb, a small back window at the left edge, the door out at the
-        right edge. Busy and hopeful. No people. Wide landscape. Then
-        ask: "continue this room to the right as a second picture whose
-        left edge matches this one's right edge" (the room is two
-        pictures wide).
-        (NOT STARTED)
-
-    assets/backgrounds/act2/bahay.jpg
-        (Attach pulungan.jpg from the folder assets/backgrounds/act1)
-        Refer to the attached image and use the same art style. Paint a
-        poor but cared-for one-room house in Tondo, 1896, seen straight
-        on from the side like a stage set, the camera far back: a grown
-        man standing at the front would be a quarter of the picture's
-        height, a door a third of it, a table top at his hip, and the
-        floor fills the bottom sixth. A bamboo floor, a low wooden table
-        and two stools in the middle, a small home altar, a rolled
-        woven mat by the wall, a capiz window, the door on the right.
-        Quiet and warm. No people. Wide landscape.
-        (NOT STARTED)
-
 ### Act III
 
     manila-view-nature.jpg
@@ -128,32 +143,6 @@ Nothing needed.
         right edges continue into each other so the picture can repeat.
         No buildings, no people, no sky. Transparent background. Wide
         landscape, largest size.
-        (NOT STARTED)
-
-    assets/backgrounds/act3/barberya.jpg
-        (Attach pulungan.jpg from the folder assets/backgrounds/act1)
-        Refer to the attached image and use the same art style. Paint a
-        small barbershop in Tondo by day, 1900, seen straight on from the
-        side like a stage set, the camera far back: a grown man standing
-        at the front would be a quarter of the picture's height, a door a
-        third of it, a table top at his hip, and the floor fills the
-        bottom sixth. One barber's chair facing a mirror on the wall, a
-        narrow shelf of razors and bottles, a small table, a bench for
-        waiting customers, the door on the right. Ordinary and tidy. No
-        people. Wide landscape.
-        (NOT STARTED)
-
-    assets/backgrounds/act3/calle-gunao.jpg
-        (Attach pulungan.jpg from the folder assets/backgrounds/act1)
-        Refer to the attached image and use the same art style. Paint
-        the sala of a respectable house on Calle Gunao, Quiapo, 1901,
-        seen straight on from the side like a stage set, the camera far
-        back: a grown man standing at the front would be a quarter of the
-        picture's height, a door a third of it, a table top at his hip,
-        and the floor fills the bottom sixth. A polished wooden floor,
-        capiz windows, a long table with papers and an inkwell in the
-        middle, chairs around it, a door at each end. Hopeful and
-        respectable. No people. Wide landscape.
         (NOT STARTED)
 
 ### Act IV
@@ -207,32 +196,6 @@ Nothing needed.
         edges must continue into each other perfectly so it can
         repeat. Fill the whole picture edge to edge, no white or empty
         space. Wide landscape, short in height.
-        (NOT STARTED)
-
-    assets/backgrounds/act4/sala.jpg
-        (Attach pulungan.jpg from the folder assets/backgrounds/act1)
-        Refer to the attached image and use the same art style. Paint a
-        large reception hall in a house in Cavite, 1906, seen straight on
-        from the side like a stage set, the camera far back: a grown man
-        standing at the front would be a quarter of the picture's
-        height, a door a third of it, a table top at his hip, and the
-        floor fills the bottom sixth. A long table laid for a festive
-        meal in the middle, chairs along it, lamps, the American flag of
-        1906 on the back wall, a door at each end. Polite and festive.
-        No people. Wide landscape.
-        (NOT STARTED)
-
-    assets/backgrounds/act4/hukuman.jpg
-        (Attach pulungan.jpg from the folder assets/backgrounds/act1)
-        Refer to the attached image and use the same art style. Paint
-        the Court of First Instance of Cavite, 1906, seen straight on
-        from the side like a stage set, the camera far back: a grown man
-        standing at the front would be a quarter of the picture's
-        height, a door a third of it, a table top at his hip, and the
-        floor fills the bottom sixth. A raised judge's bench on the
-        right, a wooden rail across the room, plain benches on the
-        left, tall windows, a door on the left. Formal and cold. No
-        people. Wide landscape.
         (NOT STARTED)
 
 ## Sprites
@@ -405,9 +368,112 @@ Also wanted (not in the game yet):
 
 ### Act I
 
-Nothing needed.
+    entablado-kit.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sprite sheet of the separate pieces of a small
+        theatre stage in Tondo, 1896, set for a moro-moro play. (1) A
+        tall red velvet stage curtain hanging straight down from top to
+        floor, gathered and tied back with a gold cord. (2) A long red
+        swagged valance with gold fringe and tassels, to hang across the
+        top. (3) A big painted canvas backdrop in a thin wooden frame: a
+        Moorish city with domes and minarets by the sea on the left, a
+        castle on a cliff on the right, mountains and a dusk sky
+        between. (4) A tall dark blue banner with a gold crescent and
+        star. (5) A painted wooden side flat of palm trees. (6) A row of
+        oil footlights with tin reflectors. (7) A gilded wooden prop
+        throne. Each piece whole and seen straight on from the side
+        (flat, no perspective), with wide empty space between them so
+        none touch or overlap, all drawn in proportion to each other. No
+        people, no walls, no floor, no shadows between pieces.
+        Transparent background. Landscape, largest size.
+        Cut into (_dev/room-art/entablado/): kurtina.png (1),
+        kurtina-taas.png (2), telon.png (3), bandila-buwan.png
+        (4), gilid-palma.png (5), ilaw-paa.png (6), trono.png
+        (7)
+        (NOT STARTED)
+
+    pulungan-kit.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sprite sheet of the separate pieces of the
+        Katipunan's secret meeting room in a house in Tondo, 1895, at
+        night by candlelight. (1) A long rough wooden table with a lit
+        candle, papers and an inkpot on it. (2) A long wooden bench. (3)
+        A red cloth banner with three white letters K in a row, hung
+        from a cord. (4) A plain wooden plank door, a little taller than
+        a man, half open, night outside. (5) A window with wooden bars,
+        night outside. (6) A lit candle in an iron wall holder. (7) A
+        wooden rack holding bolos and bamboo spears. (8) Two wooden
+        barrels and a woven basket. (9) A wall shelf with clay jars and
+        baskets. Each piece whole and seen straight on from the side
+        (flat, no perspective), with wide empty space between them so
+        none touch or overlap, all drawn in proportion to each other. No
+        people, no walls, no floor, no shadows between pieces.
+        Transparent background. Landscape, largest size.
+        Cut into (_dev/room-art/pulungan/): mesa.png (1),
+        bangko.png (2), bandila-kkk.png (3), pinto.png (4),
+        bintana.png (5), kandila.png (6), sandata.png (7),
+        bariles.png (8), istante.png (9)
+        (NOT STARTED)
 
 ### Act II
+
+    imprenta-kit.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sprite sheet of the separate pieces of the
+        Katipunan's hidden printing room in a house in Tondo, 1896. (1)
+        A wide, low wooden shelf unit, chest high to a man and wider
+        than it is tall, with a thick flat top board strong enough to
+        stand on, its shelves full of paper bundles. (2) A second such
+        shelf, a little narrower, with ink jars and boxes. (3) A tall
+        slanted type case cabinet with many small drawers of lead
+        letters. (4) A stack of wooden crates, chest high. (5) Stacked
+        bales of paper tied with string, chest high. (6) Two small
+        barrels of ink. (7) A cord strung across with printed sheets
+        hanging from it to dry. (8) A small square window with its
+        wooden shutters open, daylight outside. (9) A plain wooden door
+        with iron hinges, a little taller than a man. (10) A worktable
+        with papers and a composing stick, its top at a man's hip. Each
+        piece whole and seen straight on from the side (flat, no
+        perspective), with wide empty space between them so none touch
+        or overlap, all drawn in proportion to each other. No people, no
+        walls, no floor, no shadows between pieces. Transparent
+        background. Landscape, largest size.
+        Cut into (_dev/room-art/imprenta/): istante-1.png (1),
+        istante-2.png (2), kaha-titik.png (3), kahon.png (4),
+        papel.png (5), tinta.png (6), sampayan-papel.png (7),
+        bintana.png (8), pinto.png (9), mesa.png (10); the press
+        is palimbagan.png (act2-props.png)
+        Takes the place of (for the team):
+        assets/backgrounds/act2/imprenta.jpg
+        (NOT STARTED)
+
+    bahay-kit.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sprite sheet of the separate pieces of a poor but
+        cared-for one-room house in Tondo, 1896, quiet and warm. (1) A
+        low wooden table. (2) A small wooden stool. (3) A small home
+        altar: a wooden shelf with a carved wooden santo, a cross, a lit
+        candle and flowers. (4) A rolled woven mat (banig) standing on
+        end. (5) A sliding window of small square capiz shell panes in a
+        wooden frame. (6) A door of woven bamboo in a bamboo frame, a
+        little taller than a man. (7) Clay cooking pots on a clay stove
+        (kalan). (8) A wooden chest (baul). (9) A hanging oil lamp. Each
+        piece whole and seen straight on from the side (flat, no
+        perspective), with wide empty space between them so none touch
+        or overlap, all drawn in proportion to each other. No people, no
+        walls, no floor, no shadows between pieces. Transparent
+        background. Landscape, largest size.
+        Cut into (_dev/room-art/bahay/): mesa.png (1),
+        bangkito.png (2), altar.png (3), banig.png (4),
+        bintana-capiz.png (5), pinto.png (6), kalan.png (7),
+        baul.png (8), lampara.png (9)
+        Takes the place of (for the team):
+        assets/backgrounds/act2/bahay.jpg
+        (NOT STARTED)
 
     garrison.png
         (Attach the file _dev/parallax-art/tondo-houses.png)
@@ -464,6 +530,81 @@ Nothing needed.
 
 ### Act III
 
+    barberya-kit.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sprite sheet of the separate pieces of a small,
+        tidy barbershop in Tondo, 1900. (1) A large mirror in a carved
+        wooden frame, to hang on a wall. (2) A narrow wall shelf with
+        razors, combs, scissors and glass bottles. (3) A small square
+        wooden table covered with a plain cloth, its top at a man's hip.
+        (4) A long wooden bench for waiting customers. (5) A wooden door
+        with a small glass pane, a little taller than a man. (6) A
+        window with wooden shutters open, daylight outside. (7) A wooden
+        coat stand with a hat and a jacket. (8) A washbasin and a jug on
+        a wooden stand, a towel over it. Each piece whole and seen
+        straight on from the side (flat, no perspective), with wide
+        empty space between them so none touch or overlap, all drawn in
+        proportion to each other. No people, no walls, no floor, no
+        shadows between pieces. Transparent background. Landscape,
+        largest size.
+        Cut into (_dev/room-art/barberya/): salamin.png (1),
+        istante.png (2), mesa.png (3), bangko.png (4), pinto.png
+        (5), bintana.png (6), sabitan.png (7), palanggana.png
+        (8); the barber's chair is silya-barbero.png
+        Takes the place of (for the team):
+        assets/backgrounds/act3/barberya.jpg
+        (NOT STARTED)
+
+    selda-kit.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sprite sheet of the separate pieces of a cell in
+        Bilibid Prison, Manila, 1902 to 1907, bare and grim. (1) A cell
+        gate of iron bars in a heavy wooden frame, a little taller than
+        a man. (2) A small high arched window with iron bars, daylight
+        outside. (3) A plain wooden bench. (4) A wooden bucket. (5) A
+        thin straw sleeping mat lying flat. (6) A heavy iron ring fixed
+        to a stone block. Each piece whole and seen straight on from the
+        side (flat, no perspective), with wide empty space between them
+        so none touch or overlap, all drawn in proportion to each other.
+        No people, no walls, no floor, no shadows between pieces.
+        Transparent background. Landscape, largest size.
+        Cut into (_dev/room-art/selda/): tarangkahan.png (1),
+        bintana.png (2), bangko.png (3), timba.png (4),
+        banig.png (5), singsing.png (6)
+        (NOT STARTED)
+
+    sala-kit.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sprite sheet of the separate pieces of the sala
+        of a respectable town house in the Philippines, 1901 to 1906.
+        (1) A long dark wooden table, bare, its top at a man's hip. (2)
+        The same long table covered with a white cloth and laid for a
+        festive meal, with dishes, glasses and a candlestick. (3)
+        Papers, a quill and an inkwell, to lie on a table. (4) A
+        high-backed wooden chair seen from the side. (5) A tall window
+        of small square capiz shell panes, its sliding shutters half
+        open. (6) A tall panelled wooden double door. (7) The flag of
+        the United States of 1906 (45 stars) hung flat on a wall. (8) A
+        hanging oil lamp with a glass shade. (9) A framed painting of a
+        landscape. (10) A potted palm on a stand. Each piece whole and
+        seen straight on from the side (flat, no perspective), with wide
+        empty space between them so none touch or overlap, all drawn in
+        proportion to each other. No people, no walls, no floor, no
+        shadows between pieces. Transparent background. Landscape,
+        largest size.
+        Cut into (_dev/room-art/sala/): mesa.png (1),
+        mesa-handaan.png (2), papeles.png (3), silya.png (4),
+        bintana-capiz.png (5), pinto.png (6),
+        bandila-amerikano.png (7), lampara.png (8), larawan.png
+        (9), halaman.png (10)
+        Takes the place of (for the team):
+        assets/backgrounds/act3/calle-gunao.jpg,
+        assets/backgrounds/act4/sala.jpg
+        (NOT STARTED)
+
     camp.png
         (Attach the file _dev/parallax-art/tondo-houses.png)
         Refer to the attached image and use the same art style, size
@@ -495,6 +636,30 @@ Nothing needed.
         (NOT STARTED)
 
 ### Act IV
+
+    hukuman-kit.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sprite sheet of the separate pieces of the Court
+        of First Instance of Cavite, 1906, formal and cold. (1) A raised
+        wooden judge's bench with a step up to it and a tall chair
+        behind it. (2) A wooden rail with turned posts and a small
+        swinging gate, waist high. (3) A long plain wooden bench. (4) A
+        clerk's table with papers and a book. (5) A tall window with
+        wooden shutters. (6) A tall panelled wooden door. (7) The flag
+        of the United States of 1906 (45 stars) on a standing pole. (8)
+        A round wall clock. Each piece whole and seen straight on from
+        the side (flat, no perspective), with wide empty space between
+        them so none touch or overlap, all drawn in proportion to each
+        other. No people, no walls, no floor, no shadows between pieces.
+        Transparent background. Landscape, largest size.
+        Cut into (_dev/room-art/hukuman/): hukom-mesa.png (1),
+        barandilya.png (2), bangko.png (3), mesa.png (4),
+        bintana.png (5), pinto.png (6), bandila-amerikano.png
+        (7), orasan.png (8)
+        Takes the place of (for the team):
+        assets/backgrounds/act4/hukuman.jpg
+        (NOT STARTED)
 
     post.png
         (Attach the file _dev/parallax-art/tondo-houses.png)
@@ -562,8 +727,25 @@ Nothing needed.
     malabon      cavite-dusk       lowland    town                dirt
     patyo        bilibid-sky       none       bilibid             stone
 
-Rooms and the places one screen wide (Pugad Lawin, Balara, Laguna, the
-plaza) do not scroll, so they keep one painting each. tondo-doors.png's
+The places one screen wide (Pugad Lawin, Balara, Laguna, the plaza)
+do not scroll, so they keep one painting each. The rooms are built from
+kits instead (22 Oct 2026, the proponent, all nine): a wall from
+room-walls.png repeated along the room, a floor from room-floors.png,
+and the room's own pieces placed by x on the hotspots (doors, windows,
+the press's shelves and hiding places). Until a room is built from its
+kit, the game keeps its painting (the entablado, the pulungan, the
+selda) or the owed dark wall.
+
+    room          wall       floor       pieces
+    entablado     tabla      entablado   entablado-kit
+    pulungan      tabla      tabla       pulungan-kit
+    imprenta      tabla      tabla       imprenta-kit + palimbagan
+    bahay         sawali     kawayan     bahay-kit
+    barberya      tabla      tabla       barberya-kit + silya-barbero
+    selda         bato       bato        selda-kit
+    calle-gunao   palitada   narra       sala-kit
+    sala          palitada   narra       sala-kit
+    hukuman       palitada   narra       hukuman-kit tondo-doors.png's
 five pieces are the doors Macario goes through on the Tondo street:
 the entablado (1), Nanay's house (2), the press's house (3), the
 barberya (4), the pulungan's back door (5).

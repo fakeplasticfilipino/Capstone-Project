@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Room test</title>
+<!--
+  Room test page (22 Oct 2026, the interior backgrounds thread). Standalone,
+  as _dev/parallax-test.html is: it loads nothing from js/ or css/ and the
+  game never loads it, so deleting this one file is the whole revert. Open
+  it through the same local server as the game.
+
+  A room built from a kit (ART.md, the rooms table): a wall repeated along
+  the room (room-walls.png, cut into _dev/room-art/wall-*.png), a floor
+  strip under the feet (room-floors.png, floor-*.png), and the room's own
+  pieces placed by x, each drawn at a height in world pixels (Macario is
+  134) so a piece keeps its size whatever size ChatGPT drew it. A file not
+  there yet is a dashed box of the size it will be, named. The hotspots
+  (doors, people, shelves, hiding places) are read off content/ by hand and
+  shown as markers, so a piece can be checked against what it stands for.
+
+  Arrow keys or A/D walk; H hides the markers; N is night.
+-->
+<style>
+  html, body { margin: 0; height: 100%; background: #160f0a; color: #f5efe0;
+    font: 14px/1.4 system-ui, sans-serif; overflow: hidden; }
+  /* The game's zoom (css/style.css): 1.75 on a desktop, 0.7 on a phone. */
+  :root { --zoom: 1.75; --ground-level: 60px; }
+  @media (orientation: landscape) and (max-height: 500px) { :root { --zoom: 0.7; } }
+  #app-scale { width: calc(100% / var(--zoom)); height: calc(100% / var(--zoom));
+    transform: scale(var(--zoom)); transform-origin: top left; }
+  #viewport { position: relative; width: 100%; height: 100%; overflow: hidden; background: #2a1d14; }
+  #world { position: absolute; left: 0; top: 0; height: 100%; will-change: transform; }
+  #wall { position: absolute; left: 0; top: 0; bottom: var(--ground-level);
+    background-repeat: repeat-x; background-size: auto 100%; background-position: left bottom; }
+  #wall.owed { background: repeating-linear-gradient(90deg, #4a3a2c 0 6px, #3e3024 6px 170px); }
+  #floor { position: absolute; left: 0; bottom: 0; height: calc(var(--ground-level) + 14px);
+    background-repeat: repeat-x; background-size: auto 100%; }
+  #floor.owed { background: linear-gradient(#6b4e34, #4a3423); }
+  .piece { position: absolute; background-repeat: no-repeat; background-size: 100% 100%; }
+  .piece.owed { box-sizing: border-box; border: 2px dashed rgba(255, 230, 190, 0.7);
+    background: rgba(255, 230, 190, 0.08); font-size: 9px; color: #ffe6be;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    overflow: hidden; word-break: break-all; }
+  .piece.front { z-index: 5; }
+  #macario { position: absolute; bottom: var(--ground-level); z-index: 4;
+    background-repeat: no-repeat; background-size: 100% 100%; }
+  .mark { position: absolute; z-index: 6; pointer-events: none; font-size: 9px;
+    color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000; white-space: nowrap; }
+  .mark.npc { bottom: var(--ground-level); border-left: 2px solid #6fd3ff; height: 134px; padding-left: 2px; }
+  .mark.exit { bottom: var(--ground-level); height: 190px; background: rgba(120, 255, 140, 0.18);
+    border: 1px solid #78ff8c; }
+  .mark.hide { bottom: var(--ground-level); height: 90px; background: rgba(255, 210, 80, 0.2);
+    border: 1px solid #ffd250; }
+  .mark.shelf { border-top: 3px solid #ff6f6f; }
+  body.no-marks .mark { display: none; }
+  #tint { position: absolute; inset: 0; pointer-events: none; z-index: 7; background: transparent; }
+  body.night #tint { background: rgba(10, 20, 60, 0.35); }
+  #bar { position: fixed; left: 8px; top: 8px; z-index: 10; display: flex; gap: 6px;
+    align-items: center; background: rgba(0, 0, 0, 0.6); padding: 6px 8px; border-radius: 6px; }
+  #bar select, #bar button { font: inherit; }
+  #note { font-size: 12px; opacity: 0.8; }
+</style>
+</head>
+<body>
+<div id="bar">
+  <select id="room"></select>
+  <button id="marks">Markers</button>
+  <button id="night">Night</button>
+  <span id="note"></span>
+</div>
+<div id="app-scale"><div id="viewport">
+  <div id="world"><div id="wall"></div><div id="floor"></div><div id="macario"></div></div>
+  <div id="tint"></div>
+</div></div>
+<script>
+"use strict";
+const ART = "room-art/";            // _dev/room-art/, next to this page
+const MACARIO_H = 134;
+
+// A piece: file (in ART + the room's folder unless it has a "/"), x of its
+// left edge, h its height in world px, w the width of its placeholder (a
+// real picture keeps its own shape at h), lift above the floor, front to
+// stand in front of the people, flip to mirror it.
+// Marks: npc [x, name], exit [x, width], hide [x, width], shelf [x, y, width].
+const ROOMS = {
+  bahay: { width: 1180, wall: "wall-sawali", floor: "floor-kawayan", start: 1020,
+    pieces: [
+      { file: "kalan", x: 40, h: 70, w: 90 },
+      { file: "bintana-capiz", x: 150, h: 100, w: 130, lift: 75 },
+      { file: "altar", x: 440, h: 90, w: 80, lift: 100 },
+      { file: "bangkito", x: 500, h: 34, w: 40 },
+      { file: "mesa", x: 560, h: 48, w: 150 },
+      { file: "bangkito", x: 730, h: 34, w: 40 },
+      { file: "lampara", x: 610, h: 60, w: 40, lift: 300 },
+      { file: "banig", x: 830, h: 110, w: 36 },
+      { file: "baul", x: 900, h: 55, w: 100 },
+      { file: "pinto", x: 1090, h: 190, w: 90 },
+    ],
+    marks: { npc: [[320, "Nanay"], [1020, "start"]], exit: [[1110, 70]] } },
+
+  imprenta: { width: 1800, wall: "wall-tabla", floor: "floor-tabla", start: 1680,
+    pieces: [
+      { file: "bintana", x: 0, h: 90, w: 80, lift: 80 },
+      { file: "sprites/palimbagan", x: 160, h: 110, w: 110 },
+      { file: "kaha-titik", x: 300, h: 150, w: 80 },
+      { file: "kahon", x: 495, h: 90, w: 110 },
+      { file: "istante-2", x: 590, h: 100, w: 180 },
+      { file: "mesa", x: 680, h: 63, w: 140 },
+      { file: "sampayan-papel", x: 780, h: 50, w: 260, lift: 260 },
+      { file: "papel", x: 920, h: 90, w: 110 },
+      { file: "istante-1", x: 1100, h: 100, w: 200 },
+      { file: "kahon", x: 1390, h: 90, w: 110 },
+      { file: "tinta", x: 1530, h: 50, w: 70 },
+      { file: "pinto", x: 1710, h: 190, w: 90 },
+    ],
+    marks: { npc: [[210, "press"], [10, "window"], [700, "Jacinto"], [440, "Manlilimbag"], [1590, "hiding printer"]],
+      exit: [[1730, 70]], hide: [[495, 110], [920, 110], [1390, 110]],
+      shelf: [[590, 100, 180], [1100, 100, 200]] } },
+
+  pulungan: { width: 1180, wall: "wall-tabla", floor: "floor-tabla", start: 120, night: true,
+    pieces: [
+      { file: "pinto", x: 0, h: 190, w: 90 },
+      { file: "kandila", x: 160, h: 50, w: 30, lift: 150 },
+      { file: "bintana", x: 230, h: 90, w: 110, lift: 80 },
+      { file: "istante", x: 380, h: 120, w: 130 },
+      { file: "bandila-kkk", x: 500, h: 110, w: 190, lift: 150 },
+      { file: "bangko", x: 470, h: 30, w: 120 },
+      { file: "mesa", x: 520, h: 63, w: 200 },
+      { file: "bangko", x: 700, h: 30, w: 120 },
+      { file: "kandila", x: 860, h: 50, w: 30, lift: 150 },
+      { file: "sandata", x: 990, h: 160, w: 70 },
+      { file: "bariles", x: 1070, h: 60, w: 100 },
+    ],
+    marks: { npc: [[300, "Kasama"], [760, "Mabalasig"], [920, "Katipunero"], [560, "head (1895)"], [40, "Nanay at the door"]],
+      exit: [[0, 70]] } },
+
+  entablado: { width: 1180, wall: "wall-tabla", floor: "floor-entablado", start: 560,
+    pieces: [
+      { file: "telon", x: 110, h: 360, w: 960, lift: 0 },
+      { file: "gilid-palma", x: 90, h: 260, w: 120 },
+      { file: "gilid-palma", x: 970, h: 260, w: 120, flip: true },
+      { file: "bandila-buwan", x: 40, h: 220, w: 70, lift: 90 },
+      { file: "bandila-buwan", x: 1070, h: 220, w: 70, lift: 90 },
+      { file: "trono", x: 640, h: 120, w: 80 },
+      { file: "kurtina", x: -20, h: 470, w: 120, front: true },
+      { file: "kurtina", x: 1080, h: 470, w: 120, front: true, flip: true },
+      { file: "kurtina-taas", x: 0, h: 90, w: 1180, lift: 400, front: true },
+      { file: "ilaw-paa", x: 100, h: 18, w: 980, lift: -40, front: true },
+    ],
+    marks: { npc: [[60, "Direktor"], [300, "Maryam"], [560, "start"]], exit: [[1110, 70]] } },
+
+  barberya: { width: 1180, wall: "wall-tabla", floor: "floor-tabla", start: 1020,
+    pieces: [
+      { file: "palanggana", x: 60, h: 95, w: 60 },
+      { file: "istante", x: 150, h: 45, w: 160, lift: 150 },
+      { file: "salamin", x: 420, h: 110, w: 90, lift: 90 },
+      { file: "sprites/silya-barbero", x: 425, h: 90, w: 90 },
+      { file: "mesa", x: 580, h: 63, w: 90 },
+      { file: "bintana", x: 730, h: 90, w: 110, lift: 80 },
+      { file: "bangko", x: 680, h: 32, w: 330 },
+      { file: "sabitan", x: 1030, h: 150, w: 50 },
+      { file: "pinto", x: 1090, h: 190, w: 90 },
+    ],
+    marks: { npc: [[260, "Barbero"], [470, "chair"], [620, "table"], [700, "1"], [850, "2"], [1000, "3"]],
+      exit: [[1110, 70]] } },
+
+  selda: { width: 1180, wall: "wall-bato", floor: "floor-bato", start: 300,
+    pieces: [
+      { file: "banig", x: 120, h: 10, w: 150 },
+      { file: "singsing", x: 380, h: 30, w: 30, lift: 120 },
+      { file: "bangko", x: 560, h: 40, w: 180 },
+      { file: "timba", x: 780, h: 40, w: 36 },
+      { file: "bintana", x: 960, h: 70, w: 70, lift: 160 },
+      { file: "tarangkahan", x: 1040, h: 200, w: 110 },
+    ],
+    marks: { npc: [[1080, "gate"], [1000, "window (1907)"], [700, "Montalan"], [520, "De Vega"], [300, "start"]] } },
+
+  "calle-gunao": { width: 1180, wall: "wall-palitada", floor: "floor-narra", start: 150, kit: "sala",
+    pieces: [
+      { file: "pinto", x: 0, h: 200, w: 110 },
+      { file: "bintana-capiz", x: 220, h: 150, w: 120, lift: 50 },
+      { file: "silya", x: 430, h: 95, w: 50 },
+      { file: "mesa", x: 480, h: 63, w: 300 },
+      { file: "papeles", x: 560, h: 12, w: 80, lift: 63 },
+      { file: "silya", x: 790, h: 95, w: 50, flip: true },
+      { file: "larawan", x: 560, h: 80, w: 110, lift: 170 },
+      { file: "bintana-capiz", x: 880, h: 150, w: 120, lift: 50 },
+      { file: "pinto", x: 1070, h: 200, w: 110 },
+    ],
+    marks: { npc: [[560, "Álvarez"], [330, "Manlilimbag"], [780, "Direktor"], [980, "Guro"], [680, "Poblete"], [150, "start"]] } },
+
+  sala: { width: 1180, wall: "wall-palitada", floor: "floor-narra", start: 150,
+    pieces: [
+      { file: "pinto", x: 0, h: 200, w: 110 },
+      { file: "halaman", x: 140, h: 110, w: 70 },
+      { file: "bandila-amerikano", x: 540, h: 110, w: 190, lift: 150 },
+      { file: "lampara", x: 380, h: 60, w: 40, lift: 300 },
+      { file: "lampara", x: 880, h: 60, w: 40, lift: 300 },
+      { file: "silya", x: 440, h: 95, w: 50 },
+      { file: "mesa-handaan", x: 490, h: 66, w: 320 },
+      { file: "silya", x: 820, h: 95, w: 50, flip: true },
+      { file: "bintana-capiz", x: 950, h: 150, w: 100, lift: 50 },
+      { file: "pinto", x: 1070, h: 200, w: 110 },
+    ],
+    marks: { npc: [[920, "Van Schaick"], [380, "Montalan"], [640, "table"], [100, "Villafuerte"], [200, "De Vega"]] } },
+
+  hukuman: { width: 1180, wall: "wall-palitada", floor: "floor-narra", start: 300,
+    pieces: [
+      { file: "pinto", x: 0, h: 200, w: 110 },
+      { file: "bangko", x: 30, h: 40, w: 220 },
+      { file: "bintana", x: 330, h: 170, w: 90, lift: 40 },
+      { file: "barandilya", x: 420, h: 65, w: 240 },
+      { file: "mesa", x: 690, h: 63, w: 110 },
+      { file: "orasan", x: 760, h: 40, w: 40, lift: 230 },
+      { file: "bandila-amerikano", x: 1090, h: 230, w: 70 },
+      { file: "hukom-mesa", x: 840, h: 150, w: 220 },
+    ],
+    marks: { npc: [[900, "Hukom"], [140, "Montalan"], [60, "Villafuerte"], [210, "De Vega"], [300, "start"]] } },
+};
+
+const world = document.getElementById("world");
+const viewport = document.getElementById("viewport");
+const macarioEl = document.getElementById("macario");
+const pick = document.getElementById("room");
+let room = null, px = 0, camera = 0, facing = 1;
+
+// Resolves to the loaded picture, or null if the file is not there yet.
+const cache = {};
+function picture(src) {
+  if (!cache[src]) cache[src] = new Promise((done) => {
+    const img = new Image();
+    img.onload = () => done(img);
+    img.onerror = () => done(null);
+    img.src = src;
+  });
+  return cache[src];
+}
+const pieceSrc = (name, file) => file.includes("/")
+  ? (file.startsWith("sprites/") ? "../assets/sprites/scenery/" + file.slice(8) + ".png" : file)
+  : ART + name + "/" + file + ".png";
+
+function build(name) {
+  room = ROOMS[name];
+  world.querySelectorAll(".piece, .mark").forEach((el) => el.remove());
+  world.style.width = room.width + "px";
+  document.body.classList.toggle("night", Boolean(room.night));
+
+  const wall = document.getElementById("wall");
+  const floor = document.getElementById("floor");
+  wall.className = floor.className = "";
+  wall.style.backgroundImage = floor.style.backgroundImage = "";
+  picture(ART + room.wall + ".png").then((img) => {
+    if (img) wall.style.backgroundImage = `url("${img.src}")`; else wall.className = "owed";
+  });
+  picture(ART + room.floor + ".png").then((img) => {
+    if (img) floor.style.backgroundImage = `url("${img.src}")`; else floor.className = "owed";
+  });
+  wall.style.width = floor.style.width = room.width + "px";
+  const kit = room.kit || name;
+  document.getElementById("note").textContent =
+    `${room.wall} · ${room.floor} · ${kit}-kit`;
+
+  for (const p of room.pieces) {
+    const el = document.createElement("div");
+    el.className = "piece" + (p.front ? " front" : "");
+    el.style.left = p.x + "px";
+    el.style.bottom = `calc(var(--ground-level) + ${p.lift || 0}px)`;
+    el.style.height = p.h + "px";
+    el.style.width = p.w + "px";
+    if (p.flip) el.style.transform = "scaleX(-1)";
+    const src = pieceSrc(kit, p.file);
+    picture(src).then((img) => {
+      if (img) {
+        el.style.width = Math.round(img.naturalWidth * p.h / img.naturalHeight) + "px";
+        el.style.backgroundImage = `url("${img.src}")`;
+      } else {
+        el.classList.add("owed");
+        el.textContent = p.file;
+      }
+    });
+    world.insertBefore(el, macarioEl);
+  }
+
+  const m = room.marks || {};
+  const mark = (cls, x, text, style) => {
+    const el = document.createElement("div");
+    el.className = "mark " + cls;
+    el.style.left = x + "px";
+    Object.assign(el.style, style || {});
+    el.textContent = text || "";
+    world.appendChild(el);
+  };
+  (m.npc || []).forEach(([x, label]) => mark("npc", x, label));
+  (m.exit || []).forEach(([x, w]) => mark("exit", x, "exit", { width: w + "px" }));
+  (m.hide || []).forEach(([x, w]) => mark("hide", x, "hide", { width: w + "px" }));
+  (m.shelf || []).forEach(([x, y, w]) => mark("shelf", x, "shelf top", {
+    width: w + "px", bottom: `calc(var(--ground-level) + ${y}px)` }));
+
+  px = room.start;
+  try { localStorage.setItem("room-test", name); } catch (e) {}
+}
+
+// Macario's still, cropped to what is drawn and stood 134 tall.
+picture("../assets/sprites/player/macario-still.png").then((img) => {
+  if (!img) return;
+  const c = document.createElement("canvas");
+  c.width = img.naturalWidth; c.height = img.naturalHeight;
+  const g = c.getContext("2d");
+  g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, c.width, c.height).data;
+  let x0 = c.width, y0 = c.height, x1 = 0, y1 = 0;
+  for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) {
+    if (d[(y * c.width + x) * 4 + 3] > 20) {
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+    }
+  }
+  const crop = document.createElement("canvas");
+  crop.width = x1 - x0 + 1; crop.height = y1 - y0 + 1;
+  crop.getContext("2d").drawImage(c, x0, y0, crop.width, crop.height, 0, 0, crop.width, crop.height);
+  macarioEl.style.backgroundImage = `url("${crop.toDataURL()}")`;
+  macarioEl.style.height = MACARIO_H + "px";
+  macarioEl.style.width = Math.round(crop.width * MACARIO_H / crop.height) + "px";
+});
+
+const keys = {};
+addEventListener("keydown", (e) => {
+  keys[e.key.toLowerCase()] = true;
+  if (e.key.toLowerCase() === "h") document.body.classList.toggle("no-marks");
+  if (e.key.toLowerCase() === "n") document.body.classList.toggle("night");
+});
+addEventListener("keyup", (e) => { keys[e.key.toLowerCase()] = false; });
+document.getElementById("marks").onclick = () => document.body.classList.toggle("no-marks");
+document.getElementById("night").onclick = () => document.body.classList.toggle("night");
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  const dir = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0);
+  if (dir) facing = dir;
+  px = Math.max(0, Math.min(room.width - 40, px + dir * 220 * dt));
+  const view = viewport.clientWidth;
+  camera = Math.max(0, Math.min(Math.max(0, room.width - view), px - view / 2));
+  world.style.transform = `translateX(${-camera}px)`;
+  macarioEl.style.left = px + "px";
+  macarioEl.style.transform = facing < 0 ? "scaleX(-1)" : "";
+  requestAnimationFrame(frame);
+}
+
+for (const name of Object.keys(ROOMS)) pick.add(new Option(name, name));
+let first = "bahay";
+try { first = localStorage.getItem("room-test") || first; } catch (e) {}
+if (!ROOMS[first]) first = "bahay";
+pick.value = first;
+pick.onchange = () => build(pick.value);
+build(first);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
