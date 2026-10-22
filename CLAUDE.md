@@ -945,10 +945,14 @@ ground strip (a picture: dirt, grass or stone), and the foreground
 (the shadow trees and grass, at about 1.25). Anything a student
 reaches stays at rate 1. Rooms and outdoor places one screen wide keep
 one painting. The art is made with ChatGPT from ART.md's prompts (one
-whole prompt per picture, Outdoor layers) and arrives in
+whole prompt per picture, filed under Backgrounds and Props by the act
+that first uses it, named without a folder) and arrives in
 _dev/parallax-art/; kits come as one sprite sheet each and are cropped
-into pieces. _dev/parallax-test.html is the working model: open it
-through the local server (it reads the shadow trees out of game.js).
+into pieces, and small props one act asks for share one sheet
+(act1-props.png and so on, each entry naming the files it is cut into).
+_dev/parallax-test.html is the working model; it opens from the folder
+too (file://), with parallax-art/shadow-trees.js, a copy of game.js's
+shadow trees, standing in when the page cannot read game.js.
 Nothing of it is in the game until the engine work is approved.
 
 An exit is a doorway: a zone on the road, x and width like a hazard,

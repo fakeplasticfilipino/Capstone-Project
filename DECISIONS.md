@@ -6214,7 +6214,13 @@ himpilan, dimasalang, malabon and patyo. Rooms, and outdoor places one
 screen wide (Pugad Lawin, Balara, Laguna, the plaza), do not scroll and
 keep one painting each. Kits are shared (one camp kit for burol, morong
 and dimasalang; one mountain range for four scenes), so the art is
-seventeen pictures, each with its own prompt in ART.md, Outdoor layers.
+seventeen pictures, each with its own prompt in ART.md. On 22 Oct 2026,
+at the proponent's word, they were filed by act under Backgrounds and
+Props with the rest instead of a part of their own, and the small props
+an act owes were put in one sheet per act (act1-props.png: the sewing
+table and the barber's chair; act2-props.png: the press, the straw and
+the scarecrow), each entry naming the files it is cut into, so fewer
+pictures are asked of ChatGPT.
 
 ART.md was rewritten the same day at the proponent's word that the
 artists read only the entry in front of them: every picture is its file

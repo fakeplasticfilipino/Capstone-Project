@@ -258,12 +258,15 @@ how it looks: _dev/parallax-test.html (Tondo, built from the first art
 in _dev/parallax-art/). Who: the proponent makes the art with ChatGPT
 and commits; a session does the rest and says what changed.
 
-Art (prompts in ART.md, Outdoor layers; saved in _dev/parallax-art/),
+Art (prompts in ART.md under Backgrounds and Props by act, the entries
+named without a folder; saved in _dev/parallax-art/),
 in this order:
 
     [x] tondo-nature, tondo-trees (lowland), tondo-houses, tondo-props
     [ ] tondo-doors (the buildings Macario goes into)
     [ ] dirt-ground
+    [ ] act1-props (the sewing table and the barber's chair, Act I's
+        two owed props, in one sheet)
     [ ] sierra-nature, mountain-trees, camp, grass-ground
     [ ] garrison, rural, river
     [ ] post, sierra-night-nature
@@ -327,104 +330,8 @@ and what failure looks like) when it ships, and take them out again
 once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026, Blocks 119 to 126 on 9 Oct 2026, Blocks 128 to 131 on 13
-Oct 2026. Open:
-
-    Block 140, on the phone and on a computer (?dev=1, any point):
-       everyone stands where the painted road or floor meets a plain
-       ground of its own colour, speckled, darker toward the screen's
-       edge (Tondo, "3:morong", "4:tanay", "4:malabon", "2:bahay").
-       Failure: feet above the road, a colour that does not meet the
-       painting, or stripes.
-
-    Block 137, on the phone (?dev=1, any point; these most):
-
-    a. Rooms ("2:bahay", "3:barberya", "4:salusalo", "4:hukuman",
-       "4:bilibid") and fields ("2:sedula", "2:sanjuan", "3:morong",
-       "4:tanay"): everyone stands on the painted floor, no strip of
-       planks, grass or stone below it. Failure: two floors, or feet
-       floating above the painted one.
-    b. The press ("2:ronda"): the room at its size, and the three
-       guards still passable (shelves, hiding places). Failure: a catch
-       that cannot be avoided.
-    c. San Juan ("2:sanjuan", "2:atras"): the town twice, the second
-       mirrored behind a tree, then the store. Failure: a seam.
-
-    Block 136, on the phone (?dev=1, Act IV and Act II points):
-
-    a. Act IV's places: "himpilan" (the post at night, two paintings,
-       everyone on the painted road), "tanay", "bigas", "gomez"
-       (Di-Masalang, two), "malabon" (two), "salusalo" (the hall),
-       "hukuman" (the court), "umaga" (the yard, the scaffold where he
-       stops). Failure: a dark wall, a painting much bigger than its
-       neighbour, the post near black, or someone behind a tree.
-    b. Act II's rooms: "bahay", "simula" (the press), "sedula" (Pugad
-       Lawin), "sanjuan": the painted floor meets the game's floor with
-       no dark band between. Failure: a gap or a doubled floor.
-
-    Block 135, on the phone (?dev=1, Act III points):
-
-    a. The places: "simula" and "labanan" (the hills, two paintings),
-       "barberya" and "aral" (the barbershop, the night the tint),
-       "proklama" (the plaza), "gunao" (Calle Gunao), "bilibid" (the
-       cell, Act IV's too), "morong" (two paintings). Each a painting,
-       one scale across the tree, the people on its floor. Failure: a
-       dark wall, or a painting much bigger than its neighbour.
-    b. The people: the Bagong Nakatira ("balatkayo", walk to Nanay's
-       house), the Guro and Poblete walking in with the law ("gunao",
-       "batas"), the Opisyal standing behind his table ("proklama"),
-       the Bilibid guard walking to the bars ("bilibid"), the fighters
-       by the flag ("morong"). Failure: a box, or a smear across a
-       guard's legs as he walks.
-    (The American soldier was taken out in Block 141: the placeholder
-    box until his 1899 picture comes.)
-
-    Block 133, on the phone (?dev=1 points named):
-
-    c. Act II's places ("simula", "bahay", "sedula", "sanjuan",
-       "panakot", "balara", "laguna") and Act I's pulungan ("kasama",
-       then follow him in): each a painting, the people standing on its
-       floor. Failure: a dark wall with a file name.
-    d. The people: Isko ("bahay", he runs in and out on a walk),
-       Jacinto and the printer ("simula"), the messenger ("balara", he
-       runs in), and in Act III Álvarez, Poblete ("gunao"), Carreón and
-       Montalan ("morong"): each drawn, breathing, turning to face
-       Macario; nobody a box. Known: Poblete is drawn mid-stride and
-       glides when he walks in; Isko's waist smudges a little as he
-       walks. Failure: a box, a cut-off hand or blade, a foot that
-       slides badly.
-    e. Speed on the cheaper phone: the street and San Juan del Monte as
-       smooth as before. Failure: a stutter on the street.
-
-    Block 132, on a laptop (the dashboard, as the test teacher) and
-    the phone (the login):
-
-    a. The tabs: Overview, Students, Questions report, Edit tests,
-       Talaan papers; one shown at a time; a reload stays on it.
-       Failure: two panels at once, or a reload back on Overview.
-    b. Accounts: Students, code start "rizal" (or another), How many 2,
-       Create accounts. Two slips (rizal-01, rizal-02, six digits
-       each) and both in the roster. Print login slips prints only
-       the slips. Failure: an error, or a slip with no password.
-    c. The login: on the phone, log in with "Rizal 1" and its six
-       digits. The game opens as that student. Failure: "Mali ang
-       code o password".
-    d. A new password: tap rizal-01, Give a new password. The old one
-       stops working and the new one logs in. Failure: either does
-       not.
-    e. The student card and Needs attention read in plain sentences,
-       and every "?" says what its column means. Failure: a raw word
-       (pretest, completed) or a "?" with nothing behind it.
-
-    Public sign-up switched off by the proponent, 15 Oct 2026; schema
-    v13 applied, so a sign-up could only ever have been a student with
-    no class.
-
-    Block 134, on the phone ("trabaho", then walk the street; "polyeto"
-    for the night; Acts II to IV's street too): the old street is back,
-    its own sandy road reaching the bottom of the screen with everyone
-    walking on it, no brown strip below; at night the same street
-    darkened. Failure: a strip of another colour under the road, a gap
-    at the bottom, or anyone standing in the sky.
+Oct 2026, Blocks 132 to 141 reported working by the proponent on 22 Oct
+2026. Open: none.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
