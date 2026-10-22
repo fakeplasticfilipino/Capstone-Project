@@ -137,7 +137,7 @@
 "use strict";
 
 // Kept the same as the game (js/game.js, css/style.css) so the feel matches.
-const WORLD_WIDTH = 4400;
+const WORLD_WIDTH = 7800;
 const GROUND_LEVEL = 60;
 const SPEED = 5;
 const DISPLAY_HEIGHT = 134;
@@ -410,11 +410,16 @@ const TONDO_ART = {
 const BUILDING_SCALE = 1.1;
 const TONDO_STREET = [
   { name: "bahay-kubo", x: 150 },
-  { name: "tienda", x: 700 },
-  { name: "bahay-na-bato", x: 1200 },
-  { name: "palengke", x: 1900 },
-  { name: "simbahan", x: 2580 },
-  { name: "bahay-balkonahe", x: 3300 },
+  { name: "bahay-nanay", x: 781 },
+  { name: "tienda", x: 1408 },
+  { name: "entablado-harap", x: 2007 },
+  { name: "bahay-na-bato", x: 2607 },
+  { name: "barberya", x: 3369 },
+  { name: "palengke", x: 3881 },
+  { name: "imprenta", x: 4612 },
+  { name: "simbahan", x: 5077 },
+  { name: "pulungan-likod", x: 5853 },
+  { name: "bahay-balkonahe", x: 6367 },
 ];
 
 // The props cropped out of the props sheet (parallax-art/props/), drawn
@@ -425,20 +430,20 @@ const TONDO_PROPS = [
   { name: "palumpong", x: 0 },
   { name: "palayok", x: 560 },
   { name: "poste-ilaw", x: 655 },
-  { name: "kahon", x: 1090 },
-  { name: "halaman", x: 1235 },
-  { name: "halaman", x: 1640 },
-  { name: "bakod-sawali", x: 1730 },
-  { name: "bariles", x: 1760 },
-  { name: "kariton", x: 2260 },
-  { name: "poste-ilaw", x: 2530 },
-  { name: "bakod-kahoy", x: 3090 },
-  { name: "basket", x: 3120 },
-  { name: "bangko", x: 3830 },
-  { name: "sampayan", x: 3950 },
-  { name: "bakod-kawayan", x: 4125 },
+  { name: "kahon", x: 1798 },
+  { name: "halaman", x: 2642 },
+  { name: "halaman", x: 3047 },
+  { name: "bakod-sawali", x: 3137 },
+  { name: "bariles", x: 3167 },
+  { name: "kariton", x: 4241 },
+  { name: "poste-ilaw", x: 4511 },
+  { name: "bakod-kahoy", x: 5587 },
+  { name: "basket", x: 5617 },
+  { name: "bangko", x: 6897 },
+  { name: "sampayan", x: 7017 },
+  { name: "bakod-kawayan", x: 7192 },
 ];
-const ROAD_SRC = "../assets/backgrounds/act1/ground-lupa.jpg";
+const ROAD_SRC = "parallax-art/dirt-ground.png"; // tondo-road.png with its sky cut off
 
 function drawTondoStreet() {
   let html = `<div class="road-strip" style="height:${GROUND_LEVEL + 14}px;background-image:url('${ROAD_SRC}')"></div>`;

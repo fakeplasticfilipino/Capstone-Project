@@ -96,7 +96,7 @@
   const BAGONG_NAKATIRA = { src: "assets/sprites/characters/bagong-nakatira.png", frames: 8, fps: 4, columns: 4,
     contentTop: 6, contentHeight: 297, footX: 46, headroom: 6 };
   const MANLILIMBAG = P.manlilimbag;
-  const SILYA = owed("scenery", "silya-barbero"); // Act I's chair, owed
+  const SILYA = owed("scenery", "silya-barbero"); // Act I's chair
   // Block 120: Bilibid's guard (Act IV's, owed), and the Republic's
   // soldiers at Morong, seen beside its flag (Act IV's Kawal, owed).
   const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135

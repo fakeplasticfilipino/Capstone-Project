@@ -263,10 +263,11 @@ named without a folder; saved in _dev/parallax-art/),
 in this order:
 
     [x] tondo-nature, tondo-trees (lowland), tondo-houses, tondo-props
-    [ ] tondo-doors (the buildings Macario goes into)
-    [ ] dirt-ground
-    [ ] act1-props (the sewing table and the barber's chair, Act I's
-        two owed props, in one sheet)
+    [x] tondo-doors (the buildings Macario goes into; cropped 22 Oct)
+    [x] dirt-ground (tondo-road.png, its sky cut off: dirt-ground.png)
+    [x] act1-props (the sewing table and the barber's chair, Act I's
+        two owed props, in one sheet; tondo-props-1.png, in the game
+        since 22 Oct as assets/sprites/scenery/)
     [ ] sierra-nature, mountain-trees, camp, grass-ground
     [ ] garrison, rural, river
     [ ] post, sierra-night-nature

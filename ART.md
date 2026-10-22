@@ -24,16 +24,7 @@ node _dev/tools/key-still.js; a sheet on black: _dev/tools/key-black.py.
 
 ### Act I
 
-    dirt-ground.jpg
-        (Attach the file _dev/parallax-art/tondo-nature.png)
-        Refer to the attached image and use the same art style. Make a
-        seamless, tileable strip of packed dirt road of the Philippines
-        in 1896, seen from the side, for the ground of a 2D
-        side-scrolling game: earth with small stones, wheel ruts and a
-        few tufts of grass. The left and right edges must continue into
-        each other perfectly. Flat side view, no perspective, no
-        objects, no sky. Wide landscape, short in height.
-        (NOT STARTED)
+Nothing needed.
 
 ### Act II
 
@@ -53,12 +44,20 @@ node _dev/tools/key-still.js; a sheet on black: _dev/tools/key-black.py.
     grass-ground.jpg
         (Attach the file _dev/parallax-art/tondo-nature.png)
         Refer to the attached image and use the same art style. Make a
-        seamless, tileable strip of trodden earth and short grass at the
-        edge of a forest in the Philippines, with a few roots and
-        stones, seen from the side, for the ground of a 2D
-        side-scrolling game. The left and right edges must continue into
-        each other perfectly. Flat side view, no perspective, no
-        objects, no sky. Wide landscape, short in height.
+        flat 2D ground strip for a side-scrolling game: trodden earth
+        at the edge of a forest in the Philippines, seen exactly from
+        the side. Along the top edge short grass and a few small
+        plants sticking up; below it, dark soil with roots and small
+        buried stones, getting a little darker toward the bottom. Draw
+        it as a cross-section, like the ground in a classic 2D
+        platformer: the top edge is the flat surface people walk on, a
+        straight level line across the whole picture, and below it the
+        earth is cut open and seen from the front. Do NOT show the
+        road from above: no ruts, tracks or paths running into the
+        distance, no perspective, no tilt. The left and right edges
+        must continue into each other perfectly so it can repeat. Fill
+        the whole picture edge to edge, no white or empty space. Wide
+        landscape, short in height.
         (NOT STARTED)
 
     river.png
@@ -195,12 +194,19 @@ node _dev/tools/key-still.js; a sheet on black: _dev/tools/key-black.py.
     stone-ground.jpg
         (Attach the file _dev/parallax-art/tondo-nature.png)
         Refer to the attached image and use the same art style. Make a
-        seamless, tileable strip of worn stone flags and packed earth of
-        a prison yard in Manila in 1907, seen from the side, for the
-        ground of a 2D side-scrolling game. The left and right edges
-        must continue into each other perfectly. Flat side view, no
-        perspective, no objects, no sky. Wide landscape, short in
-        height.
+        flat 2D ground strip for a side-scrolling game: the ground of
+        a prison yard in Manila in 1907, seen exactly from the side.
+        Along the top edge a level row of worn stone flags; below it,
+        packed earth and rubble, getting a little darker toward the
+        bottom. Draw it as a cross-section, like the ground in a
+        classic 2D platformer: the top edge is the flat surface people
+        walk on, a straight level line across the whole picture, and
+        below it the earth is cut open and seen from the front. Do NOT
+        show the road from above: no ruts, tracks or paths running
+        into the distance, no perspective, no tilt. The left and right
+        edges must continue into each other perfectly so it can
+        repeat. Fill the whole picture edge to edge, no white or empty
+        space. Wide landscape, short in height.
         (NOT STARTED)
 
     assets/backgrounds/act4/sala.jpg
@@ -399,41 +405,7 @@ Also wanted (not in the game yet):
 
 ### Act I
 
-    tondo-doors.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
-        Refer to the attached image and use the same art style, size
-        and finish. Make a sprite sheet of five separate buildings of
-        Tondo, Manila, in 1896, arranged in a grid with wide empty space
-        between them so none touch or overlap. Each building in
-        straight-on front view (flat side elevation, no perspective),
-        standing on its own flat ground line, its door at ground level.
-        (1) The front of a small wooden theatre (an entablado) with a
-        painted sign board and wide double doors drawn OPEN with warm
-        light inside. (2) A poor but cared-for one-storey wooden house
-        with a nipa roof, its door drawn OPEN with warm light inside.
-        (3) An ordinary narrow two-storey wooden house, its plain door
-        drawn OPEN with warm light inside. (4) A small barbershop with a
-        wooden front, a striped awning and a barber's chair seen through
-        the window, its door drawn OPEN with warm light inside. (5) The
-        back of a house on a narrow alley, a low back door drawn OPEN
-        with warm light inside. No people, no flags, no trees, no
-        ground or shadows between buildings. Transparent background.
-        Landscape, largest size.
-        (NOT STARTED)
-
-    act1-props.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style. Make a
-        sprite sheet of two separate objects of 1890, arranged side by
-        side with wide empty space between them so they do not touch,
-        each seen from the side, drawn large. (1) One small wooden
-        sewing table with cloth, thread, scissors and a pincushion on
-        it. (2) One simple wooden barber's chair with a high back and
-        armrests. Nothing else in the picture, no people, no ground or
-        shadows. Transparent background.
-        Cut into: assets/sprites/scenery/tahian.png (1),
-        assets/sprites/scenery/silya-barbero.png (2)
-        (NOT STARTED)
+Nothing needed.
 
 ### Act II
 
@@ -601,8 +573,9 @@ barberya (4), the pulungan's back door (5).
 Done and in the game. Nothing here needs drawing.
 
     Backgrounds
-        Act I     Tondo's sky and tree line (tondo-nature,
-                  tondo-trees, in _dev/parallax-art/), the street
+        Act I     Tondo's sky, tree line and dirt road (tondo-nature,
+                  tondo-trees, and dirt-ground cut from tondo-road, in
+                  _dev/parallax-art/), the street
                   (street-01 to street-04), the road
                   (ground-lupa), the inside of the theatre
                   (entablado-inside), the Katipunan's secret room
@@ -633,5 +606,8 @@ Done and in the game. Nothing here needs drawing.
                   guard
 
     Props
-        Act I     Tondo's houses and street props (tondo-houses,
-                  tondo-props, in _dev/parallax-art/)
+        Act I     Tondo's houses, street props and doors
+                  (tondo-houses, tondo-props, tondo-doors, in
+                  _dev/parallax-art/), the Mananahi's sewing table
+                  (tahian) and the Barbero's chair (silya-barbero),
+                  cut from tondo-props-1

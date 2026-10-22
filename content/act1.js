@@ -1669,7 +1669,7 @@ window.ACT_1 = {
         },
         {
           // Block 94. His chair, used with E, as the tahian is: the
-          // barber's own game (cutHair). Owed (ART.md), a placeholder box.
+          // barber's own game (cutHair). Drawn since 22 Oct 2026.
           id: "silya", x: SILYA_X, label: "Silya", animation: SILYA, displayHeight: 90,
           hiddenByFlag: "tinanggapSaKatipunan",
           interactLabel: "Gupitin",
@@ -1679,10 +1679,9 @@ window.ACT_1 = {
         },
         {
           // The Mananahi's sewing table, beside her, used with E (Block
-          // 89). Scenery with no picture until Block 93, which named one,
-          // owed (ART.md), so the table is seen: the placeholder box until
-          // the artist draws it.
-          id: "tahian", x: TAHIAN_X, label: "Tahian", animation: TAHIAN, displayHeight: 90,
+          // 89). Drawn since 22 Oct 2026; 78 high puts its top at
+          // Macario's hip.
+          id: "tahian", x: TAHIAN_X, label: "Tahian", animation: TAHIAN, displayHeight: 78,
           hiddenWhile: PAMPHLET_NIGHT, // Block 103: taken in for the night
           interactLabel: "Manahi",
           interactIcon: "i-needle", // Block 93

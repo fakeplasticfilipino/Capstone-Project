@@ -157,6 +157,8 @@ window.ASSET_MANIFEST = [
   "assets/sprites/player/macario-melee.png",
   "assets/sprites/player/macario-shoot.png",
   "assets/sprites/player/macario-walk.png",
+  "assets/sprites/scenery/silya-barbero.png",
+  "assets/sprites/scenery/tahian.png",
 ];
 
 window.ASSET_VERSIONS = {
@@ -308,4 +310,6 @@ window.ASSET_VERSIONS = {
   "assets/sprites/player/macario-melee.png": "2076424881",
   "assets/sprites/player/macario-shoot.png": "7762522",
   "assets/sprites/player/macario-walk.png": "3025687395",
+  "assets/sprites/scenery/silya-barbero.png": "3668138000",
+  "assets/sprites/scenery/tahian.png": "4136712883",
 };
