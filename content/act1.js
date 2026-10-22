@@ -59,20 +59,11 @@
 // (CLAUDE.md, Animating a character from one still).
 // =============================================================
 
-// Block 49. The paintings of the street, laid along the road in order
-// (game.js, buildPanelBackdrop), with a shadow tree over each join
-// (Block 50). Block 57 made the street ten paintings long at the
-// proponent's direction, which with four paintings means the four in
-// order, twice, and then the first two again.
-const STREET_PAINTINGS = [
-  "assets/backgrounds/act1/street-01.jpg",
-  "assets/backgrounds/act1/street-02.jpg",
-  "assets/backgrounds/act1/street-03.jpg",
-  "assets/backgrounds/act1/street-04.jpg",
-];
+// Block 57 made the street ten paintings long at the proponent's
+// direction (Block 49's paintings, a shadow tree over each join, Block
+// 50); Acts II to IV still draw it so. Since Block 142 Act I's is drawn
+// in layers (below) at the same length, the trees where the joins were.
 const STREET_PANEL_COUNT = 10;
-const STREET_PANELS = Array.from({ length: STREET_PANEL_COUNT },
-  (_, i) => STREET_PAINTINGS[i % STREET_PAINTINGS.length]);
 
 // One panel's width in the world (game.js, PANEL_WIDTH). The joins, and
 // the trees over them, are at every multiple of it; everyone a student
@@ -80,9 +71,46 @@ const STREET_PANELS = Array.from({ length: STREET_PANEL_COUNT },
 const PANEL = 1450;
 const STREET_WIDTH = STREET_PANEL_COUNT * PANEL; // 14500
 
-// Block 46. The sky above a painting on a tall screen: the average of
-// the four paintings' top rows.
-const STREET_SKY = "#51a6ea";
+// Block 142. Since 22 Oct 2026 the street is drawn in layers (game.js,
+// LAYERED STREETS) rather than the paintings above, which Acts II to IV
+// still use: the sky, the tree line twice (far and pale, near and tall),
+// Tondo's houses, doors and props along the road, its dirt underfoot,
+// and the shadow trees where the joins were, so everyone keeps standing
+// clear of a trunk. The tree picture's bottom 7% is empty (trim).
+const TONDO_LAYERS = [
+  { src: "assets/backgrounds/layers/tondo-sky.jpg", rate: 0 },
+  { src: "assets/backgrounds/layers/tondo-trees.png", rate: 0.3, height: 0.5, lift: 100, trim: 0.07,
+    filter: "saturate(0.6) brightness(1.12) contrast(0.8)" },
+  { src: "assets/backgrounds/layers/tondo-trees.png", rate: 0.6, height: 0.95, lift: 64, trim: 0.07,
+    filter: "saturate(1.1) contrast(1.05)", offset: 700 },
+];
+const TONDO_GROUND = { src: "assets/backgrounds/layers/dirt-ground.png", lip: 14 };
+
+// x is a picture's left edge. The houses are drawn at 1.1 and stand 6
+// above the road, the props at 0.96 and 4. Five are doors, each with its
+// door behind whoever stands at it: Nanay's house (her door at 2040),
+// the pulungan's back door (4120, BACK_DOOR_X), the barberya (5340, the
+// Barbero), the Mananahi's stall (6450) and the entablado (13640, the
+// direktor). The press's house (imprenta) is Act II's door.
+const TONDO_HOUSES = [
+  ["bahay-kubo", 140], ["bahay-na-bato", 760], ["bahay-nanay", 1767],
+  ["bahay-balkonahe", 2720], ["pulungan-likod", 3925], ["palengke", 4400],
+  ["barberya", 5039], ["imprenta", 5720], ["tienda", 6234], ["simbahan", 7000],
+  ["bahay-kubo", 7800], ["bahay-na-bato", 8600], ["bahay-balkonahe", 9250],
+  ["palengke", 10100], ["bahay-kubo", 10950], ["imprenta", 11560],
+  ["bahay-na-bato", 12000], ["bahay-balkonahe", 12800], ["entablado-harap", 13370],
+];
+const TONDO_PROPS = [
+  ["poste-ilaw", 680], ["halaman", 1300], ["palumpong", 1500], ["palayok", 2340],
+  ["bakod-sawali", 2500], ["poste-ilaw", 3240], ["kariton", 3640], ["bangko", 5500],
+  ["bariles", 6680], ["basket", 6820], ["kahon", 7540], ["bakod-kawayan", 8290],
+  ["poste-ilaw", 9160], ["sampayan", 9740], ["bakod-kahoy", 10720], ["halaman", 11440],
+  ["palumpong", 12560], ["poste-ilaw", 12720], ["bakod-kawayan", 13920], ["palumpong", 14200],
+];
+const TONDO_BUILDINGS = [
+  ...TONDO_HOUSES.map(([name, x]) => ({ src: `assets/sprites/buildings/${name}.png`, x, scale: 1.1, lift: 6 })),
+  ...TONDO_PROPS.map(([name, x]) => ({ src: `assets/sprites/buildings/${name}.png`, x, scale: 0.96, lift: 4 })),
+];
 
 // ---- Art ----------------------------------------------------------
 // Every real sheet measured with _dev/tools/measure-sprite.js. A def
@@ -1428,9 +1456,13 @@ window.ACT_1 = {
       // loadScene).
       id: "tondo",
       worldWidth: STREET_WIDTH,
-      panels: STREET_PANELS,
-      ground: false, // Block 134: the paintings' own road, not the dirt strip
-      panelSky: STREET_SKY,
+      // Block 142: in layers (TONDO_LAYERS, above), the shadow trees at
+      // every PANEL as when it was paintings.
+      layers: TONDO_LAYERS,
+      buildings: TONDO_BUILDINGS,
+      ground: TONDO_GROUND,
+      frontGrass: true,
+      panelWidth: PANEL,
       startX: STREET_SPOT,
       hintSpots: HINT_SPOTS,
       // Block 81. The pamphlet run's guardia civil (PAMPHLET_GUARDS): the

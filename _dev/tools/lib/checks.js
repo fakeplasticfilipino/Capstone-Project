@@ -162,8 +162,9 @@ function content() {
       for (const g of s.guards || []) {
         if (g.type && !(types[g.type] && types[g.type].kind === "guard")) problems.push(at + ": guard type \"" + g.type + "\" is not a guard in content/enemies.js");
       }
-      // Shadow trees stand at every multiple of the panel width.
-      if (Array.isArray(s.panels) && s.panels.length) {
+      // Shadow trees stand at every multiple of the panel width, on a
+      // street of paintings or in layers (Block 142).
+      if ((Array.isArray(s.panels) && s.panels.length) || (Array.isArray(s.layers) && s.layers.length)) {
         // Block 135: or each panel its own width (panelWidths).
         const wAt = (i) => (Array.isArray(s.panelWidths) && s.panelWidths.length
           ? s.panelWidths[i % s.panelWidths.length] : s.panelWidth || PANEL_WIDTH);

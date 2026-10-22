@@ -1070,6 +1070,15 @@ function loadScene(sceneId) {
     groundEl.classList.toggle("ground-floor", Boolean(floor));
     groundEl.dataset.floor = floor ? scene.ground.floor : "";
   }
+  // Block 142. A road drawn as a picture of its own (ground: { src,
+  // lip }): the cut-away earth of a layered street, drawn whole at the
+  // strip's height rather than as a texture, with no shade over it, and
+  // its top lip (the grass and stones above the walking line) standing
+  // above the feet.
+  const lip = ownGround && scene.ground.lip;
+  groundEl.classList.toggle("ground-picture", Boolean(lip));
+  if (lip) groundEl.style.height = `calc(var(--ground-level) + ${lip}px)`;
+  else groundEl.style.removeProperty("height");
 
   // Block 36. The world element was a fixed 4400px whatever the scene
   // actually was, so the backdrop, the ground strip and every layer over
@@ -1118,6 +1127,7 @@ function unloadScene() {
   advanceGoal = null;
   clearSetbacks(); // Block 128: a new scene starts unaided
   DOORWAYS = []; // Block 126; their elements are in actElements
+  parallaxLayers = []; // Block 142; likewise
   currentScene = null;
   currentSceneId = null;
 }
@@ -1167,6 +1177,13 @@ function buildSkylineTiles() {
   // panel, with a shadow tree in front of every join.
   if (currentScene && Array.isArray(currentScene.panels) && currentScene.panels.length) {
     buildPanelBackdrop(currentScene);
+    return;
+  }
+
+  // Block 142. A street drawn in layers: a sky and tree lines behind,
+  // drifting slower than the road, and the buildings placed along it.
+  if (currentScene && Array.isArray(currentScene.layers) && currentScene.layers.length) {
+    buildLayeredBackdrop(currentScene);
     return;
   }
 
@@ -1405,23 +1422,142 @@ function buildPanelBackdrop(scene) {
     layer.appendChild(shade);
     actElements.push(shade);
 
-    // The tree itself, in front of everyone. Its own element in #world,
-    // above #player (style.css, .shadow-tree).
-    const tree = document.createElement("div");
-    tree.className = "shadow-tree";
-    tree.style.left = x - SHADOW_TREE_WIDTH / 2 + "px";
-    // Which of the four models stands here is the join's own number, so
-    // a road is palm, tree, palm, tree rather than one shape repeated,
-    // and the same tree stands at the same place on every phone and on
-    // every visit. Picking at random would put a different tree at the
-    // same join on a reload, which is not what a street does.
-    tree.style.backgroundImage = SHADOW_TREE_URLS[i % SHADOW_TREE_URLS.length];
-    // Characters stay in colour in a memory, but the tree is scenery,
-    // so it greys with the paintings behind it.
-    if (scene.greyFilter) tree.classList.add("grey-filter");
-    world.appendChild(tree);
-    actElements.push(tree);
+    buildShadowTree(scene, x, i);
   });
+}
+
+// The tree itself, in front of everyone. Its own element in #world,
+// above #player (style.css, .shadow-tree).
+function buildShadowTree(scene, x, i) {
+  const tree = document.createElement("div");
+  tree.className = "shadow-tree";
+  tree.style.left = x - SHADOW_TREE_WIDTH / 2 + "px";
+  // Which of the four models stands here is the join's own number, so
+  // a road is palm, tree, palm, tree rather than one shape repeated,
+  // and the same tree stands at the same place on every phone and on
+  // every visit. Picking at random would put a different tree at the
+  // same join on a reload, which is not what a street does.
+  tree.style.backgroundImage = SHADOW_TREE_URLS[i % SHADOW_TREE_URLS.length];
+  // Characters stay in colour in a memory, but the tree is scenery,
+  // so it greys with the paintings behind it.
+  if (scene.greyFilter) tree.classList.add("grey-filter");
+  world.appendChild(tree);
+  actElements.push(tree);
+}
+
+// =============================================================
+// LAYERED STREETS (Block 142)
+//
+// A street that scrolls may be drawn in layers instead of panels, back
+// to front: pictures behind the road that drift at a share of the
+// camera's travel (layers: the sky at 0, a far tree line at 0.3, a near
+// one at 0.6), the buildings and props standing on the road (buildings,
+// each placed by x, at the road's own speed), and in front of everyone
+// the shadow trees at every panelWidth, where the panels' joins were, so
+// the ground a student must reach stays clear of a trunk exactly as
+// before (verify_new_scene.js and prepare.js check it the same way),
+// and a little grass at the bottom of the screen passing faster than
+// the road (frontGrass). Anyone a student reaches stays at the road's
+// speed. The working model is _dev/parallax-test.html.
+//
+// A layer: { src, rate, height, lift, trim, filter, offset }. height is
+// the share of the screen the picture is drawn at, repeated left to
+// right; lift how far above the screen's bottom it stands; trim the
+// share of the picture's height that is empty under its ground, which
+// lowers it so the ground meets the road; filter pushes a far copy back
+// (paler, softer); offset shifts a second copy of the same picture so
+// its trees do not line up with the first's. All of it in the skyline
+// layer, so a night or a memory tints it with the road.
+// =============================================================
+
+let parallaxLayers = []; // { el, rate } for drawCamera
+
+function buildLayeredBackdrop(scene) {
+  const layer = document.getElementById("skyline");
+  if (!layer) return;
+  layer.classList.add("skyline-tiled");
+  parallaxLayers = [];
+  // Wide enough at its rate for the whole road on any screen a phone
+  // turns to: there is no rebuild on a resize (CLAUDE.md).
+  const span = (rate) => Math.ceil(rate * WORLD_WIDTH + Math.max(viewportWidth || 0, 2400)) + "px";
+
+  scene.layers.forEach((spec) => {
+    const el = document.createElement("div");
+    el.className = "skyline-layer";
+    const rate = spec.rate || 0;
+    const height = spec.height || 1;
+    el.style.width = span(rate);
+    el.style.height = height * 100 + "%";
+    // The trim is a share of the picture, so of this element's height,
+    // and bottom's percentage is of the skyline's: one calc either way.
+    el.style.bottom = `calc(${spec.lift || 0}px - ${((spec.trim || 0) * height * 100).toFixed(2)}%)`;
+    loadImage(spec.src); // Block 62
+    el.style.backgroundImage = cssAssetUrl(spec.src);
+    if (spec.offset) el.style.backgroundPositionX = spec.offset + "px";
+    if (spec.filter) el.style.filter = spec.filter;
+    layer.appendChild(el);
+    actElements.push(el);
+    parallaxLayers.push({ el, rate });
+  });
+
+  (scene.buildings || []).forEach((b) => {
+    const el = document.createElement("div");
+    el.className = "street-building";
+    el.style.left = b.x + "px";
+    el.style.bottom = `calc(var(--ground-level) + ${b.lift || 0}px)`;
+    loadImage(b.src).then((img) => {
+      if (!img || !el.isConnected) return;
+      el.style.width = Math.round(img.naturalWidth * (b.scale || 1)) + "px";
+      el.style.height = Math.round(img.naturalHeight * (b.scale || 1)) + "px";
+      el.style.backgroundImage = cssAssetUrl(b.src);
+    });
+    layer.appendChild(el);
+    actElements.push(el);
+  });
+
+  if (scene.frontGrass) {
+    const el = document.createElement("div");
+    el.className = "front-grass";
+    const rate = 1.25;
+    el.style.width = span(rate);
+    el.style.backgroundImage = frontGrassImage();
+    if (scene.greyFilter) el.classList.add("grey-filter");
+    world.appendChild(el);
+    actElements.push(el);
+    parallaxLayers.push({ el, rate });
+  }
+
+  panelJoins(scene).forEach((x, i) => buildShadowTree(scene, x, i));
+  lastCameraX = null; // drawCamera places the layers on the next frame
+}
+
+// Each layer is held at its share of the camera's travel: the world
+// moves by the whole of it, so a layer is moved back by the rest.
+function placeParallaxLayers(cameraX) {
+  for (const p of parallaxLayers) {
+    if (!p.el.isConnected) continue;
+    p.el.style.transform = `translateX(${(cameraX * (1 - p.rate)).toFixed(1)}px)`;
+  }
+}
+
+// The grass in front: tufts of dark blades along the screen's bottom,
+// seeded so they stand in the same places on every visit. One picture
+// 1600 wide, repeated (style.css, .front-grass).
+function frontGrassImage() {
+  if (frontGrassImage.cached) return frontGrassImage.cached;
+  let seed = 59;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const W = 1600, H = 100;
+  let paths = "";
+  for (let x = 80; x < W - 80; x += 300 + rnd() * 500) {
+    for (let k = 0; k < 9; k++) {
+      const bx = x + k * 7, h = 40 + rnd() * 50, bend = (rnd() - 0.5) * 30;
+      paths += `<path d="M${bx.toFixed(1)} ${H} Q${(bx + bend * 0.4).toFixed(1)} ${(H - h * 0.6).toFixed(1)} ${(bx + bend).toFixed(1)} ${(H - h).toFixed(1)}"/>`;
+    }
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">` +
+    `<g fill="none" stroke="#0b130c" stroke-width="5" stroke-linecap="round">${paths}</g></svg>`;
+  return (frontGrassImage.cached = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
 }
 
 // =============================================================
@@ -7116,6 +7252,7 @@ function drawCamera(cameraX, now) {
   world.style.transform = s.x || s.y
     ? `translate(${-cameraX + s.x}px, ${s.y}px)`
     : `translateX(${-cameraX}px)`;
+  if (parallaxLayers.length && cameraX !== lastCameraX) placeParallaxLayers(cameraX); // Block 142
   lastCameraX = cameraX;
   lastShakeX = s.x;
   lastShakeY = s.y;

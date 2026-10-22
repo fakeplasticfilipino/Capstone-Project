@@ -933,10 +933,10 @@ anyone fights. Gradients the engine draws, not art. (A parallax of
 layered streets was built and taken out the same day, Block 126: no
 time for the art it needs.)
 
-Outdoor layers (Block 142, PLANNED, not built yet; its to-do list is in
-TRACKER.md, Block 142). Every outdoor scene that scrolls (tondo,
-san-juan, nangka, burol, morong, himpilan, dimasalang, malabon, patyo)
-is to be rebuilt as a stack, back to front: a nature picture (sky and
+Outdoor layers (Block 142; built for Act I's street on 22 Oct 2026,
+game.js, LAYERED STREETS; the rest is TRACKER.md's list). Every outdoor
+scene that scrolls (tondo, san-juan, nangka, burol, morong, himpilan,
+dimasalang, malabon, patyo) is rebuilt as a stack, back to front: a nature picture (sky and
 far distance, rate about 0.1), a tree line twice (small and pale at
 0.3, tall at 0.6, lowered by its empty bottom rows to meet the road),
 the scene's buildings and props (pictures placed by x behind the
@@ -953,7 +953,15 @@ into pieces, and small props one act asks for share one sheet
 _dev/parallax-test.html is the working model; it opens from the folder
 too (file://), with parallax-art/shadow-trees.js, a copy of game.js's
 shadow trees, standing in when the page cannot read game.js.
-Nothing of it is in the game until the engine work is approved.
+In a scene: layers (each { src, rate, height, lift, trim, filter,
+offset }, in the skyline layer so night and memory tint them),
+buildings ({ src, x, scale, lift }, behind the people), ground: { src,
+lip } (a picture drawn whole at the strip's height, its lip above the
+feet), frontGrass, and panelWidth: the shadow trees stand at every
+multiple of it, where a street's joins were, so content keeps everyone
+90 clear of them and the checks read them the same way. Art moves into
+assets/backgrounds/layers/ and assets/sprites/buildings/ once a scene
+uses it, shrunk like any sheet.
 
 An exit is a doorway: a zone on the road, x and width like a hazard,
 reached edge to edge like an NPC. The interact button reads its label

@@ -6145,7 +6145,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     // A slow painting: the title's bar shows it, and a student who taps
     // in early waits on a screen that says so, not on an empty road.
-    const slow = await rawPage([["**/street-02.jpg*", async (route) => {
+    const slow = await rawPage([["**/tondo-trees.png*", async (route) => {
       if (route.request().method() !== "GET") return route.continue();
       await new Promise((r) => setTimeout(r, 2500));
       return route.continue();
@@ -6184,15 +6184,17 @@ const visible = (page, sel) => page.evaluate((s) => {
     // is in: the inside of the entablado, and every enemy type's sheets,
     // are loading on the title screen, so a scene change and the play's
     // fight do not wait on a download. Art that is owed is never asked
-    // for at all (the sewing table's; the Mananahi's was the example until
-    // Block 98, the Barbero's until 101, the karpintero's until 102).
+    // for at all (the American soldier's, in the enemy catalogue every act
+    // walks; the Mananahi's was the example until Block 98, the Barbero's
+    // until 101, the karpintero's until 102, the sewing table's until it
+    // was drawn on 22 Oct 2026).
     let owedAsks = 0;
-    const whole = await rawPage([["**/tahian.png*", (route) => { owedAsks++; return route.continue(); }]]);
+    const whole = await rawPage([["**/amerikano.png*", (route) => { owedAsks++; return route.continue(); }]]);
     await whole.page.waitForTimeout(400);
     const w1 = await whole.page.evaluate(() => {
       const state = (re) => { const e = [...assetLoads.entries()].find(([u]) => re.test(u)); return e ? e[1].state : null; };
       return { inside: state(/entablado-inside\.jpg/), sword: state(/kawal-attack\.png/),
-        shot: state(/bantay-shoot\.png/), owed: state(/tahian\.png/), manifest: Array.isArray(window.ASSET_MANIFEST) };
+        shot: state(/bantay-shoot\.png/), owed: state(/amerikano\.png/), manifest: Array.isArray(window.ASSET_MANIFEST) };
     });
     ok("the whole act's art is asked for before the street opens: the entablado, the enemies' sheets",
        w1.manifest && w1.inside !== null && w1.sword !== null && w1.shot !== null, w1);
@@ -6221,7 +6223,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     // slow, and Subukan ulit lets it through the moment it is back.
     let deploying = true;
     let lagAsks = 0;
-    const lag = await rawPage([["**/street-02.jpg*", (route) => {
+    const lag = await rawPage([["**/tondo-trees.png*", (route) => {
       if (route.request().method() !== "GET") return route.continue();
       lagAsks++;
       return deploying ? route.fulfill({ status: 404, body: "Not Found" }) : route.continue();
@@ -6231,7 +6233,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await lag.page.click("#shell-guest");
     await lag.page.waitForTimeout(2600);
     const g1 = await lag.page.evaluate(() => {
-      const e = [...assetLoads.entries()].find(([u]) => /street-02\.jpg/.test(u));
+      const e = [...assetLoads.entries()].find(([u]) => /tondo-trees\.png/.test(u));
       return { state: e && e[1].state, shell: Shell.state,
         slow: !document.getElementById("shell-loading-slow").classList.contains("hidden"),
         retry: !document.getElementById("shell-loading-retry").classList.contains("hidden"),
@@ -6245,7 +6247,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await lag.page.click("#shell-loading-retry");
     for (let i = 0; i < 40 && (await lag.page.evaluate(() => Shell.state)) !== "playing"; i++) await lag.page.waitForTimeout(100);
     const g2 = await lag.page.evaluate(() => {
-      const e = [...assetLoads.entries()].find(([u]) => /street-02\.jpg/.test(u));
+      const e = [...assetLoads.entries()].find(([u]) => /tondo-trees\.png/.test(u));
       return { state: e && e[1].state, shell: Shell.state, pending: Game.assetProgress() };
     });
     ok("Subukan ulit tries at once, and once it is back he goes in with every picture there",
@@ -6323,7 +6325,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       };
     });
     ok("the road is drawn from the versioned picture, and the stylesheet names no picture of its own",
-       /ground-lupa\.jpg\?v=\d+/.test(road.ground) && road.cssPictures.length === 0, road);
+       /dirt-ground\.png\?v=\d+/.test(road.ground) && road.cssPictures.length === 0, road); // Act I's road since Block 142
 
     // Block 106. Each file carries its own fingerprint, so a phone asks
     // again only for what changed; a file the manifest does not list

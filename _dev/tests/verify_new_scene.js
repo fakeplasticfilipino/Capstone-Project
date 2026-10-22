@@ -745,11 +745,31 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("the lines fade in", t1.shown === 2, t1);
     ok("and the card fades away by itself", await waitIntertitle(page, false, 12000));
 
+    // Block 142. The street in layers: the sky and the tree line twice
+    // behind, every house, door and prop drawn on the road, its dirt a
+    // picture with a lip, the grass in front, and the shadow trees where
+    // the ten paintings' joins were, so no one stands behind a trunk.
     const p0 = await panels(page);
-    ok("the street is ten paintings long, the four in order and again, a tree over each join",
-       p0.tiles === 10 && p0.loaded &&
-       JSON.stringify(p0.order) === JSON.stringify(["01", "02", "03", "04", "01", "02", "03", "04", "01", "02"].map((n) => "street-" + n)) &&
-       p0.joins.length === 9 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins), p0);
+    const lay = await page.evaluate(async () => {
+      const layers = [...document.querySelectorAll("#skyline .skyline-layer")];
+      const buildings = [...document.querySelectorAll("#skyline .street-building")];
+      await Promise.all(currentScene.buildings.map((b) => loadImage(b.src)));
+      await new Promise((r) => setTimeout(r, 100));
+      const ground = document.getElementById("ground-tiles");
+      return {
+        layers: layers.length, rates: parallaxLayers.map((p) => p.rate),
+        buildings: buildings.length, want: currentScene.buildings.length,
+        drawn: buildings.filter((b) => parseFloat(b.style.width) > 0 && /buildings\//.test(b.style.backgroundImage)).length,
+        ground: ground.classList.contains("ground-picture") && /dirt-ground/.test(getComputedStyle(ground).backgroundImage),
+        groundHigh: ground.getBoundingClientRect().height > 0,
+        grass: document.querySelectorAll("#world .front-grass").length,
+      };
+    });
+    ok("the street is in layers: the sky, two tree lines, every house and prop drawn, the dirt, the grass in front (Block 142)",
+       lay.layers === 3 && JSON.stringify(lay.rates) === "[0,0.3,0.6,1.25]" && lay.buildings === lay.want &&
+       lay.drawn === lay.want && lay.want > 30 && lay.ground && lay.groundHigh && lay.grass === 1, lay);
+    ok("a tree where each of the ten paintings' joins was, and no one behind one",
+       p0.joins.length === 9 && JSON.stringify(p0.treesAt) === JSON.stringify(p0.joins) && !p0.blocked.length, p0);
     ok("the road is 14500 wide", await page.evaluate(() => WORLD_WIDTH === 14500));
 
     // Block 72. The siga have art of their own: an idle and a walk each,
@@ -1056,7 +1076,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("beside the chair, the button reads Gupitin, with scissors", await page.evaluate(() =>
       document.querySelector("#btn-interact .lbl").textContent === "Gupitin" &&
       document.querySelector("#btn-interact .ico use").getAttribute("href") === "#i-scissors" &&
-      /silya-barbero.png/.test(document.getElementById("npc-silya").textContent)));
+      // drawn since 22 Oct 2026, no longer the placeholder box with its name
+      !document.querySelector("#npc-silya .sprite-placeholder") &&
+      /silya-barbero\.png/.test(document.getElementById("npc-silya").innerHTML)));
     await page.keyboard.press("e");
     await page.waitForTimeout(250);
     const cut0 = await cutState(page);
@@ -1142,7 +1164,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("beside the sewing, the button reads Manahi, with a needle, and the table is seen (Block 93)", await page.evaluate(() =>
       document.querySelector("#btn-interact .lbl").textContent === "Manahi" &&
       document.querySelector("#btn-interact .ico use").getAttribute("href") === "#i-needle" &&
-      /tahian.png/.test(document.getElementById("npc-tahian").textContent)));
+      // drawn since 22 Oct 2026, no longer the placeholder box with its name
+      !document.querySelector("#npc-tahian .sprite-placeholder") &&
+      /tahian\.png/.test(document.getElementById("npc-tahian").innerHTML)));
     await page.keyboard.press("e");
     await page.waitForTimeout(250);
     ok("E opens the same game with the sewing's words, played by holding instead", await page.evaluate(() =>

@@ -288,6 +288,41 @@ html, body {
   pointer-events: none;
 }
 
+/* Block 142. A street in layers (game.js, LAYERED STREETS). A layer is a
+   picture repeated along a strip as wide as its rate needs, its height
+   and its place set by game.js, moved by drawCamera. A building or prop
+   stands on the road behind the people, sized by game.js from its
+   picture. The grass in front passes faster than the road, over the
+   people's feet as the shadow trees pass over them (z-index 3). */
+.skyline-layer {
+  position: absolute;
+  left: 0;
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  pointer-events: none;
+  will-change: transform;
+}
+.street-building {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+.front-grass {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 100px;
+  z-index: 3;
+  background-repeat: repeat-x;
+  background-size: 1600px 100px;
+  pointer-events: none;
+  will-change: transform;
+}
+.front-grass.grey-filter {
+  filter: grayscale(1);
+}
+
 /* Block 126. A door that is open, lit (game.js, LIT DOORWAYS): a warm
    light rising from the threshold and a pool of it on the road, drawn
    with gradients, behind the people. Dark until open; brighter in reach;
@@ -452,6 +487,15 @@ html, body {
     var(--ground-src, none); /* set by game.js, versioned (Block 105) */
   background-repeat: no-repeat, repeat;
   background-size: 100% 100%, var(--ground-size, 120px 120px);
+}
+
+/* Block 142. A road that is a picture of its own (ground: { src, lip }):
+   drawn whole at the strip's height, repeated along it, unshaded; game.js
+   makes the strip taller by the picture's lip. */
+#ground-tiles.ground-picture {
+  background-image: var(--ground-src, none);
+  background-repeat: repeat-x;
+  background-size: auto 100%;
 }
 
 /* Block 114. A floor of pixels (game.js, FLOORS) drawn at twice its

@@ -275,30 +275,36 @@ in this order:
     [ ] bilibid, bilibid-sky-nature, stone-ground
     [ ] manila-view-nature
 
-Engine (game.js; the approach walked through with the proponent before
-it is written):
+Engine (game.js, LAYERED STREETS; built 22 Oct 2026 at the
+proponent's word, "apply them in real act 1"):
 
-    [ ] layers back from the Block 126 commit ("Block 126: lit
-        doorways, and layers that drift behind a street"): a scene's
-        pictures behind the road, each at its rate of the camera
-    [ ] a scene's buildings: pictures behind the people, placed by x at
-        one scale per kit, a door's picture on its exit
-    [ ] the shadow trees as a foreground layer, the grass under them;
-        the ground strip from a picture (dirt, grass, stone)
-    [ ] the tree line twice (far and pale, near and tall), lowered to
+    [x] a scene's layers: pictures behind the road, each at its rate of
+        the camera (layers: { src, rate, height, lift, trim, filter,
+        offset }), moved by drawCamera
+    [x] a scene's buildings: pictures behind the people, placed by x at
+        one scale per kit, a door's picture behind its door
+    [x] the shadow trees at every panelWidth as before (so everyone
+        stays clear of a trunk, and the checks hold), the grass in front
+        at 1.25 (frontGrass); the ground strip from a picture with a lip
+        (ground: { src, lip })
+    [x] the tree line twice (far and pale, near and tall), lowered to
         meet the road by its empty rows, as the test page does
-    [ ] the content check and test.js cover layers and buildings
-    [ ] the art moved from _dev/parallax-art/ into assets/ (layers in
-        assets/backgrounds/layers/, kits cropped into
-        assets/sprites/buildings/), sheets kept in
-        docs-private/art-delivered/
+    [x] the content check and verify_new_scene.js cover layers and
+        buildings
+    [x] Tondo's art moved from _dev/parallax-art/ into assets/ (layers
+        in assets/backgrounds/layers/, houses, doors and props in
+        assets/sprites/buildings/, shrunk); the sheets stay in
+        _dev/parallax-art/ until docs-private/art-delivered/
 
 Scenes:
 
-    [ ] tondo, one layout shared by Acts I to IV, each door's building
-        on its exit: Nanay's house 2000, the pulungan's back door 4100,
-        the barberya 5260, the press 6650, Act III's doors 6700, 8300
-        and 10900, the mountain road 11300, the entablado 13600
+    [x] tondo in Act I (22 Oct 2026): nineteen houses and twenty props,
+        each door behind its person: Nanay's house 2040, the pulungan's
+        back door 4120, the barberya 5340, the Mananahi's stall 6450,
+        the entablado 13640 (content/act1.js, TONDO_HOUSES)
+    [ ] tondo in Acts II to IV, the same layout, each act's doors
+        checked: the barberya 5260, the press 6650, Act III's doors
+        6700, 8300 and 10900, the mountain road 11300
     [ ] san-juan, nangka (Act II)
     [ ] burol, morong (Act III; morong again in Act IV)
     [ ] himpilan, dimasalang, malabon, patyo (Act IV)

@@ -6232,6 +6232,21 @@ for the proponent's go-ahead; the to-do list is in TRACKER.md, Block
 142. Also from this day: the proponent handles all git (CLAUDE.md,
 Deployment), so a session edits files and says what changed.
 
+Built for Act I's street on 22 Oct 2026, at the proponent's word
+("apply them in real act 1"), once Tondo's art was all in: the sky,
+the tree line twice, nineteen houses and twenty props, the dirt road
+and the shadow trees (game.js, LAYERED STREETS). Three choices. The
+shadow trees stay where the ten paintings' joins were, every 1450, and
+pass at the road's speed rather than the test page's 1.25: everyone a
+student reaches already stands 90 clear of those places, and the
+checks that keep them clear (prepare.js, verify_new_scene.js) read the
+same spots, so nothing in the story had to move; only the grass passes
+faster. Each door's building stands behind the person or exit at it
+(Nanay's house behind Nanay, the barberya behind the Barbero), so the
+lit doorway and the drawn door agree. And Act I alone for now: Acts II
+to IV keep the paintings until their doors are checked against the
+same layout, so a change to Act I cannot move a door in another act.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every
