@@ -6145,7 +6145,7 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     // A slow painting: the title's bar shows it, and a student who taps
     // in early waits on a screen that says so, not on an empty road.
-    const slow = await rawPage([["**/tondo-trees.png*", async (route) => {
+    const slow = await rawPage([["**/trees/mangga.png*", async (route) => {
       if (route.request().method() !== "GET") return route.continue();
       await new Promise((r) => setTimeout(r, 2500));
       return route.continue();
@@ -6223,7 +6223,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     // slow, and Subukan ulit lets it through the moment it is back.
     let deploying = true;
     let lagAsks = 0;
-    const lag = await rawPage([["**/tondo-trees.png*", (route) => {
+    const lag = await rawPage([["**/trees/mangga.png*", (route) => {
       if (route.request().method() !== "GET") return route.continue();
       lagAsks++;
       return deploying ? route.fulfill({ status: 404, body: "Not Found" }) : route.continue();
@@ -6233,7 +6233,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await lag.page.click("#shell-guest");
     await lag.page.waitForTimeout(2600);
     const g1 = await lag.page.evaluate(() => {
-      const e = [...assetLoads.entries()].find(([u]) => /tondo-trees\.png/.test(u));
+      const e = [...assetLoads.entries()].find(([u]) => /mangga\.png/.test(u));
       return { state: e && e[1].state, shell: Shell.state,
         slow: !document.getElementById("shell-loading-slow").classList.contains("hidden"),
         retry: !document.getElementById("shell-loading-retry").classList.contains("hidden"),
@@ -6247,7 +6247,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await lag.page.click("#shell-loading-retry");
     for (let i = 0; i < 40 && (await lag.page.evaluate(() => Shell.state)) !== "playing"; i++) await lag.page.waitForTimeout(100);
     const g2 = await lag.page.evaluate(() => {
-      const e = [...assetLoads.entries()].find(([u]) => /tondo-trees\.png/.test(u));
+      const e = [...assetLoads.entries()].find(([u]) => /mangga\.png/.test(u));
       return { state: e && e[1].state, shell: Shell.state, pending: Game.assetProgress() };
     });
     ok("Subukan ulit tries at once, and once it is back he goes in with every picture there",

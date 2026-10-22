@@ -1460,7 +1460,8 @@ function buildShadowTree(scene, x, i) {
 // the road (frontGrass). Anyone a student reaches stays at the road's
 // speed. The working model is _dev/parallax-test.html.
 //
-// A layer: { src, rate, height, lift, trim, filter, offset }. height is
+// A layer: { src, rate, height, lift, trim, filter, offset }, or items
+// in place of src (separate pictures placed along it). height is
 // the share of the screen the picture is drawn at, repeated left to
 // right; lift how far above the screen's bottom it stands; trim the
 // share of the picture's height that is empty under its ground, which
@@ -1491,9 +1492,15 @@ function buildLayeredBackdrop(scene) {
     // The trim is a share of the picture, so of this element's height,
     // and bottom's percentage is of the skyline's: one calc either way.
     el.style.bottom = `calc(${spec.lift || 0}px - ${((spec.trim || 0) * height * 100).toFixed(2)}%)`;
-    loadImage(spec.src); // Block 62
-    el.style.backgroundImage = cssAssetUrl(spec.src);
+    if (spec.src) {
+      loadImage(spec.src); // Block 62
+      el.style.backgroundImage = cssAssetUrl(spec.src);
+    }
     if (spec.offset) el.style.backgroundPositionX = spec.offset + "px";
+    // Or separate pictures placed along it (items: { src, x, scale },
+    // x in the layer's own length), standing on its bottom: single trees
+    // with the bay showing between them.
+    (spec.items || []).forEach((item) => el.appendChild(placedPicture(item, "layer-item", "0px")));
     if (spec.filter) el.style.filter = spec.filter;
     layer.appendChild(el);
     actElements.push(el);
@@ -1501,16 +1508,7 @@ function buildLayeredBackdrop(scene) {
   });
 
   (scene.buildings || []).forEach((b) => {
-    const el = document.createElement("div");
-    el.className = "street-building";
-    el.style.left = b.x + "px";
-    el.style.bottom = `calc(var(--ground-level) + ${b.lift || 0}px)`;
-    loadImage(b.src).then((img) => {
-      if (!img || !el.isConnected) return;
-      el.style.width = Math.round(img.naturalWidth * (b.scale || 1)) + "px";
-      el.style.height = Math.round(img.naturalHeight * (b.scale || 1)) + "px";
-      el.style.backgroundImage = cssAssetUrl(b.src);
-    });
+    const el = placedPicture(b, "street-building", `calc(var(--ground-level) + ${b.lift || 0}px)`);
     layer.appendChild(el);
     actElements.push(el);
   });
@@ -1529,6 +1527,22 @@ function buildLayeredBackdrop(scene) {
 
   panelJoins(scene).forEach((x, i) => buildShadowTree(scene, x, i));
   lastCameraX = null; // drawCamera places the layers on the next frame
+}
+
+// A picture placed by x at its own size times scale, its bottom at
+// bottom; sized once it has loaded.
+function placedPicture(spec, className, bottom) {
+  const el = document.createElement("div");
+  el.className = className;
+  el.style.left = spec.x + "px";
+  el.style.bottom = bottom;
+  loadImage(spec.src).then((img) => {
+    if (!img || !el.isConnected) return;
+    el.style.width = Math.round(img.naturalWidth * (spec.scale || 1)) + "px";
+    el.style.height = Math.round(img.naturalHeight * (spec.scale || 1)) + "px";
+    el.style.backgroundImage = cssAssetUrl(spec.src);
+  });
+  return el;
 }
 
 // Each layer is held at its share of the camera's travel: the world

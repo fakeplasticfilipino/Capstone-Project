@@ -573,9 +573,11 @@ barberya (4), the pulungan's back door (5).
 Done and in the game. Nothing here needs drawing.
 
     Backgrounds
-        Act I     Tondo's sky, tree line and dirt road (tondo-nature,
-                  tondo-trees, and dirt-ground cut from tondo-road, in
-                  _dev/parallax-art/), the street
+        Act I     Tondo's sky over the bay (tondo-nature-1), its eight
+                  trees (tondo-palms), and dirt-ground cut from
+                  tondo-road (in _dev/parallax-art/; the first sky and
+                  the forest, tondo-nature and tondo-trees, set aside
+                  on 22 Oct 2026), the street
                   (street-01 to street-04), the road
                   (ground-lupa), the inside of the theatre
                   (entablado-inside), the Katipunan's secret room

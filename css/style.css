@@ -302,7 +302,8 @@ html, body {
   pointer-events: none;
   will-change: transform;
 }
-.street-building {
+.street-building,
+.layer-item {
   position: absolute;
   background-repeat: no-repeat;
   background-size: 100% 100%;

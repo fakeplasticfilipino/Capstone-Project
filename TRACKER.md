@@ -265,6 +265,9 @@ in this order:
     [x] tondo-nature, tondo-trees (lowland), tondo-houses, tondo-props
     [x] tondo-doors (the buildings Macario goes into; cropped 22 Oct)
     [x] dirt-ground (tondo-road.png, its sky cut off: dirt-ground.png)
+    [x] tondo-nature-1 (the bay, its near shore) and tondo-palms (eight
+        single trees), 22 Oct, replacing tondo-nature and the forest
+        wall of tondo-trees, which hid the bay
     [x] act1-props (the sewing table and the barber's chair, Act I's
         two owed props, in one sheet; tondo-props-1.png, in the game
         since 22 Oct as assets/sprites/scenery/)

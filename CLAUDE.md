@@ -954,7 +954,9 @@ _dev/parallax-test.html is the working model; it opens from the folder
 too (file://), with parallax-art/shadow-trees.js, a copy of game.js's
 shadow trees, standing in when the page cannot read game.js.
 In a scene: layers (each { src, rate, height, lift, trim, filter,
-offset }, in the skyline layer so night and memory tint them),
+offset }, or items in place of src: single pictures { src, x, scale }
+placed along the layer, as Tondo's trees are; in the skyline layer so
+night and memory tint them),
 buildings ({ src, x, scale, lift }, behind the people), ground: { src,
 lip } (a picture drawn whole at the strip's height, its lip above the
 feet), frontGrass, and panelWidth: the shadow trees stand at every

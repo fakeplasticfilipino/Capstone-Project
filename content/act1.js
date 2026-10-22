@@ -73,16 +73,31 @@ const STREET_WIDTH = STREET_PANEL_COUNT * PANEL; // 14500
 
 // Block 142. Since 22 Oct 2026 the street is drawn in layers (game.js,
 // LAYERED STREETS) rather than the paintings above, which Acts II to IV
-// still use: the sky, the tree line twice (far and pale, near and tall),
-// Tondo's houses, doors and props along the road, its dirt underfoot,
-// and the shadow trees where the joins were, so everyone keeps standing
-// clear of a trunk. The tree picture's bottom 7% is empty (trim).
+// still use: the sky over Manila Bay with its near shore, two rows of
+// single trees (far, small and pale, standing on that shore; near, tall,
+// behind the houses) with the bay showing between them, Tondo's houses,
+// doors and props along the road, its dirt underfoot, and the shadow
+// trees where the joins were, so everyone keeps standing clear of a
+// trunk. The sky stands 50 up so its shore shows over the road.
+const TONDO_TREES = ["niyog", "mangga", "niyog-dalawa", "akasya", "niyog-hilig",
+  "kawayan", "saging", "niyog", "punong-maliit", "mangga", "niyog-hilig", "akasya"];
+// A row of trees along a layer's own length: the twelve above in turn,
+// spaced unevenly (gap, plus up to spread more) so no rhythm shows.
+const treeRow = (length, gap, spread, scale, start) => {
+  const row = [];
+  for (let i = 0, x = start; x < length; i++) {
+    const name = TONDO_TREES[i % TONDO_TREES.length];
+    row.push({ src: `assets/sprites/trees/${name}.png`, x, scale });
+    x += gap + ((i * 137) % 100) / 100 * spread;
+  }
+  return row;
+};
 const TONDO_LAYERS = [
-  { src: "assets/backgrounds/layers/tondo-sky.jpg", rate: 0 },
-  { src: "assets/backgrounds/layers/tondo-trees.png", rate: 0.3, height: 0.5, lift: 100, trim: 0.07,
-    filter: "saturate(0.6) brightness(1.12) contrast(0.8)" },
-  { src: "assets/backgrounds/layers/tondo-trees.png", rate: 0.6, height: 0.95, lift: 64, trim: 0.07,
-    filter: "saturate(1.1) contrast(1.05)", offset: 700 },
+  { src: "assets/backgrounds/layers/tondo-sky.jpg", rate: 0, lift: 50 },
+  { rate: 0.3, lift: 64, items: treeRow(7000, 230, 260, 0.42, 40),
+    filter: "saturate(0.55) brightness(1.1) contrast(0.8)" },
+  { rate: 0.6, lift: 60, items: treeRow(11400, 420, 520, 1, 200),
+    filter: "saturate(1.05)" },
 ];
 const TONDO_GROUND = { src: "assets/backgrounds/layers/dirt-ground.png", lip: 14 };
 

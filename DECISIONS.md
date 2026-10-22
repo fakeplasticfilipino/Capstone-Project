@@ -6247,6 +6247,14 @@ lit doorway and the drawn door agree. And Act I alone for now: Acts II
 to IV keep the paintings until their doors are checked against the
 same layout, so a change to Act I cannot move a door in another act.
 
+The same day the proponent found the tree line overwhelming, a wall of
+forest that hid the bay, and asked for the sea with land in front of
+it and single trees, as in a side-scroller he showed: the far picture
+(sky, Manila Bay, mountains, a near shore with small trees and huts,
+tondo-nature-1) and a sheet of eight single trees (tondo-palms), placed
+in two rows along their layers (items), the far row small and pale on
+the shore, the near row tall behind the houses, the bay between them.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every
