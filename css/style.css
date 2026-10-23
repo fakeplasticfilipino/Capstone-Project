@@ -309,6 +309,11 @@ html, body {
   background-size: 100% 100%;
   pointer-events: none;
 }
+/* A room's piece in front of the people (game.js, LAYERED STREETS): the
+   stage's footlights. Over #player (1), level with the front grass. */
+.front-piece {
+  z-index: 3;
+}
 .front-grass {
   position: absolute;
   left: 0;

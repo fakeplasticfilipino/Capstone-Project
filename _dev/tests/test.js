@@ -6193,7 +6193,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await whole.page.waitForTimeout(400);
     const w1 = await whole.page.evaluate(() => {
       const state = (re) => { const e = [...assetLoads.entries()].find(([u]) => re.test(u)); return e ? e[1].state : null; };
-      return { inside: state(/entablado-inside\.jpg/), sword: state(/kawal-attack\.png/),
+      return { inside: state(/rooms\/entablado\/telon\.png/), sword: state(/kawal-attack\.png/),
         shot: state(/bantay-shoot\.png/), owed: state(/amerikano\.png/), manifest: Array.isArray(window.ASSET_MANIFEST) };
     });
     ok("the whole act's art is asked for before the street opens: the entablado, the enemies' sheets",

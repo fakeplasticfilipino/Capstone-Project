@@ -943,23 +943,32 @@ the scene's buildings and props (pictures placed by x behind the
 people, one scale per kit, a door's picture standing on its exit), the
 ground strip (a picture: dirt, grass or stone), and the foreground
 (the shadow trees and grass, at about 1.25). Anything a student
-reaches stays at rate 1. Rooms and outdoor places one screen wide keep
-one painting. The art is made with ChatGPT from ART.md's prompts (one
+reaches stays at rate 1. Outdoor places one screen wide keep one
+painting. Rooms are built from kits (Block 143; the rooms table at the
+end of ART.md): one layer, the room's wall at rate 1, repeated
+(ROOM_WALL in content/act1.js); its floor as ground: { src, lip,
+filter }; its furniture as buildings placed by x at a height in world
+pixels; cut from the delivered sheets with _dev/tools/cut-room-kit.py
+into assets/backgrounds/rooms/ and assets/sprites/rooms/<room>/. The
+entablado and the pulungan are built so. The art is made with ChatGPT from ART.md's prompts (one
 whole prompt per picture, filed under Backgrounds and Props by the act
 that first uses it, named without a folder) and arrives in
 _dev/parallax-art/; kits come as one sprite sheet each and are cropped
 into pieces, and small props one act asks for share one sheet
 (act1-props.png and so on, each entry naming the files it is cut into).
-_dev/parallax-test.html is the working model; it opens from the folder
-too (file://), with parallax-art/shadow-trees.js, a copy of game.js's
-shadow trees, standing in when the page cannot read game.js.
+A delivered sheet, once cut and in the game, moves to
+docs-private/art-delivered/; _dev/parallax-art/ keeps only the style
+references the prompts attach and sheets not yet cut. The street test
+page of Block 142 (_dev/parallax-test.html) was retired on 23 Oct 2026,
+Tondo being built in the game; _dev/room-test.html lays out the rooms.
 In a scene: layers (each { src, rate, height, lift, trim, filter,
 offset }, or items in place of src: single pictures { src, x, scale }
 placed along the layer, as Tondo's trees are; in the skyline layer so
 night and memory tint them),
-buildings ({ src, x, scale, lift }, behind the people), ground: { src,
-lip } (a picture drawn whole at the strip's height, its lip above the
-feet), frontGrass, and panelWidth: the shadow trees stand at every
+buildings ({ src, x, scale or height, lift, flip, filter, front }:
+behind the people, or in front of them with front), ground: { src,
+lip, filter } (a picture drawn whole at the strip's height, its lip
+above the feet; filter shades a room's floor with its wall), frontGrass, and panelWidth: the shadow trees stand at every
 multiple of it, where a street's joins were, so content keeps everyone
 90 clear of them and the checks read them the same way. Art moves into
 assets/backgrounds/layers/ and assets/sprites/buildings/ once a scene

@@ -19,8 +19,11 @@ prepare.js's count right until the room is built from the kit; it checks
 that every assets/ file in Backgrounds, Sprites and Props (outside "Also
 wanted") is missing and every missing one is listed. Which scene uses
 which layers: the table at the end. When a picture arrives, move its
-line to COMPLETED. Originals are kept in docs-private/art-delivered/.
-node _dev/tools/missing-art.js lists what the game asks for and does not
+line to COMPLETED; once it is cut and in the game, its sheet moves to
+docs-private/art-delivered/, where originals are kept. _dev/parallax-art/
+keeps only the pictures the prompts attach as a style to follow
+(tondo-props, tondo-houses, tondo-nature, tondo-trees, dirt-ground) and
+sheets not yet cut. node _dev/tools/missing-art.js lists what the game asks for and does not
 have. A still delivered on black: node _dev/tools/key-still.js; a sheet
 on black: _dev/tools/key-black.py.
 
@@ -28,48 +31,7 @@ on black: _dev/tools/key-black.py.
 
 ### Act I
 
-    room-walls.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sheet of four separate pieces of the back wall of
-        a room, arranged in a row with wide empty space between them so
-        none touch. Each piece seen straight on (flat, no perspective,
-        no side walls, no floor, no ceiling corners), tall and narrow,
-        from the floor line at the bottom up to a ceiling beam across
-        the top, with a plain vertical post along its left edge and an
-        identical post along its right edge, so copies can be set side
-        by side into a long wall. Nothing on the walls: no windows,
-        doors, shelves, pictures, lamps or furniture. (1) Rough wide
-        wooden planks between dark wooden posts, a tie beam at the top,
-        as inside a working house in Tondo, 1896. (2) Woven split-bamboo
-        matting (sawali) between bamboo posts, a bamboo beam at the top,
-        as inside a poor nipa house. (3) Big grey-brown stone blocks
-        with dark wooden posts, as inside an old prison cell. (4)
-        Smooth white lime plaster above a dark polished wooden panel
-        along the bottom, between wooden pilasters, as inside a
-        respectable town house around 1900. Soft, even daylight. No
-        people. Transparent background. Landscape, largest size.
-        Cut into (_dev/room-art/): wall-tabla.png (1),
-        wall-sawali.png (2), wall-bato.png (3), wall-palitada.png (4)
-        (NOT STARTED)
-
-    room-floors.png
-        (Attach the file _dev/parallax-art/dirt-ground.png)
-        Refer to the attached image: a strip of ground seen from the
-        side for a 2D side-scrolling game. Use the same art style and
-        make a sheet of five strips of indoor floor in the same shape,
-        one above the other with wide empty space between them, each a
-        long flat band seen from the side and a little from above, with
-        the same pattern from end to end so it can repeat, the boards or
-        stones running left to right: (1) worn wooden stage boards, (2)
-        rough wide floorboards, (3) split bamboo slats, (4) worn stone
-        flagstones, (5) polished dark hardwood boards. No furniture, no
-        people, no shadows. Transparent background. Landscape, largest
-        size.
-        Cut into (_dev/room-art/): floor-entablado.png (1),
-        floor-tabla.png (2), floor-kawayan.png (3), floor-bato.png (4),
-        floor-narra.png (5)
-        (NOT STARTED)
+Nothing needed.
 
 ### Act II
 
@@ -368,54 +330,7 @@ Also wanted (not in the game yet):
 
 ### Act I
 
-    entablado-kit.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sprite sheet of the separate pieces of a small
-        theatre stage in Tondo, 1896, set for a moro-moro play. (1) A
-        tall red velvet stage curtain hanging straight down from top to
-        floor, gathered and tied back with a gold cord. (2) A long red
-        swagged valance with gold fringe and tassels, to hang across the
-        top. (3) A big painted canvas backdrop in a thin wooden frame: a
-        Moorish city with domes and minarets by the sea on the left, a
-        castle on a cliff on the right, mountains and a dusk sky
-        between. (4) A tall dark blue banner with a gold crescent and
-        star. (5) A painted wooden side flat of palm trees. (6) A row of
-        oil footlights with tin reflectors. (7) A gilded wooden prop
-        throne. Each piece whole and seen straight on from the side
-        (flat, no perspective), with wide empty space between them so
-        none touch or overlap, all drawn in proportion to each other. No
-        people, no walls, no floor, no shadows between pieces.
-        Transparent background. Landscape, largest size.
-        Cut into (_dev/room-art/entablado/): kurtina.png (1),
-        kurtina-taas.png (2), telon.png (3), bandila-buwan.png
-        (4), gilid-palma.png (5), ilaw-paa.png (6), trono.png
-        (7)
-        (NOT STARTED)
-
-    pulungan-kit.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sprite sheet of the separate pieces of the
-        Katipunan's secret meeting room in a house in Tondo, 1895, at
-        night by candlelight. (1) A long rough wooden table with a lit
-        candle, papers and an inkpot on it. (2) A long wooden bench. (3)
-        A red cloth banner with three white letters K in a row, hung
-        from a cord. (4) A plain wooden plank door, a little taller than
-        a man, half open, night outside. (5) A window with wooden bars,
-        night outside. (6) A lit candle in an iron wall holder. (7) A
-        wooden rack holding bolos and bamboo spears. (8) Two wooden
-        barrels and a woven basket. (9) A wall shelf with clay jars and
-        baskets. Each piece whole and seen straight on from the side
-        (flat, no perspective), with wide empty space between them so
-        none touch or overlap, all drawn in proportion to each other. No
-        people, no walls, no floor, no shadows between pieces.
-        Transparent background. Landscape, largest size.
-        Cut into (_dev/room-art/pulungan/): mesa.png (1),
-        bangko.png (2), bandila-kkk.png (3), pinto.png (4),
-        bintana.png (5), kandila.png (6), sandata.png (7),
-        bariles.png (8), istante.png (9)
-        (NOT STARTED)
+Nothing needed.
 
 ### Act II
 
@@ -732,9 +647,13 @@ do not scroll, so they keep one painting each. The rooms are built from
 kits instead (22 Oct 2026, the proponent, all nine): a wall from
 room-walls.png repeated along the room, a floor from room-floors.png,
 and the room's own pieces placed by x on the hotspots (doors, windows,
-the press's shelves and hiding places). Until a room is built from its
-kit, the game keeps its painting (the entablado, the pulungan, the
-selda) or the owed dark wall.
+the press's shelves and hiding places). The entablado and the pulungan
+are built so (Block 143); the walls and floors the other rooms will use
+are already cut into _dev/room-art/ (wall-sawali, wall-bato,
+wall-palitada; floor-kawayan, floor-bato, floor-narra), to move into
+assets/backgrounds/rooms/ with the room that first uses them. Until a
+room is built from its kit, the game keeps its painting (the selda) or
+the owed dark wall. Cut a sheet with _dev/tools/cut-room-kit.py.
 
     room          wall       floor       pieces
     entablado     tabla      entablado   entablado-kit
@@ -757,13 +676,14 @@ Done and in the game. Nothing here needs drawing.
     Backgrounds
         Act I     Tondo's sky over the bay (tondo-nature-1), its eight
                   trees (tondo-palms), and dirt-ground cut from
-                  tondo-road (in _dev/parallax-art/; the first sky and
+                  tondo-road (the sheets in docs-private/art-delivered/;
+                  the first sky and
                   the forest, tondo-nature and tondo-trees, set aside
                   on 22 Oct 2026), the street
                   (street-01 to street-04), the road
-                  (ground-lupa), the inside of the theatre
-                  (entablado-inside), the Katipunan's secret room
-                  (pulungan)
+                  (ground-lupa), the rooms' walls and floors
+                  (room-walls, room-floors; the sheets in
+                  docs-private/art-delivered/)
         Act II    Pugad Lawin,
                   San Juan del Monte (san-juan-1 and 2), the Nangka
                   (nangka-1 and 2), Balara, Laguna
@@ -794,4 +714,7 @@ Done and in the game. Nothing here needs drawing.
                   (tondo-houses, tondo-props, tondo-doors, in
                   _dev/parallax-art/), the Mananahi's sewing table
                   (tahian) and the Barbero's chair (silya-barbero),
-                  cut from tondo-props-1
+                  cut from tondo-props-1, the stage and the pulungan's
+                  furniture (entablado-kit, pulungan-kit; cut into
+                  assets/sprites/rooms/, the sheets in
+                  docs-private/art-delivered/)

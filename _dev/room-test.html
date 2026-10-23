@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Room test</title>
 <!--
-  Room test page (22 Oct 2026, the interior backgrounds thread). Standalone,
-  as _dev/parallax-test.html is: it loads nothing from js/ or css/ and the
-  game never loads it, so deleting this one file is the whole revert. Open
+  Room test page (22 Oct 2026, the interior backgrounds thread). Standalone:
+  it loads nothing from js/ or css/ and the game never loads it, so deleting this one file is the whole revert. Open
   it through the same local server as the game.
 
   A room built from a kit (ART.md, the rooms table): a wall repeated along
@@ -118,35 +117,43 @@ const ROOMS = {
       exit: [[1730, 70]], hide: [[495, 110], [920, 110], [1390, 110]],
       shelf: [[590, 100, 180], [1100, 100, 200]] } },
 
-  pulungan: { width: 1180, wall: "wall-tabla", floor: "floor-tabla", start: 120, night: true,
+  // Built in the game since Block 143 (content/act1.js, PULUNGAN_PIECES).
+  pulungan: { width: 1180, wall: "wall-tabla", floor: "floor-tabla", start: 120,
     pieces: [
-      { file: "pinto", x: 0, h: 190, w: 90 },
-      { file: "kandila", x: 160, h: 50, w: 30, lift: 150 },
-      { file: "bintana", x: 230, h: 90, w: 110, lift: 80 },
-      { file: "istante", x: 380, h: 120, w: 130 },
-      { file: "bandila-kkk", x: 500, h: 110, w: 190, lift: 150 },
-      { file: "bangko", x: 470, h: 30, w: 120 },
-      { file: "mesa", x: 520, h: 63, w: 200 },
-      { file: "bangko", x: 700, h: 30, w: 120 },
-      { file: "kandila", x: 860, h: 50, w: 30, lift: 150 },
-      { file: "sandata", x: 990, h: 160, w: 70 },
-      { file: "bariles", x: 1070, h: 60, w: 100 },
+      { file: "pinto", x: -40, h: 200, w: 113 },
+      { file: "kandila", x: 125, h: 60, w: 22, lift: 130 },
+      { file: "bintana", x: 185, h: 100, w: 83, lift: 85 },
+      { file: "bariles", x: 290, h: 62, w: 79 },
+      { file: "basket", x: 372, h: 40, w: 43 },
+      { file: "mesa", x: 480, h: 72, w: 165 },
+      { file: "bangko", x: 430, h: 30, w: 133 },
+      { file: "bangko", x: 600, h: 30, w: 133 },
+      { file: "kandila", x: 650, h: 60, w: 22, lift: 130 },
+      { file: "bandila-kkk", x: 705, h: 120, w: 109, lift: 165 },
+      { file: "kandila", x: 880, h: 60, w: 22, lift: 130 },
+      { file: "istante", x: 830, h: 95, w: 207 },
+      { file: "sandata", x: 1040, h: 150, w: 145 },
     ],
     marks: { npc: [[300, "Kasama"], [760, "Mabalasig"], [920, "Katipunero"], [560, "head (1895)"], [40, "Nanay at the door"]],
       exit: [[0, 70]] } },
 
+  // Built in the game since Block 143 (content/act1.js, STAGE_PIECES).
   entablado: { width: 1180, wall: "wall-tabla", floor: "floor-entablado", start: 560,
     pieces: [
-      { file: "telon", x: 110, h: 360, w: 960, lift: 0 },
-      { file: "gilid-palma", x: 90, h: 260, w: 120 },
-      { file: "gilid-palma", x: 970, h: 260, w: 120, flip: true },
-      { file: "bandila-buwan", x: 40, h: 220, w: 70, lift: 90 },
-      { file: "bandila-buwan", x: 1070, h: 220, w: 70, lift: 90 },
-      { file: "trono", x: 640, h: 120, w: 80 },
-      { file: "kurtina", x: -20, h: 470, w: 120, front: true },
-      { file: "kurtina", x: 1080, h: 470, w: 120, front: true, flip: true },
-      { file: "kurtina-taas", x: 0, h: 90, w: 1180, lift: 400, front: true },
-      { file: "ilaw-paa", x: 100, h: 18, w: 980, lift: -40, front: true },
+      { file: "telon", x: 332, h: 340, w: 516, lift: 30 },
+      { file: "gilid-palma", x: 245, h: 330, w: 87 },
+      { file: "gilid-palma", x: 848, h: 330, w: 87, flip: true },
+      { file: "bandila-buwan", x: 85, h: 200, w: 121, lift: 150 },
+      { file: "bandila-buwan", x: 975, h: 200, w: 121, lift: 150 },
+      { file: "trono", x: 720, h: 115, w: 74 },
+      { file: "kurtina", x: -20, h: 440, w: 115, lift: 0 },
+      { file: "kurtina", x: 1077, h: 440, w: 115, lift: 0, flip: true },
+      { file: "kurtina-taas", x: 70, h: 80, w: 525, lift: 360 },
+      { file: "kurtina-taas", x: 585, h: 80, w: 525, lift: 360 },
+      { file: "ilaw-paa", x: 150, h: 26, w: 168, lift: -46, front: true },
+      { file: "ilaw-paa", x: 390, h: 26, w: 168, lift: -46, front: true },
+      { file: "ilaw-paa", x: 630, h: 26, w: 168, lift: -46, front: true },
+      { file: "ilaw-paa", x: 870, h: 26, w: 168, lift: -46, front: true },
     ],
     marks: { npc: [[60, "Direktor"], [300, "Maryam"], [560, "start"]], exit: [[1110, 70]] } },
 
@@ -236,6 +243,13 @@ function picture(src) {
   });
   return cache[src];
 }
+// A picture still in room-art/, or one a built room already uses in
+// assets/ (walls and floors in backgrounds/rooms/, pieces in
+// sprites/rooms/<room>/).
+const ASSETS = (src) => src.replace(ART, "../assets/backgrounds/rooms/")
+  .replace(/backgrounds\/rooms\/([a-z-]+)\//, "sprites/rooms/$1/");
+const either = (src) => picture(src).then((img) => img ||
+  (src.startsWith(ART) ? picture(ASSETS(src)) : null));
 const pieceSrc = (name, file) => file.includes("/")
   ? (file.startsWith("sprites/") ? "../assets/sprites/scenery/" + file.slice(8) + ".png" : file)
   : ART + name + "/" + file + ".png";
@@ -250,10 +264,10 @@ function build(name) {
   const floor = document.getElementById("floor");
   wall.className = floor.className = "";
   wall.style.backgroundImage = floor.style.backgroundImage = "";
-  picture(ART + room.wall + ".png").then((img) => {
+  either(ART + room.wall + ".png").then((img) => {
     if (img) wall.style.backgroundImage = `url("${img.src}")`; else wall.className = "owed";
   });
-  picture(ART + room.floor + ".png").then((img) => {
+  either(ART + room.floor + ".png").then((img) => {
     if (img) floor.style.backgroundImage = `url("${img.src}")`; else floor.className = "owed";
   });
   wall.style.width = floor.style.width = room.width + "px";
@@ -270,7 +284,7 @@ function build(name) {
     el.style.width = p.w + "px";
     if (p.flip) el.style.transform = "scaleX(-1)";
     const src = pieceSrc(kit, p.file);
-    picture(src).then((img) => {
+    either(src).then((img) => {
       if (img) {
         el.style.width = Math.round(img.naturalWidth * p.h / img.naturalHeight) + "px";
         el.style.backgroundImage = `url("${img.src}")`;
@@ -301,11 +315,12 @@ function build(name) {
   try { localStorage.setItem("room-test", name); } catch (e) {}
 }
 
-// Macario's still, cropped to what is drawn and stood 134 tall.
-picture("../assets/sprites/player/macario-still.png").then((img) => {
+// Macario: the first cell of his idle sheet (5 columns, 4 rows), cropped
+// to what is drawn and stood 134 tall.
+picture("../assets/sprites/player/macario-idle.png").then((img) => {
   if (!img) return;
   const c = document.createElement("canvas");
-  c.width = img.naturalWidth; c.height = img.naturalHeight;
+  c.width = Math.floor(img.naturalWidth / 5); c.height = Math.floor(img.naturalHeight / 4);
   const g = c.getContext("2d");
   g.drawImage(img, 0, 0);
   const d = g.getImageData(0, 0, c.width, c.height).data;

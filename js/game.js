@@ -1079,6 +1079,13 @@ function loadScene(sceneId) {
   groundEl.classList.toggle("ground-picture", Boolean(lip));
   if (lip) groundEl.style.height = `calc(var(--ground-level) + ${lip}px)`;
   else groundEl.style.removeProperty("height");
+  // A room's floor may be shaded with its wall (ground: { filter }), the
+  // pulungan's candlelight. Inline, so it stands in for a night's tint; no
+  // room that sets one is ever night.
+  groundEl.style.filter = (ownGround && scene.ground.filter) || "";
+  // Widened by buildLayeredBackdrop for a room narrower than the screen.
+  groundEl.style.removeProperty("width");
+  skylineEl.style.removeProperty("width");
 
   // Block 36. The world element was a fixed 4400px whatever the scene
   // actually was, so the backdrop, the ground strip and every layer over
@@ -1469,6 +1476,13 @@ function buildShadowTree(scene, x, i) {
 // (paler, softer); offset shifts a second copy of the same picture so
 // its trees do not line up with the first's. All of it in the skyline
 // layer, so a night or a memory tints it with the road.
+//
+// A room is built the same way (the rooms table in ART.md): one layer,
+// its wall at the road's rate, repeated; its floor as the ground; and its
+// furniture as buildings. A building may give height (world pixels, the
+// height it is drawn at whatever size its picture is) in place of scale,
+// flip to mirror it, filter, and front to stand in front of the people
+// (the stage's footlights) rather than behind them.
 // =============================================================
 
 let parallaxLayers = []; // { el, rate } for drawCamera
@@ -1478,6 +1492,13 @@ function buildLayeredBackdrop(scene) {
   if (!layer) return;
   layer.classList.add("skyline-tiled");
   parallaxLayers = [];
+  // A room one screen wide is narrower than a wide phone held sideways
+  // (1180 against 1206 and more): the wall and floor run on to the
+  // screen's edge, as a room's one painting did (Block 34).
+  if (viewportWidth > WORLD_WIDTH) {
+    layer.style.width = viewportWidth + "px";
+    document.getElementById("ground-tiles").style.width = viewportWidth + "px";
+  }
   // Wide enough at its rate for the whole road on any screen a phone
   // turns to: there is no rebuild on a resize (CLAUDE.md).
   const span = (rate) => Math.ceil(rate * WORLD_WIDTH + Math.max(viewportWidth || 0, 2400)) + "px";
@@ -1508,8 +1529,9 @@ function buildLayeredBackdrop(scene) {
   });
 
   (scene.buildings || []).forEach((b) => {
-    const el = placedPicture(b, "street-building", `calc(var(--ground-level) + ${b.lift || 0}px)`);
-    layer.appendChild(el);
+    const el = placedPicture(b, "street-building" + (b.front ? " front-piece" : ""),
+      `calc(var(--ground-level) + ${b.lift || 0}px)`);
+    (b.front ? world : layer).appendChild(el);
     actElements.push(el);
   });
 
@@ -1529,17 +1551,20 @@ function buildLayeredBackdrop(scene) {
   lastCameraX = null; // drawCamera places the layers on the next frame
 }
 
-// A picture placed by x at its own size times scale, its bottom at
-// bottom; sized once it has loaded.
+// A picture placed by x at its own size times scale (or at height, in
+// world pixels), its bottom at bottom; sized once it has loaded.
 function placedPicture(spec, className, bottom) {
   const el = document.createElement("div");
   el.className = className;
   el.style.left = spec.x + "px";
   el.style.bottom = bottom;
+  if (spec.flip) el.style.transform = "scaleX(-1)";
+  if (spec.filter) el.style.filter = spec.filter;
   loadImage(spec.src).then((img) => {
     if (!img || !el.isConnected) return;
-    el.style.width = Math.round(img.naturalWidth * (spec.scale || 1)) + "px";
-    el.style.height = Math.round(img.naturalHeight * (spec.scale || 1)) + "px";
+    const scale = spec.height ? spec.height / img.naturalHeight : spec.scale || 1;
+    el.style.width = Math.round(img.naturalWidth * scale) + "px";
+    el.style.height = Math.round(img.naturalHeight * scale) + "px";
     el.style.backgroundImage = cssAssetUrl(spec.src);
   });
   return el;

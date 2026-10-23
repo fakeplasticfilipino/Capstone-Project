@@ -6255,6 +6255,58 @@ tondo-nature-1) and a sheet of eight single trees (tondo-palms), placed
 in two rows along their layers (items), the far row small and pale on
 the shore, the near row tall behind the houses, the bay between them.
 
+## Block 143: Act I's rooms built from kits, 23 Oct 2026
+
+The proponent, on 22 Oct 2026 (decision card, of three put to them):
+every room built from a kit rather than painted whole, the three rooms
+already painted (the entablado, the pulungan, the selda) included.
+Block 138 had found the paintings at the wrong scale and Block 141 took
+six out; a painting carries its furniture's size with it, and a kit
+does not. ART.md asks for a sheet of four walls (plank, sawali, stone,
+plaster), a sheet of five floors, and one sheet of pieces per room,
+each filed by the act that first uses it, and its rooms table says
+which room uses which. _dev/room-test.html lays every room out at the
+game's scale, Macario standing in it, each piece drawn or a named box
+where it is owed, over markers for the room's doors, people, shelves
+and hiding places.
+
+On 23 Oct 2026, at the proponent's word ("finish the interior
+background for act 1 so it's finished for good"), the walls, the
+floors, entablado-kit and pulungan-kit arrived and both of Act I's
+rooms are built from them. _dev/tools/cut-room-kit.py cuts a sheet:
+each piece to its own pixels, a wall bay with its left post dropped
+so copies meet in one post, a floor strip with its ragged ends cut
+and its right end faded into its left. The engine needed little:
+a room is Block 142's layered scene, one layer (the wall, rate 1,
+repeated), its floor as the ground, its furniture as buildings; a
+building may now give its height in world pixels, flip, filter and
+front (in front of the people: the footlights); a ground may carry a
+filter (the pulungan's floor, darkened to the candles with its wall);
+and a room narrower than the screen (1180 against a wide phone's 1206)
+has its wall and floor run on to the screen's edge, as its painting
+did. The stage: the painted moro-moro backdrop under the valance, palm
+flats and crescent banners either side, the curtains at the edges (the
+direktor in the left wing, the way out behind the right), the throne
+at the Sultan's mark, footlights along the front. The pulungan: the
+back door on the left where the lit doorway is, the table and benches
+of the oath, the banner over the head of the room, the weapons at the
+far end. entablado-inside.jpg and pulungan.jpg are retired to
+docs-private/art-delivered/. Nobody moved: every person, exit and
+script point is where it was.
+
+The same day, at the proponent's word, the folder was cleaned: every
+delivered sheet already cut and in the game (tondo-nature-1,
+tondo-palms, tondo-road, tondo-props-1, tondo-doors, room-walls,
+room-floors, entablado-kit, pulungan-kit) and the two retired room
+paintings moved to docs-private/art-delivered/; _dev/parallax-art/
+keeps only the pictures ART.md's prompts attach as a style
+(tondo-props, tondo-houses, tondo-nature, tondo-trees, dirt-ground).
+The street test page of Block 142, _dev/parallax-test.html, was
+retired with the copies only it read (parallax-art/buildings/ and
+props/, the pieces already in assets/sprites/buildings/, and
+shadow-trees.js): Tondo is built in the game, and the rooms have
+_dev/room-test.html.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

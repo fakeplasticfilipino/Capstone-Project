@@ -1212,11 +1212,17 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("the delivery step is done only once Macario says yes", await page.evaluate(() =>
       state.flags.naihatidKay_direktor === true && state.flags.naihatidAngMgaDamit === true));
     ok("the fade into the entablado", await waitForScene(page, "entablado"));
+    // Block 143: the stage built from its kit, the plank wall, the stage
+    // boards and its pieces, the footlights in front of the actors.
     const ent = await page.evaluate(() => ({ x: posX,
       ids: NPCS.map((n) => n.id).sort().join(","),
-      bg: getComputedStyle(document.getElementById("skyline")).getPropertyValue("--skyline-src") }));
-    ok("inside, on its own painting, with the direktor and Maryam", ent.x === 560 && ent.ids === "direktor,maryam" &&
-       /entablado-inside/.test(ent.bg), ent);
+      wall: [...document.querySelectorAll("#skyline .skyline-layer")].map((e) => e.style.backgroundImage).join(" "),
+      pieces: document.querySelectorAll("#skyline .street-building").length,
+      front: document.querySelectorAll("#world > .front-piece").length,
+      floor: document.getElementById("ground-tiles").style.getPropertyValue("--ground-src") }));
+    ok("inside, built from its kit, with the direktor and Maryam (Block 143)", ent.x === 560 &&
+       ent.ids === "direktor,maryam" && /wall-tabla/.test(ent.wall) && /floor-entablado/.test(ent.floor) &&
+       ent.pieces === 10 && ent.front === 4, ent);
     ok("the task is the play", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.play]));
 
     // ---------------------------------------------------------------
@@ -1489,17 +1495,16 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("a black card: he is blindfolded and taken to a secret room", await waitIntertitle(page, true, 3000) &&
        (await intertitle(page)).lines[0] === "Piniringan ang mga mata ni Macario,");
     ok("and the fade takes him to the pulungan", await waitForScene(page, "pulungan", 15000));
-    const pulungan = await page.evaluate(() => {
-      const tile = document.querySelector("#skyline .skyline-tile");
-      return { ids: NPCS.map((n) => n.id).join(","), x: posX,
-        owed: tile && tile.classList.contains("backdrop-owed") && /pulungan\.jpg/.test(tile.textContent),
-        src: document.getElementById("skyline").style.getPropertyValue("--skyline-src") };
-    });
-    // Block 133: the artist's painting arrived; until then it was owed, a
-    // dark wall named for the file (Block 80).
-    ok("the room: the Kasama, the Mabalasig and the Katipunero, before the artist's painting of it (Block 133)",
-       pulungan.ids === "kasama,mabalasig,katipunero" && pulungan.x === 120 && !pulungan.owed &&
-         /pulungan.jpg/.test(pulungan.src), pulungan);
+    const pulungan = await page.evaluate(() => ({ ids: NPCS.map((n) => n.id).join(","), x: posX,
+      wall: [...document.querySelectorAll("#skyline .skyline-layer")].map((e) => e.style.backgroundImage).join(" "),
+      pieces: [...document.querySelectorAll("#skyline .street-building")].length,
+      floor: document.getElementById("ground-tiles").style.getPropertyValue("--ground-src"),
+      lit: document.getElementById("ground-tiles").style.filter }));
+    // Block 133 brought the artist's painting; Block 143 builds the room
+    // from its kit instead, the wall and floor darkened to the candles.
+    ok("the room: the Kasama, the Mabalasig and the Katipunero, built from its kit (Block 143)",
+       pulungan.ids === "kasama,mabalasig,katipunero" && pulungan.x === 120 && /wall-tabla/.test(pulungan.wall) &&
+         /floor-tabla/.test(pulungan.floor) && pulungan.pieces === 13 && /brightness/.test(pulungan.lit), pulungan);
     ok("the task is to join", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.join]));
     // Block 81. The rite, in the histories' order.
     const o1 = await readConversation(page, 10);

@@ -245,6 +245,65 @@ const STAGE_ENTER_X = 560;    // where the fade in puts Macario
 const STAGE_PLAY_X = 440;     // his mark once the curtain opens
 const SULTAN_MARK = 760;
 
+// The two rooms are built from their kits (ART.md, the rooms table; the
+// engine in game.js, LAYERED STREETS): the plank wall repeated along the
+// room, a floor of boards under the feet, and each room's pieces placed by
+// x at a height in world pixels (Macario is 134), standing 10 back on the
+// floor. [name, x, height, more] for each, drawn in order, so a bench
+// listed after the table stands in front of it.
+const ROOM_WALL = (filter) => [
+  { src: "assets/backgrounds/rooms/wall-tabla.png", rate: 1, lift: 70, height: 0.9, filter },
+];
+const roomPieces = (room, list) => list.map(([name, x, height, more]) => ({
+  src: `assets/sprites/rooms/${room}/${name}.png`, x, height, lift: 10, ...more,
+}));
+
+// The stage: the painted moro-moro backdrop in the middle under the red
+// valance, a palm flat and a crescent banner on each side, the curtains at
+// the edges (the direktor stands in the left wing, in front of one; the
+// way out is behind the other), the throne at the Sultan's mark, and the
+// footlights along the front, in front of the actors' feet. Backstage the
+// wall is in shadow.
+const STAGE_PIECES = roomPieces("entablado", [
+  ["telon", 332, 340, { lift: 30 }],
+  ["gilid-palma", 245, 330],
+  ["gilid-palma", 848, 330, { flip: true }],
+  ["bandila-buwan", 85, 200, { lift: 150 }],
+  ["bandila-buwan", 975, 200, { lift: 150 }],
+  ["trono", 720, 115],
+  ["kurtina", -20, 440, { lift: 0 }],
+  ["kurtina", 1077, 440, { lift: 0, flip: true }],
+  ["kurtina-taas", 70, 80, { lift: 360 }],
+  ["kurtina-taas", 585, 80, { lift: 360 }],
+  ["ilaw-paa", 150, 26, { lift: -46, front: true }],
+  ["ilaw-paa", 390, 26, { lift: -46, front: true }],
+  ["ilaw-paa", 630, 26, { lift: -46, front: true }],
+  ["ilaw-paa", 870, 26, { lift: -46, front: true }],
+]);
+const STAGE_WALL = "brightness(0.45) saturate(0.8)";
+
+// The secret room by candlelight: the back door on the left (the way out,
+// Nanay at it a year on), the table and its benches in the middle where
+// the oath is sworn, the Katipunan's banner over the head of the room
+// (MABALASIG_X), the weapons at the far end. The wall and floor are
+// darkened and warmed to the candles; the pieces are drawn lit.
+const PULUNGAN_PIECES = roomPieces("pulungan", [
+  ["pinto", -40, 200],
+  ["kandila", 125, 60, { lift: 130 }],
+  ["bintana", 185, 100, { lift: 85 }],
+  ["bariles", 290, 62],
+  ["basket", 372, 40],
+  ["mesa", 480, 72],
+  ["bangko", 430, 30],
+  ["bangko", 600, 30],
+  ["kandila", 650, 60, { lift: 130 }],
+  ["bandila-kkk", 705, 120, { lift: 165 }],
+  ["kandila", 880, 60, { lift: 130 }],
+  ["istante", 830, 95],
+  ["sandata", 1040, 150],
+]);
+const PULUNGAN_LIGHT = "brightness(0.55) sepia(0.4) saturate(1.2)";
+
 // Block 80. Where the two men of the Katipunan find him after Principe
 // Baldovino: stage right, away from the direktor in the left wing. They
 // stand on the far side of him, from the right wing.
@@ -262,7 +321,7 @@ const KASAMA_X = 12500;
 
 // Block 80. The secret room, one screen wide like the entablado: the way
 // out on the left, where he came in, the Kasama by it, the Mabalasig and
-// the Katipunero at the far end. Its painting is the artist's (Block 133).
+// the Katipunero at the far end. Built from its kit (Block 143).
 const PULUNGAN_WIDTH = 1180;
 const PULUNGAN_ENTER_X = 120;
 const PULUNGAN_KASAMA_X = 300;
@@ -1984,14 +2043,16 @@ window.ACT_1 = {
       ],
     },
     {
-      // Block 56. Inside the entablado, one screen wide with its own
-      // floor. Since Block 57 the only way in is with the direktor, and
-      // since Block 59 it is where the play happens (thePlay). No gun
-      // on a stage: a long hold punches (noRanged).
+      // Block 56. Inside the entablado, one screen wide, built from its
+      // kit (STAGE_PIECES, above) since Block 143. Since Block 57 the
+      // only way in is with the direktor, and since Block 59 it is where
+      // the play happens (thePlay). No gun on a stage: a long hold
+      // punches (noRanged).
       id: "entablado",
       worldWidth: STAGE_WIDTH,
-      backdrop: { src: "assets/backgrounds/act1/entablado-inside.jpg" },
-      ground: false,
+      layers: ROOM_WALL(STAGE_WALL),
+      buildings: STAGE_PIECES,
+      ground: { src: "assets/backgrounds/rooms/floor-entablado.png", lip: 16 },
       noRanged: true,
       startX: STAGE_ENTER_X,
       // Block 93. Said at the top of the log once the student is free
@@ -2088,14 +2149,15 @@ window.ACT_1 = {
     {
       // Block 80. The Katipunan's secret room, reached only with the
       // Kasama, once, through a black card (intoThePulungan). One screen
-      // wide. Its painting is the artist's (Block 133), over floorboards
-      // (Block 114); a painting with its own floor sets ground: false. The way out stays shut until he is sworn in. Since Block 81
+      // wide. Built from its kit (PULUNGAN_PIECES, above) since Block
+      // 143. The way out stays shut until he is sworn in. Since Block 81
       // it is the back way ("Sa likod ka dadaan"), onto the street short
       // of the mangingisda, facing the three and the guardia civil.
       id: "pulungan",
       worldWidth: PULUNGAN_WIDTH,
-      backdrop: { src: "assets/backgrounds/act1/pulungan.jpg" },
-      ground: false, // Block 137: the painting's own floor, not a strip of ours
+      layers: ROOM_WALL(PULUNGAN_LIGHT),
+      buildings: PULUNGAN_PIECES,
+      ground: { src: "assets/backgrounds/rooms/floor-tabla.png", lip: 16, filter: PULUNGAN_LIGHT },
       noRanged: true,
       startX: PULUNGAN_ENTER_X,
       wayOut: "Lumabas sa likod: pumunta sa kaliwa", // Block 93

@@ -9,7 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 21 Oct 2026, Block 142 planned: every outdoor scene that
+Last updated: 23 Oct 2026, Block 143: rooms built from kits (a wall
+repeated, a floor, furniture placed by x; ART.md's rooms table); Act
+I's two, the entablado and the pulungan, built and finished, the other
+seven rooms waiting on their kits. 21 Oct 2026, Block 142 planned: every outdoor scene that
 scrolls rebuilt in layers (a sky, tree lines, buildings and props placed
 along the road, the shadow trees in front), the art made with ChatGPT
 from ART.md's prompts; its to-do list is below, Block 142. The proponent
@@ -253,14 +256,14 @@ the browser checks it on every visit.
 ## Block 142: outdoor scenes in layers (IN PROGRESS)
 
 The plan the proponent chose on 21 Oct 2026 (DECISIONS.md, Block 142).
-Target: done by the code freeze, 12 Nov 2026. The test page that shows
-how it looks: _dev/parallax-test.html (Tondo, built from the first art
-in _dev/parallax-art/). Who: the proponent makes the art with ChatGPT
+Target: done by the code freeze, 12 Nov 2026. Tondo in Act I is the
+model, in the game itself (the street test page, _dev/parallax-test.html,
+retired 23 Oct 2026). Who: the proponent makes the art with ChatGPT
 and commits; a session does the rest and says what changed.
 
 Art (prompts in ART.md under Backgrounds and Props by act, the entries
-named without a folder; saved in _dev/parallax-art/),
-in this order:
+named without a folder; saved in _dev/parallax-art/, the sheet moved
+to docs-private/art-delivered/ once cut), in this order:
 
     [x] tondo-nature, tondo-trees (lowland), tondo-houses, tondo-props
     [x] tondo-doors (the buildings Macario goes into; cropped 22 Oct)
@@ -296,8 +299,9 @@ proponent's word, "apply them in real act 1"):
         buildings
     [x] Tondo's art moved from _dev/parallax-art/ into assets/ (layers
         in assets/backgrounds/layers/, houses, doors and props in
-        assets/sprites/buildings/, shrunk); the sheets stay in
-        _dev/parallax-art/ until docs-private/art-delivered/
+        assets/sprites/buildings/, shrunk); the cut sheets moved to
+        docs-private/art-delivered/ on 23 Oct 2026, the style
+        references the prompts attach kept in _dev/parallax-art/
 
 Scenes:
 
@@ -323,6 +327,23 @@ Finish:
 
 Dates: art and engine by 25 Oct; Tondo by 28 Oct; the other eight
 scenes 29 Oct to 7 Nov; testing 8 to 11 Nov; freeze 12 Nov.
+
+## Block 143: rooms built from kits (IN PROGRESS)
+
+The proponent's choice of 22 Oct 2026 (DECISIONS.md, Block 143): every
+room built from a wall, a floor and its furniture (ART.md, the rooms
+table), the painted ones included. _dev/room-test.html lays them out;
+_dev/tools/cut-room-kit.py cuts a delivered sheet.
+
+    [x] room-walls, room-floors (all four walls and five floors cut;
+        the ones no built room uses wait in _dev/room-art/)
+    [x] entablado, pulungan (Act I, 23 Oct 2026; the paintings retired)
+    [ ] imprenta, bahay (Act II): imprenta-kit, bahay-kit, and
+        act2-props for the press
+    [ ] barberya, calle-gunao, selda (Act III): barberya-kit,
+        sala-kit, selda-kit
+    [ ] sala, hukuman, selda (Act IV): sala-kit, hukuman-kit
+    [ ] the selda painting retired once its kit is in
 
 ## Next action
 
@@ -931,6 +952,7 @@ machine, the assessment module.
     140 a ground drawn in each painting's bottom colours under the feet
     141 pictures that do not fit taken out, owed again: six rooms, the
         1917 soldier
+    143 rooms built from kits; the entablado and the pulungan built
 
 ## Blocks remaining
 
@@ -959,8 +981,8 @@ the proponent, 9 Oct 2026)
 Art still owed: ART.md. (KNOWN)
 
 Six rooms and the American soldier are the placeholder until the
-artist redraws them (Block 141: taken out as not fitting). (BLOCKED,
-the artist)
+artist redraws them (Block 141: taken out as not fitting); the rooms
+now come as kits (Block 143, ART.md). (BLOCKED, the artist)
 
 Loading on a slow connection: fixed in Blocks 62 and 78 (a student
 cannot go in with art missing), and in Block 105 (the game kept whole on
