@@ -1465,7 +1465,8 @@ function buildShadowTree(scene, x, i) {
 // before (verify_new_scene.js and prepare.js check it the same way),
 // and a little grass at the bottom of the screen passing faster than
 // the road (frontGrass). Anyone a student reaches stays at the road's
-// speed. The working model is _dev/parallax-test.html.
+// speed. Tondo in Act I is the working model (its test page retired,
+// Block 143).
 //
 // A layer: { src, rate, height, lift, trim, filter, offset }, or items
 // in place of src (separate pictures placed along it). height is
