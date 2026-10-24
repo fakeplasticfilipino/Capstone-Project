@@ -2183,6 +2183,28 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       await press(page, 2520);
       ok("the press door leads onto the street", await waitForScene(page, "tondo"));
       await settle(page);
+      // Block 142. Act I's street in layers, its press house moved to this
+      // act's door: every house and prop drawn, the press's door over the
+      // way in (6650) and Nanay's over hers (2000), no painting left, and
+      // no one behind a shadow tree.
+      const lay2 = await page.evaluate(async () => {
+        await Promise.all(currentScene.buildings.map((b) => loadImage(b.src)));
+        await new Promise((r) => setTimeout(r, 100));
+        const els = [...document.querySelectorAll("#skyline .street-building")];
+        const over = (name, x) => els.some((b) => new RegExp("buildings/" + name + "\\.png").test(b.style.backgroundImage) &&
+          parseFloat(b.style.left) < x && parseFloat(b.style.left) + parseFloat(b.style.width) > x);
+        return {
+          rates: parallaxLayers.map((p) => p.rate), want: currentScene.buildings.length,
+          drawn: els.filter((b) => parseFloat(b.style.width) > 0).length,
+          presses: currentScene.buildings.filter((b) => /imprenta\.png$/.test(b.src)).length,
+          press: over("imprenta", 6690), home: over("bahay-nanay", 2000),
+          painted: document.querySelectorAll("#skyline .skyline-panel:not(.skyline-floor)").length,
+        };
+      });
+      const p2 = await panels(page);
+      ok("Act II's street is Act I's layers: every house drawn, the press once and over its door, Nanay's house over hers (Block 142)",
+         JSON.stringify(lay2.rates) === "[0,0.3,0.6,1.25]" && lay2.drawn === lay2.want && lay2.want > 30 &&
+         lay2.presses === 1 && lay2.press && lay2.home && lay2.painted === 0 && !p2.blocked.length, { lay2, blocked: p2.blocked });
       await walkTo(page, 3220);
       await page.waitForTimeout(150);
       await page.keyboard.press("e");
@@ -2236,7 +2258,25 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
          c.lines[0] === "Macario (sa isip): Bukas ang pinto..." && c.lines.includes("Manlilimbag: Daan-daang pangalan, Pangulo. Pati ang sa inyo."), c.lines);
       await settle(page);
       ok("three guards search the press, with two shelves above their sight",
-         (await on(page, "guardia-loob-")) === 3 && await page.evaluate(() => PLATFORMS.length === 2));
+         (await on(page, "guardia-loob-")) === 3 && await page.evaluate(() => PLATFORMS.length === 2 &&
+           PLATFORMS.every((p) => p.y - GROUND_LEVEL >= GUARD_SIGHT_CLEARANCE)));
+      // Block 142. The press from its kit: every piece drawn, each shelf's
+      // picture under its platform (its top within a few pixels), and no
+      // shadow tree in a room.
+      const kit = await page.evaluate(async () => {
+        await Promise.all(currentScene.buildings.map((b) => loadImage(b.src)));
+        await new Promise((r) => setTimeout(r, 100));
+        const els = [...document.querySelectorAll("#skyline .street-building")];
+        const tops = PLATFORMS.map((p) => {
+          const s = els.find((b) => /istante/.test(b.style.backgroundImage) &&
+            parseFloat(b.style.left) < p.x + p.width / 2 && parseFloat(b.style.left) + parseFloat(b.style.width) > p.x + p.width / 2);
+          return s ? parseFloat(getComputedStyle(s).bottom) + parseFloat(s.style.height) - (p.y + 14) : null;
+        });
+        return { drawn: els.filter((b) => parseFloat(b.style.width) > 0).length, want: currentScene.buildings.length,
+          tops, trees: document.querySelectorAll(".shadow-tree").length };
+      });
+      ok("the press is built from its kit: every piece drawn, a shelf under each platform, no tree in the room (Block 142)",
+         kit.drawn === kit.want && kit.want >= 10 && kit.tops.every((d) => d !== null && Math.abs(d) <= 4) && kit.trees === 0, kit);
       // The meter at twice its old speed (Block 113): a guard who sees him
       // on the move fills it in well under a second and a half. Standing
       // still in the stage clothes (worn since Act I) still slows it

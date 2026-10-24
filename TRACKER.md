@@ -9,7 +9,15 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 23 Oct 2026, Block 143: rooms built from kits (a wall
+Last updated: 24 Oct 2026, Block 142: Act II's art finished. Its
+street is Act I's Tondo in layers, the press house over Act II's door;
+San Juan del Monte and the Nangka in layers (the Sierra Madre, the
+garrison, the farm, the river, the grass); the press and the house
+built from their kits; the press, the straw and the scarecrow drawn.
+The press's shelves raised to hide Macario from the guards, as the
+story says (they stood 40 above the floor, under a guard's 60). Owed
+art: seventeen, none of it Act II's.
+23 Oct 2026, Block 143: rooms built from kits (a wall
 repeated, a floor, furniture placed by x; ART.md's rooms table); Act
 I's two, the entablado and the pulungan, built and finished, the other
 seven rooms waiting on their kits. 21 Oct 2026, Block 142 planned: every outdoor scene that
@@ -159,8 +167,10 @@ six soldiers; it ends with Jacinto in Laguna and 1897 and 1898 on
 black. Bonifacio is the artist's
 since Block 129, and raises his fist at "Sugod!". Since Block 133 its
 paintings, Isko, Jacinto, the printer and the messenger are the
-artist's too; the press and the straw are owed (ART.md), drawn as
-placeholders. The soldiers are the bantay's
+artist's too. Since 24 Oct 2026 (Block 142) every scroll of it is in
+layers, its two rooms are built from kits, and the press, the straw
+and the scarecrow are drawn: no Act II art is owed. The soldiers are
+the bantay's
 art (the sundalo of the enemy catalogue).
 
 Act III, Ang Republika sa Lilim (Blocks 117, 118), 1899 to 1902, from
@@ -225,11 +235,11 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): seventeen pictures, Act I's two (the
-Barbero's chair, the Mananahi's sewing table), Act II's three (the
-press, the straw, the scarecrow), Act III's three (the American in the
-barber's chair, the Constabulary, the Katagalugan's flag) and Act IV's
-nine (people only, since Block 136). No picture is made or borrowed
+in code. Still owed (ART.md): seventeen pictures, Act III's six (the
+barbershop and Calle Gunao, as kits; the American soldier, the
+American in the barber's chair, the Constabulary, the Katagalugan's
+flag) and Act IV's eleven (the hall and the court, as kits; nine
+people). No picture is made or borrowed
 for what is not drawn (CLAUDE.md, Conventions).
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
@@ -274,8 +284,9 @@ to docs-private/art-delivered/ once cut), in this order:
     [x] act1-props (the sewing table and the barber's chair, Act I's
         two owed props, in one sheet; tondo-props-1.png, in the game
         since 22 Oct as assets/sprites/scenery/)
-    [ ] sierra-nature, mountain-trees, camp, grass-ground
-    [ ] garrison, rural, river
+    [x] sierra-nature, grass-ground, garrison, rural, river (24 Oct;
+        the river's checkerboard and the ground's sky taken off)
+    [ ] mountain-trees, camp
     [ ] post, sierra-night-nature
     [ ] town, cavite-dusk-nature
     [ ] bilibid, bilibid-sky-nature, stone-ground
@@ -309,10 +320,17 @@ Scenes:
         each door behind its person: Nanay's house 2040, the pulungan's
         back door 4120, the barberya 5340, the Mananahi's stall 6450,
         the entablado 13640 (content/act1.js, TONDO_HOUSES)
-    [ ] tondo in Acts II to IV, the same layout, each act's doors
-        checked: the barberya 5260, the press 6650, Act III's doors
-        6700, 8300 and 10900, the mountain road 11300
-    [ ] san-juan, nangka (Act II)
+    [x] tondo in Act II (24 Oct 2026): Act I's layers
+        (window.TONDO_STREET), the press house over its door at 6650,
+        the Mananahi's stall at 6060, no second press by the mountain
+        road (11300)
+    [ ] tondo in Acts III and IV, the same way, each act's doors
+        checked: Act III's 6700, 8300 and 10900
+    [x] san-juan, nangka (Act II, 24 Oct 2026): the Sierra sky, the
+        lowland trees, San Juan's works on the right (the polvorin's door
+        where the retreat starts) on the dirt, the Nangka's river and
+        farm on the grass; trees at every 1300 and 1250; the paintings
+        retired to docs-private/art-delivered/
     [ ] burol, morong (Act III; morong again in Act IV)
     [ ] himpilan, dimasalang, malabon, patyo (Act IV)
     [ ] in every scene: cover, hide spots, hazards and guard posts
@@ -338,8 +356,9 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
     [x] room-walls, room-floors (all four walls and five floors cut;
         the ones no built room uses wait in _dev/room-art/)
     [x] entablado, pulungan (Act I, 23 Oct 2026; the paintings retired)
-    [ ] imprenta, bahay (Act II): imprenta-kit, bahay-kit, and
-        act2-props for the press
+    [x] imprenta, bahay (Act II, 24 Oct 2026): the plank room and the
+        sawali house (wall-sawali, floor-kawayan moved in); the press's
+        shelves under its platforms, raised to 152
     [ ] barberya, calle-gunao, selda (Act III): barberya-kit,
         sala-kit, selda-kit
     [ ] sala, hukuman, selda (Act IV): sala-kit, hukuman-kit
@@ -362,7 +381,19 @@ once the proponent reports it working. Blocks 90 to 97 were tested on
 1 Oct 2026, Blocks 98 to 112 on 4 Oct 2026, Blocks 113 to 118 on 5
 Oct 2026, Blocks 119 to 126 on 9 Oct 2026, Blocks 128 to 131 on 13
 Oct 2026, Blocks 132 to 141 reported working by the proponent on 22 Oct
-2026. Open: none.
+2026. Open: Act II's art (Block 142, 24 Oct 2026). With ?dev=1:
+"Ang simula" (the press: plank walls, the press, the type case, two
+shelves, the window and the door), "Pauwi kay Nanay" and "Ang gabi"
+(the street is Act I's, the press house over the door he comes out of,
+Nanay's house over hers, the night darkening it all), "Sa bahay"
+(sawali, the altar, the stove, the bamboo door), "Ang ronda sa
+imprenta" (climb a shelf in front of a guard: he does not see you),
+"San Juan del Monte: ang pag-atras" (the polvorin behind Macario at
+the start, the flag, the palisade), and "Ilog Nangka" (the river
+behind, the footbridge, the straw, then a scarecrow). Failure: an old painting, a dashed box where the press,
+the straw or the scarecrow should be, a shelf drawn away from where he
+stands on it, a guard who sees him on a shelf, or a shadow tree in a
+room.
 
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
@@ -384,15 +415,14 @@ and ten matched pre-test and post-test pairs for every act, so each
 act has a test before the teacher writes one.
 
 5. Art from the artist: ART.md (Backgrounds, Sprites, Props, by act,
-since Block 131 written for the artist), twenty-four pictures since
-Block 141 (six rooms: the press, the house, the barbershop, Calle
-Gunao, the hall, the court; Act I's two: the Mananahi's sewing table
-and the Barbero's chair; Act II's three: the press, the straw and the
-scarecrow; Act III's four: the American soldier, the American in the
-barber's chair, the Constabulary and the Katagalugan's flag; Act IV's
-nine: Gómez, Van Schaick, Villafuerte, de Vega, the judge, a
-woman of Cavite, Isko's son and two townspeople for the crowd in
-Manila). The six rooms came drawn too close and the soldier in 1917's
+since Block 131 written for the artist), seventeen pictures since 24
+Oct 2026, none of them Act I's or Act II's (four rooms, now asked as
+kits: the barbershop, Calle Gunao, the hall, the court; Act III's
+four: the American soldier, the American in the barber's chair, the
+Constabulary and the Katagalugan's flag; Act IV's nine: Gómez, Van
+Schaick, Villafuerte, de Vega, the judge, a woman of Cavite, Isko's
+son and two townspeople for the crowd in Manila), and the layers of
+Acts III and IV's fields (ART.md, Backgrounds and Props). The six rooms came drawn too close and the soldier in 1917's
 kit; both were taken out (Block 141) and are asked for again with what
 was wrong (the rooms at the people's scale, the hall with 1906's flags,
 the soldier in 1899's kit): tell the artist, and send ART.md's "How to
@@ -959,7 +989,8 @@ machine, the assessment module.
 Every act is written, accepted and has its built-in questions (Acts I to
 IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
 Block 142, every outdoor scene in layers (IN PROGRESS, its list above);
-the art, ART.md (twenty-four pictures; BLOCKED, the artist), and the
+the art, ART.md (seventeen pictures, Acts III and IV; BLOCKED, the
+artist), and the
 two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
 BLOCKED, the artist).
 

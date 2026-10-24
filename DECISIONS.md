@@ -6307,6 +6307,67 @@ props/, the pieces already in assets/sprites/buildings/, and
 shadow-trees.js): Tondo is built in the game, and the rooms have
 _dev/room-test.html.
 
+## Block 142, continued: Act II's street in layers, 24 Oct 2026
+
+The proponent, after Act I's backgrounds were all replaced: "we have to
+do the same thing for act 2". Of Act II's eight places only the street
+could be done with art in hand. Its two rooms wait for their kits
+(imprenta-kit, bahay-kit, act2-props), the proponent's choice over a
+wall and floor laid now with the furniture invisible, since the press's
+shelves are platforms a student climbs and would have nothing drawn
+under them. San Juan del Monte and the Nangka keep the artist's
+paintings until sierra-nature, grass-ground, river, garrison and rural
+are made; ART.md's entries for the last two gained the "Cut into" line
+the other sheets have. Pugad Lawin, Balara and Laguna are one screen
+wide and keep their paintings, as ART.md says.
+
+The street is Act I's, not a copy of it: act1.js hands its sky, trees,
+dirt, houses and props to the acts after it as window.TONDO_STREET, with
+the function that turns them into buildings, and act2.js moves only
+what differs. On window rather than read as act1.js's globals, because
+the harness swaps act1.js for its fixture act while loading the real
+act2.js, and a missing global there would stop Act II loading at all.
+What differs is the press: Act II's door is at 6650 (Block 120), so the
+press house stands with its own door over that exit (the door 193 in
+from its left edge at 1.1), the Mananahi's stall moves left to 6060 to
+make room, and the two barrels that stood before it go beside the bench
+at 5740. Act I's second press house, at 11560, is left out: the press
+stands once, and the road to the mountains (11300) is a gap between the
+houses. Nobody moved, and night tints the layers as on Act I's pamphlet
+run.
+
+The same day the proponent delivered Act II's eight pictures (the
+Sierra Madre's sky, the grass ground, the river, garrison, rural,
+imprenta-kit, bahay-kit, act2-props) and asked for them to be built
+in. Two needed mending first, as tondo-road did: the river came with
+the checkerboard ChatGPT draws for "transparent" painted into it (the
+pale, grey pixels above the far bank flooded out from the top), and
+the grass ground with a sky and a forest over its grass (cut to the
+grass, its blades kept by colour). Each sheet was cut with
+cut-room-kit.py's own functions at 1.5 times the height drawn. San
+Juan del Monte and the Nangka are fields drawn as Tondo is: the
+Sierra's sky, Act I's lowland trees twice (shared through
+window.TONDO_STREET with treeRow), and their own pieces by x. San
+Juan's works stand on the right, where the charge goes, the polvorin's
+door where the retreat starts; its trees at every 1300 rather than the
+paintings' joins, the first width that kept the polvorin's door, the
+retreat's checkpoints and a heart clear of a trunk. The Nangka's river
+is a layer at 0.75 behind the near bank, kept open in the middle
+where the straw lies, a footbridge out over it. The two paintings
+each are retired to docs-private/art-delivered/.
+
+The press and the house are built from their kits as Act I's rooms
+are, the house with the sawali wall and the bamboo floor. Fitting the
+press's shelves under its platforms found a fault older than the art:
+a platform's y counts from the bottom of the world, the floor at 60,
+so the shelves at 100 held Macario 40 above the floor, under a guard's
+GUARD_SIGHT_CLEARANCE of 60, and the guards saw him on the shelves the
+story calls above their sight. They are at 152 now (92 up), the shelf
+pictures 96 tall with their top board under the platform, and
+verify_new_scene.js checks both. A room wider than PANEL_WIDTH (the
+press, 1800) gets a shadow tree at 1450 unless it says otherwise; it
+declares its own width as its panelWidth.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -61,7 +61,7 @@
 
 // Block 57 made the street ten paintings long at the proponent's
 // direction (Block 49's paintings, a shadow tree over each join, Block
-// 50); Acts II to IV still draw it so. Since Block 142 Act I's is drawn
+// 50); Acts III and IV still draw it so. Since Block 142 Act I's is drawn
 // in layers (below) at the same length, the trees where the joins were.
 const STREET_PANEL_COUNT = 10;
 
@@ -72,8 +72,8 @@ const PANEL = 1450;
 const STREET_WIDTH = STREET_PANEL_COUNT * PANEL; // 14500
 
 // Block 142. Since 22 Oct 2026 the street is drawn in layers (game.js,
-// LAYERED STREETS) rather than the paintings above, which Acts II to IV
-// still use: the sky over Manila Bay with its near shore, two rows of
+// LAYERED STREETS) rather than the paintings above, which Acts III and IV
+// still use (Act II's street is these layers too): the sky over Manila Bay with its near shore, two rows of
 // single trees (far, small and pale, standing on that shore; near, tall,
 // behind the houses) with the bay showing between them, Tondo's houses,
 // doors and props along the road, its dirt underfoot, and the shadow
@@ -122,10 +122,21 @@ const TONDO_PROPS = [
   ["poste-ilaw", 9160], ["sampayan", 9740], ["bakod-kahoy", 10720], ["halaman", 11440],
   ["palumpong", 12560], ["poste-ilaw", 12720], ["bakod-kawayan", 13920], ["palumpong", 14200],
 ];
-const TONDO_BUILDINGS = [
-  ...TONDO_HOUSES.map(([name, x]) => ({ src: `assets/sprites/buildings/${name}.png`, x, scale: 1.1, lift: 6 })),
-  ...TONDO_PROPS.map(([name, x]) => ({ src: `assets/sprites/buildings/${name}.png`, x, scale: 0.96, lift: 4 })),
+const tondoBuildings = (houses, props) => [
+  ...houses.map(([name, x]) => ({ src: `assets/sprites/buildings/${name}.png`, x, scale: 1.1, lift: 6 })),
+  ...props.map(([name, x]) => ({ src: `assets/sprites/buildings/${name}.png`, x, scale: 0.96, lift: 4 })),
 ];
+const TONDO_BUILDINGS = tondoBuildings(TONDO_HOUSES, TONDO_PROPS);
+
+// The same street for the acts after this one, which move its doors to
+// their own (content/act2.js). On window rather than read as globals: the
+// harness swaps this file for its fixture act, and a later act that named
+// these constants directly would then fail to load at all.
+window.TONDO_STREET = {
+  layers: TONDO_LAYERS, ground: TONDO_GROUND,
+  houses: TONDO_HOUSES, props: TONDO_PROPS, buildings: tondoBuildings,
+  treeRow, // the lowland trees, for Act II's fields
+};
 
 // ---- Art ----------------------------------------------------------
 // Every real sheet measured with _dev/tools/measure-sprite.js. A def

@@ -57,7 +57,7 @@
   const P = window.PEOPLE;
 
   // ---- Art ------------------------------------------------------------
-  const owed = (folder, name) => ({ src: `assets/sprites/${folder}/${name}.png`, frames: 1, fps: 1 });
+  const still = (folder, name) => ({ src: `assets/sprites/${folder}/${name}.png`, frames: 1, fps: 1 });
   const ISKO = P.isko; // content/people.js since Block 117
   // Block 133: the artist's still, animated (rig _dev/rigs/jacinto.js),
   // standing only.
@@ -76,23 +76,19 @@
   };
   const MANLILIMBAG = P.manlilimbag; // content/people.js since Block 133
   const TAGAPAGBALITA = P.tagapagbalita; // content/people.js since Block 133
-  const PALIMBAGAN = owed("scenery", "palimbagan");
-  const DAYAMI = owed("scenery", "dayami");
-  const PANAKOT = owed("scenery", "panakot");
+  // The press, the straw and the scarecrow: one picture each, cut from
+  // act2-props (Block 142, 24 Oct 2026).
+  const PALIMBAGAN = still("scenery", "palimbagan");
+  const DAYAMI = still("scenery", "dayami");
+  const PANAKOT = still("scenery", "panakot");
 
   // ---- The street ---------------------------------------------------
-  // Act I's street, its paintings in the same order. Joins at every
-  // multiple of 1450; anyone a student must reach is 90 or more clear.
-  const STREET_PAINTINGS = [
-    "assets/backgrounds/act1/street-01.jpg",
-    "assets/backgrounds/act1/street-02.jpg",
-    "assets/backgrounds/act1/street-03.jpg",
-    "assets/backgrounds/act1/street-04.jpg",
-  ];
+  // Act I's street. Since Block 142 it is Act I's layers (content/act1.js,
+  // window.TONDO_STREET): the sky over the bay, the trees, the houses
+  // and the dirt, the shadow trees at every multiple of 1450, and anyone
+  // a student must reach 90 or more clear of one.
   const PANEL = 1450;
-  const STREET_PANELS = Array.from({ length: 10 }, (_, i) => STREET_PAINTINGS[i % 4]);
   const STREET_WIDTH = 10 * PANEL;
-  const STREET_SKY = "#51a6ea";
 
   const HOME_X = 2000;          // Nanay's door, where Act I left her
   const KUTSERO_X = 3300;
@@ -108,6 +104,105 @@
   const KARPINTERO_X = 10600;
   const MARYAM_X = 13250;       // outside the entablado
   const DIREKTOR_X = 13600;
+
+  // Act I's houses and props, with the press where this act has its
+  // door: the house's own door (193 in from its left edge, at 1.1) over
+  // the exit, the Mananahi's stall moved left to make room, and the two
+  // barrels that stood there moved beside the bench. Act I's second
+  // press house, by the road out to the mountains (MOUNTAIN_ROAD_X), is
+  // left out, so the press stands once and the road shows as a gap
+  // between the houses.
+  const TONDO = window.TONDO_STREET || {};
+  const PRESS_HOUSE_X = PRESS_DOOR_X + 40 - 193;
+  const STREET_HOUSES = (TONDO.houses || [])
+    .filter(([name]) => name !== "imprenta")
+    .map(([name, x]) => [name, name === "tienda" ? 6060 : x])
+    .concat([["imprenta", PRESS_HOUSE_X]]);
+  const PROPS_MOVED = { 6680: 5740, 6820: 5900 }; // the bariles and the basket
+  const STREET_PROPS = (TONDO.props || []).map(([name, x]) => [name, PROPS_MOVED[x] || x]);
+  const STREET_BUILDINGS = TONDO.buildings ? TONDO.buildings(STREET_HOUSES, STREET_PROPS) : [];
+
+  // ---- The fields and the rooms, in layers (Block 142) -----------------
+  // San Juan del Monte and the Nangka as Tondo is drawn: the Sierra Madre
+  // far off (rate 0), Act I's lowland trees twice (far and pale, near and
+  // tall), the place's own buildings and props on the road, and its
+  // ground. [name, x, height in world pixels] for each piece, Macario
+  // being 134; drawn in order, so a prop listed after a building stands
+  // in front of it.
+  const field = (list) => list.map(([name, x, height]) => ({
+    src: `assets/sprites/buildings/${name}.png`, x, height, lift: 4,
+  }));
+  const fieldLayers = (width, more) => [
+    { src: "assets/backgrounds/layers/sierra-sky.jpg", rate: 0, lift: 50 },
+    { rate: 0.3, lift: 64, items: TONDO.treeRow ? TONDO.treeRow(0.3 * width + 2600, 230, 260, 0.42, 40) : [],
+      filter: "saturate(0.55) brightness(1.1) contrast(0.8)" },
+    { rate: 0.6, lift: 60, items: TONDO.treeRow ? TONDO.treeRow(0.6 * width + 2600, 520, 640, 1, 160) : [],
+      filter: "saturate(1.05)" },
+    ...(more || []),
+  ];
+  // San Juan: an open field from the start, then the Spanish works on the
+  // right, where the charge goes: the guard post, the palisade and its
+  // gate, the polvorin (its door where the retreat starts, clear of the
+  // tree at 3900) and the flag at the end. Kegs, crates and
+  // sandbags along the way back to the river.
+  const SAN_JUAN_PIECES = field([
+    ["bantayan-bato", 2190, 220], ["palisada", 2400, 190], ["palisada-tarangkahan", 2900, 230],
+    ["polvorin", 3380, 280], ["bandila-espanya", 3980, 430],
+    ["kahon-sundalo", 480, 100], ["sako-buhangin", 1060, 70], ["sako-buhangin", 1660, 70],
+    ["kahon-sundalo", 1990, 100], ["bariles-pulbura", 3250, 120],
+  ]);
+  // The Nangka: the river behind the near bank, open in the middle where
+  // the straw lies, a fence at the camp's end and the farm at the other,
+  // a footbridge out over the water between.
+  const NANGKA_RIVER = { src: "assets/backgrounds/layers/river.png", rate: 0.75, height: 0.45, lift: 40 };
+  const NANGKA_PIECES = field([
+    ["saging-kumpol", -60, 290], ["bakod-kawayan-mahaba", 60, 130], ["mandala", 700, 210],
+    ["tulay", 1300, 150], ["kamalig", 1760, 260], ["kubo-silong", 2080, 330],
+    ["kariton-kalabaw", 1990, 110],
+  ]);
+  const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 14 };
+
+  // The two rooms from their kits, as Act I's are (content/act1.js, the
+  // rooms table in ART.md): the wall repeated, the floor under the feet,
+  // the pieces placed by x at a height in world pixels, standing 10 back
+  // on the floor. The press: the window out at the left, the press, its
+  // ink and the type case where the printer sets type, the two shelves
+  // under the platforms a student climbs (PRESS_SHELVES: their tops at
+  // 100), the worktable, the drying line, paper and crates to hide
+  // behind, and the door on the right.
+  const roomWall = (name, filter) => [
+    { src: `assets/backgrounds/rooms/wall-${name}.png`, rate: 1, lift: 70, height: 0.9, filter },
+  ];
+  const roomPieces = (room, list) => list.map(([name, x, height, more]) => ({
+    src: `assets/sprites/rooms/${room}/${name}.png`, x, height, lift: 10, ...more,
+  }));
+  const PRESS_LIGHT = "brightness(0.75) saturate(0.9)";
+  const PRESS_PIECES = roomPieces("imprenta", [
+    ["bintana", 0, 100, { lift: 85 }],
+    ["tinta", 300, 60], ["tinta-2", 345, 56],
+    ["kaha-titik", 390, 150],
+    ["istante-2", 580, 96],
+    ["mesa", 790, 62],
+    ["sampayan-papel", 1060, 130],
+    ["istante-1", 1068, 96],
+    ["papel", 1340, 80],
+    ["kahon", 1530, 95],
+    ["pinto", 1690, 190, { lift: 0 }],
+  ]);
+  // Home: the mat and the altar by the far wall, the chest, the table and
+  // stool, the capiz window, the lamp over the table, the stove, and the
+  // bamboo door on the right, the way out.
+  const HOME_LIGHT = "brightness(0.8) sepia(0.2)";
+  const HOME_PIECES = roomPieces("bahay", [
+    ["banig", 20, 110],
+    ["altar", 70, 120, { lift: 70 }],
+    ["baul", 190, 70],
+    ["mesa", 430, 50], ["bangkito", 570, 42],
+    ["bintana-capiz", 640, 110, { lift: 85 }],
+    ["lampara", 470, 110, { lift: 220 }],
+    ["kalan", 780, 80],
+    ["pinto", 1080, 185, { lift: 0 }],
+  ]);
 
   // August, by day: four guardia civil between Nanay's door and the
   // press, each with a crate in his beat. They catch, not shoot. Passing
@@ -165,7 +260,12 @@
     { beat: [780, 1060], hide: 920, facing: 1 },
     { beat: [370, 620], hide: 495, facing: -1 },
   ];
-  const PRESS_SHELVES = [{ x: 1100, y: 100, width: 200 }, { x: 590, y: 100, width: 180 }];
+  // A platform's y is from the bottom of the world, the floor at 60
+  // (GROUND_LEVEL): at 152 a student on a shelf stands 92 above it, over
+  // a guard's sight (game.js, GUARD_SIGHT_CLEARANCE, 60). At 100 they
+  // stood 40 up and were seen (Block 142). The shelves' pictures
+  // (PRESS_PIECES) are drawn with their top board under the platform.
+  const PRESS_SHELVES = [{ x: 1100, y: 152, width: 200 }, { x: 590, y: 152, width: 180 }];
   const PRESS_CHECKPOINTS = [1200, 700];
 
   const BATTLE_WIDTH = 4200;    // San Juan del Monte
@@ -987,14 +1087,19 @@
     scenes: [
       {
         // Beats 1, 4 and 5. The Katipunan's press, and the act's first
-        // scene. Its painting is owed again (Block 141). March: Jacinto and the printer, the
-        // press used with E. August: three guardia civil searching it
-        // (they catch, not shoot), two shelves above their sight, the
-        // list under the press, the window out at the left edge.
+        // scene, built from its kit (PRESS_PIECES; Block 142). March:
+        // Jacinto and the printer, the press used with E. August: three
+        // guardia civil searching it (they catch, not shoot), two shelves
+        // above their sight, the list under the press, the window out at
+        // the left edge.
         id: "imprenta",
         worldWidth: PRESS_WIDTH,
-        backdrop: { src: "assets/backgrounds/act2/imprenta.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: roomWall("tabla", PRESS_LIGHT),
+        buildings: PRESS_PIECES,
+        ground: { src: "assets/backgrounds/rooms/floor-tabla.png", lip: 16, filter: PRESS_LIGHT },
+        // A room has no shadow tree: one join's width the whole room, as
+        // Act I's rooms are narrower than the default (game.js, panelJoins).
+        panelWidth: PRESS_WIDTH,
         noRanged: true,
         startX: PRESS_ENTER_X,
         exits: [
@@ -1077,9 +1182,12 @@
         // gun among the neighbours (noRanged).
         id: "tondo",
         worldWidth: STREET_WIDTH,
-        panels: STREET_PANELS,
-        ground: false, // Block 134: the paintings' own road, not the dirt strip
-        panelSky: STREET_SKY,
+        // Block 142: Act I's layers, the trees where the joins were.
+        layers: TONDO.layers,
+        buildings: STREET_BUILDINGS,
+        ground: TONDO.ground,
+        frontGrass: true,
+        panelWidth: PANEL,
         startX: HOME_X + 150,
         hintSpots: HINT_SPOTS,
         noRanged: true,
@@ -1232,12 +1340,14 @@
         ],
       },
       {
-        // Beat 2. Home, one room; its painting is the artist's (Block 133). Reached from the
-        // street on the walk home, and (if he goes back in) in the sweep.
+        // Beat 2. Home, one room, built from its kit (HOME_PIECES; Block
+        // 142): a sawali wall and a bamboo floor. Reached from the street
+        // on the walk home, and (if he goes back in) in the sweep.
         id: "bahay",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act2/bahay.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: roomWall("sawali", HOME_LIGHT),
+        buildings: HOME_PIECES,
+        ground: { src: "assets/backgrounds/rooms/floor-kawayan.png", lip: 16, filter: HOME_LIGHT },
         noRanged: true,
         startX: ROOM - 160,
         wayOut: "Lumabas ng bahay: pumunta sa kanan",
@@ -1323,23 +1433,18 @@
         // Beats 8 and 9. San Juan del Monte, 30 August 1896. The charge
         // (theCharge), the Kasama's death, then the rifles in the field
         // between Macario and the river, and the river at the left edge.
-        // Its painting is the artist's (Block 133). A reload in the retreat starts at the last
-        // line of rifles he passed.
+        // A reload in the retreat starts at the last line of rifles he
+        // passed.
         id: "san-juan",
         worldWidth: BATTLE_WIDTH,
-        // Block 133: the artist's two paintings, the town and then the
-        // powder store. The joins (1312, 2624) stand clear of the retreat's
-        // checkpoints (a tree stands on every join); the store is the
-        // left of the second painting, so the field ending at 4200 shows it.
-        // Block 137: drawn at the screen's height the two paintings are
-        // 3205 long, so the town is laid twice (the second mirrored)
-        // before the store, rather than both stretched half as big again.
-        panels: ["assets/backgrounds/act2/san-juan-1.jpg", "assets/backgrounds/act2/san-juan-1.jpg",
-          "assets/backgrounds/act2/san-juan-2.jpg"],
-        panelWidths: [1312, 1312, 1893],
-        mirrorPanels: true,
-        panelSky: "#4a8fd6",
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        // Block 142: in layers (SAN_JUAN_PIECES), the polvorin at the
+        // right end. A shadow tree at every 1300 (1300, 2600, 3900),
+        // clear of the retreat's checkpoints.
+        layers: fieldLayers(BATTLE_WIDTH),
+        buildings: SAN_JUAN_PIECES,
+        ground: TONDO.ground,
+        frontGrass: true,
+        panelWidth: 1300,
         dangerous: true,
         startX: RETREAT_START,
         scripts: [
@@ -1384,16 +1489,16 @@
         // Beats 10 and 11. The Nangka River, November 1896. Three
         // bundles of straw on the bank; each raised is a scarecrow in a
         // Katipunan hat (the bundle hidden, the scarecrow shown, from the
-        // flags, so a reload keeps them). Its painting is the artist's (Block 133).
+        // flags, so a reload keeps them).
         id: "nangka",
         worldWidth: RIVER_WIDTH,
-        // Block 133: the artist's river, then the fields beside it. Two
-        // more fields came with them and are kept aside: two panels
-        // already cover the bank.
-        panels: ["assets/backgrounds/act2/nangka-1.jpg", "assets/backgrounds/act2/nangka-2.jpg"],
-        panelWidths: [1266, 1134], // Block 135: one height
-        panelSky: "#4a8fd6",
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        // Block 142: in layers, the river behind the bank (NANGKA_RIVER,
+        // NANGKA_PIECES). One shadow tree, at 1250, between the straw.
+        layers: fieldLayers(RIVER_WIDTH, [NANGKA_RIVER]),
+        buildings: NANGKA_PIECES,
+        ground: GRASS,
+        frontGrass: true,
+        panelWidth: 1250,
         dangerous: true,
         startX: 500,
         scripts: [

@@ -209,12 +209,16 @@ off the repository.
                                (Blocks 73, 75)
       sprites/scenery/         things on the street that are used, not
                                talked to (empty)
-      backgrounds/act1/        street-01..04.jpg, entablado-inside.jpg,
-                               pulungan.jpg (Block 133), ground-lupa.jpg
+      backgrounds/act1/        street-01..04.jpg (Acts III and IV's
+                               street until it is layered), ground-lupa.jpg
       backgrounds/act2/,       the artist's paintings of each act's
         act3/, act4/           places (Blocks 133, 135, 136; two panels
-                               each for san-juan, nangka, burol, morong,
-                               himpilan, dimasalang and malabon)
+                               each for burol, morong, himpilan,
+                               dimasalang and malabon); Act II keeps only
+                               its one-screen places since Block 142
+      backgrounds/layers/,     the layered scenes' skies and grounds, and
+        rooms/                 the rooms' walls and floors (Blocks 142,
+                               143)
       items/                   inventory and shop tile pictures
       audio/music/, audio/sfx/
       fonts/                   the two woff2 faces and their licences
@@ -2890,6 +2894,14 @@ head height. Moving an NPC, exit or checkpoint within about 90px of
 one of those x values, or changing panelWidth, puts someone behind a
 trunk; move them, or run node _dev/tools/prepare.js, which fails on it
 in seconds (Polish #4).
+
+A platform's y counts from the bottom of the world, not from the floor
+(GROUND_LEVEL, 60): a platform meant to keep Macario out of a guard's
+sight needs y of at least 120 (GUARD_SIGHT_CLEARANCE above the floor).
+The press's shelves stood at 100 and hid nobody until Block 142.
+
+A layered room wider than PANEL_WIDTH (1450) gets a shadow tree in it
+unless it declares panelWidth: its own width (Act II's press).
 
 The Edit tool, and some editors, turn an escape typed in a string or
 a regex (\uFEFF) into the character itself, which for an invisible one

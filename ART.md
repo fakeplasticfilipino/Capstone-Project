@@ -22,7 +22,8 @@ which layers: the table at the end. When a picture arrives, move its
 line to COMPLETED; once it is cut and in the game, its sheet moves to
 docs-private/art-delivered/, where originals are kept. _dev/parallax-art/
 keeps only the pictures the prompts attach as a style to follow
-(tondo-props, tondo-houses, tondo-nature, tondo-trees, dirt-ground) and
+(tondo-props, tondo-houses, tondo-nature, tondo-trees, dirt-ground,
+sierra-nature) and
 sheets not yet cut. node _dev/tools/missing-art.js lists what the game asks for and does not
 have. A still delivered on black: node _dev/tools/key-still.js; a sheet
 on black: _dev/tools/key-black.py.
@@ -35,48 +36,7 @@ Nothing needed.
 
 ### Act II
 
-    sierra-nature.jpg
-        (Attach the file _dev/parallax-art/tondo-nature.png)
-        Refer to the attached image and use the same art style. Draw
-        ONLY the far background of a landscape east of Manila in 1896: a
-        clear blue sky with soft white clouds, and along the bottom
-        third a long range of blue-green mountains (the Sierra Madre)
-        fading into haze, with a few low forested hills in front of
-        them. No buildings, no foreground trees, no people, no road, no
-        water. Slightly lighter and hazier than the attached image so it
-        feels far away. Fill the whole picture edge to edge. Wide
-        landscape, largest size.
-        (NOT STARTED)
-
-    grass-ground.jpg
-        (Attach the file _dev/parallax-art/tondo-nature.png)
-        Refer to the attached image and use the same art style. Make a
-        flat 2D ground strip for a side-scrolling game: trodden earth
-        at the edge of a forest in the Philippines, seen exactly from
-        the side. Along the top edge short grass and a few small
-        plants sticking up; below it, dark soil with roots and small
-        buried stones, getting a little darker toward the bottom. Draw
-        it as a cross-section, like the ground in a classic 2D
-        platformer: the top edge is the flat surface people walk on, a
-        straight level line across the whole picture, and below it the
-        earth is cut open and seen from the front. Do NOT show the
-        road from above: no ruts, tracks or paths running into the
-        distance, no perspective, no tilt. The left and right edges
-        must continue into each other perfectly so it can repeat. Fill
-        the whole picture edge to edge, no white or empty space. Wide
-        landscape, short in height.
-        (NOT STARTED)
-
-    river.png
-        (Attach the file _dev/parallax-art/tondo-nature.png)
-        Refer to the attached image and use the same art style. Make a
-        seamless strip of a calm brown-green river in the Philippines
-        in 1896, seen from the side, with low grassy banks on both sides
-        and a few rocks, as wide as the picture and short in height, for
-        the middle distance of a 2D side-scrolling game. The left and
-        right edges continue into each other. No people, no boats, no
-        sky: transparent above the far bank. Wide landscape.
-        (NOT STARTED)
+Nothing needed.
 
 ### Act III
 
@@ -110,7 +70,7 @@ Nothing needed.
 ### Act IV
 
     sierra-night-nature.jpg
-        (Attach the file _dev/parallax-art/sierra-nature.jpg)
+        (Attach the file _dev/parallax-art/sierra-nature.png)
         Refer to the attached image. Redraw it exactly as it is, the
         same mountains in the same places, but at night: a deep blue
         night sky with stars and a bright full moon high on the left,
@@ -334,114 +294,7 @@ Nothing needed.
 
 ### Act II
 
-    imprenta-kit.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sprite sheet of the separate pieces of the
-        Katipunan's hidden printing room in a house in Tondo, 1896. (1)
-        A wide, low wooden shelf unit, chest high to a man and wider
-        than it is tall, with a thick flat top board strong enough to
-        stand on, its shelves full of paper bundles. (2) A second such
-        shelf, a little narrower, with ink jars and boxes. (3) A tall
-        slanted type case cabinet with many small drawers of lead
-        letters. (4) A stack of wooden crates, chest high. (5) Stacked
-        bales of paper tied with string, chest high. (6) Two small
-        barrels of ink. (7) A cord strung across with printed sheets
-        hanging from it to dry. (8) A small square window with its
-        wooden shutters open, daylight outside. (9) A plain wooden door
-        with iron hinges, a little taller than a man. (10) A worktable
-        with papers and a composing stick, its top at a man's hip. Each
-        piece whole and seen straight on from the side (flat, no
-        perspective), with wide empty space between them so none touch
-        or overlap, all drawn in proportion to each other. No people, no
-        walls, no floor, no shadows between pieces. Transparent
-        background. Landscape, largest size.
-        Cut into (_dev/room-art/imprenta/): istante-1.png (1),
-        istante-2.png (2), kaha-titik.png (3), kahon.png (4),
-        papel.png (5), tinta.png (6), sampayan-papel.png (7),
-        bintana.png (8), pinto.png (9), mesa.png (10); the press
-        is palimbagan.png (act2-props.png)
-        Takes the place of (for the team):
-        assets/backgrounds/act2/imprenta.jpg
-        (NOT STARTED)
-
-    bahay-kit.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sprite sheet of the separate pieces of a poor but
-        cared-for one-room house in Tondo, 1896, quiet and warm. (1) A
-        low wooden table. (2) A small wooden stool. (3) A small home
-        altar: a wooden shelf with a carved wooden santo, a cross, a lit
-        candle and flowers. (4) A rolled woven mat (banig) standing on
-        end. (5) A sliding window of small square capiz shell panes in a
-        wooden frame. (6) A door of woven bamboo in a bamboo frame, a
-        little taller than a man. (7) Clay cooking pots on a clay stove
-        (kalan). (8) A wooden chest (baul). (9) A hanging oil lamp. Each
-        piece whole and seen straight on from the side (flat, no
-        perspective), with wide empty space between them so none touch
-        or overlap, all drawn in proportion to each other. No people, no
-        walls, no floor, no shadows between pieces. Transparent
-        background. Landscape, largest size.
-        Cut into (_dev/room-art/bahay/): mesa.png (1),
-        bangkito.png (2), altar.png (3), banig.png (4),
-        bintana-capiz.png (5), pinto.png (6), kalan.png (7),
-        baul.png (8), lampara.png (9)
-        Takes the place of (for the team):
-        assets/backgrounds/act2/bahay.jpg
-        (NOT STARTED)
-
-    garrison.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
-        Refer to the attached image and use the same art style, size
-        and finish. Make a sprite sheet of separate pieces of the
-        Spanish powder magazine (polvorín) at San Juan del Monte in
-        1896, arranged in a grid with wide empty space between them so
-        none touch or overlap. Each piece in straight-on front view
-        (flat side elevation, no perspective), standing on its own flat
-        ground line. (1) The polvorín: a squat building of thick
-        whitewashed stone with a red tile roof and one heavy wooden
-        door. (2) A flagpole with the flag of Spain of 1896 (red,
-        yellow, red stripes). (3) A long wooden palisade section. (4) A
-        short palisade section with a gate. (5) A stack of gunpowder
-        kegs. (6) A stack of wooden crates. (7) A pile of sandbags. (8)
-        A small stone guard post with a roof. No people, no trees, no
-        ground or shadows between pieces. Transparent background.
-        Landscape, largest size.
-        (NOT STARTED)
-
-    rural.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
-        Refer to the attached image and use the same art style, size
-        and finish. Make a sprite sheet of separate pieces of a farm by
-        the Nangka River east of Manila in 1896, arranged in a grid with
-        wide empty space between them so none touch or overlap. Each
-        piece in straight-on front view (flat side elevation, no
-        perspective), standing on its own flat ground line. (1) A small
-        nipa hut on stilts. (2) A low bamboo granary on stilts. (3) A
-        long bamboo fence. (4) A short bamboo fence. (5) A haystack.
-        (6) A clump of banana plants. (7) A carabao cart without the
-        animal. (8) A wooden footbridge on posts. No people, no trees
-        behind, no ground or shadows between pieces. Transparent
-        background. Landscape, largest size.
-        (NOT STARTED)
-
-    act2-props.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style. Make a
-        sprite sheet of three separate objects of 1896, arranged side by
-        side with wide empty space between them so none touch, each seen
-        from the side, drawn large. (1) One wooden hand printing press,
-        a little shorter than a man, with a sheet of paper on it. (2)
-        One bundle of dry rice straw tied with a cord, lying on the
-        ground. (3) A straw bundle raised on a pole as a scarecrow
-        shaped like a standing man, as tall as a man, wearing a salakot
-        with a red band, arms of straw held out. Nothing else in the
-        picture, no people, no ground or shadows. Transparent
-        background.
-        Cut into: assets/sprites/scenery/palimbagan.png (1),
-        assets/sprites/scenery/dayami.png (2),
-        assets/sprites/scenery/panakot.png (3)
-        (NOT STARTED)
+Nothing needed.
 
 ### Act III
 
@@ -632,9 +485,10 @@ Nothing needed.
 
     scene        nature            trees      buildings           ground
     tondo        tondo (done)      lowland    tondo (done) +      dirt
-                                   (done)     tondo-doors
-    san-juan     sierra            lowland    garrison            dirt
-    nangka       sierra            lowland    rural + river       grass
+      (Acts I, II)                 (done)     tondo-doors
+    san-juan     sierra (done)     lowland    garrison (done)     dirt
+    nangka       sierra (done)     lowland    rural + river       grass
+                                              (done)              (done)
     burol        manila-view       mountain   camp                grass
     morong       sierra            mountain   camp                grass
     himpilan     sierra-night      lowland    post                dirt
@@ -648,9 +502,10 @@ kits instead (22 Oct 2026, the proponent, all nine): a wall from
 room-walls.png repeated along the room, a floor from room-floors.png,
 and the room's own pieces placed by x on the hotspots (doors, windows,
 the press's shelves and hiding places). The entablado and the pulungan
-are built so (Block 143); the walls and floors the other rooms will use
-are already cut into _dev/room-art/ (wall-sawali, wall-bato,
-wall-palitada; floor-kawayan, floor-bato, floor-narra), to move into
+are built so (Block 143), and Act II's imprenta and bahay (Block 142,
+24 Oct 2026); the walls and floors the other rooms will use are
+already cut into _dev/room-art/ (wall-bato, wall-palitada; floor-bato,
+floor-narra), to move into
 assets/backgrounds/rooms/ with the room that first uses them. Until a
 room is built from its kit, the game keeps its painting (the selda) or
 the owed dark wall. Cut a sheet with _dev/tools/cut-room-kit.py.
@@ -684,9 +539,13 @@ Done and in the game. Nothing here needs drawing.
                   (ground-lupa), the rooms' walls and floors
                   (room-walls, room-floors; the sheets in
                   docs-private/art-delivered/)
-        Act II    Pugad Lawin,
-                  San Juan del Monte (san-juan-1 and 2), the Nangka
-                  (nangka-1 and 2), Balara, Laguna
+        Act II    Pugad Lawin, Balara, Laguna; for San Juan del Monte
+                  and the Nangka in layers (24 Oct 2026) the Sierra
+                  Madre's sky (sierra-nature, as layers/sierra-sky.jpg),
+                  the river and the grass ground (their checkerboard
+                  and sky taken off); the paintings they replace,
+                  san-juan-1 and 2 and nangka-1 and 2, and the
+                  delivered sheets, in docs-private/art-delivered/
         Act III   the hill camp (burol-1 and 2), the plaza (bayan),
                   Morong (morong-1 and 2),
                   the cell in Bilibid (selda, Acts III and IV)
@@ -718,3 +577,9 @@ Done and in the game. Nothing here needs drawing.
                   furniture (entablado-kit, pulungan-kit; cut into
                   assets/sprites/rooms/, the sheets in
                   docs-private/art-delivered/)
+        Act II    San Juan del Monte's works (garrison) and the farm by
+                  the Nangka (rural), cut into assets/sprites/buildings/;
+                  the press's and the house's furniture (imprenta-kit,
+                  bahay-kit), cut into assets/sprites/rooms/; the
+                  press, the straw and the scarecrow (act2-props:
+                  palimbagan, dayami, panakot)
