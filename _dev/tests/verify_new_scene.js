@@ -911,6 +911,20 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("Act IV's places: every painting opening; the post, Di-Masalang and Malabon two paintings at one height (Block 136)",
        act4.srcs === 9 && act4.expected && act4.opens && act4.widths, act4);
 
+    // Block 149. Act IV's people from the proponent's pictures: each sheet
+    // opening, eight frames, and the two who walk walking.
+    const people4 = await page.evaluate(async () => {
+      const all = window.ACT_4.scenes.flatMap((s) => (s.npcs || []).concat(s.decorations || []));
+      const find = (id) => all.find((n) => n.id === id);
+      const sheets = { villafuerte: find("villafuerte-m").animation, deVega: find("de-vega-p").animation,
+        deVegaWalk: find("de-vega-p").walkAnimation, cavite: find("taga-cavite").animation,
+        caviteWalk: find("taga-cavite").walkAnimation, anak: find("anak-ni-isko").animation };
+      await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
+      return Object.fromEntries(Object.entries(sheets).map(([n, s]) => [n, !s.failed && s.frameHeight > 0 && s.frames]));
+    });
+    ok("Act IV's officers, the woman from Cavite and Isko's son: every sheet opening, eight frames, two walking (Block 149)",
+       Object.values(people4).every((f) => f === 8), people4);
+
     const c1 = await readConversation(page, 3);
     ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
     ok("Macario faces the siga, behind him on the left", c1.facings.every((f) => f === -1), c1.facings);

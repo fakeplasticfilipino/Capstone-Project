@@ -9,7 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 25 Oct 2026, Block 148: the Katagalugan's flag in at
+Last updated: 25 Oct 2026, Block 149: four of Act IV's people in
+(Villafuerte, De Vega, the woman from Cavite, Isko's son), animated
+from the proponent's two sheets; eight pictures still owed (ART.md).
+Before it, Block 148: the Katagalugan's flag in at
 Morong (its second delivery), so Act III owes no art; the general's
 uniform made from its still (skeleton.js, every move) and sold at 80.
 Before it, 24 Oct 2026, Block 147: Act III's art in. Every
@@ -415,6 +418,12 @@ Constabulary in the last fight, the Katagalugan's red flag on its
 bamboo pole, Block 148). Failure: a dashed box, a door lit beside its
 house, a figure floating or sunk, a soldier
 whose rifle butt trails a dark copy.
+
+Block 149, Act IV's people (?dev=1, Act IV): the woman from Cavite
+walks on with her rice (her feet stepping, the skirt whole); Isko's son
+beside his father; Villafuerte and De Vega in the sala and the cell, De
+Vega walking to the scaffold. Failure: a dashed box for any of the
+four, a skirt torn at the middle, a figure sliding without stepping.
 
 Block 148, the general's uniform: after Act I's savings, buy
 Uniporme ng Heneral (80) from the corner shop, wear it as Damit, and

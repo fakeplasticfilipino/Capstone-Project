@@ -6720,6 +6720,19 @@ under the full parallel run on this computer tonight, on the commit
 before this one as well (checked in a separate checkout), and passes
 alone: the machine's load, not this change. Watched in CI.
 
+## Block 149: four of Act IV's people, 25 Oct 2026
+
+The proponent sent the first two of ART.md's merged sheets (mga-opisyal,
+mag-ina), each two figures side by side, cut with cut-room-kit.py and
+shrunk to 548 tall as stills. Villafuerte and Isko's son stand, so the
+calm idle. The woman from Cavite and De Vega were drawn mid-stride, as
+the walk prompts asked: standing they only breathe (Poblete's
+mid-stride still was the precedent), and they walk by the march with
+legSplit, each leg cut apart and lifted in turn; the woman's legs are
+cut below the skirt's hem, so only her feet step and the skirt stays
+whole. A walk swung from the hip would have doubled or torn the skirt.
+The sheets, once cut, went to docs-private/art-delivered/2026-10-25-act4/.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

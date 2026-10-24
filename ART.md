@@ -192,42 +192,12 @@ Also wanted (not in the game yet):
         background.
         (NOT STARTED)
 
-    mga-opisyal.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image and use the same art style and
-        size. Draw two Filipino rebel officers of 1906 side by side,
-        each the whole body, side on, facing right, arms free of the
-        body, at the same scale and standing on the same ground line,
-        with wide empty space between them so they do not touch. (1)
-        León Villafuerte, standing, in a plain dark uniform with a sash.
-        (2) Lucio de Vega, walking, in a worn plain uniform. Transparent
-        background. Landscape.
-        Cut into: assets/sprites/characters/villafuerte.png (1),
-        assets/sprites/characters/de-vega.png (2)
-        (NOT STARTED)
-
     assets/sprites/characters/hukom.png
         (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw an American judge of 1906 in a black robe, the whole
         body, seated side on and facing right on a chair. Transparent
         background.
-        (NOT STARTED)
-
-    mag-ina.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image and use the same art style and
-        size. Draw two Filipinos of 1905 to 1906 side by side, each the
-        whole body, side on, facing right, at the same scale and
-        standing on the same ground line, with wide empty space between
-        them so they do not touch. (1) A thin village woman of Cavite,
-        walking, in a faded baro't saya, carrying a small cloth bundle
-        of rice. (2) A boy of about seven, the son of the man in the
-        attached image, about half the man's height, standing,
-        barefoot, in a simple camisa and short trousers. Transparent
-        background. Landscape.
-        Cut into: assets/sprites/characters/taga-cavite.png (1),
-        assets/sprites/characters/anak-ni-isko.png (2)
         (NOT STARTED)
 
     taong-bayan.png
@@ -504,6 +474,11 @@ Done and in the game. Nothing here needs drawing.
                   (24 Oct 2026, rigs amerikano.js and konstable.js),
                   and the American in the barber's chair
                   (sundalong-amerikano)
+        Act IV    Villafuerte and De Vega (mga-opisyal), the woman
+                  from Cavite and Isko's son (mag-ina), 25 Oct 2026,
+                  Block 149, animated from their pictures (rigs
+                  villafuerte.js, de-vega.js, taga-cavite.js,
+                  anak-ni-isko.js)
 
     Props
         Act I     Tondo's houses, street props and doors
