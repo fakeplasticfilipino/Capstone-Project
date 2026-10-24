@@ -975,8 +975,8 @@ the scene's buildings and props (pictures placed by x behind the
 people, one scale per kit, a door's picture standing on its exit), the
 ground strip (a picture: dirt, grass or stone), and the foreground
 (the shadow trees and grass, at about 1.25). Anything a student
-reaches stays at rate 1. Outdoor places one screen wide keep one
-painting. Rooms are built from kits (Block 143; the rooms table at the
+reaches stays at rate 1. Outdoor places one screen wide are layered
+too (Act II's three, Act III's plaza; 24 Oct 2026). Rooms are built from kits (Block 143; the rooms table at the
 end of ART.md): one layer, the room's wall at rate 1, repeated
 (ROOM_WALL in content/act1.js); its floor as ground: { src, lip,
 filter }; its furniture as buildings placed by x at a height in world

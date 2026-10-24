@@ -415,6 +415,48 @@ Also wanted (not in the game yet):
         size.
         (NOT STARTED)
 
+    town.png
+        (Attach the file _dev/parallax-art/tondo-houses.png)
+        Refer to the attached image and use the same art style, size
+        and finish. Make a sprite sheet of separate buildings of a
+        Tagalog town of 1901 to 1905 around its plaza, drawn by day,
+        arranged in a grid with wide empty space between them so none
+        touch or overlap. Each building in straight-on front view (flat
+        side elevation, no perspective), standing on its own flat ground
+        line, its door at ground level. (1) A large stone church with a
+        bell tower and a carved front. (2) A two-storey stone town hall
+        (casa tribunal) with arches on the ground floor. (3) A square
+        stone watchtower building. (4) A long stone wall with a wooden
+        gate. (5) A nipa house. (6) A small wooden store with an
+        awning. No people, no flags, no trees behind, no ground or
+        shadows between buildings. Transparent background. Landscape,
+        largest size.
+        (For the team: the plaza, bayan, in Act III, and Malabon in
+        Act IV)
+        (NOT STARTED)
+
+    bayan-props.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style and
+        finish. Make a sprite sheet of the separate pieces of a town
+        plaza in the Philippines in April 1901, where an American
+        officer takes the surrender of Filipino soldiers. (1) A plain
+        wooden camp table with papers, an inkwell and a ledger on it,
+        its top at a man's hip. (2) A folding wooden camp chair seen
+        from the side. (3) A printed proclamation pasted on a wooden
+        notice board on two posts, a little taller than a man. (4) The
+        flag of the United States of 1901 (45 stars) flying on a tall
+        wooden pole. (5) A stack of surrendered rifles leaning together
+        against each other. Each piece whole and seen straight on from
+        the side (flat, no perspective), with wide empty space between
+        them so none touch or overlap, all drawn in proportion to each
+        other. No people, no ground, no shadows between pieces.
+        Transparent background. Landscape, largest size.
+        Cut into (assets/sprites/buildings/): bayan-mesa.png (1),
+        bayan-silya.png (2), bayan-proklama.png (3),
+        bayan-bandila.png (4), bayan-riple.png (5)
+        (NOT STARTED)
+
     assets/sprites/scenery/watawat-katagalugan.png
         (Attach the file _dev/parallax-art/tondo-props.png, and the
         proponent's picture of the flag)
@@ -469,24 +511,6 @@ Also wanted (not in the game yet):
         Transparent background. Landscape, largest size.
         (NOT STARTED)
 
-    town.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
-        Refer to the attached image and use the same art style, size
-        and finish. Make a sprite sheet of separate buildings of the
-        town of San Francisco de Malabon, Cavite, in 1905, drawn by day,
-        arranged in a grid with wide empty space between them so none
-        touch or overlap. Each building in straight-on front view (flat
-        side elevation, no perspective), standing on its own flat ground
-        line, its door at ground level. (1) A large stone church with a
-        bell tower and a carved front. (2) A two-storey stone town hall
-        (casa tribunal) with arches on the ground floor. (3) A square
-        stone watchtower building. (4) A long stone wall with a wooden
-        gate. (5) A nipa house. (6) A small wooden store with an
-        awning. No people, no flags, no trees behind, no ground or
-        shadows between buildings. Transparent background. Landscape,
-        largest size.
-        (NOT STARTED)
-
     bilibid.png
         (Attach the file _dev/parallax-art/tondo-houses.png)
         Refer to the attached image and use the same art style, size
@@ -512,17 +536,18 @@ Also wanted (not in the game yet):
     nangka       sierra (done)     lowland    rural + river       grass
                                               (done)              (done)
     burol        manila-view       mountain   camp                grass
+    bayan        sierra (done)     lowland    town + bayan-props  dirt
     morong       sierra            mountain   camp                grass
     himpilan     sierra-night      lowland    post                dirt
     dimasalang   sierra            mountain   camp                grass
     malabon      cavite-dusk       lowland    town                dirt
     patyo        bilibid-sky       none       bilibid             stone
 
-The places one screen wide do not scroll; Act III's plaza keeps its one
-painting, but Act II's three (Pugad Lawin, Balara, Laguna) are drawn in
-the same layers as its fields since 24 Oct 2026, so the act matches
-(the Sierra sky, the lowland trees, the grass, the farm's pieces; the
-Nangka's water for Laguna's lake). The rooms are built from
+The places one screen wide do not scroll but are drawn in layers all the
+same, so every act matches: Act II's three (Pugad Lawin, Balara,
+Laguna) since 24 Oct 2026 (the Sierra sky, the lowland trees, the
+grass, the farm's pieces; the Nangka's water for Laguna's lake), and
+Act III's plaza (bayan) by the proponent's word the same day. The rooms are built from
 kits instead (22 Oct 2026, the proponent, all nine): a wall from
 room-walls.png repeated along the room, a floor from room-floors.png,
 and the room's own pieces placed by x on the hotspots (doors, windows,

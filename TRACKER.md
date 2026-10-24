@@ -303,7 +303,8 @@ to docs-private/art-delivered/ once cut), in this order:
         the river's checkerboard and the ground's sky taken off)
     [ ] mountain-trees, camp
     [ ] post, sierra-night-nature
-    [ ] town, cavite-dusk-nature
+    [ ] town, bayan-props (the plaza, layered too since 24 Oct 2026 at
+        the proponent's word), cavite-dusk-nature
     [ ] bilibid, bilibid-sky-nature, stone-ground
     [ ] manila-view-nature
 
