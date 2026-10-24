@@ -126,6 +126,48 @@ Nothing needed.
 
 Nothing needed.
 
+Also wanted (not in the game yet):
+
+    macario-parts.png
+        (Attach the file _dev/player-lab/macario-still.png)
+        Refer to the attached image. Draw this exact man again, same
+        face, same long hair, same embroidered white jacket, dark
+        trousers and shoes, same art style and lighting, but taken
+        apart like a paper puppet: every part of his body drawn
+        separately, spaced well apart with empty space between them, all
+        seen from the side facing right, all at the same scale as each
+        other, as if he were 1000 pixels tall. Draw every part whole,
+        including the parts that would be hidden when he is put
+        together. Give each part a rounded end where it joins the next
+        one, with a little extra overlap, so the joints can bend without
+        a gap. The parts, laid out in rows:
+          1. his head and neck, without the hair that hangs down his back
+          2. the long hair that hangs down his back, on its own
+          3. his torso in the jacket from the collar to the waist, with
+             no arms, the jacket fully drawn where the arms would cover it
+          4. the skirt of the jacket below the waist, with its side slits
+          5. his right upper arm in the sleeve, hanging straight down
+          6. his right forearm in the sleeve with the cuff, straight down
+          7. his right hand, closed in a loose fist
+          8. his left upper arm, left forearm and left hand: the same
+             three again, as separate pieces
+          9. his right thigh in the trousers, from the hip to the knee
+         10. his right shin in the trousers, from the knee to the ankle
+         11. his right shoe, flat, seen from the side, toe to the right
+         12. his left thigh, left shin and left shoe: the same three
+             again, as separate pieces
+        No parts touching or overlapping, no shadows on the ground, no
+        labels or numbers. Transparent background.
+        Cut into: _dev/player-lab/parts/ (head.png, hair.png,
+        torso.png, skirt.png, upper-arm.png, forearm.png, hand.png,
+        far-upper-arm.png, far-forearm.png, far-hand.png, thigh.png,
+        shin.png, foot.png, far-thigh.png, far-shin.png, far-foot.png)
+        (NOT STARTED; for the team: a try at a better Macario, Block
+        145. If it comes out consistent, _dev/tools/skeleton.js is
+        taught to build him from these parts instead of the one still.
+        If a part comes out wrong, ask again for that part alone,
+        attaching the sheet.)
+
 ### Act II
 
 Nothing needed.
