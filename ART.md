@@ -126,30 +126,6 @@ Nothing needed.
 
 Nothing needed.
 
-Also wanted (not in the game yet):
-
-    macario-npc-style.png
-        (Attach isko-still.png from the folder assets/sprites/characters,
-        and macario-still.png from the folder _dev/player-lab)
-        Refer to the two attached images. Draw the man in the second
-        image (his face, his long loose black hair, his white jacket with
-        the standing collar and the cream embroidery down the front, his
-        dark trousers and his black leather shoes) in exactly the art
-        style of the first image: the same clean dark outlines, the same
-        simple, flatter shading with few colours, the same level of
-        detail and the same proportions of head to body. He stands side
-        on, facing right, upright and relaxed, both feet flat on the
-        ground, his near arm hanging straight down with a little space
-        between the arm and his body, the hand loosely closed. His whole
-        figure is in the picture, about 1000 pixels tall, nothing cut
-        off. No shadow on the ground, nothing else in the picture.
-        Transparent background.
-        (NOT STARTED; for the team: a Macario in the NPCs' own style, so
-        he matches them and moves as naturally as they do (Block 145).
-        If it comes out right, his bones are traced on it as on
-        macario-still.png and _dev/tools/skeleton.js writes every sheet
-        from it.)
-
 ### Act II
 
 Nothing needed.
@@ -603,7 +579,10 @@ Done and in the game. Nothing here needs drawing.
                   (malabon-1 and 2), Bilibid's yard (patyo)
 
     Sprites
-        Macario   idle, walk, jump, punch, shot
+        Macario   his still in the NPCs' style (macario-still.png in
+                  _dev/player-lab, 24 Oct 2026), from which
+                  skeleton.js writes idle, walk, jump, punch, shot
+                  and the bolo's slash
         Act I     Nanay, the Kutsero and his horse (Kabayo), the
                   Barbero, the Mananahi, the three siga, the direktor,
                   Maryam, the Sultan, the kawal, the Katipunero, the

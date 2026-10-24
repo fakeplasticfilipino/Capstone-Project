@@ -2105,7 +2105,8 @@ if (BODY_TRANSLATE) player.style.bottom = "0px";
 // The sheets Macario wears with nothing equipped. A worn item replaces
 // whichever of them it declares and leaves the rest alone (setOutfit).
 //
-// Block 145. His own model since 24 Oct 2026: every sheet is written by
+// Block 145. His own model since 24 Oct 2026, drawn in the NPCs' style
+// (clean outlines, flat shading): every sheet is written by
 // _dev/tools/skeleton.js from one still (_dev/player-lab/macario.js;
 // node _dev/tools/skeleton.js macario --ship), not drawn frame by frame,
 // so the numbers below are the tool's, the same for every sheet: a cell
@@ -2130,7 +2131,7 @@ const BASE_SPRITE_SHEETS = {
   shootAim: Object.assign({ src: "assets/sprites/player/macario-shoot.png", frames: 12, fps: 8,
     startFrame: 0, endFrame: 2, loop: false }, MACARIO_CELL),
   shootFire: Object.assign({ src: "assets/sprites/player/macario-shoot.png", frames: 12, fps: 18,
-    startFrame: 3, endFrame: 11, loop: false, muzzle: { x: 162, y: 62 } }, MACARIO_CELL),
+    startFrame: 3, endFrame: 11, loop: false, muzzle: { x: 163, y: 61 } }, MACARIO_CELL),
 
   // The one-tap punch (playMelee), 12 frames at 24: half a second. Block
   // 71's contact is the frame the fist lands on, where the hit is

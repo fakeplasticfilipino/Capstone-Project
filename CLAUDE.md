@@ -237,11 +237,12 @@ off the repository.
     _dev/hooks/                pre-commit: prepare.js --check (Block 106)
     _dev/rigs/                 one rig per character animated from a
                                still by animate-still.js (Block 97)
-    _dev/player-lab/           the player's own model (Block 145): its
-                               skeleton (macario.js) for
-                               _dev/tools/skeleton.js, the sheets it
-                               writes (out/), and the test page
-                               (index.html) beside today's Macario
+    _dev/player-lab/           the player's own model (Block 145): his
+                               still in the NPCs' style
+                               (macario-still.png), its skeleton
+                               (macario.js) for _dev/tools/skeleton.js,
+                               the sheets it writes (out/), and the test
+                               page (index.html) beside an NPC
     _dev/tools/                measure-sprite.js, key-black.py (a sheet
                                on black), key-still.js (a still on
                                black, cropped and shrunk; Block 133),

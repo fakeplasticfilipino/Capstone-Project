@@ -150,7 +150,10 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
-fetch("out/macario.json?t=" + Date.now()).then((r) => r.json()).then((list) => {
+// ?model=<skeleton> shows another skeleton's output (a skin under
+// test); without it, the game's own (macario).
+const MODEL = new URLSearchParams(location.search).get("model") || "macario";
+fetch("out/" + MODEL + ".json?t=" + Date.now()).then((r) => r.json()).then((list) => {
   for (const r of list) {
     const d = { src: r.file, frames: r.frames, fps: r.fps, columns: r.columns, contentTop: r.contentTop, contentHeight: r.contentHeight, footX: r.footX };
     if (r.name === "melee" || r.name === "slash") d.parts = [[0, r.frames - 1, r.fps, 0.6]];

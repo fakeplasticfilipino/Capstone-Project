@@ -161,9 +161,19 @@ function buildTextures(sk, img) {
     for (let x = 0; x < W; x++) {
       const i = y * W + x;
       if (!solid(i)) continue;
-      if (inArm[i] && !hair(i, y) && !(trouser(i, y) && !skin(i))) { copy(arm, i); armSrc[i] = 1; continue; }
-      if (trouser(i, y)) {
-        if (inLeg[i]) { copy(leg, i); legSrc[i] = 1; }
+      // A drawing with outlines (the NPCs' style) rings the sleeve and the
+      // hand in near-black: inside the arm's outline that black is the
+      // arm's own line, not hair or trouser, and must move with it.
+      const line = sk.outlineLuma && lum[i] < sk.outlineLuma;
+      if (inArm[i] && (line || (!hair(i, y) && !(trouser(i, y) && !skin(i))))) { copy(arm, i); armSrc[i] = 1; continue; }
+      // Above the hem, a near-black line is the jacket's own (the edges of
+      // its slits, its hem), so it stays on the jacket; the trouser seen
+      // through a slit is dark grey and goes with the leg.
+      if (trouser(i, y) && !(line && y <= sk.hemY + 2)) {
+        // Not inside the arm's outline: what is there is the hand's soft
+        // edge, which copied into the hidden trouser leaves pale flecks.
+        // The trouser under the hand is painted in instead.
+        if (inLeg[i] && !inArm[i]) { copy(leg, i); legSrc[i] = 1; }
         continue;   // the far leg's pixels: replaced by the far leg
       }
       copy(body, i); bodySrc[i] = 1;
@@ -177,7 +187,11 @@ function buildTextures(sk, img) {
     for (let x = 0; x < W; x++) {
       const i = y * W + x;
       if (inArm[i] && !bodySrc[i] && y < sk.hemY) bodyHole[i] = 1;
-      if (bodySrc[i] && !dark(i)) jacket[i] = 1;
+      // Only solid cloth: not a half-transparent edge, and not the warm
+      // fringe a cut-out drawing can leave along an edge, which painted in
+      // would smear pink across the jacket.
+      const A = px[i * 4 + 3];
+      if (bodySrc[i] && !dark(i) && A > 0.95 && (px[i * 4] - px[i * 4 + 1]) / A < 0.12) jacket[i] = 1;
     }
   }
   fillRows(body, W, H, bodyHole, jacket);
@@ -187,7 +201,7 @@ function buildTextures(sk, img) {
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const i = y * W + x;
-      if (inLeg[i] && !legSrc[i] && y < sk.hemY + 24) legHole[i] = 1;
+      if (inLeg[i] && !legSrc[i] && (y < sk.hemY + 24 || inArm[i])) legHole[i] = 1;
     }
   }
   fillUp(leg, W, H, legHole, legSrc, sk.hemY);

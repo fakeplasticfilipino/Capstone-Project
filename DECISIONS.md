@@ -6547,6 +6547,26 @@ shot rather than having both. Still open: the pistol in his hand is
 owed like the blade (a prop, the same mechanism), so the shot points an
 empty fist, and the slash is made empty-handed until the blade comes.
 
+The drawing changed, not the tool, and that is what made him look right
+(24 Oct 2026, the proponent: "FINALLY!"). Two tries before it failed:
+the realistic painting animated by the tool still read as off, and a
+parts sheet from ChatGPT (every body part drawn apart, put together by
+the tool) looked wrong at the joints and in proportion. Then the same
+Macario was asked for in the NPCs' own style (ART.md: Isko's still for
+the style, the painting for the design): clean outlines, flat shading,
+the NPCs' head-to-body proportions. ChatGPT kept the painting's pose
+almost exactly, so the skeleton carried over with a few points traced
+again (the sleeve's back edge, the near shoe's top), and the motion the
+proponent had already accepted on the NPCs now reads as natural on him.
+Why, as far as can be told: a painted, near-photographic figure shows
+every stretch the mesh makes and every invented hidden part, and it
+did not match the drawn world round it; a flat, outlined figure hides
+both, and matches. Two changes to the tool came with it: near-black
+pixels inside the arm's outline go with the arm (outlineLuma), and the
+jacket's own lines above the hem stay on the jacket; the hand's soft
+edge is kept out of the hidden trousers. The painting went to
+docs-private/art-delivered/2026-10-24-old-macario/.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

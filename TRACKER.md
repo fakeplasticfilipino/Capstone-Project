@@ -391,8 +391,9 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
 Block 142 (above) comes first. Then, in order.
 
 Block 145 (IN PROGRESS), Macario's own skeleton: the new model is in
-the game since 24 Oct 2026 (BASE_SPRITE_SHEETS; the old sheets kept in
-docs-private/art-delivered/2026-10-24-old-macario/). On the phone:
+the game since 24 Oct 2026, drawn in the NPCs' style the same day
+(BASE_SPRITE_SHEETS; the artist's sheets and the realistic painting
+kept in docs-private/art-delivered/2026-10-24-old-macario/). On the phone:
 open any story point with ?dev=1 and see him stand, walk, run, jump,
 punch, aim and fire, the same height as the people round him, his feet
 on the road, nothing cut off above his head or in front of his fist;
