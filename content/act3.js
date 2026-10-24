@@ -89,7 +89,10 @@
   const POBLETE = { src: "assets/sprites/characters/poblete.png", frames: 8, fps: 4, ...POBLETE_CELL };
   const POBLETE_WALK = { src: "assets/sprites/characters/poblete-walk.png", frames: 8, fps: 12, ...POBLETE_CELL };
   const TAGAPAGBALITA = P.tagapagbalita;
-  const WATAWAT = owed("scenery", "watawat-katagalugan");
+  // Block 148: the Katagalugan's flag on its bamboo pole, the proponent's
+  // picture; it stands on the pole (footX), taller than a man.
+  const WATAWAT = { src: "assets/sprites/scenery/watawat-katagalugan.png", frames: 1, fps: 1,
+    contentTop: 1, contentHeight: 478, footX: 15 };
   // 24 Oct 2026: the soldiers' sheets (content/enemies.js), for the ones
   // who only stand or walk in a scene.
   const AMERIKANO = window.SOLDIER_SHEETS.amerikano;
@@ -1721,7 +1724,7 @@
         decorations: [
           { id: "batang-kawal", x: -120, hidden: true, animation: P.katipunero.idle,
             walkAnimation: P.katipunero.walk, faceMovement: true, speakers: ["Batang Kawal"] },
-          // Block 120. The Republic's soldiers, seen beside its flag (owed).
+          // Block 120. The Republic's soldiers, seen beside its flag (Block 135's fighter).
           ...KAWAL_X.map((x, i) => ({
             id: "kawal-" + (i + 1), x, animation: KAWAL, facing: -1,
             speakers: i === 0 ? ["Mga Kawal"] : [],
@@ -1736,8 +1739,8 @@
             ],
           },
           {
-            // The Republic's flag, raised with E (raiseTheFlag). Owed.
-            id: "watawat", x: FLAG_X, label: "Watawat", animation: WATAWAT,
+            // The Republic's flag, raised with E (raiseTheFlag).
+            id: "watawat", x: FLAG_X, label: "Watawat", animation: WATAWAT, displayHeight: 300,
             interactLabel: "Itaas ang watawat",
             interactIcon: "i-hand",
             dialogueSets: [],

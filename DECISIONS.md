@@ -6689,6 +6689,37 @@ store and tower and sala-kit's banquet table and American flag are not
 cut until Act IV uses them, so the site serves nothing it never draws;
 both sheets wait in _dev/parallax-art/.
 
+## Block 148: the general's uniform and the Katagalugan's flag, 25 Oct 2026
+
+The proponent sent two of the owed pictures and asked for them in.
+
+The flag, second delivery: red with a white sun, on a bamboo pole.
+Drawn at 300 tall on its pole (footX at the pole), the first picture
+(today's Philippine flag) kept in docs-private. Act III owes no art.
+
+The general's uniform: the still on Macario's template, every move
+written by skeleton.js --still and shipped as macario-heneral-*.png
+(the slash left out: a weapon's sheets go over the outfit's, so the
+itak keeps its own, in the camisa). Two things in the tool:
+
+    names        a skin is named for its still without "-still"
+    darkJacket   the skeleton told the jacket from the trousers by
+                 brightness, right for the cream camisa; the navy
+                 uniform read as trousers and the hole behind the arm
+                 was filled from the gold. A skin may now carry its own
+                 reading (skins, by name, in the skeleton file): with
+                 darkJacket the hem alone divides jacket from trouser,
+                 and the hole is filled from the navy cloth in front of
+                 the hair (bluish, so no hair or sash bleeds in)
+
+Sold at 80, general stock (TRACKER.md: the skins go on sale once made):
+between the itak and the pulbura, a cosmetic, nothing but the look.
+
+The suite's act1 piece fails its first two checks of the opening card
+under the full parallel run on this computer tonight, on the commit
+before this one as well (checked in a separate checkout), and passes
+alone: the machine's load, not this change. Watched in CI.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

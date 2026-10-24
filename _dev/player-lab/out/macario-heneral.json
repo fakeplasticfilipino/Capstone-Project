@@ -1,0 +1,152 @@
+[
+  {
+    "name": "idle",
+    "file": "_dev/player-lab/out/macario-heneral-idle.png",
+    "frames": 16,
+    "fps": 8,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 12,
+    "drawnBottom": 251,
+    "cellW": 200,
+    "cellH": 256
+  },
+  {
+    "name": "walk",
+    "file": "_dev/player-lab/out/macario-heneral-walk.png",
+    "frames": 8,
+    "fps": 12,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 11,
+    "drawnBottom": 250,
+    "cellW": 200,
+    "cellH": 256
+  },
+  {
+    "name": "melee",
+    "file": "_dev/player-lab/out/macario-heneral-melee.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 250,
+    "cellW": 200,
+    "cellH": 256,
+    "loop": false,
+    "contact": 6,
+    "cocked": 2
+  },
+  {
+    "name": "cross",
+    "file": "_dev/player-lab/out/macario-heneral-cross.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 250,
+    "cellW": 200,
+    "cellH": 256,
+    "loop": false,
+    "contact": 6
+  },
+  {
+    "name": "kick",
+    "file": "_dev/player-lab/out/macario-heneral-kick.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 250,
+    "cellW": 260,
+    "cellH": 256,
+    "loop": false,
+    "contact": 6
+  },
+  {
+    "name": "shoot",
+    "file": "_dev/player-lab/out/macario-heneral-shoot.png",
+    "frames": 12,
+    "fps": 8,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 249,
+    "cellW": 200,
+    "cellH": 256,
+    "loop": false,
+    "aim": [
+      0,
+      2
+    ],
+    "fire": [
+      3,
+      11
+    ],
+    "fireFps": 18,
+    "muzzle": {
+      "x": 163,
+      "y": 61
+    }
+  },
+  {
+    "name": "jump",
+    "file": "_dev/player-lab/out/macario-heneral-jump.png",
+    "frames": 6,
+    "fps": 14,
+    "columns": 6,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 249,
+    "cellW": 200,
+    "cellH": 256,
+    "loop": false,
+    "rise": [
+      0,
+      3
+    ],
+    "fall": [
+      4,
+      4
+    ],
+    "land": [
+      5,
+      5
+    ]
+  },
+  {
+    "name": "slash",
+    "file": "_dev/player-lab/out/macario-heneral-slash.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 80,
+    "contentHeight": 240,
+    "footX": 110,
+    "headroom": 80,
+    "drawnTop": 13,
+    "drawnBottom": 320,
+    "cellW": 300,
+    "cellH": 330,
+    "loop": false,
+    "contact": 6,
+    "cocked": 3
+  }
+]

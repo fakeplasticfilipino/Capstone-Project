@@ -717,7 +717,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     // Block 117: and Act III's disguise, the story's too, neither for sale.
     // Block 121: each given in its own act, and a general stock of three.
     ok("the item catalogue is the stage clothes (Block 82) and the disguise (Block 117), not for sale, still-detection effects",
-       await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 6 && ITEMS[0].id === "damit-entablado" &&
+       await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 7 && ITEMS[0].id === "damit-entablado" &&
          ITEMS[0].price === 0 && ITEMS[0].slot === "outfit" && ITEMS[0].effect.stillDetectionMult === 0.2 &&
          ITEMS[0].givenInAct === 1 && ITEMS[1].givenInAct === 3 &&
          ITEMS[1].id === "balatkayo" && ITEMS[1].price === 0 && ITEMS[1].slot === "outfit" &&
@@ -1367,9 +1367,19 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        n1.lines.length === 10 && JSON.stringify([...n1.lines.slice(0, 3), ...n1.lines.slice(8)]) === JSON.stringify(NANAY_THANKS_OWN) &&
        n1.lines[3] === "Macario: Pati po sa Barbero." && /entablado/.test(n1.lines[4]), n1.lines);
     ok("the savings are spent, and he keeps the rest", (await page.evaluate(() => Game.currency())) === 30);
-    ok("and once they are given, the shop opens: lagundi, the anting-anting, the pulbura (Block 121) and the itak (Block 145)",
+    ok("and once they are given, the shop opens: lagundi, the anting-anting, the pulbura (Block 121), the itak (Block 145) and the general's uniform (Block 148)",
        await page.evaluate(() => JSON.stringify(Inventory.forSale(null).map((i) => i.id)) ===
-         '["lagundi","anting-anting","pulbura","itak"]'));
+         '["lagundi","anting-anting","pulbura","itak","uniporme-heneral"]'));
+    // Block 148: the general's uniform, a skin: every move of his redrawn,
+    // each sheet in the game, nothing but the look changed.
+    ok("and the general's uniform: a cosmetic at 80 whose sheets redraw every move, each in the game (Block 148)",
+       await page.evaluate(() => {
+         const u = ITEMS.find((x) => x.id === "uniporme-heneral") || {};
+         const names = Object.keys(u.sheets || {});
+         return u.kind === "cosmetic" && u.slot === "outfit" && u.price === 80 && !u.effect &&
+           names.length === 10 && names.every((n) => n in BASE_SPRITE_SHEETS) &&
+           names.every((n) => u.sheets[n].src in window.ASSET_VERSIONS);
+       }));
 
     // ---------------------------------------------------------------
     // Block 80. The end of Act I.

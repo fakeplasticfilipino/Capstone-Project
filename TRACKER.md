@@ -9,13 +9,15 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 24 Oct 2026, Block 147: Act III's art in. Every
+Last updated: 25 Oct 2026, Block 148: the Katagalugan's flag in at
+Morong (its second delivery), so Act III owes no art; the general's
+uniform made from its still (skeleton.js, every move) and sold at 80.
+Before it, 24 Oct 2026, Block 147: Act III's art in. Every
 place of Act III is in layers or built from a kit (Tondo with a
 house's door at each knock, the hills, Morong, the plaza, the
 barberya, Calle Gunao, the selda, Act IV's selda too); the American
 soldier and the Constabulary animated; the American in the barber's
-chair. The Katagalugan's flag came as today's Philippine flag and is
-owed again (ART.md). Not yet seen on the phone (Next action). Before
+chair. Not yet seen on the phone (Next action). Before
 it, 24 Oct 2026, end of session, at f8e1184 (CI green, tests
 and Pages). Block 142: Act II's art is finished, every place in layers
 or built from a kit, no painting left in Act II. Its street is Act I's
@@ -409,9 +411,17 @@ chair, and walks out after the haircut, the chair left); "Abril 1901"
 his table, the flag); "Calle Gunao" (the sala); "Bilibid, Hulyo 1902"
 (the stone cell, the gate at the right); "Tondo, 1902" (each of the
 three doors lit on a house's own door); "Morong" (the camp, the
-Constabulary in the last fight). Failure: a dashed box other than the
-flag, a door lit beside its house, a figure floating or sunk, a soldier
+Constabulary in the last fight, the Katagalugan's red flag on its
+bamboo pole, Block 148). Failure: a dashed box, a door lit beside its
+house, a figure floating or sunk, a soldier
 whose rifle butt trails a dark copy.
+
+Block 148, the general's uniform: after Act I's savings, buy
+Uniporme ng Heneral (80) from the corner shop, wear it as Damit, and
+see him stand, walk, jump, punch (jab, cross, kick) and shoot in the
+navy uniform with its sash. Failure: a dashed box, a patch of another
+colour behind his swinging arm, the old camisa in any move but the
+itak's slash (the itak's sheet is the camisa's, by design).
 
 Block 146, melee with weight, on the phone: in a fight (?dev=1, the
 play's fight or San Juan del Monte) tap Atake at an enemy in reach three
@@ -1089,8 +1099,9 @@ done, Acts III and IV left; its list above); Block 143, the rooms from
 kits (IN PROGRESS: Acts I and II done, Acts III and IV's five left);
 the art, ART.md (eighteen pictures, Act II's campfire and Acts III
 and IV; made by the proponent with ChatGPT from ART.md's prompts), and
-the two skins that go on sale once made (ART.md, Also wanted: one
-still each on Macario's template, then skeleton.js).
+the Katipunero skin, on sale once made (ART.md, Also wanted: one
+still on Macario's template, then skeleton.js; the general's is in
+since Block 148).
 
 ## Blocked on other people
 

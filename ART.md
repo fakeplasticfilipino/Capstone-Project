@@ -132,20 +132,6 @@ Also wanted (not in the game yet):
 
 Nothing needed.
 
-Also wanted (not in the game yet):
-
-    _dev/player-lab/macario-heneral-still.png
-        (Attach macario-still.png from the folder _dev/player-lab)
-        Refer to the attached image. Redraw this exact man, same face,
-        same hair, same height, the same pose side on facing right, his
-        arms hanging the same way, standing in exactly the same place on
-        a canvas of exactly the same size (1024 by 1536), changing only
-        his clothes to a dark buttoned
-        general's uniform of 1902 with a sash. Transparent background.
-        (For the team: then node _dev/tools/skeleton.js macario
-        --still=_dev/player-lab/macario-heneral-still.png --ship writes every
-        sheet of the skin, and the item names them as its sheets.)
-
 ### Act IV
 
     assets/sprites/characters/gomez.png
@@ -335,20 +321,6 @@ Also wanted (not in the game yet):
         bayan-pader); the sheet stays in _dev/parallax-art/ for
         Malabon's nipa house, store and tower)
 
-    assets/sprites/scenery/watawat-katagalugan.png
-        (Attach the file _dev/parallax-art/tondo-props.png, and the
-        proponent's picture of the flag)
-        Refer to the attached images and use the art style of the
-        first. Draw the flag of the Republika ng Katagalugan, exactly as
-        in the second picture, flying on a tall bamboo pole taller than
-        a man, seen from the side, nothing else in the picture.
-        Transparent background.
-        (OWED AGAIN, 24 Oct 2026: the picture delivered was today's
-        Philippine flag, the white triangle with three stars and the
-        sun, not the Katagalugan's; kept in
-        docs-private/art-delivered/2026-10-24-act3/. Check that the
-        second picture attached is the Katagalugan's flag.)
-
 ### Act IV
 
     hukuman-kit.png
@@ -496,7 +468,9 @@ Done and in the game. Nothing here needs drawing.
         Macario   his still in the NPCs' style (macario-still.png in
                   _dev/player-lab, 24 Oct 2026), from which
                   skeleton.js writes idle, walk, jump, punch, shot
-                  and the bolo's slash
+                  and the bolo's slash; the general's uniform
+                  (macario-heneral-still.png, 24 Oct 2026, Block 148),
+                  every move of it shipped as macario-heneral-*.png
         Act I     Nanay, the Kutsero and his horse (Kabayo), the
                   Barbero, the Mananahi, the three siga, the direktor,
                   Maryam, the Sultan, the kawal, the Katipunero, the
@@ -533,4 +507,6 @@ Done and in the game. Nothing here needs drawing.
                   church, town hall and wall), cut into
                   assets/sprites/buildings/; the barbershop's, the
                   cell's and the sala's furniture (barberya-kit,
-                  selda-kit, sala-kit), cut into assets/sprites/rooms/
+                  selda-kit, sala-kit), cut into assets/sprites/rooms/;
+                  the Katagalugan's flag (watawat-katagalugan, its
+                  second delivery, Block 148)

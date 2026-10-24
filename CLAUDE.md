@@ -1513,9 +1513,14 @@ on things he keeps. The general stock since Block 121 is three items,
 none story-given: lagundi (a consumable heal, 5), the anting-anting
 (maxHealthBonus, 50) and the pulbura (projectileSpeedMult, 90); since
 Block 145 a fourth, the itak (60, the weapon slot: its slash replaces
-the punch). No
+the punch); since Block 148 a fifth, the general's uniform (80, a
+cosmetic, every move redrawn: macario-heneral-*.png from skeleton.js
+--still). No
 cosmetic is sold until its sheets are drawn (ART.md, Also wanted): one worn
-without them would draw Macario as the placeholder box.
+without them would draw Macario as the placeholder box. A skin whose
+picture reads differently from the template (a jacket as dark as the
+trousers) gets its own reading in the skeleton file, skins by name
+(darkJacket, Block 148).
 
 Effects are deliberately small and few. A faster projectile, one extra
 heart and a slower meter while still are the whole design brief; anything that needs a balance spreadsheet
@@ -2736,6 +2741,8 @@ look, by system:
       American and the Constabulary       the knocks, single mountain
                                           trees, the barber's chair,
                                           notHead)
+    the general's uniform, the flag      Block 148 (a skin sold at 80;
+                                          darkJacket)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

@@ -68,6 +68,13 @@ module.exports = {
   farShade: 0.68,               // the far arm and leg, darkened
   farLegOffset: 16,             // the far foot stands this far ahead at rest
 
+  // Skins on this template that read differently (Block 148): the
+  // general's uniform is as dark as its trousers, so the hem alone tells
+  // jacket from trouser (skeleton.js, darkJacket).
+  skins: {
+    "macario-heneral": { darkJacket: true },
+  },
+
   // Every clip is written here too, for the test page.
   out: "_dev/player-lab/out",
   clips: ["idle", "walk", "melee", "cross", "kick", "shoot", "jump", "slash"],

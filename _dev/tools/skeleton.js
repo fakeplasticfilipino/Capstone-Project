@@ -154,7 +154,11 @@ function buildTextures(sk, img) {
   };
   // Trouser and shoe: dark and below the hair; below the jacket and the
   // hand, everything is.
-  const trouser = (i, y) => y >= sk.hairAbove + 40 && (dark(i) || y > sk.hemY + 12);
+  // A skin whose jacket is as dark as its trousers (darkJacket, the
+  // general's uniform) is told apart by the hem alone.
+  const trouser = sk.darkJacket
+    ? (i, y) => (y > sk.hemY + 2 && dark(i)) || y > sk.hemY + 12
+    : (i, y) => y >= sk.hairAbove + 40 && (dark(i) || y > sk.hemY + 12);
 
   const arm = new Float32Array(N * 4), leg = new Float32Array(N * 4), body = new Float32Array(N * 4);
   const copy = (dst, i) => { for (let k = 0; k < 4; k++) dst[i * 4 + k] = px[i * 4 + k]; };
@@ -193,7 +197,11 @@ function buildTextures(sk, img) {
       // fringe a cut-out drawing can leave along an edge, which painted in
       // would smear pink across the jacket.
       const A = px[i * 4 + 3];
-      if (bodySrc[i] && !dark(i) && A > 0.95 && (px[i * 4] - px[i * 4 + 1]) / A < 0.12) jacket[i] = 1;
+      // A dark jacket is painted in from its own dark cloth, in front of
+      // the hair only (so neither the hair nor the white of a sash smears
+      // into it).
+      const cloth = sk.darkJacket ? dark(i) && x >= sk.hairBehind && px[i * 4 + 2] >= px[i * 4] : !dark(i);
+      if (bodySrc[i] && cloth && A > 0.95 && (px[i * 4] - px[i * 4 + 1]) / A < 0.12) jacket[i] = 1;
     }
   }
   fillRows(body, W, H, bodyHole, jacket);
@@ -1165,7 +1173,12 @@ function main() {
   const sk = Object.assign({ name }, require(path.join(ROOT, "_dev", "player-lab", name + ".js")));
   const stillArg = args.find((a) => a.startsWith("--still="));
   const still = path.join(ROOT, stillArg ? stillArg.slice(8) : sk.still);
-  if (stillArg) sk.name = path.basename(still, ".png");
+  // A skin's sheets are named for its still without "-still" (Block 148:
+  // macario-heneral-still.png writes macario-heneral-idle.png).
+  if (stillArg) sk.name = path.basename(still, ".png").replace(/-still$/, "");
+  // A skin may need its own reading of the picture (skins in the
+  // skeleton file, by name).
+  Object.assign(sk, (sk.skins || {})[sk.name]);
   const outDir = path.join(ROOT, sk.out);
   fs.mkdirSync(outDir, { recursive: true });
   const rig = buildRig(sk, still);
