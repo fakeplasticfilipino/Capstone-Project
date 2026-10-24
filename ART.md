@@ -192,21 +192,18 @@ Also wanted (not in the game yet):
         background.
         (NOT STARTED)
 
-    assets/sprites/characters/villafuerte.png
+    mga-opisyal.png
         (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
-        size. Draw León Villafuerte, a Filipino rebel officer of 1906:
-        the whole body, side on, facing right, standing, arms free of
-        the body, in a plain dark uniform with a sash. Transparent
-        background.
-        (NOT STARTED)
-
-    assets/sprites/characters/de-vega.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image and use the same art style and
-        size. Draw Lucio de Vega, a Filipino rebel officer of 1906: the
-        whole body, side on, facing right, walking, arms free of the
-        body, in a worn plain uniform. Transparent background.
+        size. Draw two Filipino rebel officers of 1906 side by side,
+        each the whole body, side on, facing right, arms free of the
+        body, at the same scale and standing on the same ground line,
+        with wide empty space between them so they do not touch. (1)
+        León Villafuerte, standing, in a plain dark uniform with a sash.
+        (2) Lucio de Vega, walking, in a worn plain uniform. Transparent
+        background. Landscape.
+        Cut into: assets/sprites/characters/villafuerte.png (1),
+        assets/sprites/characters/de-vega.png (2)
         (NOT STARTED)
 
     assets/sprites/characters/hukom.png
@@ -217,38 +214,33 @@ Also wanted (not in the game yet):
         background.
         (NOT STARTED)
 
-    assets/sprites/characters/taga-cavite.png
+    mag-ina.png
         (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
-        size. Draw a thin Filipino village woman of Cavite in 1905: the
-        whole body, side on, facing right, walking, in a faded baro't
-        saya, carrying a small cloth bundle of rice. Transparent
-        background.
+        size. Draw two Filipinos of 1905 to 1906 side by side, each the
+        whole body, side on, facing right, at the same scale and
+        standing on the same ground line, with wide empty space between
+        them so they do not touch. (1) A thin village woman of Cavite,
+        walking, in a faded baro't saya, carrying a small cloth bundle
+        of rice. (2) A boy of about seven, the son of the man in the
+        attached image, about half the man's height, standing,
+        barefoot, in a simple camisa and short trousers. Transparent
+        background. Landscape.
+        Cut into: assets/sprites/characters/taga-cavite.png (1),
+        assets/sprites/characters/anak-ni-isko.png (2)
         (NOT STARTED)
 
-    assets/sprites/characters/anak-ni-isko.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image (his father) and use the same art
-        style. Draw a Filipino boy of about seven in 1906, about half
-        the man's height: the whole body, side on, facing right,
-        standing, barefoot, in a simple camisa and short trousers.
-        Transparent background.
-        (NOT STARTED)
-
-    assets/sprites/characters/taong-bayan-1.png
+    taong-bayan.png
         (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
-        size. Draw an ordinary man of Tondo in 1906: the whole body,
-        standing, facing the front, in a camisa de chino, trousers and
-        a salakot. Transparent background.
-        (NOT STARTED)
-
-    assets/sprites/characters/taong-bayan-2.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image and use the same art style and
-        size. Draw an ordinary woman of Tondo in 1906: the whole body,
-        standing, facing the front, in a baro't saya and a tapis.
-        Transparent background.
+        size. Draw two ordinary people of Tondo in 1906 side by side,
+        each the whole body, standing, facing the front, at the same
+        scale and standing on the same ground line, with wide empty
+        space between them so they do not touch. (1) A man in a camisa
+        de chino, trousers and a salakot. (2) A woman in a baro't saya
+        and a tapis. Transparent background. Landscape.
+        Cut into: assets/sprites/characters/taong-bayan-1.png (1),
+        assets/sprites/characters/taong-bayan-2.png (2)
         (NOT STARTED)
 
 ## Props
@@ -259,48 +251,36 @@ Nothing needed.
 
 ### Act II
 
-    campfire.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style. Draw
-        ONE small campfire of a rebel camp in the hills of the
-        Philippines in 1896, seen from the side: a few split logs
+    act2-props-2.png
+        (Attach the files _dev/parallax-art/tondo-props.png and
+        _dev/player-lab/macario-still.png)
+        Refer to the attached images and use the art style of the
+        first. Make a sprite sheet of three separate things, each whole
+        and seen exactly from the side, with wide empty space between
+        them so none touch or overlap. (1) ONE small campfire of a rebel
+        camp in the hills of the Philippines in 1896: a few split logs
         burning on a ring of stones, bright orange and yellow flames
         about knee high to a man, a little smoke, warm light on the
-        stones. Nothing else in the picture, no people, no pot, no
-        ground or shadow around it. Transparent background.
-        Cut into: assets/sprites/buildings/apoy.png
+        stones, no pot. (2) ONE Filipino bolo (itak) of the 1890s, the
+        kind a Katipunero carried, lying flat: a plain wooden handle at
+        the LEFT end, a short metal collar, then a single-edged steel
+        blade about three times as long as the handle, widening a
+        little toward the end and pointing to the RIGHT, the cutting
+        edge along the bottom, worn, not shiny, sized for the hand of
+        the man in the second image (about 56 cm long on him). (3) ONE
+        revolver of the 1890s, the kind a Filipino revolutionary
+        carried: the grip at the LEFT end, angled down, wooden with a
+        metal butt cap, the cylinder and trigger guard in the middle,
+        and the barrel pointing straight to the RIGHT, dark worn steel,
+        sized for the same hand (about 25 cm long on him). No people, no
+        hands, no sheath, no holster, no smoke from the gun, no ground or
+        shadows. Transparent background. Landscape, largest size.
+        Cut into: assets/sprites/buildings/apoy.png (1); and, for the
+        player (sprites/player, not yet named by the game), itak.png (2)
+        and pistola.png (3). Until it comes, Balara has no fire, the bolo's slash is
+        drawn without its blade (_dev/tools/skeleton.js) and the shot
+        with an empty fist pointing where the pistol will be.
         (NOT STARTED)
-
-Also wanted (not in the game yet):
-
-    assets/sprites/player/itak.png
-        (Attach the file _dev/player-lab/macario-still.png)
-        Refer to the attached image and use the same art style. Draw
-        ONE Filipino bolo (itak) of the 1890s, the kind a Katipunero
-        carried, lying flat and seen exactly from the side: a plain
-        wooden handle at the LEFT end, a short metal collar, then a
-        single-edged steel blade about three times as long as the
-        handle, widening a little toward the end and pointing to the
-        RIGHT, the cutting edge along the bottom. Worn, not shiny. Sized
-        to fit the man in the attached image's hand (about 56 cm long
-        on him). Nothing else in the picture, no hand, no sheath, no
-        shadow. Transparent background.
-        (NOT STARTED; the bolo item's slash is drawn without it until it
-        comes, _dev/tools/skeleton.js)
-
-    assets/sprites/player/pistola.png
-        (Attach the file _dev/player-lab/macario-still.png)
-        Refer to the attached image and use the same art style. Draw
-        ONE revolver of the 1890s, the kind a Filipino revolutionary
-        carried, seen exactly from the side: the grip at the LEFT end,
-        angled down, wooden with a metal butt cap, the cylinder and
-        trigger guard in the middle, and the barrel pointing straight
-        to the RIGHT. Dark worn steel, not shiny. Sized to fit the man
-        in the attached image's hand (about 25 cm long on him). Nothing
-        else in the picture, no hand, no holster, no smoke, no shadow.
-        Transparent background.
-        (NOT STARTED; the shot is drawn with an empty fist pointing
-        where it will be until it comes, _dev/tools/skeleton.js, shoot)
 
 ### Act III
 
