@@ -24,7 +24,8 @@ seven rooms waiting on their kits. 21 Oct 2026, Block 142 planned: every outdoor
 scrolls rebuilt in layers (a sky, tree lines, buildings and props placed
 along the road, the shadow trees in front), the art made with ChatGPT
 from ART.md's prompts; its to-do list is below, Block 142. The proponent
-handles all git now: a session edits files and says what changed.
+handled all git until 24 Oct 2026; since then a session commits and
+pushes as fakeplasticfilipino (CLAUDE.md, Deployment).
 17 Oct 2026, Block 141: pictures that do
 not fit taken out of the game and owed again (ART.md): the six rooms
 painted too close and the American soldier in 1917's kit; twenty-four
@@ -51,7 +52,7 @@ DECISIONS.md. Both suites green locally and on CI (1,538 checks) as
 of Block 141.
 
 A new session, on any device: ask the proponent to pull if a file looks
-stale (a session runs no git; CLAUDE.md, Deployment); read CLAUDE.md, then
+stale (CLAUDE.md, Deployment); read CLAUDE.md, then
 this file's Start here and Next action, then STORY.md before touching
 content; look at the last CI run (the Actions tab) to know the build
 was green when this file was written; and check for pictures the

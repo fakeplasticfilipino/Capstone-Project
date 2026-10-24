@@ -71,13 +71,17 @@ core.hooksPath _dev/hooks; on since 2 Oct 2026 on the proponent's) and
 the first CI job run prepare.js --check, which changes nothing and
 fails on anything stale.
 
-JULIAN HANDLES ALL GIT (the proponent, 21 Oct 2026; replaces the old
-"always push to main" rule). Claude edits files only. Never commit,
-branch, push, pull, merge, rebase, stash or open a pull request, in any
-session, local or cloud, and never run a git command that changes
-history or a remote. When a change is finished, say which files changed
-and what changed so Julian can run prepare.js, commit and push it.
-Read-only git (status, diff, log) is fine.
+COMMIT AND PUSH AS fakeplasticfilipino (the proponent, 24 Oct 2026;
+replaces the 21 Oct rule that Julian handled all git). When a change is
+finished and checked, run prepare.js, commit to main and push, always
+under the fakeplasticfilipino account: the commit's author is the
+repository's own git identity (user.name fakeplasticfilipino), and the
+push goes through the GitHub login stored on the computer, which must
+be fakeplasticfilipino (git credential fill shows it). Never commit or
+push under another name or account; if the identity or the stored
+login is anyone else, stop and say so. Never force-push, rewrite
+history, open a pull request or work on another branch. Untracked
+files the proponent dropped in are still asked about first.
 
 TESTING A PUSH (Block 104, the proponent's choice, 1 Oct 2026). No
 student has the URL yet, so a push is not yet a release. GitHub Actions
