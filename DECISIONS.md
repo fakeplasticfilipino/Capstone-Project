@@ -6382,6 +6382,21 @@ night does not darken it; a missing building draws nothing, so it
 appears the moment its picture is cut in. The three paintings are
 retired.
 
+Four things the proponent found on the live site the same day. The
+talk lesson (Block 92) stops the world until the student talks to
+someone, and nobody can be talked to mid-fight: a fight that started
+with the card up could never end. The card is now put away, unlearned,
+the moment enemies are up, and a story point after Act I starts with
+every lesson learned, as a student who played Act I would. The river
+kept the checkerboard's pale, half-blended edge, and pockets of it shut
+in by the leaves; a second pass cleared both on the far bank only. At
+San Juan the dirt's solid edge stood 7 above the feet (the picture is
+drawn into GROUND_LEVEL + lip, its ragged top the first 15/148): open
+sky behind, rather than houses, made that read as sunk. Lip 9 puts it
+2 above the soles, and the works stand on it (lift 0). And Act I's tree
+rows were taken out of Act II's fields: the Sierra's sky, and the
+river where there is one, are enough.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

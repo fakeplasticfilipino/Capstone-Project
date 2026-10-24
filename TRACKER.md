@@ -335,6 +335,11 @@ Scenes:
         where the retreat starts) on the dirt, the Nangka's river and
         farm on the grass; trees at every 1300 and 1250; the paintings
         retired to docs-private/art-delivered/
+    [x] Act II's fixes from the live site (24 Oct 2026): the talk
+        lesson that locked a fight (put away when a fight starts; story
+        points after Act I start with every lesson learned); the river's
+        pale fringe cleared; San Juan's dirt edge at the feet (lip 9) and
+        its pieces on it; the tree rows taken out of Act II
     [ ] burol, morong (Act III; morong again in Act IV)
     [ ] himpilan, dimasalang, malabon, patyo (Act IV)
     [ ] in every scene: cover, hide spots, hazards and guard posts

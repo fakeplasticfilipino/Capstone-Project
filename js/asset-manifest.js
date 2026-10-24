@@ -297,7 +297,7 @@ window.ASSET_VERSIONS = {
   "assets/backgrounds/act4/selda.jpg": "3485017595",
   "assets/backgrounds/layers/dirt-ground.png": "307452694",
   "assets/backgrounds/layers/grass-ground.png": "1231327143",
-  "assets/backgrounds/layers/river.png": "2769420695",
+  "assets/backgrounds/layers/river.png": "3482582509",
   "assets/backgrounds/layers/sierra-sky.jpg": "1002675435",
   "assets/backgrounds/layers/tondo-sky.jpg": "3615432616",
   "assets/backgrounds/rooms/floor-entablado.png": "2777470596",

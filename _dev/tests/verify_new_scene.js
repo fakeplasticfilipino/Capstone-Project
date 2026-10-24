@@ -2056,6 +2056,20 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       await p.waitForTimeout(200);
       ok("and any answer, here an attack, lets it go", !(await cardOf()).shown &&
          await p.evaluate(() => state.flags.__turo_tanda === true));
+
+      // A talk lesson up when a fight starts cannot be done (nobody talks
+      // mid-fight) and would hold the fight forever: it is put away,
+      // unlearned (seen on the live site from Act II's story points).
+      await p.evaluate(() => { ENEMIES.forEach((e) => { if (!e.dead) hitEnemy(e, 99); }); });
+      await p.waitForTimeout(800);
+      await p.evaluate(() => { delete state.flags.__turo_usap; teach("usap"); });
+      const up = await waitCard(/kausapin/);
+      await p.evaluate(() => { spawnEnemies([{ type: "siga1", id: "usap-laban", x: posX + 300 }]); });
+      await p.waitForTimeout(400);
+      const down = await p.evaluate(() => ({ card: !document.getElementById("tutorial-card").classList.contains("hidden"),
+        learned: state.flags.__turo_usap === true, enemies: ENEMIES.filter((e) => !e.dead).length }));
+      ok("a talk lesson still up when a fight starts is put away, unlearned, and the fight goes on",
+         up.shown && !down.card && !down.learned && down.enemies === 1, { up, down });
       await tt.ctx.close();
     }
   }

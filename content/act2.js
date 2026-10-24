@@ -125,22 +125,25 @@
 
   // ---- The fields and the rooms, in layers (Block 142) -----------------
   // San Juan del Monte and the Nangka as Tondo is drawn: the Sierra Madre
-  // far off (rate 0), Act I's lowland trees twice (far and pale, near and
-  // tall), the place's own buildings and props on the road, and its
-  // ground. [name, x, height in world pixels] for each piece, Macario
-  // being 134; drawn in order, so a prop listed after a building stands
-  // in front of it.
-  const field = (list) => list.map(([name, x, height]) => ({
-    src: `assets/sprites/buildings/${name}.png`, x, height, lift: 4,
+  // far off (rate 0), the place's own buildings and props on the road,
+  // and its ground. No tree rows (the proponent, 24 Oct 2026: Act I's
+  // lowland trees did not fit here; the sky and the river are enough).
+  // [name, x, height in world pixels] for each piece, Macario being 134;
+  // drawn in order, so a prop listed after a building stands in front of
+  // it.
+  const field = (list, lift = 4) => list.map(([name, x, height]) => ({
+    src: `assets/sprites/buildings/${name}.png`, x, height, lift,
   }));
-  const fieldLayers = (width, more) => [
+  const fieldLayers = (more) => [
     { src: "assets/backgrounds/layers/sierra-sky.jpg", rate: 0, lift: 50 },
-    { rate: 0.3, lift: 64, items: TONDO.treeRow ? TONDO.treeRow(0.3 * width + 2600, 230, 260, 0.42, 40) : [],
-      filter: "saturate(0.55) brightness(1.1) contrast(0.8)" },
-    { rate: 0.6, lift: 60, items: TONDO.treeRow ? TONDO.treeRow(0.6 * width + 2600, 520, 640, 1, 160) : [],
-      filter: "saturate(1.05)" },
     ...(more || []),
   ];
+  // Tondo's dirt with its solid edge at the feet. The picture is drawn
+  // into the strip's height (GROUND_LEVEL + lip), its ragged top the first
+  // 15/148 of it: at lip 14 the solid dirt stood 7 above the feet, which
+  // in front of an open sky, rather than houses, read as feet sunk in; at
+  // 6 a line of sky showed under them. At 9 the edge is 2 above the soles.
+  const FIELD_DIRT = TONDO.ground && { ...TONDO.ground, lip: 9 };
   // San Juan: an open field from the start, then the Spanish works on the
   // right, where the charge goes: the guard post, the palisade and its
   // gate, the polvorin (its door where the retreat starts, clear of the
@@ -151,7 +154,7 @@
     ["polvorin", 3380, 280], ["bandila-espanya", 3980, 430],
     ["kahon-sundalo", 480, 100], ["sako-buhangin", 1060, 70], ["sako-buhangin", 1660, 70],
     ["kahon-sundalo", 1990, 100], ["bariles-pulbura", 3250, 120],
-  ]);
+  ], 0); // on the dirt's edge (FIELD_DIRT), not above it with sky between
   // The Nangka: the river behind the near bank, open in the middle where
   // the straw lies, a fence at the camp's end and the farm at the other,
   // a footbridge out over the water between.
@@ -1398,7 +1401,7 @@
         id: "pugad-lawin",
         worldWidth: ROOM,
         // In layers since 24 Oct 2026, its painting retired.
-        layers: fieldLayers(ROOM),
+        layers: fieldLayers(),
         buildings: PUGAD_LAWIN_PIECES,
         ground: GRASS,
         frontGrass: true,
@@ -1463,9 +1466,9 @@
         // Block 142: in layers (SAN_JUAN_PIECES), the polvorin at the
         // right end. A shadow tree at every 1300 (1300, 2600, 3900),
         // clear of the retreat's checkpoints.
-        layers: fieldLayers(BATTLE_WIDTH),
+        layers: fieldLayers(),
         buildings: SAN_JUAN_PIECES,
-        ground: TONDO.ground,
+        ground: FIELD_DIRT,
         frontGrass: true,
         panelWidth: 1300,
         dangerous: true,
@@ -1517,7 +1520,7 @@
         worldWidth: RIVER_WIDTH,
         // Block 142: in layers, the river behind the bank (NANGKA_RIVER,
         // NANGKA_PIECES). One shadow tree, at 1250, between the straw.
-        layers: fieldLayers(RIVER_WIDTH, [NANGKA_RIVER]),
+        layers: fieldLayers([NANGKA_RIVER]),
         buildings: NANGKA_PIECES,
         ground: GRASS,
         frontGrass: true,
@@ -1565,7 +1568,7 @@
         id: "balara",
         worldWidth: ROOM,
         // In layers since 24 Oct 2026, its painting retired.
-        layers: fieldLayers(ROOM),
+        layers: fieldLayers(),
         buildings: BALARA_PIECES,
         ground: GRASS,
         frontGrass: true,
@@ -1626,7 +1629,7 @@
         id: "laguna",
         worldWidth: ROOM,
         // In layers since 24 Oct 2026, its painting retired.
-        layers: fieldLayers(ROOM, [NANGKA_RIVER]),
+        layers: fieldLayers([NANGKA_RIVER]),
         buildings: LAGUNA_PIECES,
         ground: GRASS,
         frontGrass: true,

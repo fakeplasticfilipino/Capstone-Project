@@ -8561,6 +8561,10 @@ function gameLoop(now) {
     nearby = findNearby();
     // Block 92. The first person within reach is taught to be talked to.
     if (nearby.type === "npc" && !nearby.ref.scenery && !nearby.ref.interactLabel && !tutorial) teach("usap", true);
+    // Nobody can be talked to mid-fight (findNearby), so a talk lesson
+    // still up when a fight starts could never be done, and with the world
+    // stopped for it the fight could never end. It is put away, unlearned.
+    if (tutorial && tutorial.id === "usap" && enemiesAlive()) cancelTutorial("usap");
     if (nearby.type === "npc" && npcOpensShop(nearby.ref)) {
       setLabel(btnInteract, "Tindahan");
       setClass(btnInteract, "active", true);
@@ -8864,6 +8868,9 @@ async function enterGameAsGuest(jumpId) {
   if (jump) {
     Object.assign(state.flags, jump.flags);
     currency = jump.currency || 0;
+    // A point after Act I comes after every lesson Act I teaches, as it
+    // would for a student who played it: none of them comes up again.
+    if (actNumber > 1) Object.keys(TUTORIALS).forEach((t) => { state.flags["__turo_" + t] = true; });
   }
 
   if (window.Acts && act) {

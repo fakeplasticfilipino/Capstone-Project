@@ -135,7 +135,6 @@ const TONDO_BUILDINGS = tondoBuildings(TONDO_HOUSES, TONDO_PROPS);
 window.TONDO_STREET = {
   layers: TONDO_LAYERS, ground: TONDO_GROUND,
   houses: TONDO_HOUSES, props: TONDO_PROPS, buildings: tondoBuildings,
-  treeRow, // the lowland trees, for Act II's fields
 };
 
 // ---- Art ----------------------------------------------------------
