@@ -730,14 +730,13 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
            a.slot === "accessory" && a.price === 50 && a.effect.maxHealthBonus === 1 && !a.replayRemoves &&
            p.slot === "weapon" && p.price === 90 && p.effect.projectileSpeedMult === 1.5 && !p.replayRemoves;
        }));
-    // Block 145: the bolo, a weapon whose slash replaces the punch, sold
-    // nowhere and given to no one until it has a price or a story moment.
-    ok("and the itak: a weapon that swaps the punch for its slash, not for sale (Block 145)",
+    // Block 145: the bolo, a weapon whose slash replaces the punch,
+    // general stock at 60 (not sold here, while Act I saves for Nanay).
+    ok("and the itak: a weapon that swaps the punch for its slash, general stock at 60 (Block 145)",
        await page.evaluate(() => {
          const i = ITEMS.find((x) => x.id === "itak") || {};
-         return i.slot === "weapon" && i.price === 0 && !i.grantedOnAct && !i.effect &&
-           i.sheets && i.sheets.melee && i.sheets.melee.src === "assets/sprites/player/macario-slash.png" &&
-           !Inventory.forSale(null).some((x) => x.id === "itak");
+         return i.slot === "weapon" && i.price === 60 && !i.soldBy && !i.grantedOnAct && !i.effect &&
+           i.sheets && i.sheets.melee && i.sheets.melee.src === "assets/sprites/player/macario-slash.png";
        }));
 
     const t0 = await intertitle(page);
@@ -1364,9 +1363,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        n1.lines.length === 10 && JSON.stringify([...n1.lines.slice(0, 3), ...n1.lines.slice(8)]) === JSON.stringify(NANAY_THANKS_OWN) &&
        n1.lines[3] === "Macario: Pati po sa Barbero." && /entablado/.test(n1.lines[4]), n1.lines);
     ok("the savings are spent, and he keeps the rest", (await page.evaluate(() => Game.currency())) === 30);
-    ok("and once they are given, the shop opens: lagundi, the anting-anting and the pulbura (Block 121)",
+    ok("and once they are given, the shop opens: lagundi, the anting-anting, the pulbura (Block 121) and the itak (Block 145)",
        await page.evaluate(() => JSON.stringify(Inventory.forSale(null).map((i) => i.id)) ===
-         '["lagundi","anting-anting","pulbura"]'));
+         '["lagundi","anting-anting","pulbura","itak"]'));
 
     // ---------------------------------------------------------------
     // Block 80. The end of Act I.

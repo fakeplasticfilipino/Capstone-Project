@@ -1592,8 +1592,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("taking the weapon off leaves the outfit's punch", worn.skinOnly.endsWith("?balat-suntok"), worn);
     ok("and taking both off restores the base punch", worn.bare === "assets/sprites/player/macario-melee.png", worn);
 
-    // The shipped bolo names a sheet that is in the game, and is not for
-    // sale while its slash is drawn on a model the game does not use yet.
+    // The shipped bolo names a sheet that is in the game, and is general
+    // stock at 60 (Block 145).
     // Read from the files themselves: the harness serves its own fixture
     // catalogue in place of content/items.js.
     const itak = (() => {
@@ -1601,11 +1601,11 @@ const visible = (page, sel) => page.evaluate((s) => {
       require("vm").runInNewContext(fs.readFileSync(path.join(ROOT, "content", "items.js"), "utf8"), sandbox);
       require("vm").runInNewContext(fs.readFileSync(path.join(ROOT, "js", "asset-manifest.js"), "utf8"), sandbox);
       const i = (sandbox.window.ITEMS || []).find((x) => x.id === "itak");
-      return i && { slot: i.slot, price: i.price, melee: i.sheets && i.sheets.melee && i.sheets.melee.src,
+      return i && { slot: i.slot, price: i.price, soldBy: i.soldBy, melee: i.sheets && i.sheets.melee && i.sheets.melee.src,
                     listed: i.sheets.melee.src in (sandbox.window.ASSET_VERSIONS || {}) };
     })();
-    ok("the itak is a weapon whose slash sheet is in the game, sold nowhere yet",
-       itak && itak.slot === "weapon" && itak.price === 0 && itak.listed, itak);
+    ok("the itak is a weapon whose slash sheet is in the game, general stock at 60",
+       itak && itak.slot === "weapon" && itak.price === 60 && !itak.soldBy && itak.listed, itak);
 
     await ctx.close();
   }

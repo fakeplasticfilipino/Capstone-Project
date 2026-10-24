@@ -6540,9 +6540,12 @@ ART.md's four skin sheet prompts became two still prompts on the
 template, since a skin is now a still and one command. The test page
 dropped the old Macario and shows the tool's output beside an NPC.
 
-Still open: the itak is sold nowhere until it has a price or a moment
-in the story; the pistol in his hand is owed like the blade (a prop,
-the same mechanism), so the shot points an empty fist.
+The itak went on sale the same day, general stock at 60, the
+proponent's choice: between the anting-anting (50) and the pulbura (90),
+and in the pulbura's slot, so a student picks the blade or the faster
+shot rather than having both. Still open: the pistol in his hand is
+owed like the blade (a prop, the same mechanism), so the shot points an
+empty fist, and the slash is made empty-handed until the blade comes.
 
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 

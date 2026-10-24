@@ -1508,7 +1508,9 @@ act unfinishable. A replay takes barya back down to what the act began
 with and never tops them up: barya below that were spent in the shop,
 on things he keeps. The general stock since Block 121 is three items,
 none story-given: lagundi (a consumable heal, 5), the anting-anting
-(maxHealthBonus, 50) and the pulbura (projectileSpeedMult, 90). No
+(maxHealthBonus, 50) and the pulbura (projectileSpeedMult, 90); since
+Block 145 a fourth, the itak (60, the weapon slot: its slash replaces
+the punch). No
 cosmetic is sold until its sheets are drawn (ART.md, Also wanted): one worn
 without them would draw Macario as the placeholder box.
 
@@ -2451,8 +2453,8 @@ Nothing new is stored to keep the drip idempotent. The amount already paid
 is the per-objective rate times objectives_done, which act_progress
 already holds, so a reload cannot be paid twice.
 
-Prices are set against what one act pays (50 to 100): the shop's three
-items cost 5, 50 and 90, so every student who completes an act can afford
+Prices are set against what one act pays (50 to 100): the shop's four
+items cost 5, 50, 60 and 90, so every student who completes an act can afford
 something and a strong run the dearest. A shop that is a locked door to a
 student who struggled contradicts the no-game-over rule.
 

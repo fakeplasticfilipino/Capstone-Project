@@ -399,8 +399,9 @@ on the road, nothing cut off above his head or in front of his fist;
 failure is a dashed box, a figure floating or sunk, or a pose clipped
 at the edge. Changing a move: edit the clip in _dev/tools/skeleton.js,
 node _dev/tools/skeleton.js macario, judge it on /_dev/player-lab/,
-then --ship and prepare.js. Open: the itak's price or moment in the
-story (sold nowhere yet); owed: its blade and the pistol (props).
+then --ship and prepare.js. The itak is general stock at 60 (buy it
+after Act I's savings, wear it as Sandata, and the punch is a slash);
+owed: its blade and the pistol (props).
 
 1. Every new block is seen on the phone before it is called done: in
 landscape, from a private tab, after the push, with the sound on,
@@ -1039,8 +1040,8 @@ machine, the assessment module.
         (animate-player.js deleted); idle, the NPCs' walk, punch,
         shot, jump and the bolo's slash, judged on _dev/player-lab/;
         worn items may replace any sheet (setOutfit, inventory.js);
-        the itak item, sold nowhere until the new model is in the
-        game; its blade and the pistol owed; test.js Y
+        the itak item, general stock at 60; its blade and the pistol
+        owed; test.js Y
 
 ## Blocks remaining
 
