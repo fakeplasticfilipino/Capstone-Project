@@ -101,6 +101,26 @@ Nothing needed.
 
 Nothing needed.
 
+Also wanted (not in the game yet):
+
+    _dev/player-lab/macario-entablado-still.png
+        (Attach macario-still.png from the folder _dev/player-lab)
+        Refer to the attached image. Redraw this exact man, same face,
+        same hair, same height, the same pose side on facing right, his
+        arms hanging the same way, standing in exactly the same place on
+        a canvas of exactly the same size (1024 by 1536), changing only
+        his clothes to the stage costume of a Christian prince in a
+        Filipino moro-moro play of the 1890s, sewn by a village
+        seamstress: a short fitted tunic of red cloth trimmed with gold
+        braid and buttons, a short cape hanging from the shoulders down
+        his back, a sash at the waist, close trousers and plain dark
+        shoes. No hat, no sword. Transparent background.
+        (For the team: the stage clothes, damit-entablado, worn from Don
+        Rodrigo on. Then node _dev/tools/skeleton.js macario
+        --still=_dev/player-lab/macario-entablado-still.png --ship, the
+        item names the sheets, and its gold tint, the stand-in of Block
+        85, comes off.)
+
 ### Act II
 
 Nothing needed.
@@ -131,6 +151,23 @@ Also wanted (not in the game yet):
 ### Act III
 
 Nothing needed.
+
+Also wanted (not in the game yet):
+
+    _dev/player-lab/macario-magtataho-still.png
+        (Attach macario-still.png from the folder _dev/player-lab)
+        Refer to the attached image. Redraw this exact man, same face,
+        same hair, same height, the same pose side on facing right, his
+        arms hanging the same way, standing in exactly the same place on
+        a canvas of exactly the same size (1024 by 1536), changing only
+        his clothes to a poor taho seller's of Manila in 1899: a faded,
+        patched loose shirt of rough cloth, plain trousers rolled to
+        the shin, a cloth tied round the neck, bare feet or worn
+        sandals. No hat, nothing in his hands. Transparent background.
+        (For the team: the disguise, balatkayo, Maryam's from the trunk.
+        Then node _dev/tools/skeleton.js macario
+        --still=_dev/player-lab/macario-magtataho-still.png --ship, and
+        the item names the sheets.)
 
 ### Act IV
 
