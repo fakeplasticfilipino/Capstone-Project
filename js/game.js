@@ -9380,10 +9380,10 @@ function offlineFileList() {
       for (const m of src.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/g)) add(m[1], sheet.href);
     });
   });
-  // Not the stills (<name>-still.png): the originals the animate tools cut
-  // the sheets from, which the game never draws.
+  // The stills the animate tools cut the sheets from live in _dev/stills/
+  // since 24 Oct 2026, out of assets/, so every listed file is the game's.
   (window.ASSET_MANIFEST || []).forEach((f) => {
-    if (OFFLINE_FILE.test(f) && !/-still\.png$/i.test(f)) add(assetUrl(f));
+    if (OFFLINE_FILE.test(f)) add(assetUrl(f));
   });
   return [...urls];
 }

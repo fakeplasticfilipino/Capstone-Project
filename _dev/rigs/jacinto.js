@@ -12,7 +12,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/jacinto-still.png",
+  still: "_dev/stills/characters/jacinto-still.png",
   mirror: false,
   scale: 0.55,
 

@@ -18,7 +18,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/kasama-still.png",
+  still: "_dev/stills/characters/kasama-still.png",
   mirror: false,
   scale: 0.45,
 

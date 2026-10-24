@@ -2,7 +2,7 @@
 // MACARIO — _dev/tools/animate-kabayo.js
 //
 // The Kutsero's horse, from the proponent's one still (Block 100):
-// assets/sprites/characters/kabayo-still.png, a saddled bay standing side
+// _dev/stills/characters/kabayo-still.png, a saddled bay standing side
 // on, facing right. animate-still.js (Block 97) rigs a person, a head,
 // a torso, two legs and an arm, and a horse fits none of it, so this is
 // its own small tool on the same paper cut-out puppet (lib/puppet.js), as
@@ -38,7 +38,7 @@ const { decodePng, writeSheet } = require("./lib/png.js");
 const { blankLayer, compose, move, turn, Canvas, sheet } = require("./lib/puppet.js");
 
 const ROOT = path.join(__dirname, "..", "..");
-const STILL = "assets/sprites/characters/kabayo-still.png";
+const STILL = "_dev/stills/characters/kabayo-still.png";
 const OUT = "assets/sprites/characters/kabayo.png";
 
 // Drawn at half size: about 280px tall, still more than the 120 the

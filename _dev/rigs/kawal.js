@@ -24,7 +24,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/enemies/kawal-still.png",
+  still: "_dev/stills/enemies/kawal-still.png",
   mirror: false,
   // Drawn at 0.55 of the still, not 0.75 (Block 129): the kris raised
   // over his head widens the one cell every sheet shares, and at 0.75

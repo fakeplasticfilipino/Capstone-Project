@@ -6363,7 +6363,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     }
     const k1 = await sw.page.evaluate(async () => {
       const keys = new Set((await (await caches.open("macario-v1")).keys()).map((r) => r.url));
-      const want = (window.ASSET_MANIFEST || []).filter((f) => /\.(png|jpe?g|mp3|wav)$/i.test(f) && !/-still\.png$/.test(f))
+      const want = (window.ASSET_MANIFEST || []).filter((f) => /\.(png|jpe?g|mp3|wav)$/i.test(f))
         .map((f) => new URL(assetUrl(f), document.baseURI).href);
       const scripts = [...document.querySelectorAll("script[src]")].map((s) => s.src);
       const line = document.getElementById("shell-offline");

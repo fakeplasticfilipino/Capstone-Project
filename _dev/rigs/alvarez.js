@@ -13,7 +13,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/alvarez-still.png",
+  still: "_dev/stills/characters/alvarez-still.png",
   mirror: false,
   scale: 0.55,
 

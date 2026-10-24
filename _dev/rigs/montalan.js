@@ -16,7 +16,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/montalan-still.png",
+  still: "_dev/stills/characters/montalan-still.png",
   mirror: false,
   scale: 0.55,
 

@@ -18,7 +18,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/nanay-still.png",
+  still: "_dev/stills/characters/nanay-still.png",
   mirror: false,
   scale: 0.75,
   stride: 0.35,

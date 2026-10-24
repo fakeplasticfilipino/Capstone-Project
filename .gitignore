@@ -29,3 +29,6 @@ Claude outputs/
 # Claude Code settings for this computer (the preview server it
 # starts, permissions). Machine-local, so not part of the repository.
 .claude/
+
+# skeleton.js --debug pictures: regenerated on demand (Block 145)
+_dev/player-lab/out/*-debug-*.png

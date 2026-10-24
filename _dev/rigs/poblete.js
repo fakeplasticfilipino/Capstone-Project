@@ -13,7 +13,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/poblete-still.png",
+  still: "_dev/stills/characters/poblete-still.png",
   mirror: false,
   scale: 0.55,
 

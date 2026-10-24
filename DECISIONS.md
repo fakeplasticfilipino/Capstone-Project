@@ -6567,6 +6567,19 @@ jacket's own lines above the hem stay on the jacket; the hand's soft
 edge is kept out of the hidden trousers. The painting went to
 docs-private/art-delivered/2026-10-24-old-macario/.
 
+The audit the same day (the proponent: "I don't want bloats in my
+software"), twelve items, all fixed: TRACKER.md's Start here, Blocks
+remaining, Blocked and Known problems brought up to date (Macario's art,
+the layered street, the shop's four items, the acts' places painted,
+the art made by the proponent, the finished pilot item dropped);
+CLAUDE.md's Source of truth cut to what a local session needs, the
+commit rule stated where it said "tell Julian", sprites/scenery/
+described; skeleton.js's debug pictures no longer tracked (.gitignore);
+and the 25 stills the NPC rigs cut moved out of assets/ to
+_dev/stills/<folder>/ (animate-still.js writes into assets/sprites/
+<folder>/ from there), so the site serves no file the game never draws
+and the offline list needs no exception for them.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

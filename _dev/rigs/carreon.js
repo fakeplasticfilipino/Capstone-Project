@@ -12,7 +12,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/carreon-still.png",
+  still: "_dev/stills/characters/carreon-still.png",
   mirror: false,
   scale: 0.55,
 

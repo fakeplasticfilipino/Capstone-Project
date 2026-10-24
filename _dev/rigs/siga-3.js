@@ -14,7 +14,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/siga-3-still.png",
+  still: "_dev/stills/characters/siga-3-still.png",
   mirror: true,
   scale: 0.75,
 

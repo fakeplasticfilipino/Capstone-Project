@@ -18,7 +18,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/katipunero-still.png",
+  still: "_dev/stills/characters/katipunero-still.png",
   mirror: false,
   scale: 0.46,
 

@@ -11,7 +11,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/guro-still.png",
+  still: "_dev/stills/characters/guro-still.png",
   mirror: false,
   scale: 0.55,
 

@@ -28,7 +28,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/sultan-still.png",
+  still: "_dev/stills/characters/sultan-still.png",
   mirror: false,
   // 0.55, as the kawal (Block 129): the sword raised over his head
   // widens the one cell every sheet shares.

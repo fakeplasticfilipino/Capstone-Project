@@ -12,7 +12,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/bagong-nakatira-still.png",
+  still: "_dev/stills/characters/bagong-nakatira-still.png",
   mirror: false,
   scale: 0.55,
 

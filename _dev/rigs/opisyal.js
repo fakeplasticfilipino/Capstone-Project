@@ -12,7 +12,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/opisyal-still.png",
+  still: "_dev/stills/characters/opisyal-still.png",
   mirror: false,
   scale: 0.55,
 

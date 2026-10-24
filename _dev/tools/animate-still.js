@@ -96,7 +96,9 @@
 //                                                        apart and tinted,
 //                                                        to the temp folder
 //
-// Writes the rig's sheets beside its still and prints the numbers for
+// Writes the rig's sheets into assets/sprites/<folder>/ (the still's own
+// folder under _dev/stills/, where the originals live since the audit of
+// 24 Oct 2026, so the site serves no file it never draws) and prints the numbers for
 // the content. The sheets are shrunk as they are written (lib/png.js,
 // writeSheet). Then node _dev/tools/prepare.js (Block 106).
 // =============================================================
@@ -685,7 +687,12 @@ function main() {
   });
   const CELL = { x: x0 - 3, y: Math.max(0, y0 - 3), w: x1 - x0 + 7 };
   CELL.h = H - CELL.y;
-  const dir = path.dirname(stillPath);
+  // A still in _dev/stills/<folder>/ writes into assets/sprites/<folder>/;
+  // one anywhere else, beside itself.
+  const stills = path.join(ROOT, "_dev", "stills");
+  const dir = path.dirname(stillPath).startsWith(stills)
+    ? path.join(ROOT, "assets", "sprites", path.relative(stills, path.dirname(stillPath)))
+    : path.dirname(stillPath);
   rig.sheets.forEach((s, n) => {
     const frames = drawn[n].map((cv) => cv.crop(CELL.x, CELL.y, CELL.w, CELL.h));
     const out = sheet(frames, CELL.w, CELL.h, 4);

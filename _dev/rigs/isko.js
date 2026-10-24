@@ -14,7 +14,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/isko-still.png",
+  still: "_dev/stills/characters/isko-still.png",
   mirror: false,
   scale: 0.55,
 

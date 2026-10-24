@@ -16,7 +16,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/siga-2-still.png",
+  still: "_dev/stills/characters/siga-2-still.png",
   mirror: true,
   // Drawn at three quarters of the still: about the bantay's 394 pixels,
   // enough for a phone, and a quarter of the memory.

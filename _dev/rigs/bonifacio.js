@@ -25,7 +25,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/bonifacio-still.png",
+  still: "_dev/stills/characters/bonifacio-still.png",
   mirror: false,
   // 0.55, as the kawal and the Sultan: the fist raised over his head
   // widens the one cell every sheet shares.

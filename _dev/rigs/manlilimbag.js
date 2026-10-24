@@ -14,7 +14,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/manlilimbag-still.png",
+  still: "_dev/stills/characters/manlilimbag-still.png",
   mirror: false,
   scale: 0.55,
 

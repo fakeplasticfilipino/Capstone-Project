@@ -17,7 +17,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/direktor-still.png",
+  still: "_dev/stills/characters/direktor-still.png",
   mirror: true,
   scale: 0.75,
 

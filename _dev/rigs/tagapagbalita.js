@@ -15,7 +15,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/tagapagbalita-still.png",
+  still: "_dev/stills/characters/tagapagbalita-still.png",
   mirror: false,
   scale: 0.55,
 

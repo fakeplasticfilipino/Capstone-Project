@@ -13,7 +13,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/kawal-katagalugan-still.png",
+  still: "_dev/stills/characters/kawal-katagalugan-still.png",
   mirror: false,
   scale: 0.55,
 

@@ -14,7 +14,7 @@
 // =============================================================
 
 module.exports = {
-  still: "assets/sprites/characters/bantay-bilibid-still.png",
+  still: "_dev/stills/characters/bantay-bilibid-still.png",
   mirror: false,
   scale: 0.55,
 

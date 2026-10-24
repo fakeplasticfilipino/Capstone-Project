@@ -13,7 +13,7 @@
 //   node _dev/tools/key-still.js <in.png> <out-still.png> [target] [limit]
 //
 // e.g. node _dev/tools/key-still.js docs-private/art-delivered/isko.png
-//        assets/sprites/characters/isko-still.png
+//        _dev/stills/characters/isko-still.png
 // Keep the original in docs-private/art-delivered/. A sheet (several
 // cells) on black is _dev/tools/key-black.py's job instead.
 // =============================================================

@@ -34,20 +34,11 @@ not finished until ART.md says so.
 
 ## Source of truth
 
-The repository is public:
-https://github.com/fakeplasticfilipino/Capstone-Project
-
-Read the current code from there rather than reconstructing it from
-conversation history. Files described in an old chat may be out of date.
-Before editing any file, fetch it.
-
-If a file is described here but is missing from the repository, assume it
-was written locally and not yet pushed. Ask rather than guessing at its
-contents.
-
-Fetches of the GitHub page are sometimes served from cache and may show a
-stale file list. If something described here appears missing, say so and
-ask the user to confirm rather than concluding it was never pushed.
+The repository (public:
+https://github.com/fakeplasticfilipino/Capstone-Project) is the truth:
+read the files themselves, never a description of them from an old
+chat. A file described here but missing was perhaps not pushed from
+another computer: ask rather than guess at its contents.
 
 ## Deployment
 
@@ -132,7 +123,8 @@ local run comes back before every push.
 
 WORK FROM CURRENT FILES. Work is done from more than one computer, so
 a copy can be behind origin. If a file looks stale or something
-described here is missing, ask Julian to pull rather than pulling.
+described here is missing, say so and ask the proponent to pull rather
+than pulling.
 Untracked files (a picture the proponent dropped in) are the
 proponent's: ask before deleting one.
 
@@ -200,7 +192,7 @@ off the repository.
       sprites/characters/      everyone who talks, <name>.png; the
                                artist's art (Block 59), and the sheets
                                made from the artist's stills
-                               (<name>-still.png) by animate-still.js:
+                               (_dev/stills/, below) by animate-still.js:
                                the three siga, the direktor, the
                                Katipunero and the Kasama (Blocks 96 to
                                98), Nanay, the Mabalasig and the Sultan
@@ -213,7 +205,8 @@ off the repository.
                                made from it by animate-bantay.js
                                (Blocks 73, 75)
       sprites/scenery/         things on the street that are used, not
-                               talked to (empty)
+                               talked to (the straw, the press, the
+                               scarecrow, the barber's chair, the tahian)
       backgrounds/act1/        street-01..04.jpg (Acts III and IV's
                                street until it is layered), ground-lupa.jpg
       backgrounds/act3/,       the artist's paintings of each act's
@@ -237,6 +230,11 @@ off the repository.
     _dev/hooks/                pre-commit: prepare.js --check (Block 106)
     _dev/rigs/                 one rig per character animated from a
                                still by animate-still.js (Block 97)
+    _dev/stills/               the stills those rigs cut, <folder>/
+                               <name>-still.png; out of assets/ since
+                               24 Oct 2026, so the site serves no file
+                               the game never draws; animate-still.js
+                               writes into assets/sprites/<folder>/
     _dev/player-lab/           the player's own model (Block 145): his
                                still in the NPCs' style
                                (macario-still.png), its skeleton
@@ -367,7 +365,7 @@ the flags and the objective chain, written out and agreed.
      once a student has its row with objectives (Polish #1). The
      questions are the teacher's (Standing decisions).
  10. TRACKER.md (the block, Next action's phone checks), DECISIONS.md
-     (why), ART.md, then tell Julian what changed to commit.
+     (why), ART.md, then prepare.js, commit and push (Deployment).
 
 ## Stack
 
@@ -1814,7 +1812,7 @@ promising it.
 
 The steps:
 
-  1. Save the still as assets/sprites/<folder>/<name>-still.png
+  1. Save the still as _dev/stills/<folder>/<name>-still.png
      (characters/ for anyone who talks, enemies/ for a fighter). One
      delivered much larger (Block 129: the kawal and Bonifacio, 1500
      tall) is cropped to the figure and shrunk by area averaging to
@@ -1833,8 +1831,8 @@ The steps:
   3. node _dev/tools/animate-still.js <name> --debug, and look at the
      parts it wrote to the temp folder: each apart and tinted, so a
      ragged cut, a missing finger or a hole shows. Fix the rig, repeat.
-  4. node _dev/tools/animate-still.js <name> writes the sheets beside
-     the still and prints one set of numbers for all of them, and each
+  4. node _dev/tools/animate-still.js <name> writes the sheets into
+     assets/sprites/<folder>/ and prints one set of numbers for all of them, and each
      sheet's frames and fps.
   5. Look at every sheet with preview-sheet.js (the ground, footX, the
      top), and at each frame for a seam, a smear where a part moved off

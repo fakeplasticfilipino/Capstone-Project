@@ -104,11 +104,10 @@ internet.
 Acts II to IV are written (Blocks 113, 117, 119), below Act I's list. Act I, rewritten in Block 52 against the
 proponents' script and built forward since, and since Block 80 it has
 an ending. STORY.md has it beat by beat, with every line. It is one
-street ten paintings long (14500px, street-01..04.jpg in order, twice,
-then 01 and 02, standing on the bottom of the screen with their own
-painted road under everyone's feet since Block 134; a silhouette tree
-over each join; keep anyone a student
-must reach 90px clear of a multiple of 1450), the inside of the
+street 14500px long, built in layers since Block 142 (a sky, two tree
+lines, the houses and props, the dirt road and the shadow trees in
+front; keep anyone a student must reach 90px clear of a multiple of
+1450), the inside of the
 entablado, which only the direktor (and later the four-year card) takes
 Macario into, and the pulungan, the Katipunan's secret room, which only
 the Kasama takes him into. Fourteen objectives, one chain, shown one at
@@ -163,9 +162,9 @@ step; the performance award is paid on completion.
 The stage clothes (damit-entablado) are the direktor's gift after
 Principe Baldovino, worn from then on; standing still in them, a guard
 notices him five times more slowly. Act III's disguise (balatkayo) is
-the same kind of item. Since Block 121 the corner shop sells three
-things for barya (lagundi, the anting-anting, the pulbura), shut until
-Nanay has her savings. The harness fixture covers every other item path.
+the same kind of item. Since Block 121 the corner shop sells for barya
+(lagundi, the anting-anting, the pulbura, and since Block 145 the itak,
+whose slash replaces the punch), shut until Nanay has her savings. The harness fixture covers every other item path.
 
 Act II, Ang Mahabang Anino ng Digmaan (Block 113), 1896 to 1898: eight
 places joined by black cards (the Katipunan's press, where it opens;
@@ -208,9 +207,7 @@ Nacionalista's Secretary-General, three doors), Isko's surrender, the
 Sedition Law read from a notice, the capture at an oath, the Republika
 ng Katagalugan with its flag, Macario its President and Generalissimo,
 and the vow not to cut their hair. Nanay's fate stays unknown. Its
-paintings, its flag, its fighters and most of its new people are owed
-(ART.md; Álvarez, Carreón, Montalan and Poblete are the artist's since
-Block 133):
+places are painted (Block 135); what is still owed is in ART.md,
 placeholders until drawn.
 
 Act IV, Ang Mapait na Ani (Block 119), 1903 to 1907, from the
@@ -229,15 +226,16 @@ scaffold, which the student makes. His last statement is the last line
 of the game; the last card stays black. At the proponent's word the
 game does not say whether he was at Tanay, whether Gómez knew, or what
 became of Montalan and Villafuerte. Nanay's fate stays unknown. Its
-paintings and new people are owed (ART.md).
+places are painted (Block 136); its owed people and rooms are in
+ART.md.
 
 Enemies are content: content/enemies.js describes each kind
 once (bantay, kawal, the three siga of the opening, Act II's sundalo,
 Act III's amerikano, sentinela and konstable, and Act IV's
 bantay-konstable) and scenes place them by type.
 
-Art: Macario's idle, walk, jump, punch and shot are the artist's; so
-are the street paintings, the inside of the entablado, the Mananahi,
+Art: Macario is the team's own since Block 145, one still in the
+NPCs' style animated by _dev/tools/skeleton.js. The artist's are the street paintings, the inside of the entablado, the Mananahi,
 and the stills of the bantay, the three siga, the direktor, the
 Katipunero, the Kasama, and since Block 129 Bonifacio and the side-on
 Sultan and kawal, who strike with the slash (the blade over the head),
@@ -1047,36 +1045,27 @@ machine, the assessment module.
 ## Blocks remaining
 
 Every act is written, accepted and has its built-in questions (Acts I to
-IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
+IV, COMPLETE). The shop's four items are sold (Blocks 121, 145, COMPLETE). Left:
 Block 142, every outdoor scene in layers (IN PROGRESS: Acts I and II
 done, Acts III and IV left; its list above); Block 143, the rooms from
 kits (IN PROGRESS: Acts I and II done, Acts III and IV's five left);
 the art, ART.md (eighteen pictures, Act II's campfire and Acts III
 and IV; made by the proponent with ChatGPT from ART.md's prompts), and
-the
-two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
-BLOCKED, the artist).
+the two skins that go on sale once made (ART.md, Also wanted: one
+still each on Macario's template, then skeleton.js).
 
 ## Blocked on other people
 
 These do not depend on any block. Start them before writing more code.
 
-The art in ART.md, from the artist. (NOT STARTED)
-
-Provision student accounts for the session, and pilot with two or three
-students who are not part of the study. A pilot run on a study account
-consumes that student's one attempt, so the two sets must be separate.
-Add the pilot addresses to is_reset_allowed() (a create or replace; no
-migration) and record it here. Never add a study account. (COMPLETE,
-the proponent, 9 Oct 2026)
+The art in ART.md, made by the proponent with ChatGPT from its
+prompts. (IN PROGRESS)
 
 ## Known problems
 
-Art still owed: ART.md. (KNOWN)
-
-Six rooms and the American soldier are the placeholder until the
-artist redraws them (Block 141: taken out as not fitting); the rooms
-now come as kits (Block 143, ART.md). (BLOCKED, the artist)
+Art still owed (ART.md): what is not yet drawn shows as the
+placeholder. Acts I and II's rooms are built from kits (Block 143); Acts
+III and IV's rooms and the American soldier wait on theirs. (KNOWN)
 
 Loading on a slow connection: fixed in Blocks 62 and 78 (a student
 cannot go in with art missing), and in Block 105 (the game kept whole on

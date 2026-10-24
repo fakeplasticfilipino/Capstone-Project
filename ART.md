@@ -132,9 +132,9 @@ Nothing needed.
 
 Also wanted (not in the game yet):
 
-    assets/sprites/characters/bonifacio-still.png (a second version)
+    _dev/stills/characters/bonifacio-still.png (a second version)
         (Attach bonifacio-still.png from the folder
-        assets/sprites/characters)
+        _dev/stills/characters)
         Refer to the attached image. Redraw this exact man, same face,
         clothes, size and style, standing side on facing right, but
         with his sword drawn and held low in his near hand, the blade
@@ -156,7 +156,7 @@ Also wanted (not in the game yet):
 ### Act III
 
     assets/sprites/characters/sundalong-amerikano.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw an American private of 1900 with short hair, the
         whole body, sitting side on and facing right in a wooden
@@ -165,7 +165,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/enemies/amerikano.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw an American soldier of 1899 to 1906, the whole body,
         standing side on and facing right, arms free of the body, feet
@@ -176,7 +176,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/enemies/konstable.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw a Filipino of the Philippine Constabulary in 1905,
         the whole body, standing side on and facing right, arms free of
@@ -203,7 +203,7 @@ Also wanted (not in the game yet):
 
     assets/sprites/characters/gomez.png
         (Attach isko-still.png from the folder
-        assets/sprites/characters, and the proponent's picture of
+        _dev/stills/characters, and the proponent's picture of
         Dominador Gómez)
         Refer to the attached images and use the art style and size of
         the first. Draw Dominador Gómez, a Filipino labour leader of
@@ -213,7 +213,7 @@ Also wanted (not in the game yet):
 
     assets/sprites/characters/van-schaick.png
         (Attach isko-still.png from the folder
-        assets/sprites/characters, and the proponent's picture of
+        _dev/stills/characters, and the proponent's picture of
         Louis Van Schaick)
         Refer to the attached images and use the art style and size of
         the first. Draw Colonel Louis Van Schaick, an American officer
@@ -223,7 +223,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/characters/villafuerte.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw León Villafuerte, a Filipino rebel officer of 1906:
         the whole body, side on, facing right, standing, arms free of
@@ -232,7 +232,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/characters/de-vega.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw Lucio de Vega, a Filipino rebel officer of 1906: the
         whole body, side on, facing right, walking, arms free of the
@@ -240,7 +240,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/characters/hukom.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw an American judge of 1906 in a black robe, the whole
         body, seated side on and facing right on a chair. Transparent
@@ -248,7 +248,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/characters/taga-cavite.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw a thin Filipino village woman of Cavite in 1905: the
         whole body, side on, facing right, walking, in a faded baro't
@@ -257,7 +257,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/characters/anak-ni-isko.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image (his father) and use the same art
         style. Draw a Filipino boy of about seven in 1906, about half
         the man's height: the whole body, side on, facing right,
@@ -266,7 +266,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/characters/taong-bayan-1.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw an ordinary man of Tondo in 1906: the whole body,
         standing, facing the front, in a camisa de chino, trousers and
@@ -274,7 +274,7 @@ Also wanted (not in the game yet):
         (NOT STARTED)
 
     assets/sprites/characters/taong-bayan-2.png
-        (Attach isko-still.png from the folder assets/sprites/characters)
+        (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
         size. Draw an ordinary woman of Tondo in 1906: the whole body,
         standing, facing the front, in a baro't saya and a tapis.

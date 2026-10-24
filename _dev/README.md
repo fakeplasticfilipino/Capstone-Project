@@ -180,7 +180,7 @@ One figure on black rather than a sheet (the artists' Drive folder,
 Block 133) goes through key-still.js, which also crops it to the figure
 and shrinks it to 548 tall for a rig:
 
-    node _dev/tools/key-still.js docs-private/art-delivered/<date>/<name>.png assets/sprites/characters/<name>-still.png
+    node _dev/tools/key-still.js docs-private/art-delivered/<date>/<name>.png _dev/stills/characters/<name>-still.png
 
 Then the rig (CLAUDE.md, Animating a character from one still).
 
