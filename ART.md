@@ -306,6 +306,23 @@ Nothing needed.
         Cut into: assets/sprites/buildings/apoy.png
         (NOT STARTED)
 
+Also wanted (not in the game yet):
+
+    assets/sprites/player/itak.png
+        (Attach the file _dev/parallax-art/macario-testing-model.png)
+        Refer to the attached image and use the same art style. Draw
+        ONE Filipino bolo (itak) of the 1890s, the kind a Katipunero
+        carried, lying flat and seen exactly from the side: a plain
+        wooden handle at the LEFT end, a short metal collar, then a
+        single-edged steel blade about three times as long as the
+        handle, widening a little toward the end and pointing to the
+        RIGHT, the cutting edge along the bottom. Worn, not shiny. Sized
+        to fit the man in the attached image's hand (about 56 cm long
+        on him). Nothing else in the picture, no hand, no sheath, no
+        shadow. Transparent background.
+        (NOT STARTED; the bolo item's slash is drawn without it until it
+        comes, _dev/tools/skeleton.js)
+
 ### Act III
 
     barberya-kit.png

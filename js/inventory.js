@@ -640,12 +640,16 @@ const Inventory = {
     this.applyOutfit();
   },
 
-  // The outfit slot changes the sprite and nothing else, so it is
-  // applied beside the numeric effects rather than through them.
+  // Worn sheets change the sprite and nothing else, so they are applied
+  // beside the numeric effects rather than through them. The outfit's
+  // come first and the weapon's over them: a skin redraws him, and the
+  // bolo's slash replaces whichever punch that skin has.
   applyOutfit() {
     if (!window.Game || !Game.setOutfit) return;
     const worn = this.item(this.equipped("outfit"));
-    Game.setOutfit(worn && worn.sheets ? worn.sheets : null);
+    const weapon = this.item(this.equipped("weapon"));
+    const sheets = Object.assign({}, worn && worn.sheets, weapon && weapon.sheets);
+    Game.setOutfit(Object.keys(sheets).length ? sheets : null);
     // Block 85. An outfit without sheets may name a stand-in tint.
     if (Game.setOutfitTint) Game.setOutfitTint(worn && !worn.sheets && worn.tint ? worn.tint : null);
   },
@@ -687,6 +691,7 @@ const Inventory = {
       lines.push(`Nagbabalik ng ${u.heal} puso`);
     }
     if (item.kind === "cosmetic") lines.push("Binabago ang itsura");
+    if (item.slot === "weapon" && item.sheets && item.sheets.melee) lines.push("Taga sa halip na suntok");
     if (this.isQuest(item)) lines.push("Kailangan sa isang misyon");
     return lines;
   },

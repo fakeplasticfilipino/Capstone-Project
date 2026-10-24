@@ -1553,6 +1553,60 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("unequipping restores the base walk cycle",
        off.src === "assets/sprites/player/macario-walk.png" && !off.failed, off);
 
+    // 24 Oct 2026. Worn items may replace any of his sheets, not only
+    // idle and walk, and a weapon's sheets go over the outfit's: the bolo
+    // (content/items.js, itak) turns the punch into its slash.
+    const any = await page.evaluate(async () => {
+      await Game.setOutfit({
+        melee: { src: "_dev/tests/fixtures/test-outfit-walk.png", frames: 12, fps: 24, columns: 5, loop: false, contact: 6 },
+        notAPose: { src: "x.png", frames: 1, fps: 1 },
+      });
+      const r = { melee: SPRITE_SHEETS.melee.src, walk: SPRITE_SHEETS.walk.src, stray: "notAPose" in SPRITE_SHEETS };
+      await Game.setOutfit(null);
+      return r;
+    });
+    ok("an outfit may replace the punch, and leaves the walk alone",
+       any.melee.includes("test-outfit-walk.png") && any.walk === "assets/sprites/player/macario-walk.png", any);
+    ok("a sheet name the base set does not have is ignored", any.stray === false, any);
+
+    const worn = await page.evaluate(async () => {
+      const fixture = (name) => ({ src: "_dev/tests/fixtures/test-outfit-walk.png?" + name, frames: 12, fps: 12, columns: 5 });
+      ITEMS.push({ id: "test-bolo", name: "Bolo", kind: "equipment", slot: "weapon", price: 0, sheets: { melee: fixture("bolo") } });
+      ITEMS.push({ id: "test-balat", name: "Balat", kind: "cosmetic", slot: "outfit", price: 0,
+                   sheets: { walk: fixture("balat"), melee: fixture("balat-suntok") } });
+      await Inventory.grant("test-bolo"); await Inventory.grant("test-balat");
+      await Inventory.equip("test-balat"); await Inventory.equip("test-bolo");
+      await new Promise((r) => setTimeout(r, 300));
+      const both = { melee: SPRITE_SHEETS.melee.src, walk: SPRITE_SHEETS.walk.src,
+                     lines: Inventory.effectLines(Inventory.item("test-bolo")) };
+      await Inventory.unequip("weapon");
+      await new Promise((r) => setTimeout(r, 300));
+      const skinOnly = SPRITE_SHEETS.melee.src;
+      await Inventory.unequip("outfit");
+      await new Promise((r) => setTimeout(r, 300));
+      return { both, skinOnly, bare: SPRITE_SHEETS.melee.src };
+    });
+    ok("a worn weapon's punch goes over the outfit's, and the outfit's walk stays",
+       worn.both.melee.endsWith("?bolo") && worn.both.walk.endsWith("?balat"), worn);
+    ok("its line on the inventory screen says it slashes", worn.both.lines.includes("Taga sa halip na suntok"), worn.both.lines);
+    ok("taking the weapon off leaves the outfit's punch", worn.skinOnly.endsWith("?balat-suntok"), worn);
+    ok("and taking both off restores the base punch", worn.bare === "assets/sprites/player/macario-melee.png", worn);
+
+    // The shipped bolo names a sheet that is in the game, and is not for
+    // sale while its slash is drawn on a model the game does not use yet.
+    // Read from the files themselves: the harness serves its own fixture
+    // catalogue in place of content/items.js.
+    const itak = (() => {
+      const sandbox = { window: {} };
+      require("vm").runInNewContext(fs.readFileSync(path.join(ROOT, "content", "items.js"), "utf8"), sandbox);
+      require("vm").runInNewContext(fs.readFileSync(path.join(ROOT, "js", "asset-manifest.js"), "utf8"), sandbox);
+      const i = (sandbox.window.ITEMS || []).find((x) => x.id === "itak");
+      return i && { slot: i.slot, price: i.price, melee: i.sheets && i.sheets.melee && i.sheets.melee.src,
+                    listed: i.sheets.melee.src in (sandbox.window.ASSET_VERSIONS || {}) };
+    })();
+    ok("the itak is a weapon whose slash sheet is in the game, sold nowhere yet",
+       itak && itak.slot === "weapon" && itak.price === 0 && itak.listed, itak);
+
     await ctx.close();
   }
 

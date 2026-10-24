@@ -1,0 +1,86 @@
+// =============================================================
+// MACARIO — _dev/player-lab/macario.js
+//
+// Macario's skeleton for _dev/tools/skeleton.js: where his bones are in
+// the still, how the still is split into layers, and what the sheets
+// are called. A skin painted on the same template (the same pose, the
+// same canvas, the same scale) uses this file as it is, with only
+// still changed, which is what makes a new outfit one command.
+//
+// Every coordinate is in the working picture: the still cropped to
+// crop and shrunk by shrink (so 210 x 745 for the 1024 x 1536 template),
+// read off zoomed crops with a 10px grid. node _dev/tools/skeleton.js
+// macario --debug writes that picture with the bones and outlines drawn
+// on, to check them by eye.
+// =============================================================
+
+module.exports = {
+  still: "_dev/parallax-art/macario-testing-model.png",
+  crop: [290, 40, 420, 1490],   // x, y, w, h in the template
+  shrink: 2,
+
+  ground: 737,                  // his soles
+
+  joints: {
+    hip: [100, 362],            // the pelvis; the root, and the thighs' pivot
+    chest: [100, 262],          // the upper back bends about this
+    neck: [112, 116],           // the head turns about this
+    headTop: [122, 20],
+    nape: [72, 150],            // the hair hanging down his back swings from here
+    hairTip: [40, 292],
+    shoulder: [74, 172],
+    elbow: [78, 295],
+    wrist: [113, 402],
+    handTip: [118, 450],
+    knee: [96, 533],
+    ankle: [88, 708],
+    heel: [68, 737],            // the foot rocks on this as it lands...
+    ball: [150, 733],           // ...and on this as it pushes off
+    toe: [182, 736],
+    hem: [100, 432],            // the jacket's skirt hangs from the hip to here
+  },
+
+  // The near arm, sleeve and hand: drawn in front of everything, and
+  // drawn again behind him, darker, as the far arm. Hair inside it stays
+  // with the body.
+  arm: [[72, 154], [95, 154], [108, 178], [112, 210], [109, 250], [105, 290],
+    [101, 318], [112, 343], [126, 360], [129, 398], [136, 408], [137, 428],
+    [131, 448], [119, 454], [104, 451], [97, 438], [95, 410], [84, 407],
+    [81, 368], [73, 352], [58, 327], [50, 300], [45, 255], [44, 205],
+    [47, 178], [56, 162]],
+
+  // The near leg, from above the hip (under the jacket, filled with
+  // trouser) down round the near shoe. Its front edge runs down the
+  // crease where the far leg shows; the far leg and shoe are left out
+  // and replaced by this leg drawn again, darker.
+  leg: [[56, 338], [152, 338], [152, 440], [141, 500], [136, 550], [131, 590],
+    [123, 640], [119, 690], [150, 711], [186, 723], [188, 745], [58, 745],
+    [60, 700], [55, 600], [57, 500], [58, 440]],
+
+  darkLuma: 100,                // trousers, shoes and hair are darker than this
+  hairAbove: 330,               // dark pixels above this are hair, not trouser
+  hemY: 431,                    // the jacket ends here
+  farShade: 0.68,               // the far arm and leg, darkened
+  farLegOffset: 16,             // the far foot stands this far ahead at rest
+
+  // The sheets, written to _dev/player-lab/out/ while this is a test.
+  out: "_dev/player-lab/out",
+  clips: ["idle", "walk", "melee", "shoot", "jump", "slash"],
+  // Written into assets/sprites/player/ by --ship: what the game uses of
+  // this model so far (the bolo item's slash, content/items.js).
+  ship: ["slash"],
+
+  // What he holds. The itak (a bolo) is the artist's picture, owed
+  // (ART.md): drawn pointing right, handle at the left, on transparency.
+  // Until it exists the slash is drawn without it.
+  props: {
+    itak: {
+      src: "assets/sprites/player/itak.png",
+      bone: "hand",
+      grip: [120, 432],       // where his fist closes on the handle
+      angle: 12,              // at rest the blade points forward, a little down
+      length: 230,            // butt to point, working px (about 56 cm on him)
+      handle: 0.2,            // the part of that behind his fist
+    },
+  },
+};

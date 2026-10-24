@@ -1,0 +1,177 @@
+<!doctype html>
+<!--
+  MACARIO — _dev/player-lab/index.html
+  The bench for Macario's new sheets (_dev/tools/skeleton.js) before
+  any of them goes into the game: today's Macario and the new one side
+  by side, at the game's size and zoom, on a ground that slides at the
+  game's speed while he walks, so a foot that skates shows.
+  Serve the repository (the "macario" launch config) and open
+  /_dev/player-lab/.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Player lab</title>
+<style>
+  body { margin: 0; background: #1d1b19; color: #e8e2d6; font: 14px/1.4 system-ui, sans-serif; }
+  header { padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  header label { display: flex; gap: 6px; align-items: center; }
+  button, select { font: inherit; padding: 4px 10px; }
+  canvas { display: block; width: 100%; image-rendering: auto; }
+  #info { padding: 6px 16px; color: #b8b0a2; font-size: 12px; white-space: pre; }
+</style>
+</head>
+<body>
+<header>
+  <label>Clip <select id="clip"><option>idle</option><option selected>walk</option>
+    <option value="melee">punch</option><option value="shoot">shoot</option><option>jump</option>
+    <option value="slash">bolo slash</option></select></label>
+  <label>Zoom <select id="zoom">
+    <option value="0.7">0.7 (phone)</option><option value="1.75" selected>1.75 (desktop)</option>
+    <option value="3">3 (close)</option></select></label>
+  <label>Pace <select id="pace"><option value="5">walk (SPEED 5)</option><option value="6.8">run (RUN_SPEED 6.8)</option></select></label>
+  <label><input type="checkbox" id="street" checked> street behind</label>
+  <button id="play">Pause</button>
+  <button id="step">Step</button>
+</header>
+<canvas id="c" width="1200" height="520"></canvas>
+<div id="info"></div>
+<script>
+"use strict";
+const DISPLAY_HEIGHT = 134, SPEED = 5;
+// game.js: JUMP_VELOCITY 14 and GRAVITY 0.8 a 60th of a second.
+const JUMP_V = 14 * 60, GRAVITY = 0.8 * 3600;
+const asset = (p) => "../../" + p;
+
+// Today's sheets, with js/game.js's numbers. An action clip is played
+// as the game plays it: parts (frame ranges at their own fps, each held
+// for a moment after), or the jump, chosen by rising, falling, landed.
+const OLD = {
+  idle: { src: "assets/sprites/player/macario-idle.png", frames: 16, fps: 6, columns: 5, contentTop: 73, contentHeight: 106, footX: 130 },
+  walk: { src: "assets/sprites/player/macario-walk.png", frames: 20, fps: 12, columns: 5, contentTop: 60, contentHeight: 127, footX: 126 },
+  melee: { src: "assets/sprites/player/macario-melee.png", frames: 12, columns: 4, contentTop: 47, contentHeight: 109, footX: 96,
+    parts: [[0, 11, 24, 0.6]] },
+  shoot: { src: "assets/sprites/player/macario-shoot.png", frames: 12, columns: 5, contentTop: 63, contentHeight: 126, footX: 117,
+    parts: [[0, 2, 8, 0.5], [3, 11, 18, 0.6]] },
+  jump: { src: "assets/sprites/player/macario-jump.png", frames: 9, columns: 4, contentTop: 44, contentHeight: 102, footX: 106,
+    frameBottoms: [146, 146, 146, 145, 108, 95, 96, 120, 145], rise: [3, 6], fall: [7, 7], land: [8, 8] },
+};
+let NEW = {};
+// An NPC made by animate-still.js, to judge him against (content/people.js).
+const ISKO = { columns: 4, contentTop: 5, contentHeight: 295, footX: 90 };
+const NPC = {
+  idle: Object.assign({ src: "assets/sprites/characters/isko.png", frames: 8, fps: 4 }, ISKO),
+  walk: Object.assign({ src: "assets/sprites/characters/isko-walk.png", frames: 8, fps: 12 }, ISKO),
+};
+
+const images = {};
+function img(src) {
+  if (!images[src]) { images[src] = new Image(); images[src].src = src + "?t=" + Date.now(); }
+  return images[src];
+}
+
+const c = document.getElementById("c"), g = c.getContext("2d");
+const ui = (id) => document.getElementById(id);
+let playing = true, clock = 0, last = performance.now(), ground = 0, stepOnce = false;
+
+ui("play").onclick = () => { playing = !playing; ui("play").textContent = playing ? "Pause" : "Play"; };
+ui("step").onclick = () => { playing = false; ui("play").textContent = "Play"; stepOnce = true; };
+
+// Draws one sheet's frame the way spriteFit does: the drawing (not the
+// cell) DISPLAY_HEIGHT tall, its feet on the ground, footX on x.
+// Which frame shows now, and how high he is (world px), for a clip.
+function frameAt(def, rate) {
+  if (def.parts) {
+    let t = clock % def.parts.reduce((s, [a, b, fps, hold]) => s + (b - a + 1) / fps + hold, 0);
+    for (const [a, b, fps, hold] of def.parts) {
+      const len = (b - a + 1) / fps;
+      if (t < len + hold) return { f: Math.min(b, a + Math.floor(t * fps)), lift: 0 };
+      t -= len + hold;
+    }
+  }
+  if (def.rise) {
+    const air = 2 * JUMP_V / GRAVITY, landFor = 0.15, wait = 0.6;
+    const t = clock % (air + landFor + wait);
+    if (t < air) {
+      const lift = JUMP_V * t - GRAVITY * t * t / 2;
+      if (t < air / 2) return { f: Math.min(def.rise[1], def.rise[0] + Math.floor(t * 14)), lift };
+      return { f: def.fall[0], lift };
+    }
+    if (t < air + landFor) return { f: def.land[0], lift: 0 };
+    return { f: def.rise[0], lift: 0, standing: true };
+  }
+  return { f: Math.floor(clock * def.fps * rate) % def.frames, lift: 0 };
+}
+
+function drawSheet(def, x, groundY, zoom, rate) {
+  const im = img(def.src.startsWith("_dev") ? "../../" + def.src : asset(def.src));
+  if (!im.complete || !im.naturalWidth) return;
+  const rows = Math.ceil(def.frames / def.columns);
+  const fw = im.naturalWidth / def.columns, fh = im.naturalHeight / rows;
+  const { f, lift } = frameAt(def, rate);
+  const k = DISPLAY_HEIGHT * zoom / def.contentHeight;
+  const sx = (f % def.columns) * fw, sy = Math.floor(f / def.columns) * fh;
+  const bottom = def.frameBottoms ? def.frameBottoms[f] : def.contentTop + def.contentHeight;
+  const dx = x - def.footX * k, dy = groundY - lift * zoom - bottom * k;
+  g.drawImage(im, sx, sy, fw, fh, dx, dy, fw * k, fh * k);
+  return f;
+}
+
+function frame(now) {
+  const dt = Math.min(0.1, (now - last) / 1000);
+  last = now;
+  const clip = ui("clip").value, zoom = +ui("zoom").value, pace = +ui("pace").value;
+  const moving = clip === "walk";
+  // The walk sheet plays faster while running, as game.js does.
+  const rate = moving ? pace / SPEED : 1;
+  if (playing || stepOnce) {
+    const step = stepOnce ? 1 / 24 : dt;
+    clock += step;
+    if (moving) ground += pace * 60 * zoom * step;
+    stepOnce = false;
+  }
+  const W = c.width, H = c.height, gy = H - 70;
+  g.clearRect(0, 0, W, H);
+  if (ui("street").checked) {
+    const st = img(asset("assets/backgrounds/act1/street-01.jpg"));
+    if (st.complete && st.naturalWidth) {
+      const k = gy / st.naturalHeight, w = st.naturalWidth * k;
+      for (let x = -(ground * 0.5 % w); x < W; x += w) g.drawImage(st, x, 0, w, gy);
+    }
+  } else {
+    g.fillStyle = "#3b3a36"; g.fillRect(0, 0, W, gy);
+  }
+  // The ground, with a tick every 40 world px to judge a skating foot by.
+  g.fillStyle = "#5a4a38"; g.fillRect(0, gy, W, H - gy);
+  g.fillStyle = "#2c241b";
+  const tick = 40 * zoom;
+  for (let x = -(ground % tick); x < W; x += tick) g.fillRect(x, gy, 2, 14);
+  g.fillStyle = "#e8e2d6"; g.font = "13px system-ui";
+  g.fillText("today", W * 0.2 - 18, gy + 40);
+  if (NPC[clip]) g.fillText("NPC (Isko)", W * 0.5 - 30, gy + 40);
+  g.fillText("new", W * 0.8 - 12, gy + 40);
+  // The slash has no old sheet: today's punch stands in beside it.
+  const fo = drawSheet(OLD[clip] || OLD.melee, W * 0.2, gy, zoom, rate);
+  if (NPC[clip]) drawSheet(NPC[clip], W * 0.5, gy, zoom, rate);
+  let fn;
+  if (NEW[clip]) fn = drawSheet(NEW[clip], W * 0.8, gy, zoom, rate);
+  ui("info").textContent = NEW[clip]
+    ? `new ${clip}: ${NEW[clip].frames} frames at ${NEW[clip].fps} fps, frame ${fn}   today: frame ${fo}`
+    : "no new sheet for " + clip + " (run node _dev/tools/skeleton.js macario)";
+  requestAnimationFrame(frame);
+}
+
+fetch("out/macario.json?t=" + Date.now()).then((r) => r.json()).then((list) => {
+  for (const r of list) {
+    const d = { src: r.file, frames: r.frames, fps: r.fps, columns: r.columns, contentTop: r.contentTop, contentHeight: r.contentHeight, footX: r.footX };
+    if (r.name === "melee" || r.name === "slash") d.parts = [[0, r.frames - 1, r.fps, 0.6]];
+    if (r.name === "shoot") d.parts = [[r.aim[0], r.aim[1], r.fps, 0.5], [r.fire[0], r.fire[1], r.fireFps, 0.6]];
+    if (r.name === "jump") Object.assign(d, { rise: r.rise, fall: r.fall, land: r.land });
+    NEW[r.name] = d;
+  }
+}).catch(() => {});
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

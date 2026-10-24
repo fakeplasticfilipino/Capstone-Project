@@ -236,6 +236,11 @@ off the repository.
     _dev/hooks/                pre-commit: prepare.js --check (Block 106)
     _dev/rigs/                 one rig per character animated from a
                                still by animate-still.js (Block 97)
+    _dev/player-lab/           the player's own model (Block 145): its
+                               skeleton (macario.js) for
+                               _dev/tools/skeleton.js, the sheets it
+                               writes (out/), and the test page
+                               (index.html) beside today's Macario
     _dev/tools/                measure-sprite.js, key-black.py (a sheet
                                on black), key-still.js (a still on
                                black, cropped and shrunk; Block 133),
@@ -245,7 +250,9 @@ off the repository.
                                (Block 97) and lib/puppet.js, the cut-out
                                puppet the animate tools share (Block
                                96), animate-kabayo.js, the horse
-                               (Block 100), missing-art.js
+                               (Block 100), skeleton.js, the player
+                               from one still by a bent mesh (Block
+                               145), missing-art.js
                                (Block 77), make-asset-manifest.js
                                (Block 78), shrink-sprites.js (Block 105),
                                prepare.js and lib/stamp.js, lib/checks.js
@@ -1407,8 +1414,10 @@ low-end phone would buy nothing. Only ownership is stored.
       effect: { projectileSpeedMult: 1.5 }       equipment only; applies
             | { maxHealthBonus: 1 }              while worn
             | { stillDetectionMult: 0.5 }
-      sheets: { walk: {...} }                    cosmetic only; any of
-                                                 idle, walk
+      sheets: { walk: {...} }                    cosmetic, or equipment in
+                                                 the outfit or weapon slot;
+                                                 any name BASE_SPRITE_SHEETS
+                                                 has (Block 145)
       use: { heal: 1 },                          consumable only; applied
                                                  once by Gamitin
       maxStack: 5,                               consumable only; default 5
@@ -1439,7 +1448,9 @@ name, one item per slot. Equipment's effect applies only while worn. A
 cosmetic carries sheets and never an effect, which is what makes it
 cosmetic. Equipment in the outfit slot (Block 32, the stage clothes) may
 carry sheets as well as an effect; without sheets, wearing it leaves
-Macario's look unchanged. The slot ids are what player_equipment.slot stores and are
+Macario's look unchanged. Since Block 145 a weapon may carry sheets too
+(the itak's slash replaces melee), any of his sheets may be replaced,
+and the weapon's go over the outfit's (Inventory.applyOutfit). The slot ids are what player_equipment.slot stores and are
 never renamed; Sandata, Anting-anting and Damit are the labels.
 
 Consumables are kind "consumable". No slot, so equip and toggle refuse
@@ -2692,6 +2703,10 @@ look, by system:
       Balikan                             menu; parts from devJumps; a
                                           student's earlier part played
                                           and never kept)
+    the player's own model, the bolo      Block 145 (skeleton.js, a
+                                          bent mesh; the NPCs' walk;
+                                          follow-through; worn sheets
+                                          replace any move)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

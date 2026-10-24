@@ -390,6 +390,15 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
 
 Block 142 (above) comes first. Then, in order.
 
+Block 145 (IN PROGRESS), Macario's own skeleton: the proponent judges
+the new model on the test page (serve the repository, open
+/_dev/player-lab/; idle, walk, punch, shoot, jump, bolo slash beside
+today's Macario and Isko). Rerun with node _dev/tools/skeleton.js
+macario (add --ship for the sheets the game uses). When accepted: the
+new sheets into BASE_SPRITE_SHEETS, the still into assets/, the itak
+given a price or a moment in the story, and the player's test pieces
+(test.js AI, AS, AM, Y). Owed: the itak's blade and the pistol (props).
+
 1. Every new block is seen on the phone before it is called done: in
 landscape, from a private tab, after the push, with the sound on,
 played from the start, or since Block 108 from the nearest point in the
@@ -1022,6 +1031,13 @@ machine, the assessment module.
         acts and their parts, from devJumps), Balikan (a student plays
         an earlier part and nothing is kept), Pangunahing Menu in
         pause, Mag-log Out on the menu; test.js BY
+    145 Macario's own skeleton (IN PROGRESS): _dev/tools/skeleton.js
+        animates the new model by bending a mesh, not cut-outs
+        (animate-player.js deleted); idle, the NPCs' walk, punch,
+        shot, jump and the bolo's slash, judged on _dev/player-lab/;
+        worn items may replace any sheet (setOutfit, inventory.js);
+        the itak item, sold nowhere until the new model is in the
+        game; its blade and the pistol owed; test.js Y
 
 ## Blocks remaining
 

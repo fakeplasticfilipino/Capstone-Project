@@ -2425,8 +2425,13 @@ Promise.all([
   applyAnim(currentAnim, true);
 });
 
-// Swaps the player's sheets for an outfit's, or back to the base set when
-// passed nothing. inventory.js is the only caller.
+// Swaps the player's sheets for those his worn items carry, or back to
+// the base set when passed nothing. inventory.js is the only caller.
+//
+// Any sheet BASE_SPRITE_SHEETS names may be replaced, not only idle and
+// walk (until 24 Oct 2026 it was those two): a skin redraws every move,
+// and the bolo replaces the punch (melee) with its slash. A name not in
+// the base set is ignored, so an item cannot add a pose nothing plays.
 //
 // A sheet that fails to load is NOT special-cased. It goes through the same
 // dashed placeholder every other missing image in this project goes
@@ -2437,7 +2442,7 @@ async function setOutfit(sheets) {
   const next = Object.assign({}, BASE_SPRITE_SHEETS);
 
   if (sheets) {
-    ["idle", "walk"].forEach((name) => {
+    Object.keys(BASE_SPRITE_SHEETS).forEach((name) => {
       if (sheets[name] && sheets[name].src) next[name] = sheets[name];
     });
   }
@@ -2447,10 +2452,7 @@ async function setOutfit(sheets) {
   // loadSpriteSheet caches its geometry onto the def, so re-loading the
   // base sheets costs a cache hit and nothing else. It resolves rather
   // than rejects on a missing file, so this never hangs.
-  await Promise.all([
-    loadSpriteSheet(next.idle),
-    loadSpriteSheet(next.walk),
-  ]);
+  await Promise.all(Object.values(next).map((def) => loadSpriteSheet(def)));
 
   spritesReady = true;
   applyAnim(currentAnim, true);

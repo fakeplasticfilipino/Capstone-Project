@@ -127,4 +127,23 @@ window.ITEMS = [
     price: 90,
     effect: { projectileSpeedMult: 1.5 },
   },
+  {
+    // PLACEHOLDER. The bolo (24 Oct 2026): worn in the Sandata slot, his
+    // punch becomes a slash, the same blow on the same frame. No effect:
+    // only the sheet changes. The slash is drawn on the new Macario
+    // (_dev/tools/skeleton.js, --ship), so the item is given to no one
+    // and sold nowhere (price 0) until that model is in the game; then
+    // it gets a price or a moment in the story. The blade in his hand is
+    // owed (ART.md, assets/sprites/player/itak.png).
+    id: "itak", name: "Itak", kind: "equipment", slot: "weapon", icon: "i-blade",
+    description: "Isang itak na pantaga. Habang dala mo, taga ang iyong atake sa halip na suntok.",
+    price: 0,
+    sheets: {
+      melee: {
+        src: "assets/sprites/player/macario-slash.png", frames: 12, fps: 24, columns: 8,
+        loop: false, contact: 6,
+        contentTop: 80, contentHeight: 240, footX: 110, headroom: 80,
+      },
+    },
+  },
 ];

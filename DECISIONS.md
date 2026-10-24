@@ -6457,6 +6457,82 @@ A story point's words are now found quietly when a guest starts there
 (earnGlossaryByFlags(true)), as for a save restored past them; they had
 been toasted all at once.
 
+## Block 145: Macario's own skeleton, and the bolo, 24 Oct 2026
+
+The proponent wanted a Macario of the team's own (the new model,
+_dev/parallax-art/macario-testing-model.png) that fits the game's look,
+animated by a tool, so a skin later is one command. The first player
+tool (animate-player.js, a cut-out puppet like animate-still.js, 22 Oct)
+made him look goofy and was deleted at the proponent's word, with its
+rig and test page. Its replacement, _dev/tools/skeleton.js, is built
+from the ground up and was judged against the NPCs at every step.
+
+How it draws. Not rigid cut-outs: the still is split into five layers
+(the far arm, the far leg, the near leg, the body, the near arm), each
+covered by a mesh of triangles every corner of which is weighted to the
+bones near it, so an elbow or a knee bends as a curve with no notch or
+seam. What the parts in front hide is painted in: the jacket behind the
+arm row by row from the jacket either side, the trousers under the
+jacket column by column from below. The far arm and leg are the near
+ones drawn again, darker. Every clip is fitted by the standing figure,
+so he is one size whatever he does.
+
+What was tried and why it changed, all on 24 Oct 2026, each at the
+proponent's word:
+
+    a jog with planted feet     the game's walk is 300 world px a second
+                                on a figure 134 tall, which only a run
+                                covers with planted feet; his arms swung
+                                bent at 70 to 90 degrees: "his hands move
+                                a LOT", goofy
+    a walk by the feet (IK)     calm amounts, but placing the feet bent
+                                him into a crouch and threw the swinging
+                                knee up in front: "the NPCs look more
+                                natural"
+    the NPCs' walk              each leg swung from the hip, 24 degrees,
+                                the knee folding back only as it passes,
+                                the lower foot set on the ground; their
+                                arm swing; 8 frames at 12 (accepted). His
+                                feet slide against the ground as theirs do
+    actions, then loosened      the punch, shot and jump were "very
+                                stiff": every part arrived on one frame.
+                                keyed() now plays each part a little
+                                behind the part that moves it (DRAG: the
+                                forearm, the hand, the head, the hair
+                                last), and the body throws the punch and
+                                takes the shot's kick (accepted as close)
+
+The idle was raised to the NPCs' own amounts (a 1.8 degree nod, the arms
+about 2) after being quieter than theirs.
+
+The bolo. Asked for as a machete attack, built as an item at the
+proponent's choice: "itak", weapon slot (Sandata), no effect, whose
+sheets replace melee with a slash on the punch's timing (12 frames at
+24, the blow on 6), so game.js resolves it as it does the punch. The
+slash draws the blade up over the shoulder as the tell and cuts down
+diagonally, with a pale arc behind the point that the tool draws (by
+design, as the NPCs' slash does). The blade is the artist's
+(assets/sprites/player/itak.png, owed in ART.md under Act II's Props,
+Also wanted): the tool lays it along the hand when it exists and draws
+nothing in its place until then. The slash is drawn on the new model,
+so the item is sold nowhere and given to no one (price 0) until that
+model is in the game; then it gets a price or a moment in the story.
+Its sheet ships now (--ship) so the item names a file that exists.
+
+Worn sheets. setOutfit replaced only idle and walk, so a skin could not
+reach the punch, the shot or the jump, and no weapon could change a
+move. It now takes any name BASE_SPRITE_SHEETS has (others are ignored),
+and inventory.js merges the outfit's sheets with the weapon's over them:
+a skin redraws him, and the bolo's slash replaces whichever punch that
+skin has. Covered by test.js Y.
+
+Not done. The new model is not in the game: its sheets live in
+_dev/player-lab/out/, the test page beside them shows today's Macario,
+an NPC and the new one at the game's size. The pistol in his hand is
+owed like the blade (a prop, the same mechanism), so the shot points
+an empty fist. Putting him in means BASE_SPRITE_SHEETS, the still into
+assets/, prepare.js and the player's test pieces.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every
