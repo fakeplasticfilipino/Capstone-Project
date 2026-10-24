@@ -87,6 +87,8 @@ scripted scenes, black cards and arrival dialogues; dynamic difficulty;
 the act state machine; trivia, pre-test and post-test graded in the game
 (with a pass mark and a replay); the weighted performance score;
 feedback; currency, the shop, equipment and outfits; play as guest;
+the main menu (Block 144: Mga Kabanata, any part for a guest, a
+student's earlier parts as a Balikan that is never kept);
 sound and settings (text size, music, effects, a password change, the
 full reset, schema v5, run); the Talaan (the teacher's papers on
 the road); and the teacher dashboard (roster, questions editor, Talaan
