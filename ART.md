@@ -192,6 +192,26 @@ Also wanted (not in the game yet):
         background.
         (NOT STARTED)
 
+    de-vega-at-taga-cavite.png
+        (Attach isko-still.png from the folder _dev/stills/characters)
+        Refer to the attached image and use the same art style and
+        size. Draw two Filipinos of 1905 to 1906 side by side, each the
+        whole body, side on, facing right, STANDING STILL with both
+        feet flat on the ground close together and the arms hanging
+        free of the body, at the same scale and standing on the same
+        ground line, with wide empty space between them so they do not
+        touch. (1) Lucio de Vega, a rebel officer, in a worn plain
+        uniform. (2) A thin village woman of Cavite in a faded baro't
+        saya, her feet showing under the skirt, holding a small cloth
+        bundle of rice against her side. Not walking, not mid-step.
+        Transparent background. Landscape.
+        Cut into: assets/sprites/characters/de-vega.png (1),
+        assets/sprites/characters/taga-cavite.png (2)
+        (OWED AGAIN, 25 Oct 2026: the first pair, from mga-opisyal and
+        mag-ina, were drawn mid-stride and did not fit; kept in
+        docs-private/art-delivered/2026-10-25-act4/. Standing, they can
+        be given a real walk.)
+
     assets/sprites/characters/hukom.png
         (Attach isko-still.png from the folder _dev/stills/characters)
         Refer to the attached image and use the same art style and
@@ -474,11 +494,9 @@ Done and in the game. Nothing here needs drawing.
                   (24 Oct 2026, rigs amerikano.js and konstable.js),
                   and the American in the barber's chair
                   (sundalong-amerikano)
-        Act IV    Villafuerte and De Vega (mga-opisyal), the woman
-                  from Cavite and Isko's son (mag-ina), 25 Oct 2026,
-                  Block 149, animated from their pictures (rigs
-                  villafuerte.js, de-vega.js, taga-cavite.js,
-                  anak-ni-isko.js)
+        Act IV    Villafuerte (from mga-opisyal) and Isko's son (from
+                  mag-ina), 25 Oct 2026, Block 149, animated from their
+                  pictures (rigs villafuerte.js, anak-ni-isko.js)
 
     Props
         Act I     Tondo's houses, street props and doors

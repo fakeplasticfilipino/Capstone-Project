@@ -65,21 +65,17 @@
   const KAWAL = P.kawalKatagalugan; // content/people.js since Block 135
   const GOMEZ = owed("characters", "gomez");
   // Block 149: the proponent's pictures of 25 Oct 2026, animated (rigs
-  // _dev/rigs/taga-cavite.js, anak-ni-isko.js, villafuerte.js,
-  // de-vega.js). Villafuerte and the boy stand (the calm idle); the
-  // woman from Cavite and De Vega, drawn mid-stride, breathe standing
-  // and walk by the march, each foot lifted in turn.
+  // _dev/rigs/anak-ni-isko.js, villafuerte.js): Villafuerte and the boy
+  // stand (the calm idle). The woman from Cavite and De Vega came drawn
+  // mid-stride and did not fit; taken out the same day and owed again
+  // (ART.md), standing, so they can be given a walk.
   const sheet = (name, frames, fps, cell) => ({ src: "assets/sprites/characters/" + name + ".png", frames, fps,
     columns: 4, ...cell });
-  const TAGA_CAVITE_CELL = { contentTop: 8, contentHeight: 298, footX: 79, headroom: 8 };
-  const TAGA_CAVITE = sheet("taga-cavite", 8, 4, TAGA_CAVITE_CELL);
-  const TAGA_CAVITE_WALK = sheet("taga-cavite-walk", 8, 10, TAGA_CAVITE_CELL);
+  const TAGA_CAVITE = owed("characters", "taga-cavite");
   const ANAK_NI_ISKO = sheet("anak-ni-isko", 8, 4, { contentTop: 5, contentHeight: 296, footX: 35, headroom: 5 });
   const VAN_SCHAICK = owed("characters", "van-schaick");
   const VILLAFUERTE = sheet("villafuerte", 8, 4, { contentTop: 5, contentHeight: 298, footX: 34, headroom: 5 });
-  const DE_VEGA_CELL = { contentTop: 6, contentHeight: 298, footX: 79, headroom: 6 };
-  const DE_VEGA = sheet("de-vega", 8, 4, DE_VEGA_CELL);
-  const DE_VEGA_WALK = sheet("de-vega-walk", 8, 10, DE_VEGA_CELL);
+  const DE_VEGA = owed("characters", "de-vega");
   const HUKOM = owed("characters", "hukom");
   const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
   const AMERIKANO = window.SOLDIER_SHEETS.amerikano;       // content/enemies.js, 24 Oct 2026
@@ -1224,7 +1220,7 @@
         decorations: [
           { id: "tagapagbalita", x: FIELD + 80, hidden: true, animation: TAGAPAGBALITA, walkAnimation: P.tagapagbalitaWalk,
             faceMovement: true, speakers: ["Tagapagbalita"] },
-          { id: "taga-cavite", x: -120, hidden: true, animation: TAGA_CAVITE, walkAnimation: TAGA_CAVITE_WALK, faceMovement: true,
+          { id: "taga-cavite", x: -120, hidden: true, animation: TAGA_CAVITE, faceMovement: true,
             speakers: ["Taga-Cavite"] },
           { id: "gomez-lakad", x: FIELD + 80, hidden: true, animation: GOMEZ, faceMovement: true },
         ],
@@ -1574,7 +1570,7 @@
             ],
           },
           {
-            id: "de-vega", x: 520, label: "De Vega", animation: DE_VEGA, facesPlayer: true,
+            id: "de-vega", x: 520, label: "De Vega", animation: DE_VEGA,
             startsHidden: true, revealedByFlag: "a4_hatol",
             dialogueSets: [oneLine("De Vega", "Kasama mo ako hanggang dulo, Pangulo.")],
           },
@@ -1634,7 +1630,7 @@
           { requiresFlag: "a4_hulingGabi", doneFlag: "a4_saPatyo", x: 200, facing: 1, run: theMorning },
         ],
         decorations: [
-          { id: "de-vega-p", x: 420, animation: DE_VEGA, walkAnimation: DE_VEGA_WALK, faceMovement: true, speakers: ["De Vega"] },
+          { id: "de-vega-p", x: 420, animation: DE_VEGA, faceMovement: true, speakers: ["De Vega"] },
           { id: "bantay-p", x: 60, animation: BANTAY_BILIBID, speakers: ["Bantay"] },
         ],
         npcs: [],

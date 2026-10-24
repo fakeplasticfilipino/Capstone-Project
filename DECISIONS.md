@@ -6731,6 +6731,10 @@ mid-stride still was the precedent), and they walk by the march with
 legSplit, each leg cut apart and lifted in turn; the woman's legs are
 cut below the skirt's hem, so only her feet step and the skirt stays
 whole. A walk swung from the hip would have doubled or torn the skirt.
+The same day the proponent judged the two mid-stride pictures not to
+fit, and they were taken out (Block 141's rule): sheets, rigs and
+stills out of the game, the originals in docs-private, owed again as
+one sheet drawn standing, which the walk motion can move properly.
 The sheets, once cut, went to docs-private/art-delivered/2026-10-25-act4/.
 
 The opening card's two checks failed under load (Block 148's note;

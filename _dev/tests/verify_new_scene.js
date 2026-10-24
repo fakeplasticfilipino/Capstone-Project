@@ -936,17 +936,15 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        act4.srcs === 9 && act4.expected && act4.opens && act4.widths, act4);
 
     // Block 149. Act IV's people from the proponent's pictures: each sheet
-    // opening, eight frames, and the two who walk walking.
+    // opening, eight frames (the two drawn mid-stride were taken out).
     const people4 = await page.evaluate(async () => {
       const all = window.ACT_4.scenes.flatMap((s) => (s.npcs || []).concat(s.decorations || []));
       const find = (id) => all.find((n) => n.id === id);
-      const sheets = { villafuerte: find("villafuerte-m").animation, deVega: find("de-vega-p").animation,
-        deVegaWalk: find("de-vega-p").walkAnimation, cavite: find("taga-cavite").animation,
-        caviteWalk: find("taga-cavite").walkAnimation, anak: find("anak-ni-isko").animation };
+      const sheets = { villafuerte: find("villafuerte-m").animation, anak: find("anak-ni-isko").animation };
       await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
       return Object.fromEntries(Object.entries(sheets).map(([n, s]) => [n, !s.failed && s.frameHeight > 0 && s.frames]));
     });
-    ok("Act IV's officers, the woman from Cavite and Isko's son: every sheet opening, eight frames, two walking (Block 149)",
+    ok("Act IV's Villafuerte and Isko's son: every sheet opening, eight frames (Block 149)",
        Object.values(people4).every((f) => f === 8), people4);
 
     const c1 = await readConversation(page, 3);
