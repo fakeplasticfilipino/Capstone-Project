@@ -76,6 +76,10 @@
 // three-quarter, cuts each whole leg as its own part for the march
 // instead of copying one leg as the far one.
 //
+// outlines.notHead (24 Oct 2026): something held up as high as the face
+// (the amerikano's bayonet), kept with the body rather than nodding with
+// the head.
+//
 // Block 129 added, for an arm that holds a blade: armClear (outlines
 // where the arm hangs clear of the body, so nothing is filled in behind
 // it there), legColour (beside sideColour: the colour that may fill a
@@ -290,14 +294,18 @@ function splitStill(still, rig) {
     }));
   }
 
+  // outlines.notHead: something held up beside the head (the amerikano's
+  // bayonet), which belongs to the body and must not nod with the head.
+  const notHead = (x, y) => !!outlines.notHead && inPolygon(outlines.notHead, x, y);
   const head = blankLayer(W, H), torso = blankLayer(W, H), legs = blankLayer(W, H);
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const i = at(x, y);
       if (!body.d[i + 3]) continue;
       const p = body.d.subarray(i, i + 4);
-      if (y < cuts.headBottom) head.d.set(p, i);
-      if (y >= cuts.torsoTop && (y < cuts.torsoBottom || overLegs(x, y))) torso.d.set(p, i);
+      const held = notHead(x, y);
+      if (y < cuts.headBottom && !held) head.d.set(p, i);
+      if ((y >= cuts.torsoTop || held) && (y < cuts.torsoBottom || overLegs(x, y))) torso.d.set(p, i);
       if (y >= cuts.legTop) legs.d.set(p, i);
     }
   }

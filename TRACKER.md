@@ -9,7 +9,14 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 24 Oct 2026, end of session, at f8e1184 (CI green, tests
+Last updated: 24 Oct 2026, Block 147: Act III's art in. Every
+place of Act III is in layers or built from a kit (Tondo with a
+house's door at each knock, the hills, Morong, the plaza, the
+barberya, Calle Gunao, the selda, Act IV's selda too); the American
+soldier and the Constabulary animated; the American in the barber's
+chair. The Katagalugan's flag came as today's Philippine flag and is
+owed again (ART.md). Not yet seen on the phone (Next action). Before
+it, 24 Oct 2026, end of session, at f8e1184 (CI green, tests
 and Pages). Block 142: Act II's art is finished, every place in layers
 or built from a kit, no painting left in Act II. Its street is Act I's
 Tondo (window.TONDO_STREET), the press house over Act II's door; San
@@ -29,7 +36,9 @@ Tondo, burol, morong, himpilan, dimasalang, malabon, patyo; the art
 listed in ART.md), and Block 143's rooms for Acts III and IV. Cutting a
 delivered sheet needs numpy, which this computer's Python lacks: install
 it into the session's scratchpad (pip install --target) rather than
-system-wide, and run _dev/tools/cut-room-kit.py with PYTHONPATH set.
+system-wide, and run _dev/tools/cut-room-kit.py with PYTHONPATH set
+(Block 147 installed it system-wide by mistake and uninstalled it
+after).
 23 Oct 2026, Block 143: rooms built from kits (a wall
 repeated, a floor, furniture placed by x; ART.md's rooms table); Act
 I's two, the entablado and the pulungan, built and finished, the other
@@ -301,12 +310,11 @@ to docs-private/art-delivered/ once cut), in this order:
         since 22 Oct as assets/sprites/scenery/)
     [x] sierra-nature, grass-ground, garrison, rural, river (24 Oct;
         the river's checkerboard and the ground's sky taken off)
-    [ ] mountain-trees, camp
+    [x] mountain-trees (eight single trees), camp, manila-view-nature,
+        town, bayan-props (24 Oct 2026, Block 147)
     [ ] post, sierra-night-nature
-    [ ] town, bayan-props (the plaza, layered too since 24 Oct 2026 at
-        the proponent's word), cavite-dusk-nature
+    [ ] cavite-dusk-nature
     [ ] bilibid, bilibid-sky-nature, stone-ground
-    [ ] manila-view-nature
 
 Engine (game.js, LAYERED STREETS; built 22 Oct 2026 at the
 proponent's word, "apply them in real act 1"):
@@ -340,8 +348,9 @@ Scenes:
         (window.TONDO_STREET), the press house over its door at 6650,
         the Mananahi's stall at 6060, no second press by the mountain
         road (11300)
-    [ ] tondo in Acts III and IV, the same way, each act's doors
-        checked: Act III's 6700, 8300 and 10900
+    [x] tondo in Act III (24 Oct 2026, Block 147): a house's door at
+        each of 6700, 8300 and 10900, the barberya at Act I's 5340
+    [ ] tondo in Act IV, the same way, its doors checked
     [x] san-juan, nangka (Act II, 24 Oct 2026): the Sierra sky, the
         lowland trees, San Juan's works on the right (the polvorin's door
         where the retreat starts) on the dirt, the Nangka's river and
@@ -352,7 +361,9 @@ Scenes:
         points after Act I start with every lesson learned); the river's
         pale fringe cleared; San Juan's dirt edge at the feet (lip 9) and
         its pieces on it; the tree rows taken out of Act II
-    [ ] burol, morong (Act III; morong again in Act IV)
+    [x] burol, morong, and the plaza, bayan (Act III, 24 Oct 2026,
+        Block 147); Act IV's camp still on Morong's paintings
+    [ ] morong in Act IV
     [ ] himpilan, dimasalang, malabon, patyo (Act IV)
     [ ] in every scene: cover, hide spots, hazards and guard posts
         checked against the new buildings (the paintings placed some)
@@ -380,14 +391,27 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
     [x] imprenta, bahay (Act II, 24 Oct 2026): the plank room and the
         sawali house (wall-sawali, floor-kawayan moved in); the press's
         shelves under its platforms, raised to 152
-    [ ] barberya, calle-gunao, selda (Act III): barberya-kit,
-        sala-kit, selda-kit
-    [ ] sala, hukuman, selda (Act IV): sala-kit, hukuman-kit
-    [ ] the selda painting retired once its kit is in
+    [x] barberya, calle-gunao, selda (Act III, 24 Oct 2026, Block 147),
+        and Act IV's selda from the same kit; the selda painting retired
+    [ ] sala, hukuman (Act IV): sala-kit (delivered), hukuman-kit
 
 ## Next action
 
 Block 142 (above) comes first. Then, in order.
+
+Block 147, Act III's art, on the phone (?dev=1): "Ang burol: ang
+labanan" (Manila below, single mountain trees, the camp, the watchtower
+over the lookout; the American soldiers walk, lunge with the bayonet
+and flinch); "Ang barberya: ang suking Amerikano" (the room's window,
+mirror, shelf, bench, door; press Gupitin and the American sits in the
+chair, and walks out after the haircut, the chair left); "Abril 1901"
+(the church, the proclamation board, the town hall, the officer behind
+his table, the flag); "Calle Gunao" (the sala); "Bilibid, Hulyo 1902"
+(the stone cell, the gate at the right); "Tondo, 1902" (each of the
+three doors lit on a house's own door); "Morong" (the camp, the
+Constabulary in the last fight). Failure: a dashed box other than the
+flag, a door lit beside its house, a figure floating or sunk, a soldier
+whose rifle butt trails a dark copy.
 
 Block 146, melee with weight, on the phone: in a fight (?dev=1, the
 play's fight or San Juan del Monte) tap Atake at an enemy in reach three

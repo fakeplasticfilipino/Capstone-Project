@@ -207,12 +207,14 @@ off the repository.
       sprites/scenery/         things on the street that are used, not
                                talked to (the straw, the press, the
                                scarecrow, the barber's chair, the tahian)
-      backgrounds/act1/        street-01..04.jpg (Acts III and IV's
-                               street until it is layered), ground-lupa.jpg
+      backgrounds/act1/        street-01..04.jpg (Act IV's street until
+                               it is layered), ground-lupa.jpg
       backgrounds/act3/,       the artist's paintings of each act's
         act4/                  places (Blocks 133, 135, 136; two panels
-                               each for burol, morong, himpilan,
-                               dimasalang and malabon); Act II has none
+                               each for morong, which only Act IV's
+                               camp still draws, himpilan,
+                               dimasalang and malabon); Acts II and III
+                               have none
                                since Block 142, every place in layers
       backgrounds/layers/,     the layered scenes' skies and grounds, and
         rooms/                 the rooms' walls and floors (Blocks 142,
@@ -1369,9 +1371,11 @@ his flinch, and the first three frames of his shot as a bayonet lunge),
 so a battle of many costs no new art. A bantay placed in the same
 spawnEnemies is a rifle, already hostile. Act III's amerikano (hand
 to hand), sentinela (a rifle; a guard) and konstable (the Philippine
-Constabulary, hand to hand; Block 117) have their own pictures, owed:
-the placeholder box until drawn (Block 118, the art rule under
-Conventions). Act IV adds bantay-konstable (Block 119), the
+Constabulary, hand to hand; Block 117) have their own pictures since
+Block 147, animated from the proponent's stills (rigs amerikano.js,
+konstable.js): a walk, a bayonet thrust, a flinch, and a standing
+sheet for the sentry and for anyone who only stands in a scene
+(window.SOLDIER_SHEETS). Act IV adds bantay-konstable (Block 119), the
 Constabulary on guard with a rifle, on the konstable's picture. Block
 129 adds sultan, the play's Sultan when he fights Don Rodrigo himself
 (hp 3, the slash), his cell SULTAN_CELL beside the kawal's, read by
@@ -1825,7 +1829,9 @@ The steps:
      arm optional, overLegs for cloth hanging over the legs, one
      outline or a list, an entry { outline, clear: true } for one that
      hangs clear of them, a bolo's blade behind the hip, farFoot for a
-     far foot that shows); sideColour, the colour of his side behind
+     far foot that shows, notHead for something held up as high as
+     the face, a bayonet's point, so it does not nod with the head;
+     Block 147); sideColour, the colour of his side behind
      the sleeve. Read them off zoomed crops with a grid, in the mirrored
      still if mirror is true. Never guess.
   3. node _dev/tools/animate-still.js <name> --debug, and look at the
@@ -2726,6 +2732,10 @@ look, by system:
                                           bent mesh; the NPCs' walk;
                                           follow-through; worn sheets
                                           replace any move)
+    Act III in layers and kits; the       Block 147 (Tondo's doors for
+      American and the Constabulary       the knocks, single mountain
+                                          trees, the barber's chair,
+                                          notHead)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

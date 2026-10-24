@@ -187,17 +187,32 @@ window.ENEMY_TYPES = {
 //               uniform, hand to hand: the attack on the camp at Morong.
 (function () {
   const T = window.ENEMY_TYPES;
-  const owed = (name) => ({ src: "assets/sprites/enemies/" + name + ".png", frames: 1, fps: 1 });
-  // Block 141: the soldier delivered on 16 October (Block 135) wore 1917's
-  // kit and was taken out at the proponent's word, so the picture is owed
-  // again: drawn as the placeholder until the artist's 1899 soldier comes,
-  // whose sheets are then made from his still as Block 135's were.
-  T.amerikano = { kind: "enemy", hp: 2, animation: owed("amerikano") };
-  T.sentinela = { kind: "guard", shoots: true, hp: 2, speed: 1.3, detectRadius: 260, animation: owed("amerikano") };
-  T.konstable = { kind: "enemy", hp: 2, animation: owed("konstable") };
+  // 24 Oct 2026: the proponent's 1899 soldier and 1905 Constabulary (the
+  // 1917 soldier of Block 135 was taken out in Block 141), each animated
+  // from his still by _dev/tools/animate-still.js (rigs _dev/rigs/
+  // amerikano.js, konstable.js): he walks, lunges with the bayonet
+  // (thrust, frames 0 to 2 the red !, 3 the blow) and flinches; on guard
+  // he stands on his standing sheet and walks his beat on the walk. One
+  // cell for each man's four sheets.
+  const sheets = (name, cell) => {
+    const s = (pose, frames, fps) =>
+      ({ src: "assets/sprites/enemies/" + name + pose + ".png", frames, fps, ...cell });
+    return { idle: s("", 8, 4), walk: s("-walk", 8, 12), attack: s("-attack", 8, 10),
+      hit: Object.assign(s("-hit", 4, 12), { knockoutFrame: 1 }) };
+  };
+  const AMERIKANO = sheets("amerikano", { columns: 4, contentTop: 9, contentHeight: 296, footX: 84, headroom: 9 });
+  const KONSTABLE = sheets("konstable", { columns: 4, contentTop: 8, contentHeight: 296, footX: 78, headroom: 8 });
+  const fighter = (m) => ({ kind: "enemy", hp: 2, animation: m.walk, attackAnimation: m.attack, hitAnimation: m.hit });
+  const sentry = (m) => ({ kind: "guard", shoots: true, hp: 2, speed: 1.3, detectRadius: 260,
+    animation: m.idle, walkAnimation: m.walk, hitAnimation: m.hit });
+  T.amerikano = fighter(AMERIKANO);
+  T.sentinela = sentry(AMERIKANO);
+  T.konstable = fighter(KONSTABLE);
   // Block 119. The Constabulary on guard with a rifle, Act IV: on watch
   // at a post (catching rather than shooting where a scene says shoots:
   // false), and the rifles in a battle. The konstable's picture.
-  T["bantay-konstable"] = { kind: "guard", shoots: true, hp: 2, speed: 1.3, detectRadius: 260,
-    animation: owed("konstable") };
+  T["bantay-konstable"] = sentry(KONSTABLE);
+  // The standing sheets, for anyone who only stands in a scene (the
+  // soldier behind the oath, the Constabulary at the door).
+  window.SOLDIER_SHEETS = { amerikano: AMERIKANO, konstable: KONSTABLE };
 })();

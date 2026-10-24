@@ -61,9 +61,9 @@
 // not drawn: absent art is the placeholder, nothing else.
 // Every flag starts with a3_.
 //
-// Art. Every picture this act names and nobody has drawn yet (ART.md,
-// Owed) is the dashed placeholder box with its file name on it, and a
-// room whose painting is owed is a dark wall with the name on it.
+// Art. Every place is drawn in layers or built from a kit (24 Oct 2026,
+// as Act II's). A picture this act names and nobody has drawn yet
+// (ART.md, Owed) is the dashed placeholder box with its file name on it.
 // =============================================================
 
 (function () {
@@ -90,9 +90,15 @@
   const POBLETE_WALK = { src: "assets/sprites/characters/poblete-walk.png", frames: 8, fps: 12, ...POBLETE_CELL };
   const TAGAPAGBALITA = P.tagapagbalita;
   const WATAWAT = owed("scenery", "watawat-katagalugan");
-  const AMERIKANO = owed("enemies", "amerikano");
-  const KONSTABLE = owed("enemies", "konstable");
-  const SUKI_AMERIKANO = owed("characters", "sundalong-amerikano");
+  // 24 Oct 2026: the soldiers' sheets (content/enemies.js), for the ones
+  // who only stand or walk in a scene.
+  const AMERIKANO = window.SOLDIER_SHEETS.amerikano;
+  const KONSTABLE = window.SOLDIER_SHEETS.konstable;
+  // The American in the barber's chair, the proponent's still of 24 Oct
+  // 2026, chair and all: he stands where the empty chair stands (footX,
+  // the chair's pedestal), which is hidden while he sits.
+  const SUKI_AMERIKANO = { src: "assets/sprites/characters/sundalong-amerikano.png", frames: 1, fps: 1,
+    contentTop: 1, contentHeight: 418, footX: 108 };
   const BAGONG_NAKATIRA = { src: "assets/sprites/characters/bagong-nakatira.png", frames: 8, fps: 4, columns: 4,
     contentTop: 6, contentHeight: 297, footX: 46, headroom: 6 };
   const MANLILIMBAG = P.manlilimbag;
@@ -103,21 +109,16 @@
   const KAWAL = P.kawalKatagalugan; // content/people.js since Block 135
 
   // ---- The street ---------------------------------------------------
-  // Act I's street. Joins at every multiple of 1450 (5800, 7250, 8700,
-  // 10150, 11600, 13050); anyone a student must reach is 90 or more clear.
-  const STREET_PAINTINGS = [
-    "assets/backgrounds/act1/street-01.jpg",
-    "assets/backgrounds/act1/street-02.jpg",
-    "assets/backgrounds/act1/street-03.jpg",
-    "assets/backgrounds/act1/street-04.jpg",
-  ];
+  // Act I's street, in Act I's layers since 24 Oct 2026 (content/act1.js,
+  // window.TONDO_STREET), as Act II's is: the sky over the bay, the trees,
+  // the houses and the dirt, the shadow trees at every multiple of 1450
+  // (5800, 7250, 8700, 10150, 11600, 13050), and anyone a student must
+  // reach 90 or more clear of one.
   const PANEL = 1450;
-  const STREET_PANELS = Array.from({ length: 10 }, (_, i) => STREET_PAINTINGS[i % 4]);
   const STREET_WIDTH = 10 * PANEL;
-  const STREET_SKY = "#51a6ea";
 
   const HOME_X = 2000;          // Nanay's house; strangers live there now
-  const BARBERYA_X = 5260;      // the barbershop's door
+  const BARBERYA_X = 5300;      // the barbershop's door (Act I's, at 5340)
   const MANANAHI_X = 6400;
   const ISKO_X = 12200;
   const ARRIVE_X = 12500;       // into Manila from the east, by day
@@ -136,6 +137,117 @@
   const DAY_CHECKPOINTS = [10600, 9000, 7100, 5500];
   // January 1902: three doors to knock on, between the patrols.
   const DOORS_X = [10900, 8300, 6700];
+
+  // Act I's houses and props, moved so a house's own door stands at each
+  // of the three (its door half way along it, at 1.1): the nipa house and
+  // the stone house nearer, and a house with a balcony after the stall,
+  // which moves left with the bench's barrels as Act II has them; Act
+  // I's first press is left out (no press in this act), and two fences
+  // moved off the doors.
+  const TONDO = window.TONDO_STREET || {};
+  const doorAt = (i, half) => DOORS_X[i] + 40 - half;
+  const HOUSES_MOVED = { 10950: doorAt(0, 238), 8600: doorAt(1, 263), 7800: 7560, 10100: 10090, 6234: 6060 };
+  const STREET_HOUSES = (TONDO.houses || [])
+    .filter(([name, x]) => !(name === "imprenta" && x === 5720))
+    .map(([name, x]) => [name, HOUSES_MOVED[x] || x])
+    .concat([["bahay-balkonahe", doorAt(2, 233)]]);
+  const PROPS_MOVED = { 6680: 5740, 6820: 5900, 8290: 8640, 10720: 10450 };
+  const STREET_PROPS = (TONDO.props || []).map(([name, x]) => [name, PROPS_MOVED[x] || x]);
+  const STREET_BUILDINGS = TONDO.buildings ? TONDO.buildings(STREET_HOUSES, STREET_PROPS) : [];
+
+  // ---- The hills, the town and the rooms, in layers (24 Oct 2026) ----
+  // The places as Act II's fields are drawn (Block 142): a sky far off
+  // (rate 0), two rows of single trees (far, small and pale; near, tall),
+  // the place's own pieces on the road, placed by x at a height in world
+  // pixels (Macario is 134), and its ground. [name, x, height, more] for
+  // each, drawn in order, so a piece listed after another stands in front.
+  const piece = (dir) => (list, lift = 4) => list.map(([name, x, height, more]) => ({
+    src: `assets/sprites/${dir}/${name}.png`, x, height, lift, ...more,
+  }));
+  const field = piece("buildings");
+  // A row of single trees along a layer: the names in turn, spaced
+  // unevenly (gap, plus up to spread more) so no rhythm shows, as Tondo's.
+  const treeRow = (names, length, gap, spread, scale, start) => {
+    const row = [];
+    for (let i = 0, x = start; x < length; i++) {
+      row.push({ src: `assets/sprites/trees/${names[i % names.length]}.png`, x, scale });
+      x += gap + ((i * 137) % 100) / 100 * spread;
+    }
+    return row;
+  };
+  const MOUNTAIN_TREES = ["narra", "kawayan-gubat", "dao", "pako", "lauan", "palumpong-bundok",
+    "narra-bata", "palma-bundok", "narra", "dao", "kawayan-gubat", "lauan"];
+  const LOWLAND_TREES = ["mangga", "niyog", "akasya", "kawayan", "niyog-hilig", "saging"];
+  const treeLayers = (names) => [
+    { rate: 0.3, lift: 64, items: treeRow(names, 3000, 190, 220, 0.42, 30),
+      filter: "saturate(0.55) brightness(1.1) contrast(0.8)" },
+    { rate: 0.6, lift: 60, items: treeRow(names, 4200, 330, 380, 0.85, 120),
+      filter: "saturate(1.05)" },
+  ];
+  const sky = (name) => ({ src: `assets/backgrounds/layers/${name}.jpg`, rate: 0, lift: 50 });
+  const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 14 };
+  // The hills outside Manila, 1899: the city and the bay far below, the
+  // band's camp along the ridge (a hut by Isko, the cooking fire, a
+  // lean-to, washing, the canvas shelter, rocks), the watchtower over the
+  // lookout (LOOKOUT_X), and the palisade and the steps down the slope the
+  // patrol comes up.
+  const BUROL_PIECES = field([
+    ["kampo-kubo", 40, 330], ["kampo-lutuan", 520, 110], ["kampo-silungan", 700, 220],
+    ["kampo-sampayan", 1080, 140], ["kampo-tolda", 1560, 230], ["kampo-bato", 1900, 120],
+    ["kampo-bantayan", 2240, 360], ["kampo-palisada", 2480, 150], ["kampo-hagdan", 2990, 140],
+  ]);
+  // Morong, 1902: a palisade at the camp's edge, the hut, the fire, the
+  // canvas shelter behind Carreón (the papers of the Republic), the flag's
+  // ground open, the lean-to behind its soldiers, the washing, the
+  // watchtower, rocks and a log fence at the far end.
+  const MORONG_PIECES = field([
+    ["kampo-palisada", -100, 150], ["kampo-kubo", 260, 330], ["kampo-lutuan", 620, 110],
+    ["kampo-tolda", 1000, 230], ["kampo-silungan", 1650, 220], ["kampo-sampayan", 2100, 140],
+    ["kampo-bantayan", 2450, 360], ["kampo-bato", 2750, 120], ["kampo-bakod", 2950, 110],
+  ]);
+  // A town, April 1901: the church, the wall where the proclamation is
+  // posted (its board where Macario reads it), the town hall behind the
+  // officer's table (in front of him), the surrendered rifles stacked by
+  // the line, his chair and the American flag.
+  const BAYAN_PIECES = field([
+    ["bayan-simbahan", -80, 420], ["bayan-pader", 300, 120], ["bayan-proklama", 481, 150],
+    ["bayan-munisipyo", 760, 300], ["bayan-riple", 860, 95], ["bayan-bandila", 990, 400],
+    ["bayan-silya", 1075, 80], ["bayan-mesa", 1000, 70, { front: true }],
+  ]);
+  // The rooms from their kits, as Act II's are: the wall repeated, the
+  // floor under the feet, the pieces standing 10 back on the floor.
+  const roomWall = (name, filter) => [
+    { src: `assets/backgrounds/rooms/wall-${name}.png`, rate: 1, lift: 70, height: 0.9, filter },
+  ];
+  const roomFloor = (name, filter) => ({ src: `assets/backgrounds/rooms/floor-${name}.png`, lip: 16, filter });
+  const roomPieces = (room, list) => piece("rooms/" + room)(list, 10);
+  // The barbershop: the window, the washstand by the Barbero, the mirror
+  // over the chair, the shelf of razors, the little table (the oath's),
+  // the bench for waiting, the coat stand and the door, the way out.
+  const BARBERYA_LIGHT = "brightness(0.85) sepia(0.1)";
+  const BARBERYA_PIECES = roomPieces("barberya", [
+    ["bintana", 40, 105, { lift: 85 }], ["palanggana", 180, 95],
+    ["salamin", 420, 120, { lift: 75 }], ["istante", 560, 52, { lift: 140 }],
+    ["mesa", 625, 66], ["bangko", 740, 55], ["sabitan", 960, 160],
+    ["pinto", 1070, 190, { lift: 0 }],
+  ]);
+  // Calle Gunao: a sala in Quiapo, the capiz window, a palm, a painting,
+  // the table with the petition on it under the lamp, its two chairs,
+  // and the double door Poblete comes in by.
+  const SALA_LIGHT = "brightness(0.9)";
+  const GUNAO_PIECES = roomPieces("sala", [
+    ["bintana-capiz", 60, 140, { lift: 70 }], ["halaman", 240, 120],
+    ["larawan", 380, 70, { lift: 150 }], ["lampara", 515, 90, { lift: 230 }],
+    ["silya", 430, 95], ["mesa", 470, 66], ["papeles", 530, 22, { lift: 76 }],
+    ["silya", 640, 95, { flip: true }], ["pinto", 1045, 200, { lift: 0 }],
+  ]);
+  // Bilibid: the bench, the mat, the high window, the bucket, the ring in
+  // the wall, and the gate at the right, the way out (the tarangkahan).
+  const SELDA_LIGHT = "brightness(0.72) saturate(0.85)";
+  const SELDA_PIECES = roomPieces("selda", [
+    ["bangko", 120, 48], ["banig", 380, 26, { lift: 2 }], ["bintana", 560, 95, { lift: 170 }],
+    ["timba", 760, 40], ["singsing", 880, 55, { lift: 40 }], ["tarangkahan", 1068, 200, { lift: 0 }],
+  ]);
 
   // ---- Rooms ---------------------------------------------------------
   const ROOM = 1180;            // one screen wide, as the entablado
@@ -322,6 +434,7 @@
   async function theBarber() {
     setCutscene(true);
     showDecoration("suki", true);
+    showDecoration("silya-larawan", false);
     await wait(400);
     turnPlayer(-1);
     await playDialogue([
@@ -352,6 +465,7 @@
       return;
     }
     showDecoration("suki", true); // after a reload, too
+    showDecoration("silya-larawan", false);
     await playDialogue([
       { speaker: "Sundalong Amerikano", text: "Just a trim. Short on the sides." },
       { speaker: "Macario (sa isip)", text: "Maikli raw sa gilid." },
@@ -379,8 +493,13 @@
     ]);
     if (window.Game && Game.addCurrency) Game.addCurrency(10);
     showToast("+10 barya", 2000);
-    await moveDecoration("suki", ROOM + 120, 220);
+    // He gets up and goes: the chair stays, and he walks out.
     showDecoration("suki", false);
+    showDecoration("silya-larawan", true);
+    placeDecoration("suki-labas", SILYA_X + 40);
+    showDecoration("suki-labas", true);
+    await moveDecoration("suki-labas", ROOM + 120, 220);
+    showDecoration("suki-labas", false);
     await playDialogue([
       { speaker: "Barbero", text: "Ginupitan mo ang kaaway, at nag-iwan pa siya ng sukli." },
       { speaker: "Macario", text: "Mamayang gabi po, may darating na iba. Hindi para magpagupit." },
@@ -952,7 +1071,7 @@
     // Block 144. The menu's Mga Kabanata: the years on the act's card,
     // and its picture, one of the act's own paintings.
     years: "1899 - 1902",
-    menuArt: "assets/backgrounds/act3/burol-1.jpg",
+    menuArt: "assets/backgrounds/layers/manila-sky.jpg",
     devJumps: DEV_JUMPS,
 
     // One chain, in story order, the quest log (Block 48).
@@ -1079,16 +1198,13 @@
       {
         // Beats 1 and 2. His band's camp in the hills outside Manila,
         // February 1899 [INSERT]: the news of Santa Mesa, the lookout,
-        // and the battle. Its painting is owed.
+        // and the battle. In layers since 24 Oct 2026, its paintings retired.
         id: "burol",
         worldWidth: BATTLE_WIDTH,
-        // Block 135: two paintings of different shapes, each as wide as its
-        // own shape needs to stand at one height with the other, so the
-        // scene has one scale; the tree stands on the join.
-        panels: ["assets/backgrounds/act3/burol-1.jpg", "assets/backgrounds/act3/burol-2.jpg"],
-        panelWidths: [1848, 1352],
-        panelSky: "#4a8fd6",
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: [sky("manila-sky"), ...treeLayers(MOUNTAIN_TREES)],
+        buildings: BUROL_PIECES,
+        ground: GRASS,
+        frontGrass: true,
         dangerous: true,
         startX: 400,
         scripts: [
@@ -1128,9 +1244,12 @@
         // night: four patrols, and three doors.
         id: "tondo",
         worldWidth: STREET_WIDTH,
-        panels: STREET_PANELS,
-        ground: false, // Block 134: the paintings' own road, not the dirt strip
-        panelSky: STREET_SKY,
+        // 24 Oct 2026: Act I's layers, the trees where the joins were.
+        layers: TONDO.layers,
+        buildings: STREET_BUILDINGS,
+        ground: TONDO.ground,
+        frontGrass: true,
+        panelWidth: PANEL,
         startX: ARRIVE_X,
         hintSpots: HINT_SPOTS,
         noRanged: true,
@@ -1295,18 +1414,20 @@
         ],
       },
       {
-        // Beats 6, 7 and 12. The barbershop, one room; its painting is
-        // owed. By day the Barbero and an American in the chair; that night
-        // the three; in January 1902 the oath broken in on.
+        // Beats 6, 7 and 12. The barbershop, one room, from its kit (24 Oct
+        // 2026). By day the Barbero and an American in the chair; that
+        // night the three; in January 1902 the oath broken in on.
         id: "barberya",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act3/barberya.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: roomWall("tabla", BARBERYA_LIGHT),
+        buildings: BARBERYA_PIECES,
+        ground: roomFloor("tabla", BARBERYA_LIGHT),
+        panelWidth: ROOM,
         night: { requiresFlag: "a3_gabiSaBarberya", music: NIGHT },
         noRanged: true,
         startX: ROOM - 160,
         exits: [
-          { id: "labas", x: ROOM - 70, width: 70, label: "Lumabas", unlessFlag: "a3_nagupitan",
+          { id: "labas", x: ROOM - 100, width: 80, label: "Lumabas", unlessFlag: "a3_nagupitan",
             toScene: "tondo", toX: BARBERYA_X + 60, toFacing: 1 },
         ],
         scripts: [
@@ -1327,11 +1448,16 @@
           },
         ],
         decorations: [
-          { id: "suki", x: SILYA_X + 10, animation: SUKI_AMERIKANO, faceMovement: true,
+          // The barber's chair (Act I's picture), and the American in it.
+          { id: "silya-larawan", x: SILYA_X + 40, animation: SILYA, displayHeight: 90 },
+          { id: "suki", x: SILYA_X + 40, animation: SUKI_AMERIKANO, displayHeight: 108,
             hidden: true, speakers: ["Sundalong Amerikano"] },
-          { id: "sundalo-likod", x: -100, hidden: true, animation: AMERIKANO, speakers: ["Sundalong Amerikano"] },
-          { id: "konstable-pinto", x: ROOM + 60, hidden: true, animation: KONSTABLE, facing: -1,
-            speakers: ["Konstable"] },
+          { id: "suki-labas", x: SILYA_X + 40, hidden: true, animation: AMERIKANO.idle,
+            walkAnimation: AMERIKANO.walk, faceMovement: true },
+          { id: "sundalo-likod", x: -100, hidden: true, animation: AMERIKANO.idle, walkAnimation: AMERIKANO.walk,
+            faceMovement: true, speakers: ["Sundalong Amerikano"] },
+          { id: "konstable-pinto", x: ROOM + 60, hidden: true, animation: KONSTABLE.idle, walkAnimation: KONSTABLE.walk,
+            faceMovement: true, facing: -1, speakers: ["Konstable"] },
         ],
         npcs: [
           {
@@ -1344,8 +1470,9 @@
             ],
           },
           {
-            // His chair, for the haircut (cutTheAmerican). Act I's, owed.
-            id: "silya", x: SILYA_X, label: "Silya", animation: SILYA, displayHeight: 90,
+            // His chair, for the haircut (cutTheAmerican): a body to reach,
+            // its picture the decoration silya-larawan.
+            id: "silya", x: SILYA_X, label: "Silya", scenery: true,
             hiddenByFlag: "a3_gabiSaBarberya",
             interactLabel: "Gupitin",
             interactIcon: "i-scissors",
@@ -1415,13 +1542,15 @@
         ],
       },
       {
-        // Block 120. A cell in Bilibid, July 1902: Act IV's room (its
-        // painting owed, the floor the engine's stone). The amnesty from a
-        // guard; the gate at the right edge.
+        // Block 120. A cell in Bilibid, July 1902: Act IV's room, from its
+        // kit (24 Oct 2026). The amnesty from a guard; the gate at the
+        // right edge.
         id: "selda",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act4/selda.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: roomWall("bato", SELDA_LIGHT),
+        buildings: SELDA_PIECES,
+        ground: roomFloor("bato", SELDA_LIGHT),
+        panelWidth: ROOM,
         noRanged: true,
         startX: 300,
         wayOut: "Lumabas sa Bilibid: pumunta sa kanan",
@@ -1447,12 +1576,15 @@
       },
       {
         // Beat 8. A town, April 1901: the proclamation on the wall, the
-        // men in line before an American officer's table. Its painting is
-        // owed.
+        // men in line before an American officer's table. In layers since
+        // 24 Oct 2026 (the proponent: the plaza too), its painting retired.
         id: "bayan",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act3/bayan.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: [sky("sierra-sky"), ...treeLayers(LOWLAND_TREES)],
+        buildings: BAYAN_PIECES,
+        ground: TONDO.ground,
+        frontGrass: true,
+        panelWidth: ROOM,
         noRanged: true,
         startX: 250,
         scripts: [
@@ -1478,11 +1610,14 @@
       },
       {
         // Beats 9 and 10. Calle Gunao, Quiapo: a house where the Partido
-        // Nacionalista is founded [INSERT: the house]. Its painting is owed.
+        // Nacionalista is founded [INSERT: the house]. From the sala's kit
+        // (24 Oct 2026).
         id: "calle-gunao",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act3/calle-gunao.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: roomWall("palitada", SALA_LIGHT),
+        buildings: GUNAO_PIECES,
+        ground: roomFloor("narra", SALA_LIGHT),
+        panelWidth: ROOM,
         noRanged: true,
         startX: 150,
         scripts: [
@@ -1555,17 +1690,17 @@
       },
       {
         // Beats 13 and 14. The camp in the mountains of Morong, 1902.
-        // Its painting is owed. Carreón and Montalan; the Republic and its
-        // flag; the vow; the Constabulary's attack.
+        // In layers since 24 Oct 2026. Carreón and Montalan; the Republic
+        // and its flag; the vow; the Constabulary's attack.
         id: "morong",
         worldWidth: BATTLE_WIDTH,
-        // Block 135: two paintings of different shapes, each as wide as its
-        // own shape needs to stand at one height with the other, so the
-        // scene has one scale; the tree stands on the join.
-        panels: ["assets/backgrounds/act3/morong-1.jpg", "assets/backgrounds/act3/morong-2.jpg"],
-        panelWidths: [1696, 1504],
-        panelSky: "#4a8fd6",
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: [sky("sierra-sky"), ...treeLayers(MOUNTAIN_TREES)],
+        buildings: MORONG_PIECES,
+        ground: GRASS,
+        frontGrass: true,
+        // One shadow tree, at 2200: clear of Montalan, Carreón, the flag,
+        // its soldiers and the checkpoint before it.
+        panelWidth: 2200,
         dangerous: true,
         startX: 400,
         scripts: [

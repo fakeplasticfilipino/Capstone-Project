@@ -40,41 +40,7 @@ Nothing needed.
 
 ### Act III
 
-    manila-view-nature.jpg
-        (Attach the file _dev/parallax-art/tondo-nature.png)
-        Refer to the attached image and use the same art style. Draw
-        ONLY the far background seen from a hill outside Manila in
-        1899: a clear blue sky with soft clouds, and far below along the
-        bottom third the city of Manila small in the distance (church
-        domes and bell towers, red tile roofs) beside Manila Bay with a
-        few distant sailing ships, and low mountains across the bay.
-        Everything small and hazy, very far away. No foreground trees,
-        no people, no road. Fill the whole picture edge to edge. Wide
-        landscape, largest size.
-        (NOT STARTED)
-
-    mountain-trees.png
-        (Attach the files mangga.png and akasya.png from the folder
-        assets/sprites/trees)
-        Refer to the attached images and use the same art style, size
-        and finish. Make a sprite sheet of eight separate single trees
-        of the mountains of the Philippines in 1902, arranged in a grid
-        with wide empty space between them so none touch or overlap,
-        each one whole from the roots to the top of its crown, standing
-        on its own flat ground line, seen straight on from the side. (1)
-        A tall narra with a wide spreading crown. (2) A tall dao with a
-        straight trunk and a high crown. (3) A clump of wild bamboo. (4)
-        A tree fern. (5) A slender mountain palm. (6) A tall dark
-        dipterocarp with buttress roots. (7) A young narra, smaller. (8)
-        A low bush of mountain undergrowth. Varying heights, muted
-        greens. No forest behind them, no rocks between them, no people,
-        no sky, no ground or shadows between trees. Transparent
-        background. Landscape, largest size.
-        Cut into (assets/sprites/trees/): narra.png (1), dao.png (2),
-        kawayan-gubat.png (3), pako.png (4), palma-bundok.png (5),
-        lauan.png (6), narra-bata.png (7), palumpong-bundok.png (8);
-        placed in two rows like Tondo's (treeRow, content/act1.js)
-        (NOT STARTED)
+Nothing needed.
 
 ### Act IV
 
@@ -164,35 +130,7 @@ Also wanted (not in the game yet):
 
 ### Act III
 
-    assets/sprites/characters/sundalong-amerikano.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image and use the same art style and
-        size. Draw an American private of 1900 with short hair, the
-        whole body, sitting side on and facing right in a wooden
-        barber's chair with a white barber's cape over him. Transparent
-        background.
-        (NOT STARTED)
-
-    assets/sprites/enemies/amerikano.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image and use the same art style and
-        size. Draw an American soldier of 1899 to 1906, the whole body,
-        standing side on and facing right, arms free of the body, feet
-        showing: a broad-brimmed campaign hat, a blue flannel shirt,
-        khaki trousers, canvas leggings, a rifle with bayonet held
-        across his body. Not the steel helmet of 1917. Transparent
-        background.
-        (NOT STARTED)
-
-    assets/sprites/enemies/konstable.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image and use the same art style and
-        size. Draw a Filipino of the Philippine Constabulary in 1905,
-        the whole body, standing side on and facing right, arms free of
-        the body, feet showing: a khaki uniform, a campaign hat, a
-        cartridge belt, a rifle held across his body. Transparent
-        background.
-        (NOT STARTED)
+Nothing needed.
 
 Also wanted (not in the game yet):
 
@@ -329,51 +267,6 @@ Also wanted (not in the game yet):
 
 ### Act III
 
-    barberya-kit.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sprite sheet of the separate pieces of a small,
-        tidy barbershop in Tondo, 1900. (1) A large mirror in a carved
-        wooden frame, to hang on a wall. (2) A narrow wall shelf with
-        razors, combs, scissors and glass bottles. (3) A small square
-        wooden table covered with a plain cloth, its top at a man's hip.
-        (4) A long wooden bench for waiting customers. (5) A wooden door
-        with a small glass pane, a little taller than a man. (6) A
-        window with wooden shutters open, daylight outside. (7) A wooden
-        coat stand with a hat and a jacket. (8) A washbasin and a jug on
-        a wooden stand, a towel over it. Each piece whole and seen
-        straight on from the side (flat, no perspective), with wide
-        empty space between them so none touch or overlap, all drawn in
-        proportion to each other. No people, no walls, no floor, no
-        shadows between pieces. Transparent background. Landscape,
-        largest size.
-        Cut into (_dev/room-art/barberya/): salamin.png (1),
-        istante.png (2), mesa.png (3), bangko.png (4), pinto.png
-        (5), bintana.png (6), sabitan.png (7), palanggana.png
-        (8); the barber's chair is silya-barbero.png
-        Takes the place of (for the team):
-        assets/backgrounds/act3/barberya.jpg
-        (NOT STARTED)
-
-    selda-kit.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sprite sheet of the separate pieces of a cell in
-        Bilibid Prison, Manila, 1902 to 1907, bare and grim. (1) A cell
-        gate of iron bars in a heavy wooden frame, a little taller than
-        a man. (2) A small high arched window with iron bars, daylight
-        outside. (3) A plain wooden bench. (4) A wooden bucket. (5) A
-        thin straw sleeping mat lying flat. (6) A heavy iron ring fixed
-        to a stone block. Each piece whole and seen straight on from the
-        side (flat, no perspective), with wide empty space between them
-        so none touch or overlap, all drawn in proportion to each other.
-        No people, no walls, no floor, no shadows between pieces.
-        Transparent background. Landscape, largest size.
-        Cut into (_dev/room-art/selda/): tarangkahan.png (1),
-        bintana.png (2), bangko.png (3), timba.png (4),
-        banig.png (5), singsing.png (6)
-        (NOT STARTED)
-
     sala-kit.png
         (Attach the file _dev/parallax-art/tondo-props.png)
         Refer to the attached image and use the same art style and
@@ -394,35 +287,16 @@ Also wanted (not in the game yet):
         proportion to each other. No people, no walls, no floor, no
         shadows between pieces. Transparent background. Landscape,
         largest size.
-        Cut into (_dev/room-art/sala/): mesa.png (1),
+        Cut into (assets/sprites/rooms/sala/): mesa.png (1),
         mesa-handaan.png (2), papeles.png (3), silya.png (4),
         bintana-capiz.png (5), pinto.png (6),
         bandila-amerikano.png (7), lampara.png (8), larawan.png
-        (9), halaman.png (10)
+        (10), halaman.png (9) (cut-room-kit.py's numbers)
         Takes the place of (for the team):
-        assets/backgrounds/act3/calle-gunao.jpg,
         assets/backgrounds/act4/sala.jpg
-        (NOT STARTED)
-
-    camp.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
-        Refer to the attached image and use the same art style, size
-        and finish. Make a sprite sheet of separate pieces of a hidden
-        rebel camp in the mountains of the Philippines in 1902, arranged
-        in a grid with wide empty space between them so none touch or
-        overlap. Each piece in straight-on front view (flat side
-        elevation, no perspective), standing on its own flat ground
-        line. (1) A wooden watchtower with a thatched roof and a ladder.
-        (2) A nipa hut on tall stilts with a ladder. (3) An open lean-to
-        with a thatched roof. (4) An open shelter with a canvas cloth
-        roof and a table under it. (5) A long bamboo palisade. (6) A
-        short rough log fence. (7) Stone steps going up, seen from the
-        side. (8) A group of large rocks. (9) A cooking fire with a pot
-        on three stones. (10) A rack of bamboo poles with drying cloth.
-        No people, no flags, no trees behind, no ground or shadows
-        between pieces. Transparent background. Landscape, largest
-        size.
-        (NOT STARTED)
+        (DELIVERED 24 Oct 2026: cut for Calle Gunao, which is built
+        from it; the sheet stays in _dev/parallax-art/ until Act IV's
+        sala is built, mesa-handaan and bandila-amerikano being its)
 
     town.png
         (Attach the file _dev/parallax-art/tondo-houses.png)
@@ -442,29 +316,10 @@ Also wanted (not in the game yet):
         largest size.
         (For the team: the plaza, bayan, in Act III, and Malabon in
         Act IV)
-        (NOT STARTED)
-
-    bayan-props.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sprite sheet of the separate pieces of a town
-        plaza in the Philippines in April 1901, where an American
-        officer takes the surrender of Filipino soldiers. (1) A plain
-        wooden camp table with papers, an inkwell and a ledger on it,
-        its top at a man's hip. (2) A folding wooden camp chair seen
-        from the side. (3) A printed proclamation pasted on a wooden
-        notice board on two posts, a little taller than a man. (4) The
-        flag of the United States of 1901 (45 stars) flying on a tall
-        wooden pole. (5) A stack of surrendered rifles leaning together
-        against each other. Each piece whole and seen straight on from
-        the side (flat, no perspective), with wide empty space between
-        them so none touch or overlap, all drawn in proportion to each
-        other. No people, no ground, no shadows between pieces.
-        Transparent background. Landscape, largest size.
-        Cut into (assets/sprites/buildings/): bayan-mesa.png (1),
-        bayan-silya.png (2), bayan-proklama.png (3),
-        bayan-bandila.png (4), bayan-riple.png (5)
-        (NOT STARTED)
+        (DELIVERED 24 Oct 2026: the church, the town hall and the wall
+        cut for the plaza (bayan-simbahan, bayan-munisipyo,
+        bayan-pader); the sheet stays in _dev/parallax-art/ for
+        Malabon's nipa house, store and tower)
 
     assets/sprites/scenery/watawat-katagalugan.png
         (Attach the file _dev/parallax-art/tondo-props.png, and the
@@ -474,7 +329,11 @@ Also wanted (not in the game yet):
         in the second picture, flying on a tall bamboo pole taller than
         a man, seen from the side, nothing else in the picture.
         Transparent background.
-        (NOT STARTED)
+        (OWED AGAIN, 24 Oct 2026: the picture delivered was today's
+        Philippine flag, the white triangle with three stars and the
+        sun, not the Katagalugan's; kept in
+        docs-private/art-delivered/2026-10-24-act3/. Check that the
+        second picture attached is the Katagalugan's flag.)
 
 ### Act IV
 
@@ -540,13 +399,16 @@ Also wanted (not in the game yet):
 
     scene        nature            trees      buildings           ground
     tondo        tondo (done)      lowland    tondo (done) +      dirt
-      (Acts I, II)                 (done)     tondo-doors
+      (Acts I to III)              (done)     tondo-doors
     san-juan     sierra (done)     lowland    garrison (done)     dirt
     nangka       sierra (done)     lowland    rural + river       grass
                                               (done)              (done)
-    burol        manila-view       mountain   camp                grass
+    burol        manila-view       mountain   camp (done)         grass
+                 (done)            (done)
     bayan        sierra (done)     lowland    town + bayan-props  dirt
-    morong       sierra            mountain   camp                grass
+                                              (done)
+    morong       sierra (done)     mountain   camp (done)         grass
+                                   (done)
     himpilan     sierra-night      lowland    post                dirt
     dimasalang   sierra            mountain   camp                grass
     malabon      cavite-dusk       lowland    town                dirt
@@ -561,13 +423,11 @@ kits instead (22 Oct 2026, the proponent, all nine): a wall from
 room-walls.png repeated along the room, a floor from room-floors.png,
 and the room's own pieces placed by x on the hotspots (doors, windows,
 the press's shelves and hiding places). The entablado and the pulungan
-are built so (Block 143), and Act II's imprenta and bahay (Block 142,
-24 Oct 2026); the walls and floors the other rooms will use are
-already cut into _dev/room-art/ (wall-bato, wall-palitada; floor-bato,
-floor-narra), to move into
-assets/backgrounds/rooms/ with the room that first uses them. Until a
-room is built from its kit, the game keeps its painting (the selda) or
-the owed dark wall. Cut a sheet with _dev/tools/cut-room-kit.py.
+are built so (Block 143), Act II's imprenta and bahay (Block 142,
+24 Oct 2026), and Act III's barberya, selda (Act IV's too) and
+calle-gunao (24 Oct 2026), every wall and floor now in
+assets/backgrounds/rooms/. Until a room is built from its kit (the
+sala and the hukuman, Act IV), the game draws the owed dark wall. Cut a sheet with _dev/tools/cut-room-kit.py.
 
     room          wall       floor       pieces
     entablado     tabla      entablado   entablado-kit
@@ -605,9 +465,15 @@ Done and in the game. Nothing here needs drawing.
                   (san-juan-1 and 2, nangka-1 and 2, pugad-lawin,
                   balara, laguna) and the delivered sheets in
                   docs-private/art-delivered/
-        Act III   the hill camp (burol-1 and 2), the plaza (bayan),
-                  Morong (morong-1 and 2),
-                  the cell in Bilibid (selda, Acts III and IV)
+        Act III   every place in layers or from a kit (24 Oct 2026):
+                  Manila's sky from the hills (manila-view-nature, as
+                  layers/manila-sky.jpg), the mountain trees (cut into
+                  assets/sprites/trees/); the paintings they replace
+                  (burol-1 and 2, bayan, and the selda of Acts III and
+                  IV) and the delivered sheets in
+                  docs-private/art-delivered/2026-10-24-act3/; Morong's
+                  paintings (morong-1 and 2) stay, Act IV's camp
+                  drawing them
         Act IV    the Constabulary's post (himpilan-1 and 2),
                   Di-Masalang (dimasalang-1 and 2), Malabon
                   (malabon-1 and 2), Bilibid's yard (patyo)
@@ -628,7 +494,11 @@ Done and in the game. Nothing here needs drawing.
         Act III   Álvarez, Carreón, Montalan, Poblete (standing, since
                   Block 135), the Guro, the Opisyal, the Bagong
                   Nakatira, the Katagalugan's fighter, the Bilibid
-                  guard
+                  guard; the American soldier (amerikano) and the
+                  Constabulary (konstable), animated from their stills
+                  (24 Oct 2026, rigs amerikano.js and konstable.js),
+                  and the American in the barber's chair
+                  (sundalong-amerikano)
 
     Props
         Act I     Tondo's houses, street props and doors
@@ -645,3 +515,8 @@ Done and in the game. Nothing here needs drawing.
                   bahay-kit), cut into assets/sprites/rooms/; the
                   press, the straw and the scarecrow (act2-props:
                   palimbagan, dayami, panakot)
+        Act III   the camp (camp), the plaza (bayan-props, and town's
+                  church, town hall and wall), cut into
+                  assets/sprites/buildings/; the barbershop's, the
+                  cell's and the sala's furniture (barberya-kit,
+                  selda-kit, sala-kit), cut into assets/sprites/rooms/

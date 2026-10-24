@@ -2571,11 +2571,11 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("on arrival: Americans on every corner", c.lines[0] === "Macario (sa isip): Mga Amerikano sa bawat kanto.", c.lines);
     ok("Tondo, May 1899: the task is Isko's letter, and four American sentries walk the street",
        await stepIs(page, "Basahin ang sulat ni Isko") && (await on(page, "sentinela-araw-")) === 4 &&
-       // Block 141: their picture is owed again, so each is the
-       // placeholder box naming it; no art borrowed (Block 118).
+       // Block 147: the proponent's soldier, his own sheets drawn, not
+       // the placeholder box naming the file.
        await page.evaluate(() => {
          const g = GUARDS.find((x) => x.id === "sentinela-araw-1");
-         return Boolean(g && /amerikano\.png/.test(g.el.textContent) && !g.el.style.getPropertyValue("--body-tint"));
+         return Boolean(g && !/amerikano\.png/.test(g.el.textContent) && /amerikano/.test(g.el.innerHTML));
        }));
     await quiet(page);
     await walkTo(page, 12320);
@@ -2721,7 +2721,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        cutOff > 0 && c.lines[cutOff + 1] === "Sundalong Amerikano: Open up! U.S. Army!" &&
        c.lines.includes("Macario (sa isip): May nagturo."), c.lines);
     ok("prison, and the card lifts on a cell in Bilibid, July 1902 (Block 120)", await waitForScene(page, "selda", 30000) &&
-       await page.evaluate(() => document.getElementById("ground-tiles").classList.contains("ground-hidden"))); // Block 137: the painting's floor
+       await page.evaluate(() => /floor-bato/.test(document.getElementById("ground-tiles").style.getPropertyValue("--ground-src")))); // Block 147: the kit's stone floor
     // The guard walks the length of the cell to the bars between the first
     // line and his: about five seconds at a student's speed (6 Oct 2026).
     c = await readLines(page, 8, 9000);
@@ -2972,7 +2972,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("seized at the toast, at its peak", cut > 0 && c.lines[cut + 1] === "Van Schaick: Now!" &&
        c.lines.includes("Macario (sa isip): Ngayon, sila ang gumanap."), c.lines);
     ok("Bilibid", await waitForScene(page, "selda", 30000) &&
-       await page.evaluate(() => document.getElementById("ground-tiles").classList.contains("ground-hidden"))); // Block 137: the painting's floor
+       await page.evaluate(() => /floor-bato/.test(document.getElementById("ground-tiles").style.getPropertyValue("--ground-src")))); // Block 147: the kit's stone floor
     await readLines(page, 2);
     await playOn(page, "state.flags.a4_saSelda === true && !cutscenePlaying", 20000);
     await settle(page);

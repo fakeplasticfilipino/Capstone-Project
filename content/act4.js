@@ -71,7 +71,7 @@
   const DE_VEGA = owed("characters", "de-vega");
   const HUKOM = owed("characters", "hukom");
   const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
-  const AMERIKANO = owed("enemies", "amerikano");          // Act III's, owed
+  const AMERIKANO = window.SOLDIER_SHEETS.amerikano;       // content/enemies.js, 24 Oct 2026
   // Block 120. The crowd in Manila, seen and not only heard: two
   // townspeople, owed, placeholders until drawn.
   const TAONG_BAYAN = [owed("characters", "taong-bayan-1"), owed("characters", "taong-bayan-2")];
@@ -109,6 +109,18 @@
   const STOREROOM_X = 150;
   const YARD_WIDTH = 2400;      // Bilibid's yard
   const SCAFFOLD_X = 1900;
+
+  // The cell in Bilibid from its kit (24 Oct 2026), as Act III's is: the
+  // stone wall repeated, the stone floor, the pieces standing 10 back on
+  // it at a height in world pixels (Macario is 134). Here the high window
+  // is the one he looks out of (bintana, at 1000), the gate beside it.
+  const SELDA_LIGHT = "brightness(0.72) saturate(0.85)";
+  const SELDA_PIECES = [
+    ["bangko", 120, 48], ["banig", 380, 26, { lift: 2 }], ["singsing", 600, 55, { lift: 40 }],
+    ["timba", 860, 40], ["bintana", 990, 95, { lift: 150 }], ["tarangkahan", 1085, 200, { lift: 0 }],
+  ].map(([name, x, height, more]) => ({
+    src: "assets/sprites/rooms/selda/" + name + ".png", x, height, lift: 10, ...more,
+  }));
 
   // The post at night: three of the Constabulary, each with a crate in
   // his beat. They catch, not shoot; a catch puts Macario back at the
@@ -1472,9 +1484,10 @@
         decorations: [
           { id: "villafuerte-s", x: 100, animation: VILLAFUERTE, speakers: ["Villafuerte"] },
           { id: "de-vega-s", x: 200, animation: DE_VEGA, speakers: ["De Vega"] },
-          { id: "sundalo-1", x: -100, hidden: true, animation: AMERIKANO, faceMovement: true,
-            speakers: ["Sundalong Amerikano"] },
-          { id: "sundalo-2", x: ROOM + 60, hidden: true, animation: AMERIKANO, faceMovement: true },
+          { id: "sundalo-1", x: -100, hidden: true, animation: AMERIKANO.idle, walkAnimation: AMERIKANO.walk,
+            faceMovement: true, speakers: ["Sundalong Amerikano"] },
+          { id: "sundalo-2", x: ROOM + 60, hidden: true, animation: AMERIKANO.idle, walkAnimation: AMERIKANO.walk,
+            faceMovement: true },
         ],
         npcs: [
           {
@@ -1507,12 +1520,14 @@
         ],
       },
       {
-        // Beats 10 and 12. A cell in Bilibid, 1906 and 1907. Its painting
-        // is owed; the floor is the engine's stone.
+        // Beats 10 and 12. A cell in Bilibid, 1906 and 1907, from its kit
+        // (24 Oct 2026; SELDA_PIECES).
         id: "selda",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act4/selda.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: [{ src: "assets/backgrounds/rooms/wall-bato.png", rate: 1, lift: 70, height: 0.9, filter: SELDA_LIGHT }],
+        buildings: SELDA_PIECES,
+        ground: { src: "assets/backgrounds/rooms/floor-bato.png", lip: 16, filter: SELDA_LIGHT },
+        panelWidth: ROOM,
         noRanged: true,
         startX: 300,
         scripts: [

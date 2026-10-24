@@ -6627,6 +6627,68 @@ Built to the plan the proponent accepted:
 Every engine path is the shared one: the blows go through meleeAttack
 and takeBlow like the punch before them (Consistency).
 
+## Block 147: Act III in layers and kits, 24 Oct 2026
+
+The proponent's word: everything in Act III replaced, the plaza
+included (ART.md had kept its one painting; that line was taken out).
+Twelve pictures arrived from ART.md's prompts the same day; eleven are
+in the game.
+
+    Tondo        Act I's layers, as Act II's street. Act III's three
+                 doors to knock on (6700, 8300, 10900) were bodies on
+                 a painting; now a house's own door stands at each:
+                 the nipa house and the stone house moved nearer, a
+                 balcony house added after the stall (the stall and
+                 the barrels moved left as Act II has them), Act I's
+                 first press left out, two fences moved off the doors.
+                 The door positions were left where the story had them
+                 and the houses moved to them, so no guard's beat,
+                 checkpoint or guide changed. The barberya's door is
+                 Act I's (5340), the exit moved 40 to meet it.
+    burol,       Manila's sky from the hills (burol) or the Sierra's
+      morong     (morong), two rows of single mountain trees, the
+                 camp's pieces, the grass. The trees are single trees,
+                 not a continuous tree line: the proponent set the
+                 forest wall aside for Tondo on 22 Oct and the first
+                 prompt for the mountains still asked for one (fixed
+                 before it was drawn). Morong's shadow tree at 2200, one
+                 only, clear of Montalan, Carreón, the flag and its
+                 checkpoint. Act IV's camp still draws Morong's
+                 paintings, so they stay in assets/ until Act IV.
+    bayan        The Sierra sky, Tondo's trees, the town's church, wall
+                 and town hall (town.png, made any Tagalog town of 1901
+                 to 1905 so Malabon shares it), and bayan-props: the
+                 proclamation's board where the proclamation is read,
+                 the officer's table drawn in front of him, the flag,
+                 the surrendered rifles.
+    rooms        The barberya (tabla), Calle Gunao (palitada and narra,
+                 the sala's kit) and the selda (bato), Act IV's selda
+                 too, its window by the one he looks out of. The
+                 barberya's exit 80 wide at 1080, under its door.
+    soldiers     The amerikano and the konstable animated from their
+                 stills (rigs, thrust for the strike, as Block 135's
+                 1917 soldier was). The rifle's stock below the belt is
+                 cloth over the legs; the butt beyond the thigh is
+                 clear, or the far leg carried a dark copy of it. The
+                 bayonet's point stood as high as the face and nodded
+                 with the head: animate-still.js gained outlines.notHead
+                 (additive, no other rig changes). Everyone who only
+                 stands or walks in a scene (the soldier behind the oath,
+                 the Constabulary at the door, Act IV's two in the sala)
+                 now uses the same sheets, window.SOLDIER_SHEETS.
+    the chair    The American's picture is in the chair, chair and all.
+                 The chair became a decoration (silya-larawan) hidden
+                 while he sits, the NPC a body to reach; when he goes he
+                 walks out as the standing soldier, rather than sliding
+                 the chair to the door.
+
+Not taken: watawat-katagalugan.png came as today's Philippine flag,
+not the Katagalugan's, so it stays owed (ART.md) and the original is
+in docs-private/art-delivered/2026-10-24-act3/. town.png's nipa house,
+store and tower and sala-kit's banquet table and American flag are not
+cut until Act IV uses them, so the site serves nothing it never draws;
+both sheets wait in _dev/parallax-art/.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every
