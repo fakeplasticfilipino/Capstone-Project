@@ -128,6 +128,28 @@ Nothing needed.
 
 Also wanted (not in the game yet):
 
+    macario-npc-style.png
+        (Attach isko-still.png from the folder assets/sprites/characters,
+        and macario-still.png from the folder _dev/player-lab)
+        Refer to the two attached images. Draw the man in the second
+        image (his face, his long loose black hair, his white jacket with
+        the standing collar and the cream embroidery down the front, his
+        dark trousers and his black leather shoes) in exactly the art
+        style of the first image: the same clean dark outlines, the same
+        simple, flatter shading with few colours, the same level of
+        detail and the same proportions of head to body. He stands side
+        on, facing right, upright and relaxed, both feet flat on the
+        ground, his near arm hanging straight down with a little space
+        between the arm and his body, the hand loosely closed. His whole
+        figure is in the picture, about 1000 pixels tall, nothing cut
+        off. No shadow on the ground, nothing else in the picture.
+        Transparent background.
+        (NOT STARTED; for the team: a Macario in the NPCs' own style, so
+        he matches them and moves as naturally as they do (Block 145).
+        If it comes out right, his bones are traced on it as on
+        macario-still.png and _dev/tools/skeleton.js writes every sheet
+        from it.)
+
     macario-parts.png
         (Attach the file _dev/player-lab/macario-still.png)
         Refer to the attached image. Draw this exact man again, same
@@ -162,11 +184,9 @@ Also wanted (not in the game yet):
         torso.png, skirt.png, upper-arm.png, forearm.png, hand.png,
         far-upper-arm.png, far-forearm.png, far-hand.png, thigh.png,
         shin.png, foot.png, far-thigh.png, far-shin.png, far-foot.png)
-        (NOT STARTED; for the team: a try at a better Macario, Block
-        145. If it comes out consistent, _dev/tools/skeleton.js is
-        taught to build him from these parts instead of the one still.
-        If a part comes out wrong, ask again for that part alone,
-        attaching the sheet.)
+        (TRIED 24 Oct 2026 and set aside: the sheet came out clean, but
+        put together the realistic parts looked wrong at the joints and
+        in proportion (Block 145). Kept for the record, not owed.)
 
 ### Act II
 
