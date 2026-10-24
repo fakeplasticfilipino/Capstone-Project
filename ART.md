@@ -265,6 +265,20 @@ Also wanted (not in the game yet):
         (NOT STARTED; the bolo item's slash is drawn without it until it
         comes, _dev/tools/skeleton.js)
 
+    assets/sprites/player/pistola.png
+        (Attach the file _dev/player-lab/macario-still.png)
+        Refer to the attached image and use the same art style. Draw
+        ONE revolver of the 1890s, the kind a Filipino revolutionary
+        carried, seen exactly from the side: the grip at the LEFT end,
+        angled down, wooden with a metal butt cap, the cylinder and
+        trigger guard in the middle, and the barrel pointing straight
+        to the RIGHT. Dark worn steel, not shiny. Sized to fit the man
+        in the attached image's hand (about 25 cm long on him). Nothing
+        else in the picture, no hand, no holster, no smoke, no shadow.
+        Transparent background.
+        (NOT STARTED; the shot is drawn with an empty fist pointing
+        where it will be until it comes, _dev/tools/skeleton.js, shoot)
+
 ### Act III
 
     sala-kit.png
