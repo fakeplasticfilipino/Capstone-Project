@@ -390,14 +390,17 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
 
 Block 142 (above) comes first. Then, in order.
 
-Block 145 (IN PROGRESS), Macario's own skeleton: the proponent judges
-the new model on the test page (serve the repository, open
-/_dev/player-lab/; idle, walk, punch, shoot, jump, bolo slash beside
-today's Macario and Isko). Rerun with node _dev/tools/skeleton.js
-macario (add --ship for the sheets the game uses). When accepted: the
-new sheets into BASE_SPRITE_SHEETS, the still into assets/, the itak
-given a price or a moment in the story, and the player's test pieces
-(test.js AI, AS, AM, Y). Owed: the itak's blade and the pistol (props).
+Block 145 (IN PROGRESS), Macario's own skeleton: the new model is in
+the game since 24 Oct 2026 (BASE_SPRITE_SHEETS; the old sheets kept in
+docs-private/art-delivered/2026-10-24-old-macario/). On the phone:
+open any story point with ?dev=1 and see him stand, walk, run, jump,
+punch, aim and fire, the same height as the people round him, his feet
+on the road, nothing cut off above his head or in front of his fist;
+failure is a dashed box, a figure floating or sunk, or a pose clipped
+at the edge. Changing a move: edit the clip in _dev/tools/skeleton.js,
+node _dev/tools/skeleton.js macario, judge it on /_dev/player-lab/,
+then --ship and prepare.js. Open: the itak's price or moment in the
+story (sold nowhere yet); owed: its blade and the pistol (props).
 
 1. Every new block is seen on the phone before it is called done: in
 landscape, from a private tab, after the push, with the sound on,
@@ -1031,7 +1034,7 @@ machine, the assessment module.
         acts and their parts, from devJumps), Balikan (a student plays
         an earlier part and nothing is kept), Pangunahing Menu in
         pause, Mag-log Out on the menu; test.js BY
-    145 Macario's own skeleton (IN PROGRESS): _dev/tools/skeleton.js
+    145 Macario's own skeleton (IN PROGRESS; in the game): skeleton.js
         animates the new model by bending a mesh, not cut-outs
         (animate-player.js deleted); idle, the NPCs' walk, punch,
         shot, jump and the bolo's slash, judged on _dev/player-lab/;

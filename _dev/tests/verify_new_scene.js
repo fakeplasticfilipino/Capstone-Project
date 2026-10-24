@@ -717,7 +717,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     // Block 117: and Act III's disguise, the story's too, neither for sale.
     // Block 121: each given in its own act, and a general stock of three.
     ok("the item catalogue is the stage clothes (Block 82) and the disguise (Block 117), not for sale, still-detection effects",
-       await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 5 && ITEMS[0].id === "damit-entablado" &&
+       await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 6 && ITEMS[0].id === "damit-entablado" &&
          ITEMS[0].price === 0 && ITEMS[0].slot === "outfit" && ITEMS[0].effect.stillDetectionMult === 0.2 &&
          ITEMS[0].givenInAct === 1 && ITEMS[1].givenInAct === 3 &&
          ITEMS[1].id === "balatkayo" && ITEMS[1].price === 0 && ITEMS[1].slot === "outfit" &&
@@ -729,6 +729,15 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
          return l.kind === "consumable" && l.price === 5 && l.use.heal === 1 && l.maxStack === 3 && !l.soldBy &&
            a.slot === "accessory" && a.price === 50 && a.effect.maxHealthBonus === 1 && !a.replayRemoves &&
            p.slot === "weapon" && p.price === 90 && p.effect.projectileSpeedMult === 1.5 && !p.replayRemoves;
+       }));
+    // Block 145: the bolo, a weapon whose slash replaces the punch, sold
+    // nowhere and given to no one until it has a price or a story moment.
+    ok("and the itak: a weapon that swaps the punch for its slash, not for sale (Block 145)",
+       await page.evaluate(() => {
+         const i = ITEMS.find((x) => x.id === "itak") || {};
+         return i.slot === "weapon" && i.price === 0 && !i.grantedOnAct && !i.effect &&
+           i.sheets && i.sheets.melee && i.sheets.melee.src === "assets/sprites/player/macario-slash.png" &&
+           !Inventory.forSale(null).some((x) => x.id === "itak");
        }));
 
     const t0 = await intertitle(page);

@@ -315,12 +315,12 @@ function build(name) {
   try { localStorage.setItem("room-test", name); } catch (e) {}
 }
 
-// Macario: the first cell of his idle sheet (5 columns, 4 rows), cropped
+// Macario: the first cell of his idle sheet (8 columns, 2 rows), cropped
 // to what is drawn and stood 134 tall.
 picture("../assets/sprites/player/macario-idle.png").then((img) => {
   if (!img) return;
   const c = document.createElement("canvas");
-  c.width = Math.floor(img.naturalWidth / 5); c.height = Math.floor(img.naturalHeight / 4);
+  c.width = Math.floor(img.naturalWidth / 8); c.height = Math.floor(img.naturalHeight / 2);
   const g = c.getContext("2d");
   g.drawImage(img, 0, 0);
   const d = g.getImageData(0, 0, c.width, c.height).data;

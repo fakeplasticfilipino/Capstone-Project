@@ -195,7 +195,8 @@ off the repository.
                                (people.js, Block 113), and the built-in
                                test questions (questions.js)
     assets/
-      sprites/player/          Macario's sheets, macario-<pose>.png
+      sprites/player/          Macario's sheets, macario-<pose>.png,
+                               written by skeleton.js --ship (Block 145)
       sprites/characters/      everyone who talks, <name>.png; the
                                artist's art (Block 59), and the sheets
                                made from the artist's stills
@@ -1588,6 +1589,11 @@ what broke the quiz button; the empty span is the fix, and setLabel
 building one is the backstop.
 
 ## Sprite sheets
+
+The examples below quote Macario's sheets as the artist drew them,
+before Block 145; since then his sheets are written by
+_dev/tools/skeleton.js, every one in the same cell (js/game.js,
+MACARIO_CELL), and the fields mean what they say here.
 
 Sheets may be a single horizontal strip or a grid. The optional columns
 field is how many frames sit across one row; omit it and it defaults to

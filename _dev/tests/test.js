@@ -2486,8 +2486,9 @@ const visible = (page, sel) => page.evaluate((s) => {
        sheets.fire && sheets.fire.failed === false, sheets.fire);
     ok("shootAim covers frames 0-2", sheets.aim.startFrame === 0 && sheets.aim.endFrame === 2, sheets.aim);
     ok("shootFire covers frames 3-11, starting on the muzzle flash", sheets.fire.startFrame === 3 && sheets.fire.endFrame === 11, sheets.fire);
-    ok("the sheet is read as a 5 by 3 grid of 12 frames",
-       sheets.fire.columns === 5 && sheets.fire.frames === 12 && sheets.fire.rows === 3, sheets.fire);
+    // Block 145: skeleton.js's sheets, 8 across, so 12 frames are 2 rows.
+    ok("the sheet is read as an 8 by 2 grid of 12 frames",
+       sheets.fire.columns === 8 && sheets.fire.frames === 12 && sheets.fire.rows === 2, sheets.fire);
 
     // Block 27: the aim pose waits AIM_POSE_DELAY_MS before showing, so
     // a tap goes straight into the punch without a flash of the aiming
@@ -2537,8 +2538,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     const melee = await page.evaluate(() => SPRITE_SHEETS.melee);
     ok("the melee sheet loaded without falling back to a placeholder",
        melee && melee.failed === false, melee);
-    ok("and is read as a 4 by 3 grid of 12 frames",
-       melee.columns === 4 && melee.frames === 12 && melee.rows === 3, melee);
+    ok("and is read as an 8 by 2 grid of 12 frames",
+       melee.columns === 8 && melee.frames === 12 && melee.rows === 2, melee);
     await page.waitForTimeout(700);
     const punched = await page.evaluate(() => ({ shooting, anim: currentAnim, frame: currentFrame }));
     ok("the punch hands the pose back afterwards",
@@ -2633,8 +2634,10 @@ const visible = (page, sel) => page.evaluate((s) => {
       destroyProjectile();
       return { centre: posX + PLAYER_WIDTH / 2, right, left };
     });
+    // Block 145: the muzzle is his levelled fist until the pistol is
+    // drawn (ART.md), an arm's length in front: about 46 world px.
     ok("facing right, the shot starts at the muzzle, well in front of him",
-       muzzle.right.x - muzzle.centre > 55 && muzzle.right.x - muzzle.centre < 80, muzzle);
+       muzzle.right.x - muzzle.centre > 40 && muzzle.right.x - muzzle.centre < 80, muzzle);
     ok("facing left, the same distance on the other side",
        Math.abs((muzzle.centre - muzzle.left.x) - (muzzle.right.x - muzzle.centre)) <= 1, muzzle);
     ok("at the pistol's height, not the old chest height",
@@ -3652,11 +3655,13 @@ const visible = (page, sel) => page.evaluate((s) => {
     const sheets = await page.evaluate(() => ({
       rise: SPRITE_SHEETS.jumpRise, fall: SPRITE_SHEETS.jumpFall, land: SPRITE_SHEETS.jumpLand,
     }));
+    // Block 145: skeleton.js's jump, 6 frames: 0 to 3 rising, 4 falling,
+    // 5 landing, each grounded by the tool (no frameBottoms).
     ok("the jump sheet loads without falling back to a placeholder",
-       sheets.rise.failed === false && sheets.rise.columns === 4 && sheets.rise.frames === 9, sheets.rise);
+       sheets.rise.failed === false && sheets.rise.columns === 6 && sheets.rise.frames === 6, sheets.rise);
     ok("its three clips cover push-off, falling and landing",
-       sheets.rise.startFrame === 3 && sheets.rise.endFrame === 6 &&
-       sheets.fall.startFrame === 7 && sheets.land.startFrame === 8, sheets);
+       sheets.rise.startFrame === 0 && sheets.rise.endFrame === 3 &&
+       sheets.fall.startFrame === 4 && sheets.land.startFrame === 5, sheets);
 
     const jumped = await page.evaluate(() => new Promise((resolve) => {
       posX = 300; posY = floorHeightAt(posX); velY = 0; onGround = true;
@@ -3664,7 +3669,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve({ anim: currentAnim, frame: currentFrame, velY })));
     }));
     ok("jumping switches to the rising pose at once", jumped.anim === "jumpRise" && jumped.velY > 0, jumped);
-    ok("and starts on its own first frame, not frame 0", jumped.frame >= 3, jumped);
+    ok("and plays within its own frames", jumped.frame >= sheets.rise.startFrame && jumped.frame <= sheets.rise.endFrame, jumped);
 
     const falling = await page.evaluate(() => new Promise((resolve) => {
       const tick = () => {
@@ -3686,16 +3691,21 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.waitForTimeout(400);
     ok("then hands the pose back", (await page.evaluate(() => currentAnim)) === "idle");
 
-    // Each frame is grounded by its own feet, so the tucked poses are not
-    // drawn floating above the body as well as being moved up by physics.
+    // A sheet that draws its jump's height into the cell may ground each
+    // frame by its own feet (frameBottoms), so a tucked pose is not drawn
+    // floating as well as moved up by physics. Since Block 145 the
+    // player's jump is grounded by skeleton.js and has none, so the engine
+    // path is checked on a copy given two frames' bottoms.
     const grounded = await page.evaluate(() => {
-      const sheet = SPRITE_SHEETS.jumpRise;
-      const fit = spriteFit(sheet, DISPLAY_HEIGHT);
-      const offsetFor = (frame) => (sheet.frameBottoms[frame] + 1 - sheet.contentHeight) * fit.scale;
-      return { standing: offsetFor(3), tucked: offsetFor(5), plain: fit.topOffset };
+      const sheet = Object.assign({}, SPRITE_SHEETS.jumpRise, { frameBottoms: [249, 200, 249, 249, 249, 249] });
+      const y = (frame) => { currentFrame = frame; drawPlayerFrame(sheet); return parseFloat(playerSpriteEl.style.backgroundPositionY); };
+      const r = { standing: y(0), tucked: y(1), own: !SPRITE_SHEETS.jumpRise.frameBottoms };
+      drawPlayerFrame(SPRITE_SHEETS[currentAnim]);
+      return r;
     });
     ok("frameBottoms shifts a tucked frame differently from a standing one",
        Math.abs(grounded.standing - grounded.tucked) > 20, grounded);
+    ok("and the player's own jump needs none", grounded.own, grounded);
 
     // ---- A scripted conversation nobody walked up to.
     const script = await page.evaluate(() => {

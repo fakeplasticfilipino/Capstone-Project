@@ -6526,12 +6526,23 @@ and inventory.js merges the outfit's sheets with the weapon's over them:
 a skin redraws him, and the bolo's slash replaces whichever punch that
 skin has. Covered by test.js Y.
 
-Not done. The new model is not in the game: its sheets live in
-_dev/player-lab/out/, the test page beside them shows today's Macario,
-an NPC and the new one at the game's size. The pistol in his hand is
-owed like the blade (a prop, the same mechanism), so the shot points
-an empty fist. Putting him in means BASE_SPRITE_SHEETS, the still into
-assets/, prepare.js and the player's test pieces.
+In the game, the same day, at the proponent's word ("I want to use the
+new macario now"). skeleton.js --ship writes every clip over the old
+file names in assets/sprites/player/, so nothing that names them
+changed; BASE_SPRITE_SHEETS takes the tool's numbers, one cell for
+every sheet (MACARIO_CELL: 8 across, the standing figure 240 tall on
+250, the hip at 80, 10 of headroom). The jump is grounded by the tool,
+so it has no frameBottoms; the engine still honours them, and test.js
+AS checks that on a copy. The artist's sheets went to
+docs-private/art-delivered/2026-10-24-old-macario/, the still to
+_dev/player-lab/macario-still.png (the tool's source, not served), and
+ART.md's four skin sheet prompts became two still prompts on the
+template, since a skin is now a still and one command. The test page
+dropped the old Macario and shows the tool's output beside an NPC.
+
+Still open: the itak is sold nowhere until it has a price or a moment
+in the story; the pistol in his hand is owed like the blade (a prop,
+the same mechanism), so the shot points an empty fist.
 
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 

@@ -140,21 +140,18 @@ Also wanted (not in the game yet):
         with his sword drawn and held low in his near hand, the blade
         pointing forward and clear of his body. Transparent background.
 
-    assets/sprites/player/macario-katipunero-idle.png
-        (Attach macario-idle.png from the folder assets/sprites/player)
-        Refer to the attached sprite sheet. Redraw it exactly, every
-        frame in the same place and the same pose, changing only his
-        clothes to a Katipunero's of 1896: a white camisa de chino, red
-        trousers rolled at the shin, a red kerchief at the neck, a bolo
-        at the hip. Transparent background.
-
-    assets/sprites/player/macario-katipunero-walk.png
-        (Attach macario-walk.png from the folder assets/sprites/player)
-        Refer to the attached sprite sheet. Redraw it exactly, every
-        frame in the same place and the same pose, changing only his
-        clothes to a Katipunero's of 1896: a white camisa de chino, red
-        trousers rolled at the shin, a red kerchief at the neck, a bolo
-        at the hip. Transparent background.
+    _dev/player-lab/macario-katipunero-still.png
+        (Attach macario-still.png from the folder _dev/player-lab)
+        Refer to the attached image. Redraw this exact man, same face,
+        same hair, same height, the same pose side on facing right, his
+        arms hanging the same way, standing in exactly the same place on
+        a canvas of exactly the same size (1024 by 1536), changing only
+        his clothes to a Katipunero's of 1896:
+        a white camisa de chino, red trousers rolled at the shin, a red
+        kerchief at the neck. Transparent background.
+        (For the team: then node _dev/tools/skeleton.js macario
+        --still=_dev/player-lab/macario-katipunero-still.png --ship writes every
+        sheet of the skin, and the item names them as its sheets.)
 
 ### Act III
 
@@ -190,19 +187,17 @@ Also wanted (not in the game yet):
 
 Also wanted (not in the game yet):
 
-    assets/sprites/player/macario-heneral-idle.png
-        (Attach macario-idle.png from the folder assets/sprites/player)
-        Refer to the attached sprite sheet. Redraw it exactly, every
-        frame in the same place and the same pose, changing only his
-        clothes and hair: a dark buttoned general's uniform of 1902 with
-        a sash, and long hair worn loose. Transparent background.
-
-    assets/sprites/player/macario-heneral-walk.png
-        (Attach macario-walk.png from the folder assets/sprites/player)
-        Refer to the attached sprite sheet. Redraw it exactly, every
-        frame in the same place and the same pose, changing only his
-        clothes and hair: a dark buttoned general's uniform of 1902 with
-        a sash, and long hair worn loose. Transparent background.
+    _dev/player-lab/macario-heneral-still.png
+        (Attach macario-still.png from the folder _dev/player-lab)
+        Refer to the attached image. Redraw this exact man, same face,
+        same hair, same height, the same pose side on facing right, his
+        arms hanging the same way, standing in exactly the same place on
+        a canvas of exactly the same size (1024 by 1536), changing only
+        his clothes to a dark buttoned
+        general's uniform of 1902 with a sash. Transparent background.
+        (For the team: then node _dev/tools/skeleton.js macario
+        --still=_dev/player-lab/macario-heneral-still.png --ship writes every
+        sheet of the skin, and the item names them as its sheets.)
 
 ### Act IV
 
@@ -309,7 +304,7 @@ Nothing needed.
 Also wanted (not in the game yet):
 
     assets/sprites/player/itak.png
-        (Attach the file _dev/parallax-art/macario-testing-model.png)
+        (Attach the file _dev/player-lab/macario-still.png)
         Refer to the attached image and use the same art style. Draw
         ONE Filipino bolo (itak) of the 1890s, the kind a Katipunero
         carried, lying flat and seen exactly from the side: a plain

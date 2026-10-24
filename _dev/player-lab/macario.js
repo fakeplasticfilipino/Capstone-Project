@@ -15,7 +15,7 @@
 // =============================================================
 
 module.exports = {
-  still: "_dev/parallax-art/macario-testing-model.png",
+  still: "_dev/player-lab/macario-still.png",
   crop: [290, 40, 420, 1490],   // x, y, w, h in the template
   shrink: 2,
 
@@ -63,12 +63,13 @@ module.exports = {
   farShade: 0.68,               // the far arm and leg, darkened
   farLegOffset: 16,             // the far foot stands this far ahead at rest
 
-  // The sheets, written to _dev/player-lab/out/ while this is a test.
+  // Every clip is written here too, for the test page.
   out: "_dev/player-lab/out",
   clips: ["idle", "walk", "melee", "shoot", "jump", "slash"],
-  // Written into assets/sprites/player/ by --ship: what the game uses of
-  // this model so far (the bolo item's slash, content/items.js).
-  ship: ["slash"],
+  // Written into assets/sprites/player/ by --ship: every sheet the game
+  // uses of him (js/game.js, BASE_SPRITE_SHEETS; the bolo's slash,
+  // content/items.js). Since Block 145 this is the player's art.
+  ship: ["idle", "walk", "melee", "shoot", "jump", "slash"],
 
   // What he holds. The itak (a bolo) is the artist's picture, owed
   // (ART.md): drawn pointing right, handle at the left, on transparency.

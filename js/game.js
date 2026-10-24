@@ -2102,96 +2102,53 @@ if (BODY_TRANSLATE) player.style.bottom = "0px";
 // ground, and neither matched an animated NPC like Nanay, because all
 // of them were being scaled and grounded by the empty space in their
 // frame rather than by the character actually drawn in it.
-// The sheets Macario wears with nothing equipped. An outfit replaces
-// whichever of the three it declares and leaves the rest alone, so a
-// cosmetic that only redraws the walk cycle is a complete outfit.
+// The sheets Macario wears with nothing equipped. A worn item replaces
+// whichever of them it declares and leaves the rest alone (setOutfit).
+//
+// Block 145. His own model since 24 Oct 2026: every sheet is written by
+// _dev/tools/skeleton.js from one still (_dev/player-lab/macario.js;
+// node _dev/tools/skeleton.js macario --ship), not drawn frame by frame,
+// so the numbers below are the tool's, the same for every sheet: a cell
+// 200 by 256, the standing figure 240 tall standing on 250 with his hip
+// at 80, and 10 of headroom for the hair and a raised hand. Every sheet
+// is fitted by the standing figure, so he is one size whatever he does.
+// The artist's sheets they replace are kept in docs-private/.
+const MACARIO_CELL = { columns: 8, contentTop: 10, contentHeight: 240, footX: 80, headroom: 10 };
+
 const BASE_SPRITE_SHEETS = {
-  idle: {
-    src: "assets/sprites/player/macario-idle.png", frames: 16, fps: 6, columns: 5,
-    contentTop: 73, contentHeight: 106, footX: 130,
-  },
-  walk: {
-    src: "assets/sprites/player/macario-walk.png", frames: 20, fps: 12, columns: 5,
-    contentTop: 60, contentHeight: 127, footX: 126,
-  },
+  // A breath, the weight shifting, the NPCs' amounts; and their walk:
+  // each leg swung from the hip, the lower foot on the ground.
+  idle: Object.assign({ src: "assets/sprites/player/macario-idle.png", frames: 16, fps: 8 }, MACARIO_CELL),
+  walk: Object.assign({ src: "assets/sprites/player/macario-walk.png", frames: 8, fps: 12 }, MACARIO_CELL),
 
-  // Block 28. The redrawn shooting sheet: 5 by 3, 12 of its 15 cells,
-  // played as two named views of the one image through startFrame and
-  // endFrame (see Sprite sheets in CLAUDE.md). Frames 0-2 are the aim,
-  // held on frame 2 while the button stays down. Frames 3-11 are the shot:
-  // the muzzle flash is frame 3, then the recoil lifts the pistol and
-  // brings it back down, played once at the instant the projectile
-  // leaves. The fire clip starts ON the flash frame, so the flash and the
-  // projectile appear together.
-  //
-  // contentTop/contentHeight are the union across all twelve frames, which
-  // includes the pistol raised in recoil; a tighter pair would crop the
-  // gun off the top of the box in frames 5-7. footX is from the feet, as
-  // always. muzzle is the pistol's tip in frame 2, in the same native cell
-  // pixels, and is where throwProjectile starts the shot.
-  shootAim: {
-    src: "assets/sprites/player/macario-shoot.png", frames: 12, fps: 8, columns: 5,
-    startFrame: 0, endFrame: 2, loop: false,
-    contentTop: 63, contentHeight: 126, footX: 117,
-  },
-  shootFire: {
-    src: "assets/sprites/player/macario-shoot.png", frames: 12, fps: 18, columns: 5,
-    startFrame: 3, endFrame: 11, loop: false,
-    contentTop: 63, contentHeight: 126, footX: 117,
-    muzzle: { x: 178, y: 87 },
-  },
+  // The shot, two named views of one sheet (startFrame and endFrame, see
+  // Sprite sheets in CLAUDE.md). 0 to 2 raise the arm level, held on 2
+  // while the button stays down; 3 to 11 are the kick and the settle,
+  // played once from the instant the shot leaves. muzzle is the tip of
+  // his fist in frame 2, where throwProjectile starts the shot; the
+  // pistol in his hand is owed (ART.md).
+  shootAim: Object.assign({ src: "assets/sprites/player/macario-shoot.png", frames: 12, fps: 8,
+    startFrame: 0, endFrame: 2, loop: false }, MACARIO_CELL),
+  shootFire: Object.assign({ src: "assets/sprites/player/macario-shoot.png", frames: 12, fps: 18,
+    startFrame: 3, endFrame: 11, loop: false, muzzle: { x: 162, y: 62 } }, MACARIO_CELL),
 
-  // Block 27. The one-tap melee swing: a 4 by 3 sheet, 12 frames, played
-  // once per tap (playMelee). 24fps puts the whole punch at half a second,
-  // quick enough that a second tap never feels ignored. (It was delivered
-  // as a PNG with a .jpg name; Block 44 named it .png.) The punch
-  // dips about ten native pixels at full extension (frames 5 to 10), which
-  // is the lunge in the art rather than a size error, so one
-  // contentTop/contentHeight pair is right for it.
-  //
-  // Block 71. contact is the frame the fist lands on, and the hit is
-  // resolved there rather than on release (updateMeleeContact). Measured
-  // with measure-sprite.js: the drawing's right edge is 116 at frame 3,
-  // then 134, 147, 160 and 161, so frame 6 is the first at full reach.
-  melee: {
-    src: "assets/sprites/player/macario-melee.png", frames: 12, fps: 24, columns: 4,
-    loop: false, contact: 6,
-    contentTop: 47, contentHeight: 109, footX: 96,
-  },
+  // The one-tap punch (playMelee), 12 frames at 24: half a second. Block
+  // 71's contact is the frame the fist lands on, where the hit is
+  // resolved (updateMeleeContact): frame 6, the arm straight.
+  melee: Object.assign({ src: "assets/sprites/player/macario-melee.png", frames: 12, fps: 24,
+    loop: false, contact: 6 }, MACARIO_CELL),
 
-  // Block 35. The jump: a 4 by 3 sheet, 9 frames. 0-2 crouch, 3 pushes
-  // off, 4-6 are in the air, 7 comes down, 8 lands. The crouch is not
-  // played: waiting for it before leaving the ground would put a delay
-  // on a jump the student expects the instant they press. Three views of
-  // the one image, chosen in the game loop from his vertical speed rather
-  // than from time, so a short hop and a long fall both look right.
-  //
-  // This artist drew the jump's height INTO the cell: the tucked frames sit
-  // 40 to 50 native pixels above the feet of the standing ones. The engine
-  // already moves Macario up and down, so drawing that offset as well
-  // would put him twice as high as his body. frameBottoms, one per frame
-  // and measured with measure-sprite.js, puts each frame's own feet on the
-  // ground of his body instead. contentHeight is the push-off frame's
-  // height (3), which is a standing figure, so he is the same size in the
-  // air as on the ground.
-  jumpRise: {
-    src: "assets/sprites/player/macario-jump.png", frames: 9, fps: 14, columns: 4,
-    startFrame: 3, endFrame: 6, loop: false,
-    contentTop: 44, contentHeight: 102, footX: 106,
-    frameBottoms: [146, 146, 146, 145, 108, 95, 96, 120, 145],
-  },
-  jumpFall: {
-    src: "assets/sprites/player/macario-jump.png", frames: 9, fps: 14, columns: 4,
-    startFrame: 7, endFrame: 7, loop: false,
-    contentTop: 44, contentHeight: 102, footX: 106,
-    frameBottoms: [146, 146, 146, 145, 108, 95, 96, 120, 145],
-  },
-  jumpLand: {
-    src: "assets/sprites/player/macario-jump.png", frames: 9, fps: 14, columns: 4,
-    startFrame: 8, endFrame: 8, loop: false,
-    contentTop: 44, contentHeight: 102, footX: 106,
-    frameBottoms: [146, 146, 146, 145, 108, 95, 96, 120, 145],
-  },
+  // The jump: 0 the push off, 1 to 3 rising, 4 coming down, 5 the
+  // landing, three views chosen in the game loop from his vertical speed
+  // (Block 35). The tool sets the lower foot on the cell's ground in
+  // every frame, so the engine's own height is the only height and no
+  // frameBottoms are needed.
+  jumpRise: Object.assign({ src: "assets/sprites/player/macario-jump.png", frames: 6, fps: 14,
+    startFrame: 0, endFrame: 3, loop: false }, MACARIO_CELL, { columns: 6 }),
+  jumpFall: Object.assign({ src: "assets/sprites/player/macario-jump.png", frames: 6, fps: 14,
+    startFrame: 4, endFrame: 4, loop: false }, MACARIO_CELL, { columns: 6 }),
+  jumpLand: Object.assign({ src: "assets/sprites/player/macario-jump.png", frames: 6, fps: 14,
+    startFrame: 5, endFrame: 5, loop: false }, MACARIO_CELL, { columns: 6 }),
 };
 
 // The set actually in use. Reassigned by setOutfit, which is why this is
