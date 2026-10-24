@@ -15,8 +15,10 @@ San Juan del Monte and the Nangka in layers (the Sierra Madre, the
 garrison, the farm, the river, the grass); the press and the house
 built from their kits; the press, the straw and the scarecrow drawn.
 The press's shelves raised to hide Macario from the guards, as the
-story says (they stood 40 above the floor, under a guard's 60). Owed
-art: seventeen, none of it Act II's.
+story says (they stood 40 above the floor, under a guard's 60). Pugad
+Lawin, Balara and Laguna in the same layers, their paintings retired,
+so no Act II place is a painting. Owed art: eighteen, Act II's one the
+campfire for Balara (ART.md, Props).
 23 Oct 2026, Block 143: rooms built from kits (a wall
 repeated, a floor, furniture placed by x; ART.md's rooms table); Act
 I's two, the entablado and the pulungan, built and finished, the other
@@ -236,7 +238,8 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): seventeen pictures, Act III's six (the
+in code. Still owed (ART.md): eighteen pictures, Act II's campfire
+for Balara, Act III's six (the
 barbershop and Calle Gunao, as kits; the American soldier, the
 American in the barber's chair, the Constabulary, the Katagalugan's
 flag) and Act IV's eleven (the hall and the court, as kits; nine
@@ -391,7 +394,9 @@ Nanay's house over hers, the night darkening it all), "Sa bahay"
 imprenta" (climb a shelf in front of a guard: he does not see you),
 "San Juan del Monte: ang pag-atras" (the polvorin behind Macario at
 the start, the flag, the palisade), and "Ilog Nangka" (the river
-behind, the footbridge, the straw, then a scarecrow). Failure: an old painting, a dashed box where the press,
+behind, the footbridge, the straw, then a scarecrow); and Pugad Lawin,
+Balara (at night) and Laguna (the water behind), each in the same
+layers. Failure: an old painting, a dashed box where the press,
 the straw or the scarecrow should be, a shelf drawn away from where he
 stands on it, a guard who sees him on a shelf, or a shadow tree in a
 room.
@@ -416,8 +421,8 @@ and ten matched pre-test and post-test pairs for every act, so each
 act has a test before the teacher writes one.
 
 5. Art from the artist: ART.md (Backgrounds, Sprites, Props, by act,
-since Block 131 written for the artist), seventeen pictures since 24
-Oct 2026, none of them Act I's or Act II's (four rooms, now asked as
+since Block 131 written for the artist), eighteen pictures since 24
+Oct 2026: Act II's campfire for Balara, and none of Act I's (four rooms, now asked as
 kits: the barbershop, Calle Gunao, the hall, the court; Act III's
 four: the American soldier, the American in the barber's chair, the
 Constabulary and the Katagalugan's flag; Act IV's nine: Gómez, Van
@@ -990,7 +995,8 @@ machine, the assessment module.
 Every act is written, accepted and has its built-in questions (Acts I to
 IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
 Block 142, every outdoor scene in layers (IN PROGRESS, its list above);
-the art, ART.md (seventeen pictures, Acts III and IV; BLOCKED, the
+the art, ART.md (eighteen pictures, Act II's campfire and Acts III
+and IV; BLOCKED, the
 artist), and the
 two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
 BLOCKED, the artist).

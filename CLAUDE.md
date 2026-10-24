@@ -215,11 +215,11 @@ off the repository.
                                talked to (empty)
       backgrounds/act1/        street-01..04.jpg (Acts III and IV's
                                street until it is layered), ground-lupa.jpg
-      backgrounds/act2/,       the artist's paintings of each act's
-        act3/, act4/           places (Blocks 133, 135, 136; two panels
+      backgrounds/act3/,       the artist's paintings of each act's
+        act4/                  places (Blocks 133, 135, 136; two panels
                                each for burol, morong, himpilan,
-                               dimasalang and malabon); Act II keeps only
-                               its one-screen places since Block 142
+                               dimasalang and malabon); Act II has none
+                               since Block 142, every place in layers
       backgrounds/layers/,     the layered scenes' skies and grounds, and
         rooms/                 the rooms' walls and floors (Blocks 142,
                                143)

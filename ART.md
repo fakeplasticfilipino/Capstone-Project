@@ -294,7 +294,17 @@ Nothing needed.
 
 ### Act II
 
-Nothing needed.
+    campfire.png
+        (Attach the file _dev/parallax-art/tondo-props.png)
+        Refer to the attached image and use the same art style. Draw
+        ONE small campfire of a rebel camp in the hills of the
+        Philippines in 1896, seen from the side: a few split logs
+        burning on a ring of stones, bright orange and yellow flames
+        about knee high to a man, a little smoke, warm light on the
+        stones. Nothing else in the picture, no people, no pot, no
+        ground or shadow around it. Transparent background.
+        Cut into: assets/sprites/buildings/apoy.png
+        (NOT STARTED)
 
 ### Act III
 
@@ -496,8 +506,11 @@ Nothing needed.
     malabon      cavite-dusk       lowland    town                dirt
     patyo        bilibid-sky       none       bilibid             stone
 
-The places one screen wide (Pugad Lawin, Balara, Laguna, the plaza)
-do not scroll, so they keep one painting each. The rooms are built from
+The places one screen wide do not scroll; Act III's plaza keeps its one
+painting, but Act II's three (Pugad Lawin, Balara, Laguna) are drawn in
+the same layers as its fields since 24 Oct 2026, so the act matches
+(the Sierra sky, the lowland trees, the grass, the farm's pieces; the
+Nangka's water for Laguna's lake). The rooms are built from
 kits instead (22 Oct 2026, the proponent, all nine): a wall from
 room-walls.png repeated along the room, a floor from room-floors.png,
 and the room's own pieces placed by x on the hotspots (doors, windows,
@@ -539,13 +552,13 @@ Done and in the game. Nothing here needs drawing.
                   (ground-lupa), the rooms' walls and floors
                   (room-walls, room-floors; the sheets in
                   docs-private/art-delivered/)
-        Act II    Pugad Lawin, Balara, Laguna; for San Juan del Monte
-                  and the Nangka in layers (24 Oct 2026) the Sierra
+        Act II    every place in layers (24 Oct 2026): the Sierra
                   Madre's sky (sierra-nature, as layers/sierra-sky.jpg),
                   the river and the grass ground (their checkerboard
-                  and sky taken off); the paintings they replace,
-                  san-juan-1 and 2 and nangka-1 and 2, and the
-                  delivered sheets, in docs-private/art-delivered/
+                  and sky taken off); the paintings they replace
+                  (san-juan-1 and 2, nangka-1 and 2, pugad-lawin,
+                  balara, laguna) and the delivered sheets in
+                  docs-private/art-delivered/
         Act III   the hill camp (burol-1 and 2), the plaza (bayan),
                   Morong (morong-1 and 2),
                   the cell in Bilibid (selda, Acts III and IV)

@@ -14,7 +14,7 @@
 //                "from Yokohama" like the first; a rumour that someone
 //                went to the priest; the list of members, with where
 //                each lives, kept under the press. Jacinto sends him home.
-//   tondo        the street, Act I's paintings and people: the walk home,
+//   tondo        the street, Act I's layers and people: the walk home,
 //                the neighbours afraid of him already.
 //   bahay        Nanay, the ink on his hands, "Pangulo", the father, her
 //                plea and his promise, and in the middle of his answer
@@ -48,9 +48,10 @@
 // catalogue's sundalo and bantay (content/enemies.js). Every flag starts
 // with a2_, because the story's flags are kept from act to act.
 //
-// Art. Every picture this act names and nobody has drawn yet (ART.md,
-// Owed) is the dashed placeholder box with its file name on it, and a
-// room whose painting is owed is a dark wall with the name on it.
+// Art. Every place is drawn in layers or built from a kit (Block 142).
+// A picture this act names and nobody has drawn yet (ART.md, Owed) is
+// the dashed placeholder box with its file name on it, or, for a piece
+// of a layered scene (Balara's fire), nothing until it arrives.
 // =============================================================
 
 (function () {
@@ -161,6 +162,26 @@
     ["kariton-kalabaw", 1990, 110],
   ]);
   const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 14 };
+
+  // The three places one screen wide, in the same layers rather than
+  // their paintings (24 Oct 2026, the proponent): Pugad Lawin, a farm in
+  // the hills, its fence behind the gathering and a hut beside Bonifacio;
+  // Balara, the camp at night (the night tints the layers), the fire
+  // between Macario and Bonifacio when it is drawn (ART.md, owed: drawn
+  // in front, so the night does not darken it); Laguna, the lake behind
+  // them (the Nangka's water), a pier out over it.
+  const PUGAD_LAWIN_PIECES = field([
+    ["saging-kumpol", -90, 290], ["bakod-kawayan-mahaba", 230, 130], ["kubo-silong", 860, 330],
+    ["mandala", 1110, 210],
+  ]);
+  const BALARA_PIECES = [
+    ...field([["kubo-silong", -40, 330], ["bakod-kawayan-maikli", 300, 120], ["kariton-kalabaw", 720, 110],
+      ["saging-kumpol", 1010, 290]]),
+    { src: "assets/sprites/buildings/apoy.png", x: 470, height: 70, lift: -6, front: true },
+  ];
+  const LAGUNA_PIECES = field([
+    ["tulay", -120, 150], ["kubo-silong", 820, 330], ["saging-kumpol", 1100, 290],
+  ]);
 
   // The two rooms from their kits, as Act I's are (content/act1.js, the
   // rooms table in ART.md): the wall repeated, the floor under the feet,
@@ -1373,12 +1394,14 @@
         ],
       },
       {
-        // Beat 7. Pugad Lawin, 23 August 1896. One screen; its painting
-        // is owed. The cedula is Bonifacio's gift button.
+        // Beat 7. Pugad Lawin, 23 August 1896. One screen. The cedula is Bonifacio's gift button.
         id: "pugad-lawin",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act2/pugad-lawin.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        // In layers since 24 Oct 2026, its painting retired.
+        layers: fieldLayers(ROOM),
+        buildings: PUGAD_LAWIN_PIECES,
+        ground: GRASS,
+        frontGrass: true,
         noRanged: true,
         startX: 330,
         scripts: [
@@ -1538,11 +1561,14 @@
       },
       {
         // Beat 11. Balara, at night. The messenger on arrival; Bonifacio
-        // by the fire. Its painting is the artist's (Block 133).
+        // by the fire.
         id: "balara",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act2/balara.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        // In layers since 24 Oct 2026, its painting retired.
+        layers: fieldLayers(ROOM),
+        buildings: BALARA_PIECES,
+        ground: GRASS,
+        frontGrass: true,
         night: { music: NIGHT },
         noRanged: true,
         startX: 400,
@@ -1595,13 +1621,15 @@
         ],
       },
       {
-        // Beats 12 and 13. Laguna, 1897: Jacinto's camp. Its painting is
-        // owed. The second talk with Jacinto ends the act; the messenger
+        // Beats 12 and 13. Laguna, 1897: Jacinto's camp. The second talk with Jacinto ends the act; the messenger
         // brings the news from Paris (Block 120).
         id: "laguna",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act2/laguna.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        // In layers since 24 Oct 2026, its painting retired.
+        layers: fieldLayers(ROOM, [NANGKA_RIVER]),
+        buildings: LAGUNA_PIECES,
+        ground: GRASS,
+        frontGrass: true,
         noRanged: true,
         startX: 450,
         scripts: [

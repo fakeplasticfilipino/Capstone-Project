@@ -6368,6 +6368,20 @@ verify_new_scene.js checks both. A room wider than PANEL_WIDTH (the
 press, 1800) gets a shadow tree at 1450 unless it says otherwise; it
 declares its own width as its panelWidth.
 
+Seen on the live site, Pugad Lawin was still the old painting beside
+the new fields, and the proponent chose to redo all three of Act II's
+one-screen places from the art already in hand rather than wait for
+new pictures, with one owed: a campfire for Balara (ART.md). ART.md
+had kept places one screen wide on their paintings because they do not
+scroll; that held for a painting's scale, not for matching the act.
+Pugad Lawin is a farm in the hills (the fence behind the gathering, a
+hut by Bonifacio), Balara the same at night (the tint does it), and
+Laguna stands before the Nangka's water as its lake, with a pier. The
+campfire is named in Balara now, drawn in front of the people so the
+night does not darken it; a missing building draws nothing, so it
+appears the moment its picture is cut in. The three paintings are
+retired.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every
