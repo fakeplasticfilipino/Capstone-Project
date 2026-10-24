@@ -141,7 +141,9 @@ function buildTextures(sk, img) {
   }
   const solid = (i) => px[i * 4 + 3] > 0.004;
   const dark = (i) => lum[i] < sk.darkLuma;
-  const hair = (i, y) => y < sk.hairAbove && dark(i);
+  // Hair hangs behind him: a dark pixel in front of hairBehind (when the
+  // skeleton gives it) is a line of the sleeve's, not hair.
+  const hair = (i, y) => y < sk.hairAbove && dark(i) && (sk.hairBehind == null || i % W < sk.hairBehind);
   // Skin is warm: red well over blue. The trousers and the shoes are
   // nearly grey, so this is what tells the hand from them where they meet.
   const skin = (i) => {

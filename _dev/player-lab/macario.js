@@ -46,9 +46,9 @@ module.exports = {
   // The near arm, sleeve and hand: drawn in front of everything, and
   // drawn again behind him, darker, as the far arm. Hair inside it stays
   // with the body.
-  arm: [[72, 151], [98, 153], [110, 173], [115, 207], [113, 250], [111, 290],
-    [109, 318], [118, 343], [130, 358], [132, 398], [138, 410], [141, 428],
-    [134, 450], [120, 457], [104, 453], [96, 438], [94, 410], [83, 407],
+  arm: [[72, 151], [98, 153], [110, 173], [116, 207], [115, 250], [114, 290],
+    [116, 318], [118, 340], [125, 357], [126, 398], [129, 410], [130, 430],
+    [127, 448], [120, 456], [104, 453], [96, 438], [94, 410], [83, 407],
     [79, 368], [70, 350], [64, 328], [58, 300], [53, 240], [54, 180],
     [60, 162]],
 
@@ -62,6 +62,7 @@ module.exports = {
 
   darkLuma: 100,                // trousers, shoes and hair are darker than this
   hairAbove: 330,               // dark pixels above this are hair, not trouser
+  hairBehind: 70,               // ...and only behind this x: in front, the sleeve's lines
   hemY: 426,                    // the jacket ends here
   outlineLuma: 34,              // near-black: the drawing's outlines
   farShade: 0.68,               // the far arm and leg, darkened

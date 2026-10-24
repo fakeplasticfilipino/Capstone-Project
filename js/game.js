@@ -4999,7 +4999,15 @@ function playMelee() {
   if (dash || now < dashReadyAt) return;
   noteTask("attack");
   if (shooting === "melee" && currentAnim === strikeAnim) {
-    if (strikeStep < STRIKES.length - 1) strikeQueued = true;
+    // Past its contact the blow has landed: the next is thrown at once.
+    // Before that the tap is kept, so a blow on its way is never cut off.
+    const sheet = SPRITE_SHEETS[strikeAnim];
+    const landed = !meleePending && sheet && sheet.contact != null && currentFrame >= sheet.contact + QUEUE_AFTER_FRAMES;
+    if (!landed) {
+      if (strikeStep < STRIKES.length - 1) strikeQueued = true;
+      return;
+    }
+    throwStrike(strikeStep + 1 < STRIKES.length ? strikeStep + 1 : 0);
     return;
   }
   throwStrike(now < comboUntil ? comboNext : 0);
