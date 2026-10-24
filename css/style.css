@@ -3579,6 +3579,27 @@ body.text-lg .intertitle-line { font-size: 36px; }
   will-change: transform, opacity;
 }
 
+/* Block 146. The flash where a blow lands (impactBurst): a white star
+   that blooms and is gone in a sixth of a second, above everyone. Two
+   identical animations, swapped to restart it without reading layout. */
+.impact-burst {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin-left: -17px;
+  margin-bottom: -17px;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, #fffef6 0 30%, rgba(255, 244, 200, 0.85) 45%, rgba(255, 230, 160, 0) 70%);
+  clip-path: polygon(50% 0, 61% 36%, 100% 50%, 61% 64%, 50% 100%, 39% 64%, 0 50%, 39% 36%);
+}
+.impact-burst.burst-a { animation: burst-a 0.17s ease-out forwards; }
+.impact-burst.burst-b { animation: burst-b 0.17s ease-out forwards; }
+.impact-burst.burst-big { width: 54px; height: 54px; margin-left: -27px; margin-bottom: -27px; }
+@keyframes burst-a { 0% { opacity: 1; transform: scale(0.4); } 60% { opacity: 1; } 100% { opacity: 0; transform: scale(1.3); } }
+@keyframes burst-b { 0% { opacity: 1; transform: scale(0.4); } 60% { opacity: 1; } 100% { opacity: 0; transform: scale(1.3); } }
+
 .dust.dust-a { animation: dust-a 0.42s steps(6) forwards; }
 .dust.dust-b { animation: dust-b 0.42s steps(6) forwards; }
 

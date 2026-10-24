@@ -69,11 +69,11 @@ module.exports = {
 
   // Every clip is written here too, for the test page.
   out: "_dev/player-lab/out",
-  clips: ["idle", "walk", "melee", "shoot", "jump", "slash"],
+  clips: ["idle", "walk", "melee", "cross", "kick", "shoot", "jump", "slash"],
   // Written into assets/sprites/player/ by --ship: every sheet the game
   // uses of him (js/game.js, BASE_SPRITE_SHEETS; the bolo's slash,
   // content/items.js). Since Block 145 this is the player's art.
-  ship: ["idle", "walk", "melee", "shoot", "jump", "slash"],
+  ship: ["idle", "walk", "melee", "cross", "kick", "shoot", "jump", "slash"],
 
   // What he holds. The itak (a bolo) is the artist's picture, owed
   // (ART.md): drawn pointing right, handle at the left, on transparency.

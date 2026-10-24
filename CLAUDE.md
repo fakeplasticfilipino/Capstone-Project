@@ -2299,7 +2299,17 @@ clothes are what get a student through.
 A tap with an enemy ahead is a dash through him (Block 86): a hit ends
 Macario behind the enemy, a tap from beyond DASH_HIT_RANGE stops short,
 hits nothing and leaves him exposed, and he cannot be struck mid-dash.
-With no enemy ahead the tap is the old punch. Melee reads the guard's facing. From behind an unalerted guard it is a
+Since Block 146 the dash holds the blow drawn back (the sheet's cocked
+frame) and shows it fully out on the frame it lands, and an enemy within
+the fist's reach (STRIKE_REACH, MELEE_RANGE) is struck where he stands:
+taps in a row are a combo, a jab, a cross and a kick (STRIKES), the next
+tap going on to the next blow while one is thrown or within
+COMBO_WINDOW_MS (400) after, else the jab again; a dash lands as
+whichever blow is next. Every blow does 1; the kick throws him
+KICK_KNOCK (2.2) times as far. With the bolo worn it is slash, slash,
+kick. A landed blow freezes the world 90ms, shakes the camera and
+flashes white where it lands (impactBurst). With no enemy ahead the tap
+is the old punch. Melee reads the guard's facing. From behind an unalerted guard it is a
 takedown; from the front it alerts the guard and costs a health point.
 That is what makes stealth and combat interlock rather than sit beside each
 other, and it means a corridor can be solved two ways.
@@ -2583,7 +2593,9 @@ look, by system:
                                           71, 75, 76, 86 (the dash),
                                           88 (one template), 92 (the
                                           enemy dash and the red !), 93
-                                          (moving between blows, the hop)
+                                          (moving between blows, the hop),
+                                          146 (the combo, the kick, the
+                                          dash on the fist, the burst)
     audio and sound effects               Blocks 30, 58, 60, 65, 81, 93
     scenes, exits, scripts, cutscenes     Blocks 19, 31, 34, 35, 52, 57
     guards, stealth and sight             Blocks 37, 38, 42, 46, 47, 73,

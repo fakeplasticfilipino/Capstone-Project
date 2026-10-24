@@ -141,7 +141,7 @@ window.ITEMS = [
     sheets: {
       melee: {
         src: "assets/sprites/player/macario-slash.png", frames: 12, fps: 24, columns: 8,
-        loop: false, contact: 6,
+        loop: false, contact: 6, cocked: 3,
         contentTop: 80, contentHeight: 240, footX: 110, headroom: 80,
       },
     },

@@ -388,6 +388,14 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
 
 Block 142 (above) comes first. Then, in order.
 
+Block 146, melee with weight, on the phone: in a fight (?dev=1, the
+play's fight or San Juan del Monte) tap Atake at an enemy in reach three
+times quickly and see a jab, a cross and a kick, the kick knocking him
+well back; each hit freezes a moment, shakes the screen and flashes
+white; tap at one further off and see Macario lunge with his fist drawn
+back and the punch land as he arrives. Failure: the blows out of order,
+a tap that does nothing, the hit before the fist is out.
+
 Block 145 (IN PROGRESS), Macario's own skeleton: the new model is in
 the game since 24 Oct 2026, drawn in the NPCs' style the same day
 (BASE_SPRITE_SHEETS; the artist's sheets and the realistic painting
@@ -1041,6 +1049,11 @@ machine, the assessment module.
         worn items may replace any sheet (setOutfit, inventory.js);
         the itak item, general stock at 60; its blade and the pistol
         owed; test.js Y
+    146 melee with weight: the dash holds the fist back and lands on
+        the frame it is out; a combo of taps, jab, cross, kick (1
+        damage each, the kick throwing 2.2 times as far); a 90ms
+        freeze, a bigger shake and a white burst on a landed blow;
+        speed lines on the strikes (skeleton.js); test.js AI, AS, BC
 
 ## Blocks remaining
 

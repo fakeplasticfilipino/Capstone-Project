@@ -6580,6 +6580,53 @@ _dev/stills/<folder>/ (animate-still.js writes into assets/sprites/
 <folder>/ from there), so the site serves no file the game never draws
 and the offline list needs no exception for them.
 
+## Block 146: melee with weight, a combo and a kick, 24 Oct 2026
+
+The proponent: the melee "doesn't have a punch into it", and wanted
+variety, kicks. Why it had none: in a fight nearly every tap is a dash
+(Block 86), and the punch sheet played out on its own clock over the
+slide while the hit landed whenever he passed the enemy, so the fist
+was rarely out when the blow landed; and the blow's weight (Block 60)
+was a 55ms freeze and a shake of 3.
+
+Built to the plan the proponent accepted:
+
+    the dash on the fist     startDash holds the strike's cocked frame
+                             (the jab's 2, the slash's 3; else contact
+                             minus 3) while he closes, and holdStrikeFrame
+                             jumps to the contact frame on the frame the
+                             blow lands; a dash that reaches nobody throws
+                             it at the end
+    the combo                STRIKES, jab, cross, kick, one sheet each
+                             from skeleton.js, all with the blow on frame
+                             6. A tap while a blow is thrown is kept
+                             (strikeQueued) and thrown two frames after
+                             contact; within COMBO_WINDOW_MS (400) of the
+                             last blow's end a tap throws the next; after
+                             the kick, the jab. An enemy within the fist's
+                             reach (STRIKE_REACH = MELEE_RANGE) is struck
+                             in place; further off he is dashed at and the
+                             dash lands as the next blow, so a combo goes
+                             on when a punch has knocked him out of reach
+    the kick                 1 damage, as every blow, at the proponent's
+                             choice, so a fight of fifteen lasts as long;
+                             KICK_KNOCK 2.2 times the slide, a longer
+                             stagger, the knockout's sound and a heavier
+                             freeze. Threaded as a force through takeBlow,
+                             hitEnemy, hitGuard and strikeGuard
+    the weight               punch: freeze 90ms (was 55), shake 5 (3);
+                             kick 120 and 7; knockout 130 and 8; a white
+                             star where a blow lands (impactBurst, a pool
+                             of three like the dust, drawn by the game)
+    speed lines              skeleton.js draws three pale lines behind the
+                             striking fist or foot on the frames round
+                             contact, as the NPCs' attack has
+    the bolo                 its slash stands in for the cross: slash,
+                             slash, kick (strikeSheet)
+
+Every engine path is the shared one: the blows go through meleeAttack
+and takeBlow like the punch before them (Consistency).
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

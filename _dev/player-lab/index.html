@@ -26,7 +26,8 @@
 <body>
 <header>
   <label>Clip <select id="clip"><option>idle</option><option selected>walk</option>
-    <option value="melee">punch</option><option value="shoot">shoot</option><option>jump</option>
+    <option value="melee">punch</option><option value="cross">cross</option><option value="kick">kick</option>
+    <option value="combo">combo (jab, cross, kick)</option><option value="shoot">shoot</option><option>jump</option>
     <option value="slash">bolo slash</option></select></label>
   <label>Zoom <select id="zoom">
     <option value="0.7">0.7 (phone)</option><option value="1.75" selected>1.75 (desktop)</option>
@@ -95,12 +96,28 @@ function frameAt(def, rate) {
   return { f: Math.floor(clock * def.fps * rate) % def.frames, lift: 0 };
 }
 
+// Block 146. The combo clip plays the jab, the cross and the kick back to
+// back, each thrown two frames after the last one's contact, as the game
+// does with taps kept in a row.
+function comboDef() {
+  const seq = ["melee", "cross", "kick"].map((n) => NEW[n]).filter(Boolean);
+  if (seq.length < 3) return null;
+  const per = seq.map((d) => (d.contact != null ? d.contact + 3 : d.frames) / d.fps);
+  const total = per.reduce((a, b) => a + b, 0) + seq[2].frames / seq[2].fps - per[2] + 0.7;
+  let t = clock % total;
+  for (let i = 0; i < 3; i++) {
+    const len = i < 2 ? per[i] : seq[2].frames / seq[2].fps;
+    if (t < len || i === 2) return Object.assign({}, seq[i], { parts: null, forcedFrame: Math.min(seq[i].frames - 1, Math.floor(t * seq[i].fps)) });
+    t -= len;
+  }
+}
+
 function drawSheet(def, x, groundY, zoom, rate) {
   const im = img(def.src.startsWith("_dev") ? "../../" + def.src : asset(def.src));
   if (!im.complete || !im.naturalWidth) return;
   const rows = Math.ceil(def.frames / def.columns);
   const fw = im.naturalWidth / def.columns, fh = im.naturalHeight / rows;
-  const { f, lift } = frameAt(def, rate);
+  const { f, lift } = def.forcedFrame != null ? { f: def.forcedFrame, lift: 0 } : frameAt(def, rate);
   const k = DISPLAY_HEIGHT * zoom / def.contentHeight;
   const sx = (f % def.columns) * fw, sy = Math.floor(f / def.columns) * fh;
   const bottom = def.frameBottoms ? def.frameBottoms[f] : def.contentTop + def.contentHeight;
@@ -143,9 +160,10 @@ function frame(now) {
   g.fillText("Macario", W * 0.66 - 24, gy + 40);
   if (NPC[clip]) drawSheet(NPC[clip], W * 0.33, gy, zoom, rate);
   let fn;
-  if (NEW[clip]) fn = drawSheet(NEW[clip], W * 0.66, gy, zoom, rate);
-  ui("info").textContent = NEW[clip]
-    ? `new ${clip}: ${NEW[clip].frames} frames at ${NEW[clip].fps} fps, frame ${fn}`
+  const mine = clip === "combo" ? comboDef() : NEW[clip];
+  if (mine) fn = drawSheet(mine, W * 0.66, gy, zoom, rate);
+  ui("info").textContent = mine
+    ? `${clip}: ${mine.frames} frames at ${mine.fps} fps, frame ${fn}`
     : "no new sheet for " + clip + " (run node _dev/tools/skeleton.js macario)";
   requestAnimationFrame(frame);
 }
@@ -155,8 +173,8 @@ function frame(now) {
 const MODEL = new URLSearchParams(location.search).get("model") || "macario";
 fetch("out/" + MODEL + ".json?t=" + Date.now()).then((r) => r.json()).then((list) => {
   for (const r of list) {
-    const d = { src: r.file, frames: r.frames, fps: r.fps, columns: r.columns, contentTop: r.contentTop, contentHeight: r.contentHeight, footX: r.footX };
-    if (r.name === "melee" || r.name === "slash") d.parts = [[0, r.frames - 1, r.fps, 0.6]];
+    const d = { src: r.file, frames: r.frames, fps: r.fps, columns: r.columns, contentTop: r.contentTop, contentHeight: r.contentHeight, footX: r.footX, contact: r.contact };
+    if (["melee", "cross", "kick", "slash"].includes(r.name)) d.parts = [[0, r.frames - 1, r.fps, 0.6]];
     if (r.name === "shoot") d.parts = [[r.aim[0], r.aim[1], r.fps, 0.5], [r.fire[0], r.fire[1], r.fireFps, 0.6]];
     if (r.name === "jump") Object.assign(d, { rise: r.rise, fall: r.fall, land: r.land });
     NEW[r.name] = d;

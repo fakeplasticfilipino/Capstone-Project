@@ -41,6 +41,39 @@
     "cellW": 200,
     "cellH": 256,
     "loop": false,
+    "contact": 6,
+    "cocked": 2
+  },
+  {
+    "name": "cross",
+    "file": "_dev/player-lab/out/macario-cross.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 250,
+    "cellW": 200,
+    "cellH": 256,
+    "loop": false,
+    "contact": 6
+  },
+  {
+    "name": "kick",
+    "file": "_dev/player-lab/out/macario-kick.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 250,
+    "cellW": 260,
+    "cellH": 256,
+    "loop": false,
     "contact": 6
   },
   {
@@ -113,6 +146,7 @@
     "cellW": 300,
     "cellH": 330,
     "loop": false,
-    "contact": 6
+    "contact": 6,
+    "cocked": 3
   }
 ]

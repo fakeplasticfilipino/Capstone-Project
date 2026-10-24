@@ -2137,6 +2137,15 @@ const BASE_SPRITE_SHEETS = {
   // 71's contact is the frame the fist lands on, where the hit is
   // resolved (updateMeleeContact): frame 6, the arm straight.
   melee: Object.assign({ src: "assets/sprites/player/macario-melee.png", frames: 12, fps: 24,
+    loop: false, contact: 6, cocked: 2 }, MACARIO_CELL),
+
+  // Block 146. The combo's second and third blows (STRIKES): the cross,
+  // the far hand thrown across, and the kick, the near leg snapped out;
+  // each lands on frame 6 as the jab does. cocked (the jab's 2) is the
+  // frame a dash holds until it reaches the enemy.
+  cross: Object.assign({ src: "assets/sprites/player/macario-cross.png", frames: 12, fps: 24,
+    loop: false, contact: 6 }, MACARIO_CELL),
+  kick: Object.assign({ src: "assets/sprites/player/macario-kick.png", frames: 12, fps: 24,
     loop: false, contact: 6 }, MACARIO_CELL),
 
   // The jump: 0 the push off, 1 to 3 rising, 4 coming down, 5 the
@@ -2375,6 +2384,8 @@ Promise.all([
   loadSpriteSheet(SPRITE_SHEETS.shootAim),
   loadSpriteSheet(SPRITE_SHEETS.shootFire),
   loadSpriteSheet(SPRITE_SHEETS.melee),
+  loadSpriteSheet(SPRITE_SHEETS.cross),
+  loadSpriteSheet(SPRITE_SHEETS.kick),
   loadSpriteSheet(SPRITE_SHEETS.jumpRise),
   loadSpriteSheet(SPRITE_SHEETS.jumpFall),
   loadSpriteSheet(SPRITE_SHEETS.jumpLand),
@@ -3909,8 +3920,8 @@ function guardShootFrame(guard, now) {
 // at once, the same way the moro-moro's soldiers do. dir is the way the
 // blow travels; message is the toast if it drops him. Since Block 76 a
 // door into takeBlow (BLOWS, below), which every body shares.
-function hitGuard(guard, damage, dir, message) {
-  takeBlow(guard, damage, dir, message || "Napatumba mo ang bantay.");
+function hitGuard(guard, damage, dir, message, force) {
+  takeBlow(guard, damage, dir, message || "Napatumba mo ang bantay.", force);
 }
 
 // Block 75. The hit sheet's frame: played once through the stagger from
@@ -4782,6 +4793,27 @@ let shootFireTimer = null; // hands the pose back after fire
 let meleePending = false;
 let meleeEndAt = 0; // when the clip's last frame has been shown long enough
 
+// Block 146. The combo. Taps in a row are a jab, a cross and a kick
+// (STRIKES); the next tap goes on to the next blow if it comes while one
+// is being thrown (kept, strikeQueued, and thrown the moment the last has
+// landed) or within COMBO_WINDOW_MS after it ends, and otherwise starts
+// again from the jab. An enemy within STRIKE_REACH (the fist's reach,
+// MELEE_RANGE) is struck where he stands; one further off is dashed at
+// (Block 86), and the dash lands as whichever blow is next, so a combo
+// goes on when a blow has knocked him back out of reach. Every blow does ENEMY_PUNCH_DAMAGE; the kick throws him back
+// KICK_KNOCK times as far, so the combo's reward is room, not damage, and
+// a fight of fifteen lasts as long as it did.
+const STRIKES = ["melee", "cross", "kick"];
+const COMBO_WINDOW_MS = 400;
+const STRIKE_REACH = MELEE_RANGE; // centre to centre: struck in place, not dashed at
+const KICK_KNOCK = 2.2;
+const QUEUE_AFTER_FRAMES = 2; // a kept tap is thrown this many frames after contact
+let strikeStep = 0;        // which of STRIKES is being thrown
+let strikeAnim = "melee";  // its sheet (the bolo's slash stands in for both punches)
+let strikeQueued = false;
+let comboNext = 0;         // the step the next tap throws, while comboUntil holds
+let comboUntil = 0;
+
 // How long the button must be down before the aim pose shows (Block 27).
 // Before melee had its own clip, the aim pose appeared the instant the
 // button went down, which was harmless. With a punch to play on release,
@@ -4872,7 +4904,7 @@ function findDashTarget() {
     .sort((a, b) => a.gap - b.gap)[0];
 }
 
-function startDash(target) {
+function startDash(target, step) {
   const hits = target.gap <= DASH_HIT_RANGE;
   const travel = hits ? Math.max(target.gap, 0) + DASH_PASS : DASH_MISS_TRAVEL;
   const to = Math.max(0, Math.min(posX + facing * travel, WORLD_WIDTH - PLAYER_WIDTH));
@@ -4889,10 +4921,32 @@ function startDash(target) {
   shooting = "melee";
   meleePending = false;
   meleeEndAt = 0;
-  applyAnim("melee", true);
+  strikeStep = step || 0;
+  strikeAnim = strikeSheet(strikeStep);
+  strikeQueued = false;
+  applyAnim(strikeAnim, true);
+  holdStrikeFrame(cockedFrame(SPRITE_SHEETS[strikeAnim]));
   flashAttack();
   playSfx("swing");
   spawnDust(posX + PLAYER_WIDTH / 2, posY, facing, "land");
+}
+
+// Block 146. The dash holds the blow drawn back (the sheet's cocked
+// frame) while he closes, and shows the fist fully out on the frame it
+// lands, then plays the rest: until then the punch played out on its own
+// clock over the slide and the hit landed wherever the fist happened to
+// be, which read as no punch at all.
+function cockedFrame(sheet) {
+  if (!sheet || sheet.contact == null) return 0;
+  return sheet.cocked != null ? sheet.cocked : Math.max(0, sheet.contact - 3);
+}
+
+function holdStrikeFrame(frame) {
+  const sheet = SPRITE_SHEETS[strikeAnim];
+  if (!spritesReady || !sheet || sheet.failed) return;
+  currentFrame = frame;
+  lastFrameTime = performance.now();
+  drawPlayerFrame(sheet);
 }
 
 // Eased in and out (smoothstep) so he gathers speed and settles rather
@@ -4910,9 +4964,18 @@ function updateDash(deltaMs, now) {
     const gap = (target.pos + bodyKindOf(target).width / 2 - (posX + PLAYER_WIDTH / 2)) * dash.dir;
     if (gap <= 0 || (u >= 1 && gap <= 45)) {
       dash.hitDone = true;
-      if (target.kind === "guard") strikeGuard(target, dash.dir);
-      else takeBlow(target, ENEMY_PUNCH_DAMAGE, dash.dir);
+      const sheet = SPRITE_SHEETS[strikeAnim];
+      if (sheet && sheet.contact != null) holdStrikeFrame(sheet.contact);
+      const force = STRIKES[strikeStep] === "kick" ? KICK_KNOCK : 1;
+      if (target.kind === "guard") strikeGuard(target, dash.dir, force);
+      else takeBlow(target, ENEMY_PUNCH_DAMAGE, dash.dir, undefined, force);
     }
+  }
+  // Until it lands the blow stays drawn back; a dash that reaches nobody
+  // throws it at the end, into the air.
+  if (!dash.hitDone && shooting === "melee" && currentAnim === strikeAnim) {
+    const sheet = SPRITE_SHEETS[strikeAnim];
+    holdStrikeFrame(u < 1 ? cockedFrame(sheet) : (sheet && sheet.contact) || 0);
   }
   if (u < 1) return true;
 
@@ -4922,67 +4985,100 @@ function updateDash(deltaMs, now) {
   return false;
 }
 
-// Plays the punch once. The hit is not resolved here: it lands when the
-// clip reaches the frame where his arm is fully out (the sheet's
-// contact), so the swing, the thump and the enemy's stagger all happen
-// on the picture of the fist arriving. Until Block 71 the hit landed on
-// release and the arm reached out a quarter second after the enemy had
-// already reacted, which is what read as disconnected.
-//
-// A tap while the fist is still on its way is ignored, so the punch
-// already thrown lands rather than being restarted before it can
-// connect; a tap after contact starts the next punch. The pose is handed
-// back from the animation too (updateMeleeContact), not from a timer, so
-// a pause or a hit-stop mid-punch holds the whole punch, contact
-// included. clearTimeout stops a fire clip's pending hand-back from
-// ending this clip early.
+// A blow of the combo plays once. The hit is not resolved here: it lands
+// when the clip reaches the frame where the fist (or the foot) is fully
+// out (the sheet's contact), so the swing, the thump and the enemy's
+// stagger all happen on the picture of the blow arriving (Block 71). A tap
+// while a blow is being thrown is kept and thrown as the next blow the
+// moment this one has landed (Block 146); the pose is handed back from
+// the animation (updateMeleeContact), not from a timer, so a pause or a
+// hit-stop mid-blow holds the whole blow. clearTimeout stops a fire
+// clip's pending hand-back from ending this clip early.
 function playMelee() {
-  if (dash || performance.now() < dashReadyAt) return;
+  const now = performance.now();
+  if (dash || now < dashReadyAt) return;
   noteTask("attack");
-  const target = findDashTarget();
-  if (target) {
-    startDash(target);
+  if (shooting === "melee" && currentAnim === strikeAnim) {
+    if (strikeStep < STRIKES.length - 1) strikeQueued = true;
     return;
   }
-  if (meleePending && shooting === "melee" && currentAnim === "melee") return;
-  const sheet = SPRITE_SHEETS.melee;
+  throwStrike(now < comboUntil ? comboNext : 0);
+}
+
+// A blow of the combo, where he stands or by a dash at an enemy further
+// off than his fist reaches.
+function throwStrike(step) {
+  const target = findDashTarget();
+  if (target && target.gap > STRIKE_REACH) startDash(target, step);
+  else startStrike(step);
+}
+
+// The sheet a step of the combo plays: the worn weapon's own blow (the
+// bolo's slash, which replaces melee) stands in for the cross as well, so
+// with the bolo it is slash, slash, kick.
+function strikeSheet(step) {
+  const name = STRIKES[step] || "melee";
+  if (name === "cross" && SPRITE_SHEETS.melee !== BASE_SPRITE_SHEETS.melee) return "melee";
+  return SPRITE_SHEETS[name] ? name : "melee";
+}
+
+function startStrike(step) {
+  strikeStep = step;
+  strikeAnim = strikeSheet(step);
+  strikeQueued = false;
+  const sheet = SPRITE_SHEETS[strikeAnim];
   clearTimeout(shootFireTimer);
   shooting = "melee";
-  applyAnim("melee", true);
+  applyAnim(strikeAnim, true);
   meleePending = true;
   meleeEndAt = 0;
   // Without art there is no fist to wait for and no frame will advance:
   // resolve at once and hand the pose back on a timer, as before.
   if (!spritesReady || !sheet || sheet.failed || sheet.contact == null) {
     meleePending = false;
-    meleeAttack();
+    meleeAttack(step);
     shootFireTimer = setTimeout(() => {
-      if (shooting === "melee") shooting = null;
+      if (shooting === "melee") endStrike(performance.now());
     }, sheet ? sheet.frames * (1000 / sheet.fps) : 500);
   }
 }
 
+// A blow finished: the pose goes back, and the next tap within the window
+// throws the next blow (after the kick, the jab again).
+function endStrike(now) {
+  shooting = null;
+  comboNext = strikeStep + 1 < STRIKES.length ? strikeStep + 1 : 0;
+  comboUntil = now + COMBO_WINDOW_MS;
+}
+
 // Called every frame from the game loop, after the sprite has stepped.
-// Lands a pending punch on its contact frame, and ends the clip once its
-// last frame has been shown for a frame's length. Anything that took the
-// pose away (a respawn, a cutscene, a throw) has already changed
-// currentAnim or shooting, and then the punch simply never lands.
+// Lands a pending blow on its contact frame, throws a kept tap's blow a
+// moment after, and ends the clip once its last frame has been shown for
+// a frame's length. Anything that took the pose away (a respawn, a
+// cutscene, a throw) has already changed currentAnim or shooting, and
+// then the blow simply never lands.
 function updateMeleeContact(now, canAct) {
-  if (shooting !== "melee" || currentAnim !== "melee") {
+  if (shooting !== "melee" || currentAnim !== strikeAnim) {
     meleePending = false;
+    strikeQueued = false;
     return;
   }
-  const sheet = SPRITE_SHEETS.melee;
-  if (sheet.failed || sheet.contact == null) return; // playMelee's timer
+  if (dash) return; // updateDash holds the pose until it reaches him
+  const sheet = SPRITE_SHEETS[strikeAnim];
+  if (sheet.failed || sheet.contact == null) return; // startStrike's timer
   if (meleePending && currentFrame >= (sheet.contact || 0)) {
     meleePending = false;
-    if (canAct) meleeAttack();
+    if (canAct) meleeAttack(strikeStep);
+  }
+  if (!meleePending && strikeQueued && currentFrame >= sheet.contact + QUEUE_AFTER_FRAMES) {
+    throwStrike(strikeStep + 1);
+    return;
   }
   // Not lastFrameTime: the animator keeps resetting it while it holds
   // a loop: false clip on its last frame.
   if (!meleePending && currentFrame >= sheet.frames - 1) {
     if (!meleeEndAt) meleeEndAt = now + 1000 / sheet.fps;
-    else if (now >= meleeEndAt) shooting = null;
+    else if (now >= meleeEndAt) endStrike(now);
   }
 }
 
@@ -5010,7 +5106,8 @@ function flashAttack() {
   setTimeout(() => player.classList.remove("player-attack"), 180);
 }
 
-function meleeAttack() {
+function meleeAttack(step) {
+  const force = STRIKES[step] === "kick" ? KICK_KNOCK : 1;
   flashAttack();
   // Block 60. Every punch swings; one that lands also thumps (impact).
   playSfx("swing");
@@ -5029,7 +5126,7 @@ function meleeAttack() {
     .filter(({ c }) => c >= lo - ENEMY_WIDTH / 2 && c <= hi)
     .sort((a, b) => Math.abs(a.c - centre) - Math.abs(b.c - centre))[0];
   if (target) {
-    hitEnemy(target.e, ENEMY_PUNCH_DAMAGE);
+    hitEnemy(target.e, ENEMY_PUNCH_DAMAGE, force);
     return;
   }
 
@@ -5037,7 +5134,7 @@ function meleeAttack() {
     if (guard.disabled) continue;
     const guardCentre = guard.pos + GUARD_WIDTH / 2;
     if (guardCentre < lo || guardCentre > hi) continue;
-    strikeGuard(guard, Math.sign(guardCentre - centre) || facing);
+    strikeGuard(guard, Math.sign(guardCentre - centre) || facing, force);
     return; // one target per swing
   }
 }
@@ -5045,11 +5142,11 @@ function meleeAttack() {
 // What a blow does to a guard, whichever way it came (a punch, or the
 // dash through him). away is the way the blow travelled. Behind means
 // the guard is facing the way it went, so away from Macario.
-function strikeGuard(guard, away) {
+function strikeGuard(guard, away, force) {
   const behind = away === guard.facing;
   if (guard.hostile) {
     // Block 38. Already fighting: a punch is a hit, not a mistake.
-    hitGuard(guard, ENEMY_PUNCH_DAMAGE, away);
+    hitGuard(guard, ENEMY_PUNCH_DAMAGE, away, undefined, force);
   } else if (behind && guard.alert < 1) {
     disableGuard(guard, "Natumba ang bantay.", away);
   } else if (guard.shoots) {
@@ -7196,11 +7293,13 @@ function finishFight() {
 // punch on a guard and a punch on an enemy land the same way.
 //
 //   "punch"    a punch that lands
+//   "kick"     the combo's kick (Block 146)
 //   "knockout" the blow that drops someone
 //   "hurt"     Macario hit
 const IMPACTS = {
-  punch:    { sfx: "punch",    stopMs: 55,  shake: 3, shakeMs: 140 },
-  knockout: { sfx: "knockout", stopMs: 110, shake: 7, shakeMs: 280 },
+  punch:    { sfx: "punch",    stopMs: 90,  shake: 5, shakeMs: 170 },   // Block 146: 55 and 3 were too light
+  kick:     { sfx: "knockout", stopMs: 120, shake: 7, shakeMs: 240 },   // Block 146
+  knockout: { sfx: "knockout", stopMs: 130, shake: 8, shakeMs: 300 },
   hurt:     { sfx: "hurt",     stopMs: 0,   shake: 6, shakeMs: 220 },
 };
 
@@ -7599,12 +7698,14 @@ function moveBody(body, dx) {
   body.drawnPos = body.pos;
 }
 
-function takeBlow(body, damage, dir, message) {
+function takeBlow(body, damage, dir, message, force) {
   if (!body || !body.el) return;
   const kind = bodyKindOf(body);
   if (kind.isDown(body)) return;
   const away = dir || awayFromPlayer(body);
+  const push = force || 1;   // Block 146: the kick's KICK_KNOCK
   body.hp -= damage || 1;
+  impactBurst(body.pos + kind.width / 2 - away * kind.width / 2, posY + 72, push > 1);
   body.el.classList.add(kind.cls + "-hit");
   setTimeout(() => body.el && body.el.classList.remove(kind.cls + "-hit"), 150);
   kind.hit(body, away);
@@ -7615,13 +7716,38 @@ function takeBlow(body, damage, dir, message) {
   // The first frame of the slide lands with the blow, so it reads
   // through the hit-stop; updateKnockback carries the rest.
   const now = performance.now();
-  body.knockVel = away * ENEMY_KNOCK_SPEED;
+  body.knockVel = away * ENEMY_KNOCK_SPEED * push;
   moveBody(body, body.knockVel);
   body.knockVel *= ENEMY_KNOCK_DECAY;
   body.hitAt = now;
-  body.staggerUntil = now + kind.staggerMs;
+  body.staggerUntil = now + kind.staggerMs * (push > 1 ? 1.4 : 1);
   kind.staggered(body, now);
-  impact("punch");
+  impact(push > 1 ? "kick" : "punch");
+}
+
+// Block 146. A white flash where a blow lands, drawn by the game (not
+// art), from a small pool as the dust is: two identical animations
+// swapped to restart one without reading layout. Bigger for a kick.
+const BURST_POOL_SIZE = 3;
+let burstPool = null;
+let burstNext = 0;
+function impactBurst(x, y, big) {
+  if (!world) return;
+  if (!burstPool) {
+    burstPool = [];
+    for (let i = 0; i < BURST_POOL_SIZE; i++) {
+      const el = document.createElement("div");
+      el.className = "impact-burst";
+      world.appendChild(el);
+      burstPool.push(el);
+    }
+  }
+  const el = burstPool[burstNext];
+  burstNext = (burstNext + 1) % BURST_POOL_SIZE;
+  el.style.left = Math.round(x) + "px";
+  el.style.bottom = Math.round(y) + "px";
+  el.dataset.flip = el.dataset.flip === "a" ? "b" : "a";
+  el.className = "impact-burst burst-" + el.dataset.flip + (big ? " burst-big" : "");
 }
 
 function knockOut(body, dir, message) {
@@ -7639,8 +7765,8 @@ function knockOut(body, dir, message) {
 
 // An enemy takes a punch or a shot (Block 35). Since Block 76 a door
 // into takeBlow, above.
-function hitEnemy(enemy, damage) {
-  takeBlow(enemy, damage);
+function hitEnemy(enemy, damage, force) {
+  takeBlow(enemy, damage, undefined, undefined, force);
 }
 
 function resetEnemies() {

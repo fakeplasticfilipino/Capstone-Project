@@ -39,6 +39,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..", "..");
+const STRIKE_NAMES_FOR_TEST = ["melee", "cross", "kick"];
 let PORT = Number(process.env.PORT) || 0; // 0: any free port, so shards run side by side (Block 115)
 const SPEED_FOR_TEST = 5; // game.js SPEED, the walk
 const STUB = fs.readFileSync(path.join(__dirname, "sb-stub.js"), "utf8");
@@ -2548,14 +2549,16 @@ const visible = (page, sel) => page.evaluate((s) => {
     // Block 71. The hit lands on the frame the fist reaches out, not on
     // release. meleeAttack is wrapped to record the frame it ran on.
     const contact = await page.evaluate(() => new Promise((resolve) => {
+      comboUntil = 0; // Block 146: no combo still open from the punch above
       const real = meleeAttack;
       const hits = [];
-      meleeAttack = () => { hits.push({ frame: currentFrame, anim: currentAnim }); real(); };
+      meleeAttack = (step) => { hits.push({ frame: currentFrame, anim: currentAnim }); real(step); };
       startAttackHold();
       endAttackHold();
       const onRelease = hits.length;
       // A second tap while the fist is still on its way must not restart
-      // the punch or add a second hit.
+      // the punch or add a hit now; since Block 146 it is kept, and thrown
+      // as the cross once the jab has landed.
       startAttackHold();
       endAttackHold();
       const afterSecondTap = { hits: hits.length, frame: currentFrame };
@@ -2563,15 +2566,39 @@ const visible = (page, sel) => page.evaluate((s) => {
         meleeAttack = real;
         resolve({ onRelease, afterSecondTap, hits, contact: SPRITE_SHEETS.melee.contact,
                   shooting, anim: currentAnim });
-      }, 700);
+      }, 1300);
     }));
     ok("releasing a tap does not land the hit before the fist is out",
        contact.onRelease === 0 && contact.afterSecondTap.hits === 0, contact);
     ok("the hit lands once, on the punch's contact frame",
-       contact.contact === 6 && contact.hits.length === 1 &&
-       contact.hits[0].frame === 6 && contact.hits[0].anim === "melee", contact);
-    ok("and the pose is handed back after the clip",
-       contact.shooting === null && contact.anim !== "melee", contact);
+       contact.contact === 6 && contact.hits[0] && contact.hits[0].frame === 6 && contact.hits[0].anim === "melee", contact);
+    ok("a tap during the punch is kept and thrown as the cross, on its own contact frame (Block 146)",
+       contact.hits.length === 2 && contact.hits[1].anim === "cross" && contact.hits[1].frame === 6, contact);
+    ok("and the pose is handed back after the clips",
+       contact.shooting === null && !STRIKE_NAMES_FOR_TEST.includes(contact.anim), contact);
+
+    // Block 146. The combo: three taps in a row are jab, cross, kick; a
+    // tap after the window starts again from the jab.
+    const combo = await page.evaluate(() => new Promise((resolve) => {
+      comboUntil = 0;
+      const real = meleeAttack;
+      const order = [];
+      meleeAttack = (step) => { order.push(currentAnim); real(step); };
+      const tap = () => { startAttackHold(); endAttackHold(); };
+      tap(); setTimeout(tap, 60); setTimeout(tap, 560);
+      setTimeout(() => {
+        const three = order.slice();
+        // the window closes COMBO_WINDOW_MS after the last blow ends
+        setTimeout(() => {
+          tap();
+          setTimeout(() => { meleeAttack = real; resolve({ three, after: order.slice(3), next: comboNext }); }, 400);
+        }, COMBO_WINDOW_MS + 150);
+      }, 1700);
+    }));
+    ok("three taps in a row throw a jab, a cross and a kick",
+       JSON.stringify(combo.three) === '["melee","cross","kick"]', combo);
+    ok("and a tap after the window starts again from the jab",
+       JSON.stringify(combo.after) === '["melee"]', combo);
 
     // A punch cut off before contact (a respawn, a cutscene) never lands.
     const cut = await page.evaluate(() => new Promise((resolve) => {
@@ -3870,6 +3897,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       loadScene("tondo");
       posX = 300; posY = floorHeightAt(posX); onGround = true; facing = 1;
       health = maxHealth; invulnUntil = 0; dash = null; dashReadyAt = 0; dashStumbleUntil = 0;
+      comboUntil = 0; // Block 146: each dash here is a first blow, the jab
       spawnEnemies([{ id: "d" + Math.random(), x: 300 + PLAYER_WIDTH / 2 + gap - ENEMY_WIDTH / 2, hp: 2, img: "assets/Kaaway.png" }]);
       const e = ENEMIES[ENEMIES.length - 1];
       if (!live) e.staggerUntil = performance.now() + 1e9;
@@ -3878,7 +3906,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       const start = posX;
       playMelee();
       const timer = setInterval(() => {
-        samples.push({ t: performance.now() - t0, x: posX });
+        samples.push({ t: performance.now() - t0, x: posX, f: currentFrame, hit: Boolean(dash && dash.hitDone), inDash: Boolean(dash) });
         if (!dash) {
           clearInterval(timer);
           let maxSpeed = 0, maxJump = 0;
@@ -3890,7 +3918,11 @@ const visible = (page, sel) => page.evaluate((s) => {
           const result = { pw: PLAYER_WIDTH, start, end: posX, centre: 300 + PLAYER_WIDTH / 2 + gap, hp: e.hp, max: maxHealth,
                     ms: samples[samples.length - 1].t, maxSpeed, maxJump, firstStep: Math.abs(samples[0].x - start),
                     stumble: dashStumbleUntil > performance.now(), ready: dashReadyAt > performance.now(),
-                    facingAtEnd: e.facing };
+                    facingAtEnd: e.facing,
+                    // Block 146: the frames shown before the blow lands, and on it
+                    before: [...new Set(samples.filter((p) => p.inDash && !p.hit).map((p) => p.f))],
+                    onHit: (samples.find((p) => p.hit) || {}).f,
+                    cocked: SPRITE_SHEETS.melee.cocked, contact: SPRITE_SHEETS.melee.contact };
           // A live enemy gets time to decide and strike before we count.
           setTimeout(() => resolve(Object.assign(result, { health, facingLater: e.facing })), live ? 500 : 0);
         }
@@ -3901,6 +3933,9 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("a tap with an enemy ahead moves him: his position really changes", Math.abs(near.end - near.start) > 100, near);
     ok("the dash carries him through to the far side of the enemy", near.end + near.pw / 2 > near.centre + 60, near);
     ok("and the enemy took the blow on the way", near.hp === 1, near);
+    ok("the fist stays drawn back while he closes (Block 146)",
+       near.before.length >= 1 && near.before.every((f) => f === near.cocked), near);
+    ok("and is fully out on the frame the blow lands", near.onHit === near.contact, near);
     ok("it takes a visible moment, not a snap", near.ms >= 150 && near.ms <= 500, near);
     ok("it is faster than walking (0.3 px/ms) at its peak", near.maxSpeed > 0.45, near);
     ok("but never a teleport: no frame moves him more than 60px", near.maxJump < 60, near);
@@ -5299,14 +5334,33 @@ const visible = (page, sel) => page.evaluate((s) => {
                after: world.style.transform, hp: e.hp };
     });
     ok("a punch that lands swings and thumps", JSON.stringify(hit.now.asked) === '["swing","punch"]', hit);
+    // Block 146: 90ms, up from 55, which was too light to feel.
     ok("and freezes the world for a moment, and shakes the camera",
-       hit.now.stopped > 30 && hit.now.stopped <= 60 && hit.now.shaking, hit);
+       hit.now.stopped > 60 && hit.now.stopped <= 95 && hit.now.shaking, hit);
     ok("the shake moves the camera off its line, then lets it go",
        /translate\(/.test(hit.shook) && /^translateX\(/.test(hit.after), hit);
     ok("the enemy is knocked back at once, then slides on",
        hit.now.pos > hit.start && hit.later > hit.now.pos + 20, hit);
     ok("coming to rest about as far as the old knockback (45)",
        Math.abs(hit.later - hit.start - 45) < 8, hit);
+
+    // Block 146. The kick does a punch's damage and throws him much
+    // further, with a white flash where it lands.
+    const kick = await page.evaluate(async () => {
+      const e = ENEMIES[1];
+      e.hp = 3; e.staggerUntil = 0;
+      posX = 900; posY = floorHeightAt(posX); facing = 1;
+      e.pos = posX + PLAYER_WIDTH + 10;
+      await new Promise((r) => setTimeout(r, 200));
+      const start = e.pos, hp = e.hp;
+      meleeAttack(STRIKES.indexOf("kick"));
+      const burst = [...document.querySelectorAll(".impact-burst")].some((b) => /burst-(a|b)/.test(b.className) && /burst-big/.test(b.className));
+      await new Promise((r) => setTimeout(r, 400));
+      return { moved: e.pos - start, damage: hp - e.hp, burst };
+    });
+    ok("a kick does a punch's damage (1)", kick.damage === 1, kick);
+    ok("and throws the enemy about twice as far as a punch", kick.moved > 80, kick);
+    ok("with a flash where it lands", kick.burst, kick);
 
     const frozen = await page.evaluate(async () => {
       const x0 = posX;

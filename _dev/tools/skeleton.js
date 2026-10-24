@@ -623,7 +623,8 @@ const CLIPS = {
   // arm pulls back as the fist goes out; then he settles back. The
   // NPCs' attack (animate-still.js) at the player's speed.
   melee: {
-    frames: 12, fps: 24, loop: false, contact: 6,
+    frames: 12, fps: 24, loop: false, contact: 6, cocked: 2,
+    streaks: { from: "hand", frames: [5, 7] },
     pose: keyed(12, [
       { f: 0, body: { fore: { r: -2 } } },
       { f: 2, body: { root: { x: -6 }, spine: { r: -5 }, head: { r: 3 }, upper: { r: 22 }, fore: { r: -72 }, hand: { r: 6 },
@@ -644,6 +645,64 @@ const CLIPS = {
       { f: 11, body: { root: { x: 4 }, spine: { r: 1 }, head: { r: -1 }, upper: { r: -12 }, fore: { r: -10 },
           farUpper: { r: 3 }, farFore: { r: -8 }, hair: { r: 1 } },
         legs: { near: { forward: 4, knee: 6 }, far: { forward: -4, knee: 6 } } },
+    ]),
+  },
+
+  // The cross (Block 146): the combo's second blow, the far hand thrown
+  // across from behind him while the near one pulls back to guard, the
+  // hips and shoulders turning harder into it than the jab. Same timing
+  // as the jab, the blow on 6.
+  cross: {
+    frames: 12, fps: 24, loop: false, contact: 6,
+    streaks: { from: "farHand", frames: [5, 7] },
+    pose: keyed(12, [
+      { f: 0, body: { fore: { r: -2 } } },
+      { f: 2, body: { root: { x: -4 }, spine: { r: -4 }, head: { r: 2 }, upper: { r: -30 }, fore: { r: -70 },
+          farUpper: { r: 18 }, farFore: { r: -75 }, hair: { r: -2 } },
+        legs: { near: { forward: 6, knee: 14 }, far: { forward: -8, knee: 16 } } },
+      { f: 4, body: { root: { x: 8 }, spine: { r: 5 }, upper: { r: -10 }, fore: { r: -80 },
+          farUpper: { r: -45 }, farFore: { r: -55 } },
+        legs: { near: { forward: 12, knee: 14 }, far: { forward: -12, knee: 8 } } },
+      { f: 6, ease: "in", body: { root: { x: 20 }, spine: { r: 11 }, chest: { r: 2 }, head: { r: -7 }, upper: { r: 18 }, fore: { r: -70 },
+          farUpper: { r: -88 }, farFore: { r: 16 }, farHand: { r: -4 }, hair: { r: 3 } },
+        legs: { near: { forward: 20, knee: 16 }, far: { forward: -18, knee: 4 } } },
+      { f: 7, body: { root: { x: 21 }, spine: { r: 12 }, chest: { r: 2 }, head: { r: -7 }, upper: { r: 19 }, fore: { r: -70 },
+          farUpper: { r: -90 }, farFore: { r: 18 }, farHand: { r: -6 }, hair: { r: 6 } },
+        legs: { near: { forward: 20, knee: 17 }, far: { forward: -18, knee: 4 } } },
+      { f: 9, body: { root: { x: 15 }, spine: { r: 7 }, head: { r: -4 }, upper: { r: 8 }, fore: { r: -40 },
+          farUpper: { r: -70 }, farFore: { r: 2 }, hair: { r: 4 } },
+        legs: { near: { forward: 15, knee: 12 }, far: { forward: -13, knee: 6 } } },
+      { f: 11, body: { root: { x: 4 }, spine: { r: 1 }, head: { r: -1 }, upper: { r: -4 }, fore: { r: -8 },
+          farUpper: { r: -8 }, farFore: { r: -8 }, hair: { r: 1 } },
+        legs: { near: { forward: 4, knee: 6 }, far: { forward: -4, knee: 6 } } },
+    ]),
+  },
+
+  // The kick (Block 146): the combo's last blow. He draws the near knee
+  // up, leaning back against it with his hands up, snaps the leg straight
+  // out at the enemy's middle on 6, holds it a moment and sets it down.
+  // In the game it hits for 1 like the punches, and throws the enemy back
+  // further (KICK_KNOCK).
+  kick: {
+    frames: 12, fps: 24, loop: false, contact: 6,
+    streaks: { from: "toe", frames: [5, 7] },
+    cell: { w: 260, h: 256, anchorX: 80, groundY: 250 },   // the leg reaches further than an arm
+    pose: keyed(12, [
+      { f: 0, body: { fore: { r: -2 } } },
+      { f: 2, body: { spine: { r: -4 }, head: { r: 3 }, upper: { r: -40 }, fore: { r: -85 }, farUpper: { r: -30 }, farFore: { r: -85 }, hair: { r: -2 } },
+        legs: { near: { forward: 40, knee: 70 }, far: { forward: -4, knee: 12 } } },
+      { f: 4, body: { root: { x: 2 }, spine: { r: -8 }, head: { r: 5 }, upper: { r: -45 }, fore: { r: -90 }, farUpper: { r: -20 }, farFore: { r: -85 } },
+        legs: { near: { forward: 72, knee: 96 }, far: { forward: -6, knee: 10 } } },
+      { f: 6, ease: "in", body: { root: { x: 10 }, spine: { r: -13 }, chest: { r: -2 }, head: { r: 8 }, upper: { r: -30 }, fore: { r: -80 },
+          farUpper: { r: 15 }, farFore: { r: -60 }, hair: { r: 5 } },
+        legs: { near: { forward: 82, knee: 4 }, far: { forward: -8, knee: 6 } } },
+      { f: 8, body: { root: { x: 10 }, spine: { r: -12 }, chest: { r: -2 }, head: { r: 7 }, upper: { r: -30 }, fore: { r: -80 },
+          farUpper: { r: 14 }, farFore: { r: -60 }, hair: { r: 3 } },
+        legs: { near: { forward: 80, knee: 8 }, far: { forward: -8, knee: 6 } } },
+      { f: 10, body: { root: { x: 8 }, spine: { r: -3 }, head: { r: 2 }, upper: { r: -20 }, fore: { r: -40 }, farUpper: { r: 4 }, farFore: { r: -30 }, hair: { r: 1 } },
+        legs: { near: { forward: 30, knee: 50 }, far: { forward: -4, knee: 8 } } },
+      { f: 11, body: { root: { x: 6 }, spine: { r: 1 }, upper: { r: -6 }, fore: { r: -8 }, farUpper: { r: -2 }, farFore: { r: -6 } },
+        legs: { near: { forward: 6, knee: 6 }, far: { forward: -4, knee: 6 } } },
     ]),
   },
 
@@ -718,7 +777,7 @@ const CLIPS = {
   // slash is), and settles. The blade itself is the artist's (ART.md);
   // until it comes the cut is made empty-handed.
   slash: {
-    frames: 12, fps: 24, loop: false, contact: 6, prop: "itak", arc: [5, 8],
+    frames: 12, fps: 24, loop: false, contact: 6, cocked: 3, prop: "itak", arc: [5, 8],
     cell: { w: 300, h: 330, anchorX: 110, groundY: 320 },
     pose: keyed(12, [
       { f: 0, body: { fore: { r: -2 } } },
@@ -830,6 +889,11 @@ function renderFrame(sk, rig, world, clip, t) {
   if (clip && clip.arc) {
     const f = Math.round(t * clip.frames);
     if (f >= clip.arc[0] && f <= clip.arc[1]) drawArc(canvas, CW, CH, sk, rig, clip, t, map);
+  }
+  if (clip && clip.streaks) {
+    const f = Math.round(t * clip.frames);
+    const [a, b] = clip.streaks.frames;
+    if (f >= a && f <= b) drawStreaks(canvas, CW, CH, sk, rig, world, clip, map, 1 - Math.abs(f - clip.contact) * 0.35);
   }
   // Averaged down to the sheet's size, and back to straight colour.
   const w = cell.w, h = cell.h, out = new Uint8Array(w * h * 4);
@@ -983,6 +1047,43 @@ function drawArc(canvas, CW, CH, sk, rig, clip, t, map) {
   }
 }
 
+// Where the striking point is now (the near or far fist, or the toe).
+function strikePoint(sk, B, world, from) {
+  const J = sk.joints;
+  if (from === "toe") {
+    const F = world.foot, b = B.by.foot;
+    const [dx, dy] = rot(J.toe[0] - b.head[0], J.toe[1] - b.head[1], F.A);
+    return [F.H[0] + dx, F.H[1] + dy];
+  }
+  const bone = from === "farHand" ? "farHand" : "hand";
+  const H = world[bone], b = B.by[bone];
+  const [dx, dy] = rot(b.tail[0] - b.head[0], b.tail[1] - b.head[1], H.A);
+  return [H.H[0] + dx, H.H[1] + dy];
+}
+
+// Three pale lines trailing behind a blow, the comic-strip sign of speed
+// (as the NPCs' attack has, animate-still.js drawStreaks). Drawn by the
+// game, not art.
+function drawStreaks(canvas, CW, CH, sk, rig, world, clip, map, strength) {
+  if (strength <= 0) return;
+  const [px, py] = map(...strikePoint(sk, rig.B, world, clip.streaks.from));
+  const k = map(1, 0)[0] - map(0, 0)[0];   // canvas px per working px
+  for (const [dy, len] of [[-34, 120], [26, 160], [52, 100]]) {
+    const y = py + dy * k, x1 = px - 4 * k, x0 = x1 - len * k * strength;
+    for (let yy = Math.floor(y - 4 * k); yy <= Math.ceil(y + 4 * k); yy++) {
+      for (let xx = Math.max(0, Math.floor(x0)); xx <= Math.min(CW - 1, Math.ceil(x1)); xx++) {
+        if (yy < 0 || yy >= CH) continue;
+        const u = (xx - x0) / (x1 - x0);           // 0 at the tail, 1 at the fist
+        const half = (0.8 + 1.6 * u) * k;
+        if (Math.abs(yy - y) > half) continue;
+        const a = 0.9 * strength * (0.25 + 0.75 * u), i = (yy * CW + xx) * 4, q = 1 - a;
+        canvas[i] = a + canvas[i] * q; canvas[i + 1] = a * 0.98 + canvas[i + 1] * q;
+        canvas[i + 2] = a * 0.91 + canvas[i + 2] * q; canvas[i + 3] = a + canvas[i + 3] * q;
+      }
+    }
+  }
+}
+
 function loadProp(sk, name) {
   const p = sk.props && sk.props[name];
   const file = p && path.join(ROOT, p.src);
@@ -1002,6 +1103,7 @@ function clipExtras(sk, rig, clip) {
   const x = {};
   if (clip.loop === false) x.loop = false;
   if (clip.contact != null) x.contact = clip.contact;
+  if (clip.cocked != null) x.cocked = clip.cocked;
   for (const k of ["aim", "fire", "rise", "fall", "land"]) if (clip[k]) x[k] = clip[k];
   if (clip.fireFps) x.fireFps = clip.fireFps;
   if (clip.muzzleFrame != null) {
