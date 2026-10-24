@@ -417,6 +417,17 @@ the straw or the scarecrow should be, a shelf drawn away from where he
 stands on it, a guard who sees him on a shelf, or a shadow tree in a
 room.
 
+Open: the main menu (Block 144, 24 Oct 2026). Signed out: the title is
+a column of buttons on the left over the street, no controls or login
+box behind it; Mga Kabanata shows four act cards with pictures; any
+part starts a guest there. Signed in with a test account: Magpatuloy
+names the act and part; the cards say Tapos, Ginagawa, Naka-lock; an
+earlier part asks before a Balikan, plays with the yellow banner, and
+Pangunahing Menu in pause brings back Magpatuloy at the same place as
+before. Failure: the login box or the controls showing through the
+menu, a black card where an act's picture should be once loaded, a
+Balikan that moves Magpatuloy or changes barya, or a test during one.
+
 Still to watch, in the pilot rather than on
 one phone: whether the work game's green patch is too thin by the fifth
 stroke, and whether students find the Kasama and the three who take
@@ -1005,6 +1016,10 @@ machine, the assessment module.
     141 pictures that do not fit taken out, owed again: six rooms, the
         1917 soldier
     143 rooms built from kits; the entablado and the pulungan built
+    144 the main menu: the title over the world, Mga Kabanata (the
+        acts and their parts, from devJumps), Balikan (a student plays
+        an earlier part and nothing is kept), Pangunahing Menu in
+        pause, Mag-log Out on the menu; test.js BY
 
 ## Blocks remaining
 

@@ -1852,7 +1852,11 @@ const visible = (page, sel) => page.evaluate((s) => {
         "shell-logout", "shell-settings-back", "shell-reset",
         "shell-reset-yes", "shell-reset-no",
         "shell-inventory-back", "shell-shop-back", "shell-logout-yes",
-        "shell-logout-no", "auth-submit"];
+        "shell-logout-no", "auth-submit",
+        // Block 144, the main menu.
+        "shell-chapters", "shell-chapters-back", "shell-act-back",
+        "shell-review-yes", "shell-review-no", "shell-title-logout",
+        "shell-main-menu"];
       const missing = [];
       const dangling = [];
       ids.forEach((id) => {
@@ -7907,6 +7911,167 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the login field asks for a code, as text, not an email field",
        field.type === "text" && /Code/.test(field.ph), field);
     await g.ctx.close();
+  }
+
+  if (section("BY", "Block 144: the main menu, Mga Kabanata and Balikan")) {
+    const menuState = (page) => page.evaluate(() => ({
+      menu: document.getElementById("shell").classList.contains("shell-menu"),
+      open: document.body.classList.contains("shell-menu-open"),
+      controls: getComputedStyle(document.getElementById("mobile-controls")).visibility,
+      login: getComputedStyle(document.getElementById("auth-overlay")).visibility,
+    }));
+    const sub = (page, sel) => page.evaluate((s) => {
+      const l = document.querySelector(s + " .lbl");
+      return (l && l.dataset.sub) || "";
+    }, sel);
+
+    // A visitor: every act and every part open, a part a guest's start.
+    const { ctx, page } = await newPage({ session: null });
+    await page.waitForFunction(() => !document.getElementById("shell-chapters").disabled);
+    let m = await menuState(page);
+    ok("the title is the menu over the world, the controls and the login box put away",
+       m.menu && m.open && m.controls === "hidden" && m.login === "hidden", m);
+    ok("Magsimula keeps its word and says how", (await page.textContent("#shell-start .lbl")).trim() === "Magsimula" &&
+       /code/.test(await sub(page, "#shell-start")), await sub(page, "#shell-start"));
+    ok("a visitor is offered the guest's way in, and no Mag-log Out",
+       (await visible(page, "#shell-guest")) && !(await visible(page, "#shell-title-logout")));
+    await page.click("#shell-chapters");
+    const cards = await page.evaluate(() => [...document.querySelectorAll("#shell-acts .menu-act")].map((c) => ({
+      n: c.dataset.act, off: c.disabled, art: c.style.backgroundImage, tag: !!c.querySelector(".menu-act-tag"),
+    })));
+    ok("Mga Kabanata shows the four acts, all open to a visitor, each with its picture",
+       cards.length === 4 && cards.every((c) => !c.off && !c.tag && /url\("[^"]*\?v=/.test(c.art)), cards);
+    await page.click('#shell-acts [data-act="3"]');
+    const parts = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll("#shell-act-chapters .menu-chapter")].map((r) => r.disabled),
+      points: Acts.getAct(3).devJumps.length,
+      title: document.getElementById("shell-act-title").textContent,
+    }));
+    ok("an act lists its parts, its story points, every one open",
+       parts.rows.length === parts.points && parts.rows.every((d) => !d) && parts.title === "Yugto III", parts);
+    const rowH = await page.evaluate(() => document.querySelector("#shell-act-chapters .menu-chapter").getBoundingClientRect().height);
+    ok("a part is a touch target, 44px on glass", rowH >= 44, rowH);
+    await page.keyboard.press("Escape");
+    ok("Escape steps back to the acts", await visible(page, "#shell-chapters-panel"));
+    await page.click('#shell-acts [data-act="3"]');
+    const point = await page.evaluate(() => Acts.getAct(3).devJumps[2]);
+    await page.click('#shell-act-chapters [data-point="2"]');
+    await page.waitForFunction(() => Shell.state === "playing");
+    const g = await page.evaluate(() => ({ guest: Game.isGuest(), review: Game.isReview(), act: Acts.current, room: currentRoom }));
+    ok("a part starts a guest there", g.guest && !g.review && g.act === 3 && g.room === point.scene, g);
+    m = await menuState(page);
+    ok("and the controls come back with the world", !m.open && m.controls === "visible", m);
+    ok("a guest has no Balikan banner", !(await visible(page, "#review-banner")));
+    await page.evaluate(() => setCutscene(false));
+    await page.click("#btn-pause");
+    ok("the pause screen offers the menu, and says a guest is not kept",
+       (await visible(page, "#shell-main-menu")) && /bisita/.test(await sub(page, "#shell-main-menu")),
+       await sub(page, "#shell-main-menu"));
+    await ctx.close();
+
+    // A student in Act II, five parts in, Act I done.
+    const peek = await newPage({ session: null });
+    await peek.page.waitForFunction(() => window.Acts && Acts.getAct(2));
+    const jumps = await peek.page.evaluate(() => Acts.getAct(2).devJumps.map((j) => ({ id: j.id, scene: j.scene, x: j.x, flags: j.flags, label: j.label })));
+    await peek.ctx.close();
+    const at = jumps[4];
+    const student = () => ({
+      session: { user: { id: "u1" } },
+      game_progress: [{ student_id: "u1", current_act: 2, current_room: at.scene, currency: 37,
+        save_state: { quests: [], flags: Object.assign({ __probeSaved: true }, at.flags), posX: at.x } }],
+      act_progress: [
+        { student_id: "u1", act_number: 1, status: "completed", objectives_done: 9 },
+        { student_id: "u1", act_number: 2, status: "playing", objectives_done: 2 },
+      ],
+    });
+    const s = await newPage(student());
+    await s.page.waitForFunction(() => Shell.ready && !document.getElementById("shell-chapters").disabled);
+    ok("a student's menu: Magpatuloy says where they stopped",
+       (await s.page.textContent("#shell-start .lbl")).trim() === "Magpatuloy" &&
+       (await sub(s.page, "#shell-start")) === "Yugto II · " + at.label, await sub(s.page, "#shell-start"));
+    ok("no guest's way in for a student, and Mag-log Out on the menu",
+       !(await visible(s.page, "#shell-guest")) && (await visible(s.page, "#shell-title-logout")));
+    await s.page.click("#shell-title-logout");
+    ok("Mag-log Out asks first", await visible(s.page, "#shell-logout-confirm"));
+    await s.page.click("#shell-logout-no");
+    ok("and Huwag goes back to the menu, not to a pause", await visible(s.page, "#shell-title"));
+    await s.page.click("#shell-chapters");
+    const sc = await s.page.evaluate(() => [...document.querySelectorAll("#shell-acts .menu-act")].map((c) => ({
+      off: c.disabled, tag: (c.querySelector(".menu-act-tag") || {}).textContent,
+      fill: (c.querySelector(".menu-act-fill") || { style: {} }).style.width,
+    })));
+    ok("the acts: I done, II in hand, III and IV locked",
+       sc.map((c) => c.tag).join() === "Tapos,Ginagawa,Naka-lock,Naka-lock" &&
+       sc.map((c) => c.off).join() === "false,false,true,true" && sc[0].fill === "100%", sc);
+    await s.page.click('#shell-acts [data-act="2"]');
+    const rows = await s.page.evaluate(() => [...document.querySelectorAll("#shell-act-chapters .menu-chapter")].map((r) => ({
+      kind: r.className.replace(/.*menu-chapter-/, ""), off: r.disabled, text: r.querySelector(".lbl").textContent,
+    })));
+    ok("the parts: before theirs Balikan, theirs Narito ka, after it ??? and shut",
+       rows[4].kind === "here" && rows.slice(0, 4).every((r) => r.kind === "review" && !r.off) &&
+       rows.slice(5).every((r) => r.kind === "locked" && r.off && r.text === "???"), rows.map((r) => r.kind));
+
+    await s.page.click('#shell-act-chapters [data-point="1"]');
+    ok("an earlier part asks before a Balikan", await visible(s.page, "#shell-review-confirm") &&
+       (await s.page.textContent("#shell-review-title")) === jumps[1].label);
+    await s.page.click("#shell-review-no");
+    ok("Huwag na goes back to the parts", await visible(s.page, "#shell-act-panel"));
+    await s.page.click('#shell-act-chapters [data-point="1"]');
+    const before = await s.page.evaluate(() => ({ rows: JSON.stringify(__DB), calls: __CALLS.length }));
+    await s.page.click("#shell-review-yes");
+    await s.page.waitForFunction(() => Shell.state === "playing");
+    const r = await s.page.evaluate(() => ({
+      review: Game.isReview(), signed: Game.isSignedIn(), room: currentRoom, act: Acts.current,
+      kept: !!state.flags.__probeSaved, barya: Game.currency(), status: Acts.status,
+    }));
+    ok("Balikan: the student let go of, at the part, with only the part's story",
+       r.review && !r.signed && r.room === jumps[1].scene && r.act === 2 && !r.kept && r.status === "playing", r);
+    ok("the Balikan banner is up", await visible(s.page, "#review-banner"));
+    ok("no test came up for a Balikan", !(await visible(s.page, "#quiz")));
+    // Story moves, saves are asked for, and the act's objectives counted.
+    await s.page.evaluate(async () => {
+      state.flags.__reviewProbe = true;
+      markDirty();
+      await Game.flushSave();
+      await new Promise((res) => setTimeout(res, 1200));
+      Acts.checkObjectives();
+    });
+    const after = await s.page.evaluate(() => ({
+      rows: JSON.stringify(__DB),
+      writes: __CALLS.filter((c) => c.op && c.op !== "select"),
+    }));
+    ok("nothing of a Balikan is written: the save, the act, the scores as they were",
+       after.rows === before.rows && after.writes.length === 0, after.writes);
+    await s.page.evaluate(() => setCutscene(false));
+    await s.page.click("#btn-pause");
+    ok("the pause screen's menu ends the Balikan", /Balikan/.test(await sub(s.page, "#shell-main-menu")));
+    await s.ctx.close();
+
+    // Pangunahing Menu from a student's own game: the save first, then
+    // the menu again, still signed in.
+    const p = await newPage(student());
+    await p.page.waitForFunction(() => Shell.ready);
+    await p.page.click("#shell-start");
+    await p.page.waitForFunction(() => Shell.state === "playing");
+    await p.page.evaluate(() => {
+      setCutscene(false);
+      const flush = Game.flushSave;
+      Game.flushSave = async () => {
+        await flush();
+        const row = __DB.game_progress[0];
+        sessionStorage.setItem("menuFlushed", String(!!(row && row.save_state.flags.__menuProbe)));
+      };
+      state.flags.__menuProbe = true;
+      markDirty();
+    });
+    await p.page.click("#btn-pause");
+    await Promise.all([p.page.waitForNavigation(), p.page.click("#shell-main-menu")]);
+    await p.page.waitForFunction(() => window.Shell && Shell.ready);
+    ok("Pangunahing Menu saves first, then opens the menu, still signed in",
+       (await p.page.evaluate(() => sessionStorage.getItem("menuFlushed"))) === "true" &&
+       (await visible(p.page, "#shell-title")) &&
+       (await p.page.textContent("#shell-start .lbl")).trim() === "Magpatuloy");
+    await p.ctx.close();
   }
 
   await browser.close();

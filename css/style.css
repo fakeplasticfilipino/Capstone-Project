@@ -4486,3 +4486,334 @@ body.dialogue-top .dialogue-portrait {
     display: none;
   }
 }
+
+/* =============================================================
+   Block 144. The main menu (shell.js, The main menu).
+
+   The title screen stands over the world rather than in a box in the
+   middle of it: a column of buttons on the left, the scene behind
+   showing through on the right, the play controls (and the login box,
+   which waits underneath until Magsimula) put away while any of the
+   menu's screens is up. Mga Kabanata and an act's parts take
+   the wide box the inventory uses. Everything is drawn from the parts
+   already here (the pixel panel, the fonts, the green), and the act
+   cards' pictures are the acts' own paintings (menuArt in content).
+   At the end of the file so the menu's ids outrank the shell's.
+   ============================================================= */
+
+#shell.shell-menu {
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 0;
+  background: linear-gradient(90deg,
+    rgba(13, 9, 6, 0.94) 0%,
+    rgba(13, 9, 6, 0.84) 38%,
+    rgba(13, 9, 6, 0.22) 68%,
+    rgba(13, 9, 6, 0.06) 100%);
+}
+
+#shell.shell-menu #shell-box {
+  width: min(48%, 420px);
+  height: 100%;
+  max-height: 100%;
+  margin-left: 3%;
+  padding: 18px 20px;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#shell.shell-menu #shell-title .shell-eyebrow,
+#shell.shell-menu #shell-title .shell-heading,
+#shell.shell-menu #shell-title .shell-sub {
+  text-align: left;
+}
+
+#shell.shell-menu #shell-title .shell-heading {
+  font-size: 34px;
+  margin-bottom: 2px;
+  text-shadow: 3px 3px 0 var(--c-green-deep), 6px 6px 0 rgba(0, 0, 0, 0.6);
+}
+
+#shell.shell-menu #shell-title .shell-sub {
+  margin-bottom: 12px;
+}
+
+#shell.shell-menu .shell-btn {
+  transition: transform 0.08s;
+}
+
+#shell.shell-menu .shell-btn:not(:disabled):hover {
+  transform: translateX(3px);
+}
+
+/* A menu button's second line: its label's data-sub, so the label's
+   own text stays the word the checks and setLabel write. */
+.lbl[data-sub]::after {
+  content: attr(data-sub);
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78em;
+  line-height: 1;
+  color: var(--px-green-hi);
+}
+
+.shell-btn-primary .lbl[data-sub]::after {
+  color: #dff0d8;
+}
+
+body.shell-menu-open #quest-log,
+body.shell-menu-open #hud,
+body.shell-menu-open #btn-shop,
+body.shell-menu-open #btn-inventory,
+body.shell-menu-open #btn-pause,
+body.shell-menu-open #gift-btn,
+body.shell-menu-open #guide-edge,
+body.shell-menu-open #guide-marker,
+body.shell-menu-open #mobile-controls,
+body.shell-menu-open #auth-overlay {
+  visibility: hidden;
+}
+
+/* ---- Mga Kabanata: the act cards ---- */
+
+.menu-acts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.menu-act,
+.menu-act-art {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 10px;
+  text-align: left;
+  color: var(--c-cream);
+  font-family: var(--px-font);
+  background-color: var(--px-ink);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border: 2px solid var(--c-border-muted);
+  border-radius: 0;
+  box-shadow: var(--px-band);
+}
+
+.menu-act {
+  min-height: 150px;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
+}
+
+.menu-act::before,
+.menu-act-art::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 20%, rgba(10, 7, 4, 0.95) 78%);
+  pointer-events: none;
+}
+
+.menu-act > *,
+.menu-act-art > * {
+  position: relative;
+  pointer-events: none;
+}
+
+.menu-act:not(:disabled):hover {
+  transform: translateY(-3px);
+  border-color: var(--c-cream-dim);
+}
+
+.menu-act-locked {
+  cursor: default;
+  filter: grayscale(1) brightness(0.45);
+}
+
+.menu-act-num {
+  font-family: var(--px-title);
+  font-size: 22px;
+  color: #f4c542;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.menu-act-name {
+  margin: 4px 0 2px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.menu-act-years {
+  font-size: 16px;
+  color: var(--c-cream-dim);
+}
+
+.menu-act-tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 1px 6px;
+  font-size: 15px;
+  border: 1px solid;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.menu-act > .menu-act-tag {
+  position: absolute;
+}
+
+.menu-act-tag-done { color: var(--px-green-hi); border-color: var(--c-green); }
+.menu-act-tag-now { color: #f4c542; border-color: #f4c542; }
+.menu-act-tag-lock { color: var(--c-cream-faint); border-color: var(--c-cream-faint); }
+
+#shell-chapters-note {
+  margin: 8px 0 0;
+  color: var(--c-cream-dim);
+}
+
+.menu-act-bar {
+  align-self: stretch;
+  height: 5px;
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.menu-act-fill {
+  display: block;
+  height: 100%;
+  background: var(--c-green);
+}
+
+/* ---- An act's parts ---- */
+
+.menu-act-body {
+  display: flex;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+}
+
+.menu-act-art {
+  width: 30%;
+  flex: none;
+}
+
+.menu-act-art .menu-act-num { font-size: 26px; }
+.menu-act-art .menu-act-name { font-size: 22px; margin-top: 6px; }
+
+.menu-chapters {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 4px;
+}
+
+.menu-chapter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  min-height: 44px;
+  padding: 2px 10px;
+  text-align: left;
+  color: var(--c-cream);
+  font-family: var(--px-font);
+  font-size: 20px;
+  background: var(--px-cell);
+  border: 1px solid var(--c-border-muted);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.menu-chapter > * {
+  pointer-events: none;
+}
+
+.menu-chapter:not(:disabled):hover {
+  border-color: var(--c-cream-dim);
+}
+
+.menu-chapter .lbl {
+  flex: 1;
+  line-height: 1.05;
+}
+
+.menu-chapter-num {
+  width: 26px;
+  flex: none;
+  font-size: 18px;
+  color: var(--c-cream-faint);
+}
+
+.menu-chapter-tag {
+  font-size: 16px;
+  color: var(--px-green-hi);
+}
+
+.menu-chapter-here {
+  border-color: #f4c542;
+}
+
+.menu-chapter-here .menu-chapter-tag {
+  color: #f4c542;
+}
+
+.menu-chapter-locked {
+  cursor: default;
+  color: var(--c-cream-faint);
+  background: var(--px-panel);
+}
+
+/* ---- Balikan, in play ---- */
+
+#review-banner {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  padding: 3px 12px;
+  white-space: nowrap;
+  font-family: var(--px-font);
+  font-size: 18px;
+  color: #f4c542;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid #f4c542;
+  pointer-events: none;
+}
+
+#review-banner.hidden {
+  display: none;
+}
+
+/* The target device: the parts are touch targets like every button,
+   44px on glass. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .menu-chapter {
+    min-height: 63px;
+    font-size: 22px;
+  }
+
+  #shell.shell-menu #shell-box {
+    width: min(50%, 440px);
+  }
+
+  /* Pangunahing Menu made the pause screen one button longer than a
+     phone held sideways; its eyebrow is the room. */
+  #shell-pause .shell-eyebrow {
+    display: none;
+  }
+}

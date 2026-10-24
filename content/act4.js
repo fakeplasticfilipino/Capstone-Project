@@ -927,6 +927,10 @@
     number: 4,
     title: "The Bitter Harvest",
     titleTagalog: "Ang Mapait na Ani",
+    // Block 144. The menu's Mga Kabanata: the years on the act's card,
+    // and its picture, one of the act's own paintings.
+    years: "1903 - 1907",
+    menuArt: "assets/backgrounds/act4/dimasalang-1.jpg",
     devJumps: DEV_JUMPS,
 
     // One chain, in story order, the quest log (Block 48).

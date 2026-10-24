@@ -994,6 +994,10 @@
     number: 2,
     title: "The Long Shadow of War",
     titleTagalog: "Ang Mahabang Anino ng Digmaan",
+    // Block 144. The menu's Mga Kabanata: the years on the act's card,
+    // and its picture, one of the act's own.
+    years: "1896 - 1898",
+    menuArt: "assets/backgrounds/layers/sierra-sky.jpg",
     devJumps: DEV_JUMPS,
 
     // One chain, in story order, the quest log (Block 48).

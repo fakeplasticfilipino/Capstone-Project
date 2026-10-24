@@ -949,6 +949,10 @@
     number: 3,
     title: "The Republic in the Shadows",
     titleTagalog: "Ang Republika sa Lilim",
+    // Block 144. The menu's Mga Kabanata: the years on the act's card,
+    // and its picture, one of the act's own paintings.
+    years: "1899 - 1902",
+    menuArt: "assets/backgrounds/act3/burol-1.jpg",
     devJumps: DEV_JUMPS,
 
     // One chain, in story order, the quest log (Block 48).

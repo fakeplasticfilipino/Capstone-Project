@@ -8623,6 +8623,7 @@ const authOverlay = document.getElementById("auth-overlay");
 let currentUserId = null;
 let currentProfile = null; // the logged-in student's profiles row
 let isGuest = false; // see enterGameAsGuest, Block 14
+let isReview = false; // see enterGameAsReview, Block 144
 let autosaveTimer = null; // guards against stacking a second interval
 
 authForm.addEventListener("submit", async (e) => {
@@ -8704,6 +8705,9 @@ function startAuth() {
 
 async function enterGameAsUser(userId) {
   if (currentUserId === userId) return; // already entered
+  // Block 144. A Balikan has let go of the student on purpose; a token
+  // refresh (onAuthStateChange) must not sign them back in under it.
+  if (isReview) return;
 
   // Look up the role before doing anything student-specific. A teacher
   // reaching this point would otherwise be dropped into the game and
@@ -8813,6 +8817,16 @@ async function enterGameAsUser(userId) {
   // browser wants before it will play sound; see startMusic.
   startMusic();
 
+  // Block 144. The student chose a Balikan on the menu instead of
+  // Magpatuloy: enterGameAsReview has already put the world at that
+  // point, as a guest's. Nothing of the login's own flow runs: no
+  // syncStart (the trivia card, the tests, the session row) and no
+  // autosave.
+  if (isReview) {
+    enterWorldScripts();
+    return;
+  }
+
   if (window.Acts) await Acts.syncStart(actNumber);
 
   // Block 52. Only while the act is actually being played: a student who
@@ -8853,13 +8867,54 @@ async function enterGameAsGuest(jumpId) {
   authOverlay.classList.add("hidden");
   authGated = false;
 
-  // Block 108. A guest may start from a point in the story (the act's
-  // devJumps, offered on the title screen with ?dev=1): the flags the
-  // story has set by then, the barya, and where Macario stands, set
-  // before the scene is built, so what plays next plays as after a
-  // reload. A guest writes nothing, so nobody's save is touched.
-  // Polish list #2: a jump id is "act:id" (any act), or a bare id, which
-  // is Act I's. Without one, a guest plays Act I from its first scene.
+  await startAtStoryPoint(jumpId);
+
+  if (window.Shell) await Shell.awaitEntry();
+  startMusic();
+  enterWorldScripts();
+}
+
+// Block 144. Balikan: a signed-in student plays a part of the story
+// again from the menu's Mga Kabanata, and nothing of it is kept. The
+// student is let go of for the rest of the page's life: every save path
+// stopped (stopSaving, as the reset does), currentUserId cleared, so
+// every write in acts.js, inventory.js and assessment.js refuses as it
+// does for a guest (Block 14), and isGuest set, so the guest's own paths
+// (items in memory, the act's end without a test) are the ones taken.
+// The story so far is cleared and the point's own flags laid, exactly as
+// for a guest. The way out is a reload (Pangunahing Menu, or the act's
+// end), which reads the untouched save again. Called by shell.js while
+// enterGameAsUser waits on awaitEntry; that function sees isReview when
+// the wait ends and does nothing of the login's own flow.
+async function enterGameAsReview(jumpId) {
+  if (!currentUserId || isReview) return false;
+  stopSaving();
+  isReview = true;
+  isGuest = true;
+  currentUserId = null;
+  Object.keys(state.flags).forEach((k) => delete state.flags[k]);
+  clearQuests();
+  currency = 0;
+  damageTaken = 0;
+  detections = 0;
+  playMs = 0;
+  assists = 0;
+  if (window.Acts) Acts.status = "playing";
+  await startAtStoryPoint(jumpId);
+  health = maxHealth;
+  updateHudVisibility();
+  return true;
+}
+
+// Block 108. A guest may start from a point in the story (the act's
+// devJumps: the menu's Mga Kabanata since Block 144, and the title
+// screen's list with ?dev=1): the flags the story has set by then, the
+// barya, and where Macario stands, set before the scene is built, so
+// what plays next plays as after a reload. A guest writes nothing, so
+// nobody's save is touched. Polish list #2: a jump id is "act:id" (any
+// act), or a bare id, which is Act I's. Without one, Act I from its
+// first scene.
+async function startAtStoryPoint(jumpId) {
   const parts = String(jumpId || "").split(":");
   const actNumber = parts.length > 1 ? Number(parts[0]) || 1 : 1;
   const id = parts.length > 1 ? parts.slice(1).join(":") : parts[0];
@@ -8875,6 +8930,15 @@ async function enterGameAsGuest(jumpId) {
 
   if (window.Acts && act) {
     Acts.current = act.number || actNumber;
+    // Block 144. The words of the story before this point are found
+    // quietly, as for a save restored past them, not toasted all at once
+    // by the markDirty inside loadAct.
+    if (jump) {
+      const before = currentActData;
+      currentActData = act;
+      earnGlossaryByFlags(true);
+      currentActData = before;
+    }
     // An unknown or missing scene id is the act's first scene.
     loadAct(act, jump ? jump.scene : null);
     if (jump && typeof jump.x === "number") placePlayer(jump.x, jump.facing || 1);
@@ -8887,10 +8951,6 @@ async function enterGameAsGuest(jumpId) {
       if (await Inventory.grant(id)) Inventory.equip(id);
     }
   }
-
-  if (window.Shell) await Shell.awaitEntry();
-  startMusic();
-  enterWorldScripts();
 }
 
 // 6 Oct 2026. A login that cannot read the student's save or acts is
@@ -9155,6 +9215,21 @@ window.Game = {
   // more importantly, does not do.
   enterAsGuest: enterGameAsGuest,
   isGuest: () => isGuest,
+
+  // Block 144. The menu's Balikan; see enterGameAsReview above.
+  enterReview: enterGameAsReview,
+  isReview: () => isReview,
+
+  // Block 144. Which of act n's story points (devJumps, in order) the
+  // student's story has passed: every flag the point sets is set. The
+  // engine's own "__" flags are not the story's and are not asked about.
+  // A list of booleans; the menu draws Mga Kabanata from it.
+  storyPointsReached(n) {
+    const act = window.Acts && Acts.getAct ? Acts.getAct(n) : null;
+    return ((act && act.devJumps) || []).map((j) =>
+      Object.keys(j.flags || {}).every((k) =>
+        k.indexOf("__") === 0 || !j.flags[k] || Boolean(state.flags[k])));
+  },
 
   // Read by acts.js, which is the only thing that writes them anywhere.
   // Returned as a copy so a caller cannot mutate the engine's counters by

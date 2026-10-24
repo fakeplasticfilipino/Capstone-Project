@@ -6397,6 +6397,66 @@ sky behind, rather than houses, made that read as sunk. Lip 9 puts it
 rows were taken out of Act II's fields: the Sierra's sky, and the
 river where there is one, are enough.
 
+## Block 144: the main menu, Mga Kabanata and Balikan, 24 Oct 2026
+
+The proponent asked for a dedicated menu, for convenience: a menu for
+players, with faster ways to an act or a part of one, and a nicer look.
+A clickable prototype (_dev/menu-prototype.html, deleted once this
+shipped) was approved before anything was built.
+
+The title screen became the menu rather than a second screen beside
+it. It already was the gate every path waits on (awaitEntry), so making
+it a menu changed nothing about the order of the login, the save and
+the tests. It now stands over the world: a column of buttons on the
+left, the scene showing through on the right, the play controls and the
+login box underneath put away while it is up. Each button's second line
+is its label's data-sub, drawn by the stylesheet, so the word the label
+holds (Magsimula, Magpatuloy) stays what setLabel writes and what the
+checks read.
+
+Mga Kabanata lists the acts and each act's parts. The parts are the
+acts' story points, devJumps (Block 108), not a second list: their
+labels were already Tagalog a student can read, the harness starts
+from every one of them, and a point added for testing is a part on the
+menu with nothing more to write. Each act names its years and one of its
+own pictures (years, menuArt) for its card, so no new art.
+
+A guest may start from any part: a guest writes nothing, which was why
+?dev=1 could offer the same thing. A student cannot simply be moved to
+another part. One save holds every act's flags (flags are kept from act
+to act), so a jump back in it would throw away everything that came
+after, and the act_progress row and the scores would no longer match
+the story. Two ways out were weighed: show a student their progress and
+nothing more, or let them play an earlier part without keeping it. The
+second is Balikan. The engine lets go of the student for the rest of
+the page's life (enterGameAsReview): every save path stopped, as the
+reset stops them, and currentUserId cleared, which turns every write in
+acts.js, inventory.js and assessment.js into the guest's refusal that
+Block 14 relied on, rather than a new guard at each write. isGuest is
+set too, so the guest's own paths (items in memory, the act's end with
+no test) are the ones taken, and the act's end offers the menu instead
+of the next act. A token refresh cannot sign the student back in under
+it (enterGameAsUser returns while isReview). The way out is a reload,
+for the reason logout is one, and the reload reads the save that was
+never touched. A banner stays up for the whole of it.
+
+What a student may pick follows their progress: the parts of an act
+they finished, and the parts of the act in hand up to the last one their
+flags have reached (Game.storyPointsReached: every flag the point sets
+is set). Their own part is Magpatuloy. Later parts are shown as ???,
+locked, as the acts after theirs are.
+
+The pause screen gained Pangunahing Menu: the save flushed, then a
+reload, which lands a student on Magpatuloy. Mag-log Out is on the menu
+for a signed-in student, so the next student on a shared phone need not
+enter someone else's game to reach it. The login's own path is
+unchanged: Magsimula, the login box, and straight into the game, so a
+class logging in for the first time taps no more than before.
+
+A story point's words are now found quietly when a guest starts there
+(earnGlossaryByFlags(true)), as for a save restored past them; they had
+been toasted all at once.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

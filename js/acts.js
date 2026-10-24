@@ -543,6 +543,21 @@ const Acts = {
     const total = this.objectivesFor(n).length;
     if (!total || this.countDone(n) < total) return;
     this._guestEnded = true;
+    // Block 144. A Balikan ends with its act: back to the menu, where the
+    // student's own game is waiting as it was. Not on into the next act,
+    // which would be a second Balikan nobody chose.
+    if (window.Game && Game.isReview && Game.isReview()) {
+      setTimeout(() => {
+        this._screen({
+          eyebrow: `Natapos: ${ACT_ORDINALS[n] || "Yugto " + n}`,
+          title: "Balikan",
+          body: "Natapos mo ang yugtong ito. Walang naitala sa Balikan: " +
+            "ang iyong laro, barya at mga iskor ay gaya pa rin ng dati.",
+          button: "Bumalik sa menu",
+        }).then(() => location.reload());
+      }, storyMs(1500));
+      return;
+    }
     const next = n + 1;
     const nextAct = this.getAct(next);
     const goesOn = Boolean(nextAct && this.objectivesFor(next).length);

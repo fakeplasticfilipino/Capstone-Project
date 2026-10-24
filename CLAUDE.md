@@ -502,6 +502,13 @@ game.js exposes window.Game and nothing else:
                          from the act's devJumps (Block 108), starts the
                          guest at that point in the story
     isGuest()
+    enterReview(jumpId)  Block 144: a signed-in student's Balikan, a
+                         story point played and never kept (every save
+                         stopped, currentUserId cleared, isGuest set);
+                         ends in a reload
+    isReview()
+    storyPointsReached(n)  Block 144: per devJump of act n, whether the
+                         story has set its flags; the menu's parts
     stats()              { damageTaken, detections, playMs, assists },
                          a copy (assists: Block 128)
     resetStats()         called by Acts.enterAct and, for a guest,
@@ -568,6 +575,10 @@ world belongs to the scene.
     window.ACT_N = {
       number, title,
       titleTagalog,                              shown on the title card
+      years, menuArt,                            the act's card on the
+                                                 menu's Mga Kabanata: its
+                                                 years, and one of its own
+                                                 pictures (Block 144)
       developmentNotice,                         optional; marks a stub
       objectives: [{ id, label, flag,
                      countFlags,                 countFlags optional (Block 48)
@@ -792,7 +803,13 @@ change.
 
 devJumps (Block 108) are points in the story a tester can start a guest
 from: the title screen opened with ?dev=1 in the address offers them as
-a list (shell.js), and nothing else ever shows them. Each sets its
+a list (shell.js). Since Block 144 they are also the parts of an act on
+the menu's Mga Kabanata, by their labels, which students therefore read:
+a label is Tagalog a student understands. A visitor starts a guest
+from any of them; a signed-in student continues their own part
+(Magpatuloy) or plays an earlier one as a Balikan (Game.enterReview),
+never kept, because one save holds every act's flags and a jump back
+in it would throw away what came after. Each sets its
 flags and currency before the scene is built, stands Macario at x, and
 hands over its items (granted and worn, as the story does); the beat
 it leads to then plays as after a reload. A guest writes nothing, so
@@ -1534,7 +1551,9 @@ A B C D, because there is no icon for an arbitrary sentence and four
 identical marks would be decoration; the letters are also what lets a
 teacher say "pindutin ang B" out loud. The text size choices get the
 same letter at three sizes, which is the one icon in this game that
-carries its meaning without a word beside it.
+carries its meaning without a word beside it. Since Block 144 the
+menu's act cards carry the act's numeral and its parts their number,
+badges for the same reason as the quiz's letters.
 
 The three corner buttons (#btn-pause, #btn-inventory, #btn-shop) are
 the one exception to icon plus label (Scan S20): icons alone, named by
@@ -2669,6 +2688,10 @@ look, by system:
                                           own colours under the feet),
                                           141 (pictures that do not fit
                                           taken out, owed again)
+    the main menu, Mga Kabanata,          Block 144 (the title as the
+      Balikan                             menu; parts from devJumps; a
+                                          student's earlier part played
+                                          and never kept)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

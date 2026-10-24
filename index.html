@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>MACARIO</title>
-  <link rel="stylesheet" href="css/style.css?v=2317274990" />
+  <link rel="stylesheet" href="css/style.css?v=702331621" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -62,7 +62,9 @@
     <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 17.5V5.5l10-2v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="6.5" cy="17.5" rx="2.8" ry="2.3" fill="currentColor"/><ellipse cx="16.5" cy="15.5" rx="2.8" ry="2.3" fill="currentColor"/></symbol>
     <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18.3 6.5a8 8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m15.5 9.5 5 5M20.5 9.5l-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
-    <symbol id="i-letter" viewBox="0 0 24 24"><path d="M4.5 19.5 12 4.5l7.5 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.6 14h8.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7 4.5 3.5 5v13.5C7 18 10 18.5 12 20c2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 6.5V20" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11.5 12 4l8.5 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v10h12V10" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 20v-5h4v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-letter"viewBox="0 0 24 24"><path d="M4.5 19.5 12 4.5l7.5 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.6 14h8.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
   </svg>
   <div id="app-scale">
     <!-- Quest log -->
@@ -121,6 +123,9 @@
     <button id="btn-inventory" class="hidden" type="button" aria-label="Imbentaryo"><span class="ico"><svg aria-hidden="true"><use href="#i-bag"></use></svg></span></button>
     <button id="btn-pause" class="hidden" type="button" aria-label="Pahinga"><span class="ico"><svg aria-hidden="true"><use href="#i-pause"></use></svg></span></button>
     <div id="toast" class="hidden"></div>
+    <!-- Block 144. Up for the whole of a Balikan, so nobody takes it for
+         their own game. Shown by shell.js. -->
+    <div id="review-banner" class="hidden" aria-live="polite">Balikan: hindi itinatala</div>
     <!-- Block 125. The guide's tab at the screen edge when the next place
          is off screen: which way, and how far. -->
     <div id="guide-edge" class="hidden" aria-hidden="true">
@@ -297,14 +302,21 @@
                internet. Drawn by shell.js from Game.offlineStatus; hidden
                where there is no service worker (the harness, http). -->
           <p id="shell-offline" class="shell-offline hidden"></p>
+          <!-- Block 144. Each menu button's second line is its label's
+               data-sub, drawn by the stylesheet, so the label's own text
+               stays the one word the checks read. Written by shell.js. -->
           <button id="shell-start" class="shell-btn shell-btn-primary" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl">Naglo-load...</span>
           </button>
           <!-- Block 14. Skips login entirely; see Game.enterAsGuest in
                game.js. No account, no save, nothing written to the
-               database. -->
+               database. Hidden for a student already signed in. -->
           <button id="shell-guest" class="shell-btn shell-btn-ghost" type="button">
-            <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl">Maglaro bilang Bisita</span>
+            <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl" data-sub="Walang naitatala">Maglaro bilang Bisita</span>
+          </button>
+          <!-- Block 144. The acts and their parts, to start from. -->
+          <button id="shell-chapters" class="shell-btn shell-btn-ghost" type="button" disabled>
+            <span class="ico"><svg aria-hidden="true"><use href="#i-book"></use></svg></span><span class="lbl">Mga Kabanata</span>
           </button>
           <!-- Block 108. Only with ?dev=1 in the address: start as a guest
                from a point in the story (the act's devJumps), for checking
@@ -318,7 +330,59 @@
           <button id="shell-title-settings" class="shell-btn shell-btn-ghost" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-gear"></use></svg></span><span class="lbl">Mga Setting</span>
           </button>
+          <!-- Block 144. A signed-in student's way out from the menu, so
+               the next student on a shared phone need not enter someone
+               else's game to reach the pause screen's. -->
+          <button id="shell-title-logout" class="shell-btn shell-btn-danger hidden" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-out"></use></svg></span><span class="lbl">Mag-log Out</span>
+          </button>
           <div id="shell-title-note" class="shell-note"></div>
+        </div>
+
+        <!-- Block 144. Mga Kabanata: the four acts as cards. Built by
+             shell.js from the acts' content (years, menuArt). -->
+        <div id="shell-chapters-panel" class="shell-panel shell-panel-wide hidden">
+          <div class="inv-head">
+            <div class="inv-title">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-book"></use></svg></span>
+              <h2 class="shell-heading">Mga Kabanata</h2>
+            </div>
+            <button id="shell-chapters-back" class="shell-btn shell-btn-ghost inv-back" type="button">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
+            </button>
+          </div>
+          <div id="shell-acts" class="menu-acts"></div>
+          <p id="shell-chapters-note" class="shell-note"></p>
+        </div>
+
+        <!-- Block 144. One act's parts, its story points (devJumps). -->
+        <div id="shell-act-panel" class="shell-panel shell-panel-wide hidden">
+          <div class="inv-head">
+            <div class="inv-title">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-book"></use></svg></span>
+              <h2 class="shell-heading" id="shell-act-title"></h2>
+            </div>
+            <button id="shell-act-back" class="shell-btn shell-btn-ghost inv-back" type="button">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
+            </button>
+          </div>
+          <div class="menu-act-body">
+            <div id="shell-act-art" class="menu-act-art"></div>
+            <div id="shell-act-chapters" class="menu-chapters"></div>
+          </div>
+        </div>
+
+        <!-- Block 144. Before a Balikan: what it does not keep. -->
+        <div id="shell-review-confirm" class="shell-panel hidden">
+          <div class="shell-eyebrow">Balikan</div>
+          <h2 class="shell-heading" id="shell-review-title"></h2>
+          <p class="shell-sub">Hindi ito itatala: hindi magbabago ang iyong naabot, barya at mga iskor. Kapag lumabas ka, babalik ka sa menu.</p>
+          <button id="shell-review-yes" class="shell-btn shell-btn-primary" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl">Simulan</span>
+          </button>
+          <button id="shell-review-no" class="shell-btn shell-btn-ghost" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Huwag na</span>
+          </button>
         </div>
 
         <!-- Block 62. Shown only when the student has tapped in before the
@@ -352,6 +416,10 @@
           </button>
           <button id="shell-pause-settings" class="shell-btn shell-btn-ghost" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-gear"></use></svg></span><span class="lbl">Mga Setting</span>
+          </button>
+          <!-- Block 144. Back to the menu by a reload, after the save. -->
+          <button id="shell-main-menu" class="shell-btn shell-btn-ghost" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-home"></use></svg></span><span class="lbl">Pangunahing Menu</span>
           </button>
           <button id="shell-logout" class="shell-btn shell-btn-danger" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-out"></use></svg></span><span class="lbl">Mag-log Out</span>
@@ -638,17 +706,17 @@
   <script src="js/supabaseClient.js?v=2770937222"></script>
   <script src="content/enemies.js?v=3266858457"></script>
   <script src="content/people.js?v=1607945421"></script>
-  <script src="content/act1.js?v=3377113433"></script>
-  <script src="content/act2.js?v=717695579"></script>
-  <script src="content/act3.js?v=1524616740"></script>
-  <script src="content/act4.js?v=209445227"></script>
+  <script src="content/act1.js?v=1823862117"></script>
+  <script src="content/act2.js?v=969468590"></script>
+  <script src="content/act3.js?v=1055291325"></script>
+  <script src="content/act4.js?v=3959591231"></script>
   <script src="content/items.js?v=1936794751"></script>
   <script src="content/questions.js?v=3416852880"></script>
   <script src="js/asset-manifest.js?v=40034100"></script>
-  <script src="js/game.js?v=3405004597"></script>
-  <script src="js/acts.js?v=49959917"></script>
+  <script src="js/game.js?v=1279842738"></script>
+  <script src="js/acts.js?v=1586992135"></script>
   <script src="js/inventory.js?v=1012480451"></script>
   <script src="js/assessment.js?v=3475551511"></script>
-  <script src="js/shell.js?v=4134896329"></script>
+  <script src="js/shell.js?v=1878427442"></script>
 </body>
 </html>

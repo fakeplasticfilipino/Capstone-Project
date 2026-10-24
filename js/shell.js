@@ -80,6 +80,7 @@ const Shell = {
     this._watchAssets();
     this._watchOffline();
     this._offerDevJumps();
+    this._refreshMenu();
 
     this._showPanel("title");
     this.el.overlay.classList.remove("hidden");
@@ -101,7 +102,24 @@ const Shell = {
         loading: document.getElementById("shell-loading"),
         notebook: document.getElementById("shell-notebook-panel"),
         password: document.getElementById("shell-password-panel"),
+        chapters: document.getElementById("shell-chapters-panel"),
+        act: document.getElementById("shell-act-panel"),
+        review: document.getElementById("shell-review-confirm"),
       },
+      chaptersBtn: document.getElementById("shell-chapters"),
+      chaptersBack: document.getElementById("shell-chapters-back"),
+      chaptersNote: document.getElementById("shell-chapters-note"),
+      actsList: document.getElementById("shell-acts"),
+      actTitle: document.getElementById("shell-act-title"),
+      actBack: document.getElementById("shell-act-back"),
+      actArt: document.getElementById("shell-act-art"),
+      actChapters: document.getElementById("shell-act-chapters"),
+      reviewTitle: document.getElementById("shell-review-title"),
+      reviewYes: document.getElementById("shell-review-yes"),
+      reviewNo: document.getElementById("shell-review-no"),
+      titleLogoutBtn: document.getElementById("shell-title-logout"),
+      mainMenuBtn: document.getElementById("shell-main-menu"),
+      reviewBanner: document.getElementById("review-banner"),
       notebookBtn: document.getElementById("shell-notebook"),
       passwordBtn: document.getElementById("shell-password"),
       passwordOld: document.getElementById("shell-password-old"),
@@ -168,9 +186,33 @@ const Shell = {
       this.el.notebookBtn.addEventListener("click", () => this._openNotebook());
       this.el.notebookBack.addEventListener("click", () => this._closeNotebook());
     }
-    this.el.logoutBtn.addEventListener("click", () =>
-      this._showPanel("logout")
-    );
+    this.el.logoutBtn.addEventListener("click", () => {
+      this.logoutReturn = "pause";
+      this._showPanel("logout");
+    });
+
+    // Block 144. The menu: Mga Kabanata, an act's parts, the Balikan
+    // confirmation, the menu's own Mag-log Out, and the pause screen's
+    // Pangunahing Menu. Taps on the cards and the parts are read on their
+    // lists, as the inventory's tiles are.
+    this.el.chaptersBtn.addEventListener("click", () => this._openChapters());
+    this.el.chaptersBack.addEventListener("click", () => this._backToTitle());
+    this.el.actBack.addEventListener("click", () => this._openChapters());
+    this.el.actsList.addEventListener("click", (e) => {
+      const card = e.target.closest("[data-act]");
+      if (card) this._openAct(Number(card.dataset.act));
+    });
+    this.el.actChapters.addEventListener("click", (e) => {
+      const row = e.target.closest("[data-point]");
+      if (row) this._pickChapter(Number(row.dataset.act), Number(row.dataset.point));
+    });
+    this.el.reviewYes.addEventListener("click", () => this._startReview());
+    this.el.reviewNo.addEventListener("click", () => this._openAct(this.pickedAct));
+    this.el.titleLogoutBtn.addEventListener("click", () => {
+      this.logoutReturn = "title";
+      this._showPanel("logout");
+    });
+    this.el.mainMenuBtn.addEventListener("click", () => this._toMainMenu());
 
     // The only guard on window.Inventory in this file, and it is the
     // same shape as the act flow's guard on window.Assessment: with the
@@ -235,7 +277,7 @@ const Shell = {
     );
     this.el.resetConfirm.addEventListener("click", () => this._resetData());
     this.el.logoutCancel.addEventListener("click", () =>
-      this._showPanel("pause")
+      this._showPanel(this.logoutReturn || "pause")
     );
     this.el.logoutConfirm.addEventListener("click", () => this._logout());
 
@@ -286,6 +328,9 @@ const Shell = {
       else if (this.state === "password") this._closePassword();
       else if (this.state === "inventory") this._closeInventory();
       else if (this.state === "shop") this._closeShop();
+      else if (this.state === "chapters") this._backToTitle();
+      else if (this.state === "act") this._openChapters();
+      else if (this.state === "review") this._openAct(this.pickedAct);
     });
 
   },
@@ -345,6 +390,8 @@ const Shell = {
 
     if (!session) {
       this._setStart("Magsimula", true);
+      this.sessionKnown = true;
+      this._refreshMenu();
       return;
     }
 
@@ -387,6 +434,8 @@ const Shell = {
     delete this.el.startBtn.dataset.action;
     this._setStart("Magpatuloy", true);
     this.el.titleNote.textContent = "";
+    this.sessionKnown = true;
+    this._refreshMenu();
 
     if (!this.entryPromise) {
       this.entryPromise = new Promise((resolve) => {
@@ -421,6 +470,7 @@ const Shell = {
     // saying the same thing.
     this.state = "auth";
     this.el.overlay.classList.add("hidden");
+    document.body.classList.remove("shell-menu-open");
   },
 
   // Scan S21. The login box's Bumalik: the title screen again, covering
@@ -431,6 +481,7 @@ const Shell = {
     this.state = "title";
     this._showPanel("title");
     this.el.overlay.classList.remove("hidden");
+    this._refreshMenu();
   },
 
   // Block 14. Guest skips the login box entirely rather than showing
@@ -502,6 +553,230 @@ const Shell = {
     }
   },
 
+  // -----------------------------------------------------------
+  // The main menu (Block 144)
+  //
+  // The title screen is the menu: Magpatuloy or Magsimula, the guest's
+  // way in, Mga Kabanata, settings, and for a signed-in student Mag-log
+  // Out. Mga Kabanata lists the four acts and each act's parts, which are
+  // its story points (devJumps, Block 108), the same points the harness
+  // starts from. A guest may start from any of them (Game.enterAsGuest).
+  // A student sees how far they are: the acts done, the act in hand and
+  // its parts reached, the rest locked. Their own part is Magpatuloy; an
+  // earlier one is a Balikan (Game.enterReview), played and not kept,
+  // because one save holds every act's flags and a jump back in it would
+  // throw away all that came after.
+  // -----------------------------------------------------------
+
+  ROMAN: ["", "I", "II", "III", "IV"],
+
+  // The acts the menu offers, in order: those with content and parts.
+  _menuActs() {
+    if (!window.Acts || !Acts.getAct) return [];
+    return [1, 2, 3, 4].map((n) => Acts.getAct(n))
+      .filter((act) => act && (act.devJumps || []).length);
+  },
+
+  // A student is "signed in" for the menu only once the engine has their
+  // save; until then nothing about them is known.
+  _menuIsStudent() {
+    return Boolean(this.ready && window.Game && Game.isSignedIn());
+  },
+
+  // done, now, lock for a student; open for everyone else.
+  _actStatus(n) {
+    if (!this._menuIsStudent()) return "open";
+    if (Acts.isCompleted(n)) return "done";
+    if (n === Acts.current) return "now";
+    return "lock";
+  },
+
+  // The part of act n the student is at: the last story point reached,
+  // or the first. -1 for an act not in hand.
+  _herePoint(n) {
+    if (this._actStatus(n) !== "now") return -1;
+    const reached = Game.storyPointsReached ? Game.storyPointsReached(n) : [];
+    return Math.max(0, reached.lastIndexOf(true));
+  },
+
+  _setSub(btn, text) {
+    const lbl = btn && btn.querySelector(".lbl");
+    if (!lbl) return;
+    if (text) lbl.dataset.sub = text;
+    else delete lbl.dataset.sub;
+  },
+
+  // Redraws what the menu's buttons offer for who is at it. Called
+  // whenever that becomes known: no session, the engine's world ready,
+  // and back from the login box.
+  _refreshMenu() {
+    const student = this._menuIsStudent();
+    if (this.el.guestBtn) this.el.guestBtn.classList.toggle("hidden", student);
+    this.el.titleLogoutBtn.classList.toggle("hidden", !student);
+    this.el.chaptersBtn.disabled = !this.sessionKnown || !this._menuActs().length;
+    this._setSub(this.el.chaptersBtn,
+      student ? "Balikan ang mga natapos" : "Pumili ng yugto at bahagi");
+
+    let startSub = "";
+    if (student) {
+      const n = Acts.current;
+      const act = Acts.getAct(n);
+      const point = act && (act.devJumps || [])[this._herePoint(n)];
+      startSub = "Yugto " + (this.ROMAN[n] || n) + (point ? " · " + point.label : "");
+    } else if (this.sessionKnown && !this.ready) {
+      startSub = "Mag-log in gamit ang iyong code";
+    }
+    this._setSub(this.el.startBtn, startSub);
+  },
+
+  _backToTitle() {
+    this.state = "title";
+    this._showPanel("title");
+    this._refreshMenu();
+  },
+
+  _openChapters() {
+    if (this.entered || !this.sessionKnown) return;
+    const box = this.el.actsList;
+    box.innerHTML = "";
+    const student = this._menuIsStudent();
+    this._menuActs().forEach((act) => {
+      const n = act.number;
+      const status = this._actStatus(n);
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "menu-act" + (status === "lock" ? " menu-act-locked" : "");
+      card.dataset.act = String(n);
+      if (status === "lock") card.disabled = true;
+      // Quoted, always (CLAUDE.md, Pitfalls: a CSS url() built here).
+      if (act.menuArt) card.style.backgroundImage = `url("${assetUrl(act.menuArt)}")`;
+      const tag = { done: "Tapos", now: "Ginagawa", lock: "Naka-lock" }[status];
+      if (tag) card.appendChild(this._span("menu-act-tag menu-act-tag-" + status, tag));
+      card.appendChild(this._span("menu-act-num", this.ROMAN[n] || String(n)));
+      card.appendChild(this._span("lbl menu-act-name", act.titleTagalog || act.title || "Yugto " + n));
+      if (act.years) card.appendChild(this._span("menu-act-years", act.years));
+      if (student) {
+        const points = (act.devJumps || []).length || 1;
+        const pct = status === "done" ? 100 :
+          status === "now" ? Math.round(100 * this._herePoint(n) / points) : 0;
+        const bar = this._span("menu-act-bar", "");
+        bar.appendChild(this._span("menu-act-fill", ""));
+        bar.firstChild.style.width = pct + "%";
+        card.appendChild(bar);
+      }
+      box.appendChild(card);
+    });
+    this.el.chaptersNote.textContent = student
+      ? "Ang pagbalik sa isang natapos na bahagi ay hindi bumubura ng iyong naabot o ng iyong mga iskor."
+      : "Bilang bisita, bukas ang lahat ng yugto at walang naitatala. Mag-log in para maitala ang iyong laro.";
+    this.state = "chapters";
+    this._showPanel("chapters");
+  },
+
+  _span(cls, text) {
+    const s = document.createElement("span");
+    s.className = cls;
+    s.textContent = text;
+    return s;
+  },
+
+  _openAct(n) {
+    const act = window.Acts && Acts.getAct(n);
+    if (!act || this._actStatus(n) === "lock") return;
+    this.pickedAct = n;
+    this.el.actTitle.textContent = "Yugto " + (this.ROMAN[n] || n);
+    const art = this.el.actArt;
+    art.innerHTML = "";
+    art.style.backgroundImage = act.menuArt ? `url("${assetUrl(act.menuArt)}")` : "";
+    art.appendChild(this._span("menu-act-num", this.ROMAN[n] || String(n)));
+    art.appendChild(this._span("menu-act-name", act.titleTagalog || act.title || ""));
+    if (act.years) art.appendChild(this._span("menu-act-years", act.years));
+
+    const status = this._actStatus(n);
+    const here = this._herePoint(n);
+    const list = this.el.actChapters;
+    list.innerHTML = "";
+    (act.devJumps || []).forEach((point, i) => {
+      // open: a guest's; review: a student's Balikan; here: Magpatuloy.
+      let kind = "open";
+      if (status === "done") kind = "review";
+      else if (status === "now") kind = i === here ? "here" : i < here ? "review" : "locked";
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "menu-chapter menu-chapter-" + kind;
+      row.dataset.act = String(n);
+      row.dataset.point = String(i);
+      if (kind === "locked") row.disabled = true;
+      // The part's number is its badge, as the quiz's answers have
+      // letters: there is no icon for a sentence (CLAUDE.md, Icons).
+      row.appendChild(this._span("menu-chapter-num", String(i + 1)));
+      row.appendChild(this._span("lbl", kind === "locked" ? "???" : point.label));
+      const tag = { here: "Narito ka", review: "Balikan" }[kind];
+      if (tag) row.appendChild(this._span("menu-chapter-tag", tag));
+      list.appendChild(row);
+    });
+    this.state = "act";
+    this._showPanel("act");
+    list.scrollTop = 0;
+    const current = list.querySelector(".menu-chapter-here");
+    if (current) current.scrollIntoView({ block: "nearest" });
+  },
+
+  _pickChapter(n, i) {
+    const act = window.Acts && Acts.getAct(n);
+    const point = act && (act.devJumps || [])[i];
+    if (!point || this.entered) return;
+    const status = this._actStatus(n);
+    if (status === "open") {
+      // A guest, from that point. Scan S5's rule holds: never with a
+      // student signed in on this phone (open is never a student's).
+      if (window.Game && Game.isSignedIn()) return;
+      this.entered = true;
+      Game.enterAsGuest(n + ":" + point.id);
+      return;
+    }
+    if (status === "now" && i === this._herePoint(n)) {
+      this._onStart();
+      return;
+    }
+    if (status === "lock" || (status === "now" && i > this._herePoint(n))) return;
+    this.pickedAct = n;
+    this.pickedPoint = point.id;
+    this.el.reviewTitle.textContent = point.label;
+    this.state = "review";
+    this._showPanel("review");
+  },
+
+  // The Balikan itself. enterGameAsUser is waiting on awaitEntry; the
+  // engine is put at the point first, then the wait is let go, as
+  // _onStart does for Magpatuloy.
+  async _startReview() {
+    if (this.entered || !this.ready || !this.pickedPoint) return;
+    this.entered = true;
+    this.el.reviewYes.disabled = true;
+    this.el.reviewNo.disabled = true;
+    await Game.enterReview(this.pickedAct + ":" + this.pickedPoint);
+    await this._enterWorld();
+    if (this.entryResolve) {
+      this.entryResolve();
+      this.entryResolve = null;
+    }
+  },
+
+  // The pause screen's Pangunahing Menu. A reload, for the reason logout
+  // is one (the engine's per-student state in a dozen places), after the
+  // save is flushed; a student stays signed in and lands on Magpatuloy.
+  // A guest's and a Balikan's play were never kept, as the button says.
+  async _toMainMenu() {
+    this.el.mainMenuBtn.disabled = true;
+    try {
+      if (window.Game && Game.isSignedIn()) await Game.flushSave();
+    } catch (err) {
+      console.error("Save flush before the menu failed:", err);
+    }
+    window.location.reload();
+  },
+
   // Block 62. If the student is through the gate before the scene's
   // pictures have arrived, the screen says so and waits, up to
   // ENTRY_ART_WAIT_MS, rather than opening onto an empty road. Returns a
@@ -532,6 +807,10 @@ const Shell = {
     }
     this.state = "playing";
     this.el.overlay.classList.add("hidden");
+    document.body.classList.remove("shell-menu-open");
+    if (this.el.reviewBanner) {
+      this.el.reviewBanner.classList.toggle("hidden", !(window.Game && Game.isReview && Game.isReview()));
+    }
     if (window.Game) Game.setUiBlocked(false);
     this._applyOrientation();
   },
@@ -632,6 +911,10 @@ const Shell = {
     this.state = "paused";
     Game.setUiBlocked(true);
     this._refreshNotebookButton();
+    this.el.mainMenuBtn.disabled = false;
+    this._setSub(this.el.mainMenuBtn,
+      Game.isReview && Game.isReview() ? "Tapusin ang Balikan" :
+      Game.isSignedIn() ? "Itatala muna ang laro" : "Hindi naitatala ang bisita");
     this._showPanel("pause");
     this.el.overlay.classList.remove("hidden");
   },
@@ -1625,8 +1908,15 @@ const Shell = {
     // single column of buttons and keeps the narrow box.
     if (this.el.box) {
       this.el.box.classList.toggle("shell-box-wide",
-        name === "inventory" || name === "shop" || name === "notebook");
+        name === "inventory" || name === "shop" || name === "notebook" ||
+        name === "chapters" || name === "act");
     }
+    // Block 144. The menu stands over the world rather than in a box in
+    // the middle of it (shell-menu), and the play controls behind it are
+    // put away while any of the menu's screens is up (shell-menu-open).
+    this.el.overlay.classList.toggle("shell-menu", name === "title");
+    document.body.classList.toggle("shell-menu-open",
+      name === "title" || name === "chapters" || name === "act" || name === "review");
   },
 
   // The label span rather than the button, which now holds an icon.
