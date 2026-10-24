@@ -876,15 +876,19 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       const sheets = { guro: find(3, "guro").animation, opisyal: find(3, "opisyal").animation,
         nakatira: find(3, "bagong-nakatira").animation, poblete: find(3, "poblete").animation,
         pobleteWalk: find(3, "poblete-pinto").walkAnimation, bantay: P.bantayBilibid, bantayWalk: P.bantayBilibidWalk,
-        kawal: P.kawalKatagalugan }; // Block 141: the soldier's picture owed again
+        kawal: P.kawalKatagalugan,
+        // Block 147: the proponent's American soldier and Constabulary.
+        amerikano: T.amerikano.animation, sentinela: T.sentinela.animation, hit: T.amerikano.hitAnimation,
+        konstable: T.konstable.attackAnimation };
       await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
       const scene = (id) => window.ACT_3.scenes.find((s) => s.id === id);
-      const sum = (s) => s.panelWidths.reduce((a, b) => a + b, 0);
       return { open: Object.fromEntries(Object.entries(sheets).map(([n, s]) => [n, !s.failed && s.frameHeight > 0 && s.frames])),
-        widths: ["burol", "morong"].every((id) => sum(scene(id)) === scene(id).worldWidth && scene(id).panels.length === 2) };
+        // Block 147: every place in layers or from a kit, no painting.
+        layered: window.ACT_3.scenes.every((s) => !s.panels && !s.backdrop && s.layers && s.buildings) &&
+          ["burol", "morong"].every((id) => scene(id).layers.some((l) => l.items)) };
     });
-    ok("Act III's people and the American soldier: every sheet opening; the hills and Morong two paintings at one height (Block 135)",
-       Object.entries(act3.open).every(([n, f]) => f === (n === "hit" ? 4 : 8)) && act3.widths, act3);
+    ok("Act III's people and soldiers: every sheet opening; every place in layers or from a kit (Blocks 135, 147)",
+       Object.entries(act3.open).every(([n, f]) => f === (n === "hit" ? 4 : 8)) && act3.layered, act3);
 
     // Block 136. Act IV's places, painted: every scene's pictures in the
     // manifest and opening, the two-painting scenes at one height.
@@ -905,7 +909,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
         }) };
     });
     ok("Act IV's places: every painting opening; the post, Di-Masalang and Malabon two paintings at one height (Block 136)",
-       act4.srcs === 10 && act4.expected && act4.opens && act4.widths, act4);
+       act4.srcs === 9 && act4.expected && act4.opens && act4.widths, act4);
 
     const c1 = await readConversation(page, 3);
     ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);

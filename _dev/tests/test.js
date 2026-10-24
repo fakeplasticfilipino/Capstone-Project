@@ -6306,21 +6306,31 @@ const visible = (page, sel) => page.evaluate((s) => {
     // is in: the inside of the entablado, and every enemy type's sheets,
     // are loading on the title screen, so a scene change and the play's
     // fight do not wait on a download. Art that is owed is never asked
-    // for at all (the American soldier's, in the enemy catalogue every act
-    // walks; the Mananahi's was the example until Block 98, the Barbero's
-    // until 101, the karpintero's until 102, the sewing table's until it
-    // was drawn on 22 Oct 2026).
-    let owedAsks = 0;
-    const whole = await rawPage([["**/amerikano.png*", (route) => { owedAsks++; return route.continue(); }]]);
+    // for at all: since Block 147 any request for a file the manifest
+    // does not list counts (one named example went stale each time its
+    // picture was drawn: the Mananahi's until Block 98, the Barbero's
+    // until 101, the karpintero's until 102, the sewing table's until 22
+    // Oct 2026, the American soldier's until Block 147).
+    const versions = (() => {
+      const sandbox = { window: {} };
+      require("vm").runInNewContext(fs.readFileSync(path.join(ROOT, "js", "asset-manifest.js"), "utf8"), sandbox);
+      return sandbox.window.ASSET_VERSIONS || {};
+    })();
+    const owedAsked = [];
+    const whole = await rawPage([["**/assets/**", (route) => {
+      const file = decodeURIComponent(new URL(route.request().url()).pathname).replace(/^\//, "");
+      if (!(file in versions)) owedAsked.push(file);
+      return route.continue();
+    }]]);
     await whole.page.waitForTimeout(400);
     const w1 = await whole.page.evaluate(() => {
       const state = (re) => { const e = [...assetLoads.entries()].find(([u]) => re.test(u)); return e ? e[1].state : null; };
       return { inside: state(/rooms\/entablado\/telon\.png/), sword: state(/kawal-attack\.png/),
-        shot: state(/bantay-shoot\.png/), owed: state(/amerikano\.png/), manifest: Array.isArray(window.ASSET_MANIFEST) };
+        shot: state(/bantay-shoot\.png/), manifest: Array.isArray(window.ASSET_MANIFEST) };
     });
     ok("the whole act's art is asked for before the street opens: the entablado, the enemies' sheets",
        w1.manifest && w1.inside !== null && w1.sword !== null && w1.shot !== null, w1);
-    ok("and art that is owed is the placeholder at once, never asked for", w1.owed === "missing" && owedAsks === 0, { w1, owedAsks });
+    ok("and art that is owed is the placeholder at once, never asked for", owedAsked.length === 0, { w1, owedAsked });
     // Not awaited: enterAsGuest resolves only after the title's tap.
     await whole.page.evaluate(() => { Game.enterAsGuest(); });
     for (let i = 0; i < 100; i++) {
