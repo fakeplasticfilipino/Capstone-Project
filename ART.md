@@ -54,17 +54,26 @@ Nothing needed.
         (NOT STARTED)
 
     mountain-trees.png
-        (Attach the file _dev/parallax-art/tondo-trees.png)
-        Refer to the attached image and use the same art style and
-        softness. Make a continuous mountain forest tree line of the
-        Philippines in 1902, seen from a little distance, for the layer
-        behind a rebel camp in the hills: dense overlapping canopies of
-        tall narra and dao trees, wild bamboo, tree ferns and a few
-        palms, varying heights, no gaps between trees, rocks and
-        undergrowth along the bottom edge. Muted greens. The left and
-        right edges continue into each other so the picture can repeat.
-        No buildings, no people, no sky. Transparent background. Wide
-        landscape, largest size.
+        (Attach the files mangga.png and akasya.png from the folder
+        assets/sprites/trees)
+        Refer to the attached images and use the same art style, size
+        and finish. Make a sprite sheet of eight separate single trees
+        of the mountains of the Philippines in 1902, arranged in a grid
+        with wide empty space between them so none touch or overlap,
+        each one whole from the roots to the top of its crown, standing
+        on its own flat ground line, seen straight on from the side. (1)
+        A tall narra with a wide spreading crown. (2) A tall dao with a
+        straight trunk and a high crown. (3) A clump of wild bamboo. (4)
+        A tree fern. (5) A slender mountain palm. (6) A tall dark
+        dipterocarp with buttress roots. (7) A young narra, smaller. (8)
+        A low bush of mountain undergrowth. Varying heights, muted
+        greens. No forest behind them, no rocks between them, no people,
+        no sky, no ground or shadows between trees. Transparent
+        background. Landscape, largest size.
+        Cut into (assets/sprites/trees/): narra.png (1), dao.png (2),
+        kawayan-gubat.png (3), pako.png (4), palma-bundok.png (5),
+        lauan.png (6), narra-bata.png (7), palumpong-bundok.png (8);
+        placed in two rows like Tondo's (treeRow, content/act1.js)
         (NOT STARTED)
 
 ### Act IV
