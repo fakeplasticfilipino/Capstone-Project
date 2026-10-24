@@ -9,16 +9,27 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 24 Oct 2026, Block 142: Act II's art finished. Its
-street is Act I's Tondo in layers, the press house over Act II's door;
-San Juan del Monte and the Nangka in layers (the Sierra Madre, the
-garrison, the farm, the river, the grass); the press and the house
-built from their kits; the press, the straw and the scarecrow drawn.
-The press's shelves raised to hide Macario from the guards, as the
-story says (they stood 40 above the floor, under a guard's 60). Pugad
-Lawin, Balara and Laguna in the same layers, their paintings retired,
-so no Act II place is a painting. Owed art: eighteen, Act II's one the
-campfire for Balara (ART.md, Props).
+Last updated: 24 Oct 2026, end of session, at f8e1184 (CI green, tests
+and Pages). Block 142: Act II's art is finished, every place in layers
+or built from a kit, no painting left in Act II. Its street is Act I's
+Tondo (window.TONDO_STREET), the press house over Act II's door; San
+Juan del Monte and the Nangka, Pugad Lawin, Balara and Laguna drawn
+with the Sierra sky, their own pieces (garrison, rural) and the dirt,
+grass or river, with no tree rows (the proponent's word); the press and
+the house built from imprenta-kit and bahay-kit; the press, the straw
+and the scarecrow drawn. Fixed on the way: the press's shelves now hide
+Macario from the guards (y 152; they were under a guard's sight); the
+talk lesson no longer locks a fight (put away when enemies are up;
+story points after Act I start with every lesson learned); the river's
+pale fringe; San Juan's dirt edge at the feet (lip 9). Owed art:
+eighteen, Act II's only one the campfire for Balara (ART.md, Props;
+named in the content, drawn the moment it is cut in). Not yet seen on
+the phone (Next action 1). Next: Block 142 for Acts III and IV (their
+Tondo, burol, morong, himpilan, dimasalang, malabon, patyo; the art
+listed in ART.md), and Block 143's rooms for Acts III and IV. Cutting a
+delivered sheet needs numpy, which this computer's Python lacks: install
+it into the session's scratchpad (pip install --target) rather than
+system-wide, and run _dev/tools/cut-room-kit.py with PYTHONPATH set.
 23 Oct 2026, Block 143: rooms built from kits (a wall
 repeated, a floor, furniture placed by x; ART.md's rooms table); Act
 I's two, the entablado and the pulungan, built and finished, the other
@@ -999,10 +1010,12 @@ machine, the assessment module.
 
 Every act is written, accepted and has its built-in questions (Acts I to
 IV, COMPLETE). The three shop items are sold (Block 121, COMPLETE). Left:
-Block 142, every outdoor scene in layers (IN PROGRESS, its list above);
+Block 142, every outdoor scene in layers (IN PROGRESS: Acts I and II
+done, Acts III and IV left; its list above); Block 143, the rooms from
+kits (IN PROGRESS: Acts I and II done, Acts III and IV's five left);
 the art, ART.md (eighteen pictures, Act II's campfire and Acts III
-and IV; BLOCKED, the
-artist), and the
+and IV; made by the proponent with ChatGPT from ART.md's prompts), and
+the
 two cosmetic outfits that go on sale once drawn (ART.md, Also wanted;
 BLOCKED, the artist).
 
