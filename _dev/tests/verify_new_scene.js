@@ -270,6 +270,26 @@ const newPage = async (browser, test) => {
       }).observe(box, { attributes: true, attributeFilter: ["class"] });
     });
   });
+  // Block 149. Every black card as it was while up, by its first line:
+  // its lines, whether it was black, and how many had faded in. Polling
+  // the card missed it when a loaded machine ran the fast-forwarded story
+  // past it between two reads; a record cannot.
+  await page.addInitScript(() => {
+    window.__cards = {};
+    document.addEventListener("DOMContentLoaded", () => {
+      const el = document.getElementById("intertitle");
+      if (!el) return;
+      new MutationObserver(() => {
+        if (el.classList.contains("hidden")) return;
+        const lines = [...el.querySelectorAll(".intertitle-line")].map((p) => p.textContent);
+        if (!lines.length) return;
+        const card = window.__cards[lines[0]] || (window.__cards[lines[0]] = { lines, black: false, shown: 0 });
+        card.lines = lines;
+        card.black = card.black || el.classList.contains("visible");
+        card.shown = Math.max(card.shown, el.querySelectorAll(".intertitle-line.shown").length);
+      }).observe(el, { attributes: true, childList: true, subtree: true });
+    });
+  });
   await page.goto("http://localhost:" + PORT + "/index.html");
   await page.waitForTimeout(300);
   return { ctx, page };
@@ -739,17 +759,21 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
            i.sheets && i.sheets.melee && i.sheets.melee.src === "assets/sprites/player/macario-slash.png";
        }));
 
-    const t0 = await intertitle(page);
-    ok("the game opens on black: Tondo, 1890", t0.up && t0.black &&
+    // Block 149: read from the record of the card (newPage, __cards),
+    // which holds at any speed and any load.
+    const opening = () => page.evaluate(() => window.__cards["Tondo, 1890"] || null);
+    let t0 = await opening();
+    for (let t = 0; t < 15000 && !t0; t += 100) { await page.waitForTimeout(100); t0 = await opening(); }
+    ok("the game opens on black: Tondo, 1890", Boolean(t0) && t0.black &&
        JSON.stringify(t0.lines) === '["Tondo, 1890","Kung saan nagsimula ang buhay ni Macario"]', t0);
     ok("the world is held still behind it", await page.evaluate(() => cutscenePlaying && posX === 900));
-    // Block 115: watched until both are in, not read after a fixed wait,
-    // so the check holds at any speed.
-    let t1 = await intertitle(page);
-    for (let t = 0; t < 3000 && t1.up && t1.shown < 2; t += 20) {
+    // Watched until both are in, or the card is gone.
+    let t1 = await opening();
+    for (let t = 0; t < 3000 && t1.shown < 2 && (await intertitle(page)).up; t += 20) {
       await page.waitForTimeout(20);
-      t1 = await intertitle(page);
+      t1 = await opening();
     }
+    t1 = await opening();
     ok("the lines fade in", t1.shown === 2, t1);
     ok("and the card fades away by itself", await waitIntertitle(page, false, 12000));
 

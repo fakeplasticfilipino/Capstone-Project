@@ -6733,6 +6733,13 @@ cut below the skirt's hem, so only her feet step and the skirt stays
 whole. A walk swung from the hip would have doubled or torn the skirt.
 The sheets, once cut, went to docs-private/art-delivered/2026-10-25-act4/.
 
+The opening card's two checks failed under load (Block 148's note;
+then on CI too, on this block's push): they polled the card, and the
+fast-forwarded story could bring it up and take it down between two
+reads. newPage now records every card while up (__cards, a
+MutationObserver, as __dlg records the dialogue box), and the checks
+read the record. Two full runs green where three had failed.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every
