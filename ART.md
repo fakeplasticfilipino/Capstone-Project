@@ -178,7 +178,9 @@ Also wanted (not in the game yet):
         Refer to the attached images and use the art style and size of
         the first. Draw Dominador Gómez, a Filipino labour leader of
         1906, from the second picture: the whole body, side on, facing
-        right, walking, in a white suit and hat. Transparent background.
+        right, STANDING STILL with both feet flat on the ground close
+        together and the arms hanging free of the body, in a white suit
+        and hat. Not walking, not mid-step. Transparent background.
         (NOT STARTED)
 
     assets/sprites/characters/van-schaick.png
