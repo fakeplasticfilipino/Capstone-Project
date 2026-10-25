@@ -63,7 +63,13 @@
   const TAGAPAGBALITA = P.tagapagbalita;
   const PALIMBAGAN = owed("scenery", "palimbagan");        // Act II's, owed
   const KAWAL = P.kawalKatagalugan; // content/people.js since Block 135
-  const GOMEZ = owed("characters", "gomez");
+  // Block 151: the artist's Gómez and Van Schaick from the Drive (17 Oct
+  // 2026), keyed from black and animated (rigs gomez.js, van-schaick.js):
+  // Gómez stands and walks in, Van Schaick stands. The judge is the
+  // artist's still, seated at his own bench (HUKOM, below).
+  const GOMEZ_CELL = { columns: 4, contentTop: 6, contentHeight: 298, footX: 92, headroom: 6 };
+  const GOMEZ = { src: "assets/sprites/characters/gomez.png", frames: 8, fps: 4, ...GOMEZ_CELL };
+  const GOMEZ_WALK = { src: "assets/sprites/characters/gomez-walk.png", frames: 8, fps: 12, ...GOMEZ_CELL };
   // Block 149: the proponent's pictures of 25 Oct 2026, animated (rigs
   // _dev/rigs/anak-ni-isko.js, villafuerte.js): Villafuerte and the boy
   // stand (the calm idle). The woman from Cavite and De Vega came drawn
@@ -75,12 +81,16 @@
   const TAGA_CAVITE = sheet("taga-cavite", 8, 4, TAGA_CAVITE_CELL);
   const TAGA_CAVITE_WALK = sheet("taga-cavite-walk", 8, 12, TAGA_CAVITE_CELL);
   const ANAK_NI_ISKO = sheet("anak-ni-isko", 8, 4, { contentTop: 5, contentHeight: 296, footX: 35, headroom: 5 });
-  const VAN_SCHAICK = owed("characters", "van-schaick");
+  const VAN_SCHAICK = { src: "assets/sprites/characters/van-schaick.png", frames: 8, fps: 4, columns: 4,
+    contentTop: 5, contentHeight: 298, footX: 37, headroom: 5 };
   const VILLAFUERTE = sheet("villafuerte", 8, 4, { contentTop: 5, contentHeight: 298, footX: 34, headroom: 5 });
   const DE_VEGA_CELL = { contentTop: 5, contentHeight: 298, footX: 83, headroom: 5 };
   const DE_VEGA = sheet("de-vega", 8, 4, DE_VEGA_CELL);
   const DE_VEGA_WALK = sheet("de-vega-walk", 8, 12, DE_VEGA_CELL);
-  const HUKOM = owed("characters", "hukom");
+  // The judge at his bench, one picture (Hukom.png, 21 Oct 2026), drawn
+  // as a still: the bench is his, so the court's kit brings none.
+  const HUKOM = { src: "assets/sprites/characters/hukom.png", frames: 1, fps: 1,
+    contentTop: 4, contentHeight: 540, footX: 314 };
   const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
   const AMERIKANO = window.SOLDIER_SHEETS.amerikano;       // content/enemies.js, 24 Oct 2026
   // Block 120. The crowd in Manila, seen and not only heard: two
@@ -130,6 +140,28 @@
   // it at a height in world pixels (Macario is 134). Here the high window
   // is the one he looks out of (bintana, at 1000), the gate beside it.
   const SELDA_LIGHT = "brightness(0.72) saturate(0.85)";
+  // Block 151. The sala and the court from their kits, as the selda: the
+  // plastered wall, the narra floor, the pieces placed by x at a height.
+  // The sala: the pieces Calle Gunao has (assets/sprites/rooms/sala/),
+  // with the banquet laid where the toast is drunk (the mesa, 640) and
+  // the American flag behind Van Schaick. The court: the door the
+  // accused came in by, the bench they wait on, a window, the rail with
+  // its gate before the clerk's table, the clock, the flag by the bench.
+  const roomPieces4 = (room, list) => list.map(([name, x, height, more]) => ({
+    src: "assets/sprites/rooms/" + room + "/" + name + ".png", x, height, lift: 10, ...more,
+  }));
+  const SALA_LIGHT = "brightness(0.9)";
+  const SALA_PIECES = roomPieces4("sala", [
+    ["bintana-capiz", 40, 140, { lift: 70 }], ["larawan", 280, 70, { lift: 150 }],
+    ["lampara", 640, 90, { lift: 230 }], ["bandila-amerikano", 840, 110, { lift: 140 }],
+    ["silya", 560, 95], ["mesa-handaan", 598, 90], ["silya", 770, 95, { flip: true }],
+    ["halaman", 990, 120], ["pinto", 1045, 200, { lift: 0 }],
+  ]);
+  const HUKUMAN_PIECES = roomPieces4("hukuman", [
+    ["pinto", 0, 200, { lift: 0 }], ["bintana", 380, 140, { lift: 70 }],
+    ["orasan", 640, 45, { lift: 200 }], ["bangko", 100, 55],
+    ["mesa", 700, 66], ["barandilya", 560, 62], ["bandila-amerikano", 1090, 170],
+  ]);
   const SELDA_PIECES = [
     ["bangko", 120, 48], ["banig", 380, 26, { lift: 2 }], ["singsing", 600, 55, { lift: 40 }],
     ["timba", 860, 40], ["bintana", 990, 95, { lift: 150 }], ["tarangkahan", 1085, 200, { lift: 0 }],
@@ -1230,7 +1262,7 @@
             faceMovement: true, speakers: ["Tagapagbalita"] },
           { id: "taga-cavite", x: -120, hidden: true, animation: TAGA_CAVITE, walkAnimation: TAGA_CAVITE_WALK, faceMovement: true,
             speakers: ["Taga-Cavite"] },
-          { id: "gomez-lakad", x: FIELD + 80, hidden: true, animation: GOMEZ, faceMovement: true },
+          { id: "gomez-lakad", x: FIELD + 80, hidden: true, animation: GOMEZ, walkAnimation: GOMEZ_WALK, faceMovement: true },
         ],
         npcs: [
           {
@@ -1289,7 +1321,7 @@
           },
           {
             // Dominador Gómez, from 1906: the terms [MACARIO].
-            id: "gomez", x: GOMEZ_X, label: "Gómez", animation: GOMEZ,
+            id: "gomez", x: GOMEZ_X, label: "Gómez", animation: GOMEZ, facesPlayer: true,
             startsHidden: true, revealedByFlag: "a4_dumatingSiGomez",
             dialogueSets: [
               {
@@ -1488,8 +1520,11 @@
         // Schaick's reception.
         id: "sala",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act4/sala.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        // Block 151: from the sala's kit (SALA_PIECES).
+        layers: [{ src: "assets/backgrounds/rooms/wall-palitada.png", rate: 1, lift: 70, height: 0.9, filter: SALA_LIGHT }],
+        buildings: SALA_PIECES,
+        ground: { src: "assets/backgrounds/rooms/floor-narra.png", lip: 16, filter: SALA_LIGHT },
+        panelWidth: ROOM,
         noRanged: true,
         startX: 150,
         scripts: [
@@ -1506,7 +1541,7 @@
         ],
         npcs: [
           {
-            id: "van-schaick", x: 920, label: "Van Schaick", animation: VAN_SCHAICK,
+            id: "van-schaick", x: 920, label: "Van Schaick", animation: VAN_SCHAICK, facesPlayer: true,
             dialogueSets: [{
               lines: [
                 { speaker: "Van Schaick", text: "Relax, Mr. Sakay. The war is over." },
@@ -1596,8 +1631,12 @@
         // Beat 11. The Court of First Instance of Cavite, 1906.
         id: "hukuman",
         worldWidth: ROOM,
-        backdrop: { src: "assets/backgrounds/act4/hukuman.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        // Block 151: from the court's kit (HUKUMAN_PIECES), the judge's
+        // bench his own picture.
+        layers: [{ src: "assets/backgrounds/rooms/wall-palitada.png", rate: 1, lift: 70, height: 0.9, filter: SALA_LIGHT }],
+        buildings: HUKUMAN_PIECES,
+        ground: { src: "assets/backgrounds/rooms/floor-narra.png", lip: 16, filter: SALA_LIGHT },
+        panelWidth: ROOM,
         noRanged: true,
         startX: 300,
         scripts: [
@@ -1611,7 +1650,7 @@
         ],
         npcs: [
           {
-            id: "hukom", x: 900, label: "Hukom", animation: HUKOM,
+            id: "hukom", x: 900, label: "Hukom", animation: HUKOM, displayHeight: 200,
             interactLabel: "Sumagot",
             interactIcon: "i-talk",
             dialogueSets: [],

@@ -142,7 +142,8 @@ window.ITEMS = [
       melee: {
         src: "assets/sprites/player/macario-slash.png", frames: 12, fps: 24, columns: 8,
         loop: false, contact: 6, cocked: 3,
-        contentTop: 80, contentHeight: 240, footX: 110, headroom: 80,
+        // Block 151: the blade drawn, a bigger cell for its back-swing.
+        contentTop: 110, contentHeight: 240, footX: 180, headroom: 110,
       },
     },
   },
@@ -168,9 +169,11 @@ window.ITEMS = [
       sheets: {
         idle: sheet("idle", { frames: 16, fps: 8 }),
         walk: sheet("walk", { frames: 8, fps: 12 }),
-        shootAim: sheet("shoot", { frames: 12, fps: 8, startFrame: 0, endFrame: 2, loop: false }),
-        shootFire: sheet("shoot", { frames: 12, fps: 18, startFrame: 3, endFrame: 11, loop: false,
-          muzzle: { x: 163, y: 61 } }),
+        // The shot's own cell (js/game.js, SHOOT_CELL), the pistol drawn.
+        shootAim: Object.assign(sheet("shoot", { frames: 12, fps: 8, startFrame: 0, endFrame: 2, loop: false }),
+          { contentTop: 34, headroom: 34 }),
+        shootFire: Object.assign(sheet("shoot", { frames: 12, fps: 18, startFrame: 3, endFrame: 11, loop: false,
+          muzzle: { x: 194, y: 85 } }), { contentTop: 34, headroom: 34 }),
         melee: sheet("melee", { frames: 12, fps: 24, loop: false, contact: 6, cocked: 2 }),
         cross: sheet("cross", { frames: 12, fps: 24, loop: false, contact: 6 }),
         kick: sheet("kick", { frames: 12, fps: 24, loop: false, contact: 6 }),

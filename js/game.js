@@ -2115,6 +2115,9 @@ if (BODY_TRANSLATE) player.style.bottom = "0px";
 // is fitted by the standing figure, so he is one size whatever he does.
 // The artist's sheets they replace are kept in docs-private/.
 const MACARIO_CELL = { columns: 8, contentTop: 10, contentHeight: 240, footX: 80, headroom: 10 };
+// Block 151. The shot's cell is taller and wider than the rest (the
+// pistol's barrel and its kick); the same numbers for every skin's shot.
+const SHOOT_CELL = { contentTop: 34, headroom: 34 };
 
 const BASE_SPRITE_SHEETS = {
   // A breath, the weight shifting, the NPCs' amounts; and their walk:
@@ -2125,13 +2128,14 @@ const BASE_SPRITE_SHEETS = {
   // The shot, two named views of one sheet (startFrame and endFrame, see
   // Sprite sheets in CLAUDE.md). 0 to 2 raise the arm level, held on 2
   // while the button stays down; 3 to 11 are the kick and the settle,
-  // played once from the instant the shot leaves. muzzle is the tip of
-  // his fist in frame 2, where throwProjectile starts the shot; the
-  // pistol in his hand is owed (ART.md).
+  // played once from the instant the shot leaves. muzzle is the end of
+  // the pistol's barrel in frame 2, where throwProjectile starts the
+  // shot (Block 151: the pistol drawn in his hand, its sheet's cell
+  // wider and taller for the barrel and the kick).
   shootAim: Object.assign({ src: "assets/sprites/player/macario-shoot.png", frames: 12, fps: 8,
-    startFrame: 0, endFrame: 2, loop: false }, MACARIO_CELL),
+    startFrame: 0, endFrame: 2, loop: false }, MACARIO_CELL, SHOOT_CELL),
   shootFire: Object.assign({ src: "assets/sprites/player/macario-shoot.png", frames: 12, fps: 18,
-    startFrame: 3, endFrame: 11, loop: false, muzzle: { x: 163, y: 61 } }, MACARIO_CELL),
+    startFrame: 3, endFrame: 11, loop: false, muzzle: { x: 194, y: 85 } }, MACARIO_CELL, SHOOT_CELL),
 
   // The one-tap punch (playMelee), 12 frames at 24: half a second. Block
   // 71's contact is the frame the fist lands on, where the hit is

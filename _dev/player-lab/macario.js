@@ -95,5 +95,16 @@ module.exports = {
       length: 230,            // butt to point, working px (about 56 cm on him)
       handle: 0.2,            // the part of that behind his fist
     },
+    // Block 151. The revolver of the shot, the artist's picture: grip
+    // at the left, barrel pointing right. angle is at rest, with the arm
+    // hanging; raised to aim, the barrel comes level with the arm.
+    pistola: {
+      src: "assets/sprites/player/pistola.png",
+      bone: "hand",
+      grip: [120, 432],
+      angle: 80,
+      length: 100,            // about 25 cm on him
+      handle: 0.3,
+    },
   },
 };

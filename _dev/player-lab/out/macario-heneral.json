@@ -82,13 +82,14 @@
     "frames": 12,
     "fps": 8,
     "columns": 8,
-    "contentTop": 10,
+    "contentTop": 34,
     "contentHeight": 240,
     "footX": 80,
-    "drawnTop": 10,
-    "drawnBottom": 249,
-    "cellW": 200,
-    "cellH": 256,
+    "headroom": 34,
+    "drawnTop": 17,
+    "drawnBottom": 273,
+    "cellW": 240,
+    "cellH": 280,
     "loop": false,
     "aim": [
       0,
@@ -100,8 +101,8 @@
     ],
     "fireFps": 18,
     "muzzle": {
-      "x": 163,
-      "y": 61
+      "x": 194,
+      "y": 85
     }
   },
   {
@@ -137,14 +138,14 @@
     "frames": 12,
     "fps": 24,
     "columns": 8,
-    "contentTop": 80,
+    "contentTop": 110,
     "contentHeight": 240,
-    "footX": 110,
-    "headroom": 80,
-    "drawnTop": 13,
-    "drawnBottom": 320,
-    "cellW": 300,
-    "cellH": 330,
+    "footX": 180,
+    "headroom": 110,
+    "drawnTop": 31,
+    "drawnBottom": 350,
+    "cellW": 380,
+    "cellH": 360,
     "loop": false,
     "contact": 6,
     "cocked": 3

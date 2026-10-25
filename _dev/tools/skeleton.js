@@ -724,9 +724,11 @@ const CLIPS = {
   // shoulder and the body, the hand rides highest, and everything comes
   // back down a touch too far before it settles. The pistol itself is
   // owed (no art but the artist's): his fist points where it will be,
-  // and muzzle is where its tip goes.
+  // and muzzle is where its tip goes. Since Block 151 the pistol is
+  // drawn in it (props.pistola) and the muzzle is the barrel's end.
   shoot: {
-    frames: 12, fps: 8, fireFps: 18, loop: false, aim: [0, 2], fire: [3, 11], muzzleFrame: 2,
+    frames: 12, fps: 8, fireFps: 18, loop: false, aim: [0, 2], fire: [3, 11], muzzleFrame: 2, prop: "pistola",
+    cell: { w: 240, h: 280, groundY: 274 },   // the barrel past the fist, and up on the kick
     pose: keyed(12, [
       { f: 0, body: { spine: { r: 1 }, upper: { r: -30 }, fore: { r: -32 }, hand: { r: 4 } },
         legs: { near: { forward: 5, knee: 7 }, far: { forward: -5, knee: 7 } } },
@@ -788,7 +790,8 @@ const CLIPS = {
   // until it comes the cut is made empty-handed.
   slash: {
     frames: 12, fps: 24, loop: false, contact: 6, cocked: 3, prop: "itak", arc: [5, 8],
-    cell: { w: 300, h: 330, anchorX: 110, groundY: 320 },
+    // Block 151: the blade drawn, its back-swing reaches well behind him.
+    cell: { w: 380, h: 360, anchorX: 180, groundY: 350 },
     pose: keyed(12, [
       { f: 0, body: { fore: { r: -2 } } },
       { f: 1, body: { root: { x: -3 }, spine: { r: -3 }, head: { r: 2 }, upper: { r: -92 }, fore: { r: -88 }, hand: { r: 30 }, farUpper: { r: -10 }, farFore: { r: -16 } },
@@ -1119,7 +1122,13 @@ function clipExtras(sk, rig, clip) {
   if (clip.muzzleFrame != null) {
     const W = poseAt(sk, rig.B, clip, clip.muzzleFrame / clip.frames), h = rig.B.by.hand;
     const [dx, dy] = rot(h.tail[0] - h.head[0], h.tail[1] - h.head[1], W.hand.A);
-    const [mx, my] = cellMap(sk, clip)(W.hand.H[0] + dx, W.hand.H[1] + dy);
+    let [mx, my] = cellMap(sk, clip)(W.hand.H[0] + dx, W.hand.H[1] + dy);
+    // Block 151: with the pistol drawn, the shot leaves its barrel.
+    if (clip.prop && rig.props && rig.props[clip.prop]) {
+      const p = propAt(sk, W, clip.prop);
+      const tip = p.tip.map((v, i) => v + (p.tip[i] - p.butt[i]) * p.def.handle / (1 - p.def.handle));
+      [mx, my] = cellMap(sk, clip)(...tip);
+    }
     x.muzzle = { x: Math.round(mx), y: Math.round(my) };
   }
   return x;

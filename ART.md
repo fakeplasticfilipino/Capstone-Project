@@ -171,36 +171,7 @@ Also wanted (not in the game yet):
 
 ### Act IV
 
-    assets/sprites/characters/gomez.png
-        (Attach isko-still.png from the folder
-        _dev/stills/characters, and the proponent's picture of
-        Dominador Gómez)
-        Refer to the attached images and use the art style and size of
-        the first. Draw Dominador Gómez, a Filipino labour leader of
-        1906, from the second picture: the whole body, side on, facing
-        right, STANDING STILL with both feet flat on the ground close
-        together and the arms hanging free of the body, in a white suit
-        and hat. Not walking, not mid-step. Transparent background.
-        (NOT STARTED)
-
-    assets/sprites/characters/van-schaick.png
-        (Attach isko-still.png from the folder
-        _dev/stills/characters, and the proponent's picture of
-        Louis Van Schaick)
-        Refer to the attached images and use the art style and size of
-        the first. Draw Colonel Louis Van Schaick, an American officer
-        of 1906, from the second picture: the whole body, side on,
-        facing right, standing straight in a dress uniform. Transparent
-        background.
-        (NOT STARTED)
-
-    assets/sprites/characters/hukom.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image and use the same art style and
-        size. Draw an American judge of 1906 in a black robe, the whole
-        body, seated side on and facing right on a chair. Transparent
-        background.
-        (NOT STARTED)
+Nothing needed.
 
 ## Props
 
@@ -210,69 +181,9 @@ Nothing needed.
 
 ### Act II
 
-    act2-props-2.png
-        (Attach the files _dev/parallax-art/tondo-props.png and
-        _dev/player-lab/macario-still.png)
-        Refer to the attached images and use the art style of the
-        first. Make a sprite sheet of three separate things, each whole
-        and seen exactly from the side, with wide empty space between
-        them so none touch or overlap. (1) ONE small campfire of a rebel
-        camp in the hills of the Philippines in 1896: a few split logs
-        burning on a ring of stones, bright orange and yellow flames
-        about knee high to a man, a little smoke, warm light on the
-        stones, no pot. (2) ONE Filipino bolo (itak) of the 1890s, the
-        kind a Katipunero carried, lying flat: a plain wooden handle at
-        the LEFT end, a short metal collar, then a single-edged steel
-        blade about three times as long as the handle, widening a
-        little toward the end and pointing to the RIGHT, the cutting
-        edge along the bottom, worn, not shiny, sized for the hand of
-        the man in the second image (about 56 cm long on him). (3) ONE
-        revolver of the 1890s, the kind a Filipino revolutionary
-        carried: the grip at the LEFT end, angled down, wooden with a
-        metal butt cap, the cylinder and trigger guard in the middle,
-        and the barrel pointing straight to the RIGHT, dark worn steel,
-        sized for the same hand (about 25 cm long on him). No people, no
-        hands, no sheath, no holster, no smoke from the gun, no ground or
-        shadows. Transparent background. Landscape, largest size.
-        Cut into: assets/sprites/buildings/apoy.png (1); and, for the
-        player (sprites/player, not yet named by the game), itak.png (2)
-        and pistola.png (3). Until it comes, Balara has no fire, the bolo's slash is
-        drawn without its blade (_dev/tools/skeleton.js) and the shot
-        with an empty fist pointing where the pistol will be.
-        (NOT STARTED)
+Nothing needed.
 
 ### Act III
-
-    sala-kit.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sprite sheet of the separate pieces of the sala
-        of a respectable town house in the Philippines, 1901 to 1906.
-        (1) A long dark wooden table, bare, its top at a man's hip. (2)
-        The same long table covered with a white cloth and laid for a
-        festive meal, with dishes, glasses and a candlestick. (3)
-        Papers, a quill and an inkwell, to lie on a table. (4) A
-        high-backed wooden chair seen from the side. (5) A tall window
-        of small square capiz shell panes, its sliding shutters half
-        open. (6) A tall panelled wooden double door. (7) The flag of
-        the United States of 1906 (45 stars) hung flat on a wall. (8) A
-        hanging oil lamp with a glass shade. (9) A framed painting of a
-        landscape. (10) A potted palm on a stand. Each piece whole and
-        seen straight on from the side (flat, no perspective), with wide
-        empty space between them so none touch or overlap, all drawn in
-        proportion to each other. No people, no walls, no floor, no
-        shadows between pieces. Transparent background. Landscape,
-        largest size.
-        Cut into (assets/sprites/rooms/sala/): mesa.png (1),
-        mesa-handaan.png (2), papeles.png (3), silya.png (4),
-        bintana-capiz.png (5), pinto.png (6),
-        bandila-amerikano.png (7), lampara.png (8), larawan.png
-        (10), halaman.png (9) (cut-room-kit.py's numbers)
-        Takes the place of (for the team):
-        assets/backgrounds/act4/sala.jpg
-        (DELIVERED 24 Oct 2026: cut for Calle Gunao, which is built
-        from it; the sheet stays in _dev/parallax-art/ until Act IV's
-        sala is built, mesa-handaan and bandila-amerikano being its)
 
     town.png
         (Attach the file _dev/parallax-art/tondo-houses.png)
@@ -298,30 +209,6 @@ Nothing needed.
         Malabon's nipa house, store and tower)
 
 ### Act IV
-
-    hukuman-kit.png
-        (Attach the file _dev/parallax-art/tondo-props.png)
-        Refer to the attached image and use the same art style and
-        finish. Make a sprite sheet of the separate pieces of the Court
-        of First Instance of Cavite, 1906, formal and cold. (1) A raised
-        wooden judge's bench with a step up to it and a tall chair
-        behind it. (2) A wooden rail with turned posts and a small
-        swinging gate, waist high. (3) A long plain wooden bench. (4) A
-        clerk's table with papers and a book. (5) A tall window with
-        wooden shutters. (6) A tall panelled wooden door. (7) The flag
-        of the United States of 1906 (45 stars) on a standing pole. (8)
-        A round wall clock. Each piece whole and seen straight on from
-        the side (flat, no perspective), with wide empty space between
-        them so none touch or overlap, all drawn in proportion to each
-        other. No people, no walls, no floor, no shadows between pieces.
-        Transparent background. Landscape, largest size.
-        Cut into (_dev/room-art/hukuman/): hukom-mesa.png (1),
-        barandilya.png (2), bangko.png (3), mesa.png (4),
-        bintana.png (5), pinto.png (6), bandila-amerikano.png
-        (7), orasan.png (8)
-        Takes the place of (for the team):
-        assets/backgrounds/act4/hukuman.jpg
-        (NOT STARTED)
 
     post.png
         (Attach the file _dev/parallax-art/tondo-houses.png)
@@ -469,7 +356,11 @@ Done and in the game. Nothing here needs drawing.
                   pair came mid-stride), 25 Oct 2026, Block 149, animated
                   from their pictures (rigs villafuerte.js,
                   anak-ni-isko.js, de-vega.js, taga-cavite.js); the two
-                  townspeople (taong-bayan), stills facing the front
+                  townspeople (taong-bayan), stills facing the front; Gómez and Van Schaick
+                  (animated, rigs gomez.js, van-schaick.js) and the
+                  judge at his bench (a still), the artist's, from the
+                  Drive, 25 Oct 2026, Block 151; the sala and the court
+                  built from their kits (sala-kit, hukuman-kit)
 
     Props
         Act I     Tondo's houses, street props and doors
@@ -491,5 +382,8 @@ Done and in the game. Nothing here needs drawing.
                   assets/sprites/buildings/; the barbershop's, the
                   cell's and the sala's furniture (barberya-kit,
                   selda-kit, sala-kit), cut into assets/sprites/rooms/;
+                  the campfire, the itak and the pistol (act2-props-2,
+                  Block 151: Balara's fire, the blade in the slash, the
+                  revolver in the shot);
                   the Katagalugan's flag (watawat-katagalugan, its
                   second delivery, Block 148)
