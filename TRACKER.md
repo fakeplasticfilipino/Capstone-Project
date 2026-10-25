@@ -9,10 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 25 Oct 2026, Block 149: Villafuerte and Isko's son in,
-animated from the proponent's sheets; De Vega and the woman from
-Cavite, drawn mid-stride, taken out at the proponent's word and owed
-again standing (ART.md, de-vega-at-taga-cavite).
+Last updated: 25 Oct 2026, Block 149: Act IV's people in but three
+(Gómez, Van Schaick, the judge): Villafuerte, Isko's son, De Vega and
+the woman from Cavite (drawn again standing, with a walk), the two
+townspeople. Six pictures still owed (ART.md).
 Before it, Block 148: the Katagalugan's flag in at
 Morong (its second delivery), so Act III owes no art; the general's
 uniform made from its still (skeleton.js, every move) and sold at 80.
@@ -420,10 +420,10 @@ bamboo pole, Block 148). Failure: a dashed box, a door lit beside its
 house, a figure floating or sunk, a soldier
 whose rifle butt trails a dark copy.
 
-Block 149, Act IV's people (?dev=1, Act IV): Isko's son beside his
-father; Villafuerte in the sala and the cell. Failure: a dashed box for
-either (De Vega and the woman from Cavite are dashed boxes until drawn
-again).
+Block 149, Act IV's people (?dev=1, Act IV): the woman from Cavite
+walking on with her rice; Isko's son beside his father; Villafuerte and
+De Vega in the sala and the cell, De Vega walking to the scaffold; the
+townspeople in Manila. Failure: a dashed box for any of them.
 
 Block 148, the general's uniform: after Act I's savings, buy
 Uniporme ng Heneral (80) from the corner shop, wear it as Damit, and

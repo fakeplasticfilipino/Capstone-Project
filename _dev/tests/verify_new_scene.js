@@ -936,16 +936,19 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        act4.srcs === 9 && act4.expected && act4.opens && act4.widths, act4);
 
     // Block 149. Act IV's people from the proponent's pictures: each sheet
-    // opening, eight frames (the two drawn mid-stride were taken out).
+    // opening, eight frames, the two who walk walking, and the townspeople.
     const people4 = await page.evaluate(async () => {
       const all = window.ACT_4.scenes.flatMap((s) => (s.npcs || []).concat(s.decorations || []));
       const find = (id) => all.find((n) => n.id === id);
-      const sheets = { villafuerte: find("villafuerte-m").animation, anak: find("anak-ni-isko").animation };
+      const sheets = { villafuerte: find("villafuerte-m").animation, anak: find("anak-ni-isko").animation,
+        deVega: find("de-vega-p").animation, deVegaWalk: find("de-vega-p").walkAnimation,
+        cavite: find("taga-cavite").animation, caviteWalk: find("taga-cavite").walkAnimation,
+        tao1: find("tao-1").animation, tao2: find("tao-2").animation };
       await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
       return Object.fromEntries(Object.entries(sheets).map(([n, s]) => [n, !s.failed && s.frameHeight > 0 && s.frames]));
     });
-    ok("Act IV's Villafuerte and Isko's son: every sheet opening, eight frames (Block 149)",
-       Object.values(people4).every((f) => f === 8), people4);
+    ok("Act IV's people: Villafuerte, Isko's son, De Vega and the woman from Cavite (walking), the townspeople (Block 149)",
+       Object.entries(people4).every(([n, f]) => f === (/^tao/.test(n) ? 1 : 8)), people4);
 
     const c1 = await readConversation(page, 3);
     ok("the siga's lines, as written", JSON.stringify(c1.lines) === JSON.stringify(OPENING), c1.lines);
@@ -2997,8 +3000,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await settle(page);
     ok("the crowd knows him by his hair", c.lines.includes("Mga Tao: Ang haba ng buhok!") &&
        await stepIs(page, "Bumaba sa Maynila"), c.lines);
-    ok("  and is seen: six townspeople, placeholders until drawn (Block 120)", await page.evaluate(() =>
-      [1, 2, 3, 4, 5, 6].every((i) => decorationEl("tao-" + i) && /taong-bayan-[12]\.png/.test(decorationEl("tao-" + i).textContent))));
+    ok("  and is seen: six townspeople, drawn (Blocks 120, 149)", await page.evaluate(() =>
+      [1, 2, 3, 4, 5, 6].every((i) => decorationEl("tao-" + i) && !/taong-bayan-[12]\.png/.test(decorationEl("tao-" + i).textContent) &&
+        /taong-bayan-[12]/.test(decorationEl("tao-" + i).innerHTML))));
     await walkTo(page, 11090);
     await page.keyboard.press("e");
     c = await readLines(page, 11);

@@ -67,21 +67,29 @@
   // Block 149: the proponent's pictures of 25 Oct 2026, animated (rigs
   // _dev/rigs/anak-ni-isko.js, villafuerte.js): Villafuerte and the boy
   // stand (the calm idle). The woman from Cavite and De Vega came drawn
-  // mid-stride and did not fit; taken out the same day and owed again
-  // (ART.md), standing, so they can be given a walk.
+  // mid-stride and did not fit; drawn again standing the same day (rigs
+  // de-vega.js, taga-cavite.js), they stand and walk.
   const sheet = (name, frames, fps, cell) => ({ src: "assets/sprites/characters/" + name + ".png", frames, fps,
     columns: 4, ...cell });
-  const TAGA_CAVITE = owed("characters", "taga-cavite");
+  const TAGA_CAVITE_CELL = { contentTop: 7, contentHeight: 298, footX: 53, headroom: 7 };
+  const TAGA_CAVITE = sheet("taga-cavite", 8, 4, TAGA_CAVITE_CELL);
+  const TAGA_CAVITE_WALK = sheet("taga-cavite-walk", 8, 12, TAGA_CAVITE_CELL);
   const ANAK_NI_ISKO = sheet("anak-ni-isko", 8, 4, { contentTop: 5, contentHeight: 296, footX: 35, headroom: 5 });
   const VAN_SCHAICK = owed("characters", "van-schaick");
   const VILLAFUERTE = sheet("villafuerte", 8, 4, { contentTop: 5, contentHeight: 298, footX: 34, headroom: 5 });
-  const DE_VEGA = owed("characters", "de-vega");
+  const DE_VEGA_CELL = { contentTop: 5, contentHeight: 298, footX: 83, headroom: 5 };
+  const DE_VEGA = sheet("de-vega", 8, 4, DE_VEGA_CELL);
+  const DE_VEGA_WALK = sheet("de-vega-walk", 8, 12, DE_VEGA_CELL);
   const HUKOM = owed("characters", "hukom");
   const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
   const AMERIKANO = window.SOLDIER_SHEETS.amerikano;       // content/enemies.js, 24 Oct 2026
   // Block 120. The crowd in Manila, seen and not only heard: two
-  // townspeople, owed, placeholders until drawn.
-  const TAONG_BAYAN = [owed("characters", "taong-bayan-1"), owed("characters", "taong-bayan-2")];
+  // townspeople, the proponent's pictures of 25 Oct 2026 (Block 149),
+  // facing the front, so stills, as the Mananahi is.
+  const TAONG_BAYAN = [
+    { src: "assets/sprites/characters/taong-bayan-1.png", frames: 1, fps: 1, contentTop: 2, contentHeight: 416, footX: 68 },
+    { src: "assets/sprites/characters/taong-bayan-2.png", frames: 1, fps: 1, contentTop: 2, contentHeight: 416, footX: 85 },
+  ];
 
   // ---- The street ---------------------------------------------------
   // Act I's street, by day in July 1906. Joins at every multiple of 1450;
@@ -1220,7 +1228,7 @@
         decorations: [
           { id: "tagapagbalita", x: FIELD + 80, hidden: true, animation: TAGAPAGBALITA, walkAnimation: P.tagapagbalitaWalk,
             faceMovement: true, speakers: ["Tagapagbalita"] },
-          { id: "taga-cavite", x: -120, hidden: true, animation: TAGA_CAVITE, faceMovement: true,
+          { id: "taga-cavite", x: -120, hidden: true, animation: TAGA_CAVITE, walkAnimation: TAGA_CAVITE_WALK, faceMovement: true,
             speakers: ["Taga-Cavite"] },
           { id: "gomez-lakad", x: FIELD + 80, hidden: true, animation: GOMEZ, faceMovement: true },
         ],
@@ -1570,7 +1578,7 @@
             ],
           },
           {
-            id: "de-vega", x: 520, label: "De Vega", animation: DE_VEGA,
+            id: "de-vega", x: 520, label: "De Vega", animation: DE_VEGA, facesPlayer: true,
             startsHidden: true, revealedByFlag: "a4_hatol",
             dialogueSets: [oneLine("De Vega", "Kasama mo ako hanggang dulo, Pangulo.")],
           },
@@ -1630,7 +1638,7 @@
           { requiresFlag: "a4_hulingGabi", doneFlag: "a4_saPatyo", x: 200, facing: 1, run: theMorning },
         ],
         decorations: [
-          { id: "de-vega-p", x: 420, animation: DE_VEGA, faceMovement: true, speakers: ["De Vega"] },
+          { id: "de-vega-p", x: 420, animation: DE_VEGA, walkAnimation: DE_VEGA_WALK, faceMovement: true, speakers: ["De Vega"] },
           { id: "bantay-p", x: 60, animation: BANTAY_BILIBID, speakers: ["Bantay"] },
         ],
         npcs: [],
