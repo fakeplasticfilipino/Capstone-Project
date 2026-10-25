@@ -159,8 +159,8 @@
   ]);
   const HUKUMAN_PIECES = roomPieces4("hukuman", [
     ["pinto", 0, 200, { lift: 0 }], ["bintana", 380, 140, { lift: 70 }],
-    ["orasan", 640, 45, { lift: 200 }], ["bangko", 100, 55],
-    ["mesa", 700, 66], ["barandilya", 560, 62], ["bandila-amerikano", 1090, 170],
+    ["orasan", 800, 45, { lift: 215 }], ["bangko", 100, 55],
+    ["mesa", 700, 66], ["barandilya", 560, 62], ["bandila-amerikano", 1080, 235],
   ]);
   const SELDA_PIECES = [
     ["bangko", 120, 48], ["banig", 380, 26, { lift: 2 }], ["singsing", 600, 55, { lift: 40 }],
@@ -1650,7 +1650,7 @@
         ],
         npcs: [
           {
-            id: "hukom", x: 900, label: "Hukom", animation: HUKOM, displayHeight: 200,
+            id: "hukom", x: 900, label: "Hukom", animation: HUKOM, displayHeight: 150,
             interactLabel: "Sumagot",
             interactIcon: "i-talk",
             dialogueSets: [],
