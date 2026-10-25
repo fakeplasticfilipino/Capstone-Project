@@ -6781,6 +6781,21 @@ A banned student already signed in keeps playing until the access
 token expires (up to an hour); the ban stops the next login and the
 refresh.
 
+## Block 151: what the Drive already held, 25 Oct 2026
+
+The proponent's Drive held artist pictures no session had brought in
+(Gómez, Van Schaick and the judge, 17 and 21 Oct) and that day's props
+sheets. At the proponent's word nothing existing was replaced: only
+what the game drew as a placeholder was filled. So the post, town and
+bilibid kits stay out (they would replace Act IV's paintings), and
+the second sala sheet too (it would redraw Calle Gunao's furniture);
+Act IV's sala is built from the first sheet's pieces, the banquet and
+the flag cut from it now. The judge comes with his bench, so the
+court's kit is used without its own. skeleton.js gained a prop for the
+shot (props.pistola), its muzzle the barrel's end, and bigger cells
+for the shot and the slash now that the barrel and the blade are drawn
+(SHOOT_CELL in game.js; the itak's numbers in items.js).
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

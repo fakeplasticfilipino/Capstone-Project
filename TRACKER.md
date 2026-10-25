@@ -9,7 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 25 Oct 2026, Block 150: the teacher archives, restores
+Last updated: 25 Oct 2026, Block 151: from the Drive, Gómez, Van
+Schaick and the judge; the campfire, the itak (in the slash) and the
+pistol (in the shot); the sala and the court built from their kits. The
+game asks for no picture it lacks; ART.md owes only Act IV's layers
+and kits (the proponent's). The Drive's post, town and bilibid kits
+were left out: they would replace Act IV's paintings. Block 150: the teacher archives, restores
 and deletes students from the dashboard (schema v14, create-students
 version 2). Archive keeps every row and stops the login; delete only
 for accounts never used. Not yet tried with a real teacher login
@@ -434,6 +439,13 @@ Constabulary in the last fight, the Katagalugan's red flag on its
 bamboo pole, Block 148). Failure: a dashed box, a door lit beside its
 house, a figure floating or sunk, a soldier
 whose rifle butt trails a dark copy.
+
+Block 151 (?dev=1): Act IV's court (the judge at his bench, the rail,
+the clock, the flag) and the sala (the banquet, the flag behind Van
+Schaick); Gómez walking into the camp; Balara's fire in Act II; the
+pistol in Macario's hand when he shoots, the shot leaving its barrel;
+the itak's blade when he slashes. Failure: a dashed box anywhere, the
+shot starting away from the barrel, the blade cut off.
 
 Block 149, Act IV's people (?dev=1, Act IV): the woman from Cavite
 walking on with her rice; Isko's son beside his father; Villafuerte and
