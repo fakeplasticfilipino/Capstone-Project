@@ -1228,3 +1228,30 @@ th.num .tip:focus::after { left: auto; right: 0; transform: none; }
 #roster thead th.num { text-align: right; }
 #roster thead th .tip { margin: 0 10px 0 -4px; }
 #roster th button { display: inline-flex; width: auto; }
+
+/* Block 150. Ticking students to archive, restore or delete them. */
+.bulk-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 20px 12px;
+}
+.bulk-count { font-size: 13px; color: var(--text-muted); min-width: 90px; }
+.bulk-show { margin-left: auto; font-size: 13px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px; }
+.bulk-status { padding: 0 20px; margin-top: 0; }
+.btn-danger {
+  background: var(--surface);
+  color: var(--red);
+  border: 1px solid var(--red);
+  border-radius: 7px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.btn-danger:hover:not(:disabled) { background: var(--red-soft); }
+.btn-danger:disabled { opacity: 0.45; cursor: default; }
+#roster .cell-pick { width: 34px; padding-right: 0; text-align: center; }
+#roster .cell-pick input { width: 18px; height: 18px; cursor: pointer; }
+#roster tbody tr.row-archived td { color: var(--text-faint); }
+#roster tbody tr.row-archived .name-btn { color: var(--text-muted); }

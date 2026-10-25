@@ -6744,6 +6744,43 @@ reads. newPage now records every card while up (__cards, a
 MutationObserver, as __dlg records the dialogue box), and the checks
 read the record. Two full runs green where three had failed.
 
+## Block 150: archiving and deleting students, 25 Oct 2026
+
+The instructor could make accounts in bulk (Block 132) and not remove
+any. Deleting was the obvious ask and the dangerous one: every table
+that holds a student_id cascades from profiles, and profiles from
+auth.users, so deleting an account that has played deletes its scores,
+its progress, its sessions and its feedback, the study's data, with
+nothing to bring them back. So there are two tools, the proponent's
+choice of the three offered (the third, unenrolling, hides the student
+from the teacher too, since her policies go through class_id, and only
+the proponent could undo it).
+
+Archive is for anyone: profiles.archived_at set (schema v14, the
+column only) and the login banned, both by the create-students
+function, since no browser may update profiles (v11) and a ban needs
+the secret key. Every row stays, the teacher can still read them, and
+the dashboard leaves archived students out of the roster, the
+averages, the CSV and the Questions report unless Show archived is
+ticked (teacher.js keeps the whole fetch and draws a filtered copy, so
+everything downstream follows without knowing). Restore lifts both.
+The ban goes first, so a failure leaves a student who can still log in
+and is still on the roster, never one hidden but able to play.
+
+Delete is for accounts never used: the page offers it only when every
+ticked student has no save, act row or score, and the function checks
+again against all seven play tables before deleting, refusing the rest
+by name (HAS_DATA). The page asks for the number of accounts typed, a
+second step, because a habit of clicking through confirms is what a
+permanent delete has to survive. A deleted code may be made again by
+the next Create, being the highest number gone; it never held anything.
+
+Archiving a study account mid-study changes the class's reported
+averages and gain; that is the teacher's call, and the guide says so.
+A banned student already signed in keeps playing until the access
+token expires (up to an hour); the ban stops the next login and the
+refresh.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

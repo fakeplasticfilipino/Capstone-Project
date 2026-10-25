@@ -4420,7 +4420,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       cls: document.getElementById("class-name").textContent,
       teacher: document.getElementById("dash-teacher-name").textContent,
       rows: [...document.querySelectorAll("#roster-body tr")].map((tr) =>
-        [...tr.children].map((td) => td.textContent)),
+        [...tr.children].slice(1).map((td) => td.textContent)), // Block 150: past the tick
       students: document.getElementById("stat-students").textContent,
       started: document.getElementById("stat-started").textContent,
       done: document.getElementById("stat-done").textContent,
@@ -4461,7 +4461,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.fill("#roster-search", "03");
     await page.waitForTimeout(100);
     const searched = await page.evaluate(() => ({
-      rows: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[0].textContent),
+      rows: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[1].textContent),
       count: document.getElementById("roster-count").textContent,
     }));
     ok("searching narrows the roster and says how many matched",
@@ -4471,7 +4471,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.click('#roster th[data-sort="gain"] button');
     await page.waitForTimeout(100);
     const sorted = await page.evaluate(() => ({
-      order: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[0].textContent),
+      order: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[1].textContent),
       aria: document.querySelector('#roster th[data-sort="gain"]').getAttribute("aria-sort"),
     }));
     ok("sorting by gain puts the highest first and the missing last",
@@ -4492,10 +4492,10 @@ const visible = (page, sel) => page.evaluate((s) => {
     // row is a stub's, with none), and Act II can be chosen.
     const acts = await page.evaluate(async () => {
       const read = () => {
-        const s1 = [...document.querySelectorAll("#roster-body tr")].find((tr) => tr.children[0].textContent === "mag-aaral01");
+        const s1 = [...document.querySelectorAll("#roster-body tr")].find((tr) => tr.children[1].textContent === "mag-aaral01");
         return { act: document.getElementById("act-picker").value,
           names: [...document.querySelectorAll(".act-name")].map((e) => e.textContent),
-          s1: s1 ? [...s1.children].map((td) => td.textContent) : null };
+          s1: s1 ? [...s1.children].slice(1).map((td) => td.textContent) : null };
       };
       const opened = read();
       const picker = document.getElementById("act-picker");
@@ -5892,7 +5892,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.goto("http://localhost:" + PORT + "/teacher.html#tests"); // Block 132: the editor is a tab
     await page.waitForTimeout(600);
 
-    const post = await page.evaluate(() => [...document.querySelectorAll("#roster-body tr")][0].children[5].textContent);
+    const post = await page.evaluate(() => [...document.querySelectorAll("#roster-body tr")][0].children[6].textContent);
     ok("the roster shows the latest post-test try and how many there were", /^90%9\/10 · 2 attempts$/.test(post), post);
 
     const start = await page.evaluate(() => ({
@@ -7948,7 +7948,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       slips: [...document.querySelectorAll("#acct-slips .slip")].map((s) =>
         [...s.querySelectorAll(".slip-v")].map((v) => v.textContent)),
       status: document.getElementById("acct-status").textContent,
-      rows: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[0].textContent),
+      rows: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[1].textContent),
       noStudents: document.getElementById("no-students").classList.contains("hidden"),
       warn: document.querySelector("#acct-result .acct-warn").textContent,
     }));
@@ -8038,6 +8038,134 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("the login field asks for a code, as text, not an email field",
        field.type === "text" && /Code/.test(field.ph), field);
+    await g.ctx.close();
+  }
+
+  if (section("BZ", "Block 150: archiving, restoring and deleting students")) {
+    // One student who has played (s1) and two never used (s2, s3).
+    const seed = {
+      session: { user: { id: "t1" } },
+      profiles: [
+        { id: "t1", role: "teacher", full_name: "Gng. Cruz" },
+        { id: "s1", role: "student", full_name: "rizal-01", class_id: "c1" },
+        { id: "s2", role: "student", full_name: "rizal-02", class_id: "c1" },
+        { id: "s3", role: "student", full_name: "rizal-03", class_id: "c1" },
+      ],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+      game_progress: [{ student_id: "s1", current_act: 1, updated_at: "2026-10-20T08:00:00Z" }],
+      act_progress: [{ student_id: "s1", act_number: 1, status: "playing", performance_score: null,
+        objectives_done: 2, objectives_total: 7, elapsed_ms: 600000 }],
+      assessment_scores: [{ student_id: "s1", act_number: 1, test_type: "pre", score: 6, max_score: 10, attempt: 1 }],
+    };
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const page = await ctx.newPage();
+    page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+    await page.route("**/supabaseClient.js*", (route) =>
+      route.fulfill({ body: STUB, contentType: "text/javascript" }));
+    await page.route("**/js/vendor/supabase.js*", (route) =>
+      route.fulfill({ body: "", contentType: "text/javascript" }));
+    await page.addInitScript((st) => { window.__TEST = st; window.__CALLS = []; }, seed);
+    await page.goto("http://localhost:" + PORT + "/teacher.html#students");
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 3);
+
+    const bar = () => page.evaluate(() => ({
+      rows: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[1].textContent),
+      picked: [...document.querySelectorAll("#roster-body tr")].filter((tr) => tr.querySelector(".cell-pick input").checked)
+        .map((tr) => tr.children[1].textContent),
+      count: document.getElementById("bulk-count").textContent,
+      archive: !document.getElementById("bulk-archive").disabled,
+      del: !document.getElementById("bulk-delete").disabled,
+      restoreShown: !document.getElementById("bulk-restore").classList.contains("hidden"),
+      status: document.getElementById("bulk-status").textContent,
+      students: document.getElementById("stat-students").textContent,
+      pre: document.getElementById("stat-pre").textContent,
+      card: !document.getElementById("student-card").classList.contains("hidden"),
+      empty: document.getElementById("no-match").classList.contains("hidden") ? "" : document.getElementById("no-match").textContent,
+      archivedCount: document.getElementById("archived-count").textContent,
+    }));
+    const calls = () => page.evaluate(() => __CALLS.filter((c) => c.fn).map((c) => c.body));
+
+    const b0 = await bar();
+    ok("each row has a tick, nothing is ticked, and nothing can be archived or deleted yet",
+       b0.count === "None selected" && !b0.archive && !b0.del && !b0.restoreShown, b0);
+
+    await page.click("#bulk-unused");
+    const b1 = await bar();
+    ok("Select never used ticks the two who never played, and Delete is offered",
+       b1.picked.join() === "rizal-02,rizal-03" && b1.count === "2 selected" && b1.del && b1.archive, b1);
+
+    await page.click("#roster-body tr:nth-child(1) .cell-pick input");
+    const b2 = await bar();
+    ok("ticking a student who has played takes Delete away, and does not open the card",
+       b2.picked.length === 3 && !b2.del && b2.archive && !b2.card, b2);
+    await page.click("#roster-body tr:nth-child(1) .cell-pick input");
+
+    // A wrong number deletes nothing.
+    page.once("dialog", (d) => d.accept("5"));
+    await page.click("#bulk-delete");
+    await page.waitForFunction(() => /Nothing deleted/.test(document.getElementById("bulk-status").textContent));
+    ok("a delete asks for the number, and the wrong one deletes nothing",
+       (await calls()).length === 0 && (await bar()).rows.length === 3);
+
+    page.once("dialog", (d) => d.accept("2"));
+    await page.click("#bulk-delete");
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 1);
+    const b3 = await bar();
+    const c3 = (await calls()).pop();
+    ok("the right number deletes the two never used, through the function, and says so",
+       c3.action === "delete" && c3.student_ids.join() === "s2,s3" &&
+       b3.rows.join() === "rizal-01" && /2 of 2 deleted/.test(b3.status) && b3.count === "None selected", { c3, b3 });
+
+    // The function refuses one who has played, even if the page asked.
+    const refused = await page.evaluate(async () => {
+      const orig = window.prompt;
+      window.prompt = () => "1";
+      const row = { id: "s1", name: "rizal-01" };
+      const done = await TeacherAccounts.bulk("delete", [row], document.getElementById("bulk-status"));
+      window.prompt = orig;
+      return { done, status: document.getElementById("bulk-status").textContent,
+        still: __DB.profiles.some((p) => p.id === "s1"), scores: __DB.assessment_scores.length };
+    });
+    ok("a student who has played is never deleted: the function refuses, and the page says to archive",
+       !refused.done && refused.still && refused.scores === 1 && /have played \(archive them instead\): rizal-01/.test(refused.status), refused);
+
+    await page.click("#roster-body tr:nth-child(1) .cell-pick input");
+    page.once("dialog", (d) => d.accept());
+    await page.click("#bulk-archive");
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 0);
+    const b4 = await bar();
+    const db4 = await page.evaluate(() => ({ archived: __DB.profiles.find((p) => p.id === "s1").archived_at, scores: __DB.assessment_scores.length }));
+    ok("Archive takes the student off the roster and the averages and keeps every score",
+       Boolean(db4.archived) && db4.scores === 1 && b4.students === "0" && b4.pre === "—" &&
+       /Every student in this class is archived/.test(b4.empty) && b4.archivedCount === "(1)" &&
+       /1 of 1 archived/.test(b4.status), { b4, db4 });
+
+    await page.check("#show-archived");
+    const b5 = await bar();
+    ok("Show archived brings them back, marked, with Restore offered",
+       b5.rows.join() === "rizal-01Archived" && b5.restoreShown && b5.students === "1" && b5.pre === "60%", b5);
+
+    await page.click("#roster-body tr:nth-child(1) .cell-pick input");
+    const b6 = await bar();
+    ok("an archived student can be restored, not archived again or deleted",
+       !b6.archive && !b6.del && !(await page.isDisabled("#bulk-restore")), b6);
+    page.once("dialog", (d) => d.accept());
+    await page.click("#bulk-restore");
+    await page.waitForFunction(() => /1 of 1 restored/.test(document.getElementById("bulk-status").textContent));
+    await page.uncheck("#show-archived");
+    const b7 = await bar();
+    ok("Restore puts the student back on the roster and in the averages",
+       b7.rows.join() === "rizal-01" && b7.students === "1" && b7.archivedCount === "" &&
+       (await page.evaluate(() => __DB.profiles.find((p) => p.id === "s1").archived_at)) === null, b7);
+    await ctx.close();
+
+    // The game's login says an archived account plainly.
+    const g = await newPage({ session: null });
+    await g.page.waitForTimeout(300);
+    const said = await g.page.evaluate(() => [authErrorText({ message: "User is banned", code: "user_banned" }),
+      authErrorText({ message: "Invalid login credentials" })]);
+    ok("an archived account at the login is told to ask the teacher, not that the password is wrong",
+       said[0] === "Hindi na aktibo ang account na ito. Magtanong sa guro." && /Mali ang code/.test(said[1]), said);
     await g.ctx.close();
   }
 

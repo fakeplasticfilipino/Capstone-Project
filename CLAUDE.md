@@ -1910,7 +1910,8 @@ submit_assessment, unused since Block 68. Since schema v8 only the
 owner and the service roles may call the last three (handle_new_user
 also the auth service).
 
-Edge Functions (Block 132): create-students, the account maker,
+Edge Functions (Block 132): create-students, the account maker (since
+Block 150 it also archives, restores and deletes students),
 source in db/functions/create-students/index.ts, deployed with the
 connector's deploy_edge_function and verify_jwt false (it checks the
 caller's token itself; the publishable key is not a JWT). A change to
@@ -1973,6 +1974,14 @@ duplicates a column reachable by join.
 feedback has no update and no delete policy, deliberately. A student who
 wants to change their answer has no mechanism, which is correct for a
 research instrument.
+
+ARCHIVING AND DELETING STUDENTS (Block 150). A student who has played
+is archived, never deleted: profiles.archived_at (schema v14) and a
+banned login, both set by create-students; every row kept, and the
+dashboard leaves the student out of everything it shows until Show
+archived. Delete is only for an account with no row in any of the
+seven play tables, checked by the function; deleting cascades through
+all of them. Never widen delete to played accounts.
 
 Since schema v11 (Block 123) no browser role may UPDATE profiles at all:
 the own-row update policy had no WITH CHECK, and a student could make
@@ -2713,6 +2722,8 @@ look, by system:
     accounts from the dashboard; its      Block 132 (create-students,
       tabs; the code at the login         slips, the student card,
                                           schema v13)
+    archiving and deleting students       Block 150 (schema v14; delete
+                                          only never-used accounts)
     the artist's Drive delivery of 15     Block 133 (Act II's paintings,
       Oct: paintings, people; the         nine people keyed from black),
       new street tried and taken out      134 (the old street back, its

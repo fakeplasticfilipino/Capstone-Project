@@ -4,7 +4,11 @@
 // The Students tab's accounts card: a teacher makes her class's
 // accounts (a code start, how many), sees each code and password once,
 // prints them as slips to cut and hand out, and gives one student a new
-// password from the student card.
+// password from the student card. Since Block 150 it also archives,
+// restores and deletes the students ticked on the roster (bulk; the
+// ticking is teacher.js's): archive keeps everything and stops the
+// login, delete is only for accounts never used, checked again by the
+// function against every table.
 //
 // Every change goes through the create-students function
 // (db/functions/create-students), never through a table: making a login
@@ -230,6 +234,51 @@ const TeacherAccounts = {
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     if (window.TeacherDash) TeacherDash.markSlipsPrinted();
+  },
+
+  // Block 150. Archive, restore or delete the students in rows (the
+  // roster's own rows), saying each result in status. Resolves true once
+  // anything changed, so the page reloads the class.
+  async bulk(action, rows, status) {
+    this.init();
+    const codes = rows.map((r) => r.name);
+    const list = codes.length > 12 ? codes.slice(0, 12).join(", ") + " and " + (codes.length - 12) + " more" : codes.join(", ");
+    const n = rows.length;
+    const them = n === 1 ? "this student" : "these " + n + " students";
+    if (action === "archive") {
+      if (!window.confirm("Archive " + them + "?\n\n" + list + "\n\nThey will not be able to log in, and they leave the roster and the averages. " +
+        "Nothing they did is deleted; Show archived, then Restore, brings them back.")) return false;
+    } else if (action === "restore") {
+      if (!window.confirm("Restore " + them + "?\n\n" + list + "\n\nThey can log in again with the same password, and return to the roster.")) return false;
+    } else {
+      // Typing the number is the second step a delete needs: it cannot be
+      // undone, and a teacher clicking through two dialogs by habit would
+      // otherwise get it.
+      const typed = window.prompt("Delete " + them + " for good?\n\n" + list + "\n\nThey have never been used. " +
+        "Their codes and passwords stop working and cannot be brought back.\n\nType " + n + " to delete.");
+      if (typed === null) return false;
+      if (String(typed).trim() !== String(n)) {
+        this.setStatus(status, "Nothing deleted: the number typed was not " + n + ".", "error");
+        return false;
+      }
+    }
+    const verb = { archive: "Archiving", restore: "Restoring", delete: "Deleting" }[action];
+    this.setStatus(status, verb + " " + n + " account" + (n === 1 ? "" : "s") + "...");
+    const res = await this.call({ action, student_ids: rows.map((r) => r.id) });
+    const results = (res.data && res.data.results) || [];
+    if (res.error || !results.length) {
+      this.setStatus(status, this.explain(res.error), "error");
+      return false;
+    }
+    const good = results.filter((r) => r.ok);
+    const kept = results.filter((r) => r.error === "HAS_DATA").map((r) => r.code);
+    const failed = results.filter((r) => !r.ok && r.error !== "HAS_DATA").map((r) => r.code);
+    const past = { archive: "archived", restore: "restored", delete: "deleted" }[action];
+    let text = good.length + " of " + n + " " + past + ".";
+    if (kept.length) text += " Not deleted, because they have played (archive them instead): " + kept.join(", ") + ".";
+    if (failed.length) text += " Could not be " + past + ", try again: " + failed.join(", ") + ".";
+    this.setStatus(status, text, kept.length || failed.length ? "error" : "ok");
+    return good.length > 0;
   },
 
   // From the student card. The new password is shown there and added to

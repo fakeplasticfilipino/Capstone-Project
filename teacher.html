@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACARIO — Teacher Dashboard</title>
-  <link rel="stylesheet" href="css/teacher.css?v=4221560835" />
+  <link rel="stylesheet" href="css/teacher.css?v=3924341071" />
 </head>
 <body>
   <!-- Covers the page until the session and role are confirmed, so a
@@ -219,10 +219,24 @@
               <button id="export-btn" type="button" class="btn-secondary">Download CSV</button>
             </div>
           </div>
+          <!-- Block 150. Students ticked below are archived (kept, login
+               off, off the roster), restored, or deleted if they never
+               played, through the create-students function
+               (js/teacher-accounts.js). -->
+          <div id="bulk-bar" class="bulk-bar">
+            <span id="bulk-count" class="bulk-count">None selected</span>
+            <button id="bulk-unused" type="button" class="btn-secondary">Select never used</button>
+            <button id="bulk-archive" type="button" class="btn-secondary" disabled>Archive</button>
+            <button id="bulk-restore" type="button" class="btn-secondary hidden" disabled>Restore</button>
+            <button id="bulk-delete" type="button" class="btn-danger" disabled>Delete</button>
+            <label class="bulk-show"><input id="show-archived" type="checkbox" /> Show archived <span id="archived-count"></span></label>
+          </div>
+          <p id="bulk-status" class="qe-status bulk-status"></p>
           <div class="table-wrap">
             <table id="roster">
               <thead>
                 <tr>
+                  <th class="cell-pick"><input id="pick-all" type="checkbox" aria-label="Select every student shown" /></th>
                   <th data-sort="name" aria-sort="ascending"><button type="button">Student</button></th>
                   <th data-sort="status"><button type="button">Status (<span class="act-name">Act I</span>)</button></th>
                   <th data-sort="currentAct"><button type="button">Act</button><span class="tip" tabindex="0" data-tip="The act the student is in now, and how many of the four they have finished.">?</span></th>
@@ -241,6 +255,7 @@
           </div>
           <div class="table-notes">
             <p>Tap a student to see their results in words and to give them a new password. A dash (—) means no data yet.</p>
+            <p><strong>Archive</strong> takes a student off the roster and the averages and stops their login; nothing they did is lost, and Restore brings them back. <strong>Delete</strong> is only for accounts that were never used (made by mistake, or too many) and cannot be undone.</p>
           </div>
         </section>
       </div>
@@ -388,8 +403,8 @@
   <script src="content/act4.js?v=3641498663"></script>
   <!-- Block 132. Before teacher.js, which may reach it before the next
        script tag is parsed (its first awaits can resolve on microtasks). -->
-  <script src="js/teacher-accounts.js?v=928438796"></script>
-  <script src="js/teacher.js?v=2742852485"></script>
+  <script src="js/teacher-accounts.js?v=2501420699"></script>
+  <script src="js/teacher.js?v=1368811613"></script>
   <script src="js/teacher-questions.js?v=4003821537"></script>
   <script src="js/teacher-report.js?v=725711950"></script>
   <script src="js/teacher-talaan.js?v=976490959"></script>

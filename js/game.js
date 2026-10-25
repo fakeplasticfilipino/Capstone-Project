@@ -8761,6 +8761,9 @@ function loginEmail(typed) {
 
 function authErrorText(err) {
   const m = ((err && (err.message || err.code)) || "") + "";
+  // Block 150. An account the teacher archived is banned ("User is
+  // banned", code user_banned): said plainly, not as a wrong password.
+  if (/banned/i.test(m + " " + ((err && err.code) || ""))) return "Hindi na aktibo ang account na ito. Magtanong sa guro.";
   if (/invalid login|credentials|invalid_grant|password/i.test(m)) return "Mali ang code o password. Subukan ulit.";
   if (/fetch|network|offline|timeout|failed to/i.test(m) || (typeof navigator !== "undefined" && navigator.onLine === false)) {
     return "Walang koneksyon sa internet. Subukan ulit kapag may internet na.";

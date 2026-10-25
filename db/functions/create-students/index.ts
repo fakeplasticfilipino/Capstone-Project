@@ -1,12 +1,13 @@
 // =============================================================
 // MACARIO — create-students (Supabase Edge Function, Block 132)
 //
-// Lets a teacher make her students' accounts from the dashboard, and
-// give one a new password. Creating a login needs the project's secret
-// key, which must never reach a browser; this function holds it on
-// Supabase's side (SUPABASE_SERVICE_ROLE_KEY, set by the platform) and
-// does two fixed things with it, for the signed-in teacher's own class
-// and nothing else.
+// Lets a teacher make her students' accounts from the dashboard, give
+// one a new password, and (Block 150) archive, restore or delete them.
+// Each needs the project's secret key, which must never reach a
+// browser; this function holds it on Supabase's side
+// (SUPABASE_SERVICE_ROLE_KEY, set by the platform) and does a few fixed
+// things with it, for the signed-in teacher's own class and nothing
+// else.
 //
 //   { action: "create", class_id, prefix, count }
 //       count new accounts <prefix>-NN, numbered on from the highest
@@ -17,6 +18,14 @@
 //   { action: "reset", student_id }
 //       a new six digits for one student of her class. Returns
 //       { code, password }.
+//   { action: "archive" | "restore" | "delete", student_ids: [...] }
+//       Block 150, up to MAX_PER_CALL of her class's students at once.
+//       archive sets profiles.archived_at and bans the login; restore
+//       clears both. delete removes the account, and only one that
+//       never played: one row in any of PLAY_TABLES and it is refused
+//       (HAS_DATA), because deleting cascades through all of them and
+//       the scores are the study's. Returns { results: [{ id, code,
+//       ok, error }] }, one per student, so a partial run is said.
 //
 // WHO MAY CALL IT. The caller's own access token is checked here
 // (getUser), not by the gateway (deployed with verify_jwt false, since
@@ -44,6 +53,16 @@ import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
 const MAX_PER_CALL = 60;
 const PREFIX_RE = /^[a-z]{2,12}$/;
+
+// Block 150. Every table a student's play writes a row to (the seven
+// reset_my_play_data clears). An account with a row in any of them has
+// played, and is archived, never deleted.
+const PLAY_TABLES = [
+  "game_progress", "act_progress", "assessment_scores", "game_sessions",
+  "feedback", "player_inventory", "player_equipment",
+];
+// A ban Supabase reads as for good: about a hundred years.
+const BAN_FOREVER = "876000h";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -167,6 +186,59 @@ Deno.serve(async (req: Request) => {
     const { error: resetErr } = await admin.auth.admin.updateUserById(studentId, { password });
     if (resetErr) return reply(500, { error: "RESET_FAILED", detail: resetErr.message });
     return reply(200, { code: student.full_name, password });
+  }
+
+  if (body.action === "archive" || body.action === "restore" || body.action === "delete") {
+    const ids = Array.isArray(body.student_ids) ? [...new Set(body.student_ids)] : [];
+    if (!ids.length || ids.length > MAX_PER_CALL || ids.some((x) => typeof x !== "string" || !x)) {
+      return reply(400, { error: "BAD_REQUEST" });
+    }
+    // Every one must be a student of a class she owns, or nothing is
+    // done: a list with a stranger in it is a mistake to stop at, not
+    // to half-carry out.
+    const { data: rows, error: rowsErr } = await admin
+      .from("profiles").select("id, role, class_id, full_name").in("id", ids);
+    if (rowsErr) return reply(500, { error: "LOOKUP_FAILED" });
+    const byId = new Map((rows || []).map((r) => [r.id, r]));
+    const owned = new Map<string, boolean>();
+    for (const id of ids) {
+      const s = byId.get(id as string);
+      if (!s || s.role !== "student") return reply(403, { error: "NOT_YOUR_STUDENT" });
+      if (!owned.has(s.class_id)) owned.set(s.class_id, await ownsClass(s.class_id));
+      if (!owned.get(s.class_id)) return reply(403, { error: "NOT_YOUR_STUDENT" });
+    }
+
+    // Who has played, from the tables themselves, before anything is
+    // deleted.
+    const played = new Set<string>();
+    if (body.action === "delete") {
+      for (const t of PLAY_TABLES) {
+        const { data: hit, error: hitErr } = await admin.from(t).select("student_id").in("student_id", ids);
+        if (hitErr) return reply(500, { error: "LOOKUP_FAILED" });
+        (hit || []).forEach((h) => played.add(h.student_id));
+      }
+    }
+
+    const results: { id: string; code: string; ok: boolean; error?: string }[] = [];
+    for (const id of ids as string[]) {
+      const code = byId.get(id)!.full_name || "";
+      if (body.action === "delete") {
+        if (played.has(id)) { results.push({ id, code, ok: false, error: "HAS_DATA" }); continue; }
+        const { error } = await admin.auth.admin.deleteUser(id);
+        results.push(error ? { id, code, ok: false, error: "DELETE_FAILED" } : { id, code, ok: true });
+        continue;
+      }
+      const archive = body.action === "archive";
+      // The ban first: a student archived on the roster but still able
+      // to log in would be worse than one not archived at all.
+      const { error: banErr } = await admin.auth.admin.updateUserById(id,
+        { ban_duration: archive ? BAN_FOREVER : "none" });
+      if (banErr) { results.push({ id, code, ok: false, error: "BAN_FAILED" }); continue; }
+      const { error: markErr } = await admin.from("profiles")
+        .update({ archived_at: archive ? new Date().toISOString() : null }).eq("id", id);
+      results.push(markErr ? { id, code, ok: false, error: "MARK_FAILED" } : { id, code, ok: true });
+    }
+    return reply(200, { results });
   }
 
   return reply(400, { error: "BAD_ACTION" });

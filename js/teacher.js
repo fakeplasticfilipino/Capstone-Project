@@ -86,6 +86,13 @@ const ACT_NAMES = { 1: "Act I", 2: "Act II", 3: "Act III", 4: "Act IV" };
 const actPicker = document.getElementById("act-picker");
 let currentAct = null;
 let lastFetch = null;
+// Block 150. Everything fetched, archived students included (fullFetch),
+// and lastFetch is what the page shows: without them unless the teacher
+// asks, so the roster, the averages, the CSV and the Questions report all
+// leave them out the same way. picked is the ticked students' ids.
+let fullFetch = null;
+let showArchived = false;
+const picked = new Set();
 let sortKey = "name";
 let sortDir = 1; // 1 ascending, -1 descending
 
@@ -275,7 +282,7 @@ async function loadRoster(classId) {
   // 1. Students in this class.
   const { data: students, error: studentsError } = await sb
     .from("profiles")
-    .select("id, full_name")
+    .select("id, full_name, archived_at")
     .eq("class_id", classId)
     .eq("role", "student")
     .order("full_name");
@@ -292,6 +299,8 @@ async function loadRoster(classId) {
 
   if (!students || students.length === 0) {
     lastFetch = null;
+    fullFetch = null;
+    picked.clear();
     currentRows = [];
     loadingEl.classList.add("hidden");
     noStudentsEl.classList.remove("hidden");
@@ -325,12 +334,13 @@ async function loadRoster(classId) {
     return;
   }
 
-  lastFetch = {
+  fullFetch = {
     students,
     progress: progressRes.data || [],
     acts: actsRes.data || [],
     scores: scoresRes.data || [],
   };
+  lastFetch = visibleFetch();
   // The furthest act with something to finish (objectives_total above 0)
   // that anyone in the class has a row for, unless the teacher has
   // already chosen one. A stub act, which a student who finished Act I
@@ -353,6 +363,21 @@ async function loadRoster(classId) {
   rosterSection.classList.remove("hidden");
   attentionEl.classList.remove("hidden");
   renderSteps();
+}
+
+// Block 150. The fetch without archived students and their rows, unless
+// Show archived is ticked.
+function visibleFetch() {
+  if (!fullFetch) return null;
+  if (showArchived) return fullFetch;
+  const keep = new Set(fullFetch.students.filter((s) => !s.archived_at).map((s) => s.id));
+  const mine = (rows) => rows.filter((r) => keep.has(r.student_id));
+  return {
+    students: fullFetch.students.filter((s) => keep.has(s.id)),
+    progress: mine(fullFetch.progress),
+    acts: mine(fullFetch.acts),
+    scores: mine(fullFetch.scores),
+  };
 }
 
 // Builds the rows for the act chosen and draws them, with the act's name
@@ -411,6 +436,8 @@ function buildRoster(students, progress, acts, scores, actNumber) {
     if (!first || attempt < (Number(first.attempt) || 1)) firstBy.set(key, s);
   });
 
+  const scoredIds = new Set(scores.map((s) => s.student_id));
+
   return students.map((student) => {
     const prog = progressBy.get(student.id) || null;
     const studentActs = actsBy.get(student.id) || [];
@@ -460,6 +487,11 @@ function buildRoster(students, progress, acts, scores, actNumber) {
       gainLatest,
       performance,
       lastActive: prog ? prog.updated_at : null,
+      // Block 150. Never used: no save, no act row and no score in any
+      // act, so Delete is offered. The function checks again, against
+      // every table, before it deletes.
+      archived: Boolean(student.archived_at),
+      neverUsed: !prog && studentActs.length === 0 && !scoredIds.has(student.id),
     };
   });
 }
@@ -480,8 +512,23 @@ function renderRoster() {
     const tr = document.createElement("tr");
     // Block 132. The whole row opens the student card, and the name is
     // a button so a keyboard reaches it too.
-    tr.className = "row-open";
+    tr.className = "row-open" + (row.archived ? " row-archived" : "");
     tr.addEventListener("click", () => openStudent(row.id));
+
+    // Block 150. The tick is its own target: ticking never opens the card.
+    const pickTd = document.createElement("td");
+    pickTd.className = "cell-pick";
+    const pick = document.createElement("input");
+    pick.type = "checkbox";
+    pick.checked = picked.has(row.id);
+    pick.setAttribute("aria-label", "Select " + row.name);
+    pickTd.addEventListener("click", (e) => e.stopPropagation());
+    pick.addEventListener("change", () => {
+      if (pick.checked) picked.add(row.id); else picked.delete(row.id);
+      renderBulk();
+    });
+    pickTd.appendChild(pick);
+    tr.appendChild(pickTd);
 
     const nameTd = document.createElement("td");
     nameTd.className = "cell-name";
@@ -490,6 +537,12 @@ function renderRoster() {
     nameBtn.className = "name-btn";
     nameBtn.textContent = row.name;
     nameTd.appendChild(nameBtn);
+    if (row.archived) {
+      const tag = document.createElement("span");
+      tag.className = "cell-sub";
+      tag.textContent = "Archived";
+      nameTd.appendChild(tag);
+    }
     tr.appendChild(nameTd);
     tr.appendChild(statusCell(row.status));
     tr.appendChild(cell(
@@ -516,7 +569,12 @@ function renderRoster() {
   rosterCountEl.textContent = query
     ? `${rows.length} of ${total} students match`
     : `${total} students`;
+  noMatchEl.textContent = !total && fullFetch && fullFetch.students.length
+    ? "Every student in this class is archived. Tick Show archived to see them."
+    : "No students match the search.";
   noMatchEl.classList.toggle("hidden", rows.length > 0);
+  shownIds = rows.map((r) => r.id);
+  renderBulk();
 
   sortHeaders.forEach((th) => {
     if (th.dataset.sort === sortKey) {
@@ -568,6 +626,86 @@ sortHeaders.forEach((th) => {
 });
 
 rosterSearch.addEventListener("input", () => renderRoster());
+
+// =============================================================
+// Archive, restore, delete (Block 150)
+// =============================================================
+
+const bulk = {
+  count: document.getElementById("bulk-count"),
+  unused: document.getElementById("bulk-unused"),
+  archive: document.getElementById("bulk-archive"),
+  restore: document.getElementById("bulk-restore"),
+  del: document.getElementById("bulk-delete"),
+  status: document.getElementById("bulk-status"),
+  all: document.getElementById("pick-all"),
+  show: document.getElementById("show-archived"),
+  archivedCount: document.getElementById("archived-count"),
+};
+let shownIds = [];
+
+// The ticked students, of those on the page now. A tick on a student the
+// page no longer shows (archived and hidden, or deleted) is dropped, so
+// an action never reaches someone the teacher cannot see.
+function pickedRows() {
+  const live = new Set(currentRows.map((r) => r.id));
+  [...picked].forEach((id) => { if (!live.has(id)) picked.delete(id); });
+  return currentRows.filter((r) => picked.has(r.id));
+}
+
+function renderBulk() {
+  const rows = pickedRows();
+  const archivedN = fullFetch ? fullFetch.students.filter((s) => s.archived_at).length : 0;
+  bulk.count.textContent = rows.length ? rows.length + " selected" : "None selected";
+  bulk.archive.disabled = !rows.some((r) => !r.archived);
+  bulk.restore.disabled = !rows.some((r) => r.archived);
+  bulk.restore.classList.toggle("hidden", !showArchived);
+  bulk.del.disabled = !rows.length || !rows.every((r) => r.neverUsed);
+  bulk.del.title = rows.length && !bulk.del.disabled ? "" :
+    "Only accounts that were never used can be deleted. Archive the others.";
+  bulk.unused.disabled = !currentRows.some((r) => r.neverUsed);
+  bulk.archivedCount.textContent = archivedN ? "(" + archivedN + ")" : "";
+  const shownPicked = shownIds.filter((id) => picked.has(id)).length;
+  bulk.all.checked = shownIds.length > 0 && shownPicked === shownIds.length;
+  bulk.all.indeterminate = shownPicked > 0 && shownPicked < shownIds.length;
+}
+
+bulk.all.addEventListener("change", () => {
+  shownIds.forEach((id) => { if (bulk.all.checked) picked.add(id); else picked.delete(id); });
+  renderRoster();
+});
+
+bulk.unused.addEventListener("click", () => {
+  picked.clear();
+  currentRows.forEach((r) => { if (r.neverUsed) picked.add(r.id); });
+  renderRoster();
+});
+
+bulk.show.addEventListener("change", () => {
+  showArchived = bulk.show.checked;
+  lastFetch = visibleFetch();
+  drawAct();
+});
+
+async function runBulk(action) {
+  if (!window.TeacherAccounts) return;
+  let rows = pickedRows();
+  if (action === "archive") rows = rows.filter((r) => !r.archived);
+  if (action === "restore") rows = rows.filter((r) => r.archived);
+  if (!rows.length) return;
+  [bulk.archive, bulk.restore, bulk.del].forEach((b) => { b.disabled = true; });
+  const done = await TeacherAccounts.bulk(action, rows, bulk.status);
+  if (done) {
+    picked.clear();
+    await loadRoster(currentClassId);
+  } else {
+    renderBulk();
+  }
+}
+
+bulk.archive.addEventListener("click", () => runBulk("archive"));
+bulk.restore.addEventListener("click", () => runBulk("restore"));
+bulk.del.addEventListener("click", () => runBulk("delete"));
 
 refreshBtn.addEventListener("click", async () => {
   if (!currentClassId) return;
@@ -637,7 +775,7 @@ function markSlipsPrinted() {
 
 function renderSteps() {
   const made = currentStudents.length > 0;
-  const played = Boolean(lastFetch && lastFetch.progress.length);
+  const played = Boolean(fullFetch && fullFetch.progress.length);
   let printed = played;
   try { printed = printed || localStorage.getItem(slipsKey()) === "1"; } catch (e) { /* none */ }
   const done = { "step-accounts": made, "step-slips": made && printed, "step-play": played };

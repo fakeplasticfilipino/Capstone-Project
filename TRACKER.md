@@ -9,7 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 25 Oct 2026, Block 149: Act IV's people in but three
+Last updated: 25 Oct 2026, Block 150: the teacher archives, restores
+and deletes students from the dashboard (schema v14, create-students
+version 2). Archive keeps every row and stops the login; delete only
+for accounts never used. Not yet tried with a real teacher login
+(Next action).
+Before it, Block 149: Act IV's people in but three
 (Gómez, Van Schaick, the judge): Villafuerte, Isko's son, De Vega and
 the woman from Cavite (drawn again standing, with a walk), the two
 townspeople. Six pictures still owed (ART.md).
@@ -405,6 +410,16 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
 
 Block 142 (above) comes first. Then, in order.
 
+Block 150, archiving and deleting students, on the live dashboard as
+the teacher (an incognito window): make 3 accounts in a throwaway
+class, log one in and play past the pre-test; tick all three and see
+Delete greyed; Select never used, Delete, type 2: two gone. Archive
+the one who played: off the roster, Show archived (1); log in as it:
+"Hindi na aktibo ang account na ito". Restore it: the login works
+and its pre-test is still there. Failure: Delete offered for the
+played account, an archived account that still logs in, or a
+restored one missing its score.
+
 Block 147, Act III's art, on the phone (?dev=1): "Ang burol: ang
 labanan" (Manila below, single mountain trees, the camp, the watchtower
 over the lookout; the American soldiers walk, lunge with the bayonet
@@ -670,6 +685,20 @@ Trust this over any memory of a chat.
                                         publishable key as a token are
                                         both refused (401); the
                                         preflight answers 200
+    db/migrations/014_macario_schema_v14.sql   RUN, 25 Oct 2026, from the
+                                        session, at the proponent's word.
+                                        profiles.archived_at (Block 150).
+                                        Profiles a teacher, a student and
+                                        a visitor see: 2, 1, 0 before and
+                                        after; the column null on both
+                                        rows; the security advisor shows
+                                        only its two known warnings
+    db/functions/create-students               version 2 DEPLOYED, 25 Oct
+                                        2026, at the proponent's word:
+                                        archive, restore, delete (Block
+                                        150). Probed: no token and a bad
+                                        token refused (401). Not yet
+                                        called with a teacher's login
     db/migrations/012_macario_schema_v12.sql   RUN, 9 Oct 2026, from the
                                         session, at the proponent's word.
                                         assessment_scores.answers, each
@@ -1098,6 +1127,11 @@ machine, the assessment module.
         damage each, the kick throwing 2.2 times as far); a 90ms
         freeze, a bigger shake and a white burst on a landed blow;
         speed lines on the strikes (skeleton.js); test.js AI, AS, BC
+    150 the teacher archives (login banned, kept off the roster and
+        the averages, every row kept), restores and deletes students
+        ticked on the roster; delete only for accounts with no row in
+        any play table, checked by the function; schema v14
+        (profiles.archived_at); test.js BZ
 
 ## Blocks remaining
 

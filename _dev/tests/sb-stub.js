@@ -203,6 +203,27 @@
           const p = (db.profiles || []).find((x) => x.id === body.student_id);
           return Promise.resolve({ data: { code: p ? p.full_name : "", password: "654321" }, error: null });
         }
+        // Block 150. As the live function: archive and restore set and
+        // clear archived_at; delete refuses anyone with a row in a play
+        // table (HAS_DATA) and removes the rest.
+        if (body.action === "archive" || body.action === "restore" || body.action === "delete") {
+          const results = (body.student_ids || []).map((id) => {
+            const p = (db.profiles || []).find((x) => x.id === id);
+            const code = p ? p.full_name : "";
+            if (!p) return { id, code, ok: false, error: "NOT_FOUND" };
+            if (body.action === "delete") {
+              const played = ["game_progress", "act_progress", "assessment_scores", "game_sessions",
+                "feedback", "player_inventory", "player_equipment"]
+                .some((t) => (db[t] || []).some((r) => r.student_id === id));
+              if (played) return { id, code, ok: false, error: "HAS_DATA" };
+              db.profiles.splice(db.profiles.indexOf(p), 1);
+              return { id, code, ok: true };
+            }
+            p.archived_at = body.action === "archive" ? "2026-10-25T00:00:00Z" : null;
+            return { id, code, ok: true };
+          });
+          return Promise.resolve({ data: { results }, error: null });
+        }
         return Promise.resolve({ data: null, error: { message: "BAD_ACTION" } });
       },
     },
