@@ -6796,6 +6796,12 @@ shot (props.pistola), its muzzle the barrel's end, and bigger cells
 for the shot and the slash now that the barrel and the blade are drawn
 (SHOOT_CELL in game.js; the itak's numbers in items.js).
 
+On 26 Oct the proponent judged the judge too big, even made smaller,
+and he was taken out (Block 141's rule): the placeholder stands at his
+place and ART.md asks for him again seated without a bench, since the
+court's kit has its own rail and table. The Drive's post and bilibid
+kits were recorded as rejected for not fitting the game's look.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

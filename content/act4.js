@@ -87,10 +87,10 @@
   const DE_VEGA_CELL = { contentTop: 5, contentHeight: 298, footX: 83, headroom: 5 };
   const DE_VEGA = sheet("de-vega", 8, 4, DE_VEGA_CELL);
   const DE_VEGA_WALK = sheet("de-vega-walk", 8, 12, DE_VEGA_CELL);
-  // The judge at his bench, one picture (Hukom.png, 21 Oct 2026), drawn
-  // as a still: the bench is his, so the court's kit brings none.
-  const HUKOM = { src: "assets/sprites/characters/hukom.png", frames: 1, fps: 1,
-    contentTop: 4, contentHeight: 540, footX: 314 };
+  // The judge. The artist's judge at his bench (Hukom.png, 21 Oct 2026)
+  // was too big and was taken out (26 Oct 2026, the proponent): owed
+  // again (ART.md), the placeholder meanwhile.
+  const HUKOM = owed("characters", "hukom");
   const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
   const AMERIKANO = window.SOLDIER_SHEETS.amerikano;       // content/enemies.js, 24 Oct 2026
   // Block 120. The crowd in Manila, seen and not only heard: two
@@ -1650,7 +1650,7 @@
         ],
         npcs: [
           {
-            id: "hukom", x: 900, label: "Hukom", animation: HUKOM, displayHeight: 150,
+            id: "hukom", x: 900, label: "Hukom", animation: HUKOM,
             interactLabel: "Sumagot",
             interactIcon: "i-talk",
             dialogueSets: [],

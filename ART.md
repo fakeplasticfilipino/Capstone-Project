@@ -171,7 +171,15 @@ Also wanted (not in the game yet):
 
 ### Act IV
 
-Nothing needed.
+    assets/sprites/characters/hukom.png
+        (Attach isko-still.png from the folder _dev/stills/characters)
+        Refer to the attached image and use the same art style and
+        size. Draw an American judge of 1906 in a black robe, the whole
+        body, seated side on and facing right on a plain chair, with no
+        desk or bench in front of him. Transparent background.
+        (OWED AGAIN, 26 Oct 2026: the artist's judge of 21 Oct, seated
+        at his own bench, was too big for the court; taken out at the
+        proponent's word, kept in docs-private/art-delivered/)
 
 ## Props
 
@@ -362,7 +370,8 @@ Done and in the game. Nothing here needs drawing.
                   (animated, rigs gomez.js, van-schaick.js) and the
                   judge at his bench (a still), the artist's, from the
                   Drive, 25 Oct 2026, Block 151; the sala and the court
-                  built from their kits (sala-kit, hukuman-kit)
+                  built from their kits (sala-kit, hukuman-kit). The
+                  judge was taken out on 26 Oct, owed again
 
     Props
         Act I     Tondo's houses, street props and doors

@@ -9,7 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 25 Oct 2026, Block 151: from the Drive, Gómez, Van
+Last updated: 26 Oct 2026: the judge taken out (too big), owed again
+in ART.md; the Drive's post and bilibid kits rejected (not the game's
+look), still owed. Art left, all Act IV: the judge, post, bilibid,
+sierra-night-nature, cavite-dusk-nature, bilibid-sky-nature,
+stone-ground; optional, three skins and Bonifacio with his sword.
+Block 151: from the Drive, Gómez, Van
 Schaick and the judge; the campfire, the itak (in the slash) and the
 pistol (in the shot); the sala and the court built from their kits. The
 game asks for no picture it lacks; ART.md owes only Act IV's layers
@@ -440,8 +445,8 @@ bamboo pole, Block 148). Failure: a dashed box, a door lit beside its
 house, a figure floating or sunk, a soldier
 whose rifle butt trails a dark copy.
 
-Block 151 (?dev=1): Act IV's court (the judge at his bench, the rail,
-the clock, the flag) and the sala (the banquet, the flag behind Van
+Block 151 (?dev=1): Act IV's court (the rail, the clock, the flag;
+the judge a placeholder until drawn again) and the sala (the banquet, the flag behind Van
 Schaick); Gómez walking into the camp; Balara's fire in Act II; the
 pistol in Macario's hand when he shoots, the shot leaving its barrel;
 the itak's blade when he slashes. Failure: a dashed box anywhere, the
