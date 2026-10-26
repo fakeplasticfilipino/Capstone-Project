@@ -226,9 +226,8 @@ Nothing needed.
         of rifles. (7) A stack of barrels and crates. No people, no
         flags, no trees behind, no ground or shadows between pieces.
         Transparent background. Landscape, largest size.
-        (DELIVERED 25 Oct 2026, in the Drive's Props folder, not yet
-        built in: it waits until Act IV's post (himpilan) is rebuilt in
-        layers, since it would replace the painting there now)
+        (OWED AGAIN, 26 Oct 2026: the Drive's version of 25 Oct did not
+        fit the game's look, rejected by the proponent; not used)
 
     bilibid.png
         (Attach the file _dev/parallax-art/tondo-houses.png)
@@ -244,9 +243,8 @@ Nothing needed.
         steps up to it. (5) A plain wooden bench. No people, no trees,
         no ground or shadows between pieces. Transparent background.
         Landscape, largest size.
-        (DELIVERED 25 Oct 2026, in the Drive's Props folder, not yet
-        built in: it waits until Act IV's yard (patyo) is rebuilt in
-        layers, since it would replace the painting there now)
+        (OWED AGAIN, 26 Oct 2026: the Drive's version of 25 Oct did not
+        fit the game's look, rejected by the proponent; not used)
 
 ## Which scene uses which layers (for the team)
 
