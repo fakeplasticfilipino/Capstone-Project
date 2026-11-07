@@ -6830,6 +6830,45 @@ the player lab read tondo-sky and sierra-sky instead, and the originals
 are in docs-private/art-delivered/2026-11-07-retired/. ground-lupa.jpg
 stays: it is the engine's default road, still drawn.
 
+## Block 153: the database grades every test, 7 Nov 2026
+
+Before the repository was reviewed, a look for what a reviewer would
+find turned up one real hole: since schema 006 the game graded a test
+itself and inserted the score, and the only rule on that insert was
+student_id = auth.uid(). Anyone with the console open could write a
+pre-test of 0 and a post-test of 10, which is the study's gain made up.
+The proponent chose to close it and to leave the rest as it is:
+students still read every question and answer and see their scores,
+since this is a teaching tool (so the key stays readable, unlike
+before Block 68).
+
+Schema v15 adds submit_test, security definer, and revokes INSERT on
+assessment_scores from anon and authenticated, so the function is the
+only door a score comes in by. It takes the choices by item_order, not
+by item id: the built-in bank and the database's questions share their
+order, so a test the game drew from the bank after a failed read is
+still graded against the same questions (the bank is what the database
+was seeded with). It builds schema 012's answers record itself, numbers
+the attempt, refuses a second pre-test and a try after a passed
+post-test, and returns the row already written when the same attempt
+is sent twice, which is what makes a kept score safe to resend.
+
+The database must therefore hold every act's questions: Acts II to
+IV's, which lived only in content/questions.js, were copied in word for
+word (db/seeds/macario_items_acts2to4.sql), where the teacher had none.
+The pass mark, 0.75, is held in the function as well as in
+questions.js; the two are changed together.
+
+The game still counts the score itself, but only to show a student
+with no signal what he got; the database's count is the one recorded
+and shown when it answers. A kept score from before this block carries
+its answers as the record, and its choices are read back out of it
+(_choicesOf) so it is sent rather than lost. Considered and not done:
+hiding the key behind a function (the proponent wants students to see
+it), and checking each choice's question text on the server (the order
+is shared, and a teacher editing a test mid-sitting is a case too rare
+to spend on).
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -5618,9 +5618,9 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("with nothing in the database, the pre-test is the game's own ten questions",
        pre.seen.questions.length === 10, pre.seen);
-    ok("the game grades it itself: every right answer counted, the score recorded",
+    ok("the database grades it (submit_test, Block 153): every right answer counted, the score recorded",
        pre.result.score === 10 && pre.result.max === 10 && pre.rows.length === 1 &&
-       pre.rows[0].score === 10 && pre.rows[0].attempt === undefined, pre);
+       pre.rows[0].score === 10 && pre.rows[0].attempt === 1, pre);
     // Block 127: Acts II to IV carry their own bank too, so a student
     // there meets a trivia card and a real test, not "Walang pagsusulit".
     const later = await page.evaluate(async () => {
@@ -7670,28 +7670,28 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the score is written with each answer: its place, the choice, right or not, the question (item 2)",
        sent.n === 10 && sent.shaped && sent.right === sent.score && sent.orders === "1,2,3,4,5,6,7,8,9,10", sent);
 
-    const fallback = await page.evaluate(async () => {
-      // A database without schema 012 refuses the column: the score is
-      // written again without it.
-      const realFrom = sb.from.bind(sb);
-      let calls = 0;
-      sb.from = (name) => {
-        const q = realFrom(name);
-        if (name !== "assessment_scores") return q;
-        const realInsert = q.insert.bind(q);
-        q.insert = (row) => { calls++; return row.answers !== undefined
-          ? Promise.resolve({ error: { code: "PGRST204", message: "Could not find the 'answers' column" } })
-          : realInsert(row); };
-        return q;
-      };
-      const res = await Assessment._insertScore({ student_id: "u1", act_number: 2, test_type: "pre",
-        score: 1, max_score: 2, answers: {} });
-      sb.from = realFrom;
-      const row = __DB.assessment_scores.find((r) => r.act_number === 2);
-      return { calls, error: res.error || null, saved: Boolean(row), hasAnswers: row ? "answers" in row : null };
+    const server = await page.evaluate(async () => {
+      // Block 153. The score goes through submit_test, never a direct
+      // insert (the live database refuses one since schema v15); the
+      // same try sent twice writes one row; a kept score from before
+      // Block 153 (its answers as the record) is still sent.
+      const sent = __CALLS.filter((c) => c.rpc === "submit_test");
+      const inserted = __CALLS.some((c) => c.table === "assessment_scores" && c.op === "insert");
+      const first = await Assessment._sendTry({ act_number: 2, test_type: "pre", attempt: 1,
+        choices: { 1: 0, 2: 1 } });
+      const twice = await Assessment._sendTry({ act_number: 2, test_type: "pre", attempt: 1,
+        choices: { 1: 0, 2: 1 } });
+      const legacy = Assessment._choicesOf({ answers: { x: { o: 3, c: 2, k: 1, q: "?" } } });
+      return { sent: sent.length, args: sent[0] && sent[0].args, inserted,
+        firstOk: !first.error, already: twice.data && twice.data.already === true,
+        rows: __DB.assessment_scores.filter((r) => r.act_number === 2).length, legacy };
     });
-    ok("a database without the answers column still gets the score",
-       fallback.calls === 2 && !fallback.error && fallback.saved && fallback.hasAnswers === false, fallback);
+    ok("the score is sent to the database to grade, not inserted (Block 153)",
+       server.sent >= 1 && !server.inserted && server.args && server.args.p_act === 1 &&
+       server.args.p_test === "pre" && server.args.p_attempt === 1 &&
+       Object.keys(server.args.p_answers).length === 10, server);
+    ok("a try sent twice is written once, and an old kept score is still readable",
+       server.firstOk && server.already && server.rows === 1 && server.legacy && server.legacy["3"] === 2, server);
 
     const guarded = await page.evaluate(() => {
       const items = [{ id: "a", choices: [1, 2] }, { id: "b", choices: [1, 2] }, { id: "c", choices: [1, 2] }];

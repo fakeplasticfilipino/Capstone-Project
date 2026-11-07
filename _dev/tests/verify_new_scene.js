@@ -714,7 +714,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("a new student meets the built-in trivia card and the ten-question pre-test (Block 68)",
        sat.trivia && /Macario Sakay/.test(sat.triviaText) && sat.questions === 10, sat);
     const pre = await page.evaluate(() => __DB.assessment_scores.map((r) => ({ t: r.test_type, s: r.score, m: r.max_score })));
-    ok("the game grades the pre-test itself and records the score",
+    ok("the pre-test is graded (submit_test, Block 153) and its score recorded",
        pre.length === 1 && pre[0].t === "pre" && pre[0].m === 10, pre);
     ok("act status is playing", (await page.evaluate(() => Acts.status)) === "playing");
     // Block 78. Every picture the manifest lists opens in the browser: one

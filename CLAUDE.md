@@ -420,9 +420,12 @@ writes to act_progress.
 
 Assessment, in assessment.js. Owns the trivia card, both tests, and the
 optional feedback form. Since Block 68 it reads the questions whole
-(assessment_items, else content/questions.js), grades them itself and
-writes assessment_scores; get_assessment_items and submit_assessment
-are no longer called. A score that cannot be written (no internet) may
+(assessment_items, else content/questions.js); since Block 153 (schema
+v15) it sends the choices, by item_order, to submit_test, which grades
+them against assessment_items and writes assessment_scores. A browser
+cannot insert a score, so the database must hold every act's
+questions. get_assessment_items and submit_assessment are not called.
+A score that cannot be written (no internet) may
 be kept on the phone (localStorage, macario_pending_scores), counts as
 sat, and is sent on the next login (flushPending, from Acts.syncStart;
 Scan S3). A test's answers so far are kept on the phone too
@@ -1994,7 +1997,9 @@ unsafe entirely on this answer, so it is written down here:
     game_progress        select, insert, update. No delete
     act_progress         select, insert, update. No delete
     game_sessions        select, insert, update. No delete
-    assessment_scores    select and insert only. No update, no delete
+    assessment_scores    select only since schema v15 (Block 153);
+                         a score is written by submit_test, which
+                         grades it. No insert, update or delete
     feedback             select and insert only. No update, no delete
     talaan_entries       select only. Teachers write it
 
@@ -2021,9 +2026,13 @@ The table policies above are unchanged, so nothing else in the client
 gained any new power.
 
 Since schema 006 (Block 68, the instructor's direction) a student may
-read assessment_items whole, the game grades a test itself, and
-teachers may insert, update and delete items and trivia.
-assessment_scores is still select and insert only for a student: a
+read assessment_items whole and teachers may insert, update and delete
+items and trivia. Since schema v15 (Block 153) the database grades:
+submit_test is the only way a browser writes a score, and the pass
+mark it holds (0.75) is questions.js's; change both together. A
+student still reads the questions and answers whole, by the
+proponent's choice (a teaching tool).
+assessment_scores is still select only for a student: a
 score cannot be changed or deleted from a browser, but a failed
 post-test may be followed by another attempt, each its own row
 (attempt), and the pre-test is still one row, by a partial unique

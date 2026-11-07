@@ -9,7 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 7 Nov 2026, Block 152: Act IV's outdoor places rebuilt in
+Last updated: 7 Nov 2026, Block 153: the database grades every test
+(schema v15, submit_test); a score can no longer be written from the
+console. Students still see every question, answer and score. Acts II
+to IV's questions copied into the database. Before it, Block 152: Act IV's outdoor places rebuilt in
 layers (the post, Di-Masalang, Malabon, Bilibid's yard, Morong, Tondo)
 from the proponent's four layers (the night, the dusk, Bilibid's sky,
 the stone ground) and the post, town and Bilibid kits; their paintings
@@ -735,6 +738,27 @@ Trust this over any memory of a chat.
                                         150). Probed: no token and a bad
                                         token refused (401). Not yet
                                         called with a teacher's login
+    db/migrations/015_macario_schema_v15.sql   RUN, 7 Nov 2026, from the
+                                        session, at the proponent's word.
+                                        submit_test grades every test;
+                                        browsers lose INSERT on
+                                        assessment_scores (Block 153).
+                                        Probed as the test student,
+                                        rolled back: a direct insert
+                                        refused (42501); a test graded
+                                        and written with its answers;
+                                        the same try sent again returned
+                                        the first row; a second pre-test
+                                        and a try after a pass refused; a
+                                        failed post-test then a second
+                                        attempt taken. A visitor may not
+                                        call it (42501)
+    db/seeds/macario_items_acts2to4.sql        RUN, 7 Nov 2026, the same.
+                                        Acts II to IV's built-in
+                                        questions copied into
+                                        assessment_items word for word
+                                        (where none were): every act now
+                                        10 pre, 10 post
     db/migrations/012_macario_schema_v12.sql   RUN, 9 Oct 2026, from the
                                         session, at the proponent's word.
                                         assessment_scores.answers, each

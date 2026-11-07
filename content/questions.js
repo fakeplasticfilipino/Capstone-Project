@@ -3,8 +3,11 @@
 //
 // The trivia card and the pre-test and post-test questions, with their
 // answers, inside the game itself. At the instructor's direction the
-// answer key is no longer kept secret in the database: the game grades
-// a test itself (assessment.js) and writes the score.
+// answer key is no longer kept secret in the database. Since Block 153
+// the database grades every test (submit_test, schema v15), so every
+// act's questions are in assessment_items too; this file was copied
+// there (db/seeds/macario_items_acts2to4.sql), and its passing must
+// match the function's.
 //
 // This file is the built-in bank. The teacher may edit the questions
 // and answers from the dashboard (teacher.html, Mga Tanong), which

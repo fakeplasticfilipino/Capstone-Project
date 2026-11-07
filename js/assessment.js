@@ -18,19 +18,26 @@
 // The questions and their answers are read whole, from the
 // assessment_items table when the teacher has put questions there
 // (teacher.html, Mga Tanong) and from content/questions.js when it has
-// none or cannot be reached, and this file grades the test itself and
-// writes the score. Before Block 68 the key never left the database
-// (get_assessment_items and submit_assessment, schema v2); both
-// functions are still there and unused.
+// none or cannot be reached. Before Block 68 the key never left the
+// database (get_assessment_items and submit_assessment, schema v2);
+// both functions are still there and unused.
+//
+// THE DATABASE GRADES (Block 153, schema v15)
+// The student still sees every question, answer and score, but the
+// score that is recorded is counted by the database: the answers go to
+// submit_test, which grades them against assessment_items and writes
+// the row. A browser cannot insert a score any more, so none can be
+// made up from the console. The database therefore holds every act's
+// questions (db/seeds/macario_items_acts2to4.sql).
 //
 // ATTEMPTS
 // The pre-test is sat once: a student who reloads after it moves on.
 // The post-test has a pass mark (QUESTIONS[n].passing, 75% unless the
-// content says otherwise). A student below it is offered a replay of
-// the act and another try (acts.js, finishAct); every try is its own
-// row in assessment_scores, numbered by attempt, which needs schema
-// 006. Without 006 the first try of each test is still recorded as
-// before and a second is reported, not lost silently.
+// content says otherwise; submit_test holds the same 0.75). A student
+// below it is offered a replay of the act and another try (acts.js,
+// finishAct); every try is its own row in assessment_scores, numbered
+// by attempt. submit_test refuses a second pre-test and a try after a
+// passed post-test, whatever the page asks.
 // =============================================================
 
 const Assessment = {
@@ -463,10 +470,11 @@ const Assessment = {
     });
   },
 
-  // Grades the answers against the key the items carry, writes the
-  // try, and shows the score. attempt 1 is written without the column,
-  // so a database that has not run schema 006 records a first try
-  // exactly as before.
+  // Sends the answers to the database, which grades them and writes
+  // the try (Block 153, schema v15: submit_test; a browser may no longer
+  // insert a score). The score is counted here too, against the key the
+  // items carry, only so a student with no signal still sees it; the
+  // database's count is the one recorded, and shown when it answers.
   async _submit(actNumber, testType, items, answers, label, attempt, draftKey) {
     const max = items.length;
     const score = items.filter((it) => answers[it.id] === it.correct).length;
@@ -476,27 +484,31 @@ const Assessment = {
       test_type: testType,
       score,
       max_score: max,
-      answers: this._answerRecord(items, answers),
+      attempt,
+      choices: this._choicesByOrder(items, answers),
     };
-    if (attempt > 1) row.attempt = attempt;
-    const result = this._result(actNumber, testType, Object.assign({ attempt }, row));
+    let result = this._result(actNumber, testType, row);
 
     for (;;) {
       let message = "";
       let saved = false;
       try {
-        const { error } = await this._insertScore(row);
+        const { data, error } = await this._sendTry(row);
         if (error) throw error;
         saved = true;
+        if (data && data.max_score !== undefined) {
+          result = this._result(actNumber, testType,
+            { score: data.score, max_score: data.max_score, attempt: data.attempt || attempt });
+        }
       } catch (err) {
-        message = ((err && (err.message || err.code)) || "") + "";
-        console.error("assessment_scores insert failed:", err);
+        message = ((err && [err.message, err.code].filter(Boolean).join(" ")) || "") + "";
+        console.error("submit_test failed:", err);
       }
 
-      // A second try refused by a database still holding the old
-      // one-attempt rule (schema 006 not run), or a try already written
-      // from another tab. The score is shown; it is not stored again.
-      const refused = !saved && /duplicate|unique|23505|attempt/i.test(message);
+      // A try the database will not take: a pre-test already sat, a
+      // post-test already passed, or a try already written from another
+      // tab. The score is shown; it is not stored again.
+      const refused = !saved && /duplicate|unique|23505|ALREADY_|BAD_ATTEMPT/i.test(message);
 
       if (saved || refused) {
         this._clearDraft(draftKey);
@@ -516,6 +528,21 @@ const Assessment = {
           body: "Iskor mo: " + score + " ng " + max + ".",
           note,
           noteIsError: testType === "post" && !result.passed,
+          button: "Magpatuloy",
+        });
+        return result;
+      }
+      // No questions in the database for this test (Block 153: the
+      // database grades, so it must hold them). Nothing the student can
+      // fix by trying again; the score is shown and not kept.
+      if (/NO_ITEMS/.test(message)) {
+        this._clearDraft(draftKey);
+        await this._message({
+          eyebrow: label,
+          title: "Tapos na",
+          body: "Iskor mo: " + score + " ng " + max + ".",
+          note: "Hindi naitala ang iskor: walang tanong sa database para sa pagsusulit na ito.",
+          noteIsError: true,
           button: "Magpatuloy",
         });
         return result;
@@ -555,32 +582,40 @@ const Assessment = {
     }
   },
 
-  // Block 128 (schema 012). Each answer beside the score, for the
-  // dashboard's Questions report: the item's place in the test (o), the
-  // choice (c), whether it was right (k) and the question as it was asked
-  // (q), since a teacher may reword it later.
-  _answerRecord(items, answers) {
+  // Block 153. The choices sent to submit_test, by each question's
+  // place in the test (item_order), which the database's questions and
+  // the built-in bank share: the bank is what the database was seeded
+  // with, so a test drawn from it after a failed read is still graded
+  // against the same questions. The database builds the Questions
+  // report's record (schema 012) from these itself.
+  _choicesByOrder(items, answers) {
     const out = {};
     items.forEach((it, i) => {
       if (answers[it.id] === undefined) return;
-      out[it.id] = { o: it.order || i + 1, c: answers[it.id],
-        k: answers[it.id] === it.correct ? 1 : 0, q: String(it.question || "").slice(0, 600) };
+      out[String(it.order || i + 1)] = answers[it.id];
     });
     return out;
   },
 
-  // Writes a score. A database without schema 012 refuses the answers
-  // column; the score is what matters, so it is written again without
-  // it rather than held back.
-  async _insertScore(row) {
-    let res = await sb.from("assessment_scores").insert(row);
-    if (res.error && row.answers !== undefined &&
-        /answers|PGRST204|42703/i.test((res.error.message || "") + " " + (res.error.code || ""))) {
-      const plain = Object.assign({}, row);
-      delete plain.answers;
-      res = await sb.from("assessment_scores").insert(plain);
-    }
-    return res;
+  // A kept score from before Block 153 carries its answers as the
+  // record ({ id: { o, c, k, q } }) rather than as choices; its choices
+  // are read back out of it, so it can still be sent.
+  _choicesOf(row) {
+    if (row.choices && typeof row.choices === "object") return row.choices;
+    const out = {};
+    Object.values(row.answers && typeof row.answers === "object" ? row.answers : {}).forEach((a) => {
+      if (a && Number.isInteger(a.o) && Number.isInteger(a.c)) out[String(a.o)] = a.c;
+    });
+    return Object.keys(out).length ? out : null;
+  },
+
+  // One try to the database (schema v15). p_attempt makes a try sent
+  // twice harmless: the second returns the row the first wrote.
+  _sendTry(row) {
+    const choices = this._choicesOf(row);
+    if (!choices) return Promise.resolve({ data: null, error: { message: "NO_ANSWERS" } });
+    return sb.rpc("submit_test", { p_act: row.act_number, p_test: row.test_type,
+      p_answers: choices, p_attempt: Number(row.attempt) || 1 });
   },
 
   // -----------------------------------------------------------
@@ -705,8 +740,11 @@ const Assessment = {
     const left = list.filter((r) => r.student_id !== currentUserId);
     for (const row of mine) {
       try {
-        const { error } = await this._insertScore(row);
-        if (error && !/duplicate|unique|23505/i.test((error.message || error.code || "") + "")) throw error;
+        const { error } = await this._sendTry(row);
+        // Already there, or a try the database will never take (no
+        // answers kept, no questions, a try already passed): dropped.
+        const word = error ? [error.message, error.code].filter(Boolean).join(" ") : "";
+        if (error && !/duplicate|unique|23505|ALREADY_|BAD_ATTEMPT|NO_ITEMS|NO_ANSWERS/i.test(word)) throw error;
       } catch (err) {
         console.error("kept score not sent yet:", err);
         left.push(row);
