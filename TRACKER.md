@@ -13,8 +13,9 @@ Last updated: 7 Nov 2026, Block 152: Act IV's outdoor places rebuilt in
 layers (the post, Di-Masalang, Malabon, Bilibid's yard, Morong, Tondo)
 from the proponent's four layers (the night, the dusk, Bilibid's sky,
 the stone ground) and the post, town and Bilibid kits; their paintings
-taken out of the game completely. Every place of every act is now in
-layers or built from a kit. Art left: the judge (owed); optional, three
+taken out of the game completely, and Act I's four street paintings
+with them (the engine's default backdrop is now tondo-sky). Every place
+of every act is now in layers or built from a kit. Art left: the judge (owed); optional, three
 skins and Bonifacio with his sword. Not yet seen on the phone. Before
 it, the artist's props of 28 Oct from the Drive:
 the campfire, the itak and the pistol replace those of 25 Oct (Balara,

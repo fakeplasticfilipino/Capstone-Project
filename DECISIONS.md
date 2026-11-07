@@ -6821,6 +6821,14 @@ ones completely): himpilan, dimasalang, malabon, patyo and Morong's,
 the originals in docs-private. The four Tondo street paintings stay
 only as the engine's default backdrop and the harness's sample
 pictures; no scene draws them.
+The same day, at the proponent's word ("Remove them"), Act I's four
+street paintings (street-01 to street-04) went too: no scene drew them,
+but the engine fell back to street-01 as its default backdrop and the
+harness used them as sample pictures. DEFAULT_SKYLINE_SRC is now
+layers/tondo-sky.jpg (SKYLINE_ASPECT its 2042 by 770), the tests and
+the player lab read tondo-sky and sierra-sky instead, and the originals
+are in docs-private/art-delivered/2026-11-07-retired/. ground-lupa.jpg
+stays: it is the engine's default road, still drawn.
 
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 

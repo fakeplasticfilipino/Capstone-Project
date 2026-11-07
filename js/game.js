@@ -338,7 +338,7 @@ function cssAssetUrl(src) {
 
 // The backdrop of a scene that names none of its own (Block 54), and the
 // road under every scene (Block 33).
-const DEFAULT_SKYLINE_SRC = "assets/backgrounds/act1/street-01.jpg";
+const DEFAULT_SKYLINE_SRC = "assets/backgrounds/layers/tondo-sky.jpg";
 const GROUND_SRC = "assets/backgrounds/act1/ground-lupa.jpg";
 
 // Block 114. A floor that fits the place: Tondo's dirt under a room was
@@ -911,13 +911,14 @@ let HAZARDS = []; // ground regions that cost one health on contact
 let PICKUPS = []; // collectibles; currently only hearts
 
 // Native pixel dimensions of the fallback backdrop,
-// assets/backgrounds/act1/street-01.jpg since Block 54 (tondo.jpg was
+// assets/backgrounds/layers/tondo-sky.jpg since 7 Nov 2026 (the street
+// paintings, Block 54, were retired with every scene in layers; tondo.jpg was
 // removed as old). A backdrop tile is
 // drawn at the full height of the skyline, so at any rendered height it
 // is exactly this ratio times as wide. buildSkylineTiles() uses it to lay
 // the tiles out without hardcoding a width that would only be right at
 // one screen size or --zoom.
-const SKYLINE_ASPECT = 1952 / 736;
+const SKYLINE_ASPECT = 2042 / 770;
 
 // Ids collected during this visit to the scene. Created by loadScene and
 // cleared only by loadScene, never by respawnInScene, so a heart already

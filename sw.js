@@ -80,7 +80,7 @@ function isVersioned(url) {
 }
 
 // The same file under an older ?v= is dead weight once the new one is
-// stored. Compared by path, so street-01.jpg?v=24 replaces ?v=23.
+// stored. Compared by path, so tondo-sky.jpg?v=24 replaces ?v=23.
 async function dropOlderVersions(cache, url) {
   const keys = await cache.keys();
   await Promise.all(keys.map((req) => {

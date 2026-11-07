@@ -3669,7 +3669,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     // Block 105: the shared picture is set, versioned, rather than left
     // to the stylesheet's unversioned url().
     ok("leaving restores the shared backdrop, tiled again",
-       /street-01\.jpg\?v=\d+/.test(back.src) && back.tiles > 1, back);
+       /tondo-sky.jpg\?v=\d+/.test(back.src) && back.tiles > 1, back);
     ok("and the ground", back.ground !== "none", back);
     await ctx.close();
   }
@@ -4689,7 +4689,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     const { ctx, page } = await enterTestRoom();
     const built = await page.evaluate(() => {
       const scene = SCENES.find((sc) => sc.id === "misyon");
-      scene.panels = ["assets/backgrounds/act1/street-01.jpg", "assets/backgrounds/act1/street-02.jpg"];
+      scene.panels = ["assets/backgrounds/layers/tondo-sky.jpg", "assets/backgrounds/layers/sierra-sky.jpg"];
       loadScene("misyon");
       const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
       const trees = [...document.querySelectorAll(".shadow-tree")];
@@ -4709,8 +4709,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     ok("panels are laid a fixed width apart and repeat in order past the end of the list",
        built.tiles.length === 3 && built.tiles[1].left === "1450px" &&
-       /street-01\.jpg/.test(built.tiles[0].src) && /street-02\.jpg/.test(built.tiles[1].src) &&
-       /street-01\.jpg/.test(built.tiles[2].src), built);
+       /tondo-sky.jpg/.test(built.tiles[0].src) && /sierra-sky.jpg/.test(built.tiles[1].src) &&
+       /tondo-sky.jpg/.test(built.tiles[2].src), built);
     ok("a tree and its shade stand at every join, and none at the end of the world",
        JSON.stringify(built.trees) === "[1450,2900]" && built.shades === 2 && built.world === 2940, built);
     ok("no Tondo.png tile is laid under a panelled scene", built.tondoTiles === 0, built);
@@ -4793,7 +4793,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     });
     const flipped = await page.evaluate(() => {
       const scene = SCENES.find((sc) => sc.id === "misyon");
-      scene.panels = ["assets/backgrounds/act1/street-01.jpg"];
+      scene.panels = ["assets/backgrounds/layers/tondo-sky.jpg"];
       scene.mirrorPanels = true;
       loadScene("misyon");
       const tiles = [...document.querySelectorAll("#skyline .skyline-panel")];
@@ -6258,8 +6258,8 @@ const visible = (page, sel) => page.evaluate((s) => {
        r2.img === null && r2.ms < 1000, r2);
 
     const r3 = await retry.page.evaluate(async () => {
-      const a = loadImage("assets/backgrounds/act1/street-01.jpg");
-      const b = loadImage("assets/backgrounds/act1/street-01.jpg");
+      const a = loadImage("assets/backgrounds/layers/tondo-sky.jpg");
+      const b = loadImage("assets/backgrounds/layers/tondo-sky.jpg");
       return a === b;
     });
     ok("the same picture asked for twice is one download", r3);
@@ -6400,7 +6400,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       const keys = (await (await caches.open("macario-v1")).keys()).map((r) => r.url.replace(location.origin, ""));
       return {
         controlled: Boolean(navigator.serviceWorker.controller),
-        street: keys.some((k) => /street-01\.jpg\?v=\d+$/.test(k)),
+        street: keys.some((k) => /tondo-sky.jpg\?v=\d+$/.test(k)),
         game: keys.some((k) => /js\/game\.js\?v=\d+$/.test(k)),
         page: keys.some((k) => /index\.html$/.test(k)),
         stub: keys.filter((k) => /cdn\.jsdelivr/.test(k)).length,
@@ -6410,12 +6410,12 @@ const visible = (page, sel) => page.evaluate((s) => {
        c1.controlled && c1.street && c1.game && c1.page, c1);
     const c2 = await sw.page.evaluate(async () => {
       const cache = await caches.open("macario-v1");
-      await cache.put("/assets/backgrounds/act1/street-01.jpg?v=1",
+      await cache.put("/assets/backgrounds/layers/tondo-sky.jpg?v=1",
         new Response("old", { headers: { "Content-Type": "image/jpeg" } }));
-      await cache.delete(new Request(location.origin + "/" + assetUrl("assets/backgrounds/act1/street-01.jpg")));
-      await fetch(assetUrl("assets/backgrounds/act1/street-01.jpg"));
+      await cache.delete(new Request(location.origin + "/" + assetUrl("assets/backgrounds/layers/tondo-sky.jpg")));
+      await fetch(assetUrl("assets/backgrounds/layers/tondo-sky.jpg"));
       await new Promise((r) => setTimeout(r, 300));
-      const keys = (await cache.keys()).map((r) => r.url).filter((u) => /street-01\.jpg/.test(u));
+      const keys = (await cache.keys()).map((r) => r.url).filter((u) => /tondo-sky.jpg/.test(u));
       return keys.map((u) => u.replace(location.origin, ""));
     });
     ok("storing a new version of a file drops the older one",
@@ -6464,8 +6464,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     // falls back to ASSET_VERSION.
     const prints = await sw.page.evaluate(() => {
       const v = (u) => assetUrl(u).split("v=")[1];
-      return { a: v("assets/backgrounds/act1/street-01.jpg"), b: v("assets/backgrounds/act1/street-02.jpg"),
-               listed: ASSET_VERSIONS["assets/backgrounds/act1/street-01.jpg"],
+      return { a: v("assets/backgrounds/layers/tondo-sky.jpg"), b: v("assets/backgrounds/layers/sierra-sky.jpg"),
+               listed: ASSET_VERSIONS["assets/backgrounds/layers/tondo-sky.jpg"],
                other: v("assets/nobody-drew-this.png"), fallback: String(ASSET_VERSION) };
     });
     ok("every file is asked for by its own fingerprint from the manifest",
@@ -6490,7 +6490,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     const off = await sw.page.evaluate(async () => ({
       game: typeof window.Game === "object",
       title: !document.getElementById("shell-title").classList.contains("hidden"),
-      street: await loadImage("assets/backgrounds/act1/street-02.jpg").then((i) => Boolean(i)),
+      street: await loadImage("assets/backgrounds/layers/sierra-sky.jpg").then((i) => Boolean(i)),
     }));
     ok("with the connection gone, the page, the engine and its pictures still open from the phone",
        off.game && off.title && off.street, off);
@@ -7094,7 +7094,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       const ground = () => document.getElementById("ground-tiles").style.getPropertyValue("--ground-src");
       const scene = SCENES.find((s) => s.id === currentSceneId);
       const before = ground();
-      scene.ground = { src: "assets/backgrounds/act1/street-02.jpg" };
+      scene.ground = { src: "assets/backgrounds/layers/sierra-sky.jpg" };
       loadScene(scene.id);
       const mine = ground();
       scene.ground = { src: "assets/backgrounds/act9/wala.jpg" }; // owed: not asked for
@@ -7120,7 +7120,7 @@ const visible = (page, sel) => page.evaluate((s) => {
         none: portraitSheetFor("Wala").sheet === null };
     });
     ok("a scene may lay its own road, an owed one falls back, and leaving restores the dirt (Polish #6)",
-       /ground-lupa/.test(own.before) && /street-02/.test(own.mine) && /ground-lupa/.test(own.owed) &&
+       /ground-lupa/.test(own.before) && /sierra-sky/.test(own.mine) && /ground-lupa/.test(own.owed) &&
        /ground-lupa/.test(own.back), own);
     ok("a scene may name a floor the engine draws, sharp and twice its size; an unknown one is the dirt (Block 114)",
        /^url\("data:image\/svg\+xml,/.test(own.floor.src) && own.floor.sharp && own.floor.size === "128px 64px" &&

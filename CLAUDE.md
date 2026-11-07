@@ -207,13 +207,13 @@ off the repository.
       sprites/scenery/         things on the street that are used, not
                                talked to (the straw, the press, the
                                scarecrow, the barber's chair, the tahian)
-      backgrounds/act1/        street-01..04.jpg, ground-lupa.jpg: no
-                               scene draws the street paintings since
-                               7 Nov 2026 (every place in layers); kept
-                               as the engine's default backdrop
-                               (DEFAULT_SKYLINE_SRC) and the harness's
-                               sample pictures. No act has paintings
-                               of its own any more (act2/ to act4/ gone)
+      backgrounds/act1/        ground-lupa.jpg, the engine's default
+                               road (GROUND_SRC). The street paintings
+                               were retired on 7 Nov 2026 (every place
+                               in layers); the default backdrop
+                               (DEFAULT_SKYLINE_SRC) is layers/
+                               tondo-sky.jpg. No act has paintings of
+                               its own any more (act2/ to act4/ gone)
       backgrounds/layers/,     the layered scenes' skies and grounds, and
         rooms/                 the rooms' walls and floors (Blocks 142,
                                143)
@@ -870,7 +870,7 @@ open the same way (the content check now fails on one, Block 124).
 
 greyFilter reuses whatever backdrop #skyline already has (the scene's
 panels since Block 43, else the scene's backdrop, else DEFAULT_SKYLINE_SRC,
-assets/backgrounds/act1/street-01.jpg since Block 54) rather than needing a second background
+assets/backgrounds/layers/tondo-sky.jpg since 7 Nov 2026) rather than needing a second background
 asset for a flashback or memory beat. It is read once, in loadScene,
 and toggled rather than only ever added, so a scene without it clears
 whatever the previous scene set. See Decisions on record for the

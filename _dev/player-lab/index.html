@@ -142,7 +142,7 @@ function frame(now) {
   const W = c.width, H = c.height, gy = H - 70;
   g.clearRect(0, 0, W, H);
   if (ui("street").checked) {
-    const st = img(asset("assets/backgrounds/act1/street-01.jpg"));
+    const st = img(asset("assets/backgrounds/layers/tondo-sky.jpg"));
     if (st.complete && st.naturalWidth) {
       const k = gy / st.naturalHeight, w = st.naturalWidth * k;
       for (let x = -(ground * 0.5 % w); x < W; x += w) g.drawImage(st, x, 0, w, gy);

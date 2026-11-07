@@ -213,7 +213,7 @@ Done and in the game. Nothing here needs drawing.
                   the first sky and
                   the forest, tondo-nature and tondo-trees, set aside
                   on 22 Oct 2026), the street
-                  (street-01 to street-04), the road
+                  (street-01 to street-04, retired on 7 Nov 2026), the road
                   (ground-lupa), the rooms' walls and floors
                   (room-walls, room-floors; the sheets in
                   docs-private/art-delivered/)

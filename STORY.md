@@ -205,9 +205,9 @@ thirty-three days later. Nobody ever learns what became of his mother.
 
 Act I has three.
 
-tondo, the street. One long road, 14500 wide, ten paintings of the town
-end to end (street-01 to 04 in order, twice, then 01 and 02), a palm or
-a tree in silhouette over each join between two paintings. Everyone in
+tondo, the street. One long road, 14500 wide, the town in layers (sky, rows of
+trees, its houses and props), a palm or a tree in silhouette every
+1450. Everyone in
 Act I lives on it, left to right:
 
     x 900      where Macario stands when the game opens
