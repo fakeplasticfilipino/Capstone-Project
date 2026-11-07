@@ -65,8 +65,8 @@
   const KAWAL = P.kawalKatagalugan; // content/people.js since Block 135
   // Block 151: the artist's Gómez and Van Schaick from the Drive (17 Oct
   // 2026), keyed from black and animated (rigs gomez.js, van-schaick.js):
-  // Gómez stands and walks in, Van Schaick stands. The judge is the
-  // artist's still, seated at his own bench (HUKOM, below).
+  // Gómez stands and walks in, Van Schaick stands. The judge is owed
+  // (HUKOM, below).
   const GOMEZ_CELL = { columns: 4, contentTop: 6, contentHeight: 298, footX: 92, headroom: 6 };
   const GOMEZ = { src: "assets/sprites/characters/gomez.png", frames: 8, fps: 4, ...GOMEZ_CELL };
   const GOMEZ_WALK = { src: "assets/sprites/characters/gomez-walk.png", frames: 8, fps: 12, ...GOMEZ_CELL };
@@ -89,7 +89,8 @@
   const DE_VEGA_WALK = sheet("de-vega-walk", 8, 12, DE_VEGA_CELL);
   // The judge. The artist's judge at his bench (Hukom.png, 21 Oct 2026)
   // was too big and was taken out (26 Oct 2026, the proponent): owed
-  // again (ART.md), the placeholder meanwhile.
+  // again (ART.md: seated on a plain chair, facing the front, used as a
+  // still like the Mananahi), the placeholder meanwhile.
   const HUKOM = owed("characters", "hukom");
   const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
   const AMERIKANO = window.SOLDIER_SHEETS.amerikano;       // content/enemies.js, 24 Oct 2026

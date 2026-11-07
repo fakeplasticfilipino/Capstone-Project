@@ -76,16 +76,6 @@ Also wanted (not in the game yet):
 
 Nothing needed.
 
-Also wanted (not in the game yet):
-
-    _dev/stills/characters/bonifacio-still.png (a second version)
-        (Attach bonifacio-still.png from the folder
-        _dev/stills/characters)
-        Refer to the attached image. Redraw this exact man, same face,
-        clothes, size and style, standing side on facing right, but
-        with his sword drawn and held low in his near hand, the blade
-        pointing forward and clear of his body. Transparent background.
-
     _dev/player-lab/macario-katipunero-still.png
         (Attach macario-still.png from the folder _dev/player-lab)
         Refer to the attached image. Redraw this exact man, same face,
@@ -123,11 +113,18 @@ Also wanted (not in the game yet):
 ### Act IV
 
     assets/sprites/characters/hukom.png
-        (Attach isko-still.png from the folder _dev/stills/characters)
-        Refer to the attached image and use the same art style and
-        size. Draw an American judge of 1906 in a black robe, the whole
-        body, seated side on and facing right on a plain chair, with no
-        desk or bench in front of him. Transparent background.
+        (Attach van-schaick-still.png from the folder
+        _dev/stills/characters)
+        Refer to the attached image and use the same art style, the
+        same scale and the same line. Draw an American judge of 1906,
+        the whole figure, facing the front, seated upright on a plain
+        wooden chair, in a black robe over a white collar, clean shaven
+        or with a short moustache, hands resting on his knees or one
+        holding a single sheet of paper. Only the man and the chair: no
+        desk, no bench, no gavel, no flag, no floor and no shadow.
+        Seated, he is as tall as the attached man from the top of his
+        head to his waist would be standing, so he stays at people's
+        size beside him. Transparent background.
         (OWED AGAIN, 26 Oct 2026: the artist's judge of 21 Oct, seated
         at his own bench, was too big for the court; taken out at the
         proponent's word, kept in docs-private/art-delivered/)

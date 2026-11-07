@@ -16,7 +16,7 @@ the stone ground) and the post, town and Bilibid kits; their paintings
 taken out of the game completely, and Act I's four street paintings
 with them (the engine's default backdrop is now tondo-sky). Every place
 of every act is now in layers or built from a kit. Art left: the judge (owed); optional, three
-skins and Bonifacio with his sword. Not yet seen on the phone. Before
+skins (Bonifacio's drawn sword dropped, 7 Nov 2026). Not yet seen on the phone. Before
 it, the artist's props of 28 Oct from the Drive:
 the campfire, the itak and the pistol replace those of 25 Oct (Balara,
 the slash, the shot regenerated); the post and Bilibid kits delivered,
@@ -25,7 +25,7 @@ waiting in _dev/parallax-art/ for Act IV's layers. Before it, 26 Oct
 in ART.md; the Drive's post and bilibid kits rejected (not the game's
 look), still owed. Art left, all Act IV: the judge, post, bilibid,
 sierra-night-nature, cavite-dusk-nature, bilibid-sky-nature,
-stone-ground; optional, three skins and Bonifacio with his sword.
+stone-ground; optional, three skins.
 Block 151: from the Drive, Gómez, Van
 Schaick and the judge; the campfire, the itak (in the slash) and the
 pistol (in the shot); the sala and the court built from their kits. The
@@ -583,8 +583,7 @@ side-profile figure (October 12), a second Jacinto, the barbershop's
 night and a second cell (October 16) were set aside: which character,
 and whether the night paintings are wanted, is the proponent's call.
 PNGs with transparency. Ask act by act, Act I first, as ART.md is
-ordered. Also asked for (ART.md, Also wanted): Bonifacio with his sword
-drawn, for his slash.
+ordered.
 A character delivered as one still rather than a sheet is animated by
 the tool (CLAUDE.md, Animating a character from one still): ask the
 artist for the whole figure side on, standing, arms free of the body.
