@@ -9,7 +9,11 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 26 Oct 2026: the judge taken out (too big), owed again
+Last updated: 7 Nov 2026: the artist's props of 28 Oct from the Drive:
+the campfire, the itak and the pistol replace those of 25 Oct (Balara,
+the slash, the shot regenerated); the post and Bilibid kits delivered,
+waiting in _dev/parallax-art/ for Act IV's layers. Before it, 26 Oct
+2026: the judge taken out (too big), owed again
 in ART.md; the Drive's post and bilibid kits rejected (not the game's
 look), still owed. Art left, all Act IV: the judge, post, bilibid,
 sierra-night-nature, cavite-dusk-nature, bilibid-sky-nature,

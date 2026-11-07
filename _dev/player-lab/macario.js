@@ -93,7 +93,7 @@ module.exports = {
       grip: [120, 432],       // where his fist closes on the handle
       angle: 12,              // at rest the blade points forward, a little down
       length: 230,            // butt to point, working px (about 56 cm on him)
-      handle: 0.2,            // the part of that behind his fist
+      handle: 0.3,            // the part of that behind his fist (the 28 Oct blade's longer grip)
     },
     // Block 151. The revolver of the shot, the artist's picture: grip
     // at the left, barrel pointing right. angle is at rest, with the arm

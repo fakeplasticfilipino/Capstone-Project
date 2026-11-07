@@ -234,8 +234,9 @@ Nothing needed.
         of rifles. (7) A stack of barrels and crates. No people, no
         flags, no trees behind, no ground or shadows between pieces.
         Transparent background. Landscape, largest size.
-        (OWED AGAIN, 26 Oct 2026: the Drive's version of 25 Oct did not
-        fit the game's look, rejected by the proponent; not used)
+        (DELIVERED 28 Oct 2026, the artist's, in _dev/parallax-art/; cut
+        when the post (himpilan) is rebuilt in layers. The 25 Oct version
+        was rejected, not the game's look)
 
     bilibid.png
         (Attach the file _dev/parallax-art/tondo-houses.png)
@@ -251,8 +252,9 @@ Nothing needed.
         steps up to it. (5) A plain wooden bench. No people, no trees,
         no ground or shadows between pieces. Transparent background.
         Landscape, largest size.
-        (OWED AGAIN, 26 Oct 2026: the Drive's version of 25 Oct did not
-        fit the game's look, rejected by the proponent; not used)
+        (DELIVERED 28 Oct 2026, the artist's, in _dev/parallax-art/; cut
+        when the yard (patyo) is rebuilt in layers. The 25 Oct version
+        was rejected, not the game's look)
 
 ## Which scene uses which layers (for the team)
 
@@ -394,7 +396,7 @@ Done and in the game. Nothing here needs drawing.
                   cell's and the sala's furniture (barberya-kit,
                   selda-kit, sala-kit), cut into assets/sprites/rooms/;
                   the campfire, the itak and the pistol (act2-props-2,
-                  Block 151: Balara's fire, the blade in the slash, the
+                  the artist's of 28 Oct since 7 Nov; Block 151: Balara's fire, the blade in the slash, the
                   revolver in the shot);
                   the Katagalugan's flag (watawat-katagalugan, its
                   second delivery, Block 148)
