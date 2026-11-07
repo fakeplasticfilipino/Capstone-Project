@@ -1385,7 +1385,7 @@ window.ACT_1 = {
   // Block 144. The menu's Mga Kabanata: the years on the act's card, and
   // its picture, one of the act's own paintings.
   years: "1890 - 1896",
-  menuArt: "assets/backgrounds/act1/street-02.jpg",
+  menuArt: "assets/backgrounds/layers/tondo-sky.jpg",
   devJumps: DEV_JUMPS, // Block 108
 
   // One chain, in story order, drawn as the quest log (Block 48): the

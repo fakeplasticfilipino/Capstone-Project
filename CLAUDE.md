@@ -207,15 +207,13 @@ off the repository.
       sprites/scenery/         things on the street that are used, not
                                talked to (the straw, the press, the
                                scarecrow, the barber's chair, the tahian)
-      backgrounds/act1/        street-01..04.jpg (Act IV's street until
-                               it is layered), ground-lupa.jpg
-      backgrounds/act3/,       the artist's paintings of each act's
-        act4/                  places (Blocks 133, 135, 136; two panels
-                               each for morong, which only Act IV's
-                               camp still draws, himpilan,
-                               dimasalang and malabon); Acts II and III
-                               have none
-                               since Block 142, every place in layers
+      backgrounds/act1/        street-01..04.jpg, ground-lupa.jpg: no
+                               scene draws the street paintings since
+                               7 Nov 2026 (every place in layers); kept
+                               as the engine's default backdrop
+                               (DEFAULT_SKYLINE_SRC) and the harness's
+                               sample pictures. No act has paintings
+                               of its own any more (act2/ to act4/ gone)
       backgrounds/layers/,     the layered scenes' skies and grounds, and
         rooms/                 the rooms' walls and floors (Blocks 142,
                                143)

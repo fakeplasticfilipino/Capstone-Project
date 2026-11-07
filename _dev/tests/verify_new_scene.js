@@ -914,26 +914,23 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("Act III's people and soldiers: every sheet opening; every place in layers or from a kit (Blocks 135, 147)",
        Object.entries(act3.open).every(([n, f]) => f === (n === "hit" ? 4 : 8)) && act3.layered, act3);
 
-    // Block 136. Act IV's places, painted: every scene's pictures in the
-    // manifest and opening, the two-painting scenes at one height.
+    // Act IV's outdoor places in layers (7 Nov 2026): no painting left,
+    // every scene a sky, its pieces and its ground, every picture of them
+    // in the manifest and opening.
     const act4 = await page.evaluate(async () => {
-      const scenes = window.ACT_4.scenes.filter((s) => s.id !== "tondo");
-      // Block 141: the hall and the court taken out, owed again.
-      const srcs = scenes.flatMap((s) => s.panels || (s.backdrop ? [s.backdrop.src] : []))
-        .filter((s) => !/act4\/(sala|hukuman)\.jpg$/.test(s));
-      const opens = await Promise.all(srcs.map((src) => new Promise((res) => {
+      const ids = ["morong", "himpilan", "dimasalang", "malabon", "tondo", "patyo"];
+      const scenes = window.ACT_4.scenes.filter((s) => ids.includes(s.id));
+      const srcs = scenes.flatMap((s) => [...s.layers.filter((l) => l.src).map((l) => l.src),
+        ...s.buildings.map((b) => b.src), s.ground.src]);
+      const opens = await Promise.all([...new Set(srcs)].map((src) => new Promise((res) => {
         const im = new Image(); im.onload = () => res(im.naturalWidth > 0); im.onerror = () => res(false);
         im.src = assetUrl(src);
       })));
-      const sum = (s) => s.panelWidths.reduce((a, b) => a + b, 0);
-      return { srcs: srcs.length, expected: srcs.every((s) => assetExpected(s) !== false), opens: opens.every(Boolean),
-        widths: ["himpilan", "dimasalang", "malabon"].every((id) => {
-          const s = scenes.find((x) => x.id === id);
-          return s.panels.length === 2 && sum(s) === s.worldWidth;
-        }) };
+      return { scenes: scenes.length, painted: scenes.filter((s) => s.panels || s.backdrop).length,
+        expected: srcs.every((s) => assetExpected(s) !== false), opens: opens.every(Boolean) };
     });
-    ok("Act IV's places: every painting opening; the post, Di-Masalang and Malabon two paintings at one height (Block 136)",
-       act4.srcs === 9 && act4.expected && act4.opens && act4.widths, act4);
+    ok("Act IV's outdoor places in layers, no painting left, every picture opening (7 Nov 2026)",
+       act4.scenes === 6 && act4.painted === 0 && act4.expected && act4.opens, act4);
 
     // Block 149. Act IV's people from the proponent's pictures: each sheet
     // opening, eight frames, the two who walk walking, and the townspeople.
@@ -2866,10 +2863,12 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     c = await readLines(page, 7, 3000);
     ok("signed; Montalan wants guns, and uniforms: \"Makikita mo rin\"",
        c.lines.includes("Macario: Makikita mo rin.") && await page.evaluate(() => state.flags.a4_kautusan === true), c.lines);
-    // Block 136: the post's two paintings are painted at night, so the
-    // scene is not tinted again; night is its music.
+    // Block 152: the post in layers, its night sky and its pieces
+    // darkened by their own filter, so the scene is not tinted again;
+    // night is its music.
     ok("on black to the Constabulary's post, at night", await waitForScene(page, "himpilan", 30000) &&
-       await page.evaluate(() => document.querySelectorAll("#skyline .skyline-panel:not(.skyline-floor)").length === 2 &&
+       await page.evaluate(() => document.querySelectorAll("#skyline .street-building").length > 0 &&
+         [...document.querySelectorAll("#skyline .skyline-layer")].some((l) => /sierra-night/.test(l.innerHTML + l.style.cssText)) &&
          !document.getElementById("skyline").classList.contains("night-tint") &&
          sceneTrack(currentScene) === "assets/audio/music/gabi.wav"));
     c = await readLines(page, 2);

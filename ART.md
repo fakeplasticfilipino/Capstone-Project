@@ -44,56 +44,7 @@ Nothing needed.
 
 ### Act IV
 
-    sierra-night-nature.jpg
-        (Attach the file _dev/parallax-art/sierra-nature.png)
-        Refer to the attached image. Redraw it exactly as it is, the
-        same mountains in the same places, but at night: a deep blue
-        night sky with stars and a bright full moon high on the left,
-        the mountains dark blue with soft moonlit edges. No buildings,
-        no people. Fill the whole picture edge to edge. Wide landscape,
-        largest size.
-        (NOT STARTED)
-
-    cavite-dusk-nature.jpg
-        (Attach the file _dev/parallax-art/tondo-nature.png)
-        Refer to the attached image and use the same art style. Draw
-        ONLY the far background of a town in Cavite at sunset in 1905:
-        a sky going from deep orange at the horizon to purple above, a
-        low sun on the left, long thin clouds lit from below, and along
-        the bottom third a flat line of distant rice fields and coconut
-        palms in dark silhouette, with low hills far away. No
-        buildings, no people, no road. Fill the whole picture edge to
-        edge. Wide landscape, largest size.
-        (NOT STARTED)
-
-    bilibid-sky-nature.jpg
-        (Attach the file _dev/parallax-art/tondo-nature.png)
-        Refer to the attached image and use the same art style. Draw
-        ONLY the sky above a walled prison yard in Manila on an early
-        morning in 1907: a pale clear sky, a few soft clouds, cold low
-        light, and along the bottom quarter only the far tops of
-        distant trees and red tile roofs. No walls, no buildings in
-        front, no people. Fill the whole picture edge to edge. Wide
-        landscape, largest size.
-        (NOT STARTED)
-
-    stone-ground.jpg
-        (Attach the file _dev/parallax-art/tondo-nature.png)
-        Refer to the attached image and use the same art style. Make a
-        flat 2D ground strip for a side-scrolling game: the ground of
-        a prison yard in Manila in 1907, seen exactly from the side.
-        Along the top edge a level row of worn stone flags; below it,
-        packed earth and rubble, getting a little darker toward the
-        bottom. Draw it as a cross-section, like the ground in a
-        classic 2D platformer: the top edge is the flat surface people
-        walk on, a straight level line across the whole picture, and
-        below it the earth is cut open and seen from the front. Do NOT
-        show the road from above: no ruts, tracks or paths running
-        into the distance, no perspective, no tilt. The left and right
-        edges must continue into each other perfectly so it can
-        repeat. Fill the whole picture edge to edge, no white or empty
-        space. Wide landscape, short in height.
-        (NOT STARTED)
+Nothing needed.
 
 ## Sprites
 
@@ -193,68 +144,11 @@ Nothing needed.
 
 ### Act III
 
-    town.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
-        Refer to the attached image and use the same art style, size
-        and finish. Make a sprite sheet of separate buildings of a
-        Tagalog town of 1901 to 1905 around its plaza, drawn by day,
-        arranged in a grid with wide empty space between them so none
-        touch or overlap. Each building in straight-on front view (flat
-        side elevation, no perspective), standing on its own flat ground
-        line, its door at ground level. (1) A large stone church with a
-        bell tower and a carved front. (2) A two-storey stone town hall
-        (casa tribunal) with arches on the ground floor. (3) A square
-        stone watchtower building. (4) A long stone wall with a wooden
-        gate. (5) A nipa house. (6) A small wooden store with an
-        awning. No people, no flags, no trees behind, no ground or
-        shadows between buildings. Transparent background. Landscape,
-        largest size.
-        (For the team: the plaza, bayan, in Act III, and Malabon in
-        Act IV)
-        (DELIVERED 24 Oct 2026: the church, the town hall and the wall
-        cut for the plaza (bayan-simbahan, bayan-munisipyo,
-        bayan-pader); the sheet stays in _dev/parallax-art/ for
-        Malabon's nipa house, store and tower)
+Nothing needed.
 
 ### Act IV
 
-    post.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
-        Refer to the attached image and use the same art style, size
-        and finish. Make a sprite sheet of separate pieces of a
-        Philippine Constabulary post in a town in 1904, drawn by day,
-        arranged in a grid with wide empty space between them so none
-        touch or overlap. Each piece in straight-on front view (flat
-        side elevation, no perspective), standing on its own flat ground
-        line. (1) A one-storey stucco barracks with a red tile roof, a
-        lantern by the door and a heavy double door. (2) A long
-        whitewashed stone wall section with square pillars. (3) A wall
-        section with a heavy wooden gate. (4) A wooden watchtower. (5)
-        An open shed with a canvas roof and crates under it. (6) A rack
-        of rifles. (7) A stack of barrels and crates. No people, no
-        flags, no trees behind, no ground or shadows between pieces.
-        Transparent background. Landscape, largest size.
-        (DELIVERED 28 Oct 2026, the artist's, in _dev/parallax-art/; cut
-        when the post (himpilan) is rebuilt in layers. The 25 Oct version
-        was rejected, not the game's look)
-
-    bilibid.png
-        (Attach the file _dev/parallax-art/tondo-houses.png)
-        Refer to the attached image and use the same art style, size
-        and finish. Make a sprite sheet of separate pieces of the yard
-        of Bilibid Prison, Manila, in 1907, arranged in a grid with wide
-        empty space between them so none touch or overlap. Each piece in
-        straight-on front view (flat side elevation, no perspective),
-        standing on its own flat ground line. (1) A tall stone prison
-        wall section with a walkway on top. (2) A square stone guard
-        tower with a red tile roof. (3) A stone building front with an
-        iron-barred arched gate. (4) A wooden gallows platform with
-        steps up to it. (5) A plain wooden bench. No people, no trees,
-        no ground or shadows between pieces. Transparent background.
-        Landscape, largest size.
-        (DELIVERED 28 Oct 2026, the artist's, in _dev/parallax-art/; cut
-        when the yard (patyo) is rebuilt in layers. The 25 Oct version
-        was rejected, not the game's look)
+Nothing needed.
 
 ## Which scene uses which layers (for the team)
 
@@ -270,10 +164,14 @@ Nothing needed.
                                               (done)
     morong       sierra (done)     mountain   camp (done)         grass
                                    (done)
-    himpilan     sierra-night      lowland    post                dirt
-    dimasalang   sierra            mountain   camp                grass
-    malabon      cavite-dusk       lowland    town                dirt
-    patyo        bilibid-sky       none       bilibid             stone
+    himpilan     sierra-night      lowland    post (done)         dirt
+                 (done)            (done)
+    dimasalang   sierra (done)     mountain   camp (done)         grass
+                                   (done)
+    malabon      cavite-dusk       lowland    town (done)         dirt
+                 (done)            (done)
+    patyo        bilibid-sky       none       bilibid (done)      stone
+                 (done)                                           (done)
 
 The places one screen wide do not scroll but are drawn in layers all the
 same, so every act matches: Act II's three (Pugad Lawin, Balara,
@@ -335,9 +233,14 @@ Done and in the game. Nothing here needs drawing.
                   docs-private/art-delivered/2026-10-24-act3/; Morong's
                   paintings (morong-1 and 2) stay, Act IV's camp
                   drawing them
-        Act IV    the Constabulary's post (himpilan-1 and 2),
-                  Di-Masalang (dimasalang-1 and 2), Malabon
-                  (malabon-1 and 2), Bilibid's yard (patyo)
+        Act IV    every outdoor place in layers (7 Nov 2026): the
+                  night over the Sierra (sierra-night), the dusk over
+                  Cavite (cavite-dusk), the sky over Bilibid
+                  (bilibid-sky), the stone ground; the post's, the
+                  town's and Bilibid's pieces (post, town, bilibid,
+                  the artist's of 28 Oct); the paintings they replace
+                  (himpilan, dimasalang, malabon, patyo, and Morong's)
+                  taken out, in docs-private/art-delivered/
 
     Sprites
         Macario   his still in the NPCs' style (macario-still.png in

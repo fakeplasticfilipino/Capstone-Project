@@ -9,7 +9,14 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 7 Nov 2026: the artist's props of 28 Oct from the Drive:
+Last updated: 7 Nov 2026, Block 152: Act IV's outdoor places rebuilt in
+layers (the post, Di-Masalang, Malabon, Bilibid's yard, Morong, Tondo)
+from the proponent's four layers (the night, the dusk, Bilibid's sky,
+the stone ground) and the post, town and Bilibid kits; their paintings
+taken out of the game completely. Every place of every act is now in
+layers or built from a kit. Art left: the judge (owed); optional, three
+skins and Bonifacio with his sword. Not yet seen on the phone. Before
+it, the artist's props of 28 Oct from the Drive:
 the campfire, the itak and the pistol replace those of 25 Oct (Balara,
 the slash, the shot regenerated); the post and Bilibid kits delivered,
 waiting in _dev/parallax-art/ for Act IV's layers. Before it, 26 Oct
@@ -337,9 +344,8 @@ to docs-private/art-delivered/ once cut), in this order:
         the river's checkerboard and the ground's sky taken off)
     [x] mountain-trees (eight single trees), camp, manila-view-nature,
         town, bayan-props (24 Oct 2026, Block 147)
-    [ ] post, sierra-night-nature
-    [ ] cavite-dusk-nature
-    [ ] bilibid, bilibid-sky-nature, stone-ground
+    [x] post, sierra-night-nature, cavite-dusk-nature, bilibid,
+        bilibid-sky-nature, stone-ground (7 Nov 2026, Block 152)
 
 Engine (game.js, LAYERED STREETS; built 22 Oct 2026 at the
 proponent's word, "apply them in real act 1"):
@@ -375,7 +381,7 @@ Scenes:
         road (11300)
     [x] tondo in Act III (24 Oct 2026, Block 147): a house's door at
         each of 6700, 8300 and 10900, the barberya at Act I's 5340
-    [ ] tondo in Act IV, the same way, its doors checked
+    [x] tondo in Act IV (7 Nov 2026, Block 152): Act I's layers as they are
     [x] san-juan, nangka (Act II, 24 Oct 2026): the Sierra sky, the
         lowland trees, San Juan's works on the right (the polvorin's door
         where the retreat starts) on the dirt, the Nangka's river and
@@ -388,8 +394,8 @@ Scenes:
         its pieces on it; the tree rows taken out of Act II
     [x] burol, morong, and the plaza, bayan (Act III, 24 Oct 2026,
         Block 147); Act IV's camp still on Morong's paintings
-    [ ] morong in Act IV
-    [ ] himpilan, dimasalang, malabon, patyo (Act IV)
+    [x] morong in Act IV; himpilan, dimasalang, malabon, patyo (7 Nov
+        2026, Block 152), the paintings taken out
     [ ] in every scene: cover, hide spots, hazards and guard posts
         checked against the new buildings (the paintings placed some)
 
@@ -448,6 +454,15 @@ Constabulary in the last fight, the Katagalugan's red flag on its
 bamboo pole, Block 148). Failure: a dashed box, a door lit beside its
 house, a figure floating or sunk, a soldier
 whose rifle butt trails a dark copy.
+
+Block 152 (?dev=1, Act IV): every outdoor story point. The post at
+night (the barracks at the left where the bodega is, the walls, the
+watchtower, the gate at the right); Di-Masalang's camp with the
+Republic's flag; Malabon at dusk (the church, the tower, the town
+hall); Bilibid's yard (the gate, the walls, the gallows where he walks,
+the tower, the stone ground); Morong's camp; Tondo in layers. Failure:
+a painting anywhere, a dashed box, someone behind a building's piece
+they should stand in front of, feet off the ground.
 
 Block 151 (?dev=1): Act IV's court (the rail, the clock, the flag;
 the judge a placeholder until drawn again) and the sala (the banquet, the flag behind Van

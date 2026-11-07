@@ -102,18 +102,11 @@
   ];
 
   // ---- The street ---------------------------------------------------
-  // Act I's street, by day in July 1906. Joins at every multiple of 1450;
+  // Act I's street, by day in July 1906, in Act I's layers since 7 Nov
+  // 2026 (window.TONDO_STREET). Shadow trees at every multiple of 1450;
   // anyone a student must reach is 90 or more clear.
-  const STREET_PAINTINGS = [
-    "assets/backgrounds/act1/street-01.jpg",
-    "assets/backgrounds/act1/street-02.jpg",
-    "assets/backgrounds/act1/street-03.jpg",
-    "assets/backgrounds/act1/street-04.jpg",
-  ];
   const PANEL = 1450;
-  const STREET_PANELS = Array.from({ length: 10 }, (_, i) => STREET_PAINTINGS[i % 4]);
   const STREET_WIDTH = 10 * PANEL;
-  const STREET_SKY = "#51a6ea";
   const ARRIVE_X = 12500;       // into Manila from the east
   const MARYAM_X = 13250;
   const ISKO_X = 11000;
@@ -168,6 +161,79 @@
   ].map(([name, x, height, more]) => ({
     src: "assets/sprites/rooms/selda/" + name + ".png", x, height, lift: 10, ...more,
   }));
+
+  // ---- The outdoor places in layers (7 Nov 2026) ---------------------
+  // As Act III's (Block 142): a sky far off (rate 0), two rows of single
+  // trees, the place's own pieces placed by x at a height in world pixels
+  // (Macario is 134), its ground, the shadow trees at panelWidth. The
+  // paintings they replace are gone from the game (the proponent: new
+  // backgrounds and props remove the old ones completely).
+  const TONDO = window.TONDO_STREET || {};
+  const field = (list, lift = 4, filter) => list.map(([name, x, height, more]) => ({
+    src: "assets/sprites/buildings/" + name + ".png", x, height, lift, ...(filter ? { filter } : {}), ...more,
+  }));
+  const treeRow = (names, length, gap, spread, scale, start) => {
+    const row = [];
+    for (let i = 0, x = start; x < length; i++) {
+      row.push({ src: "assets/sprites/trees/" + names[i % names.length] + ".png", x, scale });
+      x += gap + ((i * 137) % 100) / 100 * spread;
+    }
+    return row;
+  };
+  const MOUNTAIN_TREES = ["narra", "kawayan-gubat", "dao", "pako", "lauan", "palumpong-bundok",
+    "narra-bata", "palma-bundok", "narra", "dao", "kawayan-gubat", "lauan"];
+  const LOWLAND_TREES = ["mangga", "niyog", "akasya", "kawayan", "niyog-hilig", "saging"];
+  const treeLayers = (names, filter) => [
+    { rate: 0.3, lift: 64, items: treeRow(names, 3000, 190, 220, 0.42, 30),
+      filter: filter || "saturate(0.55) brightness(1.1) contrast(0.8)" },
+    { rate: 0.6, lift: 60, items: treeRow(names, 4200, 330, 380, 0.85, 120), filter: filter || "saturate(1.05)" },
+  ];
+  const sky = (name) => ({ src: "assets/backgrounds/layers/" + name + ".jpg", rate: 0, lift: 50 });
+  const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 14 };
+  const STONE = { src: "assets/backgrounds/layers/stone-ground.png", lip: 12 };
+  // The camp in the mountains, Morong and Di-Masalang: Act III's camp
+  // pieces, the hut, the fire, the canvas shelter with its table (the
+  // order is signed at it, 640), the lean-to, the washing, the tower.
+  const MORONG_PIECES = field([
+    ["kampo-palisada", -100, 150], ["kampo-kubo", 160, 330], ["kampo-lutuan", 420, 110],
+    ["kampo-tolda", 560, 230], ["kampo-silungan", 1250, 220], ["kampo-sampayan", 1800, 140],
+    ["kampo-bantayan", 2300, 360], ["kampo-bato", 2700, 120], ["kampo-bakod", 2950, 110],
+  ]);
+  // Di-Masalang: the camp, the lean-to behind the line of three, the
+  // canvas shelter, the Republic's flag on its pole, where Gómez comes.
+  const DIMASALANG_PIECES = [
+    ...field([
+      ["kampo-palisada", -100, 150], ["kampo-kubo", 200, 330], ["kampo-lutuan", 620, 110],
+      ["kampo-silungan", 1000, 220], ["kampo-tolda", 1720, 230],
+    ]),
+    { src: "assets/sprites/scenery/watawat-katagalugan.png", x: 1960, height: 300, lift: 4 },
+    ...field([["kampo-sampayan", 2250, 140], ["kampo-bantayan", 2550, 360], ["kampo-bato", 2850, 120]]),
+  ];
+  // The Constabulary's post, at night: the storeroom's barracks at the
+  // left (its door the bodega, 150), the walls between the three beats,
+  // the shed, the rifle rack, the watchtower, barrels, and the gate on
+  // the right where he climbs in (POST_ENTER_X).
+  const POST_NIGHT = "brightness(0.5) saturate(0.65)";
+  const POST_PIECES = field([
+    ["himpilan-kwartel", -52, 230], ["himpilan-pader", 480, 120], ["himpilan-silong", 760, 160],
+    ["himpilan-riple", 1080, 90], ["himpilan-pader", 1200, 120], ["himpilan-bantayan", 1520, 300],
+    ["himpilan-bariles", 1760, 95], ["himpilan-pader", 1960, 120], ["himpilan-tarangkahan", 2230, 150],
+  ], 4, POST_NIGHT);
+  // San Francisco de Malabon at dusk: the nipa houses and the store at
+  // the town's edge, the wall, the church, the watchtower, the town hall
+  // (the plaza, the last of PLAZA_X), the wall beyond.
+  const DUSK = "sepia(0.2) saturate(1.1) brightness(0.8)";
+  const MALABON_PIECES = field([
+    ["bayan-kubo", 60, 230], ["bayan-tindahan", 420, 170], ["bayan-pader", 720, 120],
+    ["bayan-simbahan", 1180, 420], ["bayan-bantayan", 1700, 340], ["bayan-munisipyo", 2050, 300],
+    ["bayan-pader", 2520, 120], ["bayan-kubo", 2960, 230, { flip: true }],
+  ], 4, DUSK);
+  // Bilibid's yard: the gate he is led out of at the left, the walls, a
+  // bench, the gallows over SCAFFOLD_X (its platform there), the tower.
+  const YARD_PIECES = field([
+    ["bilibid-tarangkahan", -40, 300], ["bilibid-pader", 640, 260], ["bilibid-pader", 1686, 260],
+    ["bilibid-bangko", 1050, 45], ["bilibid-bantayan", 2080, 380], ["bilibid-bitayan", 1696, 260],
+  ], 0);
 
   // The post at night: three of the Constabulary, each with a crate in
   // his beat. They catch, not shoot; a catch puts Macario back at the
@@ -989,7 +1055,7 @@
     // Block 144. The menu's Mga Kabanata: the years on the act's card,
     // and its picture, one of the act's own paintings.
     years: "1903 - 1907",
-    menuArt: "assets/backgrounds/act4/dimasalang-1.jpg",
+    menuArt: "assets/backgrounds/layers/cavite-dusk.jpg",
     devJumps: DEV_JUMPS,
 
     // One chain, in story order, the quest log (Block 48).
@@ -1111,17 +1177,16 @@
 
     scenes: [
       {
-        // Beats 1 and 3. The camp in the mountains of Morong, Act III's
-        // painting (owed): the first order in 1903, the manifesto in 1904.
+        // Beats 1 and 3. The camp in the mountains of Morong, in layers
+        // as Act III's (7 Nov 2026): the first order in 1903, the
+        // manifesto in 1904.
         id: "morong",
         worldWidth: FIELD,
-        // Block 135: two paintings of different shapes, each as wide as its
-        // own shape needs to stand at one height with the other, so the
-        // scene has one scale; the tree stands on the join.
-        panels: ["assets/backgrounds/act3/morong-1.jpg", "assets/backgrounds/act3/morong-2.jpg"],
-        panelWidths: [1696, 1504],
-        panelSky: "#4a8fd6",
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: [sky("sierra-sky"), ...treeLayers(MOUNTAIN_TREES)],
+        buildings: MORONG_PIECES,
+        ground: GRASS,
+        frontGrass: true,
+        panelWidth: 2200,
         noRanged: true,
         startX: 400,
         scripts: [
@@ -1179,15 +1244,16 @@
       {
         // Beat 2. A post of the Constabulary in a town below the
         // mountains, 1903, at night [INSERT: the place]. In from the
-        // right; the storeroom at the left. Block 136: the artist's two
-        // paintings, painted at night, so the scene is not tinted again
-        // (music, not night); they paint their own road (ground: false).
+        // right; the storeroom at the left. In layers (7 Nov 2026): the
+        // night sky over the Sierra, the trees and the post's pieces
+        // darkened to it (POST_NIGHT), so the scene is not tinted again
+        // (music, not night).
         id: "himpilan",
         worldWidth: POST_WIDTH,
-        panels: ["assets/backgrounds/act4/himpilan-1.jpg", "assets/backgrounds/act4/himpilan-2.jpg"],
-        panelWidths: [1190, 1410],
-        panelSky: "#06173f",
-        ground: false,
+        layers: [sky("sierra-night"), ...treeLayers(LOWLAND_TREES, POST_NIGHT)],
+        buildings: POST_PIECES,
+        ground: { ...TONDO.ground, filter: POST_NIGHT },
+        frontGrass: true,
         music: NIGHT,
         startX: POST_ENTER_X,
         guards: POST_GUARDS.map((g, i) => ({
@@ -1240,14 +1306,15 @@
       },
       {
         // Beats 4, 6 and 7. The camp in the Di-Masalang mountains, from
-        // August 1904. Block 136: the artist's two paintings, the open
-        // camp first, so the join stands clear of the line of three.
+        // August 1904. In layers (7 Nov 2026); the one shadow tree at
+        // 2400, clear of the line of three and of Gómez.
         id: "dimasalang",
         worldWidth: FIELD,
-        panels: ["assets/backgrounds/act4/dimasalang-2.jpg", "assets/backgrounds/act4/dimasalang-1.jpg"],
-        panelWidths: [1839, 1361],
-        panelSky: "#609aca",
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: [sky("sierra-sky"), ...treeLayers(MOUNTAIN_TREES)],
+        buildings: DIMASALANG_PIECES,
+        ground: GRASS,
+        frontGrass: true,
+        panelWidth: 2400,
         noRanged: true,
         startX: 400,
         scripts: [
@@ -1359,14 +1426,14 @@
       },
       {
         // Beat 5. San Francisco de Malabon, Cavite, 24 January 1905.
-        // Villafuerte and de Vega fight beside him. Block 136: the
-        // artist's two paintings, the town and its church, then the post.
+        // Villafuerte and de Vega fight beside him. In layers (7 Nov
+        // 2026): the dusk over Cavite, the town's pieces lit by it.
         id: "malabon",
         worldWidth: FIELD,
-        panels: ["assets/backgrounds/act4/malabon-1.jpg", "assets/backgrounds/act4/malabon-2.jpg"],
-        panelWidths: [1999, 1201],
-        panelSky: "#434888",
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: [sky("cavite-dusk"), ...treeLayers(LOWLAND_TREES, DUSK)],
+        buildings: MALABON_PIECES,
+        ground: { ...TONDO.ground, filter: DUSK },
+        frontGrass: true,
         dangerous: true,
         startX: 400,
         checkpoints: reached(PLAZA_X, "a4_plaza", "a4_tanay"), // Block 120
@@ -1391,9 +1458,12 @@
         // [INSERT].
         id: "tondo",
         worldWidth: STREET_WIDTH,
-        panels: STREET_PANELS,
-        ground: false, // Block 134: the paintings' own road, not the dirt strip
-        panelSky: STREET_SKY,
+        // 7 Nov 2026: Act I's layers, the trees where the joins were.
+        layers: TONDO.layers,
+        buildings: TONDO.buildings ? TONDO.buildings(TONDO.houses, TONDO.props) : [],
+        ground: TONDO.ground,
+        frontGrass: true,
+        panelWidth: PANEL,
         startX: ARRIVE_X,
         hintSpots: HINT_SPOTS,
         noRanged: true,
@@ -1660,13 +1730,14 @@
       },
       {
         // Beat 13. The yard of Old Bilibid, Santa Cruz, Manila, 13
-        // September 1907; the scaffold is the painting's, its platform
-        // over SCAFFOLD_X (Block 136). He walks
-        // there himself (the checkpoint runs the statement).
+        // September 1907; in layers (7 Nov 2026), the gallows' platform
+        // over SCAFFOLD_X. He walks there himself (the checkpoint runs
+        // the statement).
         id: "patyo",
         worldWidth: YARD_WIDTH,
-        backdrop: { src: "assets/backgrounds/act4/patyo.jpg" },
-        ground: false, // Block 137: the painting's own floor, not a strip of ours
+        layers: [sky("bilibid-sky")],
+        buildings: YARD_PIECES,
+        ground: STONE,
         noRanged: true,
         startX: 200,
         checkpoints: [

@@ -6802,6 +6802,26 @@ place and ART.md asks for him again seated without a bench, since the
 court's kit has its own rail and table. The Drive's post and bilibid
 kits were recorded as rejected for not fitting the game's look.
 
+## Block 152: Act IV in layers, 7 Nov 2026
+
+The proponent sent the four layers ART.md asked for (the night over the
+Sierra, the dusk over Cavite, Bilibid's sky, the stone ground; its
+flat green above the stones keyed out) and said to apply them at once.
+With the artist's post and Bilibid kits of 28 Oct and the rest of the
+town sheet, Act IV's six outdoor places were rebuilt as Act III's are:
+a sky, two rows of single trees (lowland for the post and Malabon,
+mountain for the camps, none in the walled yard), the place's pieces,
+its ground. The post was painted at night and stays untinted by the
+engine: its pieces, trees and dirt carry a filter of their own
+(POST_NIGHT), and Malabon's a dusk one, as the rooms' lights do. The
+gallows stand with their platform over SCAFFOLD_X; the barracks' door
+over the bodega. Every painting they replace was taken out of the game
+the same day (the proponent: new backgrounds and props remove the old
+ones completely): himpilan, dimasalang, malabon, patyo and Morong's,
+the originals in docs-private. The four Tondo street paintings stay
+only as the engine's default backdrop and the harness's sample
+pictures; no scene draws them.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every
