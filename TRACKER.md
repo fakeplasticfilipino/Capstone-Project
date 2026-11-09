@@ -640,8 +640,8 @@ May); Figure 1.1 and its line in the list of figures named Danger in
 Pompeii; four sources found and added in order (Centeno et al., 2023;
 Sambo, Shishah and Isiaku, 2025; Zeng, Sun, Looi and Fan, 2024;
 GMANews.TV, 2008, for the last words, cited in the Act IV storyboard).
-Still open: Heritage Quest, cited twice and not found anywhere (the
-proponents to name the source or let the two sentences go); whether
+Heritage Quest, cited twice and found nowhere, taken out with its two
+sentences (the proponent, 10 Nov 2026). Still open: whether
 Sambo et al. say what the paper says of disabilities and data privacy
 (only the abstract was seen); and, once every phase is accepted in
 Word, the contents, the list of figures and the page numbers. A
