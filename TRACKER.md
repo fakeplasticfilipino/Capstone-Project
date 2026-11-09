@@ -582,8 +582,14 @@ software list, the visual and data pipelines, and online and offline
 Android held sideways), written once and carried into every chapter
 that repeats them. Items 1 to 10.
 
-Phase 2, the story (NOT STARTED): the storyboard and every act's
-description rewritten from STORY.md. Items 11 to 17.
+Phase 2, the story (COMPLETE 9 Nov 2026, in review:
+Capstone_Project_Proposal_phase2.docx, built on phase1 with its changes
+kept, 19 paragraphs more; undoing Phase 2's marks gives phase1's text
+exactly): the storyboard and every act's description rewritten from
+STORY.md, the [CONTEXT] events as news and cards; the act titles with
+their Tagalog and years; the dialogue choices out; the trivia before
+every pre-test. The last words' English quote is kept and still wants
+its source cited. Items 11 to 17.
 
 Phase 3, what the system does (NOT STARTED): mechanics, the score
 (50 completion, 25 survival, 25 stealth, one formula everywhere),
