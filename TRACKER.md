@@ -591,7 +591,11 @@ their Tagalog and years; the dialogue choices out; the trivia before
 every pre-test. The last words' English quote is kept and still wants
 its source cited. Items 11 to 17.
 
-Phase 3, what the system does (NOT STARTED): mechanics, the score
+Phase 3, what the system does (COMPLETE 9 Nov 2026, in review:
+Capstone_Project_Proposal_phase3.docx, on phase2, 35 paragraphs more;
+undoing Phase 3 gives phase2's text exactly; the table's continuation
+lines emptied, not removed, so no cell loses its paragraph; the stated
+objectives left as written): mechanics, the score
 (50 completion, 25 survival, 25 stealth, one formula everywhere),
 assessment, accounts, the dashboard, limitations; mostly the
 requirement tables. Items 18 to 26.
