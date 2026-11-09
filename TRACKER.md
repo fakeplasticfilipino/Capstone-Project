@@ -548,7 +548,21 @@ Group 4, large (before the freeze, E; COMPLETE, Blocks 159, 160):
     [x] 27 hints: the Tulong button (B)
     [x] 28 the mini-games' sounds made softer and less "gamey" (A)
 
-## The paper brought up to date (IN PROGRESS)
+## The paper brought up to date (COMPLETE)
+
+(COMPLETE 10 Nov 2026: at the proponent's word every tracked change was
+accepted by a session into docs-private/documents/
+Capstone_Project_Proposal_final.docx, its text checked equal to the
+accepted view, the four replaced pictures dropped, and the five phase
+copies deleted; the original Capstone_Project_Proposal.docx stays
+beside it. Rendered through LibreOffice to 98 pages and looked at: the
+calendar's sections and bars, the IPO and the ERD at page width.
+Figures 3.5 to 3.8 stay as they are: they are prototypes, by design.
+Left to the proponents in Word: the table of contents and the list of
+figures, typed by hand with page numbers that every phase moved; the
+storyboard pictures under the acts; whether Sambo et al. support the
+paper's points on disabilities and privacy. The phase notes below are
+the record of what changed.)
 
 The research paper (docs-private/documents/Capstone_Project_Proposal.docx,
 gitignored) still describes the May 2026 plan. Read against the build on
