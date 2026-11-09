@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACARIO — Teacher Dashboard</title>
-  <link rel="stylesheet" href="css/teacher.css?v=3924341071" />
+  <link rel="stylesheet" href="css/teacher.css?v=2966412279" />
 </head>
 <body>
   <!-- Covers the page until the session and role are confirmed, so a
@@ -172,7 +172,7 @@
           <div class="card-head">
             <div>
               <h2 class="section-title">Student accounts</h2>
-              <p class="muted">Each new student gets a code and a six-digit password. Students can change their password in the game's settings.</p>
+              <p class="muted">Each new student gets a code and a six-digit password, and the name you give, if any. Students can change their password in the game's settings.</p>
             </div>
           </div>
           <div class="acct-form">
@@ -183,6 +183,12 @@
               <input id="acct-count" type="number" min="1" max="60" value="40" />
             </label>
             <button id="acct-create" type="button" class="btn-primary">Create accounts</button>
+          </div>
+          <!-- Block 159. Names, optional: one account per line, in order. -->
+          <div class="acct-form acct-names">
+            <label>Names (optional, one per line; one account is made for each)
+              <textarea id="acct-names" rows="4" spellcheck="false" placeholder="Juan dela Cruz&#10;Maria Santos"></textarea>
+            </label>
           </div>
           <p id="acct-hint" class="muted acct-hint"></p>
           <p id="acct-status" class="qe-status"></p>
@@ -376,10 +382,19 @@
           <div>
             <p class="eyebrow">Student</p>
             <h2 id="sc-name" class="section-title"></h2>
+            <p id="sc-code" class="muted"></p>
           </div>
           <button id="sc-close" type="button" class="btn-secondary">Close</button>
         </div>
         <ul id="sc-lines" class="sc-lines"></ul>
+        <!-- Block 159. The student's name, beside the code. -->
+        <div class="sc-reset sc-name-row">
+          <label>Name
+            <input id="sc-name-input" type="text" maxlength="80" autocomplete="off" placeholder="Juan dela Cruz" />
+          </label>
+          <button id="sc-name-save" type="button" class="btn-secondary">Save name</button>
+          <p id="sc-name-status" class="qe-status"></p>
+        </div>
         <div class="sc-reset">
           <button id="sc-reset" type="button" class="btn-secondary">Give a new password</button>
           <p id="sc-reset-status" class="qe-status"></p>
@@ -403,8 +418,8 @@
   <script src="content/act4.js?v=4133053383"></script>
   <!-- Block 132. Before teacher.js, which may reach it before the next
        script tag is parsed (its first awaits can resolve on microtasks). -->
-  <script src="js/teacher-accounts.js?v=2501420699"></script>
-  <script src="js/teacher.js?v=3514734046"></script>
+  <script src="js/teacher-accounts.js?v=105960922"></script>
+  <script src="js/teacher.js?v=3152769830"></script>
   <script src="js/teacher-questions.js?v=4003821537"></script>
   <script src="js/teacher-report.js?v=725711950"></script>
   <script src="js/teacher-talaan.js?v=976490959"></script>

@@ -249,10 +249,19 @@
           const accounts = [];
           for (let i = 0; i < body.count; i++, next++) {
             const code = body.prefix + "-" + String(next).padStart(2, "0");
-            db.profiles.push({ id: "new-" + code, role: "student", full_name: code, class_id: body.class_id });
-            accounts.push({ code, password: String(100000 + next) });
+            // Block 159: the n-th name for the n-th account.
+            const name = (body.names || [])[i] || null;
+            db.profiles.push({ id: "new-" + code, role: "student", full_name: code, class_id: body.class_id, display_name: name });
+            accounts.push({ code, password: String(100000 + next), name });
           }
           return Promise.resolve({ data: { accounts }, error: null });
+        }
+        // Block 159. A name from the student card; empty clears it.
+        if (body.action === "rename") {
+          const p = (db.profiles || []).find((x) => x.id === body.student_id);
+          if (!p) return Promise.resolve({ data: null, error: { message: "NOT_YOUR_STUDENT" } });
+          p.display_name = String(body.name || "").trim() || null;
+          return Promise.resolve({ data: { code: p.full_name, name: p.display_name }, error: null });
         }
         if (body.action === "reset") {
           const p = (db.profiles || []).find((x) => x.id === body.student_id);

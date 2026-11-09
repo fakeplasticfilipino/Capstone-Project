@@ -42,6 +42,7 @@ const TeacherAccounts = {
       card: document.getElementById("acct"),
       prefix: document.getElementById("acct-prefix"),
       count: document.getElementById("acct-count"),
+      names: document.getElementById("acct-names"),
       create: document.getElementById("acct-create"),
       hint: document.getElementById("acct-hint"),
       status: document.getElementById("acct-status"),
@@ -146,20 +147,30 @@ const TeacherAccounts = {
     el.className = "qe-status" + (kind ? " qe-" + kind : "");
   },
 
+  // Block 159. The names typed, one a line, blank lines left out.
+  typedNames() {
+    return String(this.el.names ? this.el.names.value : "").split(/\r?\n/)
+      .map((n) => n.replace(/\s+/g, " ").trim()).filter(Boolean).map((n) => n.slice(0, 80));
+  },
+
   async create() {
     const start = this.el.prefix.value;
+    const names = this.typedNames();
+    // With names, one account each; the count follows them.
+    if (names.length) this.el.count.value = String(names.length);
     const count = Math.floor(Number(this.el.count.value));
     if (!/^[a-z]{2,12}$/.test(start)) return this.setStatus(this.el.status, this.explain("BAD_PREFIX"), "error");
     if (!(count >= 1 && count <= this.MAX)) return this.setStatus(this.el.status, this.explain("BAD_COUNT"), "error");
     if (!this.cls) return;
     this.el.create.disabled = true;
     this.setStatus(this.el.status, "Making " + count + " account" + (count === 1 ? "" : "s") + "... this can take a minute.");
-    const res = await this.call({ action: "create", class_id: this.cls.id, prefix: start, count });
+    const res = await this.call({ action: "create", class_id: this.cls.id, prefix: start, count, names });
     this.el.create.disabled = false;
     const accounts = (res.data && res.data.accounts) || [];
     if (accounts.length) {
       this.made = this.made.concat(accounts);
       this.drawSlips();
+      if (names.length && this.el.names) this.el.names.value = "";
     }
     if (res.error && !accounts.length) {
       this.setStatus(this.el.status, this.explain(res.error), "error");
@@ -174,18 +185,18 @@ const TeacherAccounts = {
   drawSlips() {
     this.el.slips.innerHTML = "";
     const cls = (this.cls && this.cls.class_name) || "";
-    this.made.forEach((a) => this.el.slips.appendChild(this.slip(a.code, a.password, cls)));
+    this.made.forEach((a) => this.el.slips.appendChild(this.slip(a.code, a.password, cls, a.name)));
     this.el.result.classList.toggle("hidden", this.made.length === 0);
   },
 
-  slip(code, password, cls) {
+  slip(code, password, cls, name) {
     const box = document.createElement("div");
     box.className = "slip";
     const rows = [
       ["MACARIO", cls],
       ["Code", code],
       ["Password", password],
-      ["Name", ""],
+      ["Name", name || ""],
     ];
     rows.forEach(([k, v], i) => {
       const line = document.createElement("div");
@@ -223,7 +234,14 @@ const TeacherAccounts = {
 
   downloadCsv() {
     if (!this.made.length) return;
-    const lines = ["code,password,name"].concat(this.made.map((a) => a.code + "," + a.password + ","));
+    // Block 159: a name may hold a comma or a quote, or start like a
+    // formula; quoted and guarded as the roster's export is (csvField).
+    const cell = (v) => {
+      let s = String(v || "");
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    const lines = ["code,password,name"].concat(this.made.map((a) => a.code + "," + a.password + "," + cell(a.name)));
     const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -241,7 +259,8 @@ const TeacherAccounts = {
   // anything changed, so the page reloads the class.
   async bulk(action, rows, status) {
     this.init();
-    const codes = rows.map((r) => r.name);
+    // Block 159: each by name and code.
+    const codes = rows.map((r) => (r.realName ? r.realName + " (" + r.code + ")" : r.code || r.name));
     const list = codes.length > 12 ? codes.slice(0, 12).join(", ") + " and " + (codes.length - 12) + " more" : codes.join(", ");
     const n = rows.length;
     const them = n === 1 ? "this student" : "these " + n + " students";
@@ -281,6 +300,19 @@ const TeacherAccounts = {
     return good.length > 0;
   },
 
+  // Block 159. A student's name from the card; empty clears it.
+  async rename(studentId, name, status) {
+    this.init();
+    this.setStatus(status, "Saving...");
+    const res = await this.call({ action: "rename", student_id: studentId, name: String(name || "").slice(0, 80) });
+    if (res.error || !res.data) {
+      this.setStatus(status, this.explain(res.error), "error");
+      return false;
+    }
+    this.setStatus(status, res.data.name ? "Saved: " + res.data.name + "." : "Name cleared.", "ok");
+    return true;
+  },
+
   // From the student card. The new password is shown there and added to
   // the slips, so it can be printed like the others.
   async resetPassword(studentId, code) {
@@ -294,7 +326,10 @@ const TeacherAccounts = {
     }
     this.setStatus(this.el.resetStatus, "New password for " + res.data.code + ": " + res.data.password +
       ". Write it down now; it is also on the slips under Students.", "ok");
-    this.made = this.made.filter((a) => a.code !== res.data.code).concat([{ code: res.data.code, password: res.data.password }]);
+    const was = this.made.find((a) => a.code === res.data.code);
+    const row = (this.students || []).find((s) => s.full_name === res.data.code);
+    this.made = this.made.filter((a) => a.code !== res.data.code).concat([{ code: res.data.code, password: res.data.password,
+      name: (was && was.name) || (row && row.display_name) || null }]);
     this.drawSlips();
   },
 };

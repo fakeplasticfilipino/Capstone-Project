@@ -1964,7 +1964,8 @@ owner and the service roles may call the last three (handle_new_user
 also the auth service).
 
 Edge Functions (Block 132): create-students, the account maker (since
-Block 150 it also archives, restores and deletes students),
+Block 150 it also archives, restores and deletes students; since Block
+159 it writes their names, on create or by its rename action),
 source in db/functions/create-students/index.ts, deployed with the
 connector's deploy_edge_function and verify_jwt false (it checks the
 caller's token itself; the publishable key is not a JWT). A change to
@@ -2037,6 +2038,10 @@ seven play tables, checked by the function; deleting cascades through
 all of them. Never widen delete to played accounts. Since Block 157 (the
 instructor) the dashboard offers Delete only in the archived view: an
 account is archived first, then deleted from there.
+
+A student's name (Block 159, schema v16) is profiles.display_name;
+full_name stays the code, which the login, the slips and the numbering
+read. Only create-students writes the name; the game never shows it.
 
 Since schema v11 (Block 123) no browser role may UPDATE profiles at all:
 the own-row update policy had no WITH CHECK, and a student could make
@@ -2791,6 +2796,8 @@ look, by system:
                                           schema v13)
     archiving and deleting students       Block 150 (schema v14; delete
                                           only never-used accounts)
+    students' names                       Block 159 (schema v16,
+                                          display_name; rename)
     the artist's Drive delivery of 15     Block 133 (Act II's paintings,
       Oct: paintings, people; the         nine people keyed from black),
       new street tried and taken out      134 (the old street back, its

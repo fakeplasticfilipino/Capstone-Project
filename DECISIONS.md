@@ -7118,6 +7118,39 @@ fast fourth partial, a touch of the strike), made by make-scene-sfx.js;
 make-sfx.py and make-fun-sfx.js no longer write them. The miss was
 already a soft thud.
 
+## Block 159: a name for every student, 9 Nov 2026
+
+Item 25 of the examination list, at the proponent's word (E: before the
+freeze). Until now the game and the dashboard held no student's name:
+the teacher kept a paper list of codes and names, and the roster was a
+column of codes. The instructor asked for names on the dashboard.
+
+The name is profiles.display_name (schema v16), beside full_name, which
+stays the code: the login reads the code (loginEmail), the slips and
+the function number from it, and renaming that column's meaning would
+have touched every one of them. A name is optional and at most 80
+characters; the dashboard shows the name where it has one and the code
+under it, and the code alone otherwise.
+
+It is written only by create-students, never by a browser. Schema v11
+took every UPDATE on profiles away from the browser roles because a
+student could make himself a teacher; a column grant for the teacher
+would have been the narrowest way back, but the function already checks
+that the caller owns the class, so the name goes the same way as
+archiving: create takes names (one account per name, the count
+following them) and a new action, rename, gives or clears one. Nothing
+in the database changed for a student: their UPDATE is still refused.
+
+The name is typed by the teacher, one a line, so a list pasted from a
+class record makes the accounts in its order. Control characters are
+taken out and spaces collapsed, by the function (cleanName) and by the
+dashboard both. The spreadsheets quote a name with a comma or a quote,
+and the roster's CSV gains code and name as its first two columns.
+
+The game itself never shows the name: it greets nobody, and a shared
+classroom phone shows the code at the login only. The repository holds
+no name (the stub's are invented, as the test accounts' codes are).
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

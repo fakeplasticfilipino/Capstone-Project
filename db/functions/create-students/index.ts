@@ -15,6 +15,11 @@
 //       class, with six random digits as its password. Returns
 //       { accounts: [{ code, password }] }, the only time a password is
 //       ever seen: it is not stored anywhere readable.
+//       Block 159: names, optional, a list of real names, the n-th for
+//       the n-th account made (profiles.display_name, schema v16).
+//   { action: "rename", student_id, name }
+//       Block 159: a student of her class gets a name (empty clears it).
+//       Returns { code, name }.
 //   { action: "reset", student_id }
 //       a new six digits for one student of her class. Returns
 //       { code, password }.
@@ -39,10 +44,10 @@
 // guessable, so a weak password is someone else's one pre-test
 // attempt. Students may change theirs in settings (Block 122).
 //
-// The codes are the students' only names here (CLAUDE.md, Privacy):
-// full_name is the code, the email <code>@example.com, which never
-// delivers and needs no confirmation (email_confirm). The teacher
-// writes each name beside its code on paper.
+// The code is the login (CLAUDE.md, Privacy): full_name is the code, the
+// email <code>@example.com, which never delivers and needs no
+// confirmation (email_confirm). Since Block 159 a real name may sit
+// beside it in profiles.display_name, written here and nowhere else.
 //
 // Source of truth for the deployed function. Deployed with the
 // Supabase connector's deploy_edge_function, name create-students,
@@ -89,6 +94,13 @@ function sixDigits(): string {
   return out;
 }
 
+// Block 159. A name as typed, kept plain: no control characters, single
+// spaces, at most 80 characters (the column's own check); empty is none.
+function cleanName(v: unknown): string | null {
+  const s = String(v ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
+  return s || null;
+}
+
 function codeFor(prefix: string, n: number): string {
   return prefix + "-" + String(n).padStart(2, "0");
 }
@@ -131,6 +143,7 @@ Deno.serve(async (req: Request) => {
   if (body.action === "create") {
     const classId = body.class_id;
     const prefix = String(body.prefix || "").trim().toLowerCase();
+    const names = Array.isArray(body.names) ? body.names.map(cleanName) : [];
     const count = Math.floor(Number(body.count));
     if (!PREFIX_RE.test(prefix)) return reply(400, { error: "BAD_PREFIX" });
     if (!(count >= 1 && count <= MAX_PER_CALL)) return reply(400, { error: "BAD_COUNT" });
@@ -146,7 +159,7 @@ Deno.serve(async (req: Request) => {
     if (own.some((p) => p.class_id !== classId)) return reply(409, { error: "PREFIX_IN_USE" });
     let next = own.reduce((m, p) => Math.max(m, Number(p.full_name.split("-")[1]) || 0), 0) + 1;
 
-    const accounts: { code: string; password: string }[] = [];
+    const accounts: { code: string; password: string; name: string | null }[] = [];
     for (let i = 0; i < count; i++, next++) {
       const code = codeFor(prefix, next);
       const password = sixDigits();
@@ -163,15 +176,30 @@ Deno.serve(async (req: Request) => {
       }
       // handle_new_user made the profile; enrol it, and make it a
       // student whatever the trigger read.
+      const name = names[i] || null;
       const { error: enrolErr } = await admin
-        .from("profiles").update({ class_id: classId, role: "student", full_name: code })
+        .from("profiles").update({ class_id: classId, role: "student", full_name: code, display_name: name })
         .eq("id", made.user.id);
       if (enrolErr) {
         return reply(207, { accounts, error: "ENROL_FAILED", at: code, detail: enrolErr.message });
       }
-      accounts.push({ code, password });
+      accounts.push({ code, password, name });
     }
     return reply(200, { accounts });
+  }
+
+  if (body.action === "rename") {
+    const studentId = body.student_id;
+    if (typeof studentId !== "string" || !studentId) return reply(400, { error: "BAD_REQUEST" });
+    const { data: student } = await admin
+      .from("profiles").select("role, class_id, full_name").eq("id", studentId).maybeSingle();
+    if (!student || student.role !== "student" || !(await ownsClass(student.class_id))) {
+      return reply(403, { error: "NOT_YOUR_STUDENT" });
+    }
+    const name = cleanName(body.name);
+    const { error: nameErr } = await admin.from("profiles").update({ display_name: name }).eq("id", studentId);
+    if (nameErr) return reply(500, { error: "RENAME_FAILED", detail: nameErr.message });
+    return reply(200, { code: student.full_name, name });
   }
 
   if (body.action === "reset") {

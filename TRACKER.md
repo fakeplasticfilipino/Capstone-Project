@@ -9,11 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Nov 2026, Block 158: group 3 (the cedula torn, the
-blindfold, the bound walk up the gallows and the drop on black), the
-Tulong button (57 help lines) and softer mini-game chimes. Left: 25
-and 26, which need the proponent's yes for the database. Before it,
-Block 157: the examination list's group 2
+Last updated: 9 Nov 2026, Block 159: a name for every student beside
+the code (schema v16, create-students version 3, the dashboard, the
+slips and the spreadsheets). Left: 26, question types. Before it,
+Block 158: group 3 (the cedula torn, the blindfold, the bound walk up
+the gallows and the drop on black), the Tulong button (57 help lines)
+and softer mini-game chimes. Before that, Block 157: the examination list's group 2
 done (see the list): the pay, three lessons and Paano Maglaro, the
 intro with Macario's card, used-up props, allies aside in fights,
 riflemen, the Talaan of every act (and the papers of Acts II to IV,
@@ -532,10 +533,10 @@ Group 3, new animation (COMPLETE, Block 158):
 
 Group 4, large (before the freeze, E):
 
-    [ ] 25 a name for every student beside the code: a column (a
+    [x] 25 a name for every student beside the code: a column (a
            migration, the proponent's yes), the account maker (a
            deploy, the proponent's yes), the dashboard, the slips, the
-           spreadsheet and the reports
+           spreadsheet and the reports (Block 159)
     [ ] 26 question types: checkboxes (several right answers) and true
            or false, graded by submit_test; an essay kept as an
            ungraded reflection, out of the score and the gain (a
@@ -908,6 +909,23 @@ Trust this over any memory of a chat.
                                         failed post-test then a second
                                         attempt taken. A visitor may not
                                         call it (42501)
+    db/migrations/016_macario_schema_v16.sql   RUN, 9 Nov 2026, from the
+                                        session, at the proponent's word.
+                                        profiles.display_name, a
+                                        student's name, at most 80
+                                        characters (Block 159). Probed:
+                                        before, 12 profiles and no
+                                        browser UPDATE grant on profiles;
+                                        after, the teacher reads her 12
+                                        with the column, a student's
+                                        UPDATE refused (42501), a visitor
+                                        reads 0
+    db/functions/create-students               version 3 DEPLOYED, 9 Nov
+                                        2026, at the proponent's word:
+                                        names on create, the rename
+                                        action (Block 159). The deployed
+                                        source read back and compared
+                                        with the repository's: the same
     db/seeds/macario_items_acts2to4.sql        RUN, 7 Nov 2026, the same.
                                         Acts II to IV's built-in
                                         questions copied into
@@ -1347,6 +1365,11 @@ machine, the assessment module.
         ticked on the roster; delete only for accounts with no row in
         any play table, checked by the function; schema v14
         (profiles.archived_at); test.js BZ
+    159 a name for every student beside the code: typed one a line
+        when the accounts are made, or given on the student card;
+        on the roster, the slips and both spreadsheets; schema v16
+        (profiles.display_name), create-students version 3 (rename);
+        test.js AV, BX
 
 ## Blocks remaining
 

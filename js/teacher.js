@@ -280,12 +280,12 @@ async function loadRoster(classId) {
   showLoading();
 
   // 1. Students in this class.
-  const { data: students, error: studentsError } = await sb
-    .from("profiles")
-    .select("id, full_name, archived_at")
-    .eq("class_id", classId)
-    .eq("role", "student")
-    .order("full_name");
+  // Block 159: with each student's name (schema v16, display_name); a
+  // database without the column is asked again without it.
+  const studentQuery = (cols) => sb.from("profiles").select(cols)
+    .eq("class_id", classId).eq("role", "student").order("full_name");
+  let { data: students, error: studentsError } = await studentQuery("id, full_name, display_name, archived_at");
+  if (studentsError) ({ data: students, error: studentsError } = await studentQuery("id, full_name, archived_at"));
 
   if (studentsError) {
     showLoadError("Could not load the students.", studentsError);
@@ -467,7 +467,11 @@ function buildRoster(students, progress, acts, scores, actNumber) {
 
     return {
       id: student.id,
-      name: student.full_name || "(no name)",
+      // Block 159: the name the teacher gave, else the code; the code
+      // kept beside it, for the login and the slips.
+      name: student.display_name || student.full_name || "(no name)",
+      code: student.full_name || "",
+      realName: student.display_name || "",
       status,
       objectivesDone: row ? row.objectives_done : null,
       objectivesTotal: row ? row.objectives_total : null,
@@ -503,7 +507,7 @@ function buildRoster(students, progress, acts, scores, actNumber) {
 function renderRoster() {
   const query = rosterSearch.value.trim().toLowerCase();
   const rows = currentRows
-    .filter((r) => !query || r.name.toLowerCase().includes(query))
+    .filter((r) => !query || r.name.toLowerCase().includes(query) || r.code.toLowerCase().includes(query))
     .sort(compareRows);
 
   rosterBody.innerHTML = "";
@@ -537,6 +541,13 @@ function renderRoster() {
     nameBtn.className = "name-btn";
     nameBtn.textContent = row.name;
     nameTd.appendChild(nameBtn);
+    // Block 159: a named student's code under the name.
+    if (row.realName && row.code) {
+      const code = document.createElement("span");
+      code.className = "cell-sub";
+      code.textContent = row.code;
+      nameTd.appendChild(code);
+    }
     if (row.archived) {
       const tag = document.createElement("span");
       tag.className = "cell-sub";
@@ -876,6 +887,13 @@ function openStudent(id) {
   if (!r) return;
   cardStudentId = id;
   document.getElementById("sc-name").textContent = r.name;
+  // Block 159: the code, and the name to give or change.
+  document.getElementById("sc-code").textContent = r.realName ? "Code: " + r.code : "No name yet. Code: " + r.code;
+  document.getElementById("sc-name-input").value = r.realName;
+  const nameStatus = document.getElementById("sc-name-status");
+  nameStatus.textContent = "";
+  nameStatus.className = "qe-status";
+  document.getElementById("sc-name-save").disabled = !window.TeacherAccounts;
   const ul = document.getElementById("sc-lines");
   ul.innerHTML = "";
   studentLines(r).forEach((t) => {
@@ -903,7 +921,19 @@ document.addEventListener("keydown", (e) => {
 });
 document.getElementById("sc-reset").addEventListener("click", () => {
   if (cardStudentId && window.TeacherAccounts) {
-    TeacherAccounts.resetPassword(cardStudentId, document.getElementById("sc-name").textContent);
+    const r = currentRows.find((x) => x.id === cardStudentId);
+    TeacherAccounts.resetPassword(cardStudentId, r ? r.code : document.getElementById("sc-name").textContent);
+  }
+});
+// Block 159. A student's name, given or changed from the card.
+document.getElementById("sc-name-save").addEventListener("click", async () => {
+  if (!cardStudentId || !window.TeacherAccounts) return;
+  const id = cardStudentId;
+  const ok = await TeacherAccounts.rename(id, document.getElementById("sc-name-input").value,
+    document.getElementById("sc-name-status"));
+  if (ok) {
+    await loadRoster(currentClassId);
+    if (cardStudentId === id) openStudent(id);
   }
 });
 
@@ -985,7 +1015,7 @@ function exportCsv() {
   const cls = classesById.get(currentClassId);
   // One act at a time, the act chosen on the page (act), so the file says
   // which act its columns describe.
-  const header = ["student", "act", "status", "current_act", "objectives_done", "objectives_total",
+  const header = ["code", "name", "act", "status", "current_act", "objectives_done", "objectives_total",
     "pre_score", "pre_max", "pre_pct", "post_first_pct", "post_latest_score", "post_max",
     "post_latest_pct", "post_attempts", "gain_first", "gain_latest", "performance",
     "play_minutes", "last_active"];
@@ -993,7 +1023,7 @@ function exportCsv() {
   const lines = [header.join(",")];
   currentRows.forEach((r) => {
     lines.push([
-      r.name, currentAct, r.status, r.currentAct, r.objectivesDone, r.objectivesTotal,
+      r.code, r.realName, currentAct, r.status, r.currentAct, r.objectivesDone, r.objectivesTotal,
       r.pre ? r.pre.score : "", r.pre ? r.pre.max_score : "", num(r.prePct, 1),
       num(r.firstPostPct, 1), r.post ? r.post.score : "", r.post ? r.post.max_score : "",
       num(r.postPct, 1), r.post ? r.post.tries : "", num(r.gain, 1),

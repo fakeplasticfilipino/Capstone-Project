@@ -4502,8 +4502,8 @@ const visible = (page, sel) => page.evaluate((s) => {
     const [download] = await Promise.all([page.waitForEvent("download"), page.click("#export-btn")]);
     const csv = require("fs").readFileSync(await download.path(), "utf8").replace(/^\ufeff/, "").split(/\r\n/);
     ok("Download CSV saves the roster, a header and a line per student (S15)",
-       /\.csv$/.test(download.suggestedFilename()) && csv.length === 5 && /^student,act,status/.test(csv[0]) &&
-       csv.some((l) => /^mag-aaral03,1,completed,.*,20\.0,50\.0,64\.0,/.test(l)), csv);
+       /\.csv$/.test(download.suggestedFilename()) && csv.length === 5 && /^code,name,act,status/.test(csv[0]) &&
+       csv.some((l) => /^mag-aaral03,,1,completed,.*,20\.0,50\.0,64\.0,/.test(l)), csv);
     const cells = await page.evaluate(() => ["=1+1", "+63", "-x", "@a", "-12.5", "12", "Ana"].map(csvField));
     ok("a cell a spreadsheet would run as a formula is written as text; numbers stay numbers (Block 121)",
        JSON.stringify(cells) === JSON.stringify(["'=1+1", "'+63", "'-x", "'@a", "-12.5", "12", "Ana"]), cells);
@@ -7912,6 +7912,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("the accounts download as a spreadsheet: code, password, a column for the name",
        csv[0] === "code,password,name" && csv.length === 4 && /^rizal-01,\d{6},$/.test(csv[1]), csv);
 
+
     // A refusal from the function is said in plain words.
     await page.evaluate(() => { window.__TEST.fnError = "PREFIX_IN_USE"; });
     // The stub reads __TEST at call time through T, the same object.
@@ -7965,6 +7966,40 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.reload();
     await page.waitForFunction(() => !document.getElementById("dash").classList.contains("hidden"));
     ok("a reload stays on the tab in the address", (await tabsAt()).shown.join() === "tab-talaan");
+    // Block 159. Names: typed one a line, one account each, on the slips,
+    // the roster and the spreadsheet; and given later from the card. (The
+    // stub starts the class again after the reload above, so the codes are
+    // read off the slips.)
+    await page.click('#tabs [data-tab="students"]');
+    await page.fill("#acct-names", "Juan dela Cruz\n\nMaria, Santos\n");
+    await page.click("#acct-create");
+    await page.waitForFunction(() => [...document.querySelectorAll("#roster-body tr")]
+      .some((tr) => /^Maria, Santos/.test(tr.children[1].textContent)));
+    const named = await page.evaluate(() => ({
+      call: __CALLS.filter((c) => c.fn).pop().body,
+      slips: [...document.querySelectorAll("#acct-slips .slip")].map((sl) => [...sl.querySelectorAll(".slip-v")].map((v) => v.textContent)),
+      rows: [...document.querySelectorAll("#roster-body tr")].map((tr) => tr.children[1].textContent),
+      cleared: document.getElementById("acct-names").value === "",
+    }));
+    const juan = (named.slips.find((sl) => sl[3] === "Juan dela Cruz") || [])[1];
+    const maria = (named.slips.find((sl) => sl[3] === "Maria, Santos") || [])[1];
+    ok("names typed make one account each, the count following them, sent to the function (Block 159)",
+       named.call.count === 2 && JSON.stringify(named.call.names) === '["Juan dela Cruz","Maria, Santos"]' && named.cleared, named);
+    ok("the named accounts' slips carry the names, and the roster shows each name with its code (Block 159)",
+       Boolean(juan && maria) && named.rows.includes("Juan dela Cruz" + juan) && named.rows.includes("Maria, Santos" + maria), named);
+    const [dl2] = await Promise.all([page.waitForEvent("download"), page.click("#acct-csv")]);
+    const csv2 = require("fs").readFileSync(await dl2.path(), "utf8").replace(/^\ufeff/, "").split(/\r\n/);
+    ok("and in the spreadsheet, a name with a comma quoted (Block 159)",
+       csv2.some((l) => l === maria + "," + l.split(",")[1] + ',"Maria, Santos"'), csv2);
+    await page.click("#roster-body tr:has-text('Juan dela Cruz') .name-btn");
+    await page.fill("#sc-name-input", "Ana Reyes");
+    await page.click("#sc-name-save");
+    await page.waitForFunction((code) => [...document.querySelectorAll("#roster-body tr")]
+      .some((tr) => tr.children[1].textContent === "Ana Reyes" + code), juan);
+    const renamed = await page.evaluate(() => __CALLS.filter((c) => c.fn).pop().body);
+    ok("a name given from the student card goes through the function and shows on the roster (Block 159)",
+       renamed.action === "rename" && renamed.name === "Ana Reyes", renamed);
+    await page.click("#sc-close");
     await ctx.close();
 
     // The game's login takes the code on the slip, however it is typed.
