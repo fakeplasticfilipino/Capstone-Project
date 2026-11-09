@@ -4934,7 +4934,13 @@ body.shell-menu-open #auth-overlay {
 .quiz-choice.quiz-multi .qbadge {
   border-radius: 3px;
 }
+/* Across both columns of the phone's answer grid, and in the answers'
+   own size: the feedback form's 13px is a quarter smaller again in the
+   pixel font, too small for a student's own sentences. */
 .quiz-essay {
   width: 100%;
   box-sizing: border-box;
+  grid-column: 1 / -1;
+  font-size: 20px;
+  line-height: 1.2;
 }
