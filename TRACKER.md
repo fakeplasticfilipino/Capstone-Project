@@ -631,14 +631,22 @@ tags pasted into the related systems taken out, "an AAA", Hiraya's
 doubled title; the reference list rebuilt, 26 entries in order by
 author, its duplicates out (Flores as Florese, Lai and Hu's second,
 RSIS as Buenaflor, McCall's doubled text), Panga's placeholder out,
-the broken URLs joined. Waiting on the proponents: the survey's two
-Sakay items (the raw counts), Kieth or Keith (both spellings in the
-paper), the cover's date (May 2026, the proposal's), Figure 1.1's
-caption against the text (Danger in Pompeii; the caption's title not
-found), sources for Zeng et al. (2024), Sambo et al. (2025), Centeno et
-al. (2023) and Heritage Quest, cited and not in the list, and for
-Sakay's last words; then, once every phase is accepted in Word, the
-contents, the list of figures and the page numbers. Items 31 to 33.
+the broken URLs joined. Then, at the proponent's word (10 Nov 2026):
+the name Kieth throughout; the survey's two Sakay items taken as the
+same counts over all 44 (35 and 36: 79.5% and 81.8%, the earlier
+figures having been worked over 43); the cover and the approval sheet
+dated November, 2026 (the proposal defense's endorsement form keeps
+May); Figure 1.1 and its line in the list of figures named Danger in
+Pompeii; four sources found and added in order (Centeno et al., 2023;
+Sambo, Shishah and Isiaku, 2025; Zeng, Sun, Looi and Fan, 2024;
+GMANews.TV, 2008, for the last words, cited in the Act IV storyboard).
+Still open: Heritage Quest, cited twice and not found anywhere (the
+proponents to name the source or let the two sentences go); whether
+Sambo et al. say what the paper says of disabilities and data privacy
+(only the abstract was seen); and, once every phase is accepted in
+Word, the contents, the list of figures and the page numbers. A
+picture of the calendar as accepted: docs-private/documents/
+phase4-figures/calendar-preview.png. Items 31 to 33.
 
 ## Next action
 
