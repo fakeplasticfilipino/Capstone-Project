@@ -3051,6 +3051,17 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("\"Sa papel nila, amnestiya. Sa batas nila, bandido.\"",
        c.lines.includes("Macario: Sa papel nila, amnestiya. Sa batas nila, bandido."), c.lines);
     ok("the court in Cavite", await waitForScene(page, "hukuman", 30000));
+    // Block 154: the judge presides, raised on the dais behind his bench,
+    // drawn, at everyone's height; the bench in front of him and behind
+    // Macario.
+    ok("the judge sits raised behind his bench, which stands between him and Macario (Block 154)",
+       await page.evaluate(() => {
+         const n = document.getElementById("npc-hukom");
+         const bench = [...document.querySelectorAll(".mid-piece")].find((e) => /luklukan/.test(e.style.backgroundImage));
+         const z = (e) => Number(getComputedStyle(e).zIndex) || 0;
+         return Boolean(n && bench && n.style.marginBottom === "44px" && n.style.height === "134px" &&
+           !/hukom.png/.test(n.textContent) && z(n) < z(bench) && z(bench) < z(document.getElementById("player")));
+       }));
     c = await readLines(page, 5, 3000);
     await playOn(page, "state.flags.a4_saHukuman === true && !cutscenePlaying", 20000);
     await settle(page);

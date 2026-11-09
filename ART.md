@@ -215,7 +215,8 @@ Done and in the game. Nothing here needs drawing.
                   built from their kits (sala-kit, hukuman-kit). The
                   judge was taken out on 26 Oct; the judge seated on a
                   plain chair (hukom, a still facing the front), 9 Nov
-                  2026, Block 154
+                  2026, Block 154, raised behind the bench and dais cut
+                  then from hukuman-kit (luklukan)
 
     Props
         Act I     Tondo's houses, street props and doors

@@ -6915,6 +6915,19 @@ one is what a court looks like. The prompt's own target (seated, a
 standing man's head to waist) could not be met by this picture at any
 size without his head shrinking to half of everyone else's.
 
+The judge, again (the proponent, the same day: far too small, and a
+judge sits raised behind a bench). The court's kit of 25 Oct already
+held the bench on its dais, never cut because the 21 Oct judge brought
+his own; it is cut now (hukuman/luklukan.png, the desk and the dais,
+the kit's red chair left out since the judge sits on his own). He is
+drawn at everyone's 134 and raised onto the dais (an NPC's lift, a
+margin so it holds whether a body is placed by translate or left), and
+the bench is a front: "mid" piece: over him (an NPC's behind, z-index
+-1 inside #world, which is its own stacking context, so still over the
+walls) and under Macario (1), who walks up to it to answer. The guide's
+arrow rises with the lift. Head and shoulders over the bench, a little
+above everyone standing below: the court as the period drew it.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

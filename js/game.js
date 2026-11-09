@@ -1531,7 +1531,10 @@ function buildLayeredBackdrop(scene) {
   });
 
   (scene.buildings || []).forEach((b) => {
-    const el = placedPicture(b, "street-building" + (b.front ? " front-piece" : ""),
+    // Block 154: front: "mid" stands in front of an NPC with behind (the
+    // judge's bench) and behind Macario, who walks up to it.
+    const front = b.front === "mid" ? " mid-piece" : b.front ? " front-piece" : "";
+    const el = placedPicture(b, "street-building" + front,
       `calc(var(--ground-level) + ${b.lift || 0}px)`);
     (b.front ? world : layer).appendChild(el);
     actElements.push(el);
@@ -1739,6 +1742,13 @@ function buildNpcs(token) {
     // NPC_WIDTH wide; only the picture changes size.
     const npcHeight = npc.displayHeight || DISPLAY_HEIGHT;
     mountBody(el, npc.x, NPC_WIDTH, npcHeight);
+    // Block 154. An NPC may stand raised off the floor, lift world px (the
+    // judge on his dais, behind the bench). A margin, so it holds whether
+    // placeBody writes translate or left; nothing reads an NPC's height
+    // for touching, which is edge to edge along the road.
+    if (npc.lift) el.style.marginBottom = npc.lift + "px";
+    // ...and behind a front: "mid" piece (the bench), which Macario is not.
+    if (npc.behind) el.classList.add("behind-pieces");
     if (npc.hidden) el.style.display = "none";
 
     if (npc.scenery) {
@@ -8310,7 +8320,7 @@ function exitIsOpen(exit) {
 function guideNpcPoint(npc) {
   return {
     x: npc.x + NPC_WIDTH / 2,
-    bottom: GROUND_LEVEL + (npc.displayHeight || DISPLAY_HEIGHT) + GUIDE_MARKER_ABOVE,
+    bottom: GROUND_LEVEL + (npc.lift || 0) + (npc.displayHeight || DISPLAY_HEIGHT) + GUIDE_MARKER_ABOVE,
     label: npc.label || "",
   };
 }

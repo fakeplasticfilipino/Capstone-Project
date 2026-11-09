@@ -15,8 +15,8 @@ clothes and the taho seller's disguise, each moved and scaled onto
 Macario's template (fit-skin.py) and animated by skeleton.js with its
 own reading (the cape and the sash tails stay with the body); the stage
 clothes and the disguise now draw him in them (the gold tint gone), the
-Katipunero's clothes sold at 70. The judge seated on his chair, sized
-by his head (displayHeight 105). ART.md owes nothing. Not yet seen on
+Katipunero's clothes sold at 70. The judge presides from a raised bench (the court kit's
+bench and dais, cut; an NPC's lift and behind), at everyone's height. ART.md owes nothing. Not yet seen on
 the phone. Before it, 7 Nov 2026, Block 153: the database grades every test
 (schema v15, submit_test); a score can no longer be written from the
 console. Students still see every question, answer and score. Acts II

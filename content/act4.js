@@ -90,12 +90,21 @@
   // The judge. The artist's judge at his bench (Hukom.png, 21 Oct 2026)
   // was too big and was taken out (26 Oct 2026, the proponent). Block
   // 154: the proponent's judge of 9 Nov 2026, seated on a plain chair,
-  // facing the front, a still like the Mananahi. Drawn with a bigger head
-  // than the others (16% of his seated height, Van Schaick's 13% of his
-  // standing 134), so he is sized by his head: HUKOM_HEIGHT.
+  // facing the front, a still like the Mananahi. He presides: seated on
+  // the dais (HUKOM_LIFT) behind the bench, which stands in front of him
+  // (LUKLUKAN), so his head and shoulders show over it, at the height
+  // everyone is drawn (the proponent, 9 Nov 2026: at 105 he was far too
+  // small).
   const HUKOM = { src: "assets/sprites/characters/hukom.png", frames: 1, fps: 1,
     contentTop: 2, contentHeight: 545, footX: 129 };
-  const HUKOM_HEIGHT = 105;
+  const HUKOM_X = 900;
+  const HUKOM_HEIGHT = 134;
+  // The bench and its dais, cut from the court's kit (hukuman-kit, the
+  // artist's of 25 Oct 2026; Block 154), centred on him: the desk 66 of
+  // its 100, the dais the rest, which is where he sits.
+  const LUKLUKAN_HEIGHT = 100;
+  const LUKLUKAN_WIDTH = 267;
+  const HUKOM_LIFT = 10 + 34;
   const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
   const AMERIKANO = window.SOLDIER_SHEETS.amerikano;       // content/enemies.js, 24 Oct 2026
   // Block 120. The crowd in Manila, seen and not only heard: two
@@ -1709,7 +1718,12 @@
         // Block 151: from the court's kit (HUKUMAN_PIECES), the judge's
         // bench his own picture.
         layers: [{ src: "assets/backgrounds/rooms/wall-palitada.png", rate: 1, lift: 70, height: 0.9, filter: SALA_LIGHT }],
-        buildings: HUKUMAN_PIECES,
+        // Block 154: the judge's bench in front of him (mid: and behind
+        // Macario, who walks up to it), on its dais.
+        buildings: [...HUKUMAN_PIECES, {
+          src: "assets/sprites/rooms/hukuman/luklukan.png", height: LUKLUKAN_HEIGHT, lift: 10, front: "mid",
+          x: HUKOM_X + 40 - LUKLUKAN_WIDTH / 2,
+        }],
         ground: { src: "assets/backgrounds/rooms/floor-narra.png", lip: 16, filter: SALA_LIGHT },
         panelWidth: ROOM,
         noRanged: true,
@@ -1725,7 +1739,8 @@
         ],
         npcs: [
           {
-            id: "hukom", x: 900, label: "Hukom", animation: HUKOM, displayHeight: HUKOM_HEIGHT,
+            id: "hukom", x: HUKOM_X, label: "Hukom", animation: HUKOM, displayHeight: HUKOM_HEIGHT,
+            lift: HUKOM_LIFT, behind: true,
             interactLabel: "Sumagot",
             interactIcon: "i-talk",
             dialogueSets: [],

@@ -314,6 +314,17 @@ html, body {
 .front-piece {
   z-index: 3;
 }
+/* Block 154. A piece in front of whoever stands behind it (an NPC with
+   behind: the judge at his bench) and behind everyone else: over the
+   NPCs (auto, painted at 0, earlier in #world) and under #player (1).
+   #world is its own stacking context (will-change), so the NPC at -1
+   is still over the room's walls. */
+.mid-piece {
+  z-index: 0;
+}
+.entity.behind-pieces {
+  z-index: -1;
+}
 .front-grass {
   position: absolute;
   left: 0;

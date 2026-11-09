@@ -1003,7 +1003,8 @@ offset }, or items in place of src: single pictures { src, x, scale }
 placed along the layer, as Tondo's trees are; in the skyline layer so
 night and memory tint them),
 buildings ({ src, x, scale or height, lift, flip, filter, front }:
-behind the people, or in front of them with front), ground: { src,
+behind the people, or in front of them with front, or with front: "mid"
+in front of an NPC declaring behind and behind everyone else; Block 154), ground: { src,
 lip, filter } (a picture drawn whole at the strip's height, its lip
 above the feet; filter shades a room's floor with its wall), frontGrass, and panelWidth: the shadow trees stand at every
 multiple of it, where a street's joins were, so content keeps everyone
@@ -1066,6 +1067,11 @@ NPC shape:
       nearSound: "assets/audio/sfx/x.mp3",       optional; loops while near
       displayHeight: 120,                        optional; drawn this tall
                                                  (Block 57)
+      lift: 44, behind: true,                    optional; stands raised this
+                                                 many world px, and behind a
+                                                 building with front: "mid"
+                                                 (the judge on his dais,
+                                                 behind his bench; Block 154)
       speakers: ["Siga", "Mga Siga"],            optional; speaker names its
                                                  bust answers to besides its
                                                  label (a decoration: its
