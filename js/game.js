@@ -8737,6 +8737,15 @@ let autosaveTimer = null; // guards against stacking a second interval
 
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+  // Block 155. The form is novalidate: the browser's own bubble for an
+  // empty field is in the phone's language (English on most), and the
+  // student reads Tagalog.
+  if (!authEmail.value.trim() || !authPassword.value) {
+    authStatus.textContent = "Ilagay ang iyong code at password.";
+    authStatus.className = "";
+    (authEmail.value.trim() ? authPassword : authEmail).focus();
+    return;
+  }
   authSubmit.disabled = true;
   authStatus.textContent = "Naglo-load...";
   authStatus.className = "";
@@ -9062,6 +9071,9 @@ async function startAtStoryPoint(jumpId) {
     for (const id of jump.items || []) {
       if (await Inventory.grant(id)) Inventory.equip(id);
     }
+    // Block 155: carried, not worn (the stage clothes after Act I, in his
+    // bag as they are for a student who played there).
+    for (const id of jump.carry || []) await Inventory.grant(id);
   }
 }
 

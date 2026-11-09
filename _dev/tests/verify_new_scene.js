@@ -2148,6 +2148,19 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
   if (part("guest", "a guest: the same opening, and on into Act II")) {
     // ---------------------------------------------------------------
     console.log("\nGuest");
+    // Block 155: an empty login is answered in Tagalog, not with the
+    // browser's own (English) bubble.
+    {
+      const l = await newPage(browser, { session: null });
+      await l.page.click("#shell-start");
+      await l.page.waitForTimeout(300);
+      await l.page.click("#auth-submit");
+      await l.page.waitForTimeout(200);
+      ok("an empty login says so in Tagalog, and signs nobody in (Block 155)", await l.page.evaluate(() =>
+        document.getElementById("auth-form").noValidate && !Game.isSignedIn() &&
+        document.getElementById("auth-status").textContent === "Ilagay ang iyong code at password."));
+      await l.ctx.close();
+    }
     const g = await newPage(browser, { session: null });
     await g.page.click("#shell-guest");
     await g.page.waitForTimeout(700);
@@ -2199,11 +2212,12 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await gpage.click("#act-screen-btn");
     for (let t = 0; t < 8000 && !(await line(gpage)); t += 100) await gpage.waitForTimeout(100);
     const into = await gpage.evaluate(() => ({ act: Acts.current, scene: currentSceneId, guest: Game.isGuest(),
-      clothes: Inventory.owns("damit-entablado"), quiz: !document.getElementById("quiz").classList.contains("hidden"),
+      clothes: Inventory.owns("damit-entablado"), worn: Inventory.equipped("outfit"), quiz: !document.getElementById("quiz").classList.contains("hidden"),
       trivia: !document.getElementById("act-screen").classList.contains("hidden"),
       written: ["game_progress", "act_progress", "assessment_scores", "game_sessions"].reduce((a, t) => a + (__DB[t] || []).length, 0) }));
-    ok("then straight into Act II's opening at the press, still a guest, the stage clothes kept, no test, nothing written",
-       into.act === 2 && into.scene === "imprenta" && into.guest && into.clothes && !into.quiz && !into.trivia &&
+    // Block 155: kept in the bag, taken off: Act II is in his own clothes.
+    ok("then straight into Act II's opening at the press, still a guest, the stage clothes kept but off, no test, nothing written",
+       into.act === 2 && into.scene === "imprenta" && into.guest && into.clothes && !into.worn && !into.quiz && !into.trivia &&
        into.written === 0 && Boolean(await line(gpage)), into);
     // Block 121. The corner shop in Act II, and a guest buying in memory:
     // the anting-anting's fourth heart, nothing written.
@@ -2364,8 +2378,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
          kit.drawn === kit.want && kit.want >= 10 && kit.tops.every((d) => d !== null && Math.abs(d) <= 4) && kit.trees === 0, kit);
       // The meter at twice its old speed (Block 113): a guard who sees him
       // on the move fills it in well under a second and a half. Standing
-      // still in the stage clothes (worn since Act I) still slows it
-      // fivefold. Measured with the guard held still and the catch itself
+      // still in the stage clothes still slows it fivefold: since Block
+      // 155 Act II opens in his own clothes and the student may put them
+      // back on, as here. Measured with the guard held still and the catch itself
       // kept from happening (the meter is read, then emptied).
       const meter = (still) => page.evaluate((still) => new Promise((resolve) => {
         const g = GUARDS.find((x) => x.id === "guardia-loob-1");
@@ -2390,7 +2405,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       const seen = await meter(false);
       ok("one who sees him fills his meter in about 0.7 s (Block 113)",
          seen.rate === 0.024 && seen.alert >= 0.95 && seen.ms < 1100, seen);
+      await page.evaluate(() => Inventory.equip("damit-entablado"));
       const disguised = await meter(true);
+      await page.evaluate(() => Inventory.unequip("outfit"));
       ok("standing still in the stage clothes he is still noticed far more slowly",
          disguised.alert < 0.5 && disguised.ms >= 1300, disguised);
       await settle(page);
@@ -2815,7 +2832,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        c.lines.includes("Mga Kawal: Mabuhay ang Republika ng Katagalugan!") &&
        c.lines.includes("Macario: Hindi tayo magpapagupit hangga't hindi malaya ang bayan."), c.lines);
     const ownClothes = await page.evaluate(() => Inventory.equipped("outfit"));
-    ok("the disguise off: his own clothes again", ownClothes === "damit-entablado", ownClothes);
+    // Block 155: his own clothes are his camisa, not the stage clothes.
+    ok("the disguise off: his own clothes again", ownClothes === null, ownClothes);
     ok("the Republic's soldiers stand by the flag (Block 120)", await page.evaluate(() =>
       ["kawal-1", "kawal-2", "kawal-3"].every((id) => decorationEl(id) && decorationEl(id).style.display !== "none")));
     // The Constabulary come for the flag: pressed through to the first

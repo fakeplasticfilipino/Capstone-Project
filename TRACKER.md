@@ -9,7 +9,13 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Nov 2026, Block 154: the last owed art in. The
+Last updated: 9 Nov 2026, Block 155: the pre-examination list
+(Finished lists), six items from a check of the whole game (both suites
+whole, all 50 story points at a phone's size, the monkey, the dashboard,
+the database's advisors). From Act II on Macario is in his own camisa
+again (the stage clothes, drawn since Block 154, had dressed him as the
+play's prince to the gallows); an empty login answered in Tagalog; this
+file brought up to date; the phone checklist in Next action. Before it, Block 154: the last owed art in. The
 proponent's four stills of 9 Nov: the stage clothes, the Katipunero's
 clothes and the taho seller's disguise, each moved and scaled onto
 Macario's template (fit-skin.py) and animated by skeleton.js with its
@@ -413,15 +419,17 @@ Scenes:
 
 Finish:
 
-    [ ] both suites in full at a student's speed (run.js --real), and
-        every outdoor scene seen on the phone (?dev=1)
-    [ ] the old street and field paintings out of assets/ (kept in
-        docs-private/art-delivered/), COMPLETED in ART.md updated
+    [x] both suites in full at a student's speed (run.js --real):
+        1604 passed, 0 failed, 9 Nov 2026 (Block 155)
+    [ ] every outdoor scene seen on the phone (?dev=1; Next action)
+    [x] the old street and field paintings out of assets/ (kept in
+        docs-private/art-delivered/), COMPLETED in ART.md updated (7 Nov
+        2026, Block 152)
 
 Dates: art and engine by 25 Oct; Tondo by 28 Oct; the other eight
 scenes 29 Oct to 7 Nov; testing 8 to 11 Nov; freeze 12 Nov.
 
-## Block 143: rooms built from kits (IN PROGRESS)
+## Block 143: rooms built from kits (COMPLETE)
 
 The proponent's choice of 22 Oct 2026 (DECISIONS.md, Block 143): every
 room built from a wall, a floor and its furniture (ART.md, the rooms
@@ -436,9 +444,42 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
         shelves under its platforms, raised to 152
     [x] barberya, calle-gunao, selda (Act III, 24 Oct 2026, Block 147),
         and Act IV's selda from the same kit; the selda painting retired
-    [ ] sala, hukuman (Act IV): sala-kit (delivered), hukuman-kit
+    [x] sala, hukuman (Act IV): from sala-kit and hukuman-kit (Block
+        151), the judge's bench and dais cut from it (Block 154)
 
 ## Next action
+
+Before the freeze (12 Nov 2026), the proponent, on the phone. The
+suites cannot judge how it looks: everything since Block 142 has been
+checked by them and by screenshots at a phone's size (Block 155), not
+yet by eye on a device. One sitting, from a private tab, in landscape,
+sound on, https://fakeplasticfilipino.github.io/Capstone-Project/?dev=1,
+each point from the list on the title screen and Simulan dito:
+
+    1:dula, 1:baldovino      the stage clothes drawn (red tunic, cape,
+                             sash), no gold tint (Block 154)
+    1:kasama                 Act I's street in layers
+    2:simula                 the press from its kit; Macario in his own
+                             camisa, not the costume (Block 155)
+    2:ronda                  climb a shelf in front of a guard: unseen
+    2:sanjuan, 2:panakot     the Sierra layers, the polvorin, the river
+    3:labanan                the hills, the Americans fight
+    3:balatkayo              the taho seller's clothes (Block 154)
+    3:barberya, 3:proklama   the barbershop's kit; the plaza
+    3:morong                 the red flag; the disguise off at the vow
+    4:himpilan, 4:malabon    the post at night; Malabon at dusk
+    4:hukuman                the judge raised behind his bench, Macario
+                             in front of it when he answers (Block 154)
+    4:umaga                  Bilibid's yard and the gallows
+    menu                     Mga Kabanata's four cards; Pangunahing Menu
+    shop                     after Act I's savings: the Katipunero's
+                             clothes (70) and the general's uniform (80)
+    login                    Magsimula, then Mag-log in with nothing
+                             typed: "Ilagay ang iyong code at password."
+
+Failure, anywhere: a dashed box, a figure floating or sunk, the costume
+in Acts II to IV unless chosen from the bag, an English message. The
+detailed checks of each block follow; take a block's out once seen.
 
 Block 142 (above) comes first. Then, in order.
 
@@ -477,7 +518,7 @@ a painting anywhere, a dashed box, someone behind a building's piece
 they should stand in front of, feet off the ground.
 
 Block 151 (?dev=1): Act IV's court (the rail, the clock, the flag;
-the judge a placeholder until drawn again) and the sala (the banquet, the flag behind Van
+the judge raised behind his bench since Block 154) and the sala (the banquet, the flag behind Van
 Schaick); Gómez walking into the camp; Balara's fire in Act II; the
 pistol in Macario's hand when he shoots, the shot leaving its barrel;
 the itak's blade when he slashes. Failure: a dashed box anywhere, the
@@ -576,9 +617,10 @@ proponent's word, content/questions.js holds a built-in trivia card
 and ten matched pre-test and post-test pairs for every act, so each
 act has a test before the teacher writes one.
 
-5. Art from the artist: ART.md (Backgrounds, Sprites, Props, by act,
-since Block 131 written for the artist), eighteen pictures since 24
-Oct 2026: Act II's campfire for Balara, and none of Act I's (four rooms, now asked as
+5. Art (COMPLETE since Block 154, 9 Nov 2026: ART.md owes nothing).
+What follows is the history of the asking. Art from the artist: ART.md
+(Backgrounds, Sprites, Props, by act, since Block 131 written for the
+artist), eighteen pictures as of 24 Oct 2026: Act II's campfire for Balara, and none of Act I's (four rooms, now asked as
 kits: the barbershop, Calle Gunao, the hall, the court; Act III's
 four: the American soldier, the American in the barber's chair, the
 Constabulary and the Katagalugan's flag; Act IV's nine: Gómez, Van
@@ -617,6 +659,12 @@ is, at the proponent's word (9 Oct 2026): no rewrite. (CLOSED)
 Each was agreed item by item and worked to the end; what was built and
 why is in DECISIONS.md under its block.
 
+    Pre-examination list, 9 Nov 2026 six items, Block 155 (COMPLETE
+                                     but the phone checks, Next action):
+                                     his own clothes from Act II, the
+                                     empty login in Tagalog, this file,
+                                     --real, the phone list, the
+                                     password warning
     Improvement list, 9 Oct 2026     twelve items, Block 128 (COMPLETE;
                                      4 dropped, Act I's files first)
     Polish list, 4 Oct 2026          fourteen items, Block 112 (COMPLETE;
@@ -1220,9 +1268,18 @@ prompts. (IN PROGRESS)
 
 ## Known problems
 
-Art still owed (ART.md): what is not yet drawn shows as the
-placeholder. Acts I and II's rooms are built from kits (Block 143); Acts
-III and IV's rooms and the American soldier wait on theirs. (KNOWN)
+Art: none owed since Block 154 (ART.md). Should any picture go
+missing, it shows as the dashed placeholder naming its file. (CLOSED)
+
+The database's security advisor warns "Leaked password protection
+disabled". It is off on purpose and must stay off: the dashboard gives
+each student six random digits (Block 132), and many six-digit numbers
+are on the leaked lists, so with it on the account maker would refuse
+passwords at random. It is a dashboard toggle, the proponent's (CLAUDE.md,
+Standing decisions). Its other warnings are by design too: the reset
+and the grading run as their owner (reset_my_play_data, can_reset_my_data,
+submit_test; Blocks 5, 153), and the "multiple permissive policies" are
+the student's and the teacher's read rules side by side. (BY DESIGN)
 
 Loading on a slow connection: fixed in Blocks 62 and 78 (a student
 cannot go in with art missing), and in Block 105 (the game kept whole on

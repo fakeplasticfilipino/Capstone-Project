@@ -631,7 +631,8 @@ world belongs to the scene.
                                                  (Block 68)
       devJumps: [{ id, label, scene, x, facing,  optional; points a tester
                    flags, currency, items,       starts a guest from, with
-                   task }],                      ?dev=1 (Block 108)
+                   carry, task }],               ?dev=1 (Block 108); carry:
+                                                 granted, not worn (Block 155)
       startingQuests: [{ id, text }],
       scenes: [ {...}, {...} ]
     }
@@ -823,7 +824,9 @@ from any of them; a signed-in student continues their own part
 never kept, because one save holds every act's flags and a jump back
 in it would throw away what came after. Each sets its
 flags and currency before the scene is built, stands Macario at x, and
-hands over its items (granted and worn, as the story does); the beat
+hands over its items (granted and worn, as the story does; carry,
+granted only, for what he has in his bag and is not wearing, the stage
+clothes after Act I, Block 155); the beat
 it leads to then plays as after a reload. A guest writes nothing, so
 no save can be touched. Each point's flags are the previous point's
 plus what the story sets in between (content/act1.js, DEV_*), and
@@ -2777,6 +2780,9 @@ look, by system:
                                           notHead)
     the general's uniform, the flag      Block 148 (a skin sold at 80;
                                           darkJacket)
+    the pre-examination list: his own     Block 155 (the stage clothes
+      clothes from Act II, the login      off at Act II's card; carry;
+                                          novalidate)
     the story's outfits drawn, the        Block 154 (fit-skin.py, the
       Katipunero's clothes, the judge     skins' readings; the judge
                                           sized by his head)

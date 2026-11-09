@@ -376,6 +376,13 @@
   async function theFirstPage() {
     setCutscene(true);
     turnPlayer(-1);
+    // Block 155. Two years on, he is in his own clothes: the stage
+    // clothes (Act I's) go back into the bag under the card, there to
+    // wear if the student chooses. Since Block 154 they draw him as the
+    // play's prince, which he is not at the press, in the Cry or after.
+    if (window.Inventory && Inventory.equipped && Inventory.equipped("outfit") === "damit-entablado") {
+      Inventory.unequip("outfit");
+    }
     await playIntertitle(["Tondo, Agosto 1896"], { startBlack: true });
     await wait(300);
     await movePlayer(PRESS_X + 110, 200);
@@ -943,8 +950,9 @@
   const HINT_SPOTS = [2600, { x: 4500, y: HINT_HIGH }, { x: 6100, y: HINT_HIGH }];
 
   // ---- Story points (?dev=1, Block 108) ---------------------------------
-  // Each the flags set by then, built on the one before. Each guest wears
-  // the stage clothes, which Act I handed over and he still wears.
+  // Each the flags set by then, built on the one before. Each guest
+  // carries the stage clothes Act I handed over (carry: in the bag, not
+  // worn, since Block 155: Act II opens in his own clothes).
   const DEV_PRINTED = { a2_simula: true, a2_nakalimbag: true, a2_umuwiNa: true };
   const DEV_SWEEP = Object.assign({}, DEV_PRINTED, { a2_nangako: true, a2_paghuli: true });
   const DEV_RAID = Object.assign({}, DEV_SWEEP, { a2_napansin: true, a2_nakitaAngRonda: true });
@@ -960,31 +968,31 @@
     a2_saLaguna: true });
   const CLOTHES = ["damit-entablado"];
   const DEV_JUMPS = [
-    { id: "simula", items: CLOTHES, label: "Ang simula: ang Kalayaan (Agosto 1896)", scene: "imprenta",
+    { id: "simula", carry: CLOTHES, label: "Ang simula: ang Kalayaan (Agosto 1896)", scene: "imprenta",
       flags: {}, task: "Maglimbag ng Kalayaan" },
-    { id: "uwi", items: CLOTHES, label: "Pauwi kay Nanay", scene: "tondo",
+    { id: "uwi", carry: CLOTHES, label: "Pauwi kay Nanay", scene: "tondo",
       x: PRESS_DOOR_X - 60, facing: -1, flags: DEV_PRINTED, task: "Umuwi sa bahay" },
-    { id: "bahay", items: CLOTHES, label: "Sa bahay: si Nanay", scene: "bahay",
+    { id: "bahay", carry: CLOTHES, label: "Sa bahay: si Nanay", scene: "bahay",
       x: ROOM - 160, facing: -1, flags: DEV_PRINTED, task: "Umuwi sa bahay" },
-    { id: "paghuli", items: CLOTHES, label: "Ang paghuli: pabalik sa imprenta", scene: "tondo",
+    { id: "paghuli", carry: CLOTHES, label: "Ang paghuli: pabalik sa imprenta", scene: "tondo",
       x: HOME_X + 60, facing: 1, flags: DEV_SWEEP, task: "Bumalik sa imprenta" },
-    { id: "ronda", items: CLOTHES, label: "Ang ronda sa imprenta", scene: "imprenta",
+    { id: "ronda", carry: CLOTHES, label: "Ang ronda sa imprenta", scene: "imprenta",
       x: PRESS_ENTER_X, facing: -1, flags: DEV_RAID, task: "Kunin ang talaan ng mga kasapi" },
-    { id: "gabi", items: CLOTHES, label: "Ang gabi: pauwi kay Nanay", scene: "tondo",
+    { id: "gabi", carry: CLOTHES, label: "Ang gabi: pauwi kay Nanay", scene: "tondo",
       x: BEHIND_PRESS_X, facing: -1, flags: DEV_NIGHT, task: "Balikan si Nanay" },
-    { id: "habol", items: CLOTHES, label: "Ang habulan: papunta sa bundok", scene: "tondo",
+    { id: "habol", carry: CLOTHES, label: "Ang habulan: papunta sa bundok", scene: "tondo",
       x: SPOTTED_X, facing: -1, flags: DEV_CHASE, task: "Tumakas papunta sa bundok" },
-    { id: "sedula", items: CLOTHES, label: "Pugad Lawin: ang mga sedula", scene: "pugad-lawin",
+    { id: "sedula", carry: CLOTHES, label: "Pugad Lawin: ang mga sedula", scene: "pugad-lawin",
       flags: DEV_CRY, task: "Punitin ang sedula" },
-    { id: "sanjuan", items: CLOTHES, label: "San Juan del Monte: ang paglusob", scene: "san-juan",
+    { id: "sanjuan", carry: CLOTHES, label: "San Juan del Monte: ang paglusob", scene: "san-juan",
       flags: DEV_CHARGE, task: "Lumusob sa San Juan del Monte" },
-    { id: "atras", items: CLOTHES, label: "San Juan del Monte: ang pag-atras", scene: "san-juan",
+    { id: "atras", carry: CLOTHES, label: "San Juan del Monte: ang pag-atras", scene: "san-juan",
       x: RETREAT_START, facing: -1, flags: DEV_RETREAT, task: "Umatras sa ilog" },
-    { id: "panakot", items: CLOTHES, label: "Ilog Nangka: ang mga panakot", scene: "nangka",
+    { id: "panakot", carry: CLOTHES, label: "Ilog Nangka: ang mga panakot", scene: "nangka",
       flags: DEV_STRAW, task: "Itayo ang mga panakot" },
-    { id: "balara", items: CLOTHES, label: "Balara: ang Supremo", scene: "balara",
+    { id: "balara", carry: CLOTHES, label: "Balara: ang Supremo", scene: "balara",
       flags: DEV_BALARA, task: "Kausapin ang Supremo" },
-    { id: "laguna", items: CLOTHES, label: "Laguna: si Jacinto", scene: "laguna",
+    { id: "laguna", carry: CLOTHES, label: "Laguna: si Jacinto", scene: "laguna",
       flags: DEV_LAGUNA, task: "Sumama kay Jacinto sa Laguna" },
   ];
 

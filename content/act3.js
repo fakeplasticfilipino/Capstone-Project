@@ -923,9 +923,10 @@
       { speaker: "Macario (sa isip)", text: "Tatlong taon akong nagtago sa balatkayo." },
       { speaker: "Macario (sa isip)", text: "Ngayon, makikilala nila ako kahit sa malayo." },
     ]);
-    // His own clothes again: no more disguises.
-    if (window.Inventory && Inventory.equip && Inventory.owns && Inventory.owns("damit-entablado")) {
-      Inventory.equip("damit-entablado");
+    // His own clothes again: no more disguises. Since Block 155 that is
+    // his camisa, the disguise taken off (not the stage clothes put on).
+    if (window.Inventory && Inventory.equipped && Inventory.equipped("outfit") === "balatkayo") {
+      Inventory.unequip("outfit");
     }
     state.flags.a3_republika = true;
     markDirty();
@@ -1009,37 +1010,37 @@
   const DEV_MORONG = Object.assign({}, DEV_CELL, { a3_saSelda: true, a3_pinalaya: true, a3_saMorong: true });
   const DEV_REPUBLIC = Object.assign({}, DEV_MORONG, { a3_itinatag: true, a3_watawat: true, a3_republika: true });
   const CLOTHES = ["damit-entablado"];
-  const DISGUISE = ["damit-entablado", "balatkayo"];
+  const DISGUISE = ["balatkayo"];
   const DEV_JUMPS = [
-    { id: "simula", items: CLOTHES, label: "Ang simula: ang balita (Pebrero 1899)", scene: "burol",
+    { id: "simula", carry: CLOTHES, label: "Ang simula: ang balita (Pebrero 1899)", scene: "burol",
       flags: {}, task: "Bantayan ang kampo" },
-    { id: "labanan", items: CLOTHES, label: "Ang burol: ang labanan", scene: "burol",
+    { id: "labanan", carry: CLOTHES, label: "Ang burol: ang labanan", scene: "burol",
       x: LOOKOUT_X - 100, facing: 1, flags: DEV_SHOT, task: "Labanan ang mga Amerikano" },
-    { id: "tondo", items: CLOTHES, label: "Tondo, 1899: ang sulat", scene: "tondo",
+    { id: "tondo", carry: CLOTHES, label: "Tondo, 1899: ang sulat", scene: "tondo",
       x: ARRIVE_X, facing: -1, flags: DEV_TONDO, task: "Basahin ang sulat ni Isko" },
-    { id: "maryam", items: CLOTHES, label: "Tondo, 1899: si Maryam", scene: "tondo",
+    { id: "maryam", carry: CLOTHES, label: "Tondo, 1899: si Maryam", scene: "tondo",
       x: 13000, facing: 1, flags: DEV_LETTER, task: "Humingi ng tulong kay Maryam" },
-    { id: "balatkayo", items: DISGUISE, label: "Tondo, 1899: ang balatkayo", scene: "tondo",
+    { id: "balatkayo", carry: CLOTHES, items: DISGUISE, label: "Tondo, 1899: ang balatkayo", scene: "tondo",
       x: 12000, facing: -1, flags: DEV_DRESSED, task: "Makarating sa barberya nang hindi nakikilala" },
-    { id: "barberya", items: DISGUISE, label: "Ang barberya: ang suking Amerikano", scene: "barberya",
+    { id: "barberya", carry: CLOTHES, items: DISGUISE, label: "Ang barberya: ang suking Amerikano", scene: "barberya",
       x: ROOM - 160, facing: -1, flags: DEV_BARBER, task: "Gupitan ang suki" },
-    { id: "aral", items: DISGUISE, label: "Ang barberya: ang aral ng Supremo", scene: "barberya",
+    { id: "aral", carry: CLOTHES, items: DISGUISE, label: "Ang barberya: ang aral ng Supremo", scene: "barberya",
       x: SILYA_X + 60, facing: 1, flags: DEV_NIGHT, task: "Ituro ang aral ng Supremo" },
-    { id: "proklama", items: DISGUISE, label: "Abril 1901: ang proklama", scene: "bayan",
+    { id: "proklama", carry: CLOTHES, items: DISGUISE, label: "Abril 1901: ang proklama", scene: "bayan",
       x: 250, facing: 1, flags: Object.assign({}, DEV_TOWN, { a3_saBayan: true }), task: "Basahin ang proklama" },
-    { id: "gunao", items: DISGUISE, label: "Calle Gunao, 1901: ang petisyon", scene: "calle-gunao",
+    { id: "gunao", carry: CLOTHES, items: DISGUISE, label: "Calle Gunao, 1901: ang petisyon", scene: "calle-gunao",
       x: 440, facing: 1, flags: DEV_GUNAO, task: "Papirmahin ang petisyon" },
-    { id: "batas", items: DISGUISE, label: "Calle Gunao, 1901: ang huling pirma", scene: "calle-gunao",
+    { id: "batas", carry: CLOTHES, items: DISGUISE, label: "Calle Gunao, 1901: ang huling pirma", scene: "calle-gunao",
       x: 440, facing: 1, flags: DEV_LAW, task: "Kunin ang huling pirma" },
-    { id: "gabi", items: DISGUISE, label: "Tondo, 1902: ang tatlong bahay", scene: "tondo",
+    { id: "gabi", carry: CLOTHES, items: DISGUISE, label: "Tondo, 1902: ang tatlong bahay", scene: "tondo",
       x: NIGHT_ARRIVE_X, facing: -1, flags: DEV_STREET_NIGHT, task: "Kumatok sa tatlong bahay" },
-    { id: "panunumpa", items: DISGUISE, label: "Ang barberya, 1902: ang panunumpa", scene: "barberya",
+    { id: "panunumpa", carry: CLOTHES, items: DISGUISE, label: "Ang barberya, 1902: ang panunumpa", scene: "barberya",
       x: ROOM - 160, facing: -1, flags: DEV_OATH, task: "Panumpain ang mga bagong kasapi" },
-    { id: "bilibid", items: DISGUISE, label: "Bilibid, Hulyo 1902: ang amnestiya", scene: "selda",
+    { id: "bilibid", carry: CLOTHES, items: DISGUISE, label: "Bilibid, Hulyo 1902: ang amnestiya", scene: "selda",
       x: 300, facing: 1, flags: DEV_CELL, task: "Lumabas sa Bilibid" },
-    { id: "morong", items: DISGUISE, label: "Morong, 1902: ang Republika", scene: "morong",
+    { id: "morong", carry: CLOTHES, items: DISGUISE, label: "Morong, 1902: ang Republika", scene: "morong",
       x: 640, facing: 1, flags: DEV_MORONG, task: "Itatag ang Republika" },
-    { id: "bandido", items: CLOTHES, label: "Morong, 1902: ang mga bandido", scene: "morong",
+    { id: "bandido", carry: CLOTHES, label: "Morong, 1902: ang mga bandido", scene: "morong",
       x: 900, facing: 1, flags: DEV_REPUBLIC, task: "Ipagtanggol ang kampo" },
   ];
 

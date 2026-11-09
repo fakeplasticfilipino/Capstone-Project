@@ -6928,6 +6928,40 @@ walls) and under Macario (1), who walks up to it to answer. The guide's
 arrow rises with the lift. Head and shoulders over the bench, a little
 above everyone standing below: the court as the period drew it.
 
+## Block 155: the pre-examination list, 9 Nov 2026
+
+The proponent asked for the game to be examined before the examination
+phase. Checked: both suites whole (1603), every story point of ?dev=1 at
+740 by 360 on touch (errors, failed requests, placeholders, a
+screenshot each), the monkey (seed 7, 50 points), the dashboard and
+the teacher's guide, the database's advisors. Six items, all approved.
+
+His own clothes from Act II. Block 154 gave the stage clothes their
+drawings, and the story had treated them as his clothes from Act I's
+end on: Act III put them back on after the disguise, every story point
+of Acts II to IV handed them over worn. Under Block 85's tint nobody
+saw; drawn, he led the Cry, met the Americans and walked to the gallows
+as the moro-moro's prince, in his portrait too. Chosen (1a, over the
+Katipunero's clothes as the story's): Act II's first card takes them
+off (Inventory.unequip, only if they are what he wears, so a student's
+chosen skin is left alone); Act III's vow takes the disguise off rather
+than putting them on; a story point gains carry, granted and not worn,
+so a guest from Act II on has them in the bag as a student would. What
+it costs: in Acts II to IV the still-standing bonus is the student's to
+choose by wearing them (the suites' Act II meter check now puts them on
+first); the scripted routes pass without it.
+
+The empty login. A required field left empty raised the browser's own
+bubble, in the phone's language, on the first screen a student sees.
+The form is novalidate and the game says it: "Ilagay ang iyong code at
+password." (The monkey found it as "An invalid form control is not
+focusable".)
+
+The rest are TRACKER's: the file brought up to date for the exam, the
+phone checklist in one sitting, the advisor's password warning
+explained (on, it would refuse the random six-digit passwords), and a
+full run at a student's speed before the freeze.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every
