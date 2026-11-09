@@ -569,7 +569,12 @@ Phase 0, the proponent's decisions (COMPLETE, 9 Nov 2026):
         assistant; ChatGPT, backgrounds and props; the artist, the
         characters), the proponents directing, reviewing and testing
 
-Phase 1, the foundation (NOT STARTED): the technology (vanilla HTML,
+Phase 1, the foundation (COMPLETE 9 Nov 2026, in review:
+Capstone_Project_Proposal_phase1.docx beside the original, 34
+paragraphs as tracked changes by "Claude"; checked as well-formed, its
+rejected view equal to the original, not yet opened in Word, which is
+not on this computer; Audacity and Figma left to the proponents to
+confirm, Audacity's line replaced by the sound effect scripts): the technology (vanilla HTML,
 CSS and JavaScript, Supabase, GitHub Pages; not Unity, not a server of
 our own), the case against Unity from the paper's own sources, the
 software list, the visual and data pipelines, and online and offline
