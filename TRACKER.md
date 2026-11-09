@@ -602,15 +602,21 @@ requirement tables. Items 18 to 26.
 
 Phase 4, diagrams (IN PROGRESS: done 10 Nov 2026 but for the
 screenshots; in review: Capstone_Project_Proposal_phase4.docx on
-phase3, the five pictures also in docs-private/documents/phase4-figures/):
+phase3, the four pictures also in docs-private/documents/phase4-figures/):
 the use case (Figure 2.1), IPO (3.2), DFD (3.3, level 1, six processes,
 D0 to D7) and ERD (3.4, the twelve tables from db/migrations) drawn
-again and swapped in as tracked changes; their text rewritten (the
+again and swapped in as tracked changes, checked for overlapping
+labels, boxes and lines (none); their text rewritten (the
 ERD says why PlayerAction and achievements were not built); the
-testing stage names the suites and CI; the Gantt chart's six tables
-marked deleted row by row and a chart in their place, development
-from 10 Aug 2026 (the first commit) to the freeze, Feb to Jul as the
-paper had it, after the freeze as planned. Left for after the freeze:
+testing stage names the suites and CI. The calendar keeps its own
+table form (the proponent, 10 Nov 2026) and EVERYTHING IS FINISHED BY
+THE END OF NOVEMBER 2026 (the instruction the proponents were given):
+the August to October header moved up to the development rows, the
+November header down to User Testing, its weeks renumbered 40 to 52;
+development shaded from week 28 (10 Aug, the first commit), the
+November work in weeks 40 to 43, December and January empty; every
+bar blue (completed), the old yellow (ongoing) too; all as tracked
+row and shading changes. Left for after the freeze:
 Figures 3.5 to 3.8 as screenshots of the game, with the line above
 them ("wireframes"), and the four storyboard pictures under the acts,
 drawn for the old storyboard (Act II's shows the wrong war); they are
