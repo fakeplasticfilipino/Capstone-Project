@@ -600,10 +600,22 @@ objectives left as written): mechanics, the score
 assessment, accounts, the dashboard, limitations; mostly the
 requirement tables. Items 18 to 26.
 
-Phase 4, diagrams (NOT STARTED): the ERD from the twelve tables, the
-DFD and IPO from the real modules, the Gantt chart to real dates; the
-UI figures as screenshots after the freeze (12 Nov 2026). Items 27 to
-30.
+Phase 4, diagrams (IN PROGRESS: done 10 Nov 2026 but for the
+screenshots; in review: Capstone_Project_Proposal_phase4.docx on
+phase3, the five pictures also in docs-private/documents/phase4-figures/):
+the use case (Figure 2.1), IPO (3.2), DFD (3.3, level 1, six processes,
+D0 to D7) and ERD (3.4, the twelve tables from db/migrations) drawn
+again and swapped in as tracked changes; their text rewritten (the
+ERD says why PlayerAction and achievements were not built); the
+testing stage names the suites and CI; the Gantt chart's six tables
+marked deleted row by row and a chart in their place, development
+from 10 Aug 2026 (the first commit) to the freeze, Feb to Jul as the
+paper had it, after the freeze as planned. Left for after the freeze:
+Figures 3.5 to 3.8 as screenshots of the game, with the line above
+them ("wireframes"), and the four storyboard pictures under the acts,
+drawn for the old storyboard (Act II's shows the wrong war); they are
+the proponents' own pictures and are not redrawn by a session. Items
+27 to 30.
 
 Phase 5, the tidy-up (NOT STARTED, last): the survey's percentages,
 typos, the references (duplicates, placeholders, order), the approval
