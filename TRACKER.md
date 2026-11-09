@@ -623,10 +623,22 @@ drawn for the old storyboard (Act II's shows the wrong war); they are
 the proponents' own pictures and are not redrawn by a session. Items
 27 to 30.
 
-Phase 5, the tidy-up (NOT STARTED, last): the survey's percentages,
-typos, the references (duplicates, placeholders, order), the approval
-sheet's title, then the contents, figures list and page numbers.
-Items 31 to 33.
+Phase 5, the tidy-up (IN PROGRESS: made 10 Nov 2026, in review:
+Capstone_Project_Proposal_phase5.docx on phase4, 52 paragraphs; undoing
+Phase 5 gives phase4's text exactly): the approval sheet's title as the
+cover's, "Teaching the Life", KaSAYSAYan, the CV's email; 21 source
+tags pasted into the related systems taken out, "an AAA", Hiraya's
+doubled title; the reference list rebuilt, 26 entries in order by
+author, its duplicates out (Flores as Florese, Lai and Hu's second,
+RSIS as Buenaflor, McCall's doubled text), Panga's placeholder out,
+the broken URLs joined. Waiting on the proponents: the survey's two
+Sakay items (the raw counts), Kieth or Keith (both spellings in the
+paper), the cover's date (May 2026, the proposal's), Figure 1.1's
+caption against the text (Danger in Pompeii; the caption's title not
+found), sources for Zeng et al. (2024), Sambo et al. (2025), Centeno et
+al. (2023) and Heritage Quest, cited and not in the list, and for
+Sakay's last words; then, once every phase is accepted in Word, the
+contents, the list of figures and the page numbers. Items 31 to 33.
 
 ## Next action
 
