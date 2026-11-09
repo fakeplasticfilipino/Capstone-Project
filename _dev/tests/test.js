@@ -3826,6 +3826,9 @@ const visible = (page, sel) => page.evaluate((s) => {
       // machine (several suites side by side) can starve past the tell.
       const watch = new MutationObserver(() => {
         if (document.querySelector(".enemy-windup")) window.__sawWindup = true;
+      // 9 Nov 2026: likewise a dash already under way when the watch begins
+      // was told before it (the fight above runs into this one).
+      if (ENEMIES.some((e) => e.dash)) window.__sawWindup = true;
       });
       watch.observe(document.body, { attributes: true, attributeFilter: ["class"], subtree: true });
       // 15 Oct 2026: on a busy CI machine the enemy can already be lit up
