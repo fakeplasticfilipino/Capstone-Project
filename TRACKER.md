@@ -548,6 +548,53 @@ Group 4, large (before the freeze, E; COMPLETE, Blocks 159, 160):
     [x] 27 hints: the Tulong button (B)
     [x] 28 the mini-games' sounds made softer and less "gamey" (A)
 
+## The paper brought up to date (IN PROGRESS)
+
+The research paper (docs-private/documents/Capstone_Project_Proposal.docx,
+gitignored) still describes the May 2026 plan. Read against the build on
+9 Nov 2026: 33 changes, in six phases, agreed with the proponent. Each
+phase is made by a session on a copy of the .docx as tracked changes,
+reviewed by the proponents, then the next; the original is never
+edited. Nothing private (names, the school) is written here.
+
+Phase 0, the proponent's decisions (COMPLETE, 9 Nov 2026):
+
+    [x] Act I's title: the paper takes the game's, "Origins / Ang
+        Pinagmulan ni Macario"; the game is unchanged
+    [x] the survey: all 44 answered the two Sakay items, so 81.4% and
+        83.7% are miscounted (neither is a whole number of 44); the
+        proponent supplies the raw counts and Phase 5 recalculates
+    [x] the method: Agile; the calendar's RAD wording goes
+    [x] AI tools: named with their roles (Claude Code, the coding
+        assistant; ChatGPT, backgrounds and props; the artist, the
+        characters), the proponents directing, reviewing and testing
+
+Phase 1, the foundation (NOT STARTED): the technology (vanilla HTML,
+CSS and JavaScript, Supabase, GitHub Pages; not Unity, not a server of
+our own), the case against Unity from the paper's own sources, the
+software list, the visual and data pipelines, and online and offline
+(the game kept on the phone, a guest offline, scores queued; low-end
+Android held sideways), written once and carried into every chapter
+that repeats them. Items 1 to 10.
+
+Phase 2, the story (NOT STARTED): the storyboard and every act's
+description rewritten from STORY.md. Items 11 to 17.
+
+Phase 3, what the system does (NOT STARTED): mechanics, the score
+(50 completion, 25 survival, 25 stealth, one formula everywhere),
+assessment, accounts, the dashboard, limitations; mostly the
+requirement tables. Items 18 to 26.
+
+Phase 4, diagrams (NOT STARTED): the ERD from the twelve tables, the
+DFD and IPO from the real modules, the Gantt chart to real dates; the
+UI figures as screenshots after the freeze (12 Nov 2026). Items 27 to
+30.
+
+Phase 5, the tidy-up (NOT STARTED, last): the survey's percentages,
+typos, the references (duplicates, placeholders, order), the approval
+sheet's title, then the contents, figures list and page numbers.
+Items 31 to 33.
+
 ## Next action
 
 (DONE: the proponent checked every line below on the phone, 9 Nov
