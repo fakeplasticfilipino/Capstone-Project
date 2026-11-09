@@ -1579,10 +1579,21 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
          /floor-tabla/.test(pulungan.floor) && pulungan.pieces === 13 && /brightness/.test(pulungan.lit), pulungan);
     ok("the task is to join", JSON.stringify((await log(page)).current) === JSON.stringify([STEP.join]));
     // Block 81. The rite, in the histories' order.
+    // Block 158: he comes in blindfolded (a band over his eyes), and it
+    // comes off at the Mabalasig's word.
+    let wore = false;
+    for (let t = 0; t < 8000 && !wore && !(await line(page)); t += 50) {
+      wore = await page.evaluate(() => document.getElementById("player").classList.contains("blindfolded"));
+      if (!wore) await page.waitForTimeout(50);
+    }
     const o1 = await readConversation(page, 10);
+    const off = await page.evaluate(() => !document.getElementById("player").classList.contains("blindfolded"));
+    const o1a = await readConversation(page, 10);
     const o1b = await readConversation(page, 10);
+    ok("he comes in blindfolded, and it comes off at the word (Block 158)", wore && off, { wore, off });
     ok("the blindfold off, he looks around, the warning on the wall, and the Mabalasig's challenge to turn back",
-       o1.lines.length === 2 && o1.lines[0] === "Mabalasig: Alisin ang kanyang piring." &&
+       o1.lines.length === 1 && o1.lines[0] === "Mabalasig: Alisin ang kanyang piring." &&
+       o1a.lines[0] === "Macario (sa isip): Madilim... itim ang lahat ng kurtina." &&
        o1b.lines.length === 5 && /pag-uusisa/.test(o1b.lines[1]) && /umatras/.test(o1b.lines[2]) &&
        o1b.lines[3] === "Macario: Hindi po ako aatras.", { o1: o1.lines, o1b: o1b.lines });
     const o2 = await readConversation(page, 10);
@@ -2465,8 +2476,19 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
          c.lines.includes("Macario: Hindi ko siya pinabantayan.") && c.lines.includes("Bonifacio: Ilabas ang inyong mga sedula!"), c.lines);
       await settle(page);
       await walkTo(page, 690);
+      // Block 158: Tulong says what to do now, the step's own help line.
+      await page.click("#btn-help");
+      ok("Tulong gives the step's help: Bonifacio, and the button to press (Block 158)", await page.evaluate(() =>
+        document.getElementById("toast").textContent === ACT_2.objectives.find((o) => o.id === "punitin_sedula").help));
+      // Block 158: the paper is torn as he says it, pieces drawn and gone.
+      await page.evaluate(() => {
+        window.__tore = false;
+        new MutationObserver(() => { if (document.querySelector(".tear-piece")) window.__tore = true; })
+          .observe(document.getElementById("world"), { childList: true });
+      });
       ok("the cedula is his to tear: Punitin ang sedula", (await gift(page)) === "Punitin ang sedula");
       c = await readLines(page, 12);
+      ok("and torn as he says it: the halves and the scraps drawn (Block 158)", await page.evaluate(() => window.__tore));
       ok("for her, wherever she is; and Bonifacio heard his line from the stage",
          c.lines[1] === "Macario (sa isip): Kung nasaan ka man ngayon, 'Nay... para sa'yo ito." &&
          c.lines.includes("Bonifacio: Napanood kita bilang Baldovino. \"Walang bayang mananatiling alipin...\""), c.lines);
@@ -3113,14 +3135,18 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        await page.evaluate(() => !state.flags.a4_saBitayan));
     await walkTo(page, 1750);
     c = await readLines(page, 6, 3000);
-    ok("his last statement: never bandits, the revolutionary force that defended the Philippines",
+    // Block 158: said at the rope, on the gallows' platform, bound; his
+    // last words on the card at the drop.
+    ok("his last statement: never bandits, the revolutionary force that defended the Philippines, said bound at the rope (Block 158)",
        c.lines.includes("Macario: Kami ay mga kasapi ng hukbong rebolusyonaryo na nagtanggol sa ating Inang Bayan, ang Pilipinas.") &&
-       c.lines[c.lines.length - 1] === "Macario: Paalam! Mabuhay ang Pilipinas!", c.lines);
+       c.lines[c.lines.length - 1] === "Macario: Paalam! Mabuhay ang Republika, at nawa'y isilang ang ating kalayaan sa hinaharap!" &&
+       await page.evaluate(() => posY > 150 && /macario-bound/.test(SPRITE_SHEETS.idle.src)), c.lines);
     ok("the hanging, the hair, the Assembly 33 days later, Wakas, and every step of Act IV done",
        await playOn(page, "state.flags.a4_wakas === true", 60000) &&
        await page.evaluate(() => Acts.countDone(4) === ACT_4.objectives.length));
     const end = await seenCards();
-    ok("  the cards say it plainly",
+    ok("  the cards say it plainly, his last words first, at the drop (Block 158)",
+       end.some((x) => /Paalam! Mabuhay ang Pilipinas!/.test(x)) &&
        end.some((x) => /Binitay si Macario Sakay sa Lumang Bilibid/.test(x)) &&
        end.some((x) => /Tatlumpu't tatlong araw matapos siyang mamatay\./.test(x)) &&
        end.some((x) => /Wakas ng Ikaapat na Yugto/.test(x)), end);

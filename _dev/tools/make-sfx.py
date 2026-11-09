@@ -103,8 +103,8 @@ write("give", notes([tone("triangle", f, 0.085, 1.2) for f in (523, 659, 784)] +
 write("quest", notes([tone("square", f, 0.08, 1.0) for f in (784, 988, 1175)] +
                      [tone("square", 1568, 0.3, 2.2)]), 0.14)
 
-# An apple caught: a quick upward pop.
-write("catch", tone("square", sweep(500, 1400, 0.09), 0.09, 1.5), 0.2)
+# An apple caught: made by make-scene-sfx.js since Block 158, a soft
+# wooden tone in place of this square wave's pop, which read as gamey.
 
 # An apple on the ground: a soft low thud.
 thud = tone("sine", sweep(180, 60, 0.18), 0.18, 2.5) + 0.25 * noise(0.18) * env(len(t_of(0.18)), curve=6)

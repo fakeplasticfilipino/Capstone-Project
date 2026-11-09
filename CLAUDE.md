@@ -599,9 +599,13 @@ world belongs to the scene.
                                                  beside the step in hand
                                                  once flag "from" is set,
                                                  until done (Block 92)
-                     guide }],                   optional; where the step is
+                     guide,                      optional; where the step is
                                                  done, for the arrow
                                                  (Block 125; The guide)
+                     help }],                    optional; one plain line,
+                                                 where to go and what to
+                                                 press, shown by the Tulong
+                                                 button (Block 158)
       linearObjectives: true,                    optional; the quest log is
                                                  the objective chain (Block 48)
       objectiveCurrency: false,                  optional; no barya per step
@@ -1102,7 +1106,10 @@ NPC shape:
       dialogueSets: [{ lines: [{speaker, text}], onComplete(),
                        skipIfFlag, requiresFlag }],  both optional; a
                                                  line's sfx replaces its
-                                                 blip (Block 85)
+                                                 blip (Block 85); a line's
+                                                 tear: true tears a paper in
+                                                 his hands as it is said
+                                                 (Block 158)
       gift: { buttonLabel, requiresFlag, givenFlag,
               requiresCurrency,                  optional; offered only while
                                                  he holds this many (Block 89)
@@ -1268,8 +1275,18 @@ of them plain globals in game.js, like addQuest:
                                  scene, not on black), sfx (an
                                  SFX_SOURCES name played with it; a
                                  card is otherwise silent; Blocks 81, 84)
-    movePlayer(x, pxPerSecond)   walks Macario there with his walk cycle
-                                 (Block 57); resolves on arrival
+    movePlayer(x, pxPerSecond, y)  walks Macario there with his walk cycle
+                                 (Block 57); resolves on arrival. y, since
+                                 Block 158: a height to rise to evenly on
+                                 the way, for stairs in a picture, a
+                                 platform (drawn: false) at the top
+    setBlindfold(bool)           Block 158: a dark band over his eyes,
+                                 drawn on his sprite at MACARIO_CELL's
+                                 eyes (any outfit); a scene change
+                                 takes it off
+    setOutfit(sheets)            his sheets for a scene (the bound hands
+                                 of Act IV's last walk, Block 158;
+                                 skeleton.js's bound and boundwalk)
     placePlayer(x, facing)       puts him there at once (Block 57)
     jumpPlayer(dx)               a jump with its sound, pose and dust,
                                  forward by dx; resolves on landing
@@ -1613,9 +1630,9 @@ carries its meaning without a word beside it. Since Block 144 the
 menu's act cards carry the act's numeral and its parts their number,
 badges for the same reason as the quiz's letters.
 
-The three corner buttons (#btn-pause, #btn-inventory, #btn-shop) are
-the one exception to icon plus label (Scan S20): icons alone, named by
-aria-label. At --zoom 0.7 a label beside each would push them into the
+The corner buttons (#btn-pause, #btn-inventory, #btn-shop, and since
+Block 158 #btn-help, Tulong, a question mark) are the one exception to
+icon plus label (Scan S20): icons alone, named by aria-label. At --zoom 0.7 a label beside each would push them into the
 quest log and the hearts on a 360px-high screen, and the three symbols
 (pause bars, a bag, coins) are the ones every phone game uses. The shop
 button shows only while something is for sale (Scan S6).
@@ -2804,6 +2821,10 @@ look, by system:
                                           notHead)
     the general's uniform, the flag      Block 148 (a skin sold at 80;
                                           darkJacket)
+    the examination list, group 3 and     Block 158 (the cedula torn,
+      Tulong; softer chimes               the blindfold, the bound walk
+                                          and the gallows, Tulong, the
+                                          mallet's catch and streak)
     the examination list, group 2         Block 157 (the pay, lessons,
                                           the intro card, used-up props,
                                           allies aside, riflemen, the

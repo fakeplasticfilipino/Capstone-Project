@@ -264,6 +264,96 @@ function normalise(sig) {
   write("katok", normalise(lowpass(out, 1800)), 0.6);
 }
 
+// ---- punit ---------------------------------------------------------
+// Block 158. A sheet of thick paper torn in two (the cedula at Pugad
+// Lawin): a fast crackle of fibres, many tiny clicks of band-limited
+// noise riding a short rising tear, and the last fibres giving way.
+{
+  const SECONDS = 0.7;
+  const n = len(SECONDS);
+  const r = rng(158);
+  const out = new Float64Array(n);
+  const body = len(0.42);
+  for (let i = 0; i < n; i++) {
+    const t = i / RATE;
+    // The tear's body: noise, louder as it goes, cut at the end.
+    const env = i < body ? Math.pow(i / body, 0.6) : Math.exp(-(i - body) / (RATE * 0.03));
+    let v = (r() * 2 - 1) * 0.35 * env;
+    // The fibres: sparse sharp clicks, thicker as the tear speeds up.
+    if (r() < (i < body ? 0.02 + 0.06 * (i / body) : 0.01)) v += (r() * 2 - 1) * 1.2;
+    out[i] = v * (1 - t / SECONDS * 0.3);
+  }
+  write("punit", normalise(lowpass(highpass(out, 900), 7000)), 0.5);
+}
+
+// ---- bitay ---------------------------------------------------------
+// Block 158. The gallows' trapdoor, heard on black: a bolt drawn, the
+// heavy door falling open against its stop (a deep wooden thud and its
+// rattle), and the rope's creak, then silence.
+{
+  const SECONDS = 2.2;
+  const n = len(SECONDS);
+  const r = rng(1907);
+  const out = new Float64Array(n);
+  // The bolt: a short metallic scrape.
+  for (let i = 0; i < len(0.12); i++) {
+    const t = i / RATE;
+    out[i] += ((r() * 2 - 1) * 0.5 + Math.sin(2 * Math.PI * 2400 * t) * 0.25) * Math.exp(-t / 0.05);
+  }
+  // The door: low wood thuds, the first heaviest.
+  [0.18, 0.31, 0.39].forEach((at, k) => {
+    const s = len(at), loud = [1, 0.45, 0.25][k];
+    for (let i = 0; s + i < n; i++) {
+      const t = i / RATE;
+      let v = Math.sin(2 * Math.PI * 62 * t) * Math.exp(-t / 0.18);
+      v += Math.sin(2 * Math.PI * 128 * t) * 0.5 * Math.exp(-t / 0.08);
+      v += (r() * 2 - 1) * 0.6 * Math.exp(-t / 0.015);
+      out[s + i] += v * loud;
+    }
+  });
+  // The rope: a slow creak, a few rasping cycles falling in pitch.
+  const c0 = len(0.75), cl = len(1.1);
+  for (let i = 0; i < cl && c0 + i < n; i++) {
+    const t = i / RATE;
+    const f = 18 - 8 * (t / 1.1);
+    const pulse = Math.pow(Math.max(0, Math.sin(2 * Math.PI * f * t)), 8);
+    out[c0 + i] += (r() * 2 - 1) * pulse * 0.35 * Math.sin(Math.PI * t / 1.1);
+  }
+  write("bitay", normalise(lowpass(out, 4200)), 0.6);
+}
+
+// ---- catch, streak -------------------------------------------------
+// Block 158 (the proponent: the mini-games' sounds less "gamey"). A good
+// stroke in the work game, a clean cut, a lesson learned: once a square
+// wave's pop (make-sfx.py) and a chiptune arpeggio (make-fun-sfx.js),
+// now a soft wooden tone, a mallet on a bamboo bar: a sine with a
+// quickly dying fourth partial and a touch of the strike. Made here now;
+// the old tools no longer write these two.
+function mallet(freq, seconds, loud, seed) {
+  const n = len(seconds);
+  const r = rng(seed);
+  const out = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const t = i / RATE;
+    let v = Math.sin(2 * Math.PI * freq * t) * Math.exp(-t / 0.16);
+    v += Math.sin(2 * Math.PI * freq * 4.01 * t) * 0.35 * Math.exp(-t / 0.025);
+    v += Math.sin(2 * Math.PI * freq * 2 * t) * 0.15 * Math.exp(-t / 0.07);
+    v += (r() * 2 - 1) * 0.25 * Math.exp(-t / 0.004);
+    out[i] = v * loud;
+  }
+  return out;
+}
+{
+  write("catch", normalise(lowpass(mallet(587, 0.4, 1, 41), 5000)), 0.32);
+  // A streak, a clean cut: two notes, a fifth apart, the second answering.
+  const a = mallet(587, 0.55, 1, 42), b = mallet(880, 0.5, 0.8, 43);
+  const out = new Float64Array(len(0.65));
+  for (let i = 0; i < a.length && i < out.length; i++) out[i] += a[i];
+  const off = len(0.11);
+  for (let i = 0; i < b.length && off + i < out.length; i++) out[off + i] += b[i];
+  write("streak", normalise(lowpass(out, 5000)), 0.36);
+}
+
 // ---- gabi (music) ------------------------------------------------
 // Eight seconds that loop: a faint low wind, and crickets, each a burst
 // of three or four quick pulses of a high tone, at a few pitches and

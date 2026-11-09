@@ -118,6 +118,9 @@ function makeIcon(symbolId) {
 }
 const mobileControls = document.getElementById("mobile-controls");
 const btnPause = document.getElementById("btn-pause");
+// Block 158. Tulong: the step in hand's help line, as a toast. Shown
+// with the pause button, while the student is playing.
+const btnHelp = document.getElementById("btn-help");
 // Shop and inventory buttons added in Block 13. They ride the same
 // visibility branch as btnPause below, further gated on window.Inventory
 // so they never appear if that module fails to load. Since Block 25
@@ -1112,6 +1115,7 @@ function loadScene(sceneId) {
 }
 
 function unloadScene() {
+  if (player) player.classList.remove("blindfolded"); // Block 158
   actElements.forEach((el) => el.remove());
   actElements = [];
   decorationEls = [];
@@ -2903,6 +2907,9 @@ function showDialogueStep() {
   // Block 58, the blip. Block 85: a line may name its own sound instead
   // (line.sfx, one of SFX_SOURCES), for a crowd that cheers.
   playSfx(line.sfx && SFX_SOURCES[line.sfx] ? line.sfx : "blip");
+  // Block 158. A line may tear a paper in Macario's hands as it is said
+  // (line.tear: the cedula at Pugad Lawin).
+  if (line.tear) tearPaper();
   dialogueLineWasRead = noteLineRead(line);
   // Block 128. The skip below was built in Block 85 and nothing said so;
   // the hint under a line read before now says it can be held.
@@ -5413,6 +5420,66 @@ function updateRun(heldDir, canAct, now, step) {
 let floatPool = null;
 let floatNext = 0;
 
+// Block 158 (the proponent: the cedula torn, shown). A paper drawn by
+// the game, not art: a sheet held up at his head that splits in two, the
+// halves thrown up and apart, and scraps fluttering down. Above his head
+// on purpose: on a phone the dialogue box covers his hands. Made fresh
+// each time (it happens once a play) and gone in under two seconds.
+// Block 158 (the proponent: the blindfold shown, a dark band over his
+// eyes). Drawn by the stylesheet on his sprite (#player.blindfolded),
+// at his eyes in MACARIO_CELL, the template every outfit is drawn on, so
+// it fits whatever he wears and flips and bobs with him. Content puts it
+// on and takes it off; a scene change takes it off.
+// Block 158 (the proponent: better hints). The step in hand (the first
+// objective whose flag is not set) and its help line, else its label;
+// for the Tulong button.
+function helpLine() {
+  const step = ((currentActData && currentActData.objectives) || []).find((o) => !state.flags[o.flag]);
+  if (!step) return "Wala nang gawain dito. Magpatuloy lang.";
+  return step.help || step.label;
+}
+
+function showHelp() {
+  playSfx("page");
+  showToast(helpLine(), 6000);
+}
+
+if (btnHelp) btnHelp.addEventListener("click", showHelp);
+
+function setBlindfold(on) {
+  setClass(player, "blindfolded", Boolean(on));
+}
+
+const TEAR_SCRAPS = 12;
+const TEAR_MS = 1800;
+
+function tearPaper() {
+  if (!world) return;
+  const cx = Math.round(posX + PLAYER_WIDTH / 2 + facing * 14);
+  const y = Math.round(posY + DISPLAY_HEIGHT + 6);
+  const pieces = [];
+  const add = (cls, dx, dy, rot, delay) => {
+    const el = document.createElement("div");
+    el.className = "tear-piece " + cls;
+    el.style.left = cx + "px";
+    el.style.bottom = y + "px";
+    el.style.setProperty("--dx", dx + "px");
+    el.style.setProperty("--dy", dy + "px");
+    el.style.setProperty("--rot", rot + "deg");
+    el.style.animationDelay = delay + "ms";
+    world.appendChild(el);
+    pieces.push(el);
+  };
+  add("tear-half tear-left", -46, 30, -70, 0);
+  add("tear-half tear-right", 46, 34, 80, 0);
+  for (let i = 0; i < TEAR_SCRAPS; i++) {
+    const a = (i / TEAR_SCRAPS) * Math.PI * 2;
+    add("tear-scrap", Math.round(Math.cos(a) * (30 + (i % 3) * 18)),
+      Math.round(-40 - (i % 4) * 22), (i % 2 ? 1 : -1) * (120 + i * 25), 60 + (i % 5) * 40);
+  }
+  setTimeout(() => pieces.forEach((el) => el.remove()), TEAR_MS + 300);
+}
+
 function floatOverPlayer(text, kind) {
   if (!world) return;
   if (!floatPool) {
@@ -5947,8 +6014,14 @@ function playIntertitle(lines, opts) {
 // shows the walk cycle while he goes (scriptWalking, read by the loop);
 // the camera follows him as it always does. A scene change mid-walk
 // ends the walk where it is.
-function movePlayer(toX, pxPerSecond) {
+// Block 158: toY, optional, a height to rise or fall to along the way,
+// evenly, for a flight of stairs drawn in a picture (the gallows'); a
+// platform at the top (drawn: false) then holds him there. Without it he
+// keeps to the surface under him, a platform he already stands on too.
+function movePlayer(toX, pxPerSecond, toY) {
   const target = Math.max(0, Math.min(Number(toX) || 0, WORLD_WIDTH - PLAYER_WIDTH));
+  const fromX = posX, fromY = posY;
+  const climb = typeof toY === "number" && target !== fromX;
   const speed = Math.max(1, pxPerSecond || 170) * TEST_SPEED; // Block 115
   const token = actLoadToken;
   if (target !== posX) facing = target < posX ? -1 : 1;
@@ -5968,7 +6041,7 @@ function movePlayer(toX, pxPerSecond) {
       last = now;
       const stepPx = (speed * dt) / 1000;
       posX = Math.abs(target - posX) <= stepPx ? target : posX + Math.sign(target - posX) * stepPx;
-      posY = groundHeightAt(posX);
+      posY = climb ? fromY + (toY - fromY) * ((posX - fromX) / (target - fromX)) : groundHeightAt(posX, posY);
       if (posX === target) return done();
       requestAnimationFrame(tick);
     };
@@ -7931,6 +8004,8 @@ const SFX_SOURCES = {
   jump: "assets/audio/sfx/jump.wav",
   door: "assets/audio/sfx/door.wav",
   katok: "assets/audio/sfx/katok.wav", // Block 156: three knocks on a door
+  punit: "assets/audio/sfx/punit.wav", // Block 158: a paper torn
+  bitay: "assets/audio/sfx/bitay.wav", // Block 158: the gallows' trapdoor
   // intertitle.wav is gone (Scan S24): black cards have been silent
   // since Block 84 and no content named it.
   // Block 60. Combat (_dev/tools/make-combat-sfx.js): every punch
@@ -8728,6 +8803,7 @@ function gameLoop(now) {
     // already the exact definition of "the student is playing", and a
     // second copy of it would be a second thing to keep in step.
     if (btnPause) setClass(btnPause, "hidden", false);
+    if (btnHelp) setClass(btnHelp, "hidden", false);
     if (btnInventoryMain && window.Inventory) {
       setClass(btnInventoryMain, "hidden", false);
     }
@@ -8775,6 +8851,7 @@ function gameLoop(now) {
     // advances it, so tuck the movement controls away.
     setClass(mobileControls, "hidden", true);
     if (btnPause) setClass(btnPause, "hidden", true);
+    if (btnHelp) setClass(btnHelp, "hidden", true);
     if (btnInventoryMain) setClass(btnInventoryMain, "hidden", true);
     if (btnShopMain) setClass(btnShopMain, "hidden", true);
     setClass(giftBtn, "hidden", true);

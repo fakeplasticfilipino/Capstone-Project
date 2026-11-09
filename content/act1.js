@@ -933,9 +933,16 @@ async function intoThePulungan() {
 // pamphlets are announced as he is sent out.
 async function theOath() {
   setCutscene(true);
-  await wait(400);
+  // Block 158: he comes in blindfolded, and stands so a moment.
+  setBlindfold(true);
+  await wait(1200);
   await playDialogue([
     { speaker: "Mabalasig", text: "Alisin ang kanyang piring." },
+  ]);
+  setBlindfold(false);
+  playSfx("page"); // the cloth pulled away
+  await wait(400);
+  await playDialogue([
     { speaker: "Macario (sa isip)", text: "Madilim... itim ang lahat ng kurtina." },
   ]);
   // Block 85. He looks around the room before anyone speaks again.
@@ -1406,47 +1413,49 @@ window.ACT_1 = {
   //      theYearAfter), which finishes Act I.
   linearObjectives: true,
   objectives: [
+      // Block 158: help, the Tulong button's line for the step (ours,
+      // PLACEHOLDER): where to go and what to press.
     // Block 125. guide: where each step is done, for the arrow (game.js,
     // THE GUIDE). A step a script plays by itself (the opening, the
     // plays, the oath) names none, or names who starts it after a reload.
-    { id: "umuwi_kasama_nanay", label: "Umuwi kasama si Nanay",
+    { id: "umuwi_kasama_nanay", help: "Sundan si Nanay pauwi sa kalye.", label: "Umuwi kasama si Nanay",
       flag: "nagpasyangMagtrabaho" },
-    { id: "kausapin_kutsero", label: "Maghanap ng trabaho: kausapin ang Kutsero",
+    { id: "kausapin_kutsero", help: "Hanapin ang Kutsero sa kalye, sa tabi ng kabayo, at kausapin siya (E, o ang berdeng pindutan).", label: "Maghanap ng trabaho: kausapin ang Kutsero",
       flag: "nakausapAngKutsero", guide: { scene: "tondo", npc: "kutsero" } },
-    { id: "alagaan_kabayo", label: "Alagaan ang kabayo ng Kutsero",
+    { id: "alagaan_kabayo", help: "Lapitan ang kabayo sa tabi ng Kutsero at pindutin ang E para suklayin ito.", label: "Alagaan ang kabayo ng Kutsero",
       flag: HORSE_JOB.first, guide: { scene: "tondo", npc: "kabayo" } },
     // Block 94. The barber's first game.
-    { id: "barberya", label: "Magtrabaho sa barberya",
+    { id: "barberya", help: "Kausapin ang Barbero sa kanyang barberya, saka gamitin ang silya para gupitan ang suki.", label: "Magtrabaho sa barberya",
       flag: BARBER_JOB.first, guide: [
         { scene: "tondo", npc: "barbero", unlessFlag: "nakausapAngBarbero" },
         { scene: "tondo", npc: "silya", requiresFlag: "nakausapAngBarbero" },
       ] },
-    { id: "kausapin_mananahi", label: "Kausapin ang Mananahi",
+    { id: "kausapin_mananahi", help: "Hanapin ang Mananahi sa kalye at kausapin siya.", label: "Kausapin ang Mananahi",
       flag: "nakausapAngMananahi", guide: { scene: "tondo", npc: "mananahi" } },
-    { id: "tulungan_mananahi", label: "Tulungan ang Mananahi sa pananahi",
+    { id: "tulungan_mananahi", help: "Lapitan ang tahian ng Mananahi at pindutin ang E para manahi.", label: "Tulungan ang Mananahi sa pananahi",
       flag: "tinawagAngMananahi", guide: { scene: "tondo", npc: "tahian" } },
-    { id: "ihatid_damit", label: "Ihatid ang mga damit sa direktor",
+    { id: "ihatid_damit", help: "Dalhin ang mga damit sa direktor, sa harap ng teatro.", label: "Ihatid ang mga damit sa direktor",
       flag: "naihatidAngMgaDamit", guide: { scene: "tondo", npc: "direktor" } },
     // The play is a script; on the street after a reload, the direktor
     // takes him in.
-    { id: "gumanap_sa_dula", label: "Gumanap bilang Don Rodrigo sa dula",
+    { id: "gumanap_sa_dula", help: "Kausapin ang direktor sa teatro. Pagdating ng laban, pindutin ang Atake.", label: "Gumanap bilang Don Rodrigo sa dula",
       flag: "naitanghalAngDula", guide: { scene: "tondo", npc: "direktor" } },
-    { id: "mag_ipon", label: "Mag-ipon para kay Nanay",
+    { id: "mag_ipon", help: "Mag-ipon ng barya sa mga trabaho sa kalye. Kapag sapat na, ibigay ito kay Nanay.", label: "Mag-ipon para kay Nanay",
       flag: "naibigayAngIponKayNanay", countCurrency: SAVINGS_GOAL,
       pinned: { from: "nakausapAngKutsero" }, guide: { scene: "tondo", npc: "nanay" } },
-    { id: "gumanap_baldovino", label: "Gumanap bilang Principe Baldovino",
+    { id: "gumanap_baldovino", help: "Ikaw si Principe Baldovino sa entablado: pindutin ang E sa bawat linya.", label: "Gumanap bilang Principe Baldovino",
       flag: "nilapitanNgKatipunan" },
-    { id: "hanapin_kasama", label: "Hanapin ang naghihintay sa kalye",
+    { id: "hanapin_kasama", help: "Hanapin ang lalaking naghihintay sa kalye, bago ang entablado, at kausapin siya.", label: "Hanapin ang naghihintay sa kalye",
       flag: "nakausapAngKasama", guide: { scene: "tondo", npc: "kasama" } },
-    { id: "sumapi_katipunan", label: "Sumapi sa Katipunan",
+    { id: "sumapi_katipunan", help: "Kausapin muli ang Kasama sa kalye; dadalhin ka niya sa pulungan.", label: "Sumapi sa Katipunan",
       flag: "tinanggapSaKatipunan", guide: { scene: "tondo", npc: "kasama" } },
-    { id: "ipamigay_polyeto", label: "Ipamigay ang mga polyeto",
+    { id: "ipamigay_polyeto", help: "Iabot ang polyeto sa tatlong naghihintay sa kalye. Kapag nakatingin ang guardia civil, magtago sa likod ng kumikinang na kahon.", label: "Ipamigay ang mga polyeto",
       flag: "naipamigayAngMgaPolyeto", countFlags: PAMPHLET_FLAGS,
       guide: { scene: "tondo", npcs: CITIZENS.map((c) => c.id) } },
     // Block 94. Done only at the very end, a year on (theYearAfter). The
     // Kasama comes for him; a reload before the report finds him at his
     // old spot.
-    { id: "mag_ulat", label: "Bumalik sa pulungan at mag-ulat",
+    { id: "mag_ulat", help: "Bumalik sa Kasama sa kalye para mag-ulat sa pulungan.", label: "Bumalik sa pulungan at mag-ulat",
       flag: "pinunoNgBalangay", guide: { scene: "tondo", npc: "kasama" } },
   ],
 

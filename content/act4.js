@@ -141,6 +141,23 @@
   const STOREROOM_X = 150;
   const YARD_WIDTH = 2400;      // Bilibid's yard
   const SCAFFOLD_X = 1900;
+  // Block 158. The gallows (bilibid-bitayan, at 1696, 260 tall): its
+  // stairs from about 1715 up to its platform, 133 above the road
+  // (GALLOWS_TOP, a platform drawn by the picture), the noose over 1931.
+  // posX is the left edge of his 40-wide body.
+  const STAIRS_FOOT_X = 1695;
+  const STAIRS_TOP_X = 1820;
+  const NOOSE_X = 1911;
+  const GALLOWS_TOP = 60 + 133;
+  // His hands tied behind him (the bound sheets, skeleton.js's bound and
+  // boundwalk clips; Block 158) from "Oras na, Sakay" to the end.
+  const BOUND = {
+    idle: { src: "assets/sprites/player/macario-bound.png", frames: 16, fps: 8, columns: 8,
+      contentTop: 10, contentHeight: 240, footX: 80, headroom: 10 },
+    walk: { src: "assets/sprites/player/macario-boundwalk.png", frames: 8, fps: 10, columns: 8,
+      contentTop: 10, contentHeight: 240, footX: 80, headroom: 10 },
+  };
+  const bindHands = () => setOutfit(BOUND);
 
   // The cell in Bilibid from its kit (24 Oct 2026), as Act III's is: the
   // stone wall repeated, the stone floor, the pieces standing 10 back on
@@ -961,6 +978,12 @@
     await playDialogue([
       { speaker: "Macario (sa isip)", text: "Alas-otso y medya ng umaga." },
       { speaker: "Bantay", text: "Oras na, Sakay." },
+    ]);
+    // Block 158: his hands are tied behind him.
+    playSfx("page");
+    await bindHands();
+    await wait(500);
+    await playDialogue([
       { speaker: "Macario (sa isip)", text: "Ilang beses akong umakyat sa entablado." },
       { speaker: "Macario (sa isip)", text: "Ito ang huli." },
     ]);
@@ -968,23 +991,31 @@
     setCutscene(false);
   }
 
+  // Block 158 (the proponent's choice, D): the walk bound, up the
+  // gallows' stairs, at the rope for his statement, and black at the
+  // drop, the trapdoor heard and his last words on the card. The
+  // history as it happened; only what is on screen is chosen.
   async function theStatement() {
     setCutscene(true);
-    await movePlayer(SCAFFOLD_X, 90);
+    await bindHands(); // after a reload too
+    await movePlayer(STAIRS_FOOT_X, 90);
+    await movePlayer(STAIRS_TOP_X, 60, GALLOWS_TOP);
+    await movePlayer(NOOSE_X, 70);
     turnPlayer(-1);
-    await wait(500);
+    await wait(700);
     await playDialogue([
       { speaker: "Macario", text: "Darating ang kamatayan sa ating lahat, maaga man o huli." },
       { speaker: "Macario", text: "Kaya haharapin ko nang mahinahon ang Panginoong Maykapal." },
       { speaker: "Macario", text: "Ngunit nais kong sabihin sa inyo: hindi kami mga bandido at magnanakaw, gaya ng paratang sa amin ng mga Amerikano." },
       { speaker: "Macario", text: "Kami ay mga kasapi ng hukbong rebolusyonaryo na nagtanggol sa ating Inang Bayan, ang Pilipinas." },
       { speaker: "Macario", text: "Paalam! Mabuhay ang Republika, at nawa'y isilang ang ating kalayaan sa hinaharap!" },
-      { speaker: "Macario", text: "Paalam! Mabuhay ang Pilipinas!" },
     ]);
-    await wait(600);
+    await wait(900);
+    // The drop: on black, the trapdoor, and the last words he said.
+    await playIntertitle(["\"Paalam! Mabuhay ang Pilipinas!\""], { keepBlack: true, holdMs: 3500, sfx: "bitay" });
     await playIntertitle(["Setyembre 13, 1907. Alas-otso y medya ng umaga.",
       "Binitay si Macario Sakay sa Lumang Bilibid, Santa Cruz, Maynila, kasama si Lucio de Vega."],
-    { keepBlack: true, holdMs: 4500 });
+    { startBlack: true, keepBlack: true, holdMs: 4500 });
     await playIntertitle(["Hindi niya ginupit ang kanyang buhok."], { startBlack: true, keepBlack: true });
     await playIntertitle(["Oktubre 16, 1907. Binuksan ang Asamblea ng Pilipinas.",
       "Tatlumpu't tatlong araw matapos siyang mamatay."], { startBlack: true, keepBlack: true, holdMs: 4500 });
@@ -1098,30 +1129,32 @@
     // Block 125. guide: where each step is done, for the arrow (game.js,
     // THE GUIDE). The battle at Malabon names none.
     objectives: [
-      { id: "kautusan", label: "Lagdaan ang unang kautusan", flag: "a4_kautusan",
+      // Block 158: help, the Tulong button's line for the step (ours,
+      // PLACEHOLDER): where to go and what to press.
+      { id: "kautusan", help: "Lapitan ang mesa sa kampo sa Morong at lagdaan ang kautusan.", label: "Lagdaan ang unang kautusan", flag: "a4_kautusan",
         guide: { scene: "morong", npc: "mesa" } },
-      { id: "himpilan", label: "Kunin ang mga baril at uniporme", flag: "a4_himpilan",
+      { id: "himpilan", help: "Pumasok nang palihim sa himpilan at kunin ang mga baril at uniporme sa bodega. Magtago sa likod ng kahon kapag may nakatingin.", label: "Kunin ang mga baril at uniporme", flag: "a4_himpilan",
         guide: { scene: "himpilan", npc: "bodega" } },
-      { id: "manipesto", label: "Ilimbag ang manipesto", flag: "a4_manipesto",
+      { id: "manipesto", help: "Lapitan ang palimbagan sa kampo at pindutin ang Ilimbag.", label: "Ilimbag ang manipesto", flag: "a4_manipesto",
         guide: { scene: "morong", npc: "palimbagan" } },
-      { id: "tanay", label: "Ihanda ang mga kawal", flag: "a4_ensayo",
+      { id: "tanay", help: "Lapitan ang hanay ng mga kawal sa Di-Masalang at sanayin sila.", label: "Ihanda ang mga kawal", flag: "a4_ensayo",
         guide: { scene: "dimasalang", npc: "hanay" } },
-      { id: "malabon", label: "Salakayin ang San Francisco de Malabon", flag: "a4_malabon" },
-      { id: "bigas", label: "Hatiin ang bigas", flag: "a4_bigas", countFlags: BIGAS_FLAGS,
+      { id: "malabon", help: "Salakayin ang bayan: labanan ang mga Konstabularyo hanggang wala nang matira.", label: "Salakayin ang San Francisco de Malabon", flag: "a4_malabon" },
+      { id: "bigas", help: "Hatiin ang bigas: kausapin ang tatlong kawal sa kampo.", label: "Hatiin ang bigas", flag: "a4_bigas", countFlags: BIGAS_FLAGS,
         guide: { scene: "dimasalang", npcs: ["kawal-1", "kawal-2", "batang-kawal"], doneFlags: BIGAS_FLAGS } },
-      { id: "gomez", label: "Harapin si Dominador Gómez", flag: "a4_gomez",
+      { id: "gomez", help: "Kausapin si Dominador Gómez sa kampo.", label: "Harapin si Dominador Gómez", flag: "a4_gomez",
         guide: { scene: "dimasalang", npc: "gomez" } },
-      { id: "maynila", label: "Bumaba sa Maynila", flag: "a4_bumaba",
+      { id: "maynila", help: "Kausapin ang Kutsero sa kalye ng Tondo.", label: "Bumaba sa Maynila", flag: "a4_bumaba",
         guide: { scene: "tondo", npc: "kutsero" } },
-      { id: "salusalo", label: "Dumalo sa salu-salo", flag: "a4_nahuli",
+      { id: "salusalo", help: "Lapitan ang mesa sa sala para dumalo sa salu-salo.", label: "Dumalo sa salu-salo", flag: "a4_nahuli",
         guide: { scene: "sala", npc: "mesa" } },
-      { id: "bilibid", label: "Kausapin si Montalan", flag: "a4_bilibid",
+      { id: "bilibid", help: "Kausapin si Montalan sa selda.", label: "Kausapin si Montalan", flag: "a4_bilibid",
         guide: { scene: "selda", npc: "montalan" } },
-      { id: "hukuman", label: "Harapin ang hukuman", flag: "a4_hatol",
+      { id: "hukuman", help: "Lapitan ang Hukom at pindutin ang Sumagot.", label: "Harapin ang hukuman", flag: "a4_hatol",
         guide: { scene: "hukuman", npc: "hukom" } },
-      { id: "bintana", label: "Dumungaw sa bintana", flag: "a4_dumungaw",
+      { id: "bintana", help: "Lapitan ang bintana ng selda at dumungaw.", label: "Dumungaw sa bintana", flag: "a4_dumungaw",
         guide: { scene: "selda", npc: "bintana" } },
-      { id: "umaga", label: "Lumakad sa huling umaga", flag: "a4_wakas",
+      { id: "umaga", help: "Lumakad pakanan sa bakuran ng Bilibid.", label: "Lumakad sa huling umaga", flag: "a4_wakas",
         guide: { scene: "patyo", x: SCAFFOLD_X - 150 } },
     ],
     startingQuests: [],
@@ -1768,9 +1801,13 @@
         checkpoints: [
           { x: SCAFFOLD_X - 150, flag: "a4_saBitayan", reach: true, requiresFlag: "a4_saPatyo", script: true },
         ],
+        // Block 158: the gallows' platform, drawn by its picture.
+        platforms: [{ x: 1830, y: GALLOWS_TOP, width: 205, drawn: false }],
         scripts: [
           { requiresFlag: "a4_saBitayan", doneFlag: "a4_wakas", run: theStatement },
           { requiresFlag: "a4_hulingGabi", doneFlag: "a4_saPatyo", x: 200, facing: 1, run: theMorning },
+          // Block 158: a reload after "Oras na" walks him bound still.
+          { requiresFlag: "a4_saPatyo", unlessFlag: "a4_saBitayan", run: bindHands },
         ],
         decorations: [
           { id: "de-vega-p", x: 420, animation: DE_VEGA, walkAnimation: DE_VEGA_WALK, faceMovement: true, speakers: ["De Vega"] },

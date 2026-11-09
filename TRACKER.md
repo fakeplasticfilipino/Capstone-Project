@@ -9,7 +9,11 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Nov 2026, Block 157: the examination list's group 2
+Last updated: 9 Nov 2026, Block 158: group 3 (the cedula torn, the
+blindfold, the bound walk up the gallows and the drop on black), the
+Tulong button (57 help lines) and softer mini-game chimes. Left: 25
+and 26, which need the proponent's yes for the database. Before it,
+Block 157: the examination list's group 2
 done (see the list): the pay, three lessons and Paano Maglaro, the
 intro with Macario's card, used-up props, allies aside in fights,
 riflemen, the Talaan of every act (and the papers of Acts II to IV,
@@ -519,12 +523,12 @@ which needs a picture or the rifle rigged as a part):
     [x] 21 Delete only in the dashboard's archived view (still only
            for accounts never used)
 
-Group 3, new animation:
+Group 3, new animation (COMPLETE, Block 158):
 
-    [ ] 22 the cedula torn: his motion, the scraps, a rip
-    [ ] 23 the blindfold at the oath: his own still with a dark band
+    [x] 22 the cedula torn: his motion, the scraps, a rip
+    [x] 23 the blindfold at the oath: his own still with a dark band
            over the eyes, through skeleton.js, worn for that scene only
-    [ ] 24 the walk to the gallows, hands tied behind; then D
+    [x] 24 the walk to the gallows, hands tied behind; then D
 
 Group 4, large (before the freeze, E):
 
@@ -536,8 +540,8 @@ Group 4, large (before the freeze, E):
            or false, graded by submit_test; an essay kept as an
            ungraded reflection, out of the score and the gain (a
            migration and a function change, the proponent's yes)
-    [ ] 27 hints: the Tulong button (B)
-    [ ] 28 the mini-games' sounds made softer and less "gamey" (A)
+    [x] 27 hints: the Tulong button (B)
+    [x] 28 the mini-games' sounds made softer and less "gamey" (A)
 
 ## Next action
 

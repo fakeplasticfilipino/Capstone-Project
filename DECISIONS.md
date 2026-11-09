@@ -7075,6 +7075,49 @@ mountains and fields looked raised beside Tondo's dirt. At lip 6 they
 stand where grass meets soil. Balara's fire, raised in Block 156 to
 clear the old grass, stands at the feet line again.
 
+## Block 158: the examination list, group 3, Tulong and the sounds, 9 Nov 2026
+
+Worked while the proponent was away, at their word: what needs a yes
+(the database for names and question types) set aside for their return.
+
+22. The cedula torn. On "Wala nang sedula. Wala nang alipin." (a line's
+tear: true) the game draws the paper in his hands splitting, the halves
+thrown up and apart and scraps fluttering down, above his head because
+on a phone the dialogue box covers his hands; drawn by the stylesheet,
+not art, like the floors. Its sound, punit, is made by
+make-scene-sfx.js: a crackle of fibres over a short rising tear.
+
+23. The blindfold, at the proponent's word ("a black pixel on his
+eyes"): a dark band drawn by the stylesheet on his sprite, placed by
+MACARIO_CELL's own numbers (the eye at 94, 30), so it fits every outfit
+on the template and flips and bobs with him. He comes into the pulungan
+with it on, stands so a moment, and it comes off at the Mabalasig's
+"Alisin ang kanyang piring."
+
+24. The walk to the gallows, as the proponent chose (D). At "Oras na,
+Sakay" his hands are tied behind him: two new clips of his skeleton,
+bound and boundwalk (the upper arms back, the forearms folded in to
+the small of the back, the head a little lower, a shorter step), base
+camisa only, copied into assets/ by hand so his other sheets were not
+written again. The script walks him to the gallows' stairs and up them
+(movePlayer's new y, onto a platform the picture draws, 133 above the
+road), to the noose, where he gives his statement; at the drop the
+screen goes black, the trapdoor (bitay: a bolt, the door's thud, the
+rope's creak) is heard, and his last words are the card. De Vega still
+stands below; a decoration does not climb, and the card names him.
+
+27. Tulong (B): a fourth corner button, a question mark, whose tap
+shows the step in hand's help line for six seconds: one plain sentence
+per objective, 57 of them, where to go and what to press. Ours,
+PLACEHOLDER. The hearts moved one button further left.
+
+28. The "gamey" sounds (A, the mini-games'): catch, the good stroke,
+the clean cut and the lesson learned, was a square wave's pop; streak
+a chiptune arpeggio. Both are now a mallet on a bamboo bar (a sine, a
+fast fourth partial, a touch of the strike), made by make-scene-sfx.js;
+make-sfx.py and make-fun-sfx.js no longer write them. The miss was
+already a soft thud.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

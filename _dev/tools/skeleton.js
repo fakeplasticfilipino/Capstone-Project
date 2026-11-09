@@ -585,6 +585,10 @@ function keyed(frames, keys, drag = DRAG) {
 // The clips. Each returns, for a moment t of its loop (0..1), the body's
 // pose and where each foot is.
 // ---------------------------------------------------------------
+// Block 158. The bound pose's arms, in degrees from where they hang
+// (positive is back, as the walk's swing).
+const BOUND_UPPER = 52, BOUND_FORE = -44, BOUND_HAND = -6;
+
 const CLIPS = {
   // Standing. Two seconds: a breath in and out, the weight easing a
   // little from one foot to the other and back, the head and the arms a
@@ -649,6 +653,63 @@ const CLIPS = {
           fore: { r: 0.5 * near.forward - 2 },
           farUpper: { r: 0.8 * far.forward },
           farFore: { r: 0.5 * far.forward - 2 },
+        },
+        legs: { near, far },
+      };
+    },
+  },
+
+  // Block 158 (the proponent: the walk to the gallows, hands tied). His
+  // hands bound behind his back: both upper arms drawn back, the forearms
+  // folded in to the small of the back, held there; the rest of him as
+  // in idle and walk, the head a little lower. Played only in Act IV's
+  // last scene (content/act4.js, the bound sheets).
+  bound: {
+    frames: 16, fps: 8,
+    pose(t, sk) {
+      const b = Math.sin(TAU * t);
+      const sway = Math.sin(TAU * t + 0.4);
+      return {
+        body: {
+          root: { x: 1.2 * sway, y: 0.8 + 0.4 * b },
+          spine: { r: -0.6 * sway + 1.5 },
+          chest: { r: -0.4 * b, y: -1.6 * b },
+          head: { r: 4 + 1.2 * Math.sin(TAU * t - 0.5) },
+          hair: { r: 1.2 * Math.sin(TAU * t - 1.2) },
+          upper: { r: BOUND_UPPER },
+          fore: { r: BOUND_FORE },
+          hand: { r: BOUND_HAND },
+          farUpper: { r: BOUND_UPPER - 4 },
+          farFore: { r: BOUND_FORE },
+        },
+        feet: {
+          near: { pivot: "heel", at: sk.joints.heel, turn: 0 },
+          far: { pivot: "heel", at: [sk.joints.heel[0] + sk.farLegOffset, sk.joints.heel[1]], turn: 0 },
+        },
+      };
+    },
+  },
+  boundwalk: {
+    frames: 8, fps: 10,
+    pose(t) {
+      const SWING = 18, KNEE = 40;   // a shorter, slower step than his walk
+      const leg = (phase) => {
+        const p = TAU * phase;
+        const forward = SWING * Math.sin(p);
+        const knee = 4 + KNEE * Math.pow(Math.max(0, Math.cos(p)), 1.6);
+        return { forward, knee };
+      };
+      const near = leg(t), far = leg(t + 0.5);
+      return {
+        body: {
+          spine: { r: 3 },
+          head: { r: 4 + 1.2 * Math.sin(TAU * (t * 2 + 0.25)) },
+          hair: { r: 1 + Math.sin(TAU * (t * 2 - 0.1)) },
+          upper: { r: BOUND_UPPER },
+          fore: { r: BOUND_FORE },
+          hand: { r: BOUND_HAND },
+          farUpper: { r: BOUND_UPPER - 4 },
+          farFore: { r: BOUND_FORE },
         },
         legs: { near, far },
       };

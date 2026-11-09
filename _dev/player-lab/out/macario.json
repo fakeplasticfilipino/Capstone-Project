@@ -149,5 +149,33 @@
     "loop": false,
     "contact": 6,
     "cocked": 3
+  },
+  {
+    "name": "bound",
+    "file": "_dev/player-lab/out/macario-bound.png",
+    "frames": 16,
+    "fps": 8,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 12,
+    "drawnBottom": 251,
+    "cellW": 200,
+    "cellH": 256
+  },
+  {
+    "name": "boundwalk",
+    "file": "_dev/player-lab/out/macario-boundwalk.png",
+    "frames": 8,
+    "fps": 10,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 11,
+    "drawnBottom": 250,
+    "cellW": 200,
+    "cellH": 256
   }
 ]

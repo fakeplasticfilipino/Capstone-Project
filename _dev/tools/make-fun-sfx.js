@@ -155,7 +155,9 @@ const C6 = 1046.5, E6 = 1318.5, G6 = 1568.0, C7 = 2093.0, A5 = 880.0, D6 = 1174.
 
 // A streak in the apple game: two quick notes, a step above the catch.
 {
-  write("streak", scale(arpeggio([A5, D6], 0.06, 0.2), 0.6), 0.57);
+  // Block 158: made by make-scene-sfx.js now, a soft wooden pair in
+  // place of this arpeggio, which read as gamey.
+  void arpeggio;
 }
 
 // A jump (Block 93): the push-off, heard, not a tune. Dull noise for the

@@ -3125,6 +3125,9 @@ the Philippine Assembly opens; on black. patyo, by itself.
 
     Macario (sa isip): Alas-otso y medya ng umaga.
     Bantay: Oras na, Sakay.
+
+    (Block 158: his hands are tied behind him; he walks bound from here.)
+
     Macario (sa isip): Ilang beses akong umakyat sa entablado.
     Macario (sa isip): Ito ang huli.
 
@@ -3136,8 +3139,12 @@ nothing walks for him. Completes, at the end: Lumakad sa huling umaga.
     Macario: Ngunit nais kong sabihin sa inyo: hindi kami mga bandido at magnanakaw, gaya ng paratang sa amin ng mga Amerikano.
     Macario: Kami ay mga kasapi ng hukbong rebolusyonaryo na nagtanggol sa ating Inang Bayan, ang Pilipinas.
     Macario: Paalam! Mabuhay ang Republika, at nawa'y isilang ang ating kalayaan sa hinaharap!
-    Macario: Paalam! Mabuhay ang Pilipinas!
 
+Block 158 (the proponent's choice): he climbs the gallows' stairs bound
+and speaks at the rope; at the drop the screen goes black, the trapdoor
+is heard, and his last words are on the card.
+
+    [BLACK] "Paalam! Mabuhay ang Pilipinas!"
     [BLACK] Setyembre 13, 1907. Alas-otso y medya ng umaga.
     [BLACK] Binitay si Macario Sakay sa Lumang Bilibid, Santa Cruz, Maynila, kasama si Lucio de Vega.
     [BLACK] Hindi niya ginupit ang kanyang buhok.

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>MACARIO</title>
-  <link rel="stylesheet" href="css/style.css?v=867029333" />
+  <link rel="stylesheet" href="css/style.css?v=2891239104" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -65,6 +65,7 @@
     <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7 4.5 3.5 5v13.5C7 18 10 18.5 12 20c2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 6.5V20" stroke="currentColor" stroke-width="2"/></symbol>
     <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11.5 12 4l8.5 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v10h12V10" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 20v-5h4v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
     <symbol id="i-letter"viewBox="0 0 24 24"><path d="M4.5 19.5 12 4.5l7.5 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.6 14h8.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><path d="M8.6 9a3.5 3.5 0 1 1 5.3 3c-1.2.8-1.9 1.5-1.9 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 19.2v.3" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
   </svg>
   <div id="app-scale">
     <!-- Quest log -->
@@ -119,6 +120,8 @@
          window.Inventory there, the same guard shell.js applies to
          their pause-menu counterparts, so the buttons never appear if
          that module fails to load. -->
+    <!-- Block 158. Tulong: what to do now, the step's help line. -->
+    <button id="btn-help" class="hidden" type="button" aria-label="Tulong"><span class="ico"><svg aria-hidden="true"><use href="#i-help"></use></svg></span></button>
     <button id="btn-shop" class="hidden" type="button" aria-label="Tindahan"><span class="ico"><svg aria-hidden="true"><use href="#i-coins"></use></svg></span></button>
     <button id="btn-inventory" class="hidden" type="button" aria-label="Imbentaryo"><span class="ico"><svg aria-hidden="true"><use href="#i-bag"></use></svg></span></button>
     <button id="btn-pause" class="hidden" type="button" aria-label="Pahinga"><span class="ico"><svg aria-hidden="true"><use href="#i-pause"></use></svg></span></button>
@@ -738,14 +741,14 @@
   <script src="js/supabaseClient.js?v=2770937222"></script>
   <script src="content/enemies.js?v=2608693528"></script>
   <script src="content/people.js?v=1607945421"></script>
-  <script src="content/act1.js?v=2162146470"></script>
-  <script src="content/act2.js?v=2147392134"></script>
-  <script src="content/act3.js?v=371832341"></script>
-  <script src="content/act4.js?v=1957909246"></script>
+  <script src="content/act1.js?v=3034662269"></script>
+  <script src="content/act2.js?v=2536182549"></script>
+  <script src="content/act3.js?v=463721189"></script>
+  <script src="content/act4.js?v=4133053383"></script>
   <script src="content/items.js?v=535744512"></script>
   <script src="content/questions.js?v=1060630089"></script>
-  <script src="js/asset-manifest.js?v=4274433337"></script>
-  <script src="js/game.js?v=2024252242"></script>
+  <script src="js/asset-manifest.js?v=2173999649"></script>
+  <script src="js/game.js?v=3792906234"></script>
   <script src="js/acts.js?v=455114043"></script>
   <script src="js/inventory.js?v=2872116366"></script>
   <script src="js/assessment.js?v=1068140239"></script>

@@ -1084,6 +1084,57 @@ html, body {
   outline: 3px solid var(--px-gold, #f4c542);
 }
 
+/* Block 158. The blindfold (game.js, setBlindfold): a dark cloth band
+   over his eyes, placed in his sprite's own box by MACARIO_CELL's
+   numbers (the eye at 94, 30 of a 200 by 256 cell; the band from the
+   temple, 80, to the face, 102, rows 27 to 34), so it scales and flips
+   with him. Drawn here, like the floors, at the proponent's word. */
+#player.blindfolded .player-sprite::after {
+  content: "";
+  position: absolute;
+  left: 39.5%;
+  top: 10.4%;
+  width: 11.5%;
+  height: 2.9%;
+  background: #1c1510;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+/* Block 158. A paper torn in his hands (game.js, tearPaper): two halves
+   thrown up and apart, scraps fluttering down, all fading. Drawn here,
+   not art, like the floors. */
+.tear-piece {
+  position: absolute;
+  z-index: 3;
+  background: #efe6cf;
+  box-shadow: 0 0 0 1px rgba(60, 45, 25, 0.55);
+  pointer-events: none;
+  animation: tear-fly 1.8s ease-out forwards;
+}
+.tear-half {
+  width: 16px;
+  height: 28px;
+  margin-left: -8px;
+}
+.tear-left {
+  clip-path: polygon(0 0, 100% 0, 70% 30%, 100% 55%, 75% 80%, 100% 100%, 0 100%);
+}
+.tear-right {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 25% 80%, 0 55%, 30% 30%);
+}
+.tear-scrap {
+  width: 8px;
+  height: 7px;
+  margin-left: -4px;
+  opacity: 0;
+}
+@keyframes tear-fly {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  35% { opacity: 1; }
+  100% { transform: translate(var(--dx), calc(var(--dy) * -1)) rotate(var(--rot)); opacity: 0; }
+}
+
 /* Block 156: an ally who does not fight, out of sight while one is on
    (game.js, updateStandAside). */
 .aside-in-fight {
@@ -1357,9 +1408,10 @@ html, body {
 #hud {
   position: absolute;
   top: 10px;
-  /* Clear of #btn-pause, #btn-inventory and #btn-shop, which own the
-     corner from Block 7 (pause) and Block 13 (the other two) on. */
-  right: 168px;
+  /* Clear of #btn-pause, #btn-inventory, #btn-shop and (Block 158)
+     #btn-help, which own the corner from Block 7 (pause) and Block 13
+     (the other two) on. */
+  right: 220px;
   z-index: 40;
 }
 
@@ -1606,7 +1658,8 @@ html, body {
    just the one. */
 #btn-pause,
 #btn-inventory,
-#btn-shop {
+#btn-shop,
+#btn-help {
   position: absolute;
   top: 10px;
   z-index: 40;
@@ -1632,9 +1685,14 @@ html, body {
   right: 116px;
 }
 
+#btn-help {
+  right: 168px;
+}
+
 #btn-pause.hidden,
 #btn-inventory.hidden,
-#btn-shop.hidden {
+#btn-shop.hidden,
+#btn-help.hidden {
   display: none;
 }
 
@@ -1791,7 +1849,8 @@ html, body {
 
 #btn-pause,
 #btn-inventory,
-#btn-shop {
+#btn-shop,
+#btn-help {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1804,7 +1863,8 @@ html, body {
 
 #btn-pause .ico svg,
 #btn-inventory .ico svg,
-#btn-shop .ico svg {
+#btn-shop .ico svg,
+#btn-help .ico svg {
   width: 20px;
   height: 20px;
 }
@@ -2003,7 +2063,8 @@ html, body {
 @media (orientation: landscape) and (max-height: 500px) {
   #btn-pause,
   #btn-inventory,
-  #btn-shop {
+  #btn-shop,
+  #btn-help {
     width: 64px;
     height: 64px;
   }
@@ -2016,8 +2077,12 @@ html, body {
     right: 156px;
   }
 
-  #hud {
+  #btn-help {
     right: 228px;
+  }
+
+  #hud {
+    right: 300px;
   }
 }
 
@@ -3020,7 +3085,8 @@ body.text-lg #guide-edge .guide-label { font-size: 28px; }
 .touch-btn,
 #btn-pause,
 #btn-inventory,
-#btn-shop {
+#btn-shop,
+#btn-help {
   border-radius: 0;
   background: rgba(18, 12, 7, 0.62);
   border: 3px solid rgba(245, 239, 224, 0.78);
@@ -3054,7 +3120,8 @@ body.text-lg #guide-edge .guide-label { font-size: 28px; }
 .touch-btn:active,
 #btn-pause:active,
 #btn-inventory:active,
-#btn-shop:active {
+#btn-shop:active,
+#btn-help:active {
   background: rgba(62, 142, 65, 0.75);
 }
 
@@ -4610,6 +4677,7 @@ body.dialogue-top .dialogue-portrait {
 body.shell-menu-open #quest-log,
 body.shell-menu-open #hud,
 body.shell-menu-open #btn-shop,
+body.shell-menu-open #btn-help,
 body.shell-menu-open #btn-inventory,
 body.shell-menu-open #btn-pause,
 body.shell-menu-open #gift-btn,
