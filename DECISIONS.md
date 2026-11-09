@@ -6869,6 +6869,52 @@ it), and checking each choice's question text on the server (the order
 is shared, and a teacher editing a test mid-sitting is a case too rare
 to spend on).
 
+## Block 154: the last owed art, adapted rather than asked for again, 9 Nov 2026
+
+The proponent's four pictures of 9 Nov (ChatGPT, from ART.md's
+prompts): three skins on Macario's template and the judge. Checked
+strictly first, all four failed, as had the 7 Nov set: the skins stood
+6 to 32 px off the template and a little larger or smaller, the stage
+costume kept its cape and a sash hanging free, the Katipunero's grew a
+sash tail, the judge was drawn with a bigger head than anyone, about
+seven heads seated. The proponent's word: adapt. So the game was fitted
+to the pictures, not the pictures redrawn.
+
+The skins. _dev/tools/fit-skin.py moves and scales each still onto the
+template by three marks read from the alpha (top of the head, soles,
+the nose), and changes nothing else, as key-still.js crops and shrinks:
+no pixel is drawn, so the rule against art not the artist's holds.
+After it each stands within a pixel of the template at the head and the
+feet. What still differs is the clothes, so skeleton.js gained readings
+a skin can set (macario.js, skins): hemY, where its shirt or tunic ends;
+overLegs, cloth that hangs over the legs and stays with the body (the
+cape and the sash's tassels, the Katipunero's sash tail), with the
+trouser painted in under it (the name animate-still.js already uses for
+the same thing); jacketCloth, the colours the hole behind the arm is
+painted from (the red tunic, which the warm-fringe test refused; the
+camisa's white and the sash's red, not the hair's brown highlights that
+streaked it); notArm, a colour the arm never is (the red sash behind his
+bare forearm); and armMargin, a few px round the arm kept out of the
+trouser (the hand's edge sits a pixel off the template's and was baked
+into the trouser as a pale curve). Every one defaults to the old
+behaviour, so the base sheets and the general's are unchanged. A
+skin's slash is not shipped: the itak's is worn over any outfit.
+
+The items. The four outfits share one sheet builder (items.js,
+skinSheets). The stage clothes and the disguise, the story's, now carry
+sheets; Block 85's gold tint, the stand-in until the costume was drawn,
+is gone, as ART.md said it would be. The Katipunero's clothes are a
+cosmetic at 70, a little below the general's uniform, as TRACKER had it
+("on sale once made").
+
+The judge. Cut out and shrunk to 548 tall as every still is, and sized
+in the court by his head, not his height: his head is 16% of his seated
+height, Van Schaick's 13% of his standing 134, so displayHeight 105
+gives them one head size, and a seated man that tall beside a standing
+one is what a court looks like. The prompt's own target (seated, a
+standing man's head to waist) could not be met by this picture at any
+size without his head shrinking to half of everyone else's.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

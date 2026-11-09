@@ -52,82 +52,17 @@ Nothing needed.
 
 Nothing needed.
 
-Also wanted (not in the game yet):
-
-    _dev/player-lab/macario-entablado-still.png
-        (Attach macario-still.png from the folder _dev/player-lab)
-        Refer to the attached image. Redraw this exact man, same face,
-        same hair, same height, the same pose side on facing right, his
-        arms hanging the same way, standing in exactly the same place on
-        a canvas of exactly the same size (1024 by 1536), changing only
-        his clothes to the stage costume of a Christian prince in a
-        Filipino moro-moro play of the 1890s, sewn by a village
-        seamstress: a short fitted tunic of red cloth trimmed with gold
-        braid and buttons, a short cape hanging from the shoulders down
-        his back, a sash at the waist, close trousers and plain dark
-        shoes. No hat, no sword. Transparent background.
-        (For the team: the stage clothes, damit-entablado, worn from Don
-        Rodrigo on. Then node _dev/tools/skeleton.js macario
-        --still=_dev/player-lab/macario-entablado-still.png --ship, the
-        item names the sheets, and its gold tint, the stand-in of Block
-        85, comes off.)
-
 ### Act II
 
 Nothing needed.
-
-    _dev/player-lab/macario-katipunero-still.png
-        (Attach macario-still.png from the folder _dev/player-lab)
-        Refer to the attached image. Redraw this exact man, same face,
-        same hair, same height, the same pose side on facing right, his
-        arms hanging the same way, standing in exactly the same place on
-        a canvas of exactly the same size (1024 by 1536), changing only
-        his clothes to a Katipunero's of 1896:
-        a white camisa de chino, red trousers rolled at the shin, a red
-        kerchief at the neck. Transparent background.
-        (For the team: then node _dev/tools/skeleton.js macario
-        --still=_dev/player-lab/macario-katipunero-still.png --ship writes every
-        sheet of the skin, and the item names them as its sheets.)
 
 ### Act III
 
 Nothing needed.
 
-Also wanted (not in the game yet):
-
-    _dev/player-lab/macario-magtataho-still.png
-        (Attach macario-still.png from the folder _dev/player-lab)
-        Refer to the attached image. Redraw this exact man, same face,
-        same hair, same height, the same pose side on facing right, his
-        arms hanging the same way, standing in exactly the same place on
-        a canvas of exactly the same size (1024 by 1536), changing only
-        his clothes to a poor taho seller's of Manila in 1899: a faded,
-        patched loose shirt of rough cloth, plain trousers rolled to
-        the shin, a cloth tied round the neck, bare feet or worn
-        sandals. No hat, nothing in his hands. Transparent background.
-        (For the team: the disguise, balatkayo, Maryam's from the trunk.
-        Then node _dev/tools/skeleton.js macario
-        --still=_dev/player-lab/macario-magtataho-still.png --ship, and
-        the item names the sheets.)
-
 ### Act IV
 
-    assets/sprites/characters/hukom.png
-        (Attach van-schaick-still.png from the folder
-        _dev/stills/characters)
-        Refer to the attached image and use the same art style, the
-        same scale and the same line. Draw an American judge of 1906,
-        the whole figure, facing the front, seated upright on a plain
-        wooden chair, in a black robe over a white collar, clean shaven
-        or with a short moustache, hands resting on his knees or one
-        holding a single sheet of paper. Only the man and the chair: no
-        desk, no bench, no gavel, no flag, no floor and no shadow.
-        Seated, he is as tall as the attached man from the top of his
-        head to his waist would be standing, so he stays at people's
-        size beside him. Transparent background.
-        (OWED AGAIN, 26 Oct 2026: the artist's judge of 21 Oct, seated
-        at his own bench, was too big for the court; taken out at the
-        proponent's word, kept in docs-private/art-delivered/)
+Nothing needed.
 
 ## Props
 
@@ -245,7 +180,12 @@ Done and in the game. Nothing here needs drawing.
                   skeleton.js writes idle, walk, jump, punch, shot
                   and the bolo's slash; the general's uniform
                   (macario-heneral-still.png, 24 Oct 2026, Block 148),
-                  every move of it shipped as macario-heneral-*.png
+                  every move of it shipped as macario-heneral-*.png;
+                  the stage clothes, the Katipunero's clothes and the
+                  taho seller's disguise (macario-entablado,
+                  macario-katipunero, macario-magtataho, 9 Nov 2026,
+                  Block 154), fitted to the template by fit-skin.py,
+                  the originals in docs-private/art-delivered/2026-11-09/
         Act I     Nanay, the Kutsero and his horse (Kabayo), the
                   Barbero, the Mananahi, the three siga, the direktor,
                   Maryam, the Sultan, the kawal, the Katipunero, the
@@ -273,7 +213,9 @@ Done and in the game. Nothing here needs drawing.
                   judge at his bench (a still), the artist's, from the
                   Drive, 25 Oct 2026, Block 151; the sala and the court
                   built from their kits (sala-kit, hukuman-kit). The
-                  judge was taken out on 26 Oct, owed again
+                  judge was taken out on 26 Oct; the judge seated on a
+                  plain chair (hukom, a still facing the front), 9 Nov
+                  2026, Block 154
 
     Props
         Act I     Tondo's houses, street props and doors

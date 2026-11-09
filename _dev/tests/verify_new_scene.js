@@ -737,7 +737,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     // Block 117: and Act III's disguise, the story's too, neither for sale.
     // Block 121: each given in its own act, and a general stock of three.
     ok("the item catalogue is the stage clothes (Block 82) and the disguise (Block 117), not for sale, still-detection effects",
-       await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 7 && ITEMS[0].id === "damit-entablado" &&
+       await page.evaluate(() => Array.isArray(window.ITEMS) && ITEMS.length === 8 && ITEMS[0].id === "damit-entablado" &&
          ITEMS[0].price === 0 && ITEMS[0].slot === "outfit" && ITEMS[0].effect.stillDetectionMult === 0.2 &&
          ITEMS[0].givenInAct === 1 && ITEMS[1].givenInAct === 3 &&
          ITEMS[1].id === "balatkayo" && ITEMS[1].price === 0 && ITEMS[1].slot === "outfit" &&
@@ -1403,9 +1403,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
        n1.lines.length === 10 && JSON.stringify([...n1.lines.slice(0, 3), ...n1.lines.slice(8)]) === JSON.stringify(NANAY_THANKS_OWN) &&
        n1.lines[3] === "Macario: Pati po sa Barbero." && /entablado/.test(n1.lines[4]), n1.lines);
     ok("the savings are spent, and he keeps the rest", (await page.evaluate(() => Game.currency())) === 30);
-    ok("and once they are given, the shop opens: lagundi, the anting-anting, the pulbura (Block 121), the itak (Block 145) and the general's uniform (Block 148)",
+    ok("and once they are given, the shop opens: lagundi, the anting-anting, the pulbura (Block 121), the itak (Block 145), the general's uniform (Block 148) and the Katipunero's clothes (Block 154)",
        await page.evaluate(() => JSON.stringify(Inventory.forSale(null).map((i) => i.id)) ===
-         '["lagundi","anting-anting","pulbura","itak","uniporme-heneral"]'));
+         '["lagundi","anting-anting","pulbura","itak","uniporme-heneral","damit-katipunero"]'));
     // Block 148: the general's uniform, a skin: every move of his redrawn,
     // each sheet in the game, nothing but the look changed.
     ok("and the general's uniform: a cosmetic at 80 whose sheets redraw every move, each in the game (Block 148)",
@@ -1415,6 +1415,18 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
          return u.kind === "cosmetic" && u.slot === "outfit" && u.price === 80 && !u.effect &&
            names.length === 10 && names.every((n) => n in BASE_SPRITE_SHEETS) &&
            names.every((n) => u.sheets[n].src in window.ASSET_VERSIONS);
+       }));
+    // Block 154: the other three skins on the same template, every sheet
+    // in the game: the Katipunero's (sold at 70), the stage clothes and the
+    // disguise (the story's, with their effects and now their look).
+    ok("and the Katipunero's clothes at 70, and the stage clothes and the disguise drawn too, every sheet in the game (Block 154)",
+       await page.evaluate(() => {
+         const by = (id) => ITEMS.find((x) => x.id === id) || {};
+         const k = by("damit-katipunero");
+         const drawn = (it) => { const names = Object.keys(it.sheets || {});
+           return names.length === 10 && names.every((n) => n in BASE_SPRITE_SHEETS && it.sheets[n].src in window.ASSET_VERSIONS); };
+         return k.kind === "cosmetic" && k.slot === "outfit" && k.price === 70 && !k.effect && drawn(k) &&
+           drawn(by("damit-entablado")) && drawn(by("balatkayo")) && !by("damit-entablado").tint;
        }));
 
     // ---------------------------------------------------------------
@@ -1482,9 +1494,10 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       toast: document.getElementById("toast").textContent }));
     ok("the stage clothes are his, worn, with their effect, and a toast says so (Block 82)",
        suit.worn && suit.still === 0.2 && /Damit-Pangteatro/.test(suit.toast), suit);
-    ok("and he looks different in them: a stand-in tint on his sprite (Block 85)", await page.evaluate(() =>
-      /sepia/.test(document.querySelector("#player .player-sprite").style.filter) &&
-      document.getElementById("player").classList.contains("outfit-tinted")));
+    // Block 154: drawn in the costume, no longer the stand-in tint.
+    ok("and he is drawn in them: the costume's sheets, no tint (Block 154)", await page.waitForFunction(() =>
+      /macario-entablado-idle/.test(SPRITE_SHEETS.idle.src) && !document.querySelector("#player .player-sprite").style.filter &&
+      !document.getElementById("player").classList.contains("outfit-tinted"), { timeout: 5000 }).then(() => true, () => false));
     const pb2b = await readConversation(page, 2);
     ok("and Maryam teases", pb2b.lines.length === 1 && /iskrip/.test(pb2b.lines[0]), pb2b.lines);
     // The scene's doneFlag is set when its script resolves, a moment after
@@ -2641,6 +2654,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("Maryam knows now who the two men were, and dresses him from the trunk: the disguise worn",
        c.lines.includes("Maryam: Alam ko na ngayon kung sino 'yung dalawang lalaki noon.") &&
        c.lines.includes("Maryam: Artista ka, 'di ba?") && dressed.owns && dressed.worn === "balatkayo", { c: c.lines, dressed });
+    ok("and he is drawn as a taho seller in it (Block 154)", await page.waitForFunction(() =>
+      /macario-magtataho-idle/.test(SPRITE_SHEETS.idle.src), { timeout: 5000 }).then(() => true, () => false));
     await walkTo(page, 6330);
     await page.keyboard.press("e");
     c = await readLines(page, 7);

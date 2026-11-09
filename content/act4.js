@@ -88,10 +88,14 @@
   const DE_VEGA = sheet("de-vega", 8, 4, DE_VEGA_CELL);
   const DE_VEGA_WALK = sheet("de-vega-walk", 8, 12, DE_VEGA_CELL);
   // The judge. The artist's judge at his bench (Hukom.png, 21 Oct 2026)
-  // was too big and was taken out (26 Oct 2026, the proponent): owed
-  // again (ART.md: seated on a plain chair, facing the front, used as a
-  // still like the Mananahi), the placeholder meanwhile.
-  const HUKOM = owed("characters", "hukom");
+  // was too big and was taken out (26 Oct 2026, the proponent). Block
+  // 154: the proponent's judge of 9 Nov 2026, seated on a plain chair,
+  // facing the front, a still like the Mananahi. Drawn with a bigger head
+  // than the others (16% of his seated height, Van Schaick's 13% of his
+  // standing 134), so he is sized by his head: HUKOM_HEIGHT.
+  const HUKOM = { src: "assets/sprites/characters/hukom.png", frames: 1, fps: 1,
+    contentTop: 2, contentHeight: 545, footX: 129 };
+  const HUKOM_HEIGHT = 105;
   const BANTAY_BILIBID = P.bantayBilibid; // content/people.js since Block 135
   const AMERIKANO = window.SOLDIER_SHEETS.amerikano;       // content/enemies.js, 24 Oct 2026
   // Block 120. The crowd in Manila, seen and not only heard: two
@@ -1721,7 +1725,7 @@
         ],
         npcs: [
           {
-            id: "hukom", x: 900, label: "Hukom", animation: HUKOM,
+            id: "hukom", x: 900, label: "Hukom", animation: HUKOM, displayHeight: HUKOM_HEIGHT,
             interactLabel: "Sumagot",
             interactIcon: "i-talk",
             dialogueSets: [],

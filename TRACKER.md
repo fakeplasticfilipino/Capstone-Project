@@ -9,7 +9,15 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 7 Nov 2026, Block 153: the database grades every test
+Last updated: 9 Nov 2026, Block 154: the last owed art in. The
+proponent's four stills of 9 Nov: the stage clothes, the Katipunero's
+clothes and the taho seller's disguise, each moved and scaled onto
+Macario's template (fit-skin.py) and animated by skeleton.js with its
+own reading (the cape and the sash tails stay with the body); the stage
+clothes and the disguise now draw him in them (the gold tint gone), the
+Katipunero's clothes sold at 70. The judge seated on his chair, sized
+by his head (displayHeight 105). ART.md owes nothing. Not yet seen on
+the phone. Before it, 7 Nov 2026, Block 153: the database grades every test
 (schema v15, submit_test); a score can no longer be written from the
 console. Students still see every question, answer and score. Acts II
 to IV's questions copied into the database. Before it, Block 152: Act IV's outdoor places rebuilt in
@@ -18,7 +26,7 @@ from the proponent's four layers (the night, the dusk, Bilibid's sky,
 the stone ground) and the post, town and Bilibid kits; their paintings
 taken out of the game completely, and Act I's four street paintings
 with them (the engine's default backdrop is now tondo-sky). Every place
-of every act is now in layers or built from a kit. Art left: the judge (owed); optional, three
+of every act is now in layers or built from a kit. Art left (until Block 154): the judge (owed); optional, three
 skins (Bonifacio's drawn sword dropped, 7 Nov 2026). Not yet seen on the phone. Before
 it, the artist's props of 28 Oct from the Drive:
 the campfire, the itak and the pistol replace those of 25 Oct (Balara,
@@ -1200,11 +1208,8 @@ IV, COMPLETE). The shop's four items are sold (Blocks 121, 145, COMPLETE). Left:
 Block 142, every outdoor scene in layers (IN PROGRESS: Acts I and II
 done, Acts III and IV left; its list above); Block 143, the rooms from
 kits (IN PROGRESS: Acts I and II done, Acts III and IV's five left);
-the art, ART.md (eighteen pictures, Act II's campfire and Acts III
-and IV; made by the proponent with ChatGPT from ART.md's prompts), and
-the Katipunero skin, on sale once made (ART.md, Also wanted: one
-still on Macario's template, then skeleton.js; the general's is in
-since Block 148).
+the art, ART.md (COMPLETE since Block 154: nothing owed; the
+Katipunero skin on sale at 70, the story's two outfits drawn).
 
 ## Blocked on other people
 

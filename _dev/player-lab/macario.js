@@ -71,8 +71,54 @@ module.exports = {
   // Skins on this template that read differently (Block 148): the
   // general's uniform is as dark as its trousers, so the hem alone tells
   // jacket from trouser (skeleton.js, darkJacket).
+  // Block 154: the three story clothes, each fitted to the template by
+  // _dev/tools/fit-skin.py first. hemY is where each one's shirt or tunic
+  // ends; overLegs is cloth hanging over the legs that stays with the
+  // body (the cape and the sash's tassels, the Katipunero's sash tail).
   skins: {
     "macario-heneral": { darkJacket: true },
+    // The stage clothes: tunic and trousers are the same red, so the hem
+    // alone tells them apart, and the tunic painted in behind the arm is
+    // the red cloth round it.
+    "macario-entablado": {
+      darkJacket: true,
+      hemY: 418,
+      armMargin: 3,
+      jacketCloth: (r, g, b) => r > 0.3 && r > g * 2.2,
+      overLegs: [
+        [[38, 170], [60, 170], [60, 330], [73, 345], [74, 492], [60, 486], [22, 466], [0, 446], [0, 300]],
+        [[150, 284], [180, 284], [194, 380], [202, 440], [201, 472], [160, 472], [158, 330]],
+      ],
+      // The cuff is wider than the camisa's.
+      arm: [[72, 151], [98, 153], [110, 173], [116, 207], [115, 250], [114, 290],
+        [118, 318], [124, 334], [132, 348], [133, 398], [130, 412], [130, 430],
+        [127, 448], [120, 456], [104, 453], [96, 438], [94, 412], [82, 407],
+        [80, 368], [74, 350], [64, 328], [58, 300], [53, 240], [54, 180],
+        [60, 162]],
+    },
+    // The camisa is tucked into the sash: the trousers start under it.
+    "macario-katipunero": {
+      hemY: 335,
+      armMargin: 3,
+      hairAbove: 300,
+      // His arm is a white sleeve and bare skin: the red behind it is the
+      // sash and the trousers.
+      notArm: (r, g, b) => r > 0.35 && r > g * 2.2 && r > b * 2.2,
+      // Painted in behind the arm: the camisa's white above the sash (not
+      // the hair's brown highlights, which would streak it), the sash's
+      // red from its top down.
+      jacketCloth: (r, g, b, x, y) => y < 308 ? g > 0.7 && b > 0.62 : r > 0.35 && r > g * 2.2,
+      overLegs: [
+        [[157, 330], [174, 330], [189, 380], [201, 445], [197, 476], [168, 476], [160, 458], [161, 360]],
+      ],
+    },
+    // The shirt hangs loose to a ragged hem.
+    "macario-magtataho": {
+      hemY: 384,
+      armMargin: 3,
+      // The faded shirt, not the hair's brown or the stains.
+      jacketCloth: (r, g, b) => g > 0.62 && r - b < 0.22,
+    },
   },
 
   // Every clip is written here too, for the test page.

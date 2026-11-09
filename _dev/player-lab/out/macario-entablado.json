@@ -1,0 +1,153 @@
+[
+  {
+    "name": "idle",
+    "file": "_dev/player-lab/out/macario-entablado-idle.png",
+    "frames": 16,
+    "fps": 8,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 12,
+    "drawnBottom": 251,
+    "cellW": 200,
+    "cellH": 256
+  },
+  {
+    "name": "walk",
+    "file": "_dev/player-lab/out/macario-entablado-walk.png",
+    "frames": 8,
+    "fps": 12,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 11,
+    "drawnBottom": 250,
+    "cellW": 200,
+    "cellH": 256
+  },
+  {
+    "name": "melee",
+    "file": "_dev/player-lab/out/macario-entablado-melee.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 250,
+    "cellW": 200,
+    "cellH": 256,
+    "loop": false,
+    "contact": 6,
+    "cocked": 2
+  },
+  {
+    "name": "cross",
+    "file": "_dev/player-lab/out/macario-entablado-cross.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 250,
+    "cellW": 200,
+    "cellH": 256,
+    "loop": false,
+    "contact": 6
+  },
+  {
+    "name": "kick",
+    "file": "_dev/player-lab/out/macario-entablado-kick.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 250,
+    "cellW": 260,
+    "cellH": 256,
+    "loop": false,
+    "contact": 6
+  },
+  {
+    "name": "shoot",
+    "file": "_dev/player-lab/out/macario-entablado-shoot.png",
+    "frames": 12,
+    "fps": 8,
+    "columns": 8,
+    "contentTop": 34,
+    "contentHeight": 240,
+    "footX": 80,
+    "headroom": 34,
+    "drawnTop": 18,
+    "drawnBottom": 273,
+    "cellW": 240,
+    "cellH": 280,
+    "loop": false,
+    "aim": [
+      0,
+      2
+    ],
+    "fire": [
+      3,
+      11
+    ],
+    "fireFps": 18,
+    "muzzle": {
+      "x": 194,
+      "y": 85
+    }
+  },
+  {
+    "name": "jump",
+    "file": "_dev/player-lab/out/macario-entablado-jump.png",
+    "frames": 6,
+    "fps": 14,
+    "columns": 6,
+    "contentTop": 10,
+    "contentHeight": 240,
+    "footX": 80,
+    "drawnTop": 10,
+    "drawnBottom": 249,
+    "cellW": 200,
+    "cellH": 256,
+    "loop": false,
+    "rise": [
+      0,
+      3
+    ],
+    "fall": [
+      4,
+      4
+    ],
+    "land": [
+      5,
+      5
+    ]
+  },
+  {
+    "name": "slash",
+    "file": "_dev/player-lab/out/macario-entablado-slash.png",
+    "frames": 12,
+    "fps": 24,
+    "columns": 8,
+    "contentTop": 110,
+    "contentHeight": 240,
+    "footX": 180,
+    "headroom": 110,
+    "drawnTop": 25,
+    "drawnBottom": 350,
+    "cellW": 380,
+    "cellH": 360,
+    "loop": false,
+    "contact": 6,
+    "cocked": 3
+  }
+]

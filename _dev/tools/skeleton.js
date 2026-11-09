@@ -132,11 +132,30 @@ function buildTextures(sk, img) {
     const a = px[i * 4 + 3];
     lum[i] = a > 0 ? (0.299 * px[i * 4] + 0.587 * px[i * 4 + 1] + 0.114 * px[i * 4 + 2]) / a * 255 : 0;
   }
-  const inArm = new Uint8Array(N), inLeg = new Uint8Array(N);
+  // overLegs (Block 154, the name animate-still.js already gives it):
+  // cloth that hangs over the legs and is not part of them, a cape or a
+  // sash's tail. It stays on the body, drawn over the legs, and the
+  // trouser under it is painted in so a leg can swing out from under it.
+  const over = sk.overLegs || [];
+  const inArm = new Uint8Array(N), inLeg = new Uint8Array(N), inOver = new Uint8Array(N);
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       inArm[y * W + x] = inPoly(sk.arm, x + 0.5, y + 0.5) ? 1 : 0;
       inLeg[y * W + x] = inPoly(sk.leg, x + 0.5, y + 0.5) ? 1 : 0;
+      inOver[y * W + x] = over.some((p) => inPoly(p, x + 0.5, y + 0.5)) ? 1 : 0;
+    }
+  }
+  // armMargin (Block 154): a skin whose hand sits a pixel or two off the
+  // template's keeps the hand's edge out of the trouser too; within this
+  // many px of the arm, the trouser is painted in rather than copied.
+  const nearArm = inArm.slice();
+  for (let m = 0; m < (sk.armMargin || 0); m++) {
+    const prev = nearArm.slice();
+    for (let y = 1; y < H - 1; y++) {
+      for (let x = 1; x < W - 1; x++) {
+        const i = y * W + x;
+        if (!prev[i] && (prev[i - 1] || prev[i + 1] || prev[i - W] || prev[i + W])) nearArm[i] = 1;
+      }
     }
   }
   const solid = (i) => px[i * 4 + 3] > 0.004;
@@ -167,11 +186,15 @@ function buildTextures(sk, img) {
     for (let x = 0; x < W; x++) {
       const i = y * W + x;
       if (!solid(i)) continue;
+      if (inOver[i]) { copy(body, i); bodySrc[i] = 1; continue; }
       // A drawing with outlines (the NPCs' style) rings the sleeve and the
       // hand in near-black: inside the arm's outline that black is the
       // arm's own line, not hair or trouser, and must move with it.
       const line = sk.outlineLuma && lum[i] < sk.outlineLuma;
-      if (inArm[i] && (line || (!hair(i, y) && !(trouser(i, y) && !skin(i))))) { copy(arm, i); armSrc[i] = 1; continue; }
+      // notArm (Block 154): a colour a skin's arm never is (the
+      // Katipunero's red sash, seen behind his bare forearm).
+      const notArm = sk.notArm && !line && sk.notArm(px[i * 4] / px[i * 4 + 3], px[i * 4 + 1] / px[i * 4 + 3], px[i * 4 + 2] / px[i * 4 + 3]);
+      if (inArm[i] && !notArm && (line || (!hair(i, y) && !(trouser(i, y) && !skin(i))))) { copy(arm, i); armSrc[i] = 1; continue; }
       // Above the hem, a near-black line is the jacket's own (the edges of
       // its slits, its hem), so it stays on the jacket; the trouser seen
       // through a slit is dark grey and goes with the leg.
@@ -179,7 +202,7 @@ function buildTextures(sk, img) {
         // Not inside the arm's outline: what is there is the hand's soft
         // edge, which copied into the hidden trouser leaves pale flecks.
         // The trouser under the hand is painted in instead.
-        if (inLeg[i] && !inArm[i]) { copy(leg, i); legSrc[i] = 1; }
+        if (inLeg[i] && !nearArm[i]) { copy(leg, i); legSrc[i] = 1; }
         continue;   // the far leg's pixels: replaced by the far leg
       }
       copy(body, i); bodySrc[i] = 1;
@@ -200,6 +223,13 @@ function buildTextures(sk, img) {
       // A dark jacket is painted in from its own dark cloth, in front of
       // the hair only (so neither the hair nor the white of a sash smears
       // into it).
+      // A skin may name its own cloth (jacketCloth, Block 154: the stage
+      // tunic is red, which the warm-fringe test below would refuse).
+      if (sk.jacketCloth) {
+        if (bodySrc[i] && !inOver[i] && A > 0.95 && x >= sk.hairBehind &&
+            sk.jacketCloth(px[i * 4] / A, px[i * 4 + 1] / A, px[i * 4 + 2] / A, x, y)) jacket[i] = 1;
+        continue;
+      }
       const cloth = sk.darkJacket ? dark(i) && x >= sk.hairBehind && px[i * 4 + 2] >= px[i * 4] : !dark(i);
       if (bodySrc[i] && cloth && A > 0.95 && (px[i * 4] - px[i * 4 + 1]) / A < 0.12) jacket[i] = 1;
     }
@@ -211,7 +241,7 @@ function buildTextures(sk, img) {
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const i = y * W + x;
-      if (inLeg[i] && !legSrc[i] && (y < sk.hemY + 24 || inArm[i])) legHole[i] = 1;
+      if (inLeg[i] && !legSrc[i] && (y < sk.hemY + 24 || nearArm[i] || inOver[i])) legHole[i] = 1;
     }
   }
   fillUp(leg, W, H, legHole, legSrc, sk.hemY);

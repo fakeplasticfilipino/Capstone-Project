@@ -252,7 +252,9 @@ off the repository.
                                96), animate-kabayo.js, the horse
                                (Block 100), skeleton.js, the player
                                from one still by a bent mesh (Block
-                               145), missing-art.js
+                               145), fit-skin.py, a skin's still
+                               onto the template (Block 154),
+                               missing-art.js
                                (Block 77), make-asset-manifest.js
                                (Block 78), shrink-sprites.js (Block 105),
                                prepare.js and lib/stamp.js, lib/checks.js
@@ -1516,12 +1518,20 @@ none story-given: lagundi (a consumable heal, 5), the anting-anting
 Block 145 a fourth, the itak (60, the weapon slot: its slash replaces
 the punch); since Block 148 a fifth, the general's uniform (80, a
 cosmetic, every move redrawn: macario-heneral-*.png from skeleton.js
---still). No
+--still); since Block 154 a sixth, the Katipunero's clothes (70, a
+cosmetic the same way). The story's two outfits are drawn too since
+Block 154 (the stage clothes, the disguise), and the stage clothes'
+tint is gone. No
 cosmetic is sold until its sheets are drawn (ART.md, Also wanted): one worn
 without them would draw Macario as the placeholder box. A skin whose
 picture reads differently from the template (a jacket as dark as the
 trousers) gets its own reading in the skeleton file, skins by name
-(darkJacket, Block 148).
+(darkJacket, Block 148; hemY, overLegs for a cape or a sash's tail,
+jacketCloth, notArm and armMargin, Block 154). A skin still that does
+not stand exactly on the template (ChatGPT's never quite do) is first
+moved and scaled onto it by _dev/tools/fit-skin.py, which changes no
+pixel of the drawing: top of the head, soles and nose on the
+template's, within a pixel.
 
 Effects are deliberately small and few. A faster projectile, one extra
 heart and a slower meter while still are the whole design brief; anything that needs a balance spreadsheet
@@ -2761,6 +2771,9 @@ look, by system:
                                           notHead)
     the general's uniform, the flag      Block 148 (a skin sold at 80;
                                           darkJacket)
+    the story's outfits drawn, the        Block 154 (fit-skin.py, the
+      Katipunero's clothes, the judge     skins' readings; the judge
+                                          sized by his head)
     the Scan list fixed                   Block 110 (S1 to S43; the
                                           guest's ending, scores kept
                                           offline, one save at a time,

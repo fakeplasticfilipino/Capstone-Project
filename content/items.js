@@ -50,7 +50,32 @@
 // would silently become the new one.
 // =============================================================
 
-window.ITEMS = [
+window.ITEMS = (() => {
+// Every move of a skin painted on Macario's template, written by
+// _dev/tools/skeleton.js (--still, --ship) as macario-<skin>-<move>.png
+// in his own cell (Block 148; shared by the four outfits since Block
+// 154). A skin has no slash sheet of its own: the itak's is worn over it.
+const skinSheets = (skin) => {
+  const cell = { columns: 8, contentTop: 10, contentHeight: 240, footX: 80, headroom: 10 };
+  const sheet = (move, more) => Object.assign(
+    { src: "assets/sprites/player/macario-" + skin + "-" + move + ".png" }, more, cell);
+  return {
+    idle: sheet("idle", { frames: 16, fps: 8 }),
+    walk: sheet("walk", { frames: 8, fps: 12 }),
+    // The shot's own cell (js/game.js, SHOOT_CELL), the pistol drawn.
+    shootAim: Object.assign(sheet("shoot", { frames: 12, fps: 8, startFrame: 0, endFrame: 2, loop: false }),
+      { contentTop: 34, headroom: 34 }),
+    shootFire: Object.assign(sheet("shoot", { frames: 12, fps: 18, startFrame: 3, endFrame: 11, loop: false,
+      muzzle: { x: 194, y: 85 } }), { contentTop: 34, headroom: 34 }),
+    melee: sheet("melee", { frames: 12, fps: 24, loop: false, contact: 6, cocked: 2 }),
+    cross: sheet("cross", { frames: 12, fps: 24, loop: false, contact: 6 }),
+    kick: sheet("kick", { frames: 12, fps: 24, loop: false, contact: 6 }),
+    jumpRise: Object.assign(sheet("jump", { frames: 6, fps: 14, startFrame: 0, endFrame: 3, loop: false }), { columns: 6 }),
+    jumpFall: Object.assign(sheet("jump", { frames: 6, fps: 14, startFrame: 4, endFrame: 4, loop: false }), { columns: 6 }),
+    jumpLand: Object.assign(sheet("jump", { frames: 6, fps: 14, startFrame: 5, endFrame: 5, loop: false }), { columns: 6 }),
+  };
+};
+return [
   // Block 82. The stage clothes come back, as the same item the id meant
   // before Block 52: the costume the Mananahi sewed and Macario first
   // wore as Don Rodrigo. The direktor tells him to go home in them after
@@ -59,8 +84,9 @@ window.ITEMS = [
   // still in them five times as long to notice (stillDetectionMult 0.2,
   // Block 38's number): an actor resting in costume is nothing to look
   // at twice. Not for sale (price 0). No tile picture: the tile shows the
-  // Damit symbol, and no art is owed for it. No sheets: Macario looks the
-  // same in them until the artist draws the costume.
+  // Damit symbol, and no art is owed for it. Since Block 154 he is drawn
+  // in them (the costume's still, macario-entablado), and Block 85's gold
+  // tint, the stand-in until then, is gone.
   {
     id: "damit-entablado", name: "Damit-Pangteatro", kind: "equipment", slot: "outfit",
     description: "Ang damit na tinahi ng Mananahi, suot mula pa kay Don Rodrigo. " +
@@ -69,9 +95,7 @@ window.ITEMS = [
     effect: { stillDetectionMult: 0.2 },
     replayRemoves: true, // Scan S7: a replay starts without them
     givenInAct: 1, // Block 121: and only a replay of Act I
-    // Block 85. A stand-in until the costume is drawn: Macario warmed
-    // toward the gold of a stage costume, so a student can see it is on.
-    tint: "sepia(0.55) saturate(1.6) hue-rotate(-12deg) brightness(1.05)",
+    sheets: skinSheets("entablado"),
   },
   // Block 117. Act III: a taho seller's clothes from the theatre's trunk,
   // which Maryam gives him in 1899 (Inventory.grant, then equip, from
@@ -80,9 +104,7 @@ window.ITEMS = [
   // (0.1): nobody looks twice at a vendor. Worn in the outfit slot, in
   // place of the stage clothes, until he swears never to cut his hair at
   // Morong and puts his own clothes back on. Not for sale. No tile
-  // picture, no sheets and, since Block 118, no tint: at the proponent's
-  // word nothing stands in for art not drawn, so Macario looks himself
-  // in it until the clothes are drawn.
+  // picture. Since Block 154 he is drawn in it (macario-magtataho).
   {
     id: "balatkayo", name: "Balatkayo ng Magtataho", kind: "equipment", slot: "outfit",
     description: "Damit ng magtataho mula sa baul ng entablado. Walang tumitingin nang dalawang " +
@@ -91,6 +113,7 @@ window.ITEMS = [
     effect: { stillDetectionMult: 0.1 },
     replayRemoves: true,
     givenInAct: 3,
+    sheets: skinSheets("magtataho"),
   },
 
   // Block 121. The general stock, on the corner shop button: what barya
@@ -157,30 +180,24 @@ window.ITEMS = [
   // on (the disguise's stillness goes with them). With the itak worn,
   // the slash is the itak's own sheet, in Macario's camisa: a weapon's
   // sheets go over the outfit's (Inventory.applyOutfit).
-  (() => {
-    const cell = { columns: 8, contentTop: 10, contentHeight: 240, footX: 80, headroom: 10 };
-    const sheet = (move, more) => Object.assign(
-      { src: "assets/sprites/player/macario-heneral-" + move + ".png" }, more, cell);
-    return {
-      id: "uniporme-heneral", name: "Uniporme ng Heneral", kind: "cosmetic", slot: "outfit", icon: "i-shirt",
-      description: "Ang uniporme ng Pangulo at Heneralisimo ng Republika ng Katagalugan. " +
-        "Pampaganda lamang: walang dagdag na lakas.",
-      price: 80,
-      sheets: {
-        idle: sheet("idle", { frames: 16, fps: 8 }),
-        walk: sheet("walk", { frames: 8, fps: 12 }),
-        // The shot's own cell (js/game.js, SHOOT_CELL), the pistol drawn.
-        shootAim: Object.assign(sheet("shoot", { frames: 12, fps: 8, startFrame: 0, endFrame: 2, loop: false }),
-          { contentTop: 34, headroom: 34 }),
-        shootFire: Object.assign(sheet("shoot", { frames: 12, fps: 18, startFrame: 3, endFrame: 11, loop: false,
-          muzzle: { x: 194, y: 85 } }), { contentTop: 34, headroom: 34 }),
-        melee: sheet("melee", { frames: 12, fps: 24, loop: false, contact: 6, cocked: 2 }),
-        cross: sheet("cross", { frames: 12, fps: 24, loop: false, contact: 6 }),
-        kick: sheet("kick", { frames: 12, fps: 24, loop: false, contact: 6 }),
-        jumpRise: Object.assign(sheet("jump", { frames: 6, fps: 14, startFrame: 0, endFrame: 3, loop: false }), { columns: 6 }),
-        jumpFall: Object.assign(sheet("jump", { frames: 6, fps: 14, startFrame: 4, endFrame: 4, loop: false }), { columns: 6 }),
-        jumpLand: Object.assign(sheet("jump", { frames: 6, fps: 14, startFrame: 5, endFrame: 5, loop: false }), { columns: 6 }),
-      },
-    };
-  })(),
+  {
+    id: "uniporme-heneral", name: "Uniporme ng Heneral", kind: "cosmetic", slot: "outfit", icon: "i-shirt",
+    description: "Ang uniporme ng Pangulo at Heneralisimo ng Republika ng Katagalugan. " +
+      "Pampaganda lamang: walang dagdag na lakas.",
+    price: 80,
+    sheets: skinSheets("heneral"),
+  },
+  // PLACEHOLDER. Block 154. The second skin: a Katipunero's clothes of
+  // 1896 (the white camisa de chino, the red trousers, the kerchief), the
+  // proponent's still on the template. A cosmetic like the general's, at
+  // 70, a little below it: the clothes of Act II, before the uniform of
+  // Act III.
+  {
+    id: "damit-katipunero", name: "Damit ng Katipunero", kind: "cosmetic", slot: "outfit", icon: "i-shirt",
+    description: "Puting kamisa de tsino, pulang salawal at panyo sa leeg, gaya ng sa mga Katipunero noong 1896. " +
+      "Pampaganda lamang: walang dagdag na lakas.",
+    price: 70,
+    sheets: skinSheets("katipunero"),
+  },
 ];
+})();
