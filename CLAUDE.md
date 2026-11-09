@@ -778,7 +778,9 @@ by the engine: hints.count of the scene's hintSpots and of hints.pool,
 both picked with a seeded shuffle whose seed ("__hintSeed") is kept in
 the save, so each student has their own three and they do not move on
 a reload. A hint is a pickup of type "hint", a scroll; reaching it sets
-"pahiwatig_" + its pool index, plays "page" (or "fanfare" for the
+"pahiwatig_" + its pool index (since Block 157 "pahiwatig_" + the act +
+"_" + it after Act I: one name for every act had Acts II to IV's papers
+counted as taken; game.js, hintFlag), plays "page" (or "fanfare" for the
 last) and opens a card over a stopped world. It is taken whatever the
 student's health, never while a dialogue, cutscene or screen is up
 (playerIsSafe), and a found one is never laid again. The pause screen
@@ -1060,6 +1062,14 @@ NPC shape:
                                                  stretch (Block 85), or a
                                                  list of them, any of which
                                                  hides it (Block 102)
+      inertWhile: { requiresFlag, unlessFlag },  optional; offers no button
+                                                 then (a job's prop once
+                                                 played; Block 157), or a
+                                                 list
+      standsAside: true,                         optional; out of sight
+                                                 while a fight is on (an
+                                                 ally who does not fight;
+                                                 decorations too; Block 157)
       opensShop: true,                           optional; see below
       opensShopAfter: "someFlag",                optional; talks, then sells
       facesPlayer: true,                         optional; side-on art that
@@ -1194,6 +1204,11 @@ of them plain globals in game.js, like addQuest:
                                  bullets) stopped until the student does
                                  the task; ids in game.js, TUTORIALS
                                  (lakad, talon, usap, atake, tanda, bag).
+                                 Three more the world asks for by itself
+                                 (askLessons, Block 157): baril at the
+                                 first fight a shot is allowed in, tago
+                                 at the first hiding place, plataporma
+                                 at the first platform.
                                  Resolves when done; skipped if taught
                                  before (flag "__turo_" + id) or off
     playWorkGame(opts)           the work game (Block 89): a marker sweeps
@@ -1239,7 +1254,10 @@ of them plain globals in game.js, like addQuest:
                                  against the clock (golden apples,
                                  doneText(n) may be a function)
     playIntertitle(lines, opts)  a black card with lines of text, faded
-                                 in and out (Block 57); opts startBlack,
+                                 in and out (Block 57); opts figure (a
+                                 sheet drawn standing above the lines,
+                                 Macario's on his own card; Block 157),
+                                 startBlack,
                                  whileBlack(), holdMs, keepBlack (the
                                  scene fade's black left up behind it,
                                  for a card that leads into
@@ -1999,7 +2017,9 @@ banned login, both set by create-students; every row kept, and the
 dashboard leaves the student out of everything it shows until Show
 archived. Delete is only for an account with no row in any of the
 seven play tables, checked by the function; deleting cascades through
-all of them. Never widen delete to played accounts.
+all of them. Never widen delete to played accounts. Since Block 157 (the
+instructor) the dashboard offers Delete only in the archived view: an
+account is archived first, then deleted from there.
 
 Since schema v11 (Block 123) no browser role may UPDATE profiles at all:
 the own-row update policy had no WITH CHECK, and a student could make
@@ -2374,7 +2394,8 @@ detections are counted as ever. A system with more knobs would need
 tuning data this project will never collect.
 
 There is no game over. Reaching zero health returns the player to the start
-of the scene at full health. A fail state that ejects a Grade 8 student
+of the scene at full health (since Block 157 at a cost of 5 barya; see
+the pay, below). A fail state that ejects a Grade 8 student
 from the lesson serves nobody.
 
 Health is not persisted and restores to full on load. A student who closed
@@ -2491,11 +2512,16 @@ term measures damage taken rather than hearts remaining, so it stays
 comparable between students either way, and re-tuning a budget that was
 chosen rather than measured would only move the arbitrariness.
 
-An act pays exactly its rounded performance score, in two parts that sum
-to it. The completion term of the score is worth 50, so that half is
-dripped as objectives land, floor(50 / objectives_total) each, and the
-remainder is paid on completion. A student is paid for what they finish
-and paid again for how well they did it.
+An act pays its objectives and its score (Block 157, the instructor:
+a better reward per mission). Every objective pays OBJECTIVE_PAY (10)
+as it lands, with its "+10 barya" toast (acts.js, perObjective), and on
+completion the rounded performance score is paid whole on top. Before
+Block 157 the score was paid in two parts that summed to it, the
+completion half dripped as floor(50 / objectives_total) a step, which
+was 2 to 5 barya. A student is paid for what they finish and paid again
+for how well they did it. Running out of hearts costs KNOCKOUT_COST (5),
+never below zero, and never while the act saves toward a sum (game.js,
+payForKnockout).
 
 Paying during the act rather than only at the end is what makes the shop
 reachable inside one class period. An act that counts barya as a story
@@ -2778,6 +2804,11 @@ look, by system:
                                           notHead)
     the general's uniform, the flag      Block 148 (a skin sold at 80;
                                           darkJacket)
+    the examination list, group 2         Block 157 (the pay, lessons,
+                                          the intro card, used-up props,
+                                          allies aside, riflemen, the
+                                          Talaan by act, shop pictures,
+                                          the grass lip, papers per act)
     the examination list, group 1         Block 156 (the costume handed
                                           over, not worn; the Sultan
                                           surrenders; portraits; lit

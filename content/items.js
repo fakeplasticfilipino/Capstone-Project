@@ -129,6 +129,7 @@ return [
   {
     // PLACEHOLDER. The herb every barrio knew for a cough and a wound.
     id: "lagundi", name: "Dahon ng Lagundi", kind: "consumable",
+    img: "assets/items/lagundi.png", // Block 156: owed (ART.md)
     description: "Dinikdik na dahon, pantapal sa sugat. Gamitin para maibalik ang isang puso.",
     price: 5,
     icon: "i-heart",
@@ -138,6 +139,7 @@ return [
   {
     // PLACEHOLDER. The Katipuneros and Sakay's men wore them into battle.
     id: "anting-anting", name: "Anting-anting", kind: "equipment", slot: "accessory",
+    img: "assets/items/anting-anting.png", // Block 156: owed (ART.md)
     description: "Isinusuot ng mga Katipunero sa labanan. Habang suot mo, may dagdag kang isang puso.",
     price: 50,
     effect: { maxHealthBonus: 1 },
@@ -146,6 +148,7 @@ return [
     // PLACEHOLDER. Finer powder for his pistol: a faster shot, and so the
     // next one sooner (one in flight at a time), for the long fights.
     id: "pulbura", name: "Pinong Pulbura", kind: "equipment", slot: "weapon",
+    img: "assets/items/pulbura.png", // Block 156: owed (ART.md)
     description: "Pinong pulbura para sa pistola. Habang dala mo, mas mabilis ang iyong putok.",
     price: 90,
     effect: { projectileSpeedMult: 1.5 },
@@ -159,6 +162,7 @@ return [
     // so a student chooses the blade or the faster shot. The blade in his
     // hand is owed (ART.md, assets/sprites/player/itak.png).
     id: "itak", name: "Itak", kind: "equipment", slot: "weapon", icon: "i-blade",
+    img: "assets/sprites/player/itak.png", // Block 156: the blade in his hand
     description: "Isang itak na pantaga. Habang dala mo, taga ang iyong atake sa halip na suntok.",
     price: 60,
     sheets: {

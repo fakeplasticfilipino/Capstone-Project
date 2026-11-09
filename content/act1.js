@@ -466,6 +466,16 @@ const PAMPHLET_FLAGS = CITIZENS.map(pamphletFlag);
 async function openingOnTheStreet() {
   setCutscene(true);
   turnPlayer(1);
+  // Block 156 (the proponent: say what is going on, and show him). Where
+  // and when, what the Spanish rule meant to a Filipino, then Macario
+  // himself, his figure on his own card. PLACEHOLDER, the first three
+  // cards; ours, written by the session at the proponent's word.
+  await playIntertitle(["Pilipinas, 1890",
+    "Mahigit tatlong daang taon nang sakop ng Espanya ang kapuluan."], { startBlack: true, keepBlack: true });
+  await playIntertitle(["Ang Kastila ang namamahala sa simbahan, sa hukuman at sa buwis.",
+    "Bawat Pilipino ay nagbabayad ng sedula, at walang tinig sa pamahalaan."], { startBlack: true, keepBlack: true });
+  await playIntertitle(["Macario Sakay", "1870-1907. Isinilang sa Tondo.",
+    "Barbero, mananahi, artista, at manghihimagsik."], { startBlack: true, keepBlack: true, figure: BASE_SPRITE_SHEETS.idle });
   await playIntertitle(["Tondo, 1890", "Kung saan nagsimula ang buhay ni Macario"],
     { startBlack: true });
   await wait(500);
@@ -1705,6 +1715,7 @@ window.ACT_1 = {
           // than someone to talk to (Block 89).
           id: "kabayo", x: KABAYO_X, label: "Kabayo", animation: KABAYO,
           hiddenWhile: PAMPHLET_NIGHT, // Block 103: stabled for the night
+          inertWhile: { requiresFlag: HORSE_JOB.first }, // Block 156: groomed, done
           displayHeight: 120,
           nearSound: "assets/audio/sfx/horse.mp3",
           interactLabel: "Suklayin",
@@ -1775,6 +1786,7 @@ window.ACT_1 = {
           // Block 94. His chair, used with E, as the tahian is: the
           // barber's own game (cutHair). Drawn since 22 Oct 2026.
           id: "silya", x: SILYA_X, label: "Silya", animation: SILYA, displayHeight: 90,
+          inertWhile: { requiresFlag: BARBER_JOB.first }, // Block 156: the cut done
           hiddenByFlag: "tinanggapSaKatipunan",
           interactLabel: "Gupitin",
           interactIcon: "i-scissors",
@@ -1786,6 +1798,7 @@ window.ACT_1 = {
           // 89). Drawn since 22 Oct 2026; 78 high puts its top at
           // Macario's hip.
           id: "tahian", x: TAHIAN_X, label: "Tahian", animation: TAHIAN, displayHeight: 78,
+          inertWhile: { requiresFlag: SEWING_JOB.first }, // Block 156: the sewing done
           hiddenWhile: PAMPHLET_NIGHT, // Block 103: taken in for the night
           interactLabel: "Manahi",
           interactIcon: "i-needle", // Block 93

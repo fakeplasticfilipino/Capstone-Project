@@ -7002,6 +7002,79 @@ shelves draw no board of their own (a platform's drawn: false), their
 pictures being the surface. Act III's doors are knocked on before they
 open: katok, three knocks, made by make-scene-sfx.js like the bell.
 
+## Block 157: the examination list, group 2, 9 Nov 2026
+
+The hiding crates first, at the proponent's word before the group
+began: they did not stand out. In the foreground now (z-index 3, with
+the front pieces), 100 tall rather than 78, and drawn with a warm rim
+and a shadow on the road (filters on a handful of static elements), so
+cover reads apart from the furniture around it.
+
+21. Delete only in the dashboard's archived view (the instructor), and
+only for archived accounts never used: archive, then delete. The
+function's rule (never a played account) is unchanged.
+
+15. The pay. A set 10 barya an objective, toasted, and the score paid
+whole at the end on top; an act therefore pays more than its score now
+(the old "sums to the score" was a choice, Block 12, not a measure).
+Act I still pays nothing per step (its savings for Nanay). Running out
+of hearts costs 5 barya, never below zero and never while saving toward
+a sum, so a fight cannot undo Nanay's money; the score's damage term is
+untouched. The toast says it: "Ulitin natin. (-5 barya)".
+
+16. A prop whose job is done offers no button (inertWhile, read as
+hiddenWhile is): Act I's horse, chair and table, Act II's press
+(between March's page and August, and after the list), Act III's chair,
+Act IV's press. People still talk. The thought lines for a second try
+stay in the content, unreachable from the prop.
+
+13. Three lessons the world asks for (askLessons, in the loop, each once
+by its "__turo_" flag, never while a cutscene, a dialogue or another
+lesson is up): baril at the first fight where a shot is allowed (done
+when he fires), tago at the first hiding place (done when he is behind
+it), plataporma at the first platform (done when he stands on one). And
+Paano Maglaro on the menu: every control and what the screen shows, in
+two columns. Our lines, PLACEHOLDER.
+
+14. The intro: three cards before Tondo, 1890, where and when, what
+Spanish rule meant (the sedula, no voice), and Macario Sakay, 1870 to
+1907, his figure standing on his card (playIntertitle's figure, his own
+standing sheet; not a line, so the harness's record of a card by its
+first line still reads his name). Ours, marked + in STORY.md.
+
+17. An ally who does not fight is out of sight while one is on
+(standsAside, a class toggled when a fight starts or ends): Isko on the
+hills, Montalan, Carreon and the three soldiers at Morong (the flag the
+enemies go for stays), Montalan, Villafuerte and De Vega at Malabon.
+
+18. The Americans on the hills: half of every wave are riflemen, and the
+rifleman (sentinela) now aims before he fires. His only drawn strike is
+a lunge with the rifle across the body, never level, so the aim is that
+lunge held at its forward frame and the shot leaves the bayonet's point:
+a shot from the hip. A shouldered aim needs a picture of its own or the
+rifle rigged as a part, as the bantay's is; not borrowed from the
+Spanish guard (Block 118).
+
+19. The Talaan of every act reached, by a picker on its screen
+(Game.glossary(n), the act's content read with the flags as they were
+left). Found on the way: a paper's flag was "pahiwatig_" + its slot in
+every act, and flags are kept from act to act, so a student who found
+Act I's papers found none in Acts II to IV; they counted as taken and
+were never laid. Acts II to IV's are named by the act now (hintFlag);
+Act I keeps its names, so no save changes.
+
+20. Pictures in the shop and the bag: an outfit shows Macario in it (its
+standing sheet's first frame); the itak its blade; lagundi, the
+anting-anting and the pulbura are owed, with prompts in ART.md, and
+keep their symbols until drawn.
+
+12. Feet in the grass. The grass ground's picture is solid green only
+from about a twentieth of its height, its soil from a tenth; at lip 14
+the feet stood in the soil, the strip's grass well above them, and the
+mountains and fields looked raised beside Tondo's dirt. At lip 6 they
+stand where grass meets soil. Balara's fire, raised in Block 156 to
+clear the old grass, stands at the feet line again.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

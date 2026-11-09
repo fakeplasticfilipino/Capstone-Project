@@ -105,7 +105,10 @@ const Shell = {
         chapters: document.getElementById("shell-chapters-panel"),
         act: document.getElementById("shell-act-panel"),
         review: document.getElementById("shell-review-confirm"),
+        howto: document.getElementById("shell-howto-panel"), // Block 156
       },
+      howtoBtn: document.getElementById("shell-howto"),
+      howtoBack: document.getElementById("shell-howto-back"),
       chaptersBtn: document.getElementById("shell-chapters"),
       chaptersBack: document.getElementById("shell-chapters-back"),
       chaptersNote: document.getElementById("shell-chapters-note"),
@@ -185,6 +188,11 @@ const Shell = {
     if (this.el.notebookBtn) {
       this.el.notebookBtn.addEventListener("click", () => this._openNotebook());
       this.el.notebookBack.addEventListener("click", () => this._closeNotebook());
+      // Block 156: a chapter picked in the Talaan.
+      document.getElementById("shell-notebook-acts").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-act]");
+        if (b) this._openNotebook(Number(b.dataset.act));
+      });
     }
     this.el.logoutBtn.addEventListener("click", () => {
       this.logoutReturn = "pause";
@@ -197,6 +205,13 @@ const Shell = {
     // lists, as the inventory's tiles are.
     this.el.chaptersBtn.addEventListener("click", () => this._openChapters());
     this.el.chaptersBack.addEventListener("click", () => this._backToTitle());
+    // Block 156. Paano Maglaro, from the menu and back to it.
+    this.el.howtoBtn.addEventListener("click", () => {
+      if (this.entered) return;
+      this.state = "howto";
+      this._showPanel("howto");
+    });
+    this.el.howtoBack.addEventListener("click", () => this._backToTitle());
     this.el.actBack.addEventListener("click", () => this._openChapters());
     this.el.actsList.addEventListener("click", (e) => {
       const card = e.target.closest("[data-act]");
@@ -329,6 +344,7 @@ const Shell = {
       else if (this.state === "inventory") this._closeInventory();
       else if (this.state === "shop") this._closeShop();
       else if (this.state === "chapters") this._backToTitle();
+      else if (this.state === "howto") this._backToTitle();
       else if (this.state === "act") this._openChapters();
       else if (this.state === "review") this._openAct(this.pickedAct);
     });
@@ -1006,10 +1022,42 @@ const Shell = {
     return { found: (book.found || 0) + hints.found, total: (book.total || 0) + hints.total };
   },
 
-  _openNotebook() {
-    if (this.state !== "paused") return;
-    const book = window.Game && Game.glossary ? Game.glossary() : null;
+  // Block 156 (the proponent: the Talaan for every chapter). The acts
+  // whose Talaan can be read now: every act up to the one on screen.
+  _notebookActs() {
+    const now = (window.Acts && Acts.current) || 1;
+    const out = [];
+    for (let n = 1; n <= now; n++) {
+      if (window.Game && Game.glossary && Game.glossary(n)) out.push(n);
+    }
+    return out;
+  },
+
+  _openNotebook(actN) {
+    if (this.state !== "paused" && this.state !== "notebook") return;
+    const acts = this._notebookActs();
+    const n = actN || (window.Acts && Acts.current) || 1;
+    const book = window.Game && Game.glossary ? Game.glossary(acts.includes(n) ? n : undefined) : null;
     if (!book) return;
+    // The chapter picker, when more than one act can be read.
+    const picker = document.getElementById("shell-notebook-acts");
+    if (picker) {
+      picker.innerHTML = "";
+      picker.classList.toggle("hidden", acts.length < 2);
+      const ROMAN = ["", "I", "II", "III", "IV"];
+      acts.forEach((k) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "shell-btn shell-btn-ghost notebook-act" + (k === book.act ? " notebook-act-on" : "");
+        b.dataset.act = String(k);
+        b.setAttribute("aria-pressed", String(k === book.act));
+        const lbl = document.createElement("span");
+        lbl.className = "lbl";
+        lbl.textContent = "Kabanata " + ROMAN[k];
+        b.appendChild(lbl);
+        picker.appendChild(b);
+      });
+    }
     document.getElementById("shell-notebook-title").textContent = book.title || "Talaan";
     const counted = this._notebookCount(book);
     document.getElementById("shell-notebook-count").textContent = counted.found + " / " + counted.total;
@@ -1279,6 +1327,22 @@ const Shell = {
     const art = document.createElement("span");
     art.className = "inv-art" + (extraClass ? " " + extraClass : "");
     art.appendChild(makeIcon(this._itemIcon(item)));
+
+    // Block 156 (the proponent: the items in the shop drawn). An outfit
+    // with no tile picture of its own shows Macario in it, the first frame
+    // of its standing sheet, drawn as he is drawn in the world.
+    const figure = item && !item.img && item.sheets && item.sheets.idle;
+    if (figure && window.loadSpriteSheet && window.bodySprite) {
+      const sprite = document.createElement("span");
+      sprite.className = "sprite inv-art-figure";
+      art.appendChild(sprite);
+      loadSpriteSheet(figure).then(() => {
+        if (figure.failed || !sprite.isConnected) return;
+        bodySprite(sprite, figure, 44, 44);
+        art.classList.add("inv-art-loaded");
+      });
+      return art;
+    }
 
     const src = item && item.img;
     if (src && !this._artFailed.has(src)) {
@@ -1909,7 +1973,7 @@ const Shell = {
     if (this.el.box) {
       this.el.box.classList.toggle("shell-box-wide",
         name === "inventory" || name === "shop" || name === "notebook" ||
-        name === "chapters" || name === "act");
+        name === "chapters" || name === "act" || name === "howto");
     }
     // Block 144. The menu stands over the world rather than in a box in
     // the middle of it (shell-menu), and the play controls behind it are

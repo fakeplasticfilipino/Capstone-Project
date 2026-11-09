@@ -660,9 +660,13 @@ function renderBulk() {
   bulk.archive.disabled = !rows.some((r) => !r.archived);
   bulk.restore.disabled = !rows.some((r) => r.archived);
   bulk.restore.classList.toggle("hidden", !showArchived);
-  bulk.del.disabled = !rows.length || !rows.every((r) => r.neverUsed);
+  // Block 156 (the instructor): Delete only in the archived view, for
+  // archived accounts that were never used. An account is archived first,
+  // then deleted from there; one that played stays archived (Block 150).
+  bulk.del.classList.toggle("hidden", !showArchived);
+  bulk.del.disabled = !rows.length || !rows.every((r) => r.archived && r.neverUsed);
   bulk.del.title = rows.length && !bulk.del.disabled ? "" :
-    "Only accounts that were never used can be deleted. Archive the others.";
+    "Only archived accounts that were never used can be deleted.";
   bulk.unused.disabled = !currentRows.some((r) => r.neverUsed);
   bulk.archivedCount.textContent = archivedN ? "(" + archivedN + ")" : "";
   const shownPicked = shownIds.filter((id) => picked.has(id)).length;

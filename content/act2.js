@@ -164,7 +164,10 @@
     ["tulay", 1300, 150], ["kamalig", 1760, 260], ["kubo-silong", 2080, 330],
     ["kariton-kalabaw", 1990, 110],
   ]);
-  const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 14 };
+  // Block 156 (the proponent: feet buried in the mountains). The grass
+  // meets the soil about a tenth of the way down its picture: at lip 14
+  // the feet stood in the soil below it, at 6 they stand on the grass.
+  const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 6 };
 
   // The three places one screen wide, in the same layers rather than
   // their paintings (24 Oct 2026, the proponent): Pugad Lawin, a farm in
@@ -180,8 +183,9 @@
   const BALARA_PIECES = [
     ...field([["kubo-silong", -40, 330], ["bakod-kawayan-maikli", 300, 120], ["kariton-kalabaw", 720, 110],
       ["saging-kumpol", 1010, 290]]),
-    // Block 156: raised to stand on the ground (at -6 it sank into it).
-    { src: "assets/sprites/buildings/apoy.png", x: 470, height: 70, lift: 8, front: true },
+    // Block 156: on the ground. At -6 it sank into the grass; with the
+    // grass lowered (GRASS, lip 6) it stands at the feet line.
+    { src: "assets/sprites/buildings/apoy.png", x: 470, height: 70, lift: 0, front: true },
   ];
   const LAGUNA_PIECES = field([
     ["tulay", -120, 150], ["kubo-silong", 820, 330], ["saging-kumpol", 1100, 290],
@@ -1172,6 +1176,10 @@
             displayHeight: 110,
             interactLabel: "Gamitin",
             interactIcon: "i-hand",
+            // Block 156: no button once March's page is printed, until
+            // August's raid, and none once the list is taken.
+            inertWhile: [{ requiresFlag: "a2_nakalimbag", unlessFlag: "a2_paghuli" },
+              { requiresFlag: "a2_nakuhaAngListahan" }],
             dialogueSets: [],
             onInteract: usePress,
           },

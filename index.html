@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>MACARIO</title>
-  <link rel="stylesheet" href="css/style.css?v=2310267994" />
+  <link rel="stylesheet" href="css/style.css?v=867029333" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -327,6 +327,11 @@
               <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl">Simulan dito</span>
             </button>
           </div>
+          <!-- Block 156 (the proponent: better instructions). Every
+               control and what the screen shows, on one card. -->
+          <button id="shell-howto" class="shell-btn shell-btn-ghost" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-scroll"></use></svg></span><span class="lbl" data-sub="Mga pindutan at gawain">Paano Maglaro</span>
+          </button>
           <button id="shell-title-settings" class="shell-btn shell-btn-ghost" type="button">
             <span class="ico"><svg aria-hidden="true"><use href="#i-gear"></use></svg></span><span class="lbl">Mga Setting</span>
           </button>
@@ -337,6 +342,31 @@
             <span class="ico"><svg aria-hidden="true"><use href="#i-out"></use></svg></span><span class="lbl">Mag-log Out</span>
           </button>
           <div id="shell-title-note" class="shell-note"></div>
+        </div>
+
+        <!-- Block 156. Paano Maglaro. PLACEHOLDER, every line. -->
+        <div id="shell-howto-panel" class="shell-panel shell-panel-wide hidden">
+          <div class="inv-head">
+            <div class="inv-title">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-scroll"></use></svg></span>
+              <h2 class="shell-heading">Paano Maglaro</h2>
+            </div>
+            <button id="shell-howto-back" class="shell-btn shell-btn-ghost inv-back" type="button">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
+            </button>
+          </div>
+          <dl class="howto">
+            <dt>Lumakad</dt><dd>Ang mga pindutan sa kaliwa, o A at D. Pindutin nang matagal para tumakbo.</dd>
+            <dt>Talon</dt><dd>Space, o Talon. Para tumawid sa panganib at sumampa sa istante.</dd>
+            <dt>Usap at gamit</dt><dd>E, o ang berdeng pindutan, kapag malapit ka sa tao, pinto o bagay.</dd>
+            <dt>Atake</dt><dd>J, o Atake. Pindutin para sumuntok; nang sunod-sunod para sa tatlong suntok. Pindutin nang matagal para bumaril, kung may baril ka roon.</dd>
+            <dt>Ang pulang !</dt><dd>Susugod ang kalaban. Umiwas, tumalon, o sumugod sa likod niya.</dd>
+            <dt>Ang bantay</dt><dd>Ang dilaw na liwanag ang kanyang tingin. Kapag napuno ang kanyang bar, mahuhuli ka. Magtago sa likod ng kumikinang na kahon, o lumayo.</dd>
+            <dt>Gawain</dt><dd>Nasa kaliwang itaas ang iyong gawain. Ang berdeng palaso ang nagtuturo kung saan pupunta.</dd>
+            <dt>Puso</dt><dd>Kapag naubos ang puso, babalik ka sa huling lugar na naabot mo, at mababawasan ka ng 5 barya.</dd>
+            <dt>Barya at Bag</dt><dd>May barya sa bawat natapos na gawain. Bumili sa tindahan; isuot ang iyong mga gamit mula sa Bag.</dd>
+            <dt>Talaan</dt><dd>Ang mga salita, pangyayari at papel na nakita mo, nasa Talaan ng pause.</dd>
+          </dl>
         </div>
 
         <!-- Block 144. Mga Kabanata: the four acts as cards. Built by
@@ -440,6 +470,8 @@
             </button>
           </div>
           <p class="shell-sub" id="shell-notebook-hint"></p>
+          <!-- Block 156. The chapter picker: every act reached (shell.js). -->
+          <div id="shell-notebook-acts" class="notebook-acts hidden"></div>
           <ol id="shell-notebook-list" class="notebook-list"></ol>
         </div>
 
@@ -704,19 +736,19 @@
        back except the one guarded awaitEntry call in game.js. -->
   <script src="js/vendor/supabase.js?v=4202140866"></script>
   <script src="js/supabaseClient.js?v=2770937222"></script>
-  <script src="content/enemies.js?v=3579587198"></script>
+  <script src="content/enemies.js?v=2608693528"></script>
   <script src="content/people.js?v=1607945421"></script>
-  <script src="content/act1.js?v=276553969"></script>
-  <script src="content/act2.js?v=2245474453"></script>
-  <script src="content/act3.js?v=981700658"></script>
-  <script src="content/act4.js?v=3609937529"></script>
-  <script src="content/items.js?v=1056124933"></script>
+  <script src="content/act1.js?v=2162146470"></script>
+  <script src="content/act2.js?v=2147392134"></script>
+  <script src="content/act3.js?v=371832341"></script>
+  <script src="content/act4.js?v=1957909246"></script>
+  <script src="content/items.js?v=535744512"></script>
   <script src="content/questions.js?v=1060630089"></script>
   <script src="js/asset-manifest.js?v=4274433337"></script>
-  <script src="js/game.js?v=1255333618"></script>
-  <script src="js/acts.js?v=1586992135"></script>
+  <script src="js/game.js?v=2024252242"></script>
+  <script src="js/acts.js?v=455114043"></script>
   <script src="js/inventory.js?v=2872116366"></script>
   <script src="js/assessment.js?v=1068140239"></script>
-  <script src="js/shell.js?v=1878427442"></script>
+  <script src="js/shell.js?v=924480833"></script>
 </body>
 </html>

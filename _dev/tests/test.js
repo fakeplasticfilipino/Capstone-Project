@@ -1305,8 +1305,9 @@ const visible = (page, sel) => page.evaluate((s) => {
        (await page.evaluate(() => Game.currency())) === 0,
        await page.evaluate(() => Game.currency()));
 
-    ok("the rate is the completion pool split across the objectives",
-       (await page.evaluate(() => Acts.perObjective(5))) === 10);
+    // Block 156: a set sum an objective, whatever their number.
+    ok("an objective pays a set sum, 10 barya, however many the act has (Block 156)",
+       (await page.evaluate(() => Acts.perObjective(5) === 10 && Acts.perObjective(17) === 10)));
     ok("an act with no objectives pays nothing per objective",
        (await page.evaluate(() => Acts.perObjective(0))) === 0);
 
@@ -1373,7 +1374,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
-  if (section("W", "The award sums to the score")) {
+  if (section("W", "The award: the score, and 10 an objective (Block 156)")) {
     const { ctx, page } = await enterTestRoom();
 
     const totals = await page.evaluate(async () => {
@@ -1405,14 +1406,31 @@ const visible = (page, sel) => page.evaluate((s) => {
         award: Acts._lastAward,
       };
     });
-    ok("the drip is the completion half",
-       totals.dripped === 50, totals);
-    ok("the total paid is the rounded score",
-       totals.paid === Math.round(totals.score), totals);
-    ok("an act cannot pay more than 100",
-       totals.paid <= 100, totals);
+    ok("the objectives pay 10 each as they land",
+       totals.dripped === 10 * totals.total, totals);
+    ok("the end pays the rounded score whole, on top (Block 156)",
+       totals.paid === Math.round(totals.score) + 10 * totals.total, totals);
     ok("the completion award is held for the transition screen",
-       totals.award === totals.paid - totals.dripped, totals);
+       totals.award === Math.round(totals.score), totals);
+
+    // Block 156: running out of hearts costs 5 barya, never below 0, and
+    // nothing while the act saves toward a sum.
+    const knock = await page.evaluate(() => {
+      const out = (start) => {
+        invulnUntil = 0; health = 1;
+        Game.spendCurrency(Game.currency()); Game.addCurrency(start);
+        damagePlayer("", false);
+        return Game.currency();
+      };
+      const rich = out(12), poor = out(3);
+      const objs = currentActData.objectives;
+      objs.push({ id: "__ipon", label: "Ipon", flag: "__iponNa", countCurrency: 100 });
+      const saving = out(12);
+      objs.pop();
+      return { rich, poor, saving, health };
+    });
+    ok("running out of hearts costs 5 barya, never below 0, and nothing while saving toward a sum (Block 156)",
+       knock.rich === 7 && knock.poor === 0 && knock.saving === 12, knock);
 
     await ctx.close();
   }
@@ -7997,6 +8015,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       count: document.getElementById("bulk-count").textContent,
       archive: !document.getElementById("bulk-archive").disabled,
       del: !document.getElementById("bulk-delete").disabled,
+      delShown: !document.getElementById("bulk-delete").classList.contains("hidden"),
       restoreShown: !document.getElementById("bulk-restore").classList.contains("hidden"),
       status: document.getElementById("bulk-status").textContent,
       students: document.getElementById("stat-students").textContent,
@@ -8013,30 +8032,45 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     await page.click("#bulk-unused");
     const b1 = await bar();
-    ok("Select never used ticks the two who never played, and Delete is offered",
-       b1.picked.join() === "rizal-02,rizal-03" && b1.count === "2 selected" && b1.del && b1.archive, b1);
+    // Block 156 (the instructor): Delete only in the archived view.
+    ok("Select never used ticks the two who never played; on the roster Delete is not offered, Archive is (Block 156)",
+       b1.picked.join() === "rizal-02,rizal-03" && b1.count === "2 selected" && !b1.delShown && b1.archive, b1);
 
     await page.click("#roster-body tr:nth-child(1) .cell-pick input");
     const b2 = await bar();
-    ok("ticking a student who has played takes Delete away, and does not open the card",
-       b2.picked.length === 3 && !b2.del && b2.archive && !b2.card, b2);
+    ok("ticking a student who has played still offers Archive, and does not open the card",
+       b2.picked.length === 3 && !b2.delShown && b2.archive && !b2.card, b2);
     await page.click("#roster-body tr:nth-child(1) .cell-pick input");
+
+    // The two never used are archived first, then deleted from the archived view.
+    page.once("dialog", (d) => d.accept());
+    await page.click("#bulk-archive");
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 1);
+    await page.check("#show-archived");
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 3);
+    await page.click("#bulk-unused");
+    const b2a = await bar();
+    ok("in the archived view, the archived never used are ticked and Delete is offered (Block 156)",
+       b2a.picked.map((x) => x.replace("Archived", "")).join() === "rizal-02,rizal-03" && b2a.delShown && b2a.del, b2a);
+    const deletes = async () => (await calls()).filter((c) => c.action === "delete");
 
     // A wrong number deletes nothing.
     page.once("dialog", (d) => d.accept("5"));
     await page.click("#bulk-delete");
     await page.waitForFunction(() => /Nothing deleted/.test(document.getElementById("bulk-status").textContent));
     ok("a delete asks for the number, and the wrong one deletes nothing",
-       (await calls()).length === 0 && (await bar()).rows.length === 3);
+       (await deletes()).length === 0 && (await bar()).rows.length === 3);
 
     page.once("dialog", (d) => d.accept("2"));
     await page.click("#bulk-delete");
     await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 1);
     const b3 = await bar();
-    const c3 = (await calls()).pop();
+    const c3 = (await deletes()).pop();
     ok("the right number deletes the two never used, through the function, and says so",
-       c3.action === "delete" && c3.student_ids.join() === "s2,s3" &&
+       c3 && c3.action === "delete" && c3.student_ids.join() === "s2,s3" &&
        b3.rows.join() === "rizal-01" && /2 of 2 deleted/.test(b3.status) && b3.count === "None selected", { c3, b3 });
+    await page.uncheck("#show-archived");
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 1);
 
     // The function refuses one who has played, even if the page asked.
     const refused = await page.evaluate(async () => {

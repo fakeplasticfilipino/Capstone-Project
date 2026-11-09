@@ -188,7 +188,10 @@
       filter: "saturate(1.05)" },
   ];
   const sky = (name) => ({ src: `assets/backgrounds/layers/${name}.jpg`, rate: 0, lift: 50 });
-  const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 14 };
+  // Block 156 (the proponent: feet buried in the mountains). The grass
+  // meets the soil about a tenth of the way down its picture: at lip 14
+  // the feet stood in the soil below it, at 6 they stand on the grass.
+  const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 6 };
   // The hills outside Manila, 1899: the city and the bay far below, the
   // band's camp along the ridge (a hut by Isko, the cooking fire, a
   // lean-to, washing, the canvas shelter, rocks), the watchtower over the
@@ -393,13 +396,14 @@
     ]);
     setCutscene(false);
     await battle("sm", [
-      { types: ["amerikano", "amerikano", "amerikano", "amerikano"],
+      // Block 156: half of every wave are riflemen who stop, aim and fire.
+      { types: ["sentinela", "amerikano", "sentinela", "amerikano"],
         after: [{ speaker: "Macario (sa isip)", text: "Hindi sila tumitigil..." }] },
-      { types: ["amerikano", "amerikano", "amerikano", "amerikano"],
+      { types: ["amerikano", "sentinela", "amerikano", "sentinela"],
         after: [{ speaker: "Isko", text: "May mga kanyon sila, Pangulo!" }] },
-      { types: ["amerikano", "sentinela", "amerikano", "amerikano"],
+      { types: ["amerikano", "sentinela", "sentinela", "amerikano"],
         after: [{ speaker: "Macario (sa isip)", text: "Mas marami pa sila kaysa sa mga Kastila..." }] },
-      { types: ["amerikano", "sentinela", "amerikano"] },
+      { types: ["sentinela", "sentinela", "amerikano"] },
     ]);
     setCutscene(true);
     await wait(400);
@@ -1230,6 +1234,7 @@
         npcs: [
           {
             id: "isko", x: 200, label: "Isko", animation: P.isko, facesPlayer: true,
+            standsAside: true, // Block 156: out of sight while they fight
             dialogueSets: [oneLine("Isko", "Ikaw ang sumilip, Pangulo. Dito lang ako.")],
           },
           {
@@ -1482,6 +1487,7 @@
             hiddenByFlag: "a3_gabiSaBarberya",
             interactLabel: "Gupitin",
             interactIcon: "i-scissors",
+            inertWhile: { requiresFlag: "a3_nagupitan" }, // Block 156: the cut done
             dialogueSets: [],
             onInteract: cutTheAmerican,
           },
@@ -1728,13 +1734,14 @@
             walkAnimation: P.katipunero.walk, faceMovement: true, speakers: ["Batang Kawal"] },
           // Block 120. The Republic's soldiers, seen beside its flag (Block 135's fighter).
           ...KAWAL_X.map((x, i) => ({
-            id: "kawal-" + (i + 1), x, animation: KAWAL, facing: -1,
+            id: "kawal-" + (i + 1), x, animation: KAWAL, facing: -1, standsAside: true,
             speakers: i === 0 ? ["Mga Kawal"] : [],
           })),
         ],
         npcs: [
           {
             id: "montalan", x: 900, label: "Montalan", animation: MONTALAN, facesPlayer: true,
+            standsAside: true, // Block 156
             dialogueSets: [
               oneLine("Montalan", "Kausapin mo si Carreón. Siya ang marunong sa mga papel.", { skipIfFlag: "a3_itinatag" }),
               oneLine("Montalan", "Hanggang sa paglaya, Pangulo."),
@@ -1750,6 +1757,7 @@
           },
           {
             id: "carreon", x: 1100, label: "Carreón", animation: CARREON, facesPlayer: true,
+            standsAside: true, // Block 156
             dialogueSets: [
               {
                 requiresFlag: "a3_saMorong",

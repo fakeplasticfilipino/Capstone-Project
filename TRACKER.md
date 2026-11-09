@@ -9,7 +9,13 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Nov 2026, Block 156: the examination list (below,
+Last updated: 9 Nov 2026, Block 157: the examination list's group 2
+done (see the list): the pay, three lessons and Paano Maglaro, the
+intro with Macario's card, used-up props, allies aside in fights,
+riflemen, the Talaan of every act (and the papers of Acts II to IV,
+never laid after Act I's were found, fixed), shop pictures, feet on the
+grass, Delete in the archived view; the hiding crates in the
+foreground. Before it, Block 156: the examination list (below,
 before Next action), group 1 done: the costume handed over not worn,
 the Sultan surrenders, portraits, the lit doorways out, bullets, the
 press guard, the campfire, crates and shelves, the knock. Before it,
@@ -486,28 +492,31 @@ Group 1, quick fixes (COMPLETE, Block 156):
            brown bars
     [x] 11 a knock at each of Act III's three doors
 
-Group 2, half a day or so each:
+Group 2, half a day or so each (COMPLETE, Block 157; the hiding crates
+made prominent first, at the proponent's word; owed: the three shop
+pictures in ART.md, and a shouldered aim for the American rifleman,
+which needs a picture or the rifle rigged as a part):
 
-    [ ] 12 feet on the ground in the mountain and field scenes: each
+    [x] 12 feet on the ground in the mountain and field scenes: each
            outdoor ground measured against where the people stand
-    [ ] 13 three lessons (the first shot, the first crate, the first
+    [x] 13 three lessons (the first shot, the first crate, the first
            platform) and a Paano Maglaro card on the menu
-    [ ] 14 the intro: black cards saying where and when and what is
+    [x] 14 the intro: black cards saying where and when and what is
            happening, then Macario's name card with his portrait and
            his figure (ours, PLACEHOLDER)
-    [ ] 15 barya: every objective pays a set sum with a "+N barya"
+    [x] 15 barya: every objective pays a set sum with a "+N barya"
            toast (Act I's savings as it is); running out of hearts
            costs 5, never below 0, never while Act I saves for Nanay
-    [ ] 16 a prop whose mini-game is played and paid offers no button
+    [x] 16 a prop whose mini-game is played and paid offers no button
            (people still talk)
-    [ ] 17 allies who do not fight are not on screen during a fight
-    [ ] 18 the Americans at the hideout: riflemen who aim and fire
+    [x] 17 allies who do not fight are not on screen during a fight
+    [x] 18 the Americans at the hideout: riflemen who aim and fire
            among them (the sentry's sheets), not only the lunge
-    [ ] 19 the Talaan of every chapter reached, by a picker
-    [ ] 20 pictures in the shop: the outfits' own figure, the itak's
+    [x] 19 the Talaan of every chapter reached, by a picker
+    [x] 20 pictures in the shop: the outfits' own figure, the itak's
            and the pistol's; lagundi, anting-anting, pulbura owed
            (ART.md)
-    [ ] 21 Delete only in the dashboard's archived view (still only
+    [x] 21 Delete only in the dashboard's archived view (still only
            for accounts never used)
 
 Group 3, new animation:

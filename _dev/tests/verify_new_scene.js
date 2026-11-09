@@ -761,6 +761,15 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
 
     // Block 149: read from the record of the card (newPage, __cards),
     // which holds at any speed and any load.
+    // Block 156: three cards come first (where and when, the rule, and
+    // Macario with his figure); the record holds them all.
+    const intro = await page.evaluate(async () => {
+      for (let t = 0; t < 15000 && !window.__cards["Macario Sakay"]; t += 100) await new Promise((r) => setTimeout(r, 100));
+      return { first: window.__cards["Pilipinas, 1890"] || null, him: window.__cards["Macario Sakay"] || null,
+        figure: Boolean(document.querySelector("#intertitle-text .intertitle-figure .sprite")) };
+    });
+    ok("the game opens on the intro: Pilipinas, 1890, then Macario's own card with his figure (Block 156)",
+       Boolean(intro.first) && intro.first.black && Boolean(intro.him) && intro.figure, intro);
     const opening = () => page.evaluate(() => window.__cards["Tondo, 1890"] || null);
     let t0 = await opening();
     for (let t = 0; t < 15000 && !t0; t += 100) { await page.waitForTimeout(100); t0 = await opening(); }
@@ -1088,11 +1097,9 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("and the savings line counts the 12 he earned", (await log(page)).pinned[0] === "Mag-ipon para kay Nanay (12/100)");
     ok("a round of five bad strokes would pay 8, the least (Block 114)", await page.evaluate(() =>
       jobPay(0) === 8 && jobPay(1) === 12 && jobPay(0.6) === 10));
-    await page.keyboard.press("e");
-    const again = await readConversation(page, 1);
-    ok("done once: the horse gives a thought, not a second game (Block 114)",
-       again.lines[0] === "Macario (sa isip): Malinis na si Kabayo. Wala na akong gagawin dito." &&
-       !(await workState(page)).up && (await page.evaluate(() => Game.currency())) === 12, again.lines);
+    // Block 156: done once, the horse offers no button at all.
+    ok("done once: the horse is no longer offered, no second game (Blocks 114, 156)",
+       await page.evaluate(() => { const n = findNearby(); return !(n.type === "npc" && n.ref && n.ref.id === "kabayo"); }) && !(await workState(page)).up && (await page.evaluate(() => Game.currency())) === 12);
     await walkTo(page, 3200);
     await page.keyboard.press("e");
     const full = await readConversation(page, 1);
@@ -1168,10 +1175,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       !uiBlocked && Game.currency() === 24 && state.flags.nakapaggupit === true));
     ok("the haircut finishes the step, and the log moves on to the Mananahi",
        JSON.stringify((await log(page)).current) === JSON.stringify([STEP.mananahi]));
-    await page.keyboard.press("e");
-    const chair = await readConversation(page, 1);
-    ok("done once: the chair gives a thought, not a second haircut",
-       chair.lines[0] === "Macario (sa isip): Wala nang nakaupo. Tapos na ako rito." && !(await cutState(page)).up, chair.lines);
+    ok("done once: the chair is no longer offered, no second haircut (Block 156)",
+       await page.evaluate(() => { const n = findNearby(); return !(n.type === "npc" && n.ref && n.ref.id === "silya"); }) && !(await cutState(page)).up);
     await walkTo(page, 5200);
     await page.keyboard.press("e");
     const brAfter = await readConversation(page, 1);
@@ -1233,10 +1238,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("the task is to take them to the direktor, and the world is his", await page.evaluate(() =>
       state.flags.mayDalangDamit === true && !cutscenePlaying) &&
        JSON.stringify((await log(page)).current) === JSON.stringify([STEP.clothes]));
-    await page.keyboard.press("e");
-    const held = await readConversation(page, 1);
-    ok("with the costumes on him the sewing waits", /^Macario \(sa isip\):/.test(held.lines[0] || "") &&
-       !(await workState(page)).up, held.lines);
+    ok("the sewing done, the table is no longer offered (Block 156)",
+       await page.evaluate(() => { const n = findNearby(); return !(n.type === "npc" && n.ref && n.ref.id === "tahian"); }) && !(await workState(page)).up);
     const jobMoney = await page.evaluate(() => Game.currency());
     ok("the three jobs have paid 36 in all", jobMoney === 36, jobMoney);
 
@@ -1824,7 +1827,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       { tinawagAngMananahi: true, mayDalangDamit: true, naihatidKay_direktor: true });
 
     r = await resume("tondo", { nakitaAngMgaSiga: true });
-    ok("a reload mid-opening starts again from Tondo, 1890", (await intertitle(r.page)).lines[0] === "Tondo, 1890");
+    ok("a reload mid-opening starts again from the first card (Block 156: Pilipinas, 1890)",
+       (await intertitle(r.page)).lines[0] === "Pilipinas, 1890");
     // A student's speed taps through the card; fast-forwarded, it is gone
     // before a tap and the taps would skip the siga's first line.
     if (SPEED === 1) { await r.page.keyboard.press("e"); await r.page.waitForTimeout(1000); await r.page.keyboard.press("e"); }
@@ -2162,7 +2166,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const g = await newPage(browser, { session: null });
     await g.page.click("#shell-guest");
     await g.page.waitForTimeout(700);
-    ok("a guest opens on Tondo, 1890 too", (await intertitle(g.page)).lines[0] === "Tondo, 1890");
+    ok("a guest opens on the same first card too", (await intertitle(g.page)).lines[0] === "Pilipinas, 1890");
     await waitIntertitle(g.page, false, 15000);
     c = await readConversation(g.page, 3);
     ok("and watches the same opening", JSON.stringify(c.lines) === JSON.stringify(OPENING), c.lines);

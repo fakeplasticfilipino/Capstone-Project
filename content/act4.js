@@ -203,7 +203,10 @@
     { rate: 0.6, lift: 60, items: treeRow(names, 4200, 330, 380, 0.85, 120), filter: filter || "saturate(1.05)" },
   ];
   const sky = (name) => ({ src: "assets/backgrounds/layers/" + name + ".jpg", rate: 0, lift: 50 });
-  const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 14 };
+  // Block 156 (the proponent: feet buried in the mountains). The grass
+  // meets the soil about a tenth of the way down its picture: at lip 14
+  // the feet stood in the soil below it, at 6 they stand on the grass.
+  const GRASS = { src: "assets/backgrounds/layers/grass-ground.png", lip: 6 };
   const STONE = { src: "assets/backgrounds/layers/stone-ground.png", lip: 12 };
   // The camp in the mountains, Morong and Di-Masalang: Act III's camp
   // pieces, the hut, the fire, the canvas shelter with its table (the
@@ -1250,6 +1253,7 @@
             startsHidden: true, revealedByFlag: "a4_saManipesto",
             interactLabel: "Ilimbag",
             interactIcon: "i-hand",
+            inertWhile: { requiresFlag: "a4_manipesto" }, // Block 156: printed
             dialogueSets: [],
             onInteract: printTheManifesto,
           },
@@ -1460,9 +1464,10 @@
           { id: "puso-sf-3", x: 2600, type: "heart" },
         ],
         decorations: [
-          { id: "montalan-m", x: 220, animation: MONTALAN, walkAnimation: P.montalanWalk, speakers: ["Montalan"] },
-          { id: "villafuerte-m", x: 120, animation: VILLAFUERTE, speakers: ["Villafuerte"] },
-          { id: "de-vega-m", x: 40, animation: DE_VEGA, speakers: ["De Vega"] },
+          // Block 156: out of sight while the fight is on (standsAside).
+          { id: "montalan-m", x: 220, animation: MONTALAN, walkAnimation: P.montalanWalk, speakers: ["Montalan"], standsAside: true },
+          { id: "villafuerte-m", x: 120, animation: VILLAFUERTE, speakers: ["Villafuerte"], standsAside: true },
+          { id: "de-vega-m", x: 40, animation: DE_VEGA, speakers: ["De Vega"], standsAside: true },
         ],
         npcs: [],
       },

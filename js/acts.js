@@ -215,11 +215,19 @@ const Acts = {
   // count without the story having paid him anything. Nothing is lost:
   // complete() pays the whole score at the end, since what was dripped
   // is then zero.
+  // Block 156 (the instructor: a better reward per mission). Every
+  // objective pays OBJECTIVE_PAY, a set sum with its "+N barya" toast,
+  // on top of the performance score paid whole at the end (complete):
+  // an act now pays its score and its objectives, no longer the score in
+  // two parts (floor(50 / total) a step was 2 to 5 barya). Still nothing
+  // per step where the act saves toward a sum (objectiveCurrency: false).
+  OBJECTIVE_PAY: 10,
+
   perObjective(total) {
     if (!total) return 0;
     const act = this.getAct(this.current);
     if (act && act.objectiveCurrency === false) return 0;
-    return Math.floor(this.COMPLETION_POOL / total);
+    return this.OBJECTIVE_PAY;
   },
 
   award(amount, toast) {
@@ -863,20 +871,14 @@ const Acts = {
     this._lastDone = done;
     this.progress[n] = { status: "completed", objectives_done: done };
 
-    // Whatever the act owes beyond what the objectives already paid.
-    // Floored at zero: a student who took enough damage to zero both
-    // the survival and stealth terms has already been paid the whole
-    // score by the drip, and an act must never claw currency back.
+    // The performance score, paid whole.
     //
     // Held for the transition screen rather than toasted, because the
     // completion write is followed by the post-test and the feedback
     // form, and a toast fired now would be gone before the student
     // looks at the world again.
-    const dripped = this.perObjective(total) * done;
-    this._lastAward = this.award(
-      Math.max(0, this.scoreFor(done, total, stats) - dripped),
-      false
-    );
+    // Block 156: the score whole; the objectives were paid on top.
+    this._lastAward = this.award(this.scoreFor(done, total, stats), false);
 
     await this.endSession();
   },

@@ -68,7 +68,30 @@ Nothing needed.
 
 ### Act I
 
-Nothing needed.
+    assets/items/lagundi.png
+        (Attach tondo-props.png from the folder _dev/parallax-art)
+        Refer to the attached image and use the same art style, the same
+        line and the same colours. Draw a small bundle of fresh lagundi leaves, five slender leaflets on each stem, three or four stems tied together with a strip of abaca, one object alone, seen
+        from the front, filling a square canvas of 512 by 512. No table,
+        no hand, no shadow, no text. Transparent background.
+        (For the team: the Dahon ng Lagundi's tile in the shop and the bag, Block 156.)
+
+    assets/items/anting-anting.png
+        (Attach tondo-props.png from the folder _dev/parallax-art)
+        Refer to the attached image and use the same art style, the same
+        line and the same colours. Draw a Filipino anting-anting of the 1890s: a small brass medallion, worn and darkened, engraved with a triangle and an eye and a few Latin letters, on a plain dark cord, one object alone, seen
+        from the front, filling a square canvas of 512 by 512. No table,
+        no hand, no shadow, no text. Transparent background.
+        (For the team: the Anting-anting's tile in the shop and the bag, Block 156.)
+
+    assets/items/pulbura.png
+        (Attach tondo-props.png from the folder _dev/parallax-art)
+        Refer to the attached image and use the same art style, the same
+        line and the same colours. Draw a small powder horn of the 1890s, cream and brown horn with a wooden stopper and a leather strap, beside a few lead bullets, one object alone, seen
+        from the front, filling a square canvas of 512 by 512. No table,
+        no hand, no shadow, no text. Transparent background.
+        (For the team: the Pinong Pulbura's tile in the shop and the bag, Block 156.)
+
 
 ### Act II
 

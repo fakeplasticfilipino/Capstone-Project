@@ -2696,6 +2696,10 @@ function findNearby() {
   const talkable = enemiesAlive() ? [] : NPCS;
   for (const npc of talkable) {
     if (npc.hidden) continue;
+    // Block 156. A thing whose job is done offers no button (inertWhile,
+    // a stretch or a list of them, as hiddenWhile): the press once
+    // printed, the chair once cut. People still talk.
+    if (npc.inertWhile && [].concat(npc.inertWhile).some(guardOnDuty)) continue;
     const dist = edgeGap(posX, PLAYER_WIDTH, npc.x, NPC_WIDTH);
     if (dist < INTERACT_DISTANCE && dist < closestDist) {
       closest = npc;
@@ -3284,7 +3288,7 @@ function buildPlatforms() {
 // its width, centred on it; the plain box until the picture loads. What
 // hides him is still the spot's x and width, not the picture.
 const HIDE_CRATE_SRC = "assets/sprites/buildings/kahon.png";
-const HIDE_SPOT_HEIGHT = 78; // .hide-spot's CSS height
+const HIDE_SPOT_HEIGHT = 100; // .hide-spot's CSS height (78 before Block 156)
 
 function buildHideSpots() {
   HIDE_SPOTS.forEach((spot, i) => {
@@ -4149,7 +4153,8 @@ function damagePlayer(reason, respawn) {
   setTimeout(() => player.classList.remove("player-hurt"), 400);
 
   if (health <= 0) {
-    showToast(reason ? reason + " Ulitin natin." : "Ulitin natin.");
+    const lost = payForKnockout(); // Block 156
+    showToast((reason ? reason + " Ulitin natin." : "Ulitin natin.") + (lost ? " (-" + lost + " barya)" : ""));
     respawnInScene();
   } else {
     if (reason) showToast(reason);
@@ -4161,6 +4166,28 @@ function damagePlayer(reason, respawn) {
 
 // Back to the start of the scene, guards reset to their posts. Health is
 // only restored when it ran out, so a player on one heart still feels it.
+// Block 156 (the instructor: a consequence for losing health). Running
+// out of hearts costs KNOCKOUT_COST barya, never below zero, and never
+// while the act is saving toward a sum (an objective with countCurrency
+// not yet done: Act I's savings for Nanay, which a fight must not undo).
+// The score's damage term is unchanged; this is only what it costs him.
+const KNOCKOUT_COST = 5;
+
+function savingTowardSum() {
+  return ((currentActData && currentActData.objectives) || [])
+    .some((o) => o.countCurrency && !state.flags[o.flag]);
+}
+
+function payForKnockout() {
+  if (savingTowardSum()) return 0;
+  const n = Math.min(KNOCKOUT_COST, currency);
+  if (n <= 0) return 0;
+  currency -= n;
+  markDirty();
+  floatOverPlayer("-" + n, "coin");
+  return n;
+}
+
 function respawnInScene() {
   noteSetback(); // Block 128
   const scene = currentScene;
@@ -4429,14 +4456,29 @@ function updatePickups() {
 // The engine never reads what an entry or a hint says; content does.
 // =============================================================
 
-function glossaryDef() {
-  return (currentActData && currentActData.glossary) || null;
+// Block 156. A paper found is kept as a flag per act: "pahiwatig_" + its
+// key in Act I (the name every save already holds), "pahiwatig_" + the
+// act + "_" + its key after it. Before this every act used Act I's three
+// names, and flags are kept from act to act, so a student who had found
+// Act I's papers found none in Acts II to IV: they counted as taken and
+// were never laid.
+function hintFlag(key, n) {
+  const act = n || (currentActData && currentActData.number) || 1;
+  return act > 1 ? "pahiwatig_" + act + "_" + key : "pahiwatig_" + key;
 }
 
-function hintsDef() {
-  const def = (currentActData && currentActData.hints) || null;
+// Block 156: each of these takes an act, the one on screen by default,
+// so the Talaan can show any act reached (Game.glossary(n)).
+function glossaryDef(act) {
+  const a = act || currentActData;
+  return (a && a.glossary) || null;
+}
+
+function hintsDef(act) {
+  const a = act || currentActData;
+  const def = (a && a.hints) || null;
   const pools = setHintPool.pools;
-  const n = currentActData && currentActData.number;
+  const n = a && a.number;
   if (!def || !def.fixed || !pools || !pools[n]) return def;
   // Block 94. The content's own papers are the defaults: a slot the
   // teacher has written replaces that slot alone, and a slot she has not
@@ -4464,8 +4506,8 @@ function setHintPool(actNumber, pool) {
 // the pool index, or for fixed hints the slot less one. A hint with
 // neither a title nor a text is left out, which is what an empty
 // teacher's slot is.
-function hintList() {
-  const def = hintsDef();
+function hintList(act) {
+  const def = hintsDef(act);
   if (!def) return [];
   const cap = def.count || 3;
   return (def.pool || [])
@@ -4587,20 +4629,25 @@ function buildHints() {
 }
 
 function pickupTaken(pickup) {
-  return pickup.type === "hint" && Boolean(state.flags["pahiwatig_" + pickup.hint]);
+  return pickup.type === "hint" && Boolean(state.flags[hintFlag(pickup.hint)]);
 }
 
 // What the pause screen lists: every word, found or not (a word not yet
 // earned shows no text), and the hints found so far out of how many
 // this student has.
-function glossaryState() {
-  const g = glossaryDef();
-  const h = hintsDef();
-  const list = hintList();
+function glossaryState(n) {
+  // Block 156. Any act's, by number (its content, window.ACT_n); the act
+  // on screen without one. Flags are kept from act to act, so an earlier
+  // act's words, years and papers read as they were left.
+  const act = n ? window["ACT_" + n] || null : currentActData;
+  if (!act) return null;
+  const g = glossaryDef(act);
+  const h = hintsDef(act);
+  const list = hintList(act);
   // Block 128. The act's timeline: what has happened by now, an entry
   // shown once its beat's flag is set (requiresFlag), so a save that
   // already passed it shows it with no call from content.
-  const line = Array.isArray(currentActData && currentActData.timeline) ? currentActData.timeline : [];
+  const line = Array.isArray(act.timeline) ? act.timeline : [];
   if (!(g && (g.entries || []).length) && !list.length && !line.length) return null;
   const events = line.filter((e) => !e.requiresFlag || state.flags[e.requiresFlag])
     .map((e) => ({ year: e.year || "", text: e.text || "" }));
@@ -4612,9 +4659,10 @@ function glossaryState() {
     return { n: i + 1, id: e.id, found, term: found ? e.term : "", text: found ? e.text : "" };
   });
   const hintTotal = h && h.fixed ? list.length : Math.min((h && h.count) || 3, list.length);
-  const hints = list.filter((x) => state.flags["pahiwatig_" + x.key])
+  const hints = list.filter((x) => state.flags[hintFlag(x.key, act.number)])
     .map((x, n) => ({ n: n + 1, title: x.title, text: x.text }));
   return {
+    act: act.number,
     title: (g && g.title) || "Talaan",
     hint: (g && g.hint) || "",
     found: words.filter((w) => w.found).length,
@@ -4663,7 +4711,7 @@ function collectPage(pickup) {
   const def = hintsDef();
   const hint = hintList().find((h) => h.key === pickup.hint);
   if (!hint) return;
-  state.flags["pahiwatig_" + pickup.hint] = true;
+  state.flags[hintFlag(pickup.hint)] = true;
   markDirty();
   const book = glossaryState();
   const done = book && book.hints.found >= book.hints.total;
@@ -5151,6 +5199,7 @@ const PROJECTILE_SIZE = 14; // must match .projectile's CSS width
 
 function throwProjectile() {
   if (projectile) return; // one at a time
+  noteTask("shoot"); // Block 156
   flashAttack();
   // Here rather than in playShootFire, which runs whether or not a shot
   // actually left: a release while the last shot is still in flight
@@ -5774,6 +5823,8 @@ const INTERTITLE_LINE_MS = 900;
 const INTERTITLE_TEXT_OUT_MS = 800;
 const INTERTITLE_SKIP_AFTER_MS = 1200;
 
+const INTERTITLE_FIGURE_HEIGHT = 170; // Block 156: a figure on a card, CSS px
+
 function playIntertitle(lines, opts) {
   const o = opts || {};
   const el = document.getElementById("intertitle");
@@ -5808,6 +5859,20 @@ function playIntertitle(lines, opts) {
 
   return (async () => {
     box.innerHTML = "";
+    // Block 156. A card may show a figure above its lines (opts.figure, a
+    // sheet): Macario's, on the card that names him. Drawn with the sheet's
+    // first frame, faded in with the first line.
+    if (o.figure) {
+      const fig = document.createElement("div");
+      fig.className = "intertitle-figure"; // not a line: its own fade (style.css)
+      const sprite = document.createElement("div");
+      sprite.className = "sprite";
+      fig.appendChild(sprite);
+      box.appendChild(fig);
+      loadSpriteSheet(o.figure).then(() => {
+        if (!o.figure.failed && sprite.isConnected) bodySprite(sprite, o.figure, INTERTITLE_FIGURE_HEIGHT, 120);
+      });
+    }
     list.forEach((text, i) => {
       const p = document.createElement("p");
       p.className = "intertitle-line" + (i === 0 ? " intertitle-head" : "");
@@ -6112,6 +6177,17 @@ const TUTORIALS = {
     text: "Pindutin ang J, o ang Atake, para sumugod sa kalaban. Sa kabila niya ka dadaan." },
   tanda: { task: "react", target: [],
     text: "Ang pulang ! ay babala: susugod siya! Sumugod sa likod niya, tumalon, o umatras." },
+  // Block 156 (the proponent: instructions for the first shot, the
+  // crates and the platforms). Asked for by the world, not by content
+  // (askLessons, in the loop): the first fight where a shot is allowed,
+  // the first scene with a hiding place, the first with a platform.
+  // PLACEHOLDER, the three texts.
+  baril: { task: "shoot", target: ["btn-attack"],
+    text: "Pindutin nang matagal ang Atake (o J) para bumaril. Isang bala lang sa bawat putok." },
+  tago: { task: "hide", target: [],
+    text: "Tumayo sa likod ng kumikinang na kahon. Doon, hindi ka makikita ng bantay." },
+  plataporma: { task: "platform", target: ["btn-jump"],
+    text: "Tumalon (Space, o Talon) para sumampa sa istante. Mula roon, hindi ka makikita ng bantay." },
   bag: { task: "inventory", target: ["btn-inventory"],
     // Block 156: the stage clothes are handed over, not worn: this is
     // where a student is told to put them on. PLACEHOLDER.
@@ -6119,6 +6195,44 @@ const TUTORIALS = {
 };
 
 let tutorial = null; // the one being taught, or null
+
+// Block 156. The lessons the world asks for: each once (teach keeps its
+// own "__turo_" flag), only while the student is free to act, and
+// auto, so one never follows another without a gap.
+// Block 156 (the proponent: allies who are not fighting should not be
+// on screen). An NPC or a decoration with standsAside is out of sight
+// while any enemy is up, and back when the fight is won; a decoy (the
+// flag the enemies go for) is never marked. Toggled only when the
+// fight starts or ends, as a class, so it never fights display:none.
+let fightAside = false;
+
+function updateStandAside() {
+  const fighting = ENEMIES.length > 0 && enemiesAlive();
+  if (fighting === fightAside) return;
+  fightAside = fighting;
+  NPCS.forEach((npc) => {
+    if (!npc.standsAside) return;
+    const el = document.getElementById("npc-" + npc.id);
+    if (el) setClass(el, "aside-in-fight", fighting);
+  });
+  ((currentScene && currentScene.decorations) || []).forEach((dec) => {
+    if (!dec.standsAside) return;
+    const el = decorationEl(dec.id);
+    if (el) setClass(el, "aside-in-fight", fighting);
+  });
+}
+
+function askLessons(canAct) {
+  if (tutorial || !canAct || inDialogue || cutscenePlaying || !tutorialsOn()) return;
+  const f = state.flags;
+  if (!f.__turo_baril && currentScene && !currentScene.noRanged && ENEMIES.length && enemiesAlive()) {
+    teach("baril", true);
+  } else if (!f.__turo_tago && HIDE_SPOTS.length) {
+    teach("tago", true);
+  } else if (!f.__turo_plataporma && PLATFORMS.length) {
+    teach("plataporma", true);
+  }
+}
 
 function tutorialsOn() {
   // The harness (window.__TEST, which nothing else defines) has them off
@@ -8540,7 +8654,15 @@ function gameLoop(now) {
       Math.abs(posX - tutorial.startX) > 60) noteTask("move");
   // Block 93. Hidden behind a crate is shown: the crate stands in front
   // of him (style.css) and he is dimmed while it covers him.
-  setClass(player, "player-hiding", HIDE_SPOTS.length > 0 && onGround && inHideSpot(posX));
+  const hiding = HIDE_SPOTS.length > 0 && onGround && inHideSpot(posX);
+  setClass(player, "player-hiding", hiding);
+  // Block 156. The three lessons: asked for, and answered.
+  askLessons(canAct);
+  updateStandAside(); // Block 156
+  if (tutorial) {
+    if (hiding) noteTask("hide");
+    if (onGround && posY > floorHeightAt(posX) + 1) noteTask("platform");
+  }
   if (canAct && !tutorial) updateGuards(step);
   if (canAct && !tutorial) updateGuardBullets(step);
   if (canAct && !tutorial) updateEnemies(step, now);

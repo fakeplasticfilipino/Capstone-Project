@@ -337,6 +337,18 @@ toward 100.
 
 tondo, x 900. Plays by itself the first time a student enters Act I.
 
+Block 156. Before it, three cards: where and when, what Spanish rule
+meant to a Filipino, and Macario himself, his figure standing on his
+card above his name.
+
+  + [BLACK] Pilipinas, 1890
+  + [BLACK] Mahigit tatlong daang taon nang sakop ng Espanya ang kapuluan.
+  + [BLACK] Ang Kastila ang namamahala sa simbahan, sa hukuman at sa buwis.
+  + [BLACK] Bawat Pilipino ay nagbabayad ng sedula, at walang tinig sa pamahalaan.
+  + [BLACK] Macario Sakay
+  + [BLACK] 1870-1907. Isinilang sa Tondo.
+  + [BLACK] Barbero, mananahi, artista, at manghihimagsik.
+
     [BLACK] Tondo, 1890
     [BLACK] Kung saan nagsimula ang buhay ni Macario
 

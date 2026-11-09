@@ -191,7 +191,13 @@ window.ENEMY_TYPES = {
   const sentry = (m) => ({ kind: "guard", shoots: true, hp: 2, speed: 1.3, detectRadius: 260,
     animation: m.idle, walkAnimation: m.walk, hitAnimation: m.hit });
   T.amerikano = fighter(AMERIKANO);
-  T.sentinela = sentry(AMERIKANO);
+  // Block 156 (the proponent: the Americans should shoot). The sentry
+  // levels his rifle before each shot: his own lunge played as an aim,
+  // frames 0 to 2 bringing the rifle up, 3 held level, 4 to 7 the kick;
+  // the shot leaves from the bayonet's point (measured on frame 3).
+  T.sentinela = Object.assign(sentry(AMERIKANO), {
+    shootAnimation: Object.assign({}, AMERIKANO.attack, { fps: 14, aimFrame: 3, fireFrame: 4, muzzle: { x: 238, y: 66 } }),
+  });
   T.konstable = fighter(KONSTABLE);
   // Block 119. The Constabulary on guard with a rifle, Act IV: on watch
   // at a post (catching rather than shooting where a scene says shoots:
