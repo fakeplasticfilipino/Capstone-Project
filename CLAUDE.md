@@ -677,7 +677,9 @@ Scene shape:
                            lines, onComplete }],
       npcs: [...],
       decorations: [...],
-      platforms: [{ x, y, width }],              optional; one-way
+      platforms: [{ x, y, width, drawn }],       optional; one-way; drawn:
+                                                 false where a picture shows
+                                                 the surface (Block 156)
       hideSpots: [{ x, width,                    optional; suppress detection
                     requiresFlag, unlessFlag }], flags optional, as a
                                                  guard's (Block 81)
@@ -965,13 +967,9 @@ ART.md as owed again, saying what was wrong, so the placeholder shows
 what is missing. It is not kept in the game while a new one is asked
 for.
 
-Lit doorways (Block 126). Every exit, and every NPC with doorway, is
-lit while open (game.js, LIT DOORWAYS): a column of warm light the
-width of the door, a glow on the wall and a pool on the road, behind
-the people, brighter in reach and at night, dark while shut or while
-anyone fights. Gradients the engine draws, not art. (A parallax of
-layered streets was built and taken out the same day, Block 126: no
-time for the art it needs.)
+Lit doorways (Block 126) were taken out in Block 156, at the
+proponent's word: a door is found by the guide's arrow (Block 125) and
+the building's own picture. An NPC's doorway field is gone with them.
 
 Outdoor layers (Block 142; built for Act I's street on 22 Oct 2026,
 game.js, LAYERED STREETS; the rest is TRACKER.md's list). Every outdoor
@@ -1090,8 +1088,6 @@ NPC shape:
       scenery: true,                             optional; no picture and no
                                                  placeholder, only a body to
                                                  reach (Block 69)
-      doorway: true | { requiresFlag,            optional; it is a door: lit
-                        unlessFlag },            while open (Block 126)
       stage: 0,                                  conversation index
       dialogueSets: [{ lines: [{speaker, text}], onComplete(),
                        skipIfFlag, requiresFlag }],  both optional; a
@@ -1389,9 +1385,11 @@ konstable.js): a walk, a bayonet thrust, a flinch, and a standing
 sheet for the sentry and for anyone who only stands in a scene
 (window.SOLDIER_SHEETS). Act IV adds bantay-konstable (Block 119), the
 Constabulary on guard with a rifle, on the konstable's picture. Block
-129 adds sultan, the play's Sultan when he fights Don Rodrigo himself
-(hp 3, the slash), his cell SULTAN_CELL beside the kawal's, read by
-content/act1.js for his idle and walk.
+129 added sultan, the play's Sultan fighting Don Rodrigo himself;
+Block 156 took the duel out (he surrenders when his kawal are down),
+and the type and its slash and flinch sheets with it. His cell,
+SULTAN_CELL, stays beside the kawal's, read by content/act1.js for his
+idle and walk.
 
 A placement's own fields win over its type's, so a sentry can see
 further than the rest of his kind without a second type. A placement
@@ -2780,6 +2778,11 @@ look, by system:
                                           notHead)
     the general's uniform, the flag      Block 148 (a skin sold at 80;
                                           darkJacket)
+    the examination list, group 1         Block 156 (the costume handed
+                                          over, not worn; the Sultan
+                                          surrenders; portraits; lit
+                                          doorways out; bullets; crates;
+                                          platforms; the knock)
     the pre-examination list: his own     Block 155 (the stage clothes
       clothes from Act II, the login      off at Act II's card; carry;
                                           novalidate)
@@ -3015,6 +3018,16 @@ head height. Moving an NPC, exit or checkpoint within about 90px of
 one of those x values, or changing panelWidth, puts someone behind a
 trunk; move them, or run node _dev/tools/prepare.js, which fails on it
 in seconds (Polish #4).
+
+Hide spots are drawn as the artist's crates (Block 156, game.js,
+buildHideSpots; assets/sprites/buildings/kahon.png), as many side by
+side as cover the spot, centred on it; what hides him is still the
+spot's x and width, not the picture.
+
+A dialogue portrait is the speaker's sheet in the scene (an NPC by its
+label or speakers, a decoration by its id or speakers); since Block 156
+a speaker not on screen takes window.PEOPLE's sheet by name (Nanay in
+the pulungan), and a sheet's headroom is left out of a bust.
 
 A platform's y counts from the bottom of the world, not from the floor
 (GROUND_LEVEL, 60): a platform meant to keep Macario out of a guard's

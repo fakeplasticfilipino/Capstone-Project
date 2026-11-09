@@ -240,6 +240,30 @@ function normalise(sig) {
   write("kampana", normalise(lowpass(out, 5000)), 0.5);
 }
 
+// ---- katok ---------------------------------------------------------
+// Block 156. Three knocks on a wooden door (Act III's three houses, the
+// night of 1902): each a dull thump, a low body that dies in a tenth of
+// a second under a short tap of filtered noise, the knuckles; the third
+// a little softer, the way a hand slows.
+{
+  const SECONDS = 1.0;
+  const n = len(SECONDS);
+  const r = rng(156);
+  const out = new Float64Array(n);
+  [0, 0.2, 0.42].forEach((at, k) => {
+    const start = len(at);
+    const loud = [1, 0.92, 0.78][k];
+    for (let i = 0; start + i < n; i++) {
+      const t = i / RATE;
+      let v = Math.sin(2 * Math.PI * 150 * t) * Math.exp(-t / 0.05) * 0.9;
+      v += Math.sin(2 * Math.PI * 310 * t) * Math.exp(-t / 0.025) * 0.45;
+      v += (r() * 2 - 1) * Math.exp(-t / 0.006) * 0.8;
+      out[start + i] += v * loud;
+    }
+  });
+  write("katok", normalise(lowpass(out, 1800)), 0.6);
+}
+
 // ---- gabi (music) ------------------------------------------------
 // Eight seconds that loop: a faint low wind, and crickets, each a burst
 // of three or four quick pulses of a high tone, at a few pitches and

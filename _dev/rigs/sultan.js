@@ -84,11 +84,8 @@ module.exports = {
   sheets: [
     { file: "sultan.png", motion: "idle" },
     { file: "sultan-walk.png", motion: "walk" },
-    // The slash's frames, as shoulder and elbow: the hand rises behind
-    // his head with the scabbard hanging back (0 to 2), and the
-    // scabbard's length comes over the top and down in front (3 to 5).
-    { file: "sultan-attack.png", motion: "slash",
-      arms: [[70, -45], [140, -100], [200, -145], [-90, -29], [-55, -39], [-20, -49], [10, -30], [4, -6]] },
-    { file: "sultan-hit.png", motion: "hit" },
+    // Block 156: his slash and flinch (sultan-attack, sultan-hit) taken
+    // out with his duel; the arm outline above stays for a rig that
+    // wants them back (Block 129, DECISIONS.md).
   ],
 };

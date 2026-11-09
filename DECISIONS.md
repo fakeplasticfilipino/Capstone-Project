@@ -6962,6 +6962,46 @@ phone checklist in one sitting, the advisor's password warning
 explained (on, it would refuse the random six-digit passwords), and a
 full run at a student's speed before the freeze.
 
+## Block 156: the examination list, group 1, 9 Nov 2026
+
+The proponent's play-through on the phone, with the instructor's
+suggestions: thirty points, planned as twenty-eight items in four groups
+by size (TRACKER.md, The examination list), the proponent's answers
+recorded there. Group 1, the quick fixes:
+
+The stage clothes are handed over and not worn (the instructor): the
+toast says they are in the bag, and the bag lesson says to choose them
+and press Isuot. Act I's later story points carry them, as Acts II to
+IV's do since Block 155.
+
+The Sultan does not fight. Block 129 had him come back to his fallen
+soldiers and duel Don Rodrigo; now he comes back, sees them down, and
+gives up his kingdom where he stands. The sultan type, its slash and its
+flinch are out of the catalogue and of assets/ (the rig keeps its arm
+outline, should they be wanted again); STORY.md loses his challenge.
+
+Portraits. A bust ignores a sheet's headroom (the space kept above the
+head for a raised blade grew the box upward and sank the head down the
+frame, the Sultan's by 68 native px), and a speaker not on screen takes
+the returning people's sheet by name (Nanay, heard in the pulungan).
+
+The lit doorways (Block 126) are taken out, engine, styles, content
+fields, checks and tests: the guide points at doors since Block 125.
+
+The shots are drawn as lead balls with a hot rim (a radial gradient in
+the stylesheet, like the floors, by design), in the same boxes, so
+every hit is where it was. The guards' red box is the same ball, smaller.
+
+The press's first guard on the second visit starts at 1420, walking
+away from the door, not at 1500 facing it (starting at his beat's far
+end turned him straight back toward the door and caught Macario as he
+came in: tried and changed the same hour). Balara's fire is raised
+(lift 8 for -6). Hiding places are the artist's crate picture side by
+side, centred on the spot (the plain box until it loads); the press's
+shelves draw no board of their own (a platform's drawn: false), their
+pictures being the surface. Act III's doors are knocked on before they
+open: katok, three knocks, made by make-scene-sfx.js like the bell.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -687,27 +687,11 @@ async function thePlay() {
   showDecoration("sultan", true);
   turnPlayer(1);
   await moveDecoration("sultan", SULTAN_MARK, 200);
+  // Block 156 (the proponent): with his soldiers down he does not fight;
+  // he gives up his kingdom where he stands. Block 129's duel is gone.
   await playDialogue([
     { speaker: "Sultan", text: "Natalo... ang lahat ng aking kawal?" },
-    { speaker: "Sultan", text: "Kung gayon, ako mismo ang haharap sa iyo!" }, // PLACEHOLDER
   ]);
-
-  // Block 129. Then he fights Don Rodrigo himself, the sword still in
-  // its scabbard (the swords are wood, Maryam said): the "sultan" of the
-  // enemy catalogue, standing where he stood. Beaten, he falls and fades
-  // like everyone who fights, and the actor walks back on from the wing
-  // to give up his kingdom, as he came back after his kawal.
-  showDecoration("sultan", false);
-  setCutscene(false);
-  setMusic("assets/audio/music/intense.mp3");
-  await spawnEnemies([{ type: "sultan", id: "sultan-laban", x: SULTAN_MARK - 40 }]);
-  setMusic(null);
-  setCutscene(true);
-  placeDecoration("sultan", STAGE_WIDTH + 100);
-  await movePlayer(STAGE_PLAY_X, 220);
-  showDecoration("sultan", true);
-  turnPlayer(1);
-  await moveDecoration("sultan", SULTAN_MARK, 160);
   // Block 113, at the proponent's word ("include the part where the
   // muslim kingdom fell"): the moro-moro ends as the plays of the
   // period ended, not with a father's blessing. The Moorish kingdom
@@ -847,14 +831,14 @@ async function principeBaldovino() {
     { speaker: "Macario", text: "Po?" },
     { speaker: "Direktor", text: "Walang guardia na nag-uusisa sa artistang pagod. Tumayo ka lang nang tahimik, iisipin nilang nagpapahinga ka lang." },
   ]);
-  // Block 82. The stage clothes, worn from here (content/items.js): a
-  // guard notices him five times more slowly while he stands still. The
-  // guard's meter drawn pale blue while they help is how a student sees
-  // it working.
-  if (window.Inventory && Inventory.grant) {
-    if (await Inventory.grant("damit-entablado")) Inventory.equip("damit-entablado");
-  }
-  showToast("Suot mo: Damit-Pangteatro", 2600);
+  // Block 82. The stage clothes, his from here (content/items.js): worn,
+  // a guard notices him five times more slowly while he stands still,
+  // and the guard's meter drawn pale blue is how a student sees it.
+  // Block 156 (the instructor): handed over, not put on; the student
+  // wears them from the bag, which the bag lesson below opens.
+  // PLACEHOLDER, the toast.
+  if (window.Inventory && Inventory.grant) await Inventory.grant("damit-entablado");
+  showToast("Nasa Bag mo na ang Damit-Pangteatro. Isuot mo ito mula roon.", 3200);
   await wait(400);
   await playDialogue([
     { speaker: "Maryam", text: "Apat na taon na, pero hindi ka pa rin marunong sumunod sa iskrip, 'no?" },
@@ -1368,13 +1352,13 @@ const DEV_JUMPS = [
     flags: DEV_PLAYED, currency: 120, task: "Mag-ipon para kay Nanay" },
   { id: "baldovino", label: "Apat na taon: Principe Baldovino", scene: "entablado",
     flags: DEV_FOUR_YEARS, currency: 20, task: "Gumanap bilang Principe Baldovino" },
-  { id: "kasama", items: ["damit-entablado"], label: "Ang Kasama sa kalye", scene: "tondo", x: 12250, facing: 1,
+  { id: "kasama", carry: ["damit-entablado"], label: "Ang Kasama sa kalye", scene: "tondo", x: 12250, facing: 1,
     flags: DEV_ASKED, currency: 20, task: "Hanapin ang naghihintay sa kalye" },
-  { id: "panunumpa", items: ["damit-entablado"], label: "Ang panunumpa", scene: "pulungan",
+  { id: "panunumpa", carry: ["damit-entablado"], label: "Ang panunumpa", scene: "pulungan",
     flags: DEV_WORD_SAID, currency: 20, task: "Sumapi sa Katipunan" },
-  { id: "polyeto", items: ["damit-entablado"], label: "Ang gabi ng mga polyeto", scene: "tondo", x: 4100, facing: 1,
+  { id: "polyeto", carry: ["damit-entablado"], label: "Ang gabi ng mga polyeto", scene: "tondo", x: 4100, facing: 1,
     flags: DEV_SWORN, currency: 20, task: "Ipamigay ang mga polyeto" },
-  { id: "ulat", items: ["damit-entablado"], label: "Ang ulat at ang wakas", scene: "pulungan",
+  { id: "ulat", carry: ["damit-entablado"], label: "Ang ulat at ang wakas", scene: "pulungan",
     flags: DEV_ROUNDS_OVER, currency: 20, task: "Bumalik sa pulungan at mag-ulat" },
 ];
 

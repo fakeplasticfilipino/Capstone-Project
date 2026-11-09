@@ -626,15 +626,9 @@ last one falls.
     back to a stage of fallen soldiers; Block 93.)
 
     Sultan: Natalo... ang lahat ng aking kawal?
-  + Sultan: Kung gayon, ako mismo ang haharap sa iyo!
 
-Block 129. The Sultan fights Don Rodrigo himself, alone, his sword in
-its scabbard (the swords are wood), raised over his head and brought
-down: three blows drop him, and he falls and fades like the kawal, the
-fight music up again. Running out of hearts starts his fight again.
-
-    (Macario walks back to his mark; the Sultan walks back on from the
-    right wing, beaten, to his mark.)
+Block 156. He does not fight (Block 129's duel taken out at the
+proponent's word): with his soldiers down, he gives up where he stands.
 
   + Macario: Bumagsak na ang iyong kaharian, Sultan. Ibaba mo ang iyong kampilan.
   + Sultan: ...

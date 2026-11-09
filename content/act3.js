@@ -754,6 +754,9 @@
         thinkAloud(n === EMPTY_DOOR ? "Wala nang tao rito." : "Naipaalam ko na rito. Sa susunod na bahay.");
         return;
       }
+      // Block 156: he knocks (three knocks), then the door opens.
+      playSfx("katok");
+      await wait(900);
       playSfx("door");
       await wait(260);
       await playDialogue(DOOR_LINES[n]);
@@ -1408,7 +1411,6 @@
             id: "pinto-" + (i + 1), x, label: "Pinto", scenery: true,
             startsHidden: true, revealedByFlag: "a3_batas", hiddenByFlag: "a3_nahuli",
             // Block 126. Lit until it has been knocked on.
-            doorway: { unlessFlag: PINTO_FLAGS[i] },
             interactLabel: "Kumatok",
             interactIcon: "i-hand",
             speakers: ["Tinig sa Loob"],
@@ -1570,7 +1572,6 @@
             // The gate: no picture, a body to reach.
             id: "tarangkahan", x: ROOM - 100, label: "Tarangkahan", scenery: true,
             // Block 126. Lit while it is the way out.
-            doorway: { requiresFlag: "a3_saSelda", unlessFlag: "a3_pinalaya" },
             interactLabel: "Lumabas",
             interactIcon: "i-out",
             dialogueSets: [],

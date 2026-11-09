@@ -902,10 +902,6 @@ let enemiesDone = null; // resolves the spawnEnemies promise
 // unloadScene clears both, and wayOutLine reads the second.
 let DECOYS = [];
 let advanceGoal = null;
-// Block 126. The lit doorways of the scene (buildDoorways). Up here
-// with the other scene lists: unloadScene clears it, and loadAct
-// reaches unloadScene at parse time.
-let DOORWAYS = [];
 let HIDE_SPOTS = []; // regions that suppress guard detection
 let HAZARDS = []; // ground regions that cost one health on contact
 let PICKUPS = []; // collectibles; currently only hearts
@@ -1106,7 +1102,6 @@ function loadScene(sceneId) {
   buildPickups();
   buildHints(); // Block 68
   buildGuards(token);
-  buildDoorways(); // Block 126
 
   posX = typeof scene.startX === "number" ? scene.startX : 0;
   posY = groundHeightAt(posX);
@@ -1134,7 +1129,6 @@ function unloadScene() {
   DECOYS = [];
   advanceGoal = null;
   clearSetbacks(); // Block 128: a new scene starts unaided
-  DOORWAYS = []; // Block 126; their elements are in actElements
   parallaxLayers = []; // Block 142; likewise
   currentScene = null;
   currentSceneId = null;
@@ -1602,83 +1596,6 @@ function frontGrassImage() {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">` +
     `<g fill="none" stroke="#0b130c" stroke-width="5" stroke-linecap="round">${paths}</g></svg>`;
   return (frontGrassImage.cached = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
-}
-
-// =============================================================
-// LIT DOORWAYS (Block 126)
-//
-// A door on the street was a zone on the road with nothing to show it,
-// and on the phone nobody found one (Block 120). Every exit, and every
-// NPC that is really a door (doorway: true, or { requiresFlag,
-// unlessFlag } for one that is a way in only for a stretch of the
-// story), is lit while it is open: a warm light rising from the
-// threshold and a pool of it on the road, brighter once Macario is in
-// reach and stronger at night. A shut door is dark, so the light also
-// says "you can go in now". Drawn by the engine (gradients), like the
-// floors and the shadow trees: no picture is made or owed for it.
-//
-// A light out of view is held still (.doorway-still), as pickups are,
-// because a CSS animation runs off screen too; and the loop writes a
-// class only when one of the three states changes.
-// =============================================================
-
-const DOORWAY_VIEW_MARGIN = 200;
-
-function doorwayOpen(d) {
-  if (d.exit) {
-    if (d.exit.requiresFlag && !state.flags[d.exit.requiresFlag]) return false;
-    return !(d.exit.unlessFlag && state.flags[d.exit.unlessFlag]);
-  }
-  if (d.npc.hidden) return false;
-  const when = d.npc.doorway;
-  if (when && typeof when === "object") {
-    if (when.requiresFlag && !state.flags[when.requiresFlag]) return false;
-    if (when.unlessFlag && state.flags[when.unlessFlag]) return false;
-  }
-  return true;
-}
-
-function buildDoorways() {
-  const scene = currentScene;
-  if (!scene) return;
-  const add = (x, width, src) => {
-    const el = document.createElement("div");
-    el.className = "doorway";
-    placeBody(el, x);
-    el.style.width = width + "px";
-    const glow = document.createElement("div");
-    glow.className = "doorway-glow";
-    const shaft = document.createElement("div");
-    shaft.className = "doorway-shaft";
-    const pool = document.createElement("div");
-    pool.className = "doorway-pool";
-    el.appendChild(glow);
-    el.appendChild(shaft);
-    el.appendChild(pool);
-    // Behind everyone: straight after the road, before the people, who
-    // are painted over it in the order they were added.
-    world.insertBefore(el, document.getElementById("ground-tiles").nextSibling);
-    actElements.push(el);
-    DOORWAYS.push(Object.assign({ el, x, width, open: null, near: null, moving: null }, src));
-  };
-  (scene.exits || []).forEach((exit) => add(exit.x, exit.width || 80, { exit }));
-  NPCS.forEach((npc) => { if (npc.doorway) add(npc.x, NPC_WIDTH, { npc }); });
-}
-
-function updateDoorways(cameraX) {
-  const from = cameraX - DOORWAY_VIEW_MARGIN;
-  const to = cameraX + (viewportWidth || 0) + DOORWAY_VIEW_MARGIN;
-  const fighting = ENEMIES.length > 0 && enemiesAlive();
-  for (let i = 0; i < DOORWAYS.length; i++) {
-    const d = DOORWAYS[i];
-    // No way out mid-fight (findNearby), so no light either.
-    const open = !fighting && doorwayOpen(d);
-    const near = open && edgeGap(posX, PLAYER_WIDTH, d.x, d.width) < INTERACT_DISTANCE;
-    const moving = open && d.x + d.width >= from && d.x <= to;
-    if (open !== d.open) { d.open = open; setClass(d.el, "doorway-open", open); }
-    if (near !== d.near) { d.near = near; setClass(d.el, "doorway-near", near); }
-    if (moving !== d.moving) { d.moving = moving; setClass(d.el, "doorway-still", !moving); }
-  }
 }
 
 // Four trees in silhouette (Block 50; one coconut palm before that, and
@@ -2938,7 +2855,12 @@ function portraitSheetFor(speaker) {
   if (npc) return { side: "right", sheet: npc.animation };
   const decorations = (currentScene && currentScene.decorations) || [];
   const dec = decorations.find((d) => d.animation && (d.id === name || answers(d)));
-  return { side: "right", sheet: dec ? dec.animation : null };
+  if (dec) return { side: "right", sheet: dec.animation };
+  // Block 156. Someone heard and not on screen (Nanay, in the pulungan)
+  // still has a face: the returning people's own sheet (content/people.js),
+  // by name.
+  const person = window.PEOPLE && window.PEOPLE[name];
+  return { side: "right", sheet: person && person.src ? person : null };
 }
 
 function drawDialoguePortrait(speaker) {
@@ -2957,7 +2879,12 @@ function drawDialoguePortrait(speaker) {
     if ((sheet.contentHeight || sheet.frameHeight) < PORTRAIT_MIN_SOURCE) return;
     const sprite = document.createElement("div");
     sprite.className = "portrait-sprite";
-    bodySprite(sprite, sheet, PORTRAIT_HEIGHT, PORTRAIT_WIDTH);
+    // Block 156. A bust has no use for headroom (the space above the head
+    // for a raised blade): kept, it grows the box upward and sinks the
+    // head down the frame (the Sultan's, 68 native px). The geometry is
+    // the sheet's own, copied after it loaded.
+    bodySprite(sprite, sheet.headroom ? Object.assign({}, sheet, { headroom: 0 }) : sheet,
+      PORTRAIT_HEIGHT, PORTRAIT_WIDTH);
     if (side === "right") sprite.style.transform = "scaleX(-1)";
     box.replaceChildren(sprite);
     box.classList.add("shown");
@@ -3343,10 +3270,21 @@ function buildPlatforms() {
     el.style.width = plat.width + "px";
     el.style.bottom = plat.y + "px";
     el.style.height = "14px";
+    // Block 156. A platform standing on a picture of its own (the press's
+    // shelves) is not drawn: the plain board on the shelf's top looked
+    // wrong. It still holds him up.
+    if (plat.drawn === false) el.classList.add("platform-undrawn");
     world.appendChild(el);
     actElements.push(el);
   });
 }
+
+// Block 156. A hiding place is drawn as the artist's crates
+// (assets/sprites/buildings/kahon.png), as many side by side as cover
+// its width, centred on it; the plain box until the picture loads. What
+// hides him is still the spot's x and width, not the picture.
+const HIDE_CRATE_SRC = "assets/sprites/buildings/kahon.png";
+const HIDE_SPOT_HEIGHT = 78; // .hide-spot's CSS height
 
 function buildHideSpots() {
   HIDE_SPOTS.forEach((spot, i) => {
@@ -3357,6 +3295,15 @@ function buildHideSpots() {
     el.style.width = spot.width + "px";
     world.appendChild(el);
     actElements.push(el);
+    loadImage(HIDE_CRATE_SRC).then((img) => {
+      if (!img || !el.isConnected) return;
+      const crate = Math.round(img.naturalWidth * HIDE_SPOT_HEIGHT / img.naturalHeight);
+      const n = Math.max(1, Math.round(spot.width / crate));
+      el.style.left = Math.round(spot.x + spot.width / 2 - (n * crate) / 2) + "px";
+      el.style.width = n * crate + "px";
+      el.style.backgroundImage = cssAssetUrl(HIDE_CRATE_SRC);
+      el.classList.add("hide-spot-drawn");
+    });
   });
 }
 
@@ -6166,7 +6113,9 @@ const TUTORIALS = {
   tanda: { task: "react", target: [],
     text: "Ang pulang ! ay babala: susugod siya! Sumugod sa likod niya, tumalon, o umatras." },
   bag: { task: "inventory", target: ["btn-inventory"],
-    text: "Buksan ang Bag para makita ang mga suot mo." },
+    // Block 156: the stage clothes are handed over, not worn: this is
+    // where a student is told to put them on. PLACEHOLDER.
+    text: "Buksan ang Bag, piliin ang Damit-Pangteatro, at pindutin ang Isuot." },
 };
 
 let tutorial = null; // the one being taught, or null
@@ -7867,6 +7816,7 @@ const SFX_SOURCES = {
   miss: "assets/audio/sfx/miss.wav",
   jump: "assets/audio/sfx/jump.wav",
   door: "assets/audio/sfx/door.wav",
+  katok: "assets/audio/sfx/katok.wav", // Block 156: three knocks on a door
   // intertitle.wav is gone (Scan S24): black cards have been silent
   // since Block 84 and no content named it.
   // Block 60. Combat (_dev/tools/make-combat-sfx.js): every punch
@@ -8646,7 +8596,6 @@ function gameLoop(now) {
   drawCamera(cameraX, now);
   updatePickupMotion(cameraX); // Block 64
   updateGuide(canAct, cameraX); // Block 125
-  if (DOORWAYS.length) updateDoorways(cameraX); // Block 126
 
 
   // Interact and gift buttons follow whichever NPC or stage is nearby.

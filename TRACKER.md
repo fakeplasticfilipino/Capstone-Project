@@ -9,7 +9,11 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Nov 2026, Block 155: the pre-examination list
+Last updated: 9 Nov 2026, Block 156: the examination list (below,
+before Next action), group 1 done: the costume handed over not worn,
+the Sultan surrenders, portraits, the lit doorways out, bullets, the
+press guard, the campfire, crates and shelves, the knock. Before it,
+Block 155: the pre-examination list
 (Finished lists), six items from a check of the whole game (both suites
 whole, all 50 story points at a phone's size, the monkey, the dashboard,
 the database's advisors). From Act II on Macario is in his own camisa
@@ -447,7 +451,89 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
     [x] sala, hukuman (Act IV): from sala-kit and hukuman-kit (Block
         151), the judge's bench and dais cut from it (Block 154)
 
+## The examination list (IN PROGRESS)
+
+The proponent's play-through and the instructor's suggestions, 9 Nov
+2026, planned by size and agreed the same day. Worked group by group,
+in order; each item ticked here when pushed. Anything of ours that a
+student reads is PLACEHOLDER (content) and + (STORY.md) until accepted.
+
+The proponent's answers: A, the "gamey" sounds are mostly the
+mini-games' (the work game, the haircut, the catch game); B, hints are
+a Tulong button by the quest log, one plain sentence per objective; C,
+the intro cards are written by the session; D, the hanging: the bound
+walk, him at the rope, black at the drop with the trapdoor's sound and
+his last words on a card; E, names and question types are needed
+BEFORE the freeze.
+
+Group 1, quick fixes (COMPLETE, Block 156):
+
+    [x] 1  the stage clothes handed over, not worn: the student puts
+           them on from the bag (Damit), told so
+    [x] 2  the Sultan surrenders once his soldiers are down; his fight,
+           its sheets and the sultan type taken out (STORY.md with it)
+    [x] 3  the Sultan's portrait cut from his standing sheet, not low
+           in the frame
+    [x] 4  a speaker not on screen (Nanay in the pulungan) takes the
+           portrait of the returning people (content/people.js)
+    [x] 5  the lit doorways taken out
+    [x] 6  the shots drawn as bullets, not squares (his and the guards')
+    [x] 7  the imprenta's guard on the second visit placed further left,
+           not facing the door Macario comes in by
+    [x] 8  the campfire raised to stand on the ground
+    [x] 9  the hiding crates drawn with the artist's crate (kahon.png)
+    [x] 10 the platforms drawn as the artist's crates or shelves, not
+           brown bars
+    [x] 11 a knock at each of Act III's three doors
+
+Group 2, half a day or so each:
+
+    [ ] 12 feet on the ground in the mountain and field scenes: each
+           outdoor ground measured against where the people stand
+    [ ] 13 three lessons (the first shot, the first crate, the first
+           platform) and a Paano Maglaro card on the menu
+    [ ] 14 the intro: black cards saying where and when and what is
+           happening, then Macario's name card with his portrait and
+           his figure (ours, PLACEHOLDER)
+    [ ] 15 barya: every objective pays a set sum with a "+N barya"
+           toast (Act I's savings as it is); running out of hearts
+           costs 5, never below 0, never while Act I saves for Nanay
+    [ ] 16 a prop whose mini-game is played and paid offers no button
+           (people still talk)
+    [ ] 17 allies who do not fight are not on screen during a fight
+    [ ] 18 the Americans at the hideout: riflemen who aim and fire
+           among them (the sentry's sheets), not only the lunge
+    [ ] 19 the Talaan of every chapter reached, by a picker
+    [ ] 20 pictures in the shop: the outfits' own figure, the itak's
+           and the pistol's; lagundi, anting-anting, pulbura owed
+           (ART.md)
+    [ ] 21 Delete only in the dashboard's archived view (still only
+           for accounts never used)
+
+Group 3, new animation:
+
+    [ ] 22 the cedula torn: his motion, the scraps, a rip
+    [ ] 23 the blindfold at the oath: his own still with a dark band
+           over the eyes, through skeleton.js, worn for that scene only
+    [ ] 24 the walk to the gallows, hands tied behind; then D
+
+Group 4, large (before the freeze, E):
+
+    [ ] 25 a name for every student beside the code: a column (a
+           migration, the proponent's yes), the account maker (a
+           deploy, the proponent's yes), the dashboard, the slips, the
+           spreadsheet and the reports
+    [ ] 26 question types: checkboxes (several right answers) and true
+           or false, graded by submit_test; an essay kept as an
+           ungraded reflection, out of the score and the gain (a
+           migration and a function change, the proponent's yes)
+    [ ] 27 hints: the Tulong button (B)
+    [ ] 28 the mini-games' sounds made softer and less "gamey" (A)
+
 ## Next action
+
+(DONE: the proponent checked every line below on the phone, 9 Nov
+2026, and reported only what is in the examination list above.)
 
 Before the freeze (12 Nov 2026), the proponent, on the phone. The
 suites cannot judge how it looks: everything since Block 142 has been

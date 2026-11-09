@@ -340,82 +340,6 @@ html, body {
   filter: grayscale(1);
 }
 
-/* Block 126. A door that is open, lit (game.js, LIT DOORWAYS): a warm
-   light rising from the threshold and a pool of it on the road, drawn
-   with gradients, behind the people. Dark until open; brighter in reach;
-   stronger at night. The flicker is a transform, and plays only in
-   reach; out of view nothing runs (.doorway-still). */
-.doorway {
-  position: absolute;
-  left: 0;
-  bottom: var(--ground-level);
-  height: 200px;
-  pointer-events: none;
-}
-
-.doorway-glow,
-.doorway-pool,
-.doorway-shaft {
-  position: absolute;
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-
-/* The light on the wall around the door: screen-blended, so it lifts
-   whatever is painted there rather than covering it. */
-.doorway-glow {
-  left: -50px;
-  right: -50px;
-  bottom: 0;
-  height: 210px;
-  mix-blend-mode: screen;
-  transform-origin: 50% 100%;
-  background: radial-gradient(ellipse 50% 100% at 50% 100%,
-    rgba(255, 214, 140, 1), rgba(255, 170, 80, 0.55) 45%, rgba(255, 140, 60, 0) 100%);
-}
-
-/* The doorway itself: a column of warm light the width of the door,
-   brightest at the threshold, so it reads as an opening on any wall. */
-.doorway-shaft {
-  left: 8px;
-  right: 8px;
-  bottom: 0;
-  height: 150px;
-  background: linear-gradient(to top,
-    rgba(255, 226, 160, 0.95), rgba(255, 196, 110, 0.6) 55%, rgba(255, 180, 90, 0) 100%);
-  box-shadow: 0 0 18px 6px rgba(255, 190, 100, 0.35);
-}
-
-.doorway-pool {
-  left: -80px;
-  right: -80px;
-  bottom: -20px;
-  height: 40px;
-  mix-blend-mode: screen;
-  background: radial-gradient(ellipse 50% 50% at 50% 50%,
-    rgba(255, 214, 140, 0.95), rgba(255, 170, 80, 0) 100%);
-}
-
-.doorway-open .doorway-glow { opacity: 0.85; }
-/* The flicker only at the door: a running animation is a style pass
-   every frame (profile.js), so it plays where it says something. */
-.doorway-open.doorway-near .doorway-glow { animation: doorway-flicker 2.6s ease-in-out infinite; }
-.doorway-open .doorway-shaft { opacity: 0.65; }
-.doorway-open .doorway-pool { opacity: 0.6; }
-.doorway-open.doorway-near .doorway-glow,
-.night-scene .doorway-open .doorway-glow { opacity: 1; }
-.doorway-open.doorway-near .doorway-shaft,
-.night-scene .doorway-open .doorway-shaft { opacity: 0.9; }
-.doorway-open.doorway-near .doorway-pool,
-.night-scene .doorway-open .doorway-pool { opacity: 0.9; }
-.doorway-still .doorway-glow { animation: none; }
-
-@keyframes doorway-flicker {
-  0%, 100% { transform: scaleY(1); }
-  45% { transform: scaleY(0.93); }
-  60% { transform: scaleY(0.98); }
-}
-
 /* The shade of a shadow tree on the paintings either side of a join,
    behind every character. Soft and faint: it only has to melt the edge
    of one painting into the next behind the trunk. Block 18's dark posts
@@ -1102,6 +1026,9 @@ html, body {
   background: #5d4037;
   border-top: 3px solid #8d6e63;
 }
+.platform.platform-undrawn {
+  visibility: hidden;
+}
 
 /* Hide spots are drawn as crates. They read as cover rather than as an
    invisible rule, which matters when the mechanic has to be learned
@@ -1116,6 +1043,16 @@ html, body {
   background: #4e342e;
   border: 3px solid #6d4c41;
   box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.25);
+}
+
+/* Block 156: the artist's crates, side by side (game.js, buildHideSpots). */
+.hide-spot.hide-spot-drawn {
+  background-color: transparent;
+  background-size: auto 100%;
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  border: 0;
+  box-shadow: none;
 }
 
 .guard {
@@ -1254,8 +1191,8 @@ html, body {
   position: absolute;
   width: 10px;
   height: 6px;
-  background: #ff5252;
-  box-shadow: 0 0 0 2px #1a0f08;
+  /* Block 156: the same lead ball as his (.projectile), not a red box. */
+  background: radial-gradient(circle, #2b2420 0 2.4px, rgba(255, 214, 140, 0.95) 3px 3.8px, rgba(255, 170, 80, 0) 5px);
   z-index: 2;
 }
 
@@ -1339,7 +1276,10 @@ html, body {
   position: absolute;
   width: 14px;
   height: 14px;
-  background: #f4c542;
+  /* Block 156. A lead ball with a hot rim, drawn here (the box is the
+     hit, PROJECTILE_SIZE; the ball inside it is what is seen), not the
+     yellow square it was. */
+  background: radial-gradient(circle, #2b2420 0 3px, rgba(255, 214, 140, 0.95) 3.6px 4.6px, rgba(255, 170, 80, 0) 6px);
   /* One above #player's own explicit z-index (1), so a throw that
      starts overlapping Macario — before game.js's own spawn-point fix
      clears his body, or after, if he steps back into his own throw —
@@ -3020,9 +2960,6 @@ body.text-lg #guide-edge .guide-label { font-size: 28px; }
   border-radius: 0;
 }
 
-.projectile {
-  box-shadow: 0 0 0 2px var(--px-ink);
-}
 
 /* ---- Touch controls and the corner buttons ---------------------- */
 

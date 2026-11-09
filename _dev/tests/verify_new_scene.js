@@ -859,18 +859,18 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     // Block 101. The proponent's stills: the side-on ones animated (Nanay,
     // the Mabalasig), the front ones still (the Kutsero, the Barbero,
     // Maryam). Block 129: the Sultan and the kawal are the artist's side-on
-    // stills now, each with a walk, the slash and a flinch.
+    // stills now, each with a walk, the slash and a flinch; since Block
+    // 156 the Sultan does not fight, and keeps only his stand and walk.
     const cast = await page.evaluate(async () => {
-      const k = window.ENEMY_TYPES.kawal, su = window.ENEMY_TYPES.sultan;
+      const k = window.ENEMY_TYPES.kawal;
       const sheets = { NANAY, NANAY_WALK, MABALASIG, sultan: SULTAN.idle, sultanWalk: SULTAN.walk,
-        sultanAttack: su.attackAnimation, sultanHit: su.hitAnimation,
         KUTSERO, BARBERO, MARYAM, kawalWalk: k.animation, kawalAttack: k.attackAnimation, kawalHit: k.hitAnimation };
       await Promise.all(Object.values(sheets).map((s) => loadSpriteSheet(s)));
       return Object.fromEntries(Object.entries(sheets).map(([n, s]) => [n, !s.failed && s.frameHeight > 0 && s.frames]));
     });
     ok("the proponent's seven new characters, every sheet opening, side-on ones animated, front ones still (Block 101)",
        Object.values(cast).every(Boolean) && cast.NANAY === 8 && cast.NANAY_WALK === 8 && cast.MABALASIG === 8 &&
-         cast.sultanWalk === 8 && cast.sultanAttack === 8 && cast.kawalAttack === 8 && cast.KUTSERO === 1 && cast.BARBERO === 1 && cast.MARYAM === 1, cast);
+         cast.sultanWalk === 8 && cast.kawalAttack === 8 && cast.KUTSERO === 1 && cast.BARBERO === 1 && cast.MARYAM === 1, cast);
 
     // Block 133. The artist's people of Acts II to IV, keyed from black and
     // animated: each standing sheet, and a walk for those a scene walks on.
@@ -1306,28 +1306,13 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     ok("they are the catalogue's kawal: its sheets and its hp (Block 76)",
        kawal.every((e) => e.type === "kawal" && e.kind === "enemy" && e.hp === 2 &&
          /kawal-walk.png$/.test(e.walk) && /kawal-attack.png$/.test(e.sword)), kawal);
-    // Block 129. The Sultan comes back to his fallen soldiers and fights
-    // Don Rodrigo himself: the catalogue's sultan, three blows.
-    await page.evaluate(() => { ENEMIES.forEach((e) => hitEnemy(e, 99)); });
-    const sDuel = await readConversation(page, 2);
-    ok("the Sultan comes back to his fallen soldiers and says he will face him himself (Block 129)",
-       sDuel.lines.length === 2 && /Natalo/.test(sDuel.lines[0]) && /ako mismo/.test(sDuel.lines[1]), sDuel.lines);
-    let duel;
-    for (let i = 0; i < 60; i++) {
-      duel = await page.evaluate(() => ({ n: ENEMIES.filter((e) => !e.dead).length,
-        e: ENEMIES.filter((e) => !e.dead).map((e) => ({ type: e.type, hp: e.hp, sword: e.attackAnimation && e.attackAnimation.src })),
-        cut: cutscenePlaying, dec: document.getElementById("dec-sultan").style.display }));
-      if (duel.n) break;
-      await page.waitForTimeout(100);
-    }
-    ok("he fights alone, the catalogue's sultan, three blows, his decoration gone meanwhile (Block 129)",
-       duel.n === 1 && duel.e[0].type === "sultan" && duel.e[0].hp === 3 && /sultan-attack.png$/.test(duel.e[0].sword) &&
-         !duel.cut && duel.dec === "none", duel);
-    // Block 93. The fight leaves him at the stage's edge; he walks back to
-    // his mark before the Sultan returns, and stands (not stuck in the walk)
-    // while they talk. The box is at the top on the stage. The Sultan's
-    // bust is his own art since Block 101.
+    // Block 156. The Sultan comes back to his fallen soldiers and gives
+    // up where he stands: no duel (Block 129's, taken out), no enemy.
     await page.evaluate(() => { posX = 1000; ENEMIES.forEach((e) => hitEnemy(e, 99)); });
+    const sBack = await readConversation(page, 1);
+    ok("the Sultan comes back to his fallen soldiers, and does not fight (Block 156)",
+       sBack.lines.length === 1 && /Natalo/.test(sBack.lines[0]) &&
+       await page.evaluate(() => !ENEMIES.some((e) => !e.dead) && !("sultan" in ENEMY_TYPES)), sBack.lines);
     for (let i = 0; i < 100 && !(await line(page)); i++) await page.waitForTimeout(100);
     await page.waitForTimeout(300);
     const markBack = await page.evaluate(() => ({ x: posX, anim: currentAnim, facing,
@@ -1341,8 +1326,15 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     // since Block 129 put Macario's first.
     const s3m = await readConversation(page, 1);
     for (let i = 0; i < 40 && !/^Sultan:/.test((await line(page)) || ""); i++) await page.waitForTimeout(50);
-    ok("the Sultan's own bust on his line (Block 101)", await page.evaluate(() =>
-      document.getElementById("dialogue-portrait-right").classList.contains("shown")));
+    // Block 156: and not sunk down the frame by his sheet's headroom.
+    ok("the Sultan's own bust on his line, his head at the top of the frame (Blocks 101, 156)", await page.evaluate(() => {
+      const sp = document.querySelector("#dialogue-portrait-right .portrait-sprite");
+      return document.getElementById("dialogue-portrait-right").classList.contains("shown") &&
+        Boolean(sp) && sp.style.height === PORTRAIT_HEIGHT + "px";
+    }));
+    // Block 156: someone heard and not on the stage still has her face.
+    ok("a speaker not on screen takes her portrait from the returning people (Nanay; Block 156)",
+       await page.evaluate(() => !NPCS.some((n) => /nanay/i.test(n.id)) && portraitSheetFor("Nanay").sheet === window.PEOPLE.nanay));
     const s3s = await readConversation(page, 1);
     const s3a = { lines: s3m.lines.concat(s3s.lines) };
     const s3b = await readConversation(page, 5);
@@ -1492,8 +1484,14 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const suit = await page.evaluate(() => ({ worn: Inventory.isWorn("damit-entablado"),
       still: Inventory.effects().stillDetectionMult,
       toast: document.getElementById("toast").textContent }));
-    ok("the stage clothes are his, worn, with their effect, and a toast says so (Block 82)",
-       suit.worn && suit.still === 0.2 && /Damit-Pangteatro/.test(suit.toast), suit);
+    // Block 156: handed over, not worn; the toast says where they are.
+    ok("the stage clothes are his, in the bag and not worn, and a toast says so (Blocks 82, 156)",
+       !suit.worn && suit.still !== 0.2 && /Damit-Pangteatro/.test(suit.toast) && /Bag/.test(suit.toast) &&
+       await page.evaluate(() => Inventory.owns("damit-entablado")), suit);
+    // The student puts them on from the bag: then the effect, and the look.
+    await page.evaluate(() => Inventory.equip("damit-entablado"));
+    ok("worn from the bag, they slow a guard's meter (Block 82)",
+       await page.evaluate(() => Inventory.effects().stillDetectionMult === 0.2));
     // Block 154: drawn in the costume, no longer the stand-in tint.
     ok("and he is drawn in them: the costume's sheets, no tint (Block 154)", await page.waitForFunction(() =>
       /macario-entablado-idle/.test(SPRITE_SHEETS.idle.src) && !document.querySelector("#player .player-sprite").style.filter &&
@@ -3223,10 +3221,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
         const e = document.getElementById("guide-edge");
         return { playing: Shell.state === "playing", step: (quests.find((q) => !q.done) || {}).text || null,
                  label: t ? t.label : null,
-                 shown: !m.classList.contains("hidden") || !e.classList.contains("hidden"),
-                 // Block 126. Every door here lit exactly when it opens.
-                 doors: DOORWAYS.map((d) => ({ id: d.exit ? d.exit.id : d.npc.id,
-                   lit: d.el.classList.contains("doorway-open"), open: doorwayOpen(d) && !enemiesAlive() })) };
+                 shown: !m.classList.contains("hidden") || !e.classList.contains("hidden") };
       });
       // Block 128. The Talaan's words and timeline follow the flags: each
       // shown exactly when its beat's flag is set.
@@ -3243,10 +3238,6 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
          book.words.filter((w) => w.found).length + "/" + book.words.length + " words, " +
          book.shown + "/" + book.total + " years",
          book.words.length > 0 && book.total > 0 && book.words.every((w) => w.found === w.flag) && book.due === book.shown, book);
-      if (pointed.doors.length) {
-        ok("  and its doors are lit exactly when open (Block 126)",
-           pointed.doors.every((x) => x.lit === x.open), pointed.doors);
-      }
       const want = pointed.playing ? GUIDE_AT[j.n + ":" + j.id] : null;
       ok("  and once the world is his, the guide points at " + (want === null ? "nothing" : JSON.stringify(want)) +
          " (Block 125)", free && pointed.label === want && pointed.shown === (want !== null), pointed);

@@ -180,7 +180,8 @@
   const BALARA_PIECES = [
     ...field([["kubo-silong", -40, 330], ["bakod-kawayan-maikli", 300, 120], ["kariton-kalabaw", 720, 110],
       ["saging-kumpol", 1010, 290]]),
-    { src: "assets/sprites/buildings/apoy.png", x: 470, height: 70, lift: -6, front: true },
+    // Block 156: raised to stand on the ground (at -6 it sank into it).
+    { src: "assets/sprites/buildings/apoy.png", x: 470, height: 70, lift: 8, front: true },
   ];
   const LAGUNA_PIECES = field([
     ["tulay", -120, 150], ["kubo-silong", 820, 330], ["saging-kumpol", 1100, 290],
@@ -280,7 +281,9 @@
   const PRINTER_X = 440;
   const HIDING_PRINTER_X = 1590;
   const PRESS_GUARDS = [
-    { beat: [1280, 1500], hide: 1390, facing: -1 },
+    // Block 156: he starts 80 further from the door Macario comes in by
+    // (he stood 180 from it), walking away from it.
+    { beat: [1280, 1500], hide: 1390, facing: -1, start: 1420 },
     { beat: [780, 1060], hide: 920, facing: 1 },
     { beat: [370, 620], hide: 495, facing: -1 },
   ];
@@ -289,7 +292,8 @@
   // a guard's sight (game.js, GUARD_SIGHT_CLEARANCE, 60). At 100 they
   // stood 40 up and were seen (Block 142). The shelves' pictures
   // (PRESS_PIECES) are drawn with their top board under the platform.
-  const PRESS_SHELVES = [{ x: 1100, y: 152, width: 200 }, { x: 590, y: 152, width: 180 }];
+  // Block 156: drawn: false, the shelf's own top is the board he stands on.
+  const PRESS_SHELVES = [{ x: 1100, y: 152, width: 200, drawn: false }, { x: 590, y: 152, width: 180, drawn: false }];
   const PRESS_CHECKPOINTS = [1200, 700];
 
   const BATTLE_WIDTH = 4200;    // San Juan del Monte
@@ -1145,7 +1149,7 @@
         ],
         guards: PRESS_GUARDS.map((g, i) => ({
           type: "bantay", id: "guardia-loob-" + (i + 1), shoots: false,
-          x: g.facing < 0 ? g.beat[1] : g.beat[0], patrolFrom: g.beat[0], patrolTo: g.beat[1],
+          x: g.start != null ? g.start : g.facing < 0 ? g.beat[1] : g.beat[0], patrolFrom: g.beat[0], patrolTo: g.beat[1],
           facing: g.facing, requiresFlag: "a2_paghuli", unlessFlag: "a2_nakatakas",
         })),
         hideSpots: PRESS_GUARDS.map((g) => ({ x: g.hide, width: 110,
@@ -1175,7 +1179,6 @@
             // The back window: no picture, only a body to reach.
             id: "bintana", x: WINDOW_X, label: "Bintana", scenery: true,
             // Block 126. Lit once it is the way out, with the list.
-            doorway: { requiresFlag: "a2_nakuhaAngListahan" },
             interactLabel: "Tumakas sa bintana",
             interactIcon: "i-out",
             dialogueSets: [],

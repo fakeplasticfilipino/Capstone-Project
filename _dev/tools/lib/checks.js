@@ -155,10 +155,6 @@ function content() {
           seen.add(x.id);
         }
       }
-      // Block 126. A doorway is true or the flags of its stretch.
-      for (const n of s.npcs || []) {
-        if (n.doorway !== undefined && n.doorway !== true && (typeof n.doorway !== "object" || n.doorway === null)) problems.push(at + ": " + n.id + "'s doorway must be true or { requiresFlag, unlessFlag }");
-      }
       for (const g of s.guards || []) {
         if (g.type && !(types[g.type] && types[g.type].kind === "guard")) problems.push(at + ": guard type \"" + g.type + "\" is not a guard in content/enemies.js");
       }
@@ -227,7 +223,7 @@ function content() {
     }
     for (const f of flagsNeverSet(src, allSrc)) problems.push(tag + ": the flag " + f + " is waited on and nothing sets it");
   });
-  return { name: "every act's content holds together: doors, story points, types, ids, objectives, guides, doorways, trees, flags",
+  return { name: "every act's content holds together: doors, story points, types, ids, objectives, guides, trees, flags",
            ok: problems.length === 0, detail: problems };
 }
 

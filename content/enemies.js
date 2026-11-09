@@ -128,21 +128,6 @@ window.ENEMY_TYPES = {
     },
   },
 
-  // Block 129. The Sultan of the play, when his kawal are down: he
-  // fights Don Rodrigo himself, the sword still in its scabbard (the
-  // play's swords are wood). The artist's still (sultan-still.png), rig
-  // _dev/rigs/sultan.js: his walk, the slash and the flinch, in his cell.
-  // Three blows to bring down, one more than a kawal.
-  sultan: {
-    kind: "enemy",
-    hp: 3,
-    animation: { src: "assets/sprites/characters/sultan-walk.png", frames: 8, fps: 12, ...SULTAN_CELL },
-    attackAnimation: { src: "assets/sprites/characters/sultan-attack.png", frames: 8, fps: 10, ...SULTAN_CELL },
-    hitAnimation: {
-      src: "assets/sprites/characters/sultan-hit.png", frames: 4, fps: 12, ...SULTAN_CELL, knockoutFrame: 1,
-    },
-  },
-
   // Block 113. The Spanish soldier of Act II's battles (San Juan del
   // Monte, the Nangka River), fighting hand to hand: a bayonet charge.
   // He is the bantay's art, so nothing is owed: the walk and the flinch
