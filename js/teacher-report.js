@@ -24,6 +24,10 @@
 // table is wrong in the same way, and the questions are shown in full so
 // that it can be seen.
 //
+// Since Block 160 an essay question (schema v17, t "essay") is counted
+// as written, not as right or wrong: its row says how many wrote one,
+// and the answers themselves are on each student card.
+//
 // Everything a teacher or a game typed is written as text, never HTML.
 // =============================================================
 
@@ -68,7 +72,8 @@ const TeacherReport = {
         if (!o) return;
         const t = byOrder[o] || (byOrder[o] = { right: 0, n: 0, texts: new Map() });
         t.n++;
-        if (Number(a.k) === 1) t.right++;
+        if (a.t === "essay") t.essay = true;
+        else if (Number(a.k) === 1) t.right++;
         const q = String(a.q || "");
         t.texts.set(q, (t.texts.get(q) || 0) + 1);
       });
@@ -88,7 +93,7 @@ const TeacherReport = {
     const post = this._tally(this._firstAttempts(scores, act, "post"));
     const orders = [...new Set([...Object.keys(pre.byOrder), ...Object.keys(post.byOrder)].map(Number))]
       .sort((a, b) => a - b);
-    const pct = (t) => (t && t.n ? (t.right / t.n) * 100 : null);
+    const pct = (t) => (t && t.n && !t.essay ? (t.right / t.n) * 100 : null);
     const rows = orders.map((o) => {
       const p = pre.byOrder[o] || null;
       const q = post.byOrder[o] || null;
@@ -123,7 +128,8 @@ const TeacherReport = {
       tr.appendChild(td);
       return td;
     };
-    const share = (t, p) => (t ? Math.round(p) + "% (" + t.right + "/" + t.n + ")" : "—");
+    const share = (t, p) => (!t ? "—" : t.essay ? "essay, " + t.n + " written"
+      : Math.round(p) + "% (" + t.right + "/" + t.n + ")");
     rows.forEach((r) => {
       const tr = document.createElement("tr");
       cell(tr, String(r.order), "num");
@@ -147,8 +153,8 @@ const TeacherReport = {
     this.report.rows.forEach((r) => {
       lines.push([
         this.lastAct, r.order,
-        r.pre ? r.pre.q : "", r.pre ? r.pre.right : "", r.pre ? r.pre.n : "", num(r.prePct),
-        r.post ? r.post.q : "", r.post ? r.post.right : "", r.post ? r.post.n : "", num(r.postPct),
+        r.pre ? r.pre.q : "", r.pre && !r.pre.essay ? r.pre.right : "", r.pre ? r.pre.n : "", num(r.prePct),
+        r.post ? r.post.q : "", r.post && !r.post.essay ? r.post.right : "", r.post ? r.post.n : "", num(r.postPct),
         num(r.change),
       ].map(csvField).join(","));
     });

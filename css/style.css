@@ -4927,3 +4927,14 @@ body.shell-menu-open #auth-overlay {
     display: none;
   }
 }
+
+/* Block 160: a question with several right answers. Its letters are
+   squares, the way a box to tick is (no glyph: Icons, CLAUDE.md).
+   The essay's box is the feedback form's. */
+.quiz-choice.quiz-multi .qbadge {
+  border-radius: 3px;
+}
+.quiz-essay {
+  width: 100%;
+  box-sizing: border-box;
+}

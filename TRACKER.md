@@ -9,9 +9,12 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Nov 2026, Block 159: a name for every student beside
-the code (schema v16, create-students version 3, the dashboard, the
-slips and the spreadsheets). Left: 26, question types. Before it,
+Last updated: 9 Nov 2026, Block 160: question types (several answers,
+true or false, an essay kept and never scored; schema v17, the test
+screen, the editor, the student card, the Questions report). The
+examination list is done. Before it, Block 159: a name for every
+student beside the code (schema v16, create-students version 3, the
+dashboard, the slips and the spreadsheets). Before that,
 Block 158: group 3 (the cedula torn, the blindfold, the bound walk up
 the gallows and the drop on black), the Tulong button (57 help lines)
 and softer mini-game chimes. Before that, Block 157: the examination list's group 2
@@ -462,7 +465,7 @@ _dev/tools/cut-room-kit.py cuts a delivered sheet.
     [x] sala, hukuman (Act IV): from sala-kit and hukuman-kit (Block
         151), the judge's bench and dais cut from it (Block 154)
 
-## The examination list (IN PROGRESS)
+## The examination list (COMPLETE)
 
 The proponent's play-through and the instructor's suggestions, 9 Nov
 2026, planned by size and agreed the same day. Worked group by group,
@@ -531,16 +534,17 @@ Group 3, new animation (COMPLETE, Block 158):
            over the eyes, through skeleton.js, worn for that scene only
     [x] 24 the walk to the gallows, hands tied behind; then D
 
-Group 4, large (before the freeze, E):
+Group 4, large (before the freeze, E; COMPLETE, Blocks 159, 160):
 
     [x] 25 a name for every student beside the code: a column (a
            migration, the proponent's yes), the account maker (a
            deploy, the proponent's yes), the dashboard, the slips, the
            spreadsheet and the reports (Block 159)
-    [ ] 26 question types: checkboxes (several right answers) and true
+    [x] 26 question types: checkboxes (several right answers) and true
            or false, graded by submit_test; an essay kept as an
            ungraded reflection, out of the score and the gain (a
-           migration and a function change, the proponent's yes)
+           migration and a function change, the proponent's yes;
+           Block 160)
     [x] 27 hints: the Tulong button (B)
     [x] 28 the mini-games' sounds made softer and less "gamey" (A)
 
@@ -926,6 +930,26 @@ Trust this over any memory of a chat.
                                         action (Block 159). The deployed
                                         source read back and compared
                                         with the repository's: the same
+    db/migrations/017_macario_schema_v17.sql   RUN, 9 Nov 2026, from the
+                                        session, at the proponent's word.
+                                        assessment_items.item_type and
+                                        correct_indexes; submit_test
+                                        grades several answers (all or
+                                        nothing), true or false, and
+                                        keeps an essay unscored; the
+                                        pass check on an earlier try no
+                                        longer divides whole numbers
+                                        (Block 160). Probed as the test
+                                        student, rolled back, with four
+                                        probe questions added: 12 of 13,
+                                        the essay out of the maximum and
+                                        its text kept, a partial multi
+                                        answer wrong, a direct insert
+                                        refused (42501), the same try
+                                        sent again the first row. Reads
+                                        for a student, the teacher and a
+                                        visitor the same before and after
+                                        (80, 80, 0), every item single
     db/seeds/macario_items_acts2to4.sql        RUN, 7 Nov 2026, the same.
                                         Acts II to IV's built-in
                                         questions copied into
@@ -1370,6 +1394,11 @@ machine, the assessment module.
         on the roster, the slips and both spreadsheets; schema v16
         (profiles.display_name), create-students version 3 (rename);
         test.js AV, BX
+    160 question types: several answers ticked as boxes (all or
+        nothing), true or false, an essay kept for the teacher and out
+        of the score, the pass mark and the gain; schema v17, the test
+        screen, the editor, the student card, the Questions report;
+        test.js CA
 
 ## Blocks remaining
 

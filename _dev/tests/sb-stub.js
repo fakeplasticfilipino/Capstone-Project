@@ -160,7 +160,7 @@
         const rows = db.assessment_scores;
         const mine = rows.filter((r) => r.student_id === uid && r.act_number === a.p_act && r.test_type === a.p_test)
           .sort((x, y) => (Number(x.attempt) || 1) - (Number(y.attempt) || 1));
-        const passed = (r) => a.p_test === "pre" || (Number(r.max_score) > 0 && r.score / r.max_score >= 0.75);
+        const passed = (r) => a.p_test === "pre" || Number(r.max_score) === 0 || r.score / r.max_score >= 0.75;
         const same = mine.find((r) => (Number(r.attempt) || 1) === a.p_attempt);
         if (same) {
           return Promise.resolve({ data: { score: same.score, max_score: same.max_score,
@@ -178,22 +178,40 @@
           .sort((x, y) => x.item_order - y.item_order);
         if (!items.length) {
           const bank = (window.QUESTIONS && window.QUESTIONS[a.p_act] && window.QUESTIONS[a.p_act][a.p_test]) || [];
-          items = bank.map((q, i) => ({ id: "q" + (i + 1), item_order: i + 1, question: q.question, correct_index: q.correct }));
+          items = bank.map((q, i) => ({ id: "q" + (i + 1), item_order: i + 1, question: q.question, correct_index: q.correct,
+            item_type: q.type, correct_indexes: Array.isArray(q.correct) ? q.correct : null }));
         }
         if (!items.length) return fail("NO_ITEMS", "P0002");
+        // Block 160 (schema v17): graded as the database grades.
         const answers = {};
         let score = 0;
+        let max = 0;
         items.forEach((it) => {
           const c = (a.p_answers || {})[String(it.item_order)];
+          const q = String(it.question).slice(0, 600);
+          if (it.item_type === "essay") {
+            if (typeof c === "string" && c.trim()) answers[it.id] = { o: it.item_order, t: "essay", e: c.trim().slice(0, 2000), q };
+            return;
+          }
+          max++;
+          if (it.item_type === "multi") {
+            if (!Array.isArray(c) || !c.length || !c.every(Number.isInteger)) return;
+            const set = [...new Set(c)].sort((x, y) => x - y);
+            const key = [...new Set(it.correct_indexes || [it.correct_index])].sort((x, y) => x - y);
+            const k = set.length === key.length && set.every((n, i) => n === key[i]) ? 1 : 0;
+            score += k;
+            answers[it.id] = { o: it.item_order, t: "multi", c: set, k, q };
+            return;
+          }
           if (!Number.isInteger(c)) return;
           const k = c === it.correct_index ? 1 : 0;
           score += k;
-          answers[it.id] = { o: it.item_order, c, k, q: String(it.question).slice(0, 600) };
+          answers[it.id] = { o: it.item_order, c, k, q };
         });
         const row = { student_id: uid, act_number: a.p_act, test_type: a.p_test,
-          score, max_score: items.length, attempt, answers };
+          score, max_score: max, attempt, answers };
         rows.push(row);
-        return Promise.resolve({ data: { score, max_score: items.length, attempt, passed: passed(row) }, error: null });
+        return Promise.resolve({ data: { score, max_score: max, attempt, passed: passed(row) }, error: null });
       }
       // No items seeded for any act, which is the documented state
       // until macario_items_v3.sql is run.

@@ -7151,6 +7151,39 @@ The game itself never shows the name: it greets nobody, and a shared
 classroom phone shows the code at the login only. The repository holds
 no name (the stub's are invented, as the test accounts' codes are).
 
+## Block 160: question types, 9 Nov 2026
+
+Item 26 of the examination list, the instructor's suggestion, at the
+proponent's word (E: before the freeze). Every question had been four
+choices and one right answer.
+
+Four types, in assessment_items.item_type (schema v17): single, as
+before; multi, several right answers, ticked as boxes; truefalse, Tama
+or Mali; essay, written. A multi question is right only when exactly
+its right answers are ticked, nothing partial: a half mark would make
+max_score a fraction or a question worth more than one, and the
+roster, the gain and the Questions report all count whole questions.
+True or false is graded as one choice of two; it is a type only so the
+editor fixes its two choices and the screen shows them.
+
+An essay is never scored. Nobody marks it in the game, and a score
+the teacher had to set by hand afterwards would change a pre-test
+after the gain was read. So it is kept in the try's answers (t
+"essay", e the text) and left out of the score, the maximum, the pass
+mark and the gain; the teacher reads it on the student card, and the
+Questions report counts how many wrote one. A test of essays only has
+a maximum of 0 and counts as passed.
+
+correct_index stays not null: a multi question keeps its first right
+answer there and the full list in correct_indexes, an essay -1, so a
+reader written before the types (an old cached game) still loads every
+row. The game and the editor ask for the new columns and, refused,
+ask again without them.
+
+Found on the way: submit_test's check of an earlier post-test divided
+two whole numbers, so 8 of 10 read as 0 and a post-test passed with
+less than full marks could be sat again. It divides as numeric now.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -8324,6 +8324,151 @@ const visible = (page, sel) => page.evaluate((s) => {
     await p.ctx.close();
   }
 
+  if (section("CA", "Block 160: question types (several answers, true or false, essay)")) {
+    // The game: a pre-test of one of each type, sat through the screen.
+    const items = [
+      { id: "i1", act_number: 1, test_type: "pre", item_order: 1, question: "Isang sagot?",
+        choices: ["A0", "A1", "A2"], correct_index: 1, item_type: "single" },
+      { id: "i2", act_number: 1, test_type: "pre", item_order: 2, question: "Ilang sagot?",
+        choices: ["B0", "B1", "B2", "B3"], correct_index: 0, item_type: "multi", correct_indexes: [0, 2] },
+      { id: "i3", act_number: 1, test_type: "pre", item_order: 3, question: "Tama o mali?",
+        choices: ["Tama", "Mali"], correct_index: 1, item_type: "truefalse" },
+      { id: "i4", act_number: 1, test_type: "pre", item_order: 4, question: "Ano ang natutunan mo?",
+        choices: [], correct_index: -1, item_type: "essay" },
+    ];
+    const { ctx, page } = await newPage(Object.assign(atTestRoom(), { realQuestions: true, assessment_items: items }), fixtureRoutes());
+    await page.waitForTimeout(700);
+    await page.click("#shell-start");
+    await page.waitForTimeout(400);
+    const sat = await page.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const until = async (fn) => { for (let i = 0; i < 80 && !fn(); i++) await wait(25); };
+      const q = () => document.getElementById("quiz-question").textContent;
+      const btnEl = () => document.getElementById("quiz-btn");
+      const choices = () => [...document.querySelectorAll(".quiz-choice")];
+      const p = Assessment.runTest(1, "pre");
+      const out = {};
+      await until(() => q() === "Isang sagot?");
+      choices()[1].click();
+      btnEl().click();
+      await until(() => q() === "Ilang sagot?");
+      out.multiNote = document.getElementById("quiz-note").textContent;
+      out.multiClass = choices().every((c) => c.classList.contains("quiz-multi"));
+      out.emptyDisabled = btnEl().disabled;
+      choices()[0].click();
+      choices()[2].click();
+      choices()[3].click();
+      choices()[3].click(); // ticked and unticked
+      out.ticked = choices().map((c) => c.classList.contains("selected"));
+      btnEl().click();
+      await until(() => q() === "Tama o mali?");
+      out.tf = choices().map((c) => c.querySelector(".lbl").textContent);
+      choices()[1].click();
+      btnEl().click();
+      await until(() => q() === "Ano ang natutunan mo?");
+      const box = document.querySelector("#quiz-choices textarea.quiz-essay");
+      out.essayBox = Boolean(box) && choices().length === 0;
+      out.essayDisabled = btnEl().disabled;
+      box.value = "  Si Sakay ay lumaban hanggang dulo.  ";
+      box.dispatchEvent(new Event("input"));
+      out.essayEnabled = !btnEl().disabled;
+      btnEl().click();
+      await until(() => /Tapos na/.test(document.getElementById("quiz-title").textContent));
+      out.body = document.getElementById("quiz-question").textContent;
+      btnEl().click();
+      out.result = await p;
+      out.row = __DB.assessment_scores.find((r) => r.test_type === "pre");
+      return out;
+    });
+    ok("several answers: tick boxes, said so, Susunod only once one is ticked, a second tap unticks",
+       sat.multiNote.length > 0 && sat.multiClass && sat.emptyDisabled &&
+       JSON.stringify(sat.ticked) === "[true,false,true,false]", sat);
+    ok("true or false shows Tama and Mali; the essay is a box to write in, Susunod once something is written",
+       JSON.stringify(sat.tf) === '["Tama","Mali"]' && sat.essayBox && sat.essayDisabled && sat.essayEnabled, sat);
+    const essay = Object.values((sat.row && sat.row.answers) || {}).find((a) => a.t === "essay");
+    ok("graded: all three right, the essay out of the score and the maximum, its text kept for the teacher",
+       sat.result.score === 3 && sat.result.max === 3 && /3 ng 3/.test(sat.body) &&
+       sat.row.score === 3 && sat.row.max_score === 3 && essay && essay.e === "Si Sakay ay lumaban hanggang dulo.", sat);
+    await ctx.close();
+
+    // A multi answer is all or nothing.
+    const g2 = await newPage(Object.assign(atTestRoom(), { realQuestions: true, assessment_items: items }), fixtureRoutes());
+    await g2.page.waitForTimeout(700);
+    await g2.page.click("#shell-start");
+    await g2.page.waitForTimeout(400);
+    const partial = await g2.page.evaluate(async () => {
+      const r = await sb.rpc("submit_test", { p_act: 1, p_test: "pre", p_answers: { 1: 1, 2: [0], 3: 0 }, p_attempt: 1 });
+      return { r: r.data, local: Assessment._isRight(Assessment._item("x", "q", ["a", "b", "c"], "multi", [0, 2], 2), [0]) };
+    });
+    ok("several answers with one missing is wrong, here and in the grader", partial.r.score === 1 && partial.r.max_score === 3 &&
+       partial.local === false, partial);
+    await g2.ctx.close();
+
+    // The editor: a question of each type written and saved.
+    const seed = {
+      session: { user: { id: "t1" } },
+      profiles: [
+        { id: "t1", role: "teacher", full_name: "Gng. Cruz" },
+        { id: "s1", role: "student", full_name: "mag-aaral01", class_id: "c1" },
+      ],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+      assessment_scores: [
+        { student_id: "s1", act_number: 1, test_type: "pre", score: 1, max_score: 1, attempt: 1,
+          answers: { x9: { o: 4, t: "essay", e: "Sinulat ko ito.", q: "Ano ang natutunan mo?" } } },
+      ],
+    };
+    const ctx2 = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const tp = await ctx2.newPage();
+    tp.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+    tp.on("dialog", (d) => d.accept());
+    await tp.route("**/supabaseClient.js*", (route) => route.fulfill({ body: STUB, contentType: "text/javascript" }));
+    await tp.route("**/js/vendor/supabase.js*", (route) => route.fulfill({ body: "", contentType: "text/javascript" }));
+    await tp.addInitScript((st) => { window.__TEST = st; }, seed);
+    await tp.goto("http://localhost:" + PORT + "/teacher.html#tests");
+    await tp.waitForFunction(() => document.querySelectorAll("#qe-list .qe-item").length === 10);
+    const card = (i) => '#qe-list .qe-item:nth-child(' + i + ')';
+    await tp.selectOption(card(1) + " .qe-item-type", "multi");
+    await tp.locator(card(1) + " .qe-correct").nth(2).check();
+    await tp.selectOption(card(2) + " .qe-item-type", "truefalse");
+    await tp.locator(card(2) + " .qe-correct").nth(1).check();
+    await tp.selectOption(card(3) + " .qe-item-type", "essay");
+    const shown = await tp.evaluate(() => {
+      const cards = [...document.querySelectorAll("#qe-list .qe-item")];
+      return {
+        multiBoxes: [...cards[0].querySelectorAll(".qe-correct")].map((x) => x.type + ":" + x.checked),
+        tf: [...cards[1].querySelectorAll(".qe-choice-text")].map((x) => x.value + (x.readOnly ? "!" : "")),
+        essayChoices: cards[2].querySelectorAll(".qe-choice").length,
+      };
+    });
+    ok("the editor: several answers as tick boxes, true or false fixed, an essay with no choices",
+       shown.multiBoxes.join() === "checkbox:true,checkbox:false,checkbox:true,checkbox:false" &&
+       shown.tf.join() === "Tama!,Mali!" && shown.essayChoices === 0, shown);
+    await tp.click("#qe-save");
+    await tp.waitForFunction(() => /^Saved/.test(document.getElementById("qe-status").textContent));
+    const rows = await tp.evaluate(() => __DB.assessment_items.filter((r) => r.act_number === 1 && r.test_type === "pre")
+      .sort((a, b) => a.item_order - b.item_order).slice(0, 4)
+      .map((r) => ({ t: r.item_type, c: r.correct_index, cs: r.correct_indexes, n: r.choices.length })));
+    ok("saved with each type, the right answers of several, an essay with none",
+       rows[0].t === "multi" && JSON.stringify(rows[0].cs) === "[0,2]" && rows[0].c === 0 &&
+       rows[1].t === "truefalse" && rows[1].c === 1 && rows[1].n === 2 &&
+       rows[2].t === "essay" && rows[2].c === -1 && rows[2].n === 0 && rows[2].cs === null &&
+       rows[3].t === "single" && rows[3].cs === null, rows);
+    await tp.selectOption("#qe-type", "post");
+    await tp.waitForTimeout(300);
+    await tp.selectOption("#qe-type", "pre");
+    await tp.waitForFunction(() => document.querySelectorAll("#qe-list .qe-item").length === 10);
+    const back = await tp.evaluate(() => [...document.querySelectorAll("#qe-list .qe-item-type")].slice(0, 4).map((x) => x.value));
+    ok("and read back as written", back.join() === "multi,truefalse,essay,single", back);
+    // The essay on the student card, and in the report as written, not scored.
+    await tp.click('#tabs [data-tab="students"]');
+    await tp.click("#roster-body tr:has-text('mag-aaral01') .name-btn");
+    const lines = await tp.evaluate(() => [...document.querySelectorAll("#sc-lines li")].map((l) => l.textContent));
+    ok("the student card shows what the student wrote for an essay",
+       lines.some((l) => /question 4 \(essay\).*Sinulat ko ito\./.test(l)), lines);
+    await tp.click("#sc-close");
+    await ctx2.close();
+  }
+
   await browser.close();
   server.close();
   if (ONLY && !pass && !fail) {

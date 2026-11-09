@@ -203,7 +203,7 @@ const Assessment = {
     const max = Number(row.max_score);
     return {
       score, max, attempt: Number(row.attempt) || 1,
-      passed: testType !== "post" || (max > 0 && score / max >= this.passingFor(actNumber)),
+      passed: testType !== "post" || max === 0 || score / max >= this.passingFor(actNumber),
     };
   },
 
@@ -312,13 +312,14 @@ const Assessment = {
   // between a student and a test (Block 68).
   async _loadItems(actNumber, testType, label) {
     let rows = null;
+    // Block 160 (schema v17): each question's type and, for one with
+    // several right answers, all of them. A database without the columns
+    // is asked again without them, every question then one choice.
+    const read = (cols) => sb.from("assessment_items").select(cols)
+      .eq("act_number", actNumber).eq("test_type", testType).order("item_order");
     try {
-      const res = await sb
-        .from("assessment_items")
-        .select("id, item_order, question, choices, correct_index")
-        .eq("act_number", actNumber)
-        .eq("test_type", testType)
-        .order("item_order");
+      let res = await read("id, item_order, question, choices, correct_index, item_type, correct_indexes");
+      if (res.error) res = await read("id, item_order, question, choices, correct_index");
       if (res.error) throw res.error;
       rows = res.data;
     } catch (err) {
@@ -326,17 +327,15 @@ const Assessment = {
     }
 
     let items = (rows || [])
-      .filter((r) => r && r.question && Array.isArray(r.choices) && r.choices.length)
+      .filter((r) => r && r.question && (r.item_type === "essay" || (Array.isArray(r.choices) && r.choices.length)))
       .sort((a, b) => Number(a.item_order) - Number(b.item_order))
-      .map((r, i) => ({ id: String(r.id), question: r.question, choices: r.choices,
-                     correct: Number(r.correct_index),
-                     order: Number(r.item_order) || i + 1 }));
+      .map((r, i) => this._item(String(r.id), r.question, r.choices, r.item_type,
+        Array.isArray(r.correct_indexes) ? r.correct_indexes : r.correct_index,
+        Number(r.item_order) || i + 1));
 
     if (!items.length) {
-      items = (this._bank(actNumber)[testType] || []).map((q, i) => ({
-        id: "q" + (i + 1), question: q.question, choices: q.choices, correct: Number(q.correct),
-        order: i + 1,
-      }));
+      items = (this._bank(actNumber)[testType] || []).map((q, i) =>
+        this._item("q" + (i + 1), q.question, q.choices, q.type, q.correct, i + 1));
     }
 
     if (!items.length) {
@@ -362,6 +361,45 @@ const Assessment = {
     }
     return items;
   },
+
+  // Block 160. One question as the test screen uses it: its type
+  // (single, multi, truefalse, essay; anything else is single), its
+  // choices (an essay has none) and its right answer: a number, or for
+  // multi a sorted list.
+  _item(id, question, choices, type, correct, order) {
+    const t = ["multi", "truefalse", "essay"].includes(type) ? type : "single";
+    const list = t === "essay" ? [] : (Array.isArray(choices) ? choices : []);
+    let key;
+    if (t === "multi") {
+      key = [...new Set((Array.isArray(correct) ? correct : [correct]).map(Number)
+        .filter((n) => Number.isInteger(n) && n >= 0))].sort((a, b) => a - b);
+    } else {
+      key = Number(Array.isArray(correct) ? correct[0] : correct);
+    }
+    return { id, question, choices: list, type: t, correct: key, order };
+  },
+
+  // Whether an answer is right, as submit_test counts it: a multi
+  // answer must be exactly the right set; an essay is never right or
+  // wrong and is not counted at all.
+  _isRight(item, answer) {
+    if (item.type === "essay" || answer === undefined) return false;
+    if (item.type === "multi") {
+      if (!Array.isArray(answer)) return false;
+      const got = [...new Set(answer)].sort((a, b) => a - b);
+      return got.length === item.correct.length && got.every((n, i) => n === item.correct[i]);
+    }
+    return answer === item.correct;
+  },
+
+  // Whether a question has an answer the student may go on with.
+  _answered(item, answer) {
+    if (item.type === "essay") return typeof answer === "string" && answer.trim().length > 0;
+    if (item.type === "multi") return Array.isArray(answer) && answer.length > 0;
+    return answer !== undefined;
+  },
+
+  ESSAY_MAX: 2000,
 
   // Block 121. Whether the act has any question at all, of either test:
   // the built-in bank, else one row in the database. A failed read says
@@ -405,11 +443,39 @@ const Assessment = {
 
         this.el.choices.innerHTML = "";
         const choices = Array.isArray(item.choices) ? item.choices : [];
+        const multi = item.type === "multi";
+
+        // Block 160. Said under the question for the two types that do
+        // not work like the rest.
+        if (multi) {
+          this.el.note.textContent = "Pumili ng lahat ng tamang sagot. Tama lang kung lahat ng tama ang napili.";
+        }
+        if (item.type === "essay") {
+          this.el.note.textContent = "Isulat ang sagot mo sa sarili mong salita. Hindi ito kasama sa iskor; babasahin ito ng iyong guro.";
+          const box = document.createElement("textarea");
+          box.className = "feedback-comment quiz-essay";
+          box.rows = 5;
+          box.maxLength = Assessment.ESSAY_MAX;
+          box.placeholder = "Isulat dito...";
+          box.value = typeof answers[item.id] === "string" ? answers[item.id] : "";
+          // Not render() on each key: a repaint would replace the box and
+          // lose the caret. The draft is written as he types.
+          box.addEventListener("input", () => {
+            answers[item.id] = box.value.slice(0, Assessment.ESSAY_MAX);
+            this.el.btn.disabled = !this._answered(item, answers[item.id]);
+            this._writeDraft(draftKey, answers, index);
+          });
+          this.el.choices.appendChild(box);
+        }
+
         choices.forEach((choice, i) => {
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.className = "quiz-choice";
-          if (answers[item.id] === i) btn.classList.add("selected");
+          btn.className = "quiz-choice" + (multi ? " quiz-multi" : "");
+          const picked = multi ? Array.isArray(answers[item.id]) && answers[item.id].includes(i)
+            : answers[item.id] === i;
+          if (picked) btn.classList.add("selected");
+          if (multi) btn.setAttribute("aria-pressed", picked ? "true" : "false");
 
           // A lettered badge rather than a pictogram. There is no
           // icon for an arbitrary sentence, and four identical marks
@@ -427,13 +493,22 @@ const Assessment = {
           btn.appendChild(text);
 
           btn.addEventListener("click", () => {
-            answers[item.id] = i;
+            if (multi) {
+              // A box ticked or unticked; the list kept in order.
+              const now = Array.isArray(answers[item.id]) ? answers[item.id].slice() : [];
+              const at = now.indexOf(i);
+              if (at === -1) now.push(i); else now.splice(at, 1);
+              if (now.length) answers[item.id] = now.sort((a, b) => a - b);
+              else delete answers[item.id];
+            } else {
+              answers[item.id] = i;
+            }
             render(); // repaint so the selection is visible
           });
           this.el.choices.appendChild(btn);
         });
 
-        const answered = answers[item.id] !== undefined;
+        const answered = this._answered(item, answers[item.id]);
 
         // A tick on the last question and an arrow on the others, so
         // the button says whether one more screen is coming without
@@ -441,7 +516,7 @@ const Assessment = {
         this._onButton(
           isLast ? "Ipasa ang sagot" : "Susunod",
           () => {
-            if (answers[item.id] === undefined) return;
+            if (!this._answered(item, answers[item.id])) return;
             if (isLast) {
               resolve(answers);
             } else {
@@ -476,8 +551,9 @@ const Assessment = {
   // items carry, only so a student with no signal still sees it; the
   // database's count is the one recorded, and shown when it answers.
   async _submit(actNumber, testType, items, answers, label, attempt, draftKey) {
-    const max = items.length;
-    const score = items.filter((it) => answers[it.id] === it.correct).length;
+    // Block 160: an essay is neither counted nor part of the maximum.
+    const max = items.filter((it) => it.type !== "essay").length;
+    const score = items.filter((it) => this._isRight(it, answers[it.id])).length;
     const row = {
       student_id: currentUserId,
       act_number: actNumber,
@@ -591,8 +667,9 @@ const Assessment = {
   _choicesByOrder(items, answers) {
     const out = {};
     items.forEach((it, i) => {
-      if (answers[it.id] === undefined) return;
-      out[String(it.order || i + 1)] = answers[it.id];
+      if (!this._answered(it, answers[it.id])) return;
+      const a = answers[it.id];
+      out[String(it.order || i + 1)] = it.type === "essay" ? a.trim().slice(0, this.ESSAY_MAX) : a;
     });
     return out;
   },
@@ -665,13 +742,20 @@ const Assessment = {
     items.forEach((item) => {
       const a = draft.answers[item.id];
       const n = Array.isArray(item.choices) ? item.choices.length : 0;
-      if (Number.isInteger(a) && a >= 0 && a < n) answers[item.id] = a;
+      const fits = (x) => Number.isInteger(x) && x >= 0 && x < n;
+      if (item.type === "essay") {
+        if (typeof a === "string" && a.trim()) answers[item.id] = a.slice(0, this.ESSAY_MAX);
+      } else if (item.type === "multi") {
+        if (Array.isArray(a) && a.length && a.every(fits)) answers[item.id] = [...new Set(a)].sort((x, y) => x - y);
+      } else if (fits(a)) {
+        answers[item.id] = a;
+      }
     });
     if (!Object.keys(answers).length) return null;
     // Back to the question he was on, but never past the first he had
     // not answered, so a question cannot be skipped by a reload.
     let index = Math.max(0, Math.min(Number(draft.index) || 0, items.length - 1));
-    const firstOpen = items.findIndex((item) => answers[item.id] === undefined);
+    const firstOpen = items.findIndex((item) => !this._answered(item, answers[item.id]));
     if (firstOpen !== -1 && firstOpen < index) index = firstOpen;
     return { answers, index };
   },

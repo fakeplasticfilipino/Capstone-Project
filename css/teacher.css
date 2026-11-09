@@ -1281,3 +1281,16 @@ th.num .tip:focus::after { left: auto; right: 0; transform: none; }
 #roster .cell-pick input { width: 18px; height: 18px; cursor: pointer; }
 #roster tbody tr.row-archived td { color: var(--text-faint); }
 #roster tbody tr.row-archived .name-btn { color: var(--text-muted); }
+
+/* Block 160: a question's type, and the notes under it. */
+.qe-type-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin: 6px 0;
+}
+.qe-essay-note {
+  margin: 4px 0 8px;
+  font-size: 13px;
+}

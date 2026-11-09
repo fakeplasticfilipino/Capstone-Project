@@ -23,6 +23,12 @@
 // added on 9 Oct 2026 at the proponent's word, so every act has a test
 // before the teacher writes one.
 //
+// Since Block 160 (schema v17) a question may also declare type:
+// "multi" (correct a list; right only when exactly those are chosen),
+// "truefalse" (choices Tama and Mali) or "essay" (no choices, kept and
+// never scored). Without it a question is one answer, as every one
+// here is.
+//
 // passing is the share of a post-test a student must get right to
 // pass. Below it, the student is offered a replay of the act and
 // another try at the post-test (acts.js, finishAct).

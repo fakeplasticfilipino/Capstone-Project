@@ -2086,7 +2086,13 @@ gained any new power.
 
 Since schema 006 (Block 68, the instructor's direction) a student may
 read assessment_items whole and teachers may insert, update and delete
-items and trivia. Since schema v15 (Block 153) the database grades:
+items and trivia. Since schema v17 (Block 160) a question has a type,
+item_type: single, multi (correct_indexes, right only when exactly
+those are chosen), truefalse, or essay (kept in the answers, t
+"essay" and e its text, and never scored: out of the score, max_score,
+the pass mark and the gain). correct_index stays not null (multi: the
+first right answer; essay: -1). A new type is a change to submit_test,
+assessment.js, the editor and the stub together. Since schema v15 (Block 153) the database grades:
 submit_test is the only way a browser writes a score, and the pass
 mark it holds (0.75) is questions.js's; change both together. A
 student still reads the questions and answers whole, by the
@@ -2798,6 +2804,8 @@ look, by system:
                                           only never-used accounts)
     students' names                       Block 159 (schema v16,
                                           display_name; rename)
+    question types                        Block 160 (schema v17;
+                                          essays unscored)
     the artist's Drive delivery of 15     Block 133 (Act II's paintings,
       Oct: paintings, people; the         nine people keyed from black),
       new street tried and taken out      134 (the old street back, its

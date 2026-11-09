@@ -25,12 +25,25 @@
 // questions still at the end; either way the teacher is told and saves
 // again.
 //
+// Since Block 160 (schema v17) a question has a type: one answer, several
+// answers ticked as boxes (right only when exactly the right ones are
+// ticked), true or false, or an essay, kept for the teacher and never
+// scored. A database without the type columns still loads, every
+// question one answer.
+//
 // Everything a teacher typed is written into inputs as values, never
 // as HTML.
 // =============================================================
 
 const TeacherQuestions = {
   CHOICES: 4,
+  TYPES: [
+    ["single", "One answer"],
+    ["multi", "Several answers (tick boxes)"],
+    ["truefalse", "True or false"],
+    ["essay", "Essay (not scored)"],
+  ],
+  TRUE_FALSE: ["Tama", "Mali"],
   items: [],
   loadedFromDb: false,
 
@@ -52,7 +65,7 @@ const TeacherQuestions = {
     this.el.type.addEventListener("change", () => this.load());
     this.el.add.addEventListener("click", () => {
       this.collect();
-      this.items.push({ question: "", choices: Array(this.CHOICES).fill(""), correct: 0 });
+      this.items.push({ question: "", type: "single", choices: Array(this.CHOICES).fill(""), correct: 0 });
       this.render();
     });
     this.el.defaults.addEventListener("click", () => {
@@ -80,11 +93,22 @@ const TeacherQuestions = {
     if (this.isTrivia()) {
       this.items = [{ trivia: this.bank().trivia || "" }];
     } else {
-      this.items = (this.bank()[this.type()] || []).map((q) => ({
-        question: q.question, choices: q.choices.slice(), correct: Number(q.correct),
-      }));
+      this.items = (this.bank()[this.type()] || []).map((q) =>
+        this.shape(q.question, q.type, q.choices, q.correct));
     }
     this.render();
+  },
+
+  // Block 160. One question as the editor holds it: correct is a
+  // number, or for several answers a list.
+  shape(question, type, choices, correct) {
+    const t = this.TYPES.some(([id]) => id === type) ? type : "single";
+    const list = t === "essay" ? [] : t === "truefalse" ? this.TRUE_FALSE.slice()
+      : (Array.isArray(choices) ? choices.slice() : []);
+    const key = t === "multi"
+      ? (Array.isArray(correct) ? correct : [correct]).map(Number).filter((n) => Number.isInteger(n) && n >= 0)
+      : Number(Array.isArray(correct) ? correct[0] : correct) || 0;
+    return { question: question || "", type: t, choices: list, correct: key };
   },
 
   async load() {
@@ -104,18 +128,16 @@ const TeacherQuestions = {
           this.useDefaults();
         }
       } else {
-        const { data, error } = await sb.from("assessment_items")
-          .select("id, item_order, question, choices, correct_index")
-          .eq("act_number", this.act()).eq("test_type", this.type())
-          .order("item_order");
+        const read = (cols) => sb.from("assessment_items").select(cols)
+          .eq("act_number", this.act()).eq("test_type", this.type()).order("item_order");
+        let res = await read("id, item_order, question, choices, correct_index, item_type, correct_indexes");
+        if (res.error) res = await read("id, item_order, question, choices, correct_index");
+        const { data, error } = res;
         if (error) throw error;
         const rows = (data || []).slice().sort((a, b) => a.item_order - b.item_order);
         if (rows.length) {
-          this.items = rows.map((r) => ({
-            question: r.question,
-            choices: Array.isArray(r.choices) ? r.choices.slice() : [],
-            correct: Number(r.correct_index),
-          }));
+          this.items = rows.map((r) => this.shape(r.question, r.item_type, r.choices,
+            Array.isArray(r.correct_indexes) ? r.correct_indexes : r.correct_index));
           this.loadedFromDb = true;
           this.render();
         } else {
@@ -186,6 +208,37 @@ const TeacherQuestions = {
       head.appendChild(tools);
       card.appendChild(head);
 
+      // Block 160. The question's type; a change redraws the card.
+      const typeRow = document.createElement("label");
+      typeRow.className = "qe-type-row";
+      typeRow.textContent = "Type ";
+      const typeSel = document.createElement("select");
+      typeSel.className = "qe-item-type";
+      this.TYPES.forEach(([id, name]) => {
+        const o = document.createElement("option");
+        o.value = id;
+        o.textContent = name;
+        typeSel.appendChild(o);
+      });
+      typeSel.value = item.type;
+      typeSel.addEventListener("change", () => {
+        this.collect();
+        const it = this.items[i];
+        const was = it.type;
+        it.type = typeSel.value;
+        if (it.type === "truefalse") { it.choices = this.TRUE_FALSE.slice(); it.correct = 0; }
+        else if (it.type === "essay") { it.choices = []; it.correct = 0; }
+        else {
+          if (was === "truefalse" || was === "essay") it.choices = Array(this.CHOICES).fill("");
+          it.correct = it.type === "multi"
+            ? (Array.isArray(it.correct) ? it.correct : [it.correct])
+            : (Array.isArray(it.correct) ? (it.correct[0] || 0) : it.correct);
+        }
+        this.render();
+      });
+      typeRow.appendChild(typeSel);
+      card.appendChild(typeRow);
+
       const q = document.createElement("textarea");
       q.className = "qe-question";
       q.rows = 2;
@@ -193,15 +246,33 @@ const TeacherQuestions = {
       q.setAttribute("aria-label", "Question " + (i + 1));
       card.appendChild(q);
 
+      if (item.type === "essay") {
+        const note = document.createElement("p");
+        note.className = "muted qe-essay-note";
+        note.textContent = "Students write a few sentences. Not scored: kept for you to read on the student card, and left out of the score, the pass mark and the gain.";
+        card.appendChild(note);
+        list.appendChild(card);
+        return;
+      }
+
+      const multi = item.type === "multi";
+      const fixed = item.type === "truefalse";
+      if (multi) {
+        const note = document.createElement("p");
+        note.className = "muted qe-essay-note";
+        note.textContent = "Tick every right answer. A student is right only when they tick exactly these.";
+        card.appendChild(note);
+      }
       const choices = item.choices.slice();
-      while (choices.length < this.CHOICES) choices.push("");
+      if (!fixed) while (choices.length < this.CHOICES) choices.push("");
       choices.forEach((choice, c) => {
         const row = document.createElement("label");
         row.className = "qe-choice";
         const radio = document.createElement("input");
-        radio.type = "radio";
+        radio.type = multi ? "checkbox" : "radio";
         radio.name = "qe-correct-" + i;
-        radio.checked = item.correct === c;
+        radio.className = "qe-correct";
+        radio.checked = multi ? (Array.isArray(item.correct) && item.correct.includes(c)) : item.correct === c;
         radio.title = "Correct answer";
         row.appendChild(radio);
         const letter = document.createElement("span");
@@ -212,6 +283,7 @@ const TeacherQuestions = {
         input.type = "text";
         input.className = "qe-choice-text";
         input.value = choice;
+        input.readOnly = fixed;
         input.setAttribute("aria-label", "Choice " + "ABCDEFGH".charAt(c));
         row.appendChild(input);
         card.appendChild(row);
@@ -229,35 +301,49 @@ const TeacherQuestions = {
       return;
     }
     this.items = [...this.el.list.querySelectorAll(".qe-item")].map((card) => {
-      const radios = [...card.querySelectorAll("input[type=radio]")];
+      const marks = [...card.querySelectorAll(".qe-correct")];
+      const sel = card.querySelector(".qe-item-type");
+      const type = sel ? sel.value : "single";
       return {
         question: card.querySelector(".qe-question").value,
+        type,
         choices: [...card.querySelectorAll(".qe-choice-text")].map((x) => x.value),
-        correct: Math.max(0, radios.findIndex((r) => r.checked)),
+        correct: type === "multi"
+          ? marks.map((r, k) => (r.checked ? k : -1)).filter((k) => k >= 0)
+          : Math.max(0, marks.findIndex((r) => r.checked)),
       };
     });
   },
 
-  // Every question needs its text, at least two choices, and a right
-  // answer that is one of them. Empty choices are dropped and the right
-  // answer moved with the ones that stay.
+  // Every question needs its text; every one but an essay at least two
+  // choices and a right answer that is one of them (several answers: at
+  // least one ticked). Empty choices are dropped and the right answers
+  // moved with the ones that stay.
   validate() {
     const rows = [];
     for (let i = 0; i < this.items.length; i++) {
       const it = this.items[i];
+      const type = it.type || "single";
       const question = it.question.trim();
+      if (!question) return { error: "Question " + (i + 1) + " is empty." };
+      if (type === "essay") {
+        rows.push({ question, type, choices: [], correct: -1, corrects: null });
+        continue;
+      }
+      const marked = type === "multi" ? (Array.isArray(it.correct) ? it.correct : [it.correct]) : [it.correct];
       const kept = [];
-      let correct = -1;
+      const right = [];
+      let lostMark = false;
       it.choices.forEach((c, k) => {
         const text = c.trim();
-        if (!text) return;
-        if (k === it.correct) correct = kept.length;
+        if (!text) { if (marked.includes(k)) lostMark = true; return; }
+        if (marked.includes(k)) right.push(kept.length);
         kept.push(text);
       });
-      if (!question) return { error: "Question " + (i + 1) + " is empty." };
       if (kept.length < 2) return { error: "Question " + (i + 1) + " needs at least two choices." };
-      if (correct < 0) return { error: "The correct answer chosen for question " + (i + 1) + " is empty." };
-      rows.push({ question, choices: kept, correct });
+      if (lostMark) return { error: "A correct answer ticked for question " + (i + 1) + " is empty." };
+      if (!right.length) return { error: "Tick the correct answer" + (type === "multi" ? "s" : "") + " for question " + (i + 1) + "." };
+      rows.push({ question, type, choices: kept, correct: right[0], corrects: type === "multi" ? right : null });
     }
     if (!rows.length) return { error: "A test needs at least one question." };
     return { rows };
@@ -295,6 +381,7 @@ const TeacherQuestions = {
         const put = await sb.from("assessment_items").upsert(checked.rows.map((r, i) => ({
           act_number: act, test_type: type, item_order: i + 1,
           question: r.question, choices: r.choices, correct_index: r.correct,
+          item_type: r.type, correct_indexes: r.corrects,
         })), { onConflict: "act_number,test_type,item_order" });
         if (put.error) throw put.error;
         const del = await sb.from("assessment_items").delete().eq("act_number", act).eq("test_type", type)
@@ -310,7 +397,7 @@ const TeacherQuestions = {
     } catch (err) {
       console.error("question save failed:", err);
       this.setStatus("Not saved: " + ((err && err.message) || "error") +
-        ". Make sure schema 006 has been run in Supabase.", "error");
+        ". Make sure schemas 006 and 017 have been run in Supabase.", "error");
     } finally {
       this.el.save.disabled = false;
     }

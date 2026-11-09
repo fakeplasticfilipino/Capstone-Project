@@ -852,10 +852,13 @@ function studentLines(r) {
   const lines = [];
   lines.push(act + ": " + r.name + " " + (STATUS[r.status] || STATUS.none).words + ".");
   if (r.objectivesTotal) lines.push("Story steps done: " + r.objectivesDone + " of " + r.objectivesTotal + ".");
-  lines.push(r.pre
-    ? "Pre-test: " + fraction(r.pre) + " (" + Math.round(r.prePct) + "%)."
-    : "Pre-test: not taken yet.");
-  if (r.post) {
+  // Block 160: a test of essays only has no score to show.
+  lines.push(!r.pre ? "Pre-test: not taken yet."
+    : r.prePct === null ? "Pre-test: answered (essays only, not scored)."
+    : "Pre-test: " + fraction(r.pre) + " (" + Math.round(r.prePct) + "%).");
+  if (r.post && r.postPct === null) {
+    lines.push("Post-test: answered (essays only, not scored).");
+  } else if (r.post) {
     const first = r.firstPostPct !== null ? Math.round(r.firstPostPct) + "%" : "";
     lines.push(r.post.tries > 1
       ? "Post-test: " + r.post.tries + " tries. First " + first + ", latest " + fraction(r.post) + " (" + Math.round(r.postPct) + "%)."
@@ -875,7 +878,23 @@ function studentLines(r) {
   if (r.elapsed) lines.push("Time in this act: " + formatDuration(r.elapsed) + ".");
   lines.push(r.lastActive ? "Last active: " + formatDate(r.lastActive) + "." : "Has not logged in yet.");
   lines.push("Acts finished: " + r.actsCompleted + " of " + TOTAL_ACTS + ".");
+  // Block 160. What the student wrote for an essay question, from the
+  // latest try of each test: never scored, so the card is where it is read.
+  [["Pre-test", r.pre], ["Post-test", r.post]].forEach(([name, row]) => {
+    essaysOf(row).forEach((a) => {
+      lines.push(name + ", question " + a.o + " (essay): " + a.q + " Answer: " + a.e);
+    });
+  });
   return lines;
+}
+
+// Block 160. The essay answers a score row recorded (schema v17: t
+// "essay", e the text), in the order of the test.
+function essaysOf(row) {
+  const answers = row && row.answers && typeof row.answers === "object" ? row.answers : {};
+  return Object.values(answers)
+    .filter((a) => a && a.t === "essay" && typeof a.e === "string")
+    .sort((a, b) => Number(a.o) - Number(b.o));
 }
 
 function openStudent(id) {
