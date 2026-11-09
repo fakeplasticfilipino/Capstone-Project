@@ -32,3 +32,16 @@ Claude outputs/
 
 # skeleton.js --debug pictures: regenerated on demand (Block 145)
 _dev/player-lab/out/*-debug-*.png
+
+# Screenshots taken while checking a block (the phone-size passes).
+# Working material on this computer only, like Claude outputs/.
+_dev/screenshots-*/
+
+# Editor and operating system clutter, and Python's bytecode cache
+# from the tools under _dev/tools/.
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+*.log
+__pycache__/
