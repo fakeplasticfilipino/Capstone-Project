@@ -6573,7 +6573,7 @@ remaining, Blocked and Known problems brought up to date (Macario's art,
 the layered street, the shop's four items, the acts' places painted,
 the art made by the proponent, the finished pilot item dropped);
 CLAUDE.md's Source of truth cut to what a local session needs, the
-commit rule stated where it said "tell Julian", sprites/scenery/
+commit rule stated where it named who to tell, sprites/scenery/
 described; skeleton.js's debug pictures no longer tracked (.gitignore);
 and the 25 stills the NPC rigs cut moved out of assets/ to
 _dev/stills/<folder>/ (animate-still.js writes into assets/sprites/
@@ -7208,6 +7208,65 @@ since the form is optional and the roster should not fail with it.
 
 The counts are of the students who answered: the form may be skipped,
 and the page says so rather than reading a few answers as the class.
+
+## Block 162: the pre-deployment check, 10 Nov 2026
+
+The proponent asked for the whole game scanned and played before it is
+deployed, and only real problems listed. Both suites, every one of the
+50 story points at 740 by 360 (no error, no failed request, no
+placeholder), random play from each (a new seed, 50 runs, nothing
+stuck), the live site and the database's advisors found the game
+sound. Six things were wrong, agreed item by item and fixed.
+
+The end of the game was a dead end. Acts.showTransition showed Wakas
+with no button after Act IV, the world blocked behind it, and every
+Magpatuloy afterwards came back to it; a student on a shared phone
+could reach the menu, and so Mag-log Out, only by reloading the page by
+hand. It now carries Pangunahing Menu, which saves and reloads, as the
+guest's ending always did. A reload rather than a way back into the
+world: nothing is left to do there, and the menu has Mga Kabanata.
+
+A replay cleared every act's flags. replayAct (Block 68) was written
+when there was one act, and deleted every story flag but the kept
+kinds. Replaying Act II after a failed post-test therefore emptied Act
+I's Mga Pangyayari in the Talaan (5 of 5 to none, in a probe), since a
+timeline entry shows by its beat's flag. Acts II to IV's flags all
+carry their act's prefix, so a replay of one clears that prefix only.
+Act I's have none, and nothing comes before it, so its replay is as it
+was. A new act keeps the prefix rule or this breaks silently.
+
+A test could be graded on questions the student never saw. Block 68
+answered a failed read of assessment_items with the built-in bank, so
+a bad connection never stood between a student and a test. That was
+right while the game graded; since Block 153 the database grades, by
+each question's place, against its own rows. The two are the same
+today, and stop being so the day a teacher edits a test, after which a
+dropped read would have produced a wrong score with nothing to show
+it. The read is now tried twice, then the student is told (Walang
+koneksyon) and tries again; a signed-in student needs the internet to
+send the answers anyway, so nothing that worked is lost. The bank
+still stands in for a database that answers and has no questions.
+
+The database as it stands is the source of truth (the proponent). It
+had been refreshed the same day: the test student removed, one class
+of 44 coded accounts with their rows. Nothing in it was changed.
+CLAUDE.md's Accounts and the reset script's header were written to
+match it, and the Run log records what a read found. The reset list
+inside is_reset_allowed() still names the removed account; it is in
+the database, so it stays, and matches nobody.
+
+Two names of people were in tracked files, against the privacy rule,
+and were taken out. README.md and TRACKER.md said art was owed that
+has been drawn, and blocks in progress that are finished; both now
+say what is so. test.js CC covers the three fixes.
+
+Found on the way: the full run at a student's speed (--real), which a
+release asks for, had been red since the intro grew to three cards
+(Block 156). Three waits in verify_new_scene.js (Act I's opening, the
+tutorials, the guest) gave the opening 15 seconds, and at real speed
+the cards take about 20; the game was right. They wait 45 now, for a
+condition, so the fast run is no slower. --real green, 10 Nov 2026:
+1,582 checks.
 
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 

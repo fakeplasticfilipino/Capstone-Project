@@ -63,7 +63,7 @@ the first CI job run prepare.js --check, which changes nothing and
 fails on anything stale.
 
 COMMIT AND PUSH AS fakeplasticfilipino (the proponent, 24 Oct 2026;
-replaces the 21 Oct rule that Julian handled all git). When a change is
+replaces the 21 Oct rule that the proponent handled all git). When a change is
 finished and checked, run prepare.js, commit to main and push, always
 under the fakeplasticfilipino account: the commit's author is the
 repository's own git identity (user.name fakeplasticfilipino), and the
@@ -428,6 +428,10 @@ v15) it sends the choices, by item_order, to submit_test, which grades
 them against assessment_items and writes assessment_scores. A browser
 cannot insert a score, so the database must hold every act's
 questions. get_assessment_items and submit_assessment are not called.
+A read of the questions that fails is tried again and then said to the
+student, who tries again (Block 162): the built-in questions stand in
+only for a database that answers with none, never for a dropped read,
+since the database grades against its own.
 A score that cannot be written (no internet) may
 be kept on the phone (localStorage, macario_pending_scores), counts as
 sat, and is sent on the next login (flushPending, from Acts.syncStart;
@@ -2562,8 +2566,8 @@ Nothing new is stored to keep the drip idempotent. The amount already paid
 is the per-objective rate times objectives_done, which act_progress
 already holds, so a reload cannot be paid twice.
 
-Prices are set against what one act pays (50 to 100): the shop's four
-items cost 5, 50, 60 and 90, so every student who completes an act can afford
+Prices are set against what one act pays (50 to 100): the shop's six
+items cost 5, 50, 60, 70, 80 and 90, so every student who completes an act can afford
 something and a strong run the dearest. A shop that is a locked door to a
 student who struggled contradicts the no-game-over rule.
 
@@ -2808,6 +2812,10 @@ look, by system:
                                           display_name; rename)
     question types                        Block 160 (schema v17;
                                           essays unscored)
+    the pre-deployment check              Block 162 (the way back from
+                                          Wakas, a replay's own flags,
+                                          no test on a dropped read;
+                                          the database as it stands)
     the Feedback tab                      Block 161 (the optional form
                                           shown at last; a fifth query)
     the artist's Drive delivery of 15     Block 133 (Act II's paintings,
@@ -3129,14 +3137,25 @@ reaches unloadScene at parse time.
 
 ## Accounts
 
-guro@example.com, teacher.
-hi@example.com, student, enrolled in class MAC8-RIZAL.
+THE DATABASE AS IT STANDS IS THE SOURCE OF TRUTH (the proponent, 10 Nov
+2026). Nothing in it is changed to suit the code or these files; the
+code and these files change to suit it. What it holds is in TRACKER.md's
+Run log, as last read.
 
-Both are named in two places that matter, and the two lists are the
-same list for the same reason: db/scripts/reset_test_accounts.sql, which
-clears them from the SQL editor, and is_reset_allowed() in schema v5,
-which is what lets the in-game reset run at all. A pilot account added
-for the session goes in both. A study account goes in neither, ever.
+guro@example.com, teacher, who owns the one class, Grade 8 - Rizal.
+Its students are the 44 accounts coded rizal, made the dashboard's way
+(a code at the login). There is no test student: the proponent removed
+hi@example.com when the database was refreshed, 10 Nov 2026. Trying
+the game as a student is done as a guest, or from a story point with
+?dev=1; the suites never touch the live project.
+
+is_reset_allowed() (schema v5), which is what lets the in-game reset
+run at all, and db/scripts/reset_test_accounts.sql, which clears the
+same accounts from the SQL editor, still name hi@example.com beside
+the teacher. With no such account the name matches nobody: no student
+can run the in-game reset, and the script clears only the teacher's
+rows. A pilot account added for a session goes in both. A study
+account, and so any of the 44, goes in neither, ever.
 
 Supabase project reference: rkfnovfkroajottpmxxq
 

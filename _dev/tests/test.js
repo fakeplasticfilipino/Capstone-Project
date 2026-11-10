@@ -8526,6 +8526,83 @@ const visible = (page, sel) => page.evaluate((s) => {
     await ctx.close();
   }
 
+  // -------------------------------------------------------------
+  // CC. 10 Nov 2026, the pre-deployment check: a test is never sat on
+  // questions it will not be graded on; a replay of a later act leaves
+  // the acts before it alone; the end of the game has a way back.
+  // -------------------------------------------------------------
+  if (section("CC", "A dropped questions read, a replay's flags, and the way back from Wakas")) {
+    const { ctx, page } = await newPage(Object.assign(atTestRoom(), { realQuestions: true }), fixtureRoutes());
+    await page.waitForTimeout(700);
+    await page.click("#shell-start");
+    await page.waitForTimeout(400);
+    const dropped = await page.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const until = async (fn) => { for (let i = 0; i < 120 && !fn(); i++) await wait(25); return fn(); };
+      const title = () => document.getElementById("quiz-title").textContent;
+      const up = () => !document.getElementById("quiz").classList.contains("hidden");
+      const orig = console.error;
+      console.error = () => {};
+      // Two reads (each asked with and without the new columns) fail.
+      __TEST.selectFail = { assessment_items: 4 };
+      Assessment.runTest(1, "pre");
+      const said = await until(() => up() && title() === "Walang koneksyon");
+      const choicesWhileDown = document.querySelectorAll(".quiz-choice").length;
+      document.getElementById("quiz-btn").click();
+      const asked = await until(() => up() && document.querySelectorAll(".quiz-choice").length > 0);
+      console.error = orig;
+      return { said, choicesWhileDown, asked, progress: document.getElementById("quiz-progress").textContent,
+        scores: __DB.assessment_scores.length };
+    });
+    ok("a questions read that fails twice shows no built-in test: the student is told, with a way to try again",
+       dropped.said && dropped.choicesWhileDown === 0 && dropped.scores === 0, dropped);
+    ok("and the test opens once the read answers", dropped.asked && /^Tanong 1 ng 10/.test(dropped.progress), dropped);
+    await ctx.close();
+
+    const r2 = await enterTestRoom();
+    const replay = await r2.page.evaluate(async () => {
+      Assessment.runTest = async function () {};
+      Assessment.runTrivia = async function () {};
+      Acts.showActTitle = async function () {};
+      Acts.progress[1] = { status: "completed", objectives_done: 5 };
+      await Acts.enterAct(2);
+      Object.assign(state.flags, { a2_simula: true, a2_sedula: true, a3_iba: true, salita_tondo: true });
+      const before = Boolean(state.flags.nalamanAngPinagmulan);
+      await Acts.replayAct(2);
+      return { before, act1: Boolean(state.flags.nalamanAngPinagmulan), other: Boolean(state.flags.a3_iba),
+        own: Boolean(state.flags.a2_simula || state.flags.a2_sedula), word: Boolean(state.flags.salita_tondo),
+        retake: state.flags.__retakePost_2 === true };
+    });
+    ok("a replay of Act II clears Act II's flags and no other act's (Act I's Talaan stays as it was)",
+       replay.before && replay.act1 && replay.other && !replay.own && replay.word && replay.retake, replay);
+    await r2.ctx.close();
+
+    const done = [1, 2, 3, 4].map((n) => ({ student_id: "u1", act_number: n, status: "completed",
+      objectives_done: 14, objectives_total: 14 }));
+    const r3 = await newPage({ session: { user: { id: "u1" } }, act_progress: done,
+      game_progress: [{ student_id: "u1", current_act: 4, current_room: "patyo", save_state: {} }] });
+    await r3.page.waitForFunction(() => window.Shell && Shell.ready);
+    await r3.page.click("#shell-start");
+    await r3.page.waitForFunction(() => !document.getElementById("act-screen").classList.contains("hidden") &&
+      document.getElementById("act-screen-title").textContent === "Wakas");
+    const end = await r3.page.evaluate(() => {
+      const btn = document.getElementById("act-screen-btn");
+      const r = btn.getBoundingClientRect();
+      const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return { label: btn.querySelector(".lbl").textContent, reachable: top === btn, glass: Math.round(r.height) };
+    });
+    ok("the end of the game offers Pangunahing Menu, a button a tap reaches, 44px on glass",
+       end.label === "Pangunahing Menu" && end.reachable && end.glass >= 44, end);
+    await Promise.all([r3.page.waitForNavigation(), r3.page.click("#act-screen-btn")]);
+    await r3.page.waitForFunction(() => window.Shell && Shell.ready);
+    const menu = await r3.page.evaluate(() => ({ state: Shell.state,
+      screen: document.getElementById("act-screen").classList.contains("hidden"),
+      logout: !document.getElementById("shell-title-logout").classList.contains("hidden") }));
+    ok("and it lands on the menu, signed in, with Mag-log Out there",
+       menu.state === "title" && menu.screen && menu.logout, menu);
+    await r3.ctx.close();
+  }
+
   await browser.close();
   server.close();
   if (ONLY && !pass && !fail) {

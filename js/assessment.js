@@ -307,9 +307,9 @@ const Assessment = {
   },
 
   // The questions, with their answers: the teacher's, from the
-  // database, when there are any; else the built-in bank. A failed
-  // read falls back to the bank too, so a bad connection never stands
-  // between a student and a test (Block 68).
+  // database, when there are any; else the built-in bank, for a
+  // database that has none. A failed read is tried again and then said
+  // (below): it fell back to the bank from Block 68 until 10 Nov 2026.
   async _loadItems(actNumber, testType, label) {
     let rows = null;
     // Block 160 (schema v17): each question's type and, for one with
@@ -317,13 +317,37 @@ const Assessment = {
     // is asked again without them, every question then one choice.
     const read = (cols) => sb.from("assessment_items").select(cols)
       .eq("act_number", actNumber).eq("test_type", testType).order("item_order");
-    try {
-      let res = await read("id, item_order, question, choices, correct_index, item_type, correct_indexes");
-      if (res.error) res = await read("id, item_order, question, choices, correct_index");
-      if (res.error) throw res.error;
-      rows = res.data;
-    } catch (err) {
-      console.error("assessment_items read failed, using the built-in questions:", err);
+    const readOnce = async () => {
+      try {
+        let res = await read("id, item_order, question, choices, correct_index, item_type, correct_indexes");
+        if (res.error) res = await read("id, item_order, question, choices, correct_index");
+        if (res.error) throw res.error;
+        return res.data || [];
+      } catch (err) {
+        console.error("assessment_items read failed:", err);
+        return null;
+      }
+    };
+    // 10 Nov 2026. A failed read is no longer answered with the built-in
+    // questions. Since Block 153 the database grades, by each question's
+    // place in the test, against ITS questions: a student shown the
+    // built-in ones after a dropped read would be graded against whatever
+    // the teacher has since written, a wrong score with nothing to show
+    // for it. So the read is tried again, and then the student is told
+    // and tries again himself; a test is sat only on the questions it
+    // will be graded on. The built-in bank still stands in for a database
+    // that answers and has none.
+    rows = await readOnce();
+    if (rows === null) rows = await readOnce();
+    while (rows === null) {
+      await this._message({
+        eyebrow: label,
+        title: "Walang koneksyon",
+        body: "Hindi makuha ang mga tanong. Suriin ang internet, saka subukan ulit.",
+        noteIsError: true,
+        button: "Subukan Ulit",
+      });
+      rows = await readOnce();
     }
 
     let items = (rows || [])

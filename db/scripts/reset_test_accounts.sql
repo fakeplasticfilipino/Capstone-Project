@@ -29,6 +29,12 @@
 -- the test accounts explicitly rather than taking a role. A pilot
 -- account added for a session goes in the list below AND in
 -- is_reset_allowed() (schema v5), and nowhere else.
+--
+-- 10 Nov 2026: the test student (hi@example.com) was removed from
+-- the database by the proponent. The name is kept below because
+-- is_reset_allowed() in the database still holds the same list and
+-- the two must match; with no such account it matches nobody, and
+-- this file clears only the teacher's rows.
 -- =============================================================
 
 do $$

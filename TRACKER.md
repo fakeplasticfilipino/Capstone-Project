@@ -9,7 +9,18 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 10 Nov 2026, Block 161: the dashboard's Feedback tab
+Last updated: 10 Nov 2026, Block 162: the pre-deployment check (both
+suites, all 50 story points at a phone's size, random play, the live
+site, the database read): six things fixed. The end of the game has a
+way back to the menu; a replay clears only its own act's flags; a
+test is never sat on questions it will not be graded on; two names out
+of the tracked files; README.md and this file say what is so; the
+database as the proponent refreshed it recorded in the Run log and in
+CLAUDE.md's Accounts, nothing in it changed. The full run at a
+student's speed (--real) is green again, 1,582 checks: three waits on
+the opening had been too short for it since Block 156. Before it,
+Block 161: the
+dashboard's Feedback tab
 (every act's ratings and each answer; the optional form had been
 collected and never shown), and each act's Talaan papers written into
 the database. Before it, Block 160: question types (several answers,
@@ -329,12 +340,9 @@ content/people.js. Characters drawn
 side on or three-quarter move, their motion made from the one still by
 tools (animate-bantay.js, animate-kabayo.js, and animate-still.js with a
 rig each); those drawn facing the front stand still. Nothing is drawn
-in code. Still owed (ART.md): eighteen pictures, Act II's campfire
-for Balara, Act III's six (the
-barbershop and Calle Gunao, as kits; the American soldier, the
-American in the barber's chair, the Constabulary, the Katagalugan's
-flag) and Act IV's eleven (the hall and the court, as kits; nine
-people). No picture is made or borrowed
+in code. Still owed (ART.md): three shop tiles (lagundi, the
+anting-anting, the pulbura), which show their symbols meanwhile; every
+place and person is drawn. No picture is made or borrowed
 for what is not drawn (CLAUDE.md, Conventions).
 
 Interface: a flat pixel theme, Press Start 2P for titles and VT323 for
@@ -358,7 +366,7 @@ hook and CI, so there is no list to keep here. The Supabase library is
 supabase-js 2.117.2 (js/vendor/supabase.js). sw.js carries no version:
 the browser checks it on every visit.
 
-## Block 142: outdoor scenes in layers (IN PROGRESS)
+## Block 142: outdoor scenes in layers (COMPLETE, Block 152)
 
 The plan the proponent chose on 21 Oct 2026 (DECISIONS.md, Block 142).
 Target: done by the code freeze, 12 Nov 2026. Tondo in Act I is the
@@ -649,7 +657,7 @@ doubled title; the reference list rebuilt, 26 entries in order by
 author, its duplicates out (Flores as Florese, Lai and Hu's second,
 RSIS as Buenaflor, McCall's doubled text), Panga's placeholder out,
 the broken URLs joined. Then, at the proponent's word (10 Nov 2026):
-the name Kieth throughout; the survey's two Sakay items taken as the
+one proponent's name spelled one way throughout; the survey's two Sakay items taken as the
 same counts over all 44 (35 and 36: 79.5% and 81.8%, the earlier
 figures having been worked over 43); the cover and the approval sheet
 dated November, 2026 (the proposal defense's endorsement form keeps
@@ -1047,6 +1055,26 @@ Trust this over any memory of a chat.
                                         action (Block 159). The deployed
                                         source read back and compared
                                         with the repository's: the same
+    the database as found                      READ, 10 Nov 2026, by a
+                                        session, nothing written (Block
+                                        162). The proponent refreshed it
+                                        and it is the source of truth as
+                                        it stands: one teacher, one
+                                        class (Grade 8 - Rizal), 44
+                                        student accounts coded rizal,
+                                        made that day, with their saves,
+                                        act rows, 404 scores over the
+                                        four acts and 17 feedback
+                                        answers; no game_sessions,
+                                        inventory or equipment rows, and
+                                        none of the 44 has signed in.
+                                        The test student is removed. 80
+                                        questions, every one single; one
+                                        trivia card (Act I); 12 Talaan
+                                        papers. Students cannot insert a
+                                        score or update a profile; RLS
+                                        on all twelve tables; the
+                                        advisor's two known warnings
     talaan_entries (data)                      WRITTEN, 10 Nov 2026, from
                                         the session, at the proponent's
                                         word: each act's three built-in
@@ -1532,28 +1560,35 @@ machine, the assessment module.
     161 the Feedback tab: each act's answers, average rating and
         ratings, the chosen act's answers by student, Export CSV; a
         fifth query (feedback); test.js CB
+    162 the pre-deployment check: Pangunahing Menu on the last
+        Wakas; a replay of Acts II to IV clears only that act's
+        flags; a failed questions read tried again and said, never
+        the built-in test; names out; the documents and the
+        database's state brought in line; test.js CC
 
 ## Blocks remaining
 
 Every act is written, accepted and has its built-in questions (Acts I to
-IV, COMPLETE). The shop's four items are sold (Blocks 121, 145, COMPLETE). Left:
-Block 142, every outdoor scene in layers (IN PROGRESS: Acts I and II
-done, Acts III and IV left; its list above); Block 143, the rooms from
-kits (IN PROGRESS: Acts I and II done, Acts III and IV's five left);
-the art, ART.md (COMPLETE since Block 154: nothing owed; the
-Katipunero skin on sale at 70, the story's two outfits drawn).
+IV, COMPLETE). The shop's six items are sold (Blocks 121, 145, 148,
+154, COMPLETE). Every outdoor scene is in layers (Block 142, COMPLETE
+since Block 152) and every room built from a kit (Block 143,
+COMPLETE). No block is left. Owed: three shop tile pictures (ART.md),
+which show their symbols meanwhile.
 
 ## Blocked on other people
 
 These do not depend on any block. Start them before writing more code.
 
-The art in ART.md, made by the proponent with ChatGPT from its
-prompts. (IN PROGRESS)
+The three shop tile pictures in ART.md (lagundi, the anting-anting,
+the pulbura), made by the proponent with ChatGPT from its prompts.
+(IN PROGRESS)
 
 ## Known problems
 
-Art: none owed since Block 154 (ART.md). Should any picture go
-missing, it shows as the dashed placeholder naming its file. (CLOSED)
+Art: three shop tiles owed since Block 157 (ART.md: lagundi, the
+anting-anting, the pulbura); each shows its symbol until its picture
+comes. Nothing else is owed. Should any other picture go missing, it
+shows as the dashed placeholder naming its file. (KNOWN)
 
 The database's security advisor warns "Leaked password protection
 disabled". It is off on purpose and must stay off: the dashboard gives

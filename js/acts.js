@@ -758,7 +758,8 @@ const Acts = {
 
   // Block 68. Plays the act again from the start after a failed
   // post-test, at the instructor's direction. The story's flags are
-  // cleared, except what was earned to keep: glossary entries
+  // cleared (this act's only, from Act II on), except what was earned
+  // to keep: glossary entries
   // (salita_), hints found (pahiwatig_), the engine's own "__" flags,
   // and any the act names in keepFlagsOnReplay (a best score). The
   // barya go back to what they were when the act's play began, the
@@ -770,9 +771,18 @@ const Acts = {
     const act = this.getAct(n);
     if (!act) return;
     const keepNamed = new Set(act.keepFlagsOnReplay || []);
+    // 10 Nov 2026. Only this act's story starts again. Every flag of Acts
+    // II to IV carries its act's prefix (a2_, a3_, a4_), so a replay of
+    // one of them clears those and nothing else: it used to clear the
+    // acts before it too, and their Mga Pangyayari in the Talaan went
+    // back to none found. Act I's flags have no prefix, and nothing comes
+    // before it, so its replay clears as it always did.
+    const own = n > 1 ? "a" + n + "_" : null;
     const kept = {};
     Object.keys(state.flags).forEach((k) => {
-      if (/^(salita_|pahiwatig_|__)/.test(k) || keepNamed.has(k)) kept[k] = state.flags[k];
+      if (/^(salita_|pahiwatig_|__)/.test(k) || keepNamed.has(k) || (own && k.indexOf(own) !== 0)) {
+        kept[k] = state.flags[k];
+      }
     });
     Object.keys(state.flags).forEach((k) => delete state.flags[k]);
     Object.assign(state.flags, kept);
@@ -1053,14 +1063,21 @@ const Acts = {
     }
 
     if (!nextAct) {
+      // 10 Nov 2026. A way back, as the guest's ending has. With no button
+      // this was a dead end: nothing could be tapped, and every Magpatuloy
+      // after it came back here, so a student on a shared phone could not
+      // reach the menu to log out without reloading the page by hand. The
+      // reload is the menu, where Mga Kabanata and Mag-log Out are.
       await this._screen({
         eyebrow: `Natapos: ${ACT_ORDINALS[fromAct] || "Yugto " + fromAct}`,
         title: "Wakas",
         body:
           earned +
           "Natapos mo ang buong kuwento. Maraming salamat sa paglalaro.",
-        button: "",
+        button: "Pangunahing Menu",
       });
+      if (window.Game && Game.flushSave) await Game.flushSave();
+      location.reload();
       return;
     }
 

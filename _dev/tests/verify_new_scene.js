@@ -764,7 +764,12 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     // Block 156: three cards come first (where and when, the rule, and
     // Macario with his figure); the record holds them all.
     const intro = await page.evaluate(async () => {
-      for (let t = 0; t < 15000 && !window.__cards["Macario Sakay"]; t += 100) await new Promise((r) => setTimeout(r, 100));
+      // 10 Nov 2026: 45 seconds, not 15. At a student's speed (--real) the three
+      // cards take about 20, so this and the two waits below (the tutorials,
+      // the guest) gave up before the opening they wait for; --real had been
+      // red on them since the intro grew (Block 156). A wait for a condition,
+      // so the fast run is no slower.
+      for (let t = 0; t < 45000 && !window.__cards["Macario Sakay"]; t += 100) await new Promise((r) => setTimeout(r, 100));
       return { first: window.__cards["Pilipinas, 1890"] || null, him: window.__cards["Macario Sakay"] || null,
         figure: Boolean(document.querySelector("#intertitle-text .intertitle-figure .sprite")) };
     });
@@ -2067,7 +2072,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       const p = tt.page;
       await p.click("#shell-guest");
       await p.waitForTimeout(700);
-      await waitIntertitle(p, false, 15000);
+      await waitIntertitle(p, false, 45000);
       await readConversation(p, 3);
       const cardOf = () => p.evaluate(() => ({
         shown: !document.getElementById("tutorial-card").classList.contains("hidden"),
@@ -2178,7 +2183,7 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     await g.page.click("#shell-guest");
     await g.page.waitForTimeout(700);
     ok("a guest opens on the same first card too", (await intertitle(g.page)).lines[0] === "Pilipinas, 1890");
-    await waitIntertitle(g.page, false, 15000);
+    await waitIntertitle(g.page, false, 45000);
     c = await readConversation(g.page, 3);
     ok("and watches the same opening", JSON.stringify(c.lines) === JSON.stringify(OPENING), c.lines);
     await g.ctx.close();

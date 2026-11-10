@@ -20,8 +20,9 @@ health with hazards and collectible hearts; jobs that pay barya by how
 well they are done;
 and short tutorials that stop the world until the control is used. Guard and enemy speed
 scale with the act number. An inventory with three equipment slots holds what
-the story hands over, and a shop sells a remedy, an anting-anting and
-finer powder for barya awarded by performance.
+the story hands over, and a shop sells a remedy, an anting-anting,
+finer powder, a bolo and two outfits for barya paid for each objective
+and for performance.
 
 The interface is flat pixel art to match the sprites, with two
 self-hosted pixel fonts, a three-step text size, music and sound effect
@@ -43,10 +44,9 @@ game runs on a real Android phone. All four acts are written and
 playable from their openings to their ends, each closing with its
 post-test; every act's lines are accepted by the proponents, and every
 act ships its own trivia card and test questions, which a teacher may
-replace from the dashboard. Act I's people are all drawn;
-fifty-two pictures across the four acts (rooms, places, the people of Acts
-II to IV and their fighters) are still placeholder boxes until the
-artist's drawings arrive (ART.md).
+replace from the dashboard. Every place and person of the four acts is
+drawn; three shop tiles still show a symbol in place of their picture
+(ART.md).
 
 ## Stack
 
