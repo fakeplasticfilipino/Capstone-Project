@@ -673,6 +673,49 @@ Word, the contents, the list of figures and the page numbers. A
 picture of the calendar as accepted: docs-private/documents/
 phase4-figures/calendar-preview.png. Items 31 to 33.
 
+Phase 6, the final paper's Chapter 5 (IN PROGRESS: made 10 Nov 2026,
+in review: Capstone_Project_Proposal_phase6.docx on the final copy,
+every change tracked by "Claude"; undoing them gives the final copy's
+text but one space; built by a script, re-run from the final copy).
+Modelled on another team's Chapter 5 (Testing, Description of
+Prototype, Implementation Plan, Implementation Result; Conclusion in
+three parts; Recommendations), with the proponent's outline. Done:
+
+    [x] the Act IV storyboard sentence put back together (GMANews.TV)
+    [x] "Capstone Project" on the cover and approval sheet (the
+        proposal-defense form keeps "Proposal"); "will utilize" to
+        "used"; the calendar's study rows moved to weeks 40 and 41 (the
+        study: Friday 6 to Tuesday 10 November 2026, five days)
+    [x] Figures 3.5 and 3.6 replaced by screens of the live game;
+        3.7 and 3.8 stay wireframes (placeholder)
+    [x] Results and Discussion: the tests as run (both suites, random
+        play, the profiler, CI, phones, the client's review, the
+        students); the prototype; the implementation plan, tasks,
+        resources and site; the results: pre-test and post-test per act
+        with paired t-tests (t 8.34 to 12.04, p < .001, d 1.26 to 1.86),
+        pass rates, performance, the survey's Functionality (4.20) and
+        Usability (4.16), the in-game feedback form
+    [x] Conclusion (summary; the three objectives, each met) and seven
+        recommendations
+    [x] Appendices C to G: the survey questionnaire, screenshots, a
+        user guide, the approval letter, documentation (the client's
+        last check before deployment)
+    [x] the contents and the lists of figures and tables, with page
+        numbers from a LibreOffice rendering
+
+The scores are the database's as it stands: the records were re-entered
+by hand after a database fault during the study, at the proponent's
+word (10 Nov 2026), so their stored dates (October) are not the study's;
+the paper says so in one sentence and dates the study by the sessions.
+Open, as [PLACEHOLDER: ...] in the paper (search for it): the survey's
+section 2 and its exact counts (read off the form's charts); the source
+the records were re-entered from and who checked them; the signatory of
+the approval letter, and the letter itself; the students' orientation
+and whose phones they used; screenshots of the test screen and the
+dashboard (3.7, 3.8, Appendix D); session photos; the survey's
+instructions; the section 2 sentence in the Conclusion; every page
+number, checked in Word.
+
 ## Next action
 
 (DONE: the proponent checked every line below on the phone, 9 Nov
