@@ -673,8 +673,11 @@ Word, the contents, the list of figures and the page numbers. A
 picture of the calendar as accepted: docs-private/documents/
 phase4-figures/calendar-preview.png. Items 31 to 33.
 
-Phase 6, the final paper's Chapter 5 (IN PROGRESS: made 10 Nov 2026,
-in review: Capstone_Project_Proposal_phase6.docx on the final copy,
+Phase 6, the final paper's Chapter 5 (IN PROGRESS: made 10 Nov 2026;
+accepted whole at the proponent's word the same day into
+Capstone_Project_Final_phase6_accepted.docx, 118 pages, no tracked
+change left; the tracked copy, Capstone_Project_Proposal_phase6.docx,
+is on the old final copy,
 every change tracked by "Claude"; undoing them gives the final copy's
 text but one space; built by a script, re-run from the final copy).
 Modelled on another team's Chapter 5 (Testing, Description of
