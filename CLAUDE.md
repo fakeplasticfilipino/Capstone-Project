@@ -177,7 +177,8 @@ off the repository.
                                teacher, teacher-questions,
                                teacher-talaan, teacher-report
                                (Block 128), teacher-accounts (Block
-                               132), supabaseClient), and
+                               132), teacher-feedback (Block 161),
+                               supabaseClient), and
                                asset-manifest.js, the list of every file
                                under assets/, written by a tool (Block 78);
                                js/vendor/ the Supabase library (Block 105)
@@ -2361,7 +2362,8 @@ can set it to anything, which is acceptable because currency buys cosmetics
 only and touches nothing the dashboard reports. State this in the
 documentation rather than letting a panel find it.
 
-The teacher dashboard runs four scoped queries and stitches results in
+The teacher dashboard runs four scoped queries (five since Block 161,
+the feedback form's answers, shown on its Feedback tab) and stitches results in
 JavaScript rather than using a joined view or RPC. RLS enforces correctness
 per query. Class sizes of 40 to 50 make the extra round trips immaterial.
 
@@ -2806,6 +2808,8 @@ look, by system:
                                           display_name; rename)
     question types                        Block 160 (schema v17;
                                           essays unscored)
+    the Feedback tab                      Block 161 (the optional form
+                                          shown at last; a fifth query)
     the artist's Drive delivery of 15     Block 133 (Act II's paintings,
       Oct: paintings, people; the         nine people keyed from black),
       new street tried and taken out      134 (the old street back, its

@@ -24,13 +24,15 @@
 // nothing here adds a query or widens one beyond the teacher's own class.
 //
 // THE TABS (Block 132)
-// The page was one long scroll; it is now five tabs, one job each
-// (Overview, Students, Questions report, Edit tests, Talaan papers),
+// The page was one long scroll; it is now six tabs, one job each
+// (Overview, Students, Questions report, Feedback (Block 161), Edit
+// tests, Talaan papers),
 // with the act chosen once at the top for all of them. The overview
 // adds Getting started (three steps, each ticked once done) and Needs
 // attention; a row opens the student card, the numbers in sentences
 // and a new password (js/teacher-accounts.js). Nothing it reports is
-// computed differently: the same four queries feed every tab.
+// computed differently: the same queries feed every tab (five since
+// Block 161, the feedback).
 //
 // SECURITY NOTE
 // The role check below is a usability guard, not the security
@@ -126,7 +128,7 @@ function passMark(act) {
 // Tabs (Block 132)
 // =============================================================
 
-const TABS = ["overview", "students", "report", "tests", "talaan"];
+const TABS = ["overview", "students", "report", "feedback", "tests", "talaan"];
 const tabsEl = document.getElementById("tabs");
 let currentTab = "overview";
 // An editor the teacher has typed in is never switched to another act
@@ -217,6 +219,7 @@ async function initTeacher() {
   if (window.TeacherTalaan) TeacherTalaan.init();
   // Block 128. The Questions report, drawn with the roster.
   if (window.TeacherReport) TeacherReport.init();
+  if (window.TeacherFeedback) TeacherFeedback.init();
 
   await loadClasses(profile.id);
 }
@@ -310,9 +313,10 @@ async function loadRoster(classId) {
 
   const ids = students.map((s) => s.id);
 
-  // 2, 3, 4. Progress, act progress, and scores for those students.
-  // Run together since none depends on the others.
-  const [progressRes, actsRes, scoresRes] = await Promise.all([
+  // 2, 3, 4, 5. Progress, act progress, scores and (Block 161) the
+  // feedback form's answers for those students. Run together since none
+  // depends on the others.
+  const [progressRes, actsRes, scoresRes, feedbackRes] = await Promise.all([
     sb
       .from("game_progress")
       .select("student_id, current_act, updated_at")
@@ -324,6 +328,10 @@ async function loadRoster(classId) {
     sb
       .from("assessment_scores")
       .select("*")
+      .in("student_id", ids),
+    sb
+      .from("feedback")
+      .select("student_id, act_number, rating, comment, created_at")
       .in("student_id", ids),
   ]);
 
@@ -339,7 +347,11 @@ async function loadRoster(classId) {
     progress: progressRes.data || [],
     acts: actsRes.data || [],
     scores: scoresRes.data || [],
+    // Block 161. Optional, so a failed read empties only its own tab
+    // (null: the tab says so) rather than the whole page.
+    feedback: feedbackRes.error ? null : feedbackRes.data || [],
   };
+  if (feedbackRes.error) console.error("feedback read failed:", feedbackRes.error);
   lastFetch = visibleFetch();
   // The furthest act with something to finish (objectives_total above 0)
   // that anyone in the class has a row for, unless the teacher has
@@ -377,6 +389,7 @@ function visibleFetch() {
     progress: mine(fullFetch.progress),
     acts: mine(fullFetch.acts),
     scores: mine(fullFetch.scores),
+    feedback: fullFetch.feedback === null ? null : mine(fullFetch.feedback || []),
   };
 }
 
@@ -396,6 +409,7 @@ function drawAct() {
   renderAttention(rows);
   if (window.TeacherReport) TeacherReport.draw(lastFetch, currentAct);
   document.getElementById("qr-wait").classList.add("hidden");
+  if (window.TeacherFeedback) TeacherFeedback.draw(lastFetch, currentAct);
 }
 
 actPicker.addEventListener("change", () => {

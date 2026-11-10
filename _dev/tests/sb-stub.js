@@ -26,6 +26,8 @@
     player_equipment: T.player_equipment || [],
     // Block 68: the questions the teacher edited, and the trivia card.
     assessment_items: T.assessment_items || [],
+    // Block 161: the feedback form's answers, read by the dashboard.
+    feedback: T.feedback || [],
     act_trivia: T.act_trivia || [],
     // Block 70: the teacher's Talaan papers.
     talaan_entries: T.talaan_entries || [],

@@ -4529,7 +4529,7 @@ const visible = (page, sel) => page.evaluate((s) => {
       return { opened, two };
     });
     ok("the roster opens on the furthest act with objectives, and says which (Polish #1)",
-       acts.opened.act === "1" && acts.opened.names.length === 4 && // the roster, the summary, the Questions report (Block 128), Needs attention (Block 132)
+       acts.opened.act === "1" && acts.opened.names.length === 5 && // the roster, the summary, the Questions report (Block 128), Needs attention (Block 132), Feedback (Block 161)
        acts.opened.names.every((n) => n === "Act I"), acts.opened);
     ok("choosing Act II shows Act II's status and no Act I scores",
        acts.two.names.every((n) => n === "Act II") && acts.two.s1[1] === "Playing" &&
@@ -8467,6 +8467,63 @@ const visible = (page, sel) => page.evaluate((s) => {
        lines.some((l) => /question 4 \(essay\).*Sinulat ko ito\./.test(l)), lines);
     await tp.click("#sc-close");
     await ctx2.close();
+  }
+
+  if (section("CB", "Block 161: the Feedback tab")) {
+    const seed = {
+      session: { user: { id: "t1" } },
+      profiles: [
+        { id: "t1", role: "teacher", full_name: "Gng. Cruz" },
+        { id: "s1", role: "student", full_name: "rizal-01", display_name: "Ana Reyes", class_id: "c1" },
+        { id: "s2", role: "student", full_name: "rizal-02", class_id: "c1" },
+        { id: "s3", role: "student", full_name: "rizal-03", class_id: "c1", archived_at: "2026-11-01T00:00:00Z" },
+      ],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+      act_progress: [
+        { student_id: "s1", act_number: 1, status: "completed", objectives_done: 14, objectives_total: 14 },
+        { student_id: "s2", act_number: 1, status: "completed", objectives_done: 14, objectives_total: 14 },
+      ],
+      feedback: [
+        { student_id: "s1", act_number: 1, rating: 5, comment: "ang ganda po", created_at: "2026-11-02T03:00:00Z" },
+        { student_id: "s2", act_number: 1, rating: 2, comment: "<b>hirap</b>, ma'am", created_at: "2026-11-03T03:00:00Z" },
+        { student_id: "s2", act_number: 2, rating: 4, comment: null, created_at: "2026-11-04T03:00:00Z" },
+        { student_id: "s3", act_number: 1, rating: 1, comment: "archived", created_at: "2026-11-01T03:00:00Z" },
+      ],
+    };
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, acceptDownloads: true });
+    const page = await ctx.newPage();
+    page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+    await page.route("**/supabaseClient.js*", (route) => route.fulfill({ body: STUB, contentType: "text/javascript" }));
+    await page.route("**/js/vendor/supabase.js*", (route) => route.fulfill({ body: "", contentType: "text/javascript" }));
+    await page.addInitScript((st) => { window.__TEST = st; }, seed);
+    await page.goto("http://localhost:" + PORT + "/teacher.html#feedback");
+    await page.waitForFunction(() => !document.getElementById("fb").classList.contains("hidden"));
+    const view = await page.evaluate(() => ({
+      tab: !document.getElementById("tab-feedback").classList.contains("hidden"),
+      basis: document.getElementById("fb-basis").textContent,
+      act1: [...document.querySelectorAll("#fb-summary tbody tr")][0].textContent,
+      act2: [...document.querySelectorAll("#fb-summary tbody tr")][1].textContent,
+      rows: [...document.querySelectorAll("#fb-table tbody tr")].map((tr) => [...tr.children].map((td) => td.textContent)),
+      html: document.querySelector("#fb-table tbody").innerHTML.includes("<b>"),
+    }));
+    ok("the Feedback tab opens from the address and counts the answers of students not archived (Block 161)",
+       view.tab && /^3 answers from 2 of 2 students/.test(view.basis), view);
+    ok("each act's count, average and ratings: Act I two answers, 3.5, one 2 and one 5, two comments",
+       view.act1 === "Act I23.5 / 5010012" && view.act2 === "Act II14.0 / 5000100", view);
+    ok("the act's answers newest first, by name with the code under it, a typed tag kept as text",
+       view.rows.length === 2 && view.rows[0][0] === "rizal-02" && view.rows[0][2] === "<b>hirap</b>, ma'am" &&
+       view.rows[1][0] === "Ana Reyesrizal-01" && view.rows[1][1] === "5 / 5" && !view.html, view);
+    await page.selectOption("#act-picker", "2");
+    await page.waitForFunction(() => /Act II/.test(document.querySelector("#tab-feedback .act-name").textContent));
+    const two = await page.evaluate(() => [...document.querySelectorAll("#fb-table tbody tr")].map((tr) => tr.children[2].textContent));
+    ok("another act at the top shows that act's answers; a rating alone says so", JSON.stringify(two) === '["(rating only)"]', two);
+    const [dl] = await Promise.all([page.waitForEvent("download"), page.click("#fb-export")]);
+    const csv = require("fs").readFileSync(await dl.path(), "utf8").replace(/^\ufeff/, "").split(/\r\n/);
+    ok("Export CSV saves every act's answers, a comma quoted, the archived left out",
+       csv[0] === "act,code,name,rating,comment,date" && csv.length === 4 &&
+       csv.includes('1,rizal-02,,2,"<b>hirap</b>, ma\'am",2026-11-03') && !csv.some((l) => /archived/.test(l)), csv);
+
+    await ctx.close();
   }
 
   await browser.close();

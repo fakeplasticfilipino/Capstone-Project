@@ -9,7 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 9 Nov 2026, Block 160: question types (several answers,
+Last updated: 10 Nov 2026, Block 161: the dashboard's Feedback tab
+(every act's ratings and each answer; the optional form had been
+collected and never shown), and each act's Talaan papers written into
+the database. Before it, Block 160: question types (several answers,
 true or false, an essay kept and never scored; schema v17, the test
 screen, the editor, the student card, the Questions report). The
 examination list is done. Before it, Block 159: a name for every
@@ -1044,6 +1047,19 @@ Trust this over any memory of a chat.
                                         action (Block 159). The deployed
                                         source read back and compared
                                         with the repository's: the same
+    talaan_entries (data)                      WRITTEN, 10 Nov 2026, from
+                                        the session, at the proponent's
+                                        word: each act's three built-in
+                                        papers (content, hints.pool)
+                                        copied in, slots 1 to 3, so the
+                                        dashboard's Talaan editor starts
+                                        from them (Block 161). Nothing
+                                        was there before
+    assessment_items (data)                    WRITTEN, 10 Nov 2026, the
+                                        same: Act I pre-test question 1,
+                                        typed by mistake during testing,
+                                        given back its built-in wording;
+                                        its choices and answer unchanged
     db/migrations/017_macario_schema_v17.sql   RUN, 9 Nov 2026, from the
                                         session, at the proponent's word.
                                         assessment_items.item_type and
@@ -1513,6 +1529,9 @@ machine, the assessment module.
         of the score, the pass mark and the gain; schema v17, the test
         screen, the editor, the student card, the Questions report;
         test.js CA
+    161 the Feedback tab: each act's answers, average rating and
+        ratings, the chosen act's answers by student, Export CSV; a
+        fifth query (feedback); test.js CB
 
 ## Blocks remaining
 

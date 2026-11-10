@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACARIO — Teacher Dashboard</title>
-  <link rel="stylesheet" href="css/teacher.css?v=682031254" />
+  <link rel="stylesheet" href="css/teacher.css?v=1898653286" />
 </head>
 <body>
   <!-- Covers the page until the session and role are confirmed, so a
@@ -73,6 +73,7 @@
         <button type="button" role="tab" data-tab="overview" aria-selected="true">Overview</button>
         <button type="button" role="tab" data-tab="students" aria-selected="false">Students</button>
         <button type="button" role="tab" data-tab="report" aria-selected="false">Questions report</button>
+        <button type="button" role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
         <button type="button" role="tab" data-tab="tests" aria-selected="false">Edit tests</button>
         <button type="button" role="tab" data-tab="talaan" aria-selected="false">Talaan papers</button>
       </nav>
@@ -304,6 +305,63 @@
         <div id="qr-wait" class="notice">The report appears once the class's results have loaded.</div>
       </div>
 
+      <!-- ================= Feedback ================= -->
+      <div id="tab-feedback" class="tab-panel hidden" role="tabpanel">
+        <!-- Block 161. The optional form after each act's post-test (the
+             feedback table): every act's ratings, and the chosen act's
+             answers. Built by js/teacher-feedback.js from the rows the
+             roster fetched. -->
+        <section id="fb" class="card hidden">
+          <div class="card-head">
+            <div>
+              <h2 class="section-title">Student Feedback</h2>
+              <p class="muted" id="fb-basis"></p>
+            </div>
+            <div>
+              <button id="fb-export" type="button" class="btn-secondary">Export CSV</button>
+            </div>
+          </div>
+          <div id="fb-error" class="notice error hidden">Could not load the feedback. Press Refresh to try again.</div>
+          <div class="table-wrap">
+            <table id="fb-summary" class="fb-table">
+              <thead>
+                <tr>
+                  <th>Act</th>
+                  <th class="num">Answers</th>
+                  <th class="num">Average rating</th>
+                  <th class="num">1</th>
+                  <th class="num">2</th>
+                  <th class="num">3</th>
+                  <th class="num">4</th>
+                  <th class="num">5</th>
+                  <th class="num">With a comment</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <h3 class="fb-sub">Answers, <span class="act-name">Act I</span></h3>
+          <div class="table-wrap">
+            <table id="fb-table" class="fb-table hidden">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th class="num">Rating</th>
+                  <th>Comment</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div id="fb-empty" class="empty-row">No answers yet.</div>
+          </div>
+          <div class="table-notes">
+            <p>The form comes after each act's post-test and may be skipped, so these are the students who chose to answer. A rating is 1 (Hindi masyado) to 5 (Sobrang gusto). An answer cannot be changed once sent.</p>
+          </div>
+        </section>
+        <div id="fb-wait" class="notice">The feedback appears once the class's results have loaded.</div>
+      </div>
+
       <!-- ================= Edit tests ================= -->
       <div id="tab-tests" class="tab-panel hidden" role="tabpanel">
         <!-- Block 68. The questions and answers of each test, and the trivia
@@ -419,9 +477,10 @@
   <!-- Block 132. Before teacher.js, which may reach it before the next
        script tag is parsed (its first awaits can resolve on microtasks). -->
   <script src="js/teacher-accounts.js?v=105960922"></script>
-  <script src="js/teacher.js?v=4034253050"></script>
+  <script src="js/teacher.js?v=4154627151"></script>
   <script src="js/teacher-questions.js?v=3297212867"></script>
   <script src="js/teacher-report.js?v=326321925"></script>
+  <script src="js/teacher-feedback.js?v=2009694176"></script>
   <script src="js/teacher-talaan.js?v=976490959"></script>
 </body>
 </html>

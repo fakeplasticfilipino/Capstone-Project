@@ -7184,6 +7184,31 @@ Found on the way: submit_test's check of an earlier post-test divided
 two whole numbers, so 8 of 10 read as 0 and a post-test passed with
 less than full marks could be sat again. It divides as numeric now.
 
+## Block 161: the Feedback tab, 10 Nov 2026
+
+Found while trying the dashboard on a full class: the optional
+feedback form (Block 8; js/assessment.js, runFeedback) wrote every
+answer to the feedback table, and teachers could read the table, but
+no page showed it. The third stated objective names optional user
+feedback, so a panel asking where it goes would have had no answer.
+
+A sixth tab, Feedback, beside the Questions report, the same kind of
+page: plain tables, no chart (the documented limit). Above, every act
+in one table: how many answered, the average rating, how many gave
+each of the five ratings, and how many wrote a comment, the act chosen
+at the top of the page in bold. Below, the chosen act's answers, newest
+first, each by the student's name with the code under it (Block 159),
+the rating and the comment as typed. Export CSV saves every act's.
+
+It is read in the roster's load, a fifth query beside the four, run
+in the same Promise.all, rather than its own round trip on opening the
+tab; archived students are left out the way every tab leaves them out
+(visibleFetch). A failed read empties only this tab, which says so,
+since the form is optional and the roster should not fail with it.
+
+The counts are of the students who answered: the form may be skipped,
+and the page says so rather than reading a few answers as the class.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

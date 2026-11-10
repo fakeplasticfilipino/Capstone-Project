@@ -539,6 +539,51 @@ input:focus-visible {
   background: #fcfbf8;
 }
 
+/* Block 161. The Feedback tab's two tables, the Questions report's look. */
+.fb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.fb-table th {
+  background: var(--surface-alt);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  padding: 11px 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.fb-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--grey-soft);
+  font-variant-numeric: tabular-nums;
+  vertical-align: top;
+}
+.fb-table th.num,
+.fb-table td.num {
+  text-align: right;
+  white-space: nowrap;
+}
+.fb-table tbody tr:nth-child(even) {
+  background: #fcfbf8;
+}
+.fb-table tr.fb-current td {
+  font-weight: 600;
+}
+.fb-table td.fb-comment {
+  min-width: 240px;
+  max-width: 520px;
+  white-space: pre-wrap;
+}
+.fb-sub {
+  margin: 22px 0 8px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+
 .gain-positive { color: var(--green); font-weight: 600; }
 .gain-negative { color: var(--red); font-weight: 600; }
 .gain-neutral  { color: var(--text-muted); }
