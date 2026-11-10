@@ -694,24 +694,26 @@ three parts; Recommendations), with the proponent's outline. Done:
         resources and site; the results: pre-test and post-test per act
         with paired t-tests (t 8.34 to 12.04, p < .001, d 1.26 to 1.86),
         pass rates, performance, the survey's Functionality (4.20) and
-        Usability (4.16), the in-game feedback form
+        Usability (4.16; the survey has these two sections only, its
+        counts checked against the responses sheet), the in-game
+        feedback form
     [x] Conclusion (summary; the three objectives, each met) and six
         recommendations
-    [x] Appendices C to G: the survey questionnaire, screenshots, a
-        user guide, the approval letter, documentation (the client's
-        last check before deployment)
+    [x] Appendices C to H: the survey (its own title and instructions),
+        screenshots (the game's, and the dashboard's Overview from the
+        teacher login), a user guide, the approval letter,
+        documentation (the client's last check before deployment; no
+        session photos, at the client's wish), the interview transcript
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
 The scores are the database's as it stands (the proponent, 10 Nov 2026),
 and the paper dates the study by its sessions; it gives no account of
-the testing phase beyond that, at the proponent's word.
-Open, as [PLACEHOLDER: ...] in the paper (search for it): the survey's
-section 2 and its exact counts (read off the form's charts); the
-approval letter's scan; the students' orientation and whose phones they
-used; screenshots of the test screen and the dashboard (Appendix D);
-session photos; the survey's instructions; the section 2 sentence in
-the Conclusion; every page number, checked in Word.
+the testing phase beyond that, at the proponent's word. No endorsement
+letter appendix (the instructors' word). Open, as [PLACEHOLDER: ...] in
+the paper (search for it): the approval letter, scanned or
+photographed; the interview transcript; every page number, checked in
+Word.
 
 ## Next action
 
