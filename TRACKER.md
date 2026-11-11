@@ -710,6 +710,17 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 7, the IT experts (IN PROGRESS, 11 Nov 2026: one of three done;
+Capstone_Project_Final_phase7.docx tracked on the phase 6 accepted copy,
+Capstone_Project_Final_phase7_accepted.docx clean). The expert
+evaluation in Testing, the prototype's evaluation and the
+Implementation Result (Table 8.0, ISO 25010, placeholders for the
+ratings); the experts in Appendix A; their signed certifications in
+Appendix I (the template, IT EXPERT CERTIFICATION.docx, filled per
+expert as a copy); the recommendation to have experts evaluate it taken
+out. Owed: the second and third experts' details and certifications,
+and the three experts' survey results.
+
 The scores are the database's as it stands (the proponent, 10 Nov 2026),
 and the paper dates the study by its sessions; it gives no account of
 the testing phase beyond that, at the proponent's word. No endorsement
