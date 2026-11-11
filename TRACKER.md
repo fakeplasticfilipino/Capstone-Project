@@ -710,6 +710,12 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 9 (COMPLETE, 11 Nov 2026): Appendix H's header (interviewee and
+interviewers) and a certification and signature line for the client to
+sign on the printed copy; the personal lines kept, at the proponent's
+word; the clean copy is Capstone_Project_Final_phase9_accepted.docx
+(122 pages), the newest.
+
 Phase 8 (COMPLETE, 11 Nov 2026): the interview transcript in Appendix H,
 as the proponent gave it, in Filipino, speakers as INTERVIEWER and
 CLIENT; each appendix picture kept on its caption's page; the clean copy
