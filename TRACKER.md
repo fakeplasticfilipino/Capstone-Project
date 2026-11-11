@@ -710,6 +710,14 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 12 (COMPLETE, 11 Nov 2026), made directly, no tracked changes (the
+proponent accepts everything): Capstone_Project_Final.docx (120 pages)
+is now THE paper; the phase copies beside it are history. Three empty
+sections after the references taken out (three blank pages); Appendix
+A's experts block spaced and kept with its heading; the first expert's
+signature turned right way up (his certification and Appendix I).
+Later changes go straight into Capstone_Project_Final.docx.
+
 Phase 11 (COMPLETE, 11 Nov 2026): the second IT expert (MIS Staff, 12
 years) in the Implementation Result, Appendix A and Appendix I; every
 certification's signature line taken out (the signature is pasted in),
