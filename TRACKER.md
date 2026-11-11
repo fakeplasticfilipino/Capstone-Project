@@ -710,6 +710,11 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 8 (COMPLETE, 11 Nov 2026): the interview transcript in Appendix H,
+as the proponent gave it, in Filipino, speakers as INTERVIEWER and
+CLIENT; each appendix picture kept on its caption's page; the clean copy
+is Capstone_Project_Final_phase8_accepted.docx (122 pages), the newest.
+
 Phase 7, the IT experts (IN PROGRESS, 11 Nov 2026: one of three done;
 Capstone_Project_Final_phase7.docx tracked on the phase 6 accepted copy,
 Capstone_Project_Final_phase7_accepted.docx clean). The expert
