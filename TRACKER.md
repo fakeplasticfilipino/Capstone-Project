@@ -710,6 +710,18 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 15 (COMPLETE, 11 Nov 2026), directly in Capstone_Project_Final.docx
+(121 pages): the three IT experts' survey, read from the form's charts.
+Table 8.0 by characteristic (Portability 5.00, Functionality and
+Compatibility 4.67, Maintainability 4.56 Excellent; Performance
+Efficiency 4.44, Usability 4.22, Reliability and Security 4.11 Very
+Good; overall 4.47 Very Good, the mean of the eight), its discussion,
+and the Conclusion's sentence. Tables 6.0 to 8.0 kept whole on a page.
+Every page number in the contents and the lists refreshed from the
+rendering, References to Personal Technical Vitae among them (they
+still held the original paper's numbers). No placeholder is left but
+the page-number check in Word.
+
 Phase 14 (COMPLETE, 11 Nov 2026), directly in Capstone_Project_Final.docx
 (120 pages): the third IT expert, Rochel Rizo, MIS Staff, 3 years, MIS
 (her certification filled from the template, signature cut from a
