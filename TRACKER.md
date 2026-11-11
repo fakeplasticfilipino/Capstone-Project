@@ -710,6 +710,15 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 14 (COMPLETE, 11 Nov 2026), directly in Capstone_Project_Final.docx
+(120 pages): the third IT expert, Rochel Rizo, MIS Staff, 3 years, MIS
+(her certification filled from the template, signature cut from a
+photo; Implementation Result, Appendix A, Appendix H as Figure 4.12,
+the list of figures). The first expert is an MIS Manager, not staff:
+his letter, Appendix A and the Implementation Result say so. Owed, and
+nothing else: the three experts' survey results (Table 8.0, its
+discussion, the Conclusion's sentence).
+
 Phase 13 (COMPLETE, 11 Nov 2026), directly in Capstone_Project_Final.docx
 (119 pages): the approval letter is not needed (the proponent), so its
 appendix is out and the rest renumbered: F Documentation, G the
