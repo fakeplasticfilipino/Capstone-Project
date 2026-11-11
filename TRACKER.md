@@ -710,6 +710,15 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 16 (COMPLETE, 11 Nov 2026), directly in Capstone_Project_Final.docx
+(123 pages): Appendix C is now SURVEY QUESTIONNAIRES and holds both
+instruments as the blank rating grids the respondents filled in (Item,
+5 to 1; Table 6.0's style), items word for word from the forms: the
+students' survey on its first page, the IT experts' (eight
+characteristics, a Name line) on the next two. The Implementation
+Result points to Appendix C where each survey is described. Contents
+and lists refreshed.
+
 Phase 15 (COMPLETE, 11 Nov 2026), directly in Capstone_Project_Final.docx
 (121 pages): the three IT experts' survey, read from the form's charts.
 Table 8.0 by characteristic (Portability 5.00, Functionality and
