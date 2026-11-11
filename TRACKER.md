@@ -710,6 +710,11 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 10 (COMPLETE, 11 Nov 2026): the first expert's title is "MIS
+Staff" (his field, Management Information Systems), in his
+certification, Appendix A, the Implementation Result and Appendix I; the
+clean copy is Capstone_Project_Final_phase10_accepted.docx, the newest.
+
 Phase 9 (COMPLETE, 11 Nov 2026): Appendix H's header (interviewee and
 interviewers) and a certification and signature line for the client to
 sign on the printed copy; the personal lines kept, at the proponent's
