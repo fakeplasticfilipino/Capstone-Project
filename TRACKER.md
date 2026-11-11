@@ -710,6 +710,13 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 13 (COMPLETE, 11 Nov 2026), directly in Capstone_Project_Final.docx
+(119 pages): the approval letter is not needed (the proponent), so its
+appendix is out and the rest renumbered: F Documentation, G the
+transcript, H the IT expert certifications (Figures 4.9 to 4.11). The
+phase copies were deleted at the proponent's word. Owed, and nothing
+else: the third IT expert, and the three experts' survey results.
+
 Phase 12 (COMPLETE, 11 Nov 2026), made directly, no tracked changes (the
 proponent accepts everything): Capstone_Project_Final.docx (120 pages)
 is now THE paper; the phase copies beside it are history. Three empty
