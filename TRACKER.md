@@ -710,6 +710,30 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 17 (COMPLETE, 11 Nov 2026), directly in Capstone_Project_Final.docx
+(123 pages to 95): the audit's 22 items, approved whole by the
+proponent. Layout: the PDF converter's page-per-section breaks in the
+body removed and the sentences they cut joined again (19), one page
+setup for every body page (Chapter 1's), one footer; chapters,
+References and each appendix start a page; the requirements tables
+full width and joined (7 pages to 3), the Gantt tables joined; Tables
+2.0 to 8.0 kept whole; headings kept with their text; the contents
+rebuilt as clean dotted lines and every page number in the contents
+and both lists read again from the render; the preliminary survey's
+charts captioned. Text: the names on the title and endorsement pages
+one per line (Riño), the teacher's block in Appendix A, STI College
+Dasmariñas everywhere (footers too), Figures 2.1 and 3.2 named for
+what they show, no colon in figure captions, 13 dashes the converter
+dropped, citations by author (Ruiz, Li, Ishak, Galvez, Lanz Tolentino,
+Ramos-Pardo and Martín-Fernández, Kendikorp, ViCaRy; Kessner cited),
+seven uncited references dropped, the stray A./B. in Scope, the
+students' Usability items 2.1 to 2.4, Inclusive Years in the vitae,
+High School, Parañaque, the missing period. Left to the proponent:
+Kurt's skills list (identical to Kennel's), the panelists' names on
+the Approval Sheet, and the page numbers checked once in Word
+(LibreOffice prints the List of Tables' page as vii, a second vii,
+where Word should print viii).
+
 Phase 16 (COMPLETE, 11 Nov 2026), directly in Capstone_Project_Final.docx
 (123 pages): Appendix C is now SURVEY QUESTIONNAIRES and holds both
 instruments as the blank rating grids the respondents filled in (Item,
