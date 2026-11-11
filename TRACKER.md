@@ -710,6 +710,14 @@ three parts; Recommendations), with the proponent's outline. Done:
     [x] the contents and the lists of figures and tables, with page
         numbers from a LibreOffice rendering
 
+Phase 11 (COMPLETE, 11 Nov 2026): the second IT expert (MIS Staff, 12
+years) in the Implementation Result, Appendix A and Appendix I; every
+certification's signature line taken out (the signature is pasted in),
+the template too; Appendix A's expert block styled like the blocks
+above it. Clean copy: Capstone_Project_Final_phase11_accepted.docx, the
+newest. Owed: the third expert, the three experts' survey results, the
+approval letter.
+
 Phase 10 (COMPLETE, 11 Nov 2026): the first expert's title is "MIS
 Staff" (his field, Management Information Systems), in his
 certification, Appendix A, the Implementation Result and Appendix I; the
