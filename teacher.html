@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MACARIO — Teacher Dashboard</title>
-  <link rel="stylesheet" href="css/teacher.css?v=1898653286" />
+  <link rel="stylesheet" href="css/teacher.css?v=1848773775" />
 </head>
 <body>
   <!-- Covers the page until the session and role are confirmed, so a
@@ -82,9 +82,17 @@
       <div id="no-class" class="notice hidden">
         <strong>No class is linked to this account yet.</strong>
         <span class="notice-sub">
-          Ask the game's administrator to set up your class, then reload
-          this page. You can still edit the tests and the Talaan papers.
+          Make your first section here. You can still edit the tests and
+          the Talaan papers without one.
         </span>
+        <!-- Block 164. A teacher makes her own sections. -->
+        <div class="acct-form">
+          <label>Section name
+            <input id="first-sect-name" type="text" maxlength="80" autocomplete="off" placeholder="Grade 8 - Rizal" />
+          </label>
+          <button id="first-sect-create" type="button" class="btn-primary">Make section</button>
+        </div>
+        <p id="first-sect-status" class="qe-status"></p>
       </div>
 
       <!-- Query failure. -->
@@ -169,6 +177,75 @@
              function (db/functions/create-students), never the browser:
              it needs the project's secret key. Built by
              js/teacher-accounts.js. -->
+        <!-- Block 164. Sections: the teacher's own classes. Built by
+             js/teacher-sections.js. -->
+        <section id="sect" class="card hidden">
+          <div class="card-head">
+            <div>
+              <h2 class="section-title">Sections</h2>
+              <p class="muted">A section is one class of students. Choose the section to look at with the picker at the top of the page.</p>
+            </div>
+          </div>
+          <div class="acct-form">
+            <label>This section's name
+              <input id="sect-name" type="text" maxlength="80" autocomplete="off" />
+            </label>
+            <button id="sect-rename" type="button" class="btn-secondary">Rename</button>
+            <button id="sect-delete" type="button" class="btn-secondary sect-own">Delete if empty</button>
+          </div>
+          <div class="acct-form sect-own">
+            <label>New section
+              <input id="sect-new-name" type="text" maxlength="80" autocomplete="off" placeholder="Grade 8 - Bonifacio" />
+            </label>
+            <button id="sect-create" type="button" class="btn-primary">Make section</button>
+          </div>
+          <p id="sect-status" class="qe-status"></p>
+        </section>
+
+        <!-- Block 165. A class list as the school made it: any sheet, any
+             columns. The teacher says which is which; nothing is made
+             until she confirms. Built by js/teacher-sections.js. -->
+        <section id="cl" class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="section-title">Upload a class list</h2>
+              <p class="muted">Use the class list you already have (Excel .xlsx, or .csv). It does not need to be made for this game: after uploading, you choose which column holds the names and which, if any, the section. The file is read on this computer and is not stored.</p>
+            </div>
+          </div>
+          <div class="acct-form">
+            <label>Class list file
+              <input id="cl-file" type="file" accept=".xlsx,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" />
+            </label>
+          </div>
+          <p id="cl-status" class="qe-status"></p>
+          <div id="cl-map" class="hidden">
+            <div class="acct-form cl-choices">
+              <label class="hidden">Sheet
+                <select id="cl-sheet"></select>
+              </label>
+              <label>Names are in
+                <select id="cl-col-name"></select>
+              </label>
+              <label>First names in a separate column?
+                <select id="cl-col-first"></select>
+              </label>
+              <label>Sections are in
+                <select id="cl-col-section"></select>
+              </label>
+              <label>Students start at row
+                <input id="cl-start" type="number" min="1" value="2" />
+              </label>
+            </div>
+            <p class="muted">Every ticked row becomes one account. Untick anything that is not a student.</p>
+            <div id="cl-preview" class="cl-preview"></div>
+            <p id="cl-count" class="muted"></p>
+            <div id="cl-groups" class="cl-groups"></div>
+            <div class="qe-actions">
+              <button id="cl-go" type="button" class="btn-primary" disabled>Make these accounts</button>
+            </div>
+          </div>
+        </section>
+
         <section id="acct" class="card hidden">
           <div class="card-head">
             <div>
@@ -236,6 +313,9 @@
             <button id="bulk-archive" type="button" class="btn-secondary" disabled>Archive</button>
             <button id="bulk-restore" type="button" class="btn-secondary hidden" disabled>Restore</button>
             <button id="bulk-delete" type="button" class="btn-danger" disabled>Delete</button>
+            <!-- Block 164. Shown once there is a second section. -->
+            <select id="bulk-move-to" class="hidden" aria-label="Section to move the ticked students to"></select>
+            <button id="bulk-move" type="button" class="btn-secondary hidden">Move to section</button>
             <label class="bulk-show"><input id="show-archived" type="checkbox" /> Show archived <span id="archived-count"></span></label>
           </div>
           <p id="bulk-status" class="qe-status bulk-status"></p>
@@ -476,8 +556,9 @@
   <script src="content/act4.js?v=4133053383"></script>
   <!-- Block 132. Before teacher.js, which may reach it before the next
        script tag is parsed (its first awaits can resolve on microtasks). -->
-  <script src="js/teacher-accounts.js?v=105960922"></script>
-  <script src="js/teacher.js?v=4154627151"></script>
+  <script src="js/teacher-sections.js?v=1219812219"></script>
+  <script src="js/teacher-accounts.js?v=3617771388"></script>
+  <script src="js/teacher.js?v=710103047"></script>
   <script src="js/teacher-questions.js?v=3297212867"></script>
   <script src="js/teacher-report.js?v=326321925"></script>
   <script src="js/teacher-feedback.js?v=2009694176"></script>

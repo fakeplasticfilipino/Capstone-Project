@@ -7268,6 +7268,66 @@ the cards take about 20; the game was right. They wait 45 now, for a
 condition, so the fast run is no slower. --real green, 10 Nov 2026:
 1,582 checks.
 
+## Blocks 163 to 167: the instructor's list of 14 Nov 2026
+
+The instructor asked for the game to run without its developers: a
+student dashboard, an administrator who makes the teachers, sections,
+the hearts always shown, and accounts from a class list rather than
+typed names. The proponents added the login upright, and a Delete that
+"did not work".
+
+Block 163. The hearts are always shown. They had appeared only where
+something could take them, so a student first met them mid-fight; the
+derivation (Block 81) is gone and updateHudVisibility only draws. The
+menu and the login are allowed upright: the rotate notice is hidden,
+and the camera steps back to 1, while body.signed-out is set, which
+shell.js mirrors from the login box with a MutationObserver rather than
+at each place game.js shows or hides it. Once a student or a guest is
+in, upright is the notice again, so portrait is still not a layout the
+game plays in. Delete was not broken: every account in the database had
+played, and Block 150's rule refuses those. The button was greyed with
+its reason in a tooltip a phone never shows; the reason is now said in
+the status line, by code. The rule itself is unchanged.
+
+Block 164. A section is a row of classes, and the policy "Teachers can
+manage their own classes" has allowed a teacher to write her own since
+schema v1; only the page never offered it. So making and renaming a
+section is a plain insert and update from the dashboard, with no new
+policy. Deleting is offered for an empty section only, counted first,
+because profiles.class_id is ON DELETE SET NULL and a section deleted
+with students would leave them where no teacher can see them. Moving
+students writes profiles.class_id, which no browser may (schema v11),
+so it is a new action of create-students. No "all sections" view: the
+picker the page already had is shown from the second section on.
+
+Block 165. The class list is the school's, not made for this game, so
+the upload assumes nothing about it. The page finds the header row if
+there is one, guesses the name and section columns, and shows every row
+it would make an account for, each with a tick; rows that are not
+students (MALE, a title, a total) are unticked by the guess. A section
+named in the file is matched to one she has by its name or its last
+word, else made. The .xlsx is read with DecompressionStream and
+DOMParser, about a hundred lines, rather than a vendored spreadsheet
+library near a megabyte (the plan said a library; this needs no
+download and nothing to keep up to date). The old .xls is refused with
+the way out. The file never leaves the browser; only the names go to
+the function.
+
+Block 166. An administrator is a third role. The narrowest change that
+does the job: two SELECT policies (profiles, classes) through
+private.is_admin(), and every write through create-students, which
+checks the role. An admin reads no score; managing students is the
+dashboard's Students tab opened as an admin, every section listed and
+the other tabs hidden, so there is one set of account tools, not two.
+Teachers are made with an email and a twelve-character password shown
+once. An admin cannot be made from any page.
+
+Block 167. Aking Pag-unlad, on the menu for a signed-in student: an
+overview, each act's tasks, tests and score, and its status. Three
+reads of the student's own rows under policies that already existed,
+nothing written. It shows the code, not the name. On the menu only: the
+pause screen is already one button longer than a phone held sideways.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

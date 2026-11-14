@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MACARIO — Administrator</title>
+  <link rel="stylesheet" href="css/teacher.css?v=1848773775" />
+</head>
+<body>
+  <!-- Block 166. The administrator's page: teachers' accounts, and which
+       teacher each section belongs to. In English and in the dashboard's
+       style, since an administrator, like a teacher, is not a player.
+       Students are managed on the dashboard's Students tab, which an
+       administrator opens from here. Built by js/admin.js; every change
+       goes through the create-students function. -->
+  <div id="gate">
+    <div id="gate-card">
+      <div class="brand-mark" aria-hidden="true">M</div>
+      <div id="gate-msg">Checking your account...</div>
+    </div>
+  </div>
+
+  <div id="dash" class="hidden">
+    <header id="dash-header">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">M</div>
+          <div>
+            <h1 id="dash-title">MACARIO</h1>
+            <p id="dash-subtitle">Administrator</p>
+          </div>
+        </div>
+        <div id="dash-user">
+          <div class="user-meta">
+            <span id="dash-teacher-name"></span>
+            <span class="user-role">Administrator</span>
+          </div>
+          <a class="guide-link" href="teacher.html#students">Manage students</a>
+          <button id="logout-btn" type="button">Log out</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="dash-body">
+      <div id="load-error" class="notice error hidden"></div>
+
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="section-title">New teacher</h2>
+            <p class="muted">The teacher logs in at the game's login with this email and the password shown here once, and is taken to the dashboard. She then makes her own sections and students.</p>
+          </div>
+        </div>
+        <div class="acct-form">
+          <label>Name
+            <input id="t-name" type="text" maxlength="80" autocomplete="off" placeholder="Ms. Santos" />
+          </label>
+          <label>Email
+            <input id="t-email" type="email" maxlength="120" autocomplete="off" placeholder="santos@school.edu.ph" />
+          </label>
+          <button id="t-create" type="button" class="btn-primary">Create teacher</button>
+        </div>
+        <p id="t-status" class="qe-status"></p>
+        <p id="t-made" class="acct-warn hidden"></p>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="section-title">Teachers</h2>
+            <p class="muted" id="t-count"></p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Sections</th><th>Students</th><th>Status</th><th></th></tr></thead>
+            <tbody id="t-body"></tbody>
+          </table>
+        </div>
+        <p id="t-row-status" class="qe-status"></p>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="section-title">Sections</h2>
+            <p class="muted">Every section and the teacher it belongs to. Handing a section to another teacher moves its students with it; their progress and scores are kept.</p>
+          </div>
+        </div>
+        <div class="acct-form">
+          <label>New section
+            <input id="s-name" type="text" maxlength="80" autocomplete="off" placeholder="Grade 8 - Mabini" />
+          </label>
+          <label>For teacher
+            <select id="s-teacher"></select>
+          </label>
+          <button id="s-create" type="button" class="btn-primary">Make section</button>
+        </div>
+        <p id="s-status" class="qe-status"></p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Section</th><th>Students</th><th>Teacher</th><th></th></tr></thead>
+            <tbody id="s-body"></tbody>
+          </table>
+        </div>
+        <div class="table-notes">
+          <p>To make, name, archive or move students, or to upload a class list, open <a href="teacher.html#students">Manage students</a> and choose the section at the top of that page.</p>
+          <p>An administrator account is made only by the game's developers.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/vendor/supabase.js?v=4202140866"></script>
+  <script src="js/supabaseClient.js?v=2770937222"></script>
+  <script src="js/admin.js?v=1525382641"></script>
+</body>
+</html>

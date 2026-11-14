@@ -32,6 +32,27 @@
 //       the scores are the study's. Returns { results: [{ id, code,
 //       ok, error }] }, one per student, so a partial run is said.
 //
+//   { action: "move", student_ids: [...], class_id }
+//       Block 164: her students to another of her sections. Only
+//       profiles.class_id changes; codes, passwords and every row of
+//       play stay. Returns { moved }.
+//
+// Block 166, an administrator only (profiles.role admin, schema v18):
+//   { action: "teacher-create", email, name }
+//       a teacher's login, with a password of twelve letters and digits
+//       returned once. Returns { email, password, id }.
+//   { action: "teacher-reset", teacher_id }       { email, password }
+//   { action: "teacher-archive" | "teacher-restore", teacher_id }
+//       bans or unbans the login and sets or clears archived_at. Her
+//       sections, students and questions are kept. Returns { ok }.
+//   { action: "section-create", teacher_id, class_name }   { id }
+//   { action: "section-assign", class_id, teacher_id }     { ok }
+//       hands a section, with its students, to another teacher.
+// An administrator may also call every action above for any section:
+// ownsClass is true for one. No action reads or writes a score, and an
+// administrator cannot be made, changed or archived from here: the
+// first is made by the developers, by hand.
+//
 // WHO MAY CALL IT. The caller's own access token is checked here
 // (getUser), not by the gateway (deployed with verify_jwt false, since
 // the project's publishable key is not a JWT); then profiles.role must
@@ -94,6 +115,19 @@ function sixDigits(): string {
   return out;
 }
 
+// Block 166. A teacher's password: n letters and digits, none of the
+// ones read as each other on a printed slip (0 O, 1 l I).
+function letters(n: number): string {
+  const set = "abcdefghjkmnpqrstuvwxyz23456789";
+  let out = "";
+  const buf = new Uint8Array(1);
+  while (out.length < n) {
+    crypto.getRandomValues(buf);
+    if (buf[0] < 248) out += set[buf[0] % set.length];
+  }
+  return out;
+}
+
 // Block 159. A name as typed, kept plain: no control characters, single
 // spaces, at most 80 characters (the column's own check); empty is none.
 function cleanName(v: unknown): string | null {
@@ -124,7 +158,8 @@ Deno.serve(async (req: Request) => {
 
   const { data: caller } = await admin
     .from("profiles").select("role").eq("id", callerId).maybeSingle();
-  if (!caller || caller.role !== "teacher") return reply(403, { error: "NOT_A_TEACHER" });
+  if (!caller || (caller.role !== "teacher" && caller.role !== "admin")) return reply(403, { error: "NOT_A_TEACHER" });
+  const isAdmin = caller.role === "admin";
 
   let body: Record<string, unknown>;
   try {
@@ -135,8 +170,10 @@ Deno.serve(async (req: Request) => {
 
   const ownsClass = async (classId: unknown) => {
     if (typeof classId !== "string" || !classId) return false;
-    const { data } = await admin
-      .from("classes").select("id").eq("id", classId).eq("teacher_id", callerId).maybeSingle();
+    let q = admin.from("classes").select("id").eq("id", classId);
+    // Block 166: an administrator manages every section's students.
+    if (!isAdmin) q = q.eq("teacher_id", callerId);
+    const { data } = await q.maybeSingle();
     return Boolean(data);
   };
 
@@ -267,6 +304,105 @@ Deno.serve(async (req: Request) => {
       results.push(markErr ? { id, code, ok: false, error: "MARK_FAILED" } : { id, code, ok: true });
     }
     return reply(200, { results });
+  }
+
+  if (body.action === "move") {
+    const ids = Array.isArray(body.student_ids) ? [...new Set(body.student_ids)] : [];
+    if (!ids.length || ids.length > MAX_PER_CALL || ids.some((x) => typeof x !== "string" || !x)) {
+      return reply(400, { error: "BAD_REQUEST" });
+    }
+    if (!(await ownsClass(body.class_id))) return reply(403, { error: "NOT_YOUR_SECTION" });
+    const { data: rows, error: rowsErr } = await admin
+      .from("profiles").select("id, role, class_id").in("id", ids);
+    if (rowsErr) return reply(500, { error: "LOOKUP_FAILED" });
+    if ((rows || []).length !== ids.length) return reply(403, { error: "NOT_YOUR_STUDENT" });
+    const owned = new Map<string, boolean>();
+    for (const r of rows || []) {
+      if (r.role !== "student") return reply(403, { error: "NOT_YOUR_STUDENT" });
+      if (!owned.has(r.class_id)) owned.set(r.class_id, await ownsClass(r.class_id));
+      if (!owned.get(r.class_id)) return reply(403, { error: "NOT_YOUR_STUDENT" });
+    }
+    const { error: moveErr } = await admin.from("profiles")
+      .update({ class_id: body.class_id }).in("id", ids as string[]).eq("role", "student");
+    if (moveErr) return reply(500, { error: "MOVE_FAILED", detail: moveErr.message });
+    return reply(200, { moved: ids.length });
+  }
+
+  // ---- Block 166. Everything below is an administrator's. ----
+  if (typeof body.action === "string" && (body.action.startsWith("teacher-") || body.action.startsWith("section-"))) {
+    if (!isAdmin) return reply(403, { error: "NOT_AN_ADMIN" });
+
+    // A teacher by id, and nobody else: never a student, never an admin.
+    const teacherRow = async (id: unknown) => {
+      if (typeof id !== "string" || !id) return null;
+      const { data } = await admin.from("profiles").select("id, role, full_name").eq("id", id).maybeSingle();
+      return data && data.role === "teacher" ? data : null;
+    };
+
+    if (body.action === "teacher-create") {
+      const email = String(body.email || "").trim().toLowerCase();
+      const name = cleanName(body.name);
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 120) return reply(400, { error: "BAD_EMAIL" });
+      if (!name) return reply(400, { error: "BAD_NAME" });
+      const password = letters(12);
+      const { data: made, error: makeErr } = await admin.auth.admin.createUser({
+        email, password, email_confirm: true, user_metadata: { full_name: name },
+      });
+      if (makeErr || !made?.user) {
+        const taken = /already|registered|exists/i.test(makeErr?.message || "");
+        return reply(taken ? 409 : 500, { error: taken ? "EMAIL_IN_USE" : "CREATE_FAILED", detail: makeErr?.message });
+      }
+      // handle_new_user made the profile a student (schema v13); only
+      // here, with the service role, does it become a teacher.
+      const { error: roleErr } = await admin.from("profiles")
+        .update({ role: "teacher", full_name: name, class_id: null }).eq("id", made.user.id);
+      if (roleErr) return reply(500, { error: "ROLE_FAILED", detail: roleErr.message });
+      return reply(200, { id: made.user.id, email, password });
+    }
+
+    if (body.action === "teacher-reset") {
+      const t = await teacherRow(body.teacher_id);
+      if (!t) return reply(403, { error: "NOT_A_TEACHER_ACCOUNT" });
+      const password = letters(12);
+      const { data: upd, error } = await admin.auth.admin.updateUserById(t.id, { password });
+      if (error) return reply(500, { error: "RESET_FAILED", detail: error.message });
+      return reply(200, { email: upd?.user?.email || "", password });
+    }
+
+    if (body.action === "teacher-archive" || body.action === "teacher-restore") {
+      const t = await teacherRow(body.teacher_id);
+      if (!t) return reply(403, { error: "NOT_A_TEACHER_ACCOUNT" });
+      const archive = body.action === "teacher-archive";
+      const { error: banErr } = await admin.auth.admin.updateUserById(t.id,
+        { ban_duration: archive ? BAN_FOREVER : "none" });
+      if (banErr) return reply(500, { error: "BAN_FAILED" });
+      const { error: markErr } = await admin.from("profiles")
+        .update({ archived_at: archive ? new Date().toISOString() : null }).eq("id", t.id);
+      if (markErr) return reply(500, { error: "MARK_FAILED" });
+      return reply(200, { ok: true });
+    }
+
+    if (body.action === "section-create") {
+      const t = await teacherRow(body.teacher_id);
+      const name = cleanName(body.class_name);
+      if (!t) return reply(403, { error: "NOT_A_TEACHER_ACCOUNT" });
+      if (!name) return reply(400, { error: "BAD_NAME" });
+      const { data: made, error } = await admin.from("classes")
+        .insert({ teacher_id: t.id, class_name: name, join_code: "SEC-" + letters(10).toUpperCase() })
+        .select("id").single();
+      if (error || !made) return reply(500, { error: "SECTION_FAILED", detail: error?.message });
+      return reply(200, { id: made.id });
+    }
+
+    if (body.action === "section-assign") {
+      const t = await teacherRow(body.teacher_id);
+      if (!t) return reply(403, { error: "NOT_A_TEACHER_ACCOUNT" });
+      if (typeof body.class_id !== "string" || !body.class_id) return reply(400, { error: "BAD_REQUEST" });
+      const { data: upd, error } = await admin.from("classes")
+        .update({ teacher_id: t.id }).eq("id", body.class_id).select("id");
+      if (error || !upd?.length) return reply(500, { error: "ASSIGN_FAILED", detail: error?.message });
+      return reply(200, { ok: true });
+    }
   }
 
   return reply(400, { error: "BAD_ACTION" });

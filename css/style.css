@@ -1628,6 +1628,22 @@ html, body {
   }
 }
 
+/* Block 163. The menu and the login are allowed upright: a teacher who
+   only wants the dashboard need not turn the phone to type a password.
+   body.signed-out is shell.js's mirror of the login box (there until a
+   student or a guest is in), so the notice comes back the moment a
+   world is entered, and portrait is still not a layout the game plays
+   in. The camera steps back to 1 for it: the desktop's 1.75 on a screen
+   360 wide left a login box 205 wide. */
+@media (orientation: portrait) and (max-width: 900px) {
+  body.signed-out {
+    --zoom: 1;
+  }
+  body.signed-out #rotate-notice {
+    display: none;
+  }
+}
+
 #rotate-notice-inner {
   max-width: 280px;
 }
@@ -4944,3 +4960,68 @@ body.shell-menu-open #auth-overlay {
   font-size: 20px;
   line-height: 1.2;
 }
+
+/* Block 163. The menu upright (see ROTATE NOTICE): the column that sits
+   beside the picture on a screen held sideways takes the whole width
+   here, over the picture, and scrolls if the phone is short. At the end
+   of the file because #shell.shell-menu #shell-box above would outrank
+   the same rule placed earlier. */
+@media (orientation: portrait) and (max-width: 900px) {
+  body.signed-out #shell.shell-menu #shell-box {
+    width: 100%;
+    margin-left: 0;
+    padding: 20px 22px;
+    justify-content: flex-start;
+    overflow-y: auto;
+    background: rgba(var(--c-wood-deep-rgb), 0.72);
+  }
+}
+
+/* Block 167. Aking Pag-unlad. Sized against the theme's text, not the
+   older px rules (Pitfalls); it scrolls inside the wide box. */
+.prog {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  text-align: left;
+  font-size: 1.15em;
+  padding-right: 6px;
+}
+.prog-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 6px 0 10px;
+}
+.prog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 2px solid var(--px-edge);
+  background: rgba(0, 0, 0, 0.25);
+}
+.prog-value { color: var(--px-gold, #f4c542); font-size: 1.25em; }
+.prog-label { color: var(--c-cream-dim); }
+.prog-note { color: var(--c-cream-dim); margin: 4px 0; }
+.prog-act {
+  border: 2px solid var(--px-edge);
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.prog-act-head { display: flex; gap: 10px; align-items: baseline; }
+.prog-num { color: var(--px-gold, #f4c542); min-width: 2em; }
+.prog-title { flex: 1; color: var(--c-cream); }
+.prog-status { color: var(--c-cream-dim); }
+.prog-completed .prog-status { color: #9be08a; }
+.prog-locked, .prog-none { opacity: 0.6; }
+.prog-bar { height: 8px; background: rgba(0, 0, 0, 0.4); margin: 6px 0; }
+.prog-bar-fill { height: 100%; background: #4f9a3f; }
+.prog-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr max-content 1fr;
+  gap: 2px 12px;
+  margin: 0;
+}
+.prog-facts dt { color: var(--c-cream-dim); }
+.prog-facts dd { margin: 0; color: var(--c-cream); }

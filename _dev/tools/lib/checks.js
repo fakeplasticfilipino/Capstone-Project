@@ -58,7 +58,7 @@ const CONTROL = /[\u0000-\u0008\u000B\u000C\u000E-\u001F]/;
 
 function syntax() {
   const errors = [];
-  const text = jsFiles().concat(["index.html", "teacher.html"],
+  const text = jsFiles().concat(["index.html", "teacher.html", "admin.html"],
     fs.readdirSync(path.join(ROOT, "css")).map((f) => "css/" + f),
     fs.readdirSync(ROOT).filter((f) => /\.md$/.test(f)));
   for (const rel of jsFiles()) {

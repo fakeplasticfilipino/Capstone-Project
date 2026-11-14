@@ -82,7 +82,10 @@
             return Promise.resolve({ data: null, error: { message: T.insertError[table] } });
           }
           const list = Array.isArray(payload) ? payload : [payload];
-          const added = list.map((p) => Object.assign({}, p));
+          // Block 164: a section made from the dashboard gets its id from
+          // the database (gen_random_uuid), so the stub gives one too.
+          const added = list.map((p, i) => Object.assign(
+            table === "classes" && !p.id ? { id: "sec-" + (rows.length + i + 1) } : {}, p));
           rows.push(...added);
           data = m === "single" ? added[0] : added;
         } else if (op === "upsert") {
@@ -307,6 +310,38 @@
             return { id, code, ok: true };
           });
           return Promise.resolve({ data: { results }, error: null });
+        }
+        // Block 164. Students to another section: only class_id changes.
+        if (body.action === "move") {
+          const moved = (db.profiles || []).filter((p) => (body.student_ids || []).includes(p.id));
+          moved.forEach((p) => { p.class_id = body.class_id; });
+          return Promise.resolve({ data: { moved: moved.length }, error: null });
+        }
+        // Block 166. The administrator's actions, as the live function.
+        if (body.action === "teacher-create") {
+          db.profiles = db.profiles || [];
+          const id = "teacher-" + (db.profiles.length + 1);
+          db.profiles.push({ id, role: "teacher", full_name: body.name, class_id: null });
+          return Promise.resolve({ data: { id, email: body.email, password: "abcdefgh2345" }, error: null });
+        }
+        if (body.action === "teacher-reset") {
+          return Promise.resolve({ data: { email: "t@example.com", password: "newpass23456" }, error: null });
+        }
+        if (body.action === "teacher-archive" || body.action === "teacher-restore") {
+          const p = (db.profiles || []).find((x) => x.id === body.teacher_id);
+          if (p) p.archived_at = body.action === "teacher-archive" ? "2026-11-14T00:00:00Z" : null;
+          return Promise.resolve({ data: { ok: true }, error: null });
+        }
+        if (body.action === "section-create") {
+          db.classes = db.classes || [];
+          const id = "sec-" + (db.classes.length + 1);
+          db.classes.push({ id, class_name: body.class_name, teacher_id: body.teacher_id, join_code: "S" });
+          return Promise.resolve({ data: { id }, error: null });
+        }
+        if (body.action === "section-assign") {
+          const c = (db.classes || []).find((x) => x.id === body.class_id);
+          if (c) c.teacher_id = body.teacher_id;
+          return Promise.resolve({ data: { ok: true }, error: null });
         }
         return Promise.resolve({ data: null, error: { message: "BAD_ACTION" } });
       },

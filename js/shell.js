@@ -106,7 +106,11 @@ const Shell = {
         act: document.getElementById("shell-act-panel"),
         review: document.getElementById("shell-review-confirm"),
         howto: document.getElementById("shell-howto-panel"), // Block 156
+        progress: document.getElementById("shell-progress-panel"), // Block 167
       },
+      progressBtn: document.getElementById("shell-progress"),
+      progressBack: document.getElementById("shell-progress-back"),
+      progressBody: document.getElementById("shell-progress-body"),
       howtoBtn: document.getElementById("shell-howto"),
       howtoBack: document.getElementById("shell-howto-back"),
       chaptersBtn: document.getElementById("shell-chapters"),
@@ -173,6 +177,17 @@ const Shell = {
     this.el.startBtn.addEventListener("click", () => this._onStart());
     const authBack = document.getElementById("auth-back");
     if (authBack) authBack.addEventListener("click", () => this._onAuthBack());
+    // Block 163. body.signed-out while the login box is on the page
+    // (game.js hides it once a student or a guest is in), read by the
+    // stylesheet to allow the menu and the login upright. Watched here
+    // rather than set at each place game.js shows or hides the box, so
+    // a new one cannot be missed.
+    const authOverlay = document.getElementById("auth-overlay");
+    if (authOverlay) {
+      const mirror = () => document.body.classList.toggle("signed-out", !authOverlay.classList.contains("hidden"));
+      mirror();
+      new MutationObserver(mirror).observe(authOverlay, { attributes: true, attributeFilter: ["class"] });
+    }
     if (this.el.guestBtn) {
       this.el.guestBtn.addEventListener("click", () => this._onGuestStart());
     }
@@ -212,6 +227,17 @@ const Shell = {
       this._showPanel("howto");
     });
     this.el.howtoBack.addEventListener("click", () => this._backToTitle());
+    // Block 167. Aking Pag-unlad, a signed-in student's own numbers,
+    // from the menu and back to it. progress.js is optional.
+    if (this.el.progressBtn) {
+      this.el.progressBtn.addEventListener("click", () => {
+        if (this.entered || !window.Progress || !this._menuIsStudent()) return;
+        this.state = "progress";
+        this._showPanel("progress");
+        Progress.show(this.el.progressBody);
+      });
+      this.el.progressBack.addEventListener("click", () => this._backToTitle());
+    }
     this.el.actBack.addEventListener("click", () => this._openChapters());
     this.el.actsList.addEventListener("click", (e) => {
       const card = e.target.closest("[data-act]");
@@ -345,6 +371,7 @@ const Shell = {
       else if (this.state === "shop") this._closeShop();
       else if (this.state === "chapters") this._backToTitle();
       else if (this.state === "howto") this._backToTitle();
+      else if (this.state === "progress") this._backToTitle();
       else if (this.state === "act") this._openChapters();
       else if (this.state === "review") this._openAct(this.pickedAct);
     });
@@ -629,6 +656,7 @@ const Shell = {
     const student = this._menuIsStudent();
     if (this.el.guestBtn) this.el.guestBtn.classList.toggle("hidden", student);
     this.el.titleLogoutBtn.classList.toggle("hidden", !student);
+    if (this.el.progressBtn) this.el.progressBtn.classList.toggle("hidden", !student || !window.Progress);
     this.el.chaptersBtn.disabled = !this.sessionKnown || !this._menuActs().length;
     this._setSub(this.el.chaptersBtn,
       student ? "Balikan ang mga natapos" : "Pumili ng yugto at bahagi");
@@ -1973,7 +2001,7 @@ const Shell = {
     if (this.el.box) {
       this.el.box.classList.toggle("shell-box-wide",
         name === "inventory" || name === "shop" || name === "notebook" ||
-        name === "chapters" || name === "act" || name === "howto");
+        name === "chapters" || name === "act" || name === "howto" || name === "progress");
     }
     // Block 144. The menu stands over the world rather than in a box in
     // the middle of it (shell-menu), and the play controls behind it are

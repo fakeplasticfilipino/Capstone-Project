@@ -9,7 +9,20 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 10 Nov 2026, Block 162: the pre-deployment check (both
+Last updated: 14 Nov 2026, Blocks 163 to 167, the instructor's list:
+the hearts always shown; the menu and login allowed upright; Delete
+says why it is greyed (every account has played; the rule stands);
+sections made by the teacher, students moved between them; a class
+list uploaded as the school made it (.xlsx or .csv, columns chosen);
+the administrator's page (admin.html); Aking Pag-unlad, a student's own
+dashboard. BUILT AND TESTED AGAINST THE STUB, NOT YET LIVE where it
+needs the database: migration 018 is NOT RUN and create-students
+version 4 is NOT DEPLOYED (Run log), so until then Move to section and
+everything on admin.html answer "the server has not been updated", and
+no admin account exists. Sections, the upload, the hearts, the upright
+login and Aking Pag-unlad need neither and work now. Not done: new
+cover pictures for the four acts (waiting on which pictures). Before
+it, Block 162: the pre-deployment check (both
 suites, all 50 story points at a phone's size, random play, the live
 site, the database read): six things fixed. The end of the game has a
 way back to the menu; a replay clears only its own act's flags; a
@@ -1257,6 +1270,18 @@ Trust this over any memory of a chat.
                                         for a student, the teacher and a
                                         visitor the same before and after
                                         (80, 80, 0), every item single
+    db/migrations/018_macario_schema_v18.sql   NOT RUN (written 14 Nov
+                                        2026, Block 166; waits for the
+                                        proponent's yes). The role
+                                        admin, private.is_admin(), two
+                                        SELECT policies
+    db/functions/create-students               version 4 NOT DEPLOYED
+                                        (the same): move, and the
+                                        administrator's actions
+    the first administrator                    NOT MADE: an account made
+                                        in Supabase's Authentication,
+                                        then its profile's role set to
+                                        admin, by the developers
     db/seeds/macario_items_acts2to4.sql        RUN, 7 Nov 2026, the same.
                                         Acts II to IV's built-in
                                         questions copied into
@@ -1714,6 +1739,16 @@ machine, the assessment module.
         flags; a failed questions read tried again and said, never
         the built-in test; names out; the documents and the
         database's state brought in line; test.js CC
+    163 hearts always shown; the menu and login upright
+        (body.signed-out); Delete says why; test.js AC, AS
+    164 sections: made, renamed, deleted when empty by the teacher;
+        students moved (create-students "move"); test.js CD
+    165 a class list uploaded as it is (.xlsx read with no library,
+        .csv), columns chosen, rows ticked; test.js CD
+    166 the administrator: admin.html, schema v18 (NOT RUN),
+        create-students version 4 (NOT DEPLOYED); test.js CD
+    167 Aking Pag-unlad, a student's own dashboard (progress.js);
+        test.js CD
 
 ## Blocks remaining
 

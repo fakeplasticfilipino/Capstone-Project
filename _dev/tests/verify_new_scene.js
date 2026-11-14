@@ -1562,8 +1562,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
       return { shown: n && !n.hidden, x: n && n.x };
     });
     ok("the Kasama waits on the street, left of the direktor", kasamaSt.shown && kasamaSt.x === 12500, kasamaSt);
-    ok("and no guardia civil walks the street yet, and no hearts show (Block 81)", await page.evaluate(() =>
-      GUARDS.length === 0 && document.getElementById("hud").classList.contains("hidden")));
+    ok("and no guardia civil walks the street yet (Block 81), the hearts shown all the same (Block 163)", await page.evaluate(() =>
+      GUARDS.length === 0 && !document.getElementById("hud").classList.contains("hidden")));
     await walkTo(page, 12380);
     await page.keyboard.press("e");
     const w1 = await readConversation(page, 6);

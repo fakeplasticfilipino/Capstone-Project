@@ -147,7 +147,11 @@ justification for the entire technical approach and should not be traded
 away for convenience.
 
 Landscape is the intended orientation and portrait is not a second
-supported layout. A phone held upright gets a rotate notice instead. That
+supported layout. A phone held upright gets a rotate notice instead
+(since Block 163 only once someone is in the world: the menu and the
+login are allowed upright, so a teacher need not turn the phone to
+reach the dashboard; body.signed-out, shell.js's mirror of the login
+box, is what the stylesheet reads). That
 one decision is what removed the mobile control overflow from the work
 rather than fixing it, because the overflow only ever happened in
 portrait.
@@ -160,6 +164,9 @@ off the repository.
 
     index.html, teacher.html   the two pages; they must stay at the root,
                                because the Pages URL serves index.html
+    admin.html                 the administrator's page (Block 166):
+                               teachers' accounts and which teacher a
+                               section belongs to; js/admin.js
     teacher-guide.html         the teacher's guide, one printable page
                                linked from the dashboard (Block 128); no
                                script. A change to what a student sees
@@ -178,6 +185,10 @@ off the repository.
                                teacher-talaan, teacher-report
                                (Block 128), teacher-accounts (Block
                                132), teacher-feedback (Block 161),
+                               teacher-sections (Blocks 164, 165:
+                               sections and the class list upload),
+                               admin (Block 166), progress (Block 167:
+                               a student's own dashboard, optional),
                                supabaseClient), and
                                asset-manifest.js, the list of every file
                                under assets/, written by a tool (Block 78);
@@ -490,6 +501,8 @@ Load order in index.html, which is load bearing:
                          parse time (Block 78)
     game.js
     acts.js              after game.js
+    progress.js          Block 167; optional, read only, drawn by
+                         shell.js on the menu
     inventory.js         after acts.js, which is what calls it
     assessment.js        after acts.js
     shell.js             last
@@ -651,7 +664,8 @@ Scene shape:
     {
       id,                                        persisted as current_room
       worldWidth, startX,
-      dangerous: true,                           optional; shows the hearts
+      dangerous: true,                           optional; accepted, unread
+                                                 since Block 163
       night: true | { requiresFlag, unlessFlag,  optional; moonlit backdrop
                music },                          and its own track (Block 85)
       greyFilter: true,                          optional; greys backdrop + ground
@@ -852,10 +866,10 @@ A hazard's reason is the Tagalog toast shown on contact and defaults to
 there is no y. A pickup's y is optional and defaults to the floor, so a
 heart can be placed on a platform.
 
-A scene counts as dangerous, and therefore shows the hearts, if it declares
-dangerous, or declares any guard, or declares any hazard. The explicit flag
-still wins. The derivation exists because a scene that adds a hazard and
-forgets the flag would take a heart the student cannot see.
+The hearts are always shown (Block 163, the instructor). Until then a
+scene showed them only if it declared dangerous, a guard on duty, a
+hazard or a live enemy; the dangerous field is still accepted and no
+longer read.
 
 The guide (Block 125, Block 42's brought back after Block 69 removed
 it; for everyone, always on, with no setting to turn it off). An arrow
@@ -1970,7 +1984,11 @@ also the auth service).
 
 Edge Functions (Block 132): create-students, the account maker (since
 Block 150 it also archives, restores and deletes students; since Block
-159 it writes their names, on create or by its rename action),
+159 it writes their names, on create or by its rename action; since
+Block 164 it moves students between a teacher's sections; since Block
+166 an administrator may call all of it for any section, and it alone
+makes, resets and archives teachers and makes or hands over a section
+for one),
 source in db/functions/create-students/index.ts, deployed with the
 connector's deploy_edge_function and verify_jwt false (it checks the
 caller's token itself; the publishable key is not a JWT). A change to
@@ -2033,6 +2051,27 @@ duplicates a column reachable by join.
 feedback has no update and no delete policy, deliberately. A student who
 wants to change their answer has no mechanism, which is correct for a
 research instrument.
+
+THE ADMINISTRATOR (Block 166, schema v18). profiles.role may be admin.
+An administrator reads every profile and every class (two SELECT
+policies through private.is_admin()) and nothing a student did: no
+policy on any play table names an admin, so scores stay the teacher's.
+An admin writes nothing from a browser; every change is a
+create-students action. Nobody becomes an admin from any page: the
+first is made by the developers, by hand (TRACKER.md, Run log), which
+is the one thing the game still needs its developers for. At the game's
+login an admin is sent to admin.html; on teacher.html an admin sees
+every section and the Students tab only.
+
+SECTIONS (Block 164). A section is a row of classes. A teacher makes,
+renames and deletes (only when empty: the foreign key would otherwise
+leave its students in no section) her own from the Students tab, under
+the policy she has had since schema v1; moving students is the
+function's. The class list upload (Block 165, js/teacher-sections.js)
+reads an .xlsx or .csv as the school made it, with the browser's own
+DecompressionStream and DOMParser and no library; the teacher says
+which column is the name and which, if any, the section, and nothing is
+made until she confirms.
 
 ARCHIVING AND DELETING STUDENTS (Block 150). A student who has played
 is archived, never deleted: profiles.archived_at (schema v14) and a
@@ -2304,7 +2343,9 @@ honestly described, build that rather than the full version.
 The rules set in Blocks 1 to 12, which every session needs; moved
 here from Decisions on record in Block 79 (DECISIONS.md keeps the rest).
 
-Class assignment is administrator-assigned. Students cannot self-register.
+Class assignment is administrator-assigned (since Blocks 164 and 166 by
+the teacher, who makes her own sections, or by an administrator, who
+makes the teachers). Students cannot self-register.
 The join_code column exists but no student-facing join screen is built.
 This is a deliberate change from the proposal's User Authentication
 requirement and is the right one for supervised classroom sessions.
@@ -2818,6 +2859,14 @@ look, by system:
                                           the database as it stands)
     the Feedback tab                      Block 161 (the optional form
                                           shown at last; a fifth query)
+    hearts always shown, the login        Block 163 (and why Delete was
+      upright                             greyed)
+    sections, the class list upload       Blocks 164, 165 (no library;
+                                          any sheet, columns chosen)
+    the administrator                     Block 166 (schema v18; reads
+                                          accounts, never scores)
+    a student's own dashboard             Block 167 (Aking Pag-unlad,
+                                          read only)
     the artist's Drive delivery of 15     Block 133 (Act II's paintings,
       Oct: paintings, people; the         nine people keyed from black),
       new street tried and taken out      134 (the old street back, its

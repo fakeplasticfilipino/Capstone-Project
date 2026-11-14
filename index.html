@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>MACARIO</title>
-  <link rel="stylesheet" href="css/style.css?v=1075055903" />
+  <link rel="stylesheet" href="css/style.css?v=1897501950" />
 </head>
 <body>
   <!-- ICON SPRITE.
@@ -330,6 +330,12 @@
               <span class="ico"><svg aria-hidden="true"><use href="#i-play"></use></svg></span><span class="lbl">Simulan dito</span>
             </button>
           </div>
+          <!-- Block 167. A signed-in student's own dashboard: overview,
+               progress and status. Hidden for a visitor and a guest, and
+               without js/progress.js. -->
+          <button id="shell-progress" class="shell-btn shell-btn-ghost hidden" type="button">
+            <span class="ico"><svg aria-hidden="true"><use href="#i-book"></use></svg></span><span class="lbl" data-sub="Mga marka at natapos">Aking Pag-unlad</span>
+          </button>
           <!-- Block 156 (the proponent: better instructions). Every
                control and what the screen shows, on one card. -->
           <button id="shell-howto" class="shell-btn shell-btn-ghost" type="button">
@@ -370,6 +376,21 @@
             <dt>Barya at Bag</dt><dd>May barya sa bawat natapos na gawain. Bumili sa tindahan; isuot ang iyong mga gamit mula sa Bag.</dd>
             <dt>Talaan</dt><dd>Ang mga salita, pangyayari at papel na nakita mo, nasa Talaan ng pause.</dd>
           </dl>
+        </div>
+
+        <!-- Block 167. Aking Pag-unlad, drawn by js/progress.js from the
+             student's own rows. -->
+        <div id="shell-progress-panel" class="shell-panel shell-panel-wide hidden">
+          <div class="inv-head">
+            <div class="inv-title">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-book"></use></svg></span>
+              <h2 class="shell-heading">Aking Pag-unlad</h2>
+            </div>
+            <button id="shell-progress-back" class="shell-btn shell-btn-ghost inv-back" type="button">
+              <span class="ico"><svg aria-hidden="true"><use href="#i-back"></use></svg></span><span class="lbl">Bumalik</span>
+            </button>
+          </div>
+          <div id="shell-progress-body" class="prog"></div>
         </div>
 
         <!-- Block 144. Mga Kabanata: the four acts as cards. Built by
@@ -748,10 +769,11 @@
   <script src="content/items.js?v=535744512"></script>
   <script src="content/questions.js?v=2144419295"></script>
   <script src="js/asset-manifest.js?v=2173999649"></script>
-  <script src="js/game.js?v=3792906234"></script>
+  <script src="js/game.js?v=1282209957"></script>
   <script src="js/acts.js?v=1774922560"></script>
+  <script src="js/progress.js?v=953924083"></script>
   <script src="js/inventory.js?v=2872116366"></script>
   <script src="js/assessment.js?v=363895429"></script>
-  <script src="js/shell.js?v=924480833"></script>
+  <script src="js/shell.js?v=2837805200"></script>
 </body>
 </html>

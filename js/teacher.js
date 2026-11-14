@@ -78,6 +78,7 @@ const attentionEl = document.getElementById("attention");
 const stepsEl = document.getElementById("start-steps");
 
 let teacherProfile = null;
+let isAdmin = false; // Block 166
 let currentStudents = [];
 let classesById = new Map();
 let currentClassId = null;
@@ -200,13 +201,25 @@ async function initTeacher() {
     return;
   }
 
-  if (!profile || profile.role !== "teacher") {
+  // Block 166. An administrator reaches this page from the Admin page,
+  // to manage any section's students: every section is listed, and only
+  // the Students tab is shown, since no score is an administrator's to
+  // read (the policies give an admin accounts and sections, nothing of
+  // what a student did).
+  if (!profile || (profile.role !== "teacher" && profile.role !== "admin")) {
     bounceToGame("This is not a teacher account.");
     return;
   }
 
   teacherProfile = profile;
-  teacherNameEl.textContent = profile.full_name || "Teacher";
+  isAdmin = profile.role === "admin";
+  teacherNameEl.textContent = profile.full_name || (isAdmin ? "Administrator" : "Teacher");
+  if (isAdmin) {
+    document.body.classList.add("admin-view");
+    const roleEl = document.querySelector("#dash-user .user-role");
+    if (roleEl) roleEl.textContent = "Administrator";
+    location.hash = "students";
+  }
 
   gate.classList.add("hidden");
   dash.classList.remove("hidden");
@@ -233,12 +246,15 @@ logoutBtn.addEventListener("click", async () => {
 // Classes
 // =============================================================
 
-async function loadClasses(teacherId) {
-  const { data: classes, error } = await sb
-    .from("classes")
-    .select("id, class_name, join_code")
-    .eq("teacher_id", teacherId)
-    .order("class_name");
+// Block 164. Called again whenever a section is made, renamed or
+// deleted (TeacherDash.reloadClasses), keeping the one on screen unless
+// another is asked for.
+async function loadClasses(teacherId, selectId) {
+  let query = sb.from("classes").select("id, class_name, join_code, teacher_id").order("class_name");
+  // An administrator's policy shows every section; a teacher's only her
+  // own, and the filter says so twice.
+  if (!isAdmin) query = query.eq("teacher_id", teacherId);
+  const { data: classes, error } = await query;
 
   if (error) {
     showLoadError("Could not load the class list.", error);
@@ -248,8 +264,10 @@ async function loadClasses(teacherId) {
   if (!classes || classes.length === 0) {
     loadingEl.classList.add("hidden");
     noClassEl.classList.remove("hidden");
+    if (window.TeacherSections) TeacherSections.init();
     return;
   }
+  noClassEl.classList.add("hidden");
 
   classesById = new Map(classes.map((c) => [c.id, c]));
   classPicker.innerHTML = "";
@@ -262,13 +280,16 @@ async function loadClasses(teacherId) {
 
   // A dropdown holding one option is just noise, so only show the
   // picker when there is an actual choice to make.
-  if (classes.length > 1) {
-    classPickerRow.classList.remove("hidden");
+  classPickerRow.classList.toggle("hidden", classes.length < 2);
+
+  if (!classPicker.dataset.bound) {
+    classPicker.dataset.bound = "1";
+    classPicker.addEventListener("change", () => { picked.clear(); loadRoster(classPicker.value); });
   }
 
-  classPicker.addEventListener("change", () => loadRoster(classPicker.value));
-
-  await loadRoster(classes[0].id);
+  const first = classesById.has(selectId) ? selectId : classes[0].id;
+  classPicker.value = first;
+  await loadRoster(first);
 }
 
 // =============================================================
@@ -299,6 +320,7 @@ async function loadRoster(classId) {
   // Block 132. The accounts card belongs to the class, not to its
   // students: it is how the first ones are made.
   if (window.TeacherAccounts) TeacherAccounts.show(cls, currentStudents);
+  if (window.TeacherSections) TeacherSections.show(cls, [...classesById.values()], isAdmin);
 
   if (!students || students.length === 0) {
     lastFetch = null;
@@ -692,6 +714,21 @@ function renderBulk() {
   bulk.del.disabled = !rows.length || !rows.every((r) => r.archived && r.neverUsed);
   bulk.del.title = rows.length && !bulk.del.disabled ? "" :
     "Only archived accounts that were never used can be deleted.";
+  // Block 163. A greyed Delete read as broken (the proponents, 14 Nov
+  // 2026): the reason was only in a tooltip, which a phone never shows.
+  // Said in the status line, by name, whenever the view is the archived
+  // one and someone ticked has played.
+  const played = rows.filter((r) => !r.neverUsed);
+  if (showArchived && played.length && !bulk.status.classList.contains("qe-ok")) {
+    const names = played.slice(0, 6).map((r) => r.code || r.name).join(", ") + (played.length > 6 ? " and " + (played.length - 6) + " more" : "");
+    bulk.status.textContent = "Cannot be deleted, because they have played: " + names +
+      ". Their scores are kept; an archived account is already out of the roster and cannot log in.";
+    bulk.status.className = "qe-status";
+    bulk.status.dataset.why = "1";
+  } else if (bulk.status.dataset.why) {
+    bulk.status.textContent = "";
+    delete bulk.status.dataset.why;
+  }
   bulk.unused.disabled = !currentRows.some((r) => r.neverUsed);
   bulk.archivedCount.textContent = archivedN ? "(" + archivedN + ")" : "";
   const shownPicked = shownIds.filter((id) => picked.has(id)).length;
@@ -975,6 +1012,10 @@ document.getElementById("sc-name-save").addEventListener("click", async () => {
 window.TeacherDash = {
   classId: () => currentClassId,
   reload: () => (currentClassId ? loadRoster(currentClassId) : Promise.resolve()),
+  // Block 164, for js/teacher-sections.js.
+  reloadClasses: (selectId) => loadClasses(teacherProfile.id, selectId || currentClassId),
+  pickedRows: () => pickedRows(),
+  clearPicked: () => picked.clear(),
   markSlipsPrinted,
 };
 

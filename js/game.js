@@ -4055,21 +4055,13 @@ function hudEls() {
 function updateHudVisibility() {
   const hudEl = hudEls().root;
   if (!hudEl) return;
-  // Hearts only appear where something can take them. Derived rather than
-  // read straight off the flag, because a scene that declares a hazard and
-  // forgets the flag would take a heart the student cannot see, and that
-  // failure is silent. The explicit flag still works and still wins.
-  const dangerous = Boolean(
-    currentScene &&
-      (currentScene.dangerous ||
-        // Block 81. The guards on duty, not every one the scene names:
-        // a guard placed for a later beat is no reason for hearts now.
-        GUARDS.length ||
-        (currentScene.hazards && currentScene.hazards.length) ||
-        ENEMIES.some((e) => !e.dead))
-  );
-  hudEl.classList.toggle("hidden", !dangerous);
-  if (dangerous) renderHearts();
+  // Block 163 (the instructor): the hearts are always shown. Until then
+  // they appeared only where something could take them (the scene's
+  // dangerous flag, a guard on duty, a hazard, an enemy up), and a
+  // student met them for the first time in the middle of a fight. A
+  // scene's dangerous field is still accepted and no longer read here.
+  hudEl.classList.remove("hidden");
+  renderHearts();
 }
 
 function renderHearts() {
@@ -8990,6 +8982,15 @@ async function enterGameAsUser(userId) {
   if (profileError) {
     console.error("Profile fetch failed:", profileError);
     authStatus.textContent = "May error sa account. Subukan ulit.";
+    return;
+  }
+
+  // Block 166. An administrator is not a player either, and has a page
+  // of their own.
+  if (profile && profile.role === "admin") {
+    authStatus.textContent = "Administrator account, inililipat...";
+    authStatus.className = "success";
+    window.location.replace("admin.html");
     return;
   }
 

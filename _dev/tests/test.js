@@ -1899,6 +1899,35 @@ const visible = (page, sel) => page.evaluate((s) => {
        await page.evaluate(() => uiBlocked === false));
 
     await ctx.close();
+
+    // Block 163. The menu and the login are allowed upright, so a teacher
+    // need not turn the phone to reach the dashboard; the notice is back
+    // the moment someone is in the world.
+    const up = await newPage({ session: null }, null, { width: 412, height: 823 });
+    await up.page.waitForTimeout(500);
+    ok("signed out and upright, the menu shows and the notice does not (Block 163)",
+       !(await visible(up.page, "#rotate-notice")) && await visible(up.page, "#shell-start"));
+    const startBox = await up.page.evaluate(() => {
+      const r = document.getElementById("shell-start").getBoundingClientRect();
+      return { left: r.left, right: r.right, height: r.height, w: innerWidth };
+    });
+    ok("its buttons fit the upright screen, 44px tall on glass",
+       startBox.left >= 0 && startBox.right <= startBox.w && startBox.height >= 44, startBox);
+    await up.page.click("#shell-start");
+    await up.page.waitForTimeout(200);
+    const loginBox = await up.page.evaluate(() => {
+      const r = document.getElementById("auth-box").getBoundingClientRect();
+      return { left: r.left, right: r.right, w: innerWidth };
+    });
+    ok("the login box is reachable upright and fits",
+       await visible(up.page, "#auth-submit") && loginBox.left >= 0 && loginBox.right <= loginBox.w, loginBox);
+    await up.page.fill("#auth-email", "hi@example.com");
+    await up.page.fill("#auth-password", "x");
+    await up.page.click("#auth-submit");
+    await up.page.waitForTimeout(700);
+    ok("once a student is in, upright is the rotate notice again",
+       await visible(up.page, "#rotate-notice"));
+    await up.ctx.close();
   }
 
   if (section("AD", "Every button carries an icon")) {
@@ -3800,8 +3829,8 @@ const visible = (page, sel) => page.evaluate((s) => {
                speed: ENEMIES[0].speed, playerSpeed: SPEED };
     });
     ok("spawnEnemies puts them in the world", fight.count === 2 && fight.alive, fight);
-    ok("a safe scene shows no hearts until they arrive",
-       fight.heartsBefore === true && fight.hearts === true, fight);
+    ok("the hearts show before the fight as in it (Block 163: always shown)",
+       fight.heartsBefore === false && fight.hearts === true, fight);
     ok("and they are slower than Macario, like a guard", fight.speed < fight.playerSpeed, fight);
 
     // Long enough to cross the 180px between them at their own speed.
@@ -3909,7 +3938,7 @@ const visible = (page, sel) => page.evaluate((s) => {
                                  exitAgain: nearby.type }), FIGHT_END_BEAT_MS + 400);
     }));
     ok("beating the last one resolves what the script is waiting on", won.won === true, won);
-    ok("the hearts go away with them", won.hearts, won);
+    ok("the hearts stay once they are down (Block 163)", won.hearts === false, won);
     ok("and the doorway is offered again", won.exitAgain === "exit", won);
 
     // ---- The attack is a movement: a dash through the enemy.
@@ -7909,8 +7938,8 @@ const visible = (page, sel) => page.evaluate((s) => {
 
     const [download] = await Promise.all([page.waitForEvent("download"), page.click("#acct-csv")]);
     const csv = require("fs").readFileSync(await download.path(), "utf8").replace(/^\ufeff/, "").split(/\r\n/);
-    ok("the accounts download as a spreadsheet: code, password, a column for the name",
-       csv[0] === "code,password,name" && csv.length === 4 && /^rizal-01,\d{6},$/.test(csv[1]), csv);
+    ok("the accounts download as a spreadsheet: code, password, a column for the name, the section (Block 165)",
+       csv[0] === "code,password,name,section" && csv.length === 4 && /^rizal-01,\d{6},,MAC8-RIZAL$/.test(csv[1]), csv);
 
 
     // A refusal from the function is said in plain words.
@@ -7990,7 +8019,7 @@ const visible = (page, sel) => page.evaluate((s) => {
     const [dl2] = await Promise.all([page.waitForEvent("download"), page.click("#acct-csv")]);
     const csv2 = require("fs").readFileSync(await dl2.path(), "utf8").replace(/^\ufeff/, "").split(/\r\n/);
     ok("and in the spreadsheet, a name with a comma quoted (Block 159)",
-       csv2.some((l) => l === maria + "," + l.split(",")[1] + ',"Maria, Santos"'), csv2);
+       csv2.some((l) => l === maria + "," + l.split(",")[1] + ',"Maria, Santos",MAC8-RIZAL'), csv2);
     await page.click("#roster-body tr:has-text('Juan dela Cruz') .name-btn");
     await page.fill("#sc-name-input", "Ana Reyes");
     await page.click("#sc-name-save");
@@ -8601,6 +8630,331 @@ const visible = (page, sel) => page.evaluate((s) => {
     ok("and it lands on the menu, signed in, with Mag-log Out there",
        menu.state === "title" && menu.screen && menu.logout, menu);
     await r3.ctx.close();
+  }
+
+  if (section("CD", "Blocks 164 to 166: sections, a class list uploaded, the administrator")) {
+    const zlib = require("zlib");
+    // A workbook as Excel writes one: a zip of XML, deflated, built here
+    // so the page's own reader is what is tested.
+    const makeZip = (files) => {
+      const parts = [], central = [];
+      let offset = 0;
+      for (const [name, text] of Object.entries(files)) {
+        const raw = Buffer.from(text, "utf8");
+        const data = zlib.deflateRawSync(raw);
+        const nameBuf = Buffer.from(name, "utf8");
+        const local = Buffer.alloc(30);
+        local.writeUInt32LE(0x04034b50, 0); local.writeUInt16LE(20, 4); local.writeUInt16LE(8, 8);
+        local.writeUInt32LE(zlib.crc32 ? zlib.crc32(raw) : 0, 14);
+        local.writeUInt32LE(data.length, 18); local.writeUInt32LE(raw.length, 22); local.writeUInt16LE(nameBuf.length, 26);
+        const head = Buffer.alloc(46);
+        head.writeUInt32LE(0x02014b50, 0); head.writeUInt16LE(20, 4); head.writeUInt16LE(20, 6); head.writeUInt16LE(8, 10);
+        head.writeUInt32LE(data.length, 20); head.writeUInt32LE(raw.length, 24); head.writeUInt16LE(nameBuf.length, 28);
+        head.writeUInt32LE(offset, 42);
+        parts.push(local, nameBuf, data);
+        central.push(head, nameBuf);
+        offset += 30 + nameBuf.length + data.length;
+      }
+      const cd = Buffer.concat(central);
+      const eocd = Buffer.alloc(22);
+      eocd.writeUInt32LE(0x06054b50, 0); eocd.writeUInt16LE(central.length / 2, 8); eocd.writeUInt16LE(central.length / 2, 10);
+      eocd.writeUInt32LE(cd.length, 12); eocd.writeUInt32LE(offset, 16);
+      return Buffer.concat([...parts, cd, eocd]);
+    };
+    // A class list made by a school, not for this game: a title, a blank
+    // row, a header that is not on the first row, a number column, the
+    // word MALE between the names, and the section given once per group.
+    const strings = ["Republic High School", "CLASS LIST S.Y. 2026", "No.", "LEARNER'S NAME", "Section",
+      "MALE", "Dela Cruz, Juan", "Rizal", "Santos, Pedro", "FEMALE", "Reyes, Maria", "Bonifacio", "Garcia, Ana"];
+    const si = (t) => "<si><t>" + t.replace(/&/g, "&amp;") + "</t></si>";
+    const c = (ref, i) => '<c r="' + ref + '" t="s"><v>' + i + "</v></c>";
+    const n = (ref, v) => '<c r="' + ref + '"><v>' + v + "</v></c>";
+    const sheet = '<?xml version="1.0"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>' +
+      '<row r="1">' + c("A1", 0) + "</row>" +
+      '<row r="2">' + c("A2", 1) + "</row>" +
+      '<row r="4">' + c("A4", 2) + c("B4", 3) + c("C4", 4) + "</row>" +
+      '<row r="5">' + c("B5", 5) + "</row>" +
+      '<row r="6">' + n("A6", 1) + c("B6", 6) + c("C6", 7) + "</row>" +
+      '<row r="7">' + n("A7", 2) + c("B7", 8) + "</row>" +
+      '<row r="8">' + c("B8", 9) + "</row>" +
+      '<row r="9">' + n("A9", 3) + c("B9", 10) + c("C9", 11) + "</row>" +
+      '<row r="10">' + n("A10", 4) + c("B10", 12) + "</row>" +
+      "</sheetData></worksheet>";
+    const xlsx = makeZip({
+      "xl/workbook.xml": '<?xml version="1.0"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Grade 8" sheetId="1" r:id="rId1"/></sheets></workbook>',
+      "xl/_rels/workbook.xml.rels": '<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="x" Target="worksheets/sheet1.xml"/></Relationships>',
+      "xl/sharedStrings.xml": '<?xml version="1.0"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + strings.map(si).join("") + "</sst>",
+      "xl/worksheets/sheet1.xml": sheet,
+    });
+
+    const open = async (seed, url) => {
+      const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+      const page = await ctx.newPage();
+      page.on("pageerror", (e) => { fail++; console.log("  FAIL  pageerror: " + e.message); });
+      page.on("dialog", (d) => d.accept());
+      await page.route("**/supabaseClient.js*", (route) =>
+        route.fulfill({ body: STUB, contentType: "text/javascript" }));
+      await page.route("**/js/vendor/supabase.js*", (route) =>
+        route.fulfill({ body: "", contentType: "text/javascript" }));
+      await page.addInitScript((st) => { window.__TEST = st; window.__CALLS = []; }, seed);
+      await page.goto("http://localhost:" + PORT + "/" + url);
+      return { ctx, page };
+    };
+
+    // ---- A teacher with no section makes her first.
+    const none = await open({
+      session: { user: { id: "t1" } },
+      profiles: [{ id: "t1", role: "teacher", full_name: "Gng. Cruz" }],
+      classes: [],
+    }, "teacher.html#students");
+    await none.page.waitForSelector("#no-class:not(.hidden)");
+    await none.page.fill("#first-sect-name", "Grade 8 - Rizal");
+    await none.page.click("#first-sect-create");
+    await none.page.waitForFunction(() => !document.getElementById("acct").classList.contains("hidden"));
+    const firstMade = await none.page.evaluate(() => ({
+      name: document.getElementById("class-name").textContent,
+      notice: document.getElementById("no-class").classList.contains("hidden"),
+      row: __CALLS.find((c) => c.table === "classes" && c.op === "insert") != null,
+    }));
+    ok("a teacher with no section makes her first herself, and the page opens on it (Block 164)",
+       firstMade.name === "Grade 8 - Rizal" && firstMade.notice && firstMade.row, firstMade);
+    await none.ctx.close();
+
+    // ---- Sections, moving, and the class list.
+    const seed = {
+      session: { user: { id: "t1" } },
+      profiles: [
+        { id: "t1", role: "teacher", full_name: "Gng. Cruz" },
+        { id: "s1", role: "student", full_name: "rizal-01", class_id: "c1" },
+        { id: "s2", role: "student", full_name: "rizal-02", class_id: "c1" },
+      ],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+    };
+    const { ctx, page } = await open(seed, "teacher.html#students");
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 2);
+    ok("with one section, no picker and no Move",
+       await page.evaluate(() => document.getElementById("class-picker-row").classList.contains("hidden") &&
+         document.getElementById("bulk-move").classList.contains("hidden")));
+
+    await page.fill("#sect-new-name", "Grade 8 - Mabini");
+    await page.click("#sect-create");
+    await page.waitForFunction(() => document.getElementById("class-name").textContent === "Grade 8 - Mabini");
+    const two = await page.evaluate(() => ({
+      picker: !document.getElementById("class-picker-row").classList.contains("hidden"),
+      options: [...document.getElementById("class-picker").options].map((o) => o.textContent),
+      empty: !document.getElementById("no-students").classList.contains("hidden"),
+    }));
+    ok("a new section is made and shown, empty, and the picker appears with both",
+       two.picker && two.options.length === 2 && two.options.includes("Grade 8 - Mabini") && two.empty, two);
+
+    await page.fill("#sect-name", "Grade 8 - Luna");
+    await page.click("#sect-rename");
+    await page.waitForFunction(() => document.getElementById("class-name").textContent === "Grade 8 - Luna");
+    ok("the section on screen is renamed", true);
+
+    await page.selectOption("#class-picker", "c1");
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 2);
+    await page.click("#sect-delete");
+    await page.waitForFunction(() => /still has 2 students/.test(document.getElementById("sect-status").textContent));
+    ok("a section with students is not deleted, and says to move them first", true);
+
+    await page.click("#roster-body tr:first-child .cell-pick input");
+    await page.click("#bulk-move");
+    await page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 1);
+    const moved = await page.evaluate(() => ({
+      call: __CALLS.find((c) => c.fn && c.body.action === "move"),
+      status: document.getElementById("bulk-status").textContent,
+    }));
+    ok("ticked students are moved to the other section through the function",
+       moved.call && moved.call.body.student_ids.join() === "s1" && moved.call.body.class_id !== "c1" &&
+       /1 moved to Grade 8 - Luna/.test(moved.status), moved);
+
+    // The class list, as the school made it.
+    await page.setInputFiles("#cl-file", { name: "class-list.xlsx",
+      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer: xlsx });
+    await page.waitForSelector("#cl-map:not(.hidden)");
+    await page.waitForFunction(() => [...document.querySelectorAll("#cl-groups .cl-start")].every((i) => i.value));
+    const read = await page.evaluate(() => ({
+      nameCol: document.getElementById("cl-col-name").value,
+      sectionCol: document.getElementById("cl-col-section").value,
+      start: document.getElementById("cl-start").value,
+      rows: [...document.querySelectorAll("#cl-preview .cl-row")].map((r) =>
+        [r.querySelector("input").checked, r.querySelector(".cl-name").textContent, r.querySelector(".cl-sec").textContent]),
+      groups: [...document.querySelectorAll("#cl-groups .cl-group")].map((g) =>
+        [g.querySelector("span").textContent, g.querySelector(".cl-start").value]),
+    }));
+    ok("a school's own class list is read: the header found below the title, the name and section columns guessed (Block 165)",
+       read.nameCol === "1" && read.sectionCol === "2" && read.start === "5", read);
+    ok("MALE and FEMALE are unticked, the four students ticked, a section said once carried down its group",
+       read.rows.length === 6 && read.rows.filter((r) => r[0]).map((r) => r[1]).join("|") ===
+         "Dela Cruz, Juan|Santos, Pedro|Reyes, Maria|Garcia, Ana" &&
+       read.rows.find((r) => r[1] === "Santos, Pedro")[2] === "Rizal" &&
+       read.rows.find((r) => r[1] === "Garcia, Ana")[2] === "Bonifacio" &&
+       read.rows.filter((r) => !r[0]).map((r) => r[1]).join() === "MALE,FEMALE", read.rows);
+    ok("Rizal is matched to the section she has, with its own code start; Bonifacio is a new section with a start of its own",
+       read.groups.length === 2 && /2 students into MAC8-RIZAL/.test(read.groups[0][0]) && read.groups[0][1] === "rizal" &&
+       /2 students into a new section, Bonifacio/.test(read.groups[1][0]) && read.groups[1][1] === "bonifacio", read.groups);
+
+    await page.click("#cl-go");
+    await page.waitForFunction(() => /4 of 4 accounts made/.test(document.getElementById("cl-status").textContent));
+    const up = await page.evaluate(() => ({
+      creates: __CALLS.filter((c) => c.fn && c.body.action === "create").map((c) => [c.body.prefix, c.body.names.join("|")]),
+      slips: [...document.querySelectorAll("#acct-slips .slip")].map((s) =>
+        [...s.querySelectorAll(".slip-v")].map((v) => v.textContent)),
+      options: [...document.getElementById("class-picker").options].map((o) => o.textContent),
+      hidden: document.getElementById("cl-map").classList.contains("hidden"),
+    }));
+    ok("one account per ticked row, by section, numbered on from the section's last code",
+       up.creates.length === 2 && up.creates[0].join() === "rizal,Dela Cruz, Juan|Santos, Pedro" &&
+       up.creates[1].join() === "bonifacio,Reyes, Maria|Garcia, Ana" &&
+       up.slips.some((s) => s[1] === "rizal-03" && s[3] === "Dela Cruz, Juan" && s[0] === "MAC8-RIZAL") &&
+       up.slips.some((s) => s[1] === "bonifacio-01" && s[0] === "Bonifacio"), up);
+    ok("the new section exists, and the upload card is cleared",
+       up.options.includes("Bonifacio") && up.hidden, up.options);
+
+    // A .csv with semicolons and no header at all, into the section on screen.
+    await page.setInputFiles("#cl-file", { name: "list.csv", mimeType: "text/csv",
+      buffer: Buffer.from("1;\"Lopez, Carla\"\n2;Tan, Miguel\n", "utf8") });
+    await page.waitForSelector("#cl-map:not(.hidden)");
+    const csv = await page.evaluate(() => ({
+      nameCol: document.getElementById("cl-col-name").value,
+      start: document.getElementById("cl-start").value,
+      names: [...document.querySelectorAll("#cl-preview .cl-row")].filter((r) => r.querySelector("input").checked)
+        .map((r) => r.querySelector(".cl-name").textContent),
+      group: document.querySelector("#cl-groups .cl-group span").textContent,
+    }));
+    ok("a .csv with no header and no section column goes to the section on screen",
+       csv.nameCol === "1" && csv.start === "1" && csv.names.join("|") === "Lopez, Carla|Tan, Miguel" &&
+       /2 students into /.test(csv.group), csv);
+    await page.setInputFiles("#cl-file", { name: "old.xls", mimeType: "application/vnd.ms-excel",
+      buffer: Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0, 0, 0, 0]) });
+    await page.waitForFunction(() => /old Excel format/.test(document.getElementById("cl-status").textContent));
+    ok("the old .xls format is refused with the way out", true);
+    await ctx.close();
+
+    // ---- The administrator.
+    const adminSeed = {
+      session: { user: { id: "a1" } },
+      profiles: [
+        { id: "a1", role: "admin", full_name: "Admin" },
+        { id: "t1", role: "teacher", full_name: "Gng. Cruz" },
+        { id: "t2", role: "teacher", full_name: "G. Reyes" },
+        { id: "s1", role: "student", full_name: "rizal-01", class_id: "c1" },
+      ],
+      classes: [{ id: "c1", class_name: "MAC8-RIZAL", join_code: "R1", teacher_id: "t1" }],
+    };
+    const ad = await open(adminSeed, "admin.html");
+    await ad.page.waitForFunction(() => document.querySelectorAll("#t-body tr").length === 2);
+    const listed = await ad.page.evaluate(() => ({
+      teachers: [...document.querySelectorAll("#t-body tr")].map((tr) => [...tr.children].slice(0, 4).map((td) => td.textContent)),
+      sections: [...document.querySelectorAll("#s-body tr")].map((tr) => [tr.children[0].textContent, tr.children[1].textContent, tr.querySelector("select").value]),
+    }));
+    ok("the administrator sees every teacher with her sections and student count, and every section with its teacher (Block 166)",
+       listed.teachers.some((t) => t.join("|") === "Gng. Cruz|MAC8-RIZAL|1|Active") &&
+       listed.teachers.some((t) => t[0] === "G. Reyes" && t[1] === "None yet") &&
+       listed.sections.join() === "MAC8-RIZAL,1,t1", listed);
+
+    await ad.page.fill("#t-name", "Bb. Luna");
+    await ad.page.fill("#t-email", "not-an-email");
+    await ad.page.click("#t-create");
+    ok("a bad email is refused before anything is asked",
+       /email address/.test(await ad.page.textContent("#t-status")) &&
+       !(await ad.page.evaluate(() => __CALLS.some((c) => c.fn))));
+    await ad.page.fill("#t-email", "luna@school.test");
+    await ad.page.click("#t-create");
+    await ad.page.waitForFunction(() => document.querySelectorAll("#t-body tr").length === 3);
+    const madeT = await ad.page.evaluate(() => ({
+      call: __CALLS.find((c) => c.fn && c.body.action === "teacher-create"),
+      shown: document.getElementById("t-made").textContent,
+    }));
+    ok("a teacher is made through the function, and her password shown once",
+       madeT.call && madeT.call.body.email === "luna@school.test" && madeT.call.body.name === "Bb. Luna" &&
+       /luna@school.test/.test(madeT.shown) && /abcdefgh2345/.test(madeT.shown), madeT);
+
+    await ad.page.selectOption("#s-body tr select", "t2");
+    await ad.page.click("#s-body tr button");
+    await ad.page.waitForFunction(() => /now belongs to G. Reyes/.test(document.getElementById("s-status").textContent));
+    ok("a section is handed to another teacher",
+       await ad.page.evaluate(() => __CALLS.some((c) => c.fn && c.body.action === "section-assign" &&
+         c.body.class_id === "c1" && c.body.teacher_id === "t2")));
+
+    const archRow = "#t-body tr:nth-child(2)";
+    const archName = await ad.page.textContent(archRow + " td");
+    await ad.page.click(archRow + " button:last-child");
+    await ad.page.waitForFunction(() => /archived\./.test(document.getElementById("t-row-status").textContent));
+    ok("a teacher is archived, and shown as unable to log in",
+       await ad.page.evaluate((name) => [...document.querySelectorAll("#t-body tr")].some((tr) =>
+         tr.children[0].textContent === name && /Archived/.test(tr.children[3].textContent)), archName), archName);
+    await ad.ctx.close();
+
+    // The dashboard, opened by an administrator: every section, Students only.
+    const ad2 = await open(adminSeed, "teacher.html");
+    await ad2.page.waitForFunction(() => document.querySelectorAll("#roster-body tr").length === 1);
+    const view = await ad2.page.evaluate(() => ({
+      tabs: [...document.querySelectorAll("#tabs button")].filter((b) => getComputedStyle(b).display !== "none").map((b) => b.dataset.tab),
+      panel: [...document.querySelectorAll(".tab-panel")].filter((p) => !p.classList.contains("hidden")).map((p) => p.id).join(),
+      role: document.querySelector("#dash-user .user-role").textContent,
+      own: [...document.querySelectorAll(".sect-own")].every((e) => e.classList.contains("hidden")),
+    }));
+    ok("an administrator on the dashboard gets every section's students and the Students tab only",
+       view.tabs.join() === "students" && view.panel === "tab-students" && view.role === "Administrator" && view.own, view);
+    await ad2.ctx.close();
+
+    // A student sent to either page is turned away; an admin at the login goes to admin.html.
+    const st = await open({ session: { user: { id: "s1" } },
+      profiles: [{ id: "s1", role: "student", full_name: "rizal-01", class_id: "c1" }] }, "admin.html");
+    await st.page.waitForFunction(() => /not an administrator/.test(document.getElementById("gate-msg").textContent));
+    ok("a student is turned away from the administrator's page",
+       await st.page.evaluate(() => document.getElementById("dash").classList.contains("hidden")));
+    await st.ctx.close();
+
+    // ---- Block 167. Aking Pag-unlad, a student's own numbers on the menu.
+    const mine = await newPage({
+      session: { user: { id: "u1" } },
+      profiles: [{ id: "u1", role: "student", full_name: "rizal-07", class_id: "c1" }],
+      game_progress: [{ student_id: "u1", current_act: 2, current_room: "tondo", currency: 85, save_state: {} }],
+      act_progress: [
+        { student_id: "u1", act_number: 1, status: "completed", performance_score: 82, objectives_done: 7, objectives_total: 7, elapsed_ms: 1500000 },
+        { student_id: "u1", act_number: 2, status: "playing", performance_score: null, objectives_done: 2, objectives_total: 8, elapsed_ms: 600000 },
+        { student_id: "u2", act_number: 3, status: "completed", performance_score: 99, objectives_done: 9, objectives_total: 9, elapsed_ms: 1 },
+      ],
+      assessment_scores: [
+        { student_id: "u1", act_number: 1, test_type: "pre", score: 4, max_score: 10, attempt: 1 },
+        { student_id: "u1", act_number: 1, test_type: "post", score: 6, max_score: 10, attempt: 1 },
+        { student_id: "u1", act_number: 1, test_type: "post", score: 9, max_score: 10, attempt: 2 },
+        { student_id: "u1", act_number: 2, test_type: "pre", score: 5, max_score: 10, attempt: 1 },
+      ],
+    });
+    await mine.page.waitForFunction(() => !document.getElementById("shell-progress").classList.contains("hidden"));
+    await mine.page.click("#shell-progress");
+    await mine.page.waitForSelector("#shell-progress-body .prog-act");
+    const prog = await mine.page.evaluate(() => ({
+      state: Shell.state,
+      sum: { finished: Progress.last.finished, of: Progress.last.of, barya: Progress.last.barya, perf: Progress.last.performance, code: Progress.last.code },
+      one: Progress.last.rows[0], two: Progress.last.rows[1], three: Progress.last.rows[2],
+      cards: [...document.querySelectorAll(".prog-card .prog-value")].map((e) => e.textContent),
+      statuses: [...document.querySelectorAll(".prog-status")].map((e) => e.textContent),
+      writes: __CALLS.filter((c) => c.table && c.op !== "select" && ["act_progress", "assessment_scores"].includes(c.table)).length,
+    }));
+    ok("a signed-in student opens Aking Pag-unlad from the menu: acts finished, barya, time and score (Block 167)",
+       prog.state === "progress" && prog.sum.finished === 1 && prog.sum.of === 4 && prog.sum.barya === 85 &&
+       prog.sum.perf === 82 && prog.sum.code === "rizal-07" && prog.cards[0] === "1 / 4" && prog.cards[1] === "85", prog);
+    ok("each act says its tasks, both tests and its status; the post-test is the best of the tries",
+       prog.one.done === 7 && prog.one.total === 7 && prog.one.prePct === 40 && prog.one.postPct === 90 && prog.one.tries === 2 &&
+       prog.one.gain === 50 && /Pumasa/.test(prog.one.note) && prog.statuses[0] === "Tapos na" &&
+       prog.two.done === 2 && prog.two.total === 8 && prog.two.post === null && prog.statuses[1] === "Nilalaro", [prog.one, prog.two]);
+    ok("only the student's own rows are read, and an act not begun says so",
+       prog.three.status === "none" && prog.three.performance === null && prog.statuses[2] === "Hindi pa nasisimulan", prog.three);
+    ok("and nothing is written by looking", prog.writes === 0, prog.writes);
+    await mine.page.click("#shell-progress-back");
+    ok("Bumalik returns to the menu", (await mine.page.evaluate(() => Shell.state)) === "title");
+    await mine.ctx.close();
+
+    const visitor = await newPage({ session: null });
+    await visitor.page.waitForFunction(() => !document.getElementById("shell-chapters").disabled);
+    ok("a visitor is not offered Aking Pag-unlad",
+       await visitor.page.evaluate(() => document.getElementById("shell-progress").classList.contains("hidden")));
+    await visitor.ctx.close();
   }
 
   await browser.close();

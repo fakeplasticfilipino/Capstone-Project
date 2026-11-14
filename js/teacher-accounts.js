@@ -139,6 +139,9 @@ const TeacherAccounts = {
       NOT_YOUR_STUDENT: "That student is not in your class.",
       NOT_A_TEACHER: "Only a teacher account can do this.",
       NOT_SIGNED_IN: "You have been logged out. Reload the page and log in again.",
+      // Block 164: an action the deployed function does not know yet.
+      BAD_ACTION: "The server has not been updated for this yet. Tell the game's developers.",
+      NOT_YOUR_SECTION: "That section is not linked to your account.",
     })[word] || "Could not reach the server. Check the internet connection and try again.";
   },
 
@@ -182,10 +185,19 @@ const TeacherAccounts = {
     if (accounts.length && window.TeacherDash) await TeacherDash.reload();
   },
 
+  // Block 165. Accounts made by the class list upload, each with the
+  // section it went into, since one upload can fill several.
+  addMade(accounts, clsName) {
+    this.init();
+    if (!accounts || !accounts.length) return;
+    this.made = this.made.concat(accounts.map((a) => Object.assign({}, a, { cls: clsName })));
+    this.drawSlips();
+  },
+
   drawSlips() {
     this.el.slips.innerHTML = "";
     const cls = (this.cls && this.cls.class_name) || "";
-    this.made.forEach((a) => this.el.slips.appendChild(this.slip(a.code, a.password, cls, a.name)));
+    this.made.forEach((a) => this.el.slips.appendChild(this.slip(a.code, a.password, a.cls || cls, a.name)));
     this.el.result.classList.toggle("hidden", this.made.length === 0);
   },
 
@@ -241,7 +253,8 @@ const TeacherAccounts = {
       if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
       return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     };
-    const lines = ["code,password,name"].concat(this.made.map((a) => a.code + "," + a.password + "," + cell(a.name)));
+    const lines = ["code,password,name,section"].concat(this.made.map((a) =>
+      a.code + "," + a.password + "," + cell(a.name) + "," + cell(a.cls || (this.cls && this.cls.class_name))));
     const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);

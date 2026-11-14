@@ -1339,3 +1339,35 @@ th.num .tip:focus::after { left: auto; right: 0; transform: none; }
   margin: 4px 0 8px;
   font-size: 13px;
 }
+
+/* Blocks 164, 165. Sections and the class list upload. */
+.cl-choices { flex-wrap: wrap; }
+.cl-preview {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid #d9d2c3;
+  border-radius: 6px;
+  margin: 8px 0;
+}
+.cl-row {
+  display: grid;
+  grid-template-columns: 28px 70px 1fr minmax(0, 0.6fr);
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid #e8e2d5;
+  cursor: pointer;
+}
+.cl-row:last-child { border-bottom: 0; }
+.cl-row.cl-off .cl-name, .cl-row.cl-off .cl-sec { opacity: 0.45; text-decoration: line-through; }
+.cl-n { font-size: 0.8em; opacity: 0.6; }
+.cl-sec { opacity: 0.75; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cl-groups { display: grid; gap: 6px; margin: 8px 0 12px; }
+.cl-group { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.cl-start { width: 9em; }
+/* Block 166. An administrator manages accounts and reads no scores:
+   only the Students tab. */
+body.admin-view #tabs button:not([data-tab="students"]),
+body.admin-view #act-picker,
+body.admin-view .act-picker-label,
+body.admin-view #export-btn { display: none; }
