@@ -16,9 +16,9 @@ sections made by the teacher, students moved between them; a class
 list uploaded as the school made it (.xlsx or .csv, columns chosen);
 the administrator's page (admin.html); Aking Pag-unlad, a student's own
 dashboard. Migration 018 is RUN and create-students version 4 is
-DEPLOYED (15 Nov 2026, Run log), so Move to section works. NOT YET
-MADE: the first administrator, so admin.html has nobody to open it
-(Run log). Not done: new
+DEPLOYED (15 Nov 2026, Run log), so Move to section works, and the
+first administrator is made (Run log). Not yet tried by a person on
+the live site: admin.html, Move to section. Not done: new
 cover pictures for the four acts (waiting on which pictures). Before
 it, Block 162: the pre-deployment check (both
 suites, all 50 story points at a phone's size, random play, the live
@@ -1286,10 +1286,24 @@ Trust this over any memory of a chat.
                                         allowed for any section, and the
                                         teacher- and section- actions.
                                         A call with no login answers 401
-    the first administrator                    NOT MADE: an account made
-                                        in Supabase's Authentication,
-                                        then its profile's role set to
-                                        admin, by the developers
+    the first administrator                    MADE, 15 Nov 2026: the
+                                        account by the proponent in
+                                        Supabase's Authentication (an
+                                        admin address at example.com),
+                                        its profile's role set to admin
+                                        from the session, at the
+                                        proponent's word (one row, a
+                                        student in no class with no
+                                        save). Probed as it: is_admin()
+                                        true, every profile (46) and
+                                        class (1), and 0 scores, saves,
+                                        act rows and feedback. A student
+                                        probed after: unchanged (1, 1,
+                                        8). The database now holds 44
+                                        students, none archived (the one
+                                        archived account of 14 Nov is
+                                        gone, not by a session), the
+                                        teacher and the administrator
     db/seeds/macario_items_acts2to4.sql        RUN, 7 Nov 2026, the same.
                                         Acts II to IV's built-in
                                         questions copied into
@@ -1754,7 +1768,7 @@ machine, the assessment module.
     165 a class list uploaded as it is (.xlsx read with no library,
         .csv), columns chosen, rows ticked; test.js CD
     166 the administrator: admin.html, schema v18, create-students
-        version 4; the first admin not yet made; test.js CD
+        version 4; the first admin made 15 Nov 2026; test.js CD
     167 Aking Pag-unlad, a student's own dashboard (progress.js);
         test.js CD
 

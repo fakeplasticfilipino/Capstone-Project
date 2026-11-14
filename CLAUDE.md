@@ -3191,6 +3191,12 @@ THE DATABASE AS IT STANDS IS THE SOURCE OF TRUTH (the proponent, 10 Nov
 code and these files change to suit it. What it holds is in TRACKER.md's
 Run log, as last read.
 
+One administrator (Block 166, made 15 Nov 2026), an admin address at
+example.com, who makes the teachers from admin.html. A further
+administrator is made the same way: the account in Supabase's
+Authentication, then its profile's role set to admin with the
+proponent's yes, recorded in the Run log.
+
 guro@example.com, teacher, who owns the one class, Grade 8 - Rizal.
 Its students are the 44 accounts coded rizal, made the dashboard's way
 (a code at the login). There is no test student: the proponent removed
