@@ -15,12 +15,10 @@ says why it is greyed (every account has played; the rule stands);
 sections made by the teacher, students moved between them; a class
 list uploaded as the school made it (.xlsx or .csv, columns chosen);
 the administrator's page (admin.html); Aking Pag-unlad, a student's own
-dashboard. BUILT AND TESTED AGAINST THE STUB, NOT YET LIVE where it
-needs the database: migration 018 is NOT RUN and create-students
-version 4 is NOT DEPLOYED (Run log), so until then Move to section and
-everything on admin.html answer "the server has not been updated", and
-no admin account exists. Sections, the upload, the hearts, the upright
-login and Aking Pag-unlad need neither and work now. Not done: new
+dashboard. Migration 018 is RUN and create-students version 4 is
+DEPLOYED (15 Nov 2026, Run log), so Move to section works. NOT YET
+MADE: the first administrator, so admin.html has nobody to open it
+(Run log). Not done: new
 cover pictures for the four acts (waiting on which pictures). Before
 it, Block 162: the pre-deployment check (both
 suites, all 50 story points at a phone's size, random play, the live
@@ -1270,14 +1268,24 @@ Trust this over any memory of a chat.
                                         for a student, the teacher and a
                                         visitor the same before and after
                                         (80, 80, 0), every item single
-    db/migrations/018_macario_schema_v18.sql   NOT RUN (written 14 Nov
-                                        2026, Block 166; waits for the
-                                        proponent's yes). The role
-                                        admin, private.is_admin(), two
-                                        SELECT policies
-    db/functions/create-students               version 4 NOT DEPLOYED
-                                        (the same): move, and the
-                                        administrator's actions
+    db/migrations/018_macario_schema_v18.sql   RUN, 15 Nov 2026, from the
+                                        session, at the proponent's word
+                                        (Block 166). The role admin,
+                                        private.is_admin(), two SELECT
+                                        policies (profiles, classes).
+                                        Probed before and after, the
+                                        same: a student counts 1 profile,
+                                        1 class, 8 scores; the teacher
+                                        46, 1, 405; a visitor 0, 0, 0;
+                                        is_admin() false for both. No
+                                        row changed; no profile has the
+                                        role admin
+    db/functions/create-students               version 4 DEPLOYED, 15 Nov
+                                        2026, the same, verify_jwt
+                                        false: move, an administrator
+                                        allowed for any section, and the
+                                        teacher- and section- actions.
+                                        A call with no login answers 401
     the first administrator                    NOT MADE: an account made
                                         in Supabase's Authentication,
                                         then its profile's role set to
@@ -1745,8 +1753,8 @@ machine, the assessment module.
         students moved (create-students "move"); test.js CD
     165 a class list uploaded as it is (.xlsx read with no library,
         .csv), columns chosen, rows ticked; test.js CD
-    166 the administrator: admin.html, schema v18 (NOT RUN),
-        create-students version 4 (NOT DEPLOYED); test.js CD
+    166 the administrator: admin.html, schema v18, create-students
+        version 4; the first admin not yet made; test.js CD
     167 Aking Pag-unlad, a student's own dashboard (progress.js);
         test.js CD
 
