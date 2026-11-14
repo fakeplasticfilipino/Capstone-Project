@@ -9,7 +9,10 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 14 Nov 2026, Blocks 163 to 167, the instructor's list:
+Last updated: 15 Nov 2026, Block 168: the four act covers are
+screenshots of the game (assets/backgrounds/menu/), and the teacher's
+guide has a section for the administrator. Before it, 14 Nov 2026,
+Blocks 163 to 167, the instructor's list:
 the hearts always shown; the menu and login allowed upright; Delete
 says why it is greyed (every account has played; the rule stands);
 sections made by the teacher, students moved between them; a class
@@ -18,8 +21,7 @@ the administrator's page (admin.html); Aking Pag-unlad, a student's own
 dashboard. Migration 018 is RUN and create-students version 4 is
 DEPLOYED (15 Nov 2026, Run log), so Move to section works, and the
 first administrator is made (Run log). Not yet tried by a person on
-the live site: admin.html, Move to section. Not done: new
-cover pictures for the four acts (waiting on which pictures). Before
+the live site: admin.html, Move to section. Before
 it, Block 162: the pre-deployment check (both
 suites, all 50 story points at a phone's size, random play, the live
 site, the database read): six things fixed. The end of the game has a
@@ -1771,6 +1773,8 @@ machine, the assessment module.
         version 4; the first admin made 15 Nov 2026; test.js CD
     167 Aking Pag-unlad, a student's own dashboard (progress.js);
         test.js CD
+    168 the act covers, screenshots of the game (make-covers.js);
+        the administrator in the teacher's guide
 
 ## Blocks remaining
 

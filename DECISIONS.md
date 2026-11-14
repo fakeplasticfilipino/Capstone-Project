@@ -7328,6 +7328,23 @@ reads of the student's own rows under policies that already existed,
 nothing written. It shows the code, not the name. On the menu only: the
 pause screen is already one button longer than a phone held sideways.
 
+## Block 168: the act covers, and the administrator's guide, 15 Nov 2026
+
+Each act's card on Mga Kabanata showed a sky painting, one of the
+layers behind its scenes, so the four looked alike. At the proponent's
+word each is now a screenshot of the game itself at one of the act's
+story points, with everything but the world hidden (make-covers.js):
+Tondo and the house (Act I), the street at night (Act II), the hill's
+watchtower (Act III), the camp at Di-Masalang (Act IV). A screenshot is
+the artist's scenes as the game already draws them, so nothing was made
+for a cover, which is what the rule against art of ours asks. Act II's
+first choice, San Juan by day, was mostly sky in a card that shows the
+middle third of a wide picture; a cover is chosen for what stands in
+its middle. A cover goes stale when its scene's art changes: retake it
+with the tool. The teacher's guide gained a section for the
+administrator, linked from admin.html, and two rows for Delete and the
+class list.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

@@ -1103,7 +1103,7 @@
     // Block 144. The menu's Mga Kabanata: the years on the act's card,
     // and its picture, one of the act's own paintings.
     years: "1903 - 1907",
-    menuArt: "assets/backgrounds/layers/cavite-dusk.jpg",
+    menuArt: "assets/backgrounds/menu/yugto-4.jpg",
     devJumps: DEV_JUMPS,
 
     // One chain, in story order, the quest log (Block 48).

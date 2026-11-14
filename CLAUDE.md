@@ -226,6 +226,10 @@ off the repository.
                                (DEFAULT_SKYLINE_SRC) is layers/
                                tondo-sky.jpg. No act has paintings of
                                its own any more (act2/ to act4/ gone)
+      backgrounds/menu/        the four act covers on Mga Kabanata,
+                               yugto-<n>.jpg: screenshots of the game
+                               itself, taken by _dev/tools/
+                               make-covers.js (Block 168)
       backgrounds/layers/,     the layered scenes' skies and grounds, and
         rooms/                 the rooms' walls and floors (Blocks 142,
                                143)
@@ -2867,6 +2871,8 @@ look, by system:
                                           accounts, never scores)
     a student's own dashboard             Block 167 (Aking Pag-unlad,
                                           read only)
+    the act covers                        Block 168 (screenshots of the
+                                          game, make-covers.js)
     the artist's Drive delivery of 15     Block 133 (Act II's paintings,
       Oct: paintings, people; the         nine people keyed from black),
       new street tried and taken out      134 (the old street back, its
