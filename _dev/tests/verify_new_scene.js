@@ -1941,8 +1941,8 @@ const fastChecks = require(path.join(ROOT, "_dev", "tools", "lib", "checks.js"))
     const offRun = await r.page.evaluate(() => ({ guards: GUARDS.length,
       crates: document.querySelectorAll("#world .hide-spot").length,
       hearts: !document.getElementById("hud").classList.contains("hidden") }));
-    ok("and one before the oath has no guards, no crates and no hearts",
-       offRun.guards === 0 && offRun.crates === 0 && !offRun.hearts, offRun);
+    ok("and one before the oath has no guards and no crates (the hearts are always shown, Block 163)",
+       offRun.guards === 0 && offRun.crates === 0 && offRun.hearts, offRun);
     await r.ctx.close();
 
     const pamphletsDone = Object.assign({}, worded, { tinanggapSaKatipunan: true,
