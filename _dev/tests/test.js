@@ -7853,7 +7853,8 @@ const visible = (page, sel) => page.evaluate((s) => {
       sections: [...document.querySelectorAll(".guide-card .section-title")].map((h) => h.textContent),
       back: (document.querySelector("a.guide-link") || {}).getAttribute ? document.querySelector("a.guide-link").getAttribute("href") : null }));
     ok("the dashboard links the teacher's guide, which loads whole and links back (item 12)",
-       guide.path.endsWith("/teacher-guide.html") && guide.sections.length === 5 &&
+       guide.path.endsWith("/teacher-guide.html") && guide.sections.length === 6 &&
+       guide.sections[5] === "For the administrator" && // Block 168
        guide.back === "teacher.html" && missing.length === 0, { guide, missing });
     await ctx.close();
   }
