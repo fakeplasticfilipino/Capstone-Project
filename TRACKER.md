@@ -9,7 +9,9 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 15 Nov 2026, Block 168: the four act covers are
+Last updated: 15 Nov 2026, the paper moved into the school's
+manuscript template (The paper brought up to date, below). Before it,
+Block 168: the four act covers are
 screenshots of the game (assets/backgrounds/menu/), and the teacher's
 guide has a section for the administrator. Before it, 14 Nov 2026,
 Blocks 163 to 167, the instructor's list:
@@ -573,6 +575,41 @@ Group 4, large (before the freeze, E; COMPLETE, Blocks 159, 160):
     [x] 28 the mini-games' sounds made softer and less "gamey" (A)
 
 ## The paper brought up to date (COMPLETE)
+
+(15 Nov 2026: the paper moved into the school's manuscript template,
+FT-CRD-191-00, at the proponent's word. The new file is
+docs-private/documents/Capstone_Project_Manuscript.docx, built from the
+template itself (its styles, margins and footers) by
+docs-private/documents/migration-tools/migrate.py, which reads
+Capstone_Project_Final.docx and is rerun to rebuild it; the old file
+stays as it was. 112 pages when rendered through LibreOffice. What
+changed besides the format: the endorsement is for the oral defense; an
+abstract with keywords, acknowledgements and a list of notations added;
+the appendices in the template's order (A resource persons and the
+interview, B relevant source code, new, C the questionnaires, the
+preliminary survey and the IT experts' certifications, D the
+screenshots and the documentation photograph, E the user's guide, F
+the vitae), their figures numbered again in that order; Development
+and Testing given their own headings; floating pictures put in the
+line of text; the contents and the lists of figures and tables written
+with the page numbers of the LibreOffice rendering, to be checked in
+Word. Blocks 163 to 168 are in: the administrator, sections, the class
+list upload, the student's own progress, hearts always shown, three
+new requirement rows, the user's guide for administrators, and one
+paragraph saying these came after the evaluation and were not what the
+students and experts rated. The portrait limitation is out, as the
+instructor said it is not one. Left marked in yellow for the
+proponents: the date approved, the date of the oral defense, the three
+panelists, the month and year of graduation, each acknowledgement's
+contribution, the vitae's experience, affiliations and trainings
+tables, and a figure of the administrator's page and of Aking Pag-unlad.
+Figure 3.3 still draws two external entities; its text says the
+administrator was added after. The paper's PDF and the four IT expert
+certification files were moved to the Recycle Bin at the proponent's
+word; the certifications are in the paper as figures. The defense deck
+on Canva: its Scope slide gains sections, the class list, the student's
+progress and the administrator, and its Limitations slide loses the
+portrait line.)
 
 (COMPLETE 10 Nov 2026: at the proponent's word every tracked change was
 accepted by a session into docs-private/documents/
