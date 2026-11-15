@@ -606,10 +606,16 @@ tables, and a figure of the administrator's page and of Aking Pag-unlad.
 Figure 3.3 still draws two external entities; its text says the
 administrator was added after. The paper's PDF and the four IT expert
 certification files were moved to the Recycle Bin at the proponent's
-word; the certifications are in the paper as figures. The defense deck
+word; the certifications are in the paper as figures. A second pass
+the same day, every page looked at: the template's blanks are Word
+form fields set after tab stops, and the first fill had put the text
+before the tabs (the researchers' names out of line); each blank is now
+replaced where it stands and its field removed, the page-number field
+kept; each vita's address, email and number are three lines again. The
+defense deck
 on Canva: its Scope slide gains sections, the class list, the student's
 progress and the administrator, and its Limitations slide loses the
-portrait line.)
+portrait line (saved 15 Nov 2026, at the proponent's word).)
 
 (COMPLETE 10 Nov 2026: at the proponent's word every tracked change was
 accepted by a session into docs-private/documents/
