@@ -1371,3 +1371,15 @@ body.admin-view #tabs button:not([data-tab="students"]),
 body.admin-view #act-picker,
 body.admin-view .act-picker-label,
 body.admin-view #export-btn { display: none; }
+
+/* Block 166. The administrator's two tables: the roster's rules are
+   keyed to #roster, so these had no padding and ran their columns
+   together. */
+body.admin-page .table-wrap table { width: 100%; border-collapse: collapse; }
+body.admin-page .table-wrap th,
+body.admin-page .table-wrap td { padding: 10px 16px; text-align: left; vertical-align: middle; }
+body.admin-page .table-wrap thead th { border-bottom: 1px solid #d9d2c3; font-weight: 600; }
+body.admin-page .table-wrap tbody tr + tr td { border-top: 1px solid #ece6d8; }
+body.admin-page .table-wrap td.qe-actions { display: table-cell; white-space: nowrap; }
+body.admin-page .table-wrap td.qe-actions button + button { margin-left: 8px; }
+body.admin-page tr.row-archived td { color: #8a8272; }

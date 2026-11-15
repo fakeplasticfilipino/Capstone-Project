@@ -611,7 +611,16 @@ the same day, every page looked at: the template's blanks are Word
 form fields set after tab stops, and the first fill had put the text
 before the tabs (the researchers' names out of line); each blank is now
 replaced where it stands and its field removed, the page-number field
-kept; each vita's address, email and number are three lines again. The
+kept; each vita's address, email and number are three lines again. A
+third pass, from the proponent: approved 13 November 2026, the oral
+defense on 22 November 2026, the adviser also the Program Head; the
+acknowledgements drafted (God first, then the template's order); the
+administrator's page and Aking Pag-unlad added as Figures 4.13 and 4.14
+from the pages themselves with sample data (migration-tools/figs.js);
+a questionnaire's Remarks line kept with its table and each vita on one
+page, 109 pages. Still marked: the three panelists, the month and year
+of graduation, and each vita's experience, affiliations and trainings.
+The administrator's tables were given the padding the roster has. The
 defense deck
 on Canva: its Scope slide gains sections, the class list, the student's
 progress and the administrator, and its Limitations slide loses the
