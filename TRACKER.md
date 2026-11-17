@@ -620,7 +620,12 @@ from the pages themselves with sample data (migration-tools/figs.js);
 a questionnaire's Remarks line kept with its table and each vita on one
 page, 109 pages. Still marked: the three panelists, the month and year
 of graduation, and each vita's experience, affiliations and trainings.
-The administrator's tables were given the padding the roster has. The
+The administrator's tables were given the padding the roster has. A
+fourth pass, 17 Nov 2026: each vita's experience and trainings filled
+from the proponents' own resumes and nothing else (a section with no
+entry there is left out; none lists an affiliation), graduation July
+2027, and Figure 3.3 drawn again with the administrator
+(migration-tools/dfd.js). Still marked: the three panelists. The
 defense deck
 on Canva: its Scope slide gains sections, the class list, the student's
 progress and the administrator, and its Limitations slide loses the
