@@ -638,8 +638,8 @@ transcript's own words. A sixth pass, 17 Nov 2026, from the adviser's
 comments: the contents' page numbers in one right-aligned column; the
 front pages print i to xi as the contents gives them; Purpose and
 Description and Objectives each start a page; the Gantt chart's label
-above it, with a legend (weeks from 15 November on drawn lighter, as
-ongoing or upcoming); pictures in the chapters at most 3.7 in tall, so
+above it, with a legend of the two states (every bar left as drawn,
+completed, at the proponent's word); pictures in the chapters at most 3.7 in tall, so
 none leaves half a page empty. And a second copy for the printed
 defense, Capstone_Project_Manuscript_Defense (.docx and .pdf, 98
 pages), without the source code and the sample output, its appendices
