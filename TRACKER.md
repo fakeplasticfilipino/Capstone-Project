@@ -625,7 +625,16 @@ fourth pass, 17 Nov 2026: each vita's experience and trainings filled
 from the proponents' own resumes and nothing else (a section with no
 entry there is left out; none lists an affiliation), graduation July
 2027, and Figure 3.3 drawn again with the administrator
-(migration-tools/dfd.js). Still marked: the three panelists. The
+(migration-tools/dfd.js). A fifth pass the same day, the PDF being the
+final for printing (Capstone_Project_Manuscript.pdf, 109 pages, the
+LibreOffice rendering the page numbers are taken from): a label and
+its text hang, so a second line returns under the text (the title on
+the endorsement and abstract pages); a vita's experience and trainings
+tables drawn as its education and skills tables are; the contents and
+lists in one weight; three blank lines off the endorsement page so its
+date keeps to its foot. Every page looked at, and a text scan
+(migration-tools/scan.py) clean but for the source code and the
+transcript's own words. Still marked: the three panelists. The
 defense deck
 on Canva: its Scope slide gains sections, the class list, the student's
 progress and the administrator, and its Limitations slide loses the
