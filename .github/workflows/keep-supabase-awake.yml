@@ -1,0 +1,25 @@
+# Supabase's free plan pauses a project after about a week without use. This pings the game's
+# project once a day so it never goes idle. It only knocks: the auth health check, and the REST
+# root with the publishable key (the same key js/supabaseClient.js ships in every page), which is
+# refused. Nothing is read, written or changed. A ping that can't reach the project fails the run,
+# so GitHub emails the proponent if it pauses anyway.
+name: Keep Supabase awake
+
+on:
+  schedule:
+    - cron: '17 3 * * *' # every day, 03:17 UTC (11:17 in Manila)
+  workflow_dispatch: {} # "Run workflow" button, for trying it by hand
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the Supabase project
+        env:
+          URL: https://rkfnovfkroajottpmxxq.supabase.co
+          KEY: sb_publishable__2EtEOa12QW3IoOH1fj88Q_73BDqJrs # public, as in js/supabaseClient.js
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H "apikey: $KEY" "$URL/rest/v1/")
+          echo "rest: $code"
+          [ "$code" != "000" ]
+          curl -sf -o /dev/null -H "apikey: $KEY" "$URL/auth/v1/health"
