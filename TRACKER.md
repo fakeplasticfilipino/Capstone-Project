@@ -11,8 +11,7 @@ Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
 Last updated: 25 Nov 2026, the panel's minor revisions after the
 defense: Block 169, several trivia cards an act (built-in three an
-act; the teacher adds, orders and removes hers; schema v19 NOT RUN,
-see the Run log), and the paper's three (The paper brought up to date,
+act; the teacher adds, orders and removes hers; schema v19 run), and the paper's three (The paper brought up to date,
 below). Before it, 15 Nov 2026, the paper moved into the school's
 manuscript template (The paper brought up to date, below). Before it,
 Block 168: the four act covers are
@@ -1372,17 +1371,17 @@ Trust this over any memory of a chat.
                                         is_admin() false for both. No
                                         row changed; no profile has the
                                         role admin
-    db/migrations/019_macario_schema_v19.sql   NOT RUN (written 25 Nov
-                                        2026, Block 169; the session's
-                                        apply was stopped by the
-                                        permission check). act_trivia
-                                        keyed by act and position, and
-                                        a delete policy for teachers.
-                                        Until it runs, the game shows
-                                        the database's one card an act
-                                        (Act I's) or the built-in three,
-                                        and the dashboard saves one
-                                        card an act
+    db/migrations/019_macario_schema_v19.sql   RUN, 25 Nov 2026, from the
+                                        session, at the proponent's word
+                                        (Block 169). act_trivia keyed by
+                                        act and position, a delete policy
+                                        for teachers. Act I's one card is
+                                        position 1, its text unchanged.
+                                        Probed in a transaction rolled
+                                        back: the teacher may insert a
+                                        card, update and delete one; a
+                                        student and a visitor none of
+                                        the three
     db/functions/create-students               version 4 DEPLOYED, 15 Nov
                                         2026, the same, verify_jwt
                                         false: move, an administrator
