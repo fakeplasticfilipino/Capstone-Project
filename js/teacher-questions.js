@@ -65,7 +65,9 @@ const TeacherQuestions = {
     this.el.type.addEventListener("change", () => this.load());
     this.el.add.addEventListener("click", () => {
       this.collect();
-      this.items.push({ question: "", type: "single", choices: Array(this.CHOICES).fill(""), correct: 0 });
+      // Block 169: under Trivia card, Add is another card.
+      if (this.isTrivia()) this.items.push({ trivia: "" });
+      else this.items.push({ question: "", type: "single", choices: Array(this.CHOICES).fill(""), correct: 0 });
       this.render();
     });
     this.el.defaults.addEventListener("click", () => {
@@ -91,7 +93,8 @@ const TeacherQuestions = {
 
   useDefaults() {
     if (this.isTrivia()) {
-      this.items = [{ trivia: this.bank().trivia || "" }];
+      const t = this.bank().trivia;
+      this.items = (Array.isArray(t) ? t : [t || ""]).map((f) => ({ trivia: f || "" }));
     } else {
       this.items = (this.bank()[this.type()] || []).map((q) =>
         this.shape(q.question, q.type, q.choices, q.correct));
@@ -117,11 +120,15 @@ const TeacherQuestions = {
     this.loadedFromDb = false;
     try {
       if (this.isTrivia()) {
-        const { data, error } = await sb.from("act_trivia").select("fact")
-          .eq("act_number", this.act()).maybeSingle();
-        if (error) throw error;
-        if (data && data.fact) {
-          this.items = [{ trivia: data.fact }];
+        let res = await sb.from("act_trivia").select("fact, position")
+          .eq("act_number", this.act()).order("position");
+        this.hasPositions = !res.error;
+        if (res.error) res = await sb.from("act_trivia").select("fact").eq("act_number", this.act());
+        if (res.error) throw res.error;
+        const rows = (res.data || []).slice().sort((a, b) => (a.position || 1) - (b.position || 1))
+          .filter((r) => r.fact);
+        if (rows.length) {
+          this.items = rows.map((r) => ({ trivia: r.fact }));
           this.loadedFromDb = true;
           this.render();
         } else {
@@ -155,18 +162,62 @@ const TeacherQuestions = {
   render() {
     const list = this.el.list;
     list.innerHTML = "";
-    this.el.add.classList.toggle("hidden", this.isTrivia());
+    // Block 169: one button, a card or a question by what is shown. The
+    // dashboard has no icons in its buttons, so its text is written whole.
+    this.el.add.textContent = this.isTrivia() ? "+ Add a card" : "+ Add a question";
     this.el.source.textContent = this.loadedFromDb
       ? "From the database: this is what the game uses now."
       : "Nothing saved in the database yet; these are the game's built-in questions. Press Save to take them over.";
 
     if (this.isTrivia()) {
-      const box = document.createElement("textarea");
-      box.className = "qe-question qe-trivia";
-      box.rows = 4;
-      box.value = (this.items[0] && this.items[0].trivia) || "";
-      box.setAttribute("aria-label", "Trivia card");
-      list.appendChild(box);
+      // Block 169. Each card in turn, shown to the student in this order
+      // before the pre-test.
+      if (!this.items.length) this.items = [{ trivia: "" }];
+      this.items.forEach((item, i) => {
+        const card = document.createElement("div");
+        card.className = "qe-item qe-trivia-item";
+        const head = document.createElement("div");
+        head.className = "qe-item-head";
+        const num = document.createElement("strong");
+        num.textContent = "Card " + (i + 1);
+        head.appendChild(num);
+        const tools = document.createElement("div");
+        [["\u2191", -1, "Move up"], ["\u2193", 1, "Move down"]].forEach(([label, dir, name]) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "btn-secondary qe-small";
+          b.textContent = label;
+          b.setAttribute("aria-label", name);
+          b.disabled = (dir < 0 && i === 0) || (dir > 0 && i === this.items.length - 1);
+          b.addEventListener("click", () => {
+            this.collect();
+            const j = i + dir;
+            [this.items[i], this.items[j]] = [this.items[j], this.items[i]];
+            this.render();
+          });
+          tools.appendChild(b);
+        });
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "btn-secondary qe-small qe-delete";
+        del.textContent = "Remove";
+        del.disabled = this.items.length === 1;
+        del.addEventListener("click", () => {
+          this.collect();
+          this.items.splice(i, 1);
+          this.render();
+        });
+        tools.appendChild(del);
+        head.appendChild(tools);
+        card.appendChild(head);
+        const box = document.createElement("textarea");
+        box.className = "qe-question qe-trivia";
+        box.rows = 4;
+        box.value = item.trivia || "";
+        box.setAttribute("aria-label", "Trivia card " + (i + 1));
+        card.appendChild(box);
+        list.appendChild(card);
+      });
       return;
     }
 
@@ -296,8 +347,7 @@ const TeacherQuestions = {
   // Reads what is on screen back into this.items.
   collect() {
     if (this.isTrivia()) {
-      const box = this.el.list.querySelector(".qe-trivia");
-      this.items = [{ trivia: box ? box.value : "" }];
+      this.items = [...this.el.list.querySelectorAll(".qe-trivia")].map((box) => ({ trivia: box.value }));
       return;
     }
     this.items = [...this.el.list.querySelectorAll(".qe-item")].map((card) => {
@@ -355,10 +405,24 @@ const TeacherQuestions = {
     this.el.save.disabled = true;
     try {
       if (this.isTrivia()) {
-        const fact = (this.items[0].trivia || "").trim();
-        if (!fact) { this.setStatus("The trivia card is empty.", "error"); return; }
-        const { error } = await sb.from("act_trivia").upsert({ act_number: act, fact }, { onConflict: "act_number" });
-        if (error) throw error;
+        const facts = this.items.map((it) => (it.trivia || "").trim());
+        const empty = facts.findIndex((f) => !f);
+        if (empty >= 0) { this.setStatus("Card " + (empty + 1) + " is empty. Write it or remove it.", "error"); return; }
+        if (this.hasPositions === false) {
+          // A database before schema v19 keeps one card an act.
+          if (facts.length > 1) {
+            this.setStatus("Not saved: this database keeps one trivia card an act until schema 019 is run in Supabase.", "error");
+            return;
+          }
+          const { error } = await sb.from("act_trivia").upsert({ act_number: act, fact: facts[0] }, { onConflict: "act_number" });
+          if (error) throw error;
+        } else {
+          const put = await sb.from("act_trivia").upsert(facts.map((fact, i) => ({ act_number: act, position: i + 1, fact })),
+            { onConflict: "act_number,position" });
+          if (put.error) throw put.error;
+          const del = await sb.from("act_trivia").delete().eq("act_number", act).gt("position", facts.length);
+          if (del.error) throw del.error;
+        }
       } else {
         const checked = this.validate();
         if (checked.error) { this.setStatus(checked.error, "error"); return; }
@@ -391,7 +455,8 @@ const TeacherQuestions = {
       this.loadedFromDb = true;
       this.render();
       this.setStatus(this.isTrivia()
-        ? "Saved. The game will use this from the next test on."
+        ? "Saved. Students see " + (this.items.length === 1 ? "this card" : "these " + this.items.length + " cards, in this order,") +
+          " before the act's pre-test. A card must not give away a pre-test answer."
         : "Saved. The game will use this from the next test on. The pre-test and post-test are matched" +
           " pairs: if you changed a question here, change its partner in the other test too.", "ok");
     } catch (err) {

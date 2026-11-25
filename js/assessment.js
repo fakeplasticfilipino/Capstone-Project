@@ -141,41 +141,49 @@ const Assessment = {
   // Trivia
   //
   // The proposal specifies a historical trivia fact before each
-  // pre-test. An act with no trivia row resolves immediately rather
-  // than showing an empty card.
+  // pre-test. Since Block 169 (the panel: more trivia about Sakay) an
+  // act may have several cards, shown one after another: the teacher's
+  // in the database (act_trivia, by position, schema v19), else the
+  // game's own (questions.js, trivia, a list). An act with none resolves
+  // at once rather than showing an empty card.
   // -----------------------------------------------------------
   async runTrivia(actNumber) {
     this._cache();
-    let fact = null;
+    let facts = [];
 
     try {
-      const { data, error } = await sb
-        .from("act_trivia")
-        .select("fact")
-        .eq("act_number", actNumber)
-        .maybeSingle();
-      if (error) throw error;
-      fact = data && data.fact;
+      let res = await sb.from("act_trivia").select("fact, position")
+        .eq("act_number", actNumber).order("position");
+      // A database before schema v19 has no position: its one card.
+      if (res.error) res = await sb.from("act_trivia").select("fact").eq("act_number", actNumber);
+      if (res.error) throw res.error;
+      facts = (res.data || []).slice()
+        .sort((a, b) => (a.position || 1) - (b.position || 1))
+        .map((r) => String(r.fact || "").trim()).filter(Boolean);
     } catch (err) {
       // A missing trivia card is not worth blocking an act over.
       console.error("act_trivia read failed:", err);
     }
 
-    // Block 68. The built-in card when the database has none.
-    if (!fact) fact = this._bank(actNumber).trivia || null;
+    // Block 68. The built-in cards when the database has none.
+    if (!facts.length) facts = this.builtInTrivia(actNumber);
 
-    if (!fact) {
-      this._close();
-      return;
+    for (let i = 0; i < facts.length; i++) {
+      await this._message({
+        eyebrow: facts.length > 1 ? "Alam mo ba? (" + (i + 1) + " / " + facts.length + ")" : "Alam mo ba?",
+        title: "Kaalaman sa Kasaysayan",
+        body: facts[i],
+        button: "Magpatuloy",
+      });
     }
-
-    await this._message({
-      eyebrow: "Alam mo ba?",
-      title: "Kaalaman sa Kasaysayan",
-      body: fact,
-      button: "Magpatuloy",
-    });
     this._close();
+  },
+
+  // questions.js gives an act's trivia as a list (Block 169), or as one
+  // card, as every act did before.
+  builtInTrivia(actNumber) {
+    const t = this._bank(actNumber).trivia;
+    return (Array.isArray(t) ? t : [t]).map((f) => String(f || "").trim()).filter(Boolean);
   },
 
   // -----------------------------------------------------------

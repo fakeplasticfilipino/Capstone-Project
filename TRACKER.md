@@ -9,7 +9,11 @@ compress it to a line.
 
 Status markers: (COMPLETE), (IN PROGRESS), (NOT STARTED), (BLOCKED).
 
-Last updated: 15 Nov 2026, the paper moved into the school's
+Last updated: 25 Nov 2026, the panel's minor revisions after the
+defense: Block 169, several trivia cards an act (built-in three an
+act; the teacher adds, orders and removes hers; schema v19 NOT RUN,
+see the Run log), and the paper's three (The paper brought up to date,
+below). Before it, 15 Nov 2026, the paper moved into the school's
 manuscript template (The paper brought up to date, below). Before it,
 Block 168: the four act covers are
 screenshots of the game (assets/backgrounds/menu/), and the teacher's
@@ -1358,6 +1362,17 @@ Trust this over any memory of a chat.
                                         is_admin() false for both. No
                                         row changed; no profile has the
                                         role admin
+    db/migrations/019_macario_schema_v19.sql   NOT RUN (written 25 Nov
+                                        2026, Block 169; the session's
+                                        apply was stopped by the
+                                        permission check). act_trivia
+                                        keyed by act and position, and
+                                        a delete policy for teachers.
+                                        Until it runs, the game shows
+                                        the database's one card an act
+                                        (Act I's) or the built-in three,
+                                        and the dashboard saves one
+                                        card an act
     db/functions/create-students               version 4 DEPLOYED, 15 Nov
                                         2026, the same, verify_jwt
                                         false: move, an administrator
@@ -1851,6 +1866,8 @@ machine, the assessment module.
         test.js CD
     168 the act covers, screenshots of the game (make-covers.js);
         the administrator in the teacher's guide
+    169 several trivia cards an act: schema v19, the game, the
+        dashboard, three built-in Sakay facts an act; test.js BH, BI
 
 ## Blocks remaining
 

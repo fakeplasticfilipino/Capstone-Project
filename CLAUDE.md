@@ -2392,14 +2392,19 @@ items say, where the keys sit and what they test is the teacher's
 call. content/questions.js is only the fallback for an empty database.
 At the proponent's word (9 Oct 2026, Block 127) it holds a trivia card
 and ten matched pairs for every act, written by a session; a teacher's
-questions on the dashboard replace them test by test. Change the
+questions on the dashboard replace them test by test. Since Block 169
+(the panel: more trivia about Sakay) an act has several trivia cards,
+shown one after another before the pre-test: act_trivia keys them by
+(act_number, position) (schema v19), the dashboard adds, orders and
+removes them, and questions.js's trivia is a list, three an act. The
+teacher's cards, when an act has any, replace the built-in list whole. Change the
 fallback only when the proponent asks.
 
 Assessment items live in the database because the table holds the answer
 key. Item and cosmetic definitions live in code because they hold no
 secret. Only ownership needs a table.
 
-The trivia card must not contain the answer to any pre-test item. It is
+No trivia card may contain the answer to any pre-test item. It is
 shown before the pre-test, so a fact drawn from the tested content inflates
 the pre-test and shrinks the measured gain.
 

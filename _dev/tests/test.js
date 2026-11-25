@@ -5679,15 +5679,23 @@ const visible = (page, sel) => page.evaluate((s) => {
         const t = Assessment.runTrivia(n);
         for (let i = 0; i < 40 && document.getElementById("quiz").classList.contains("hidden"); i++)
           await new Promise((r) => setTimeout(r, 25));
-        const card = document.getElementById("quiz-question").textContent;
-        document.getElementById("quiz-btn").click();
+        // Block 169: every card of the act, one after another.
+        const cards = [];
+        let done = false;
+        t.then(() => { done = true; });
+        for (let i = 0; i < 10 && !done; i++) {
+          cards.push(document.getElementById("quiz-question").textContent);
+          document.getElementById("quiz-btn").click();
+          await new Promise((r) => setTimeout(r, 30));
+        }
         await t;
+        const card = cards.join("|") === QUESTIONS[n].trivia.join("|");
         const bank = QUESTIONS[n].pre;
         const key = new Map(bank.map((q) => [q.question, q.correct]));
         const p = Assessment.runTest(n, "pre");
         const seen = await __drive(p, (q) => key.get(q));
         const r = await p;
-        out[n] = { card: card === QUESTIONS[n].trivia, asked: seen.questions.length,
+        out[n] = { card, cards: cards.length, asked: seen.questions.length,
                    first: seen.questions[0] === bank[0].question, score: r.score, max: r.max };
       }
       // Their rows taken out again, in place, so the checks after count
@@ -5696,8 +5704,8 @@ const visible = (page, sel) => page.evaluate((s) => {
       for (let i = rows.length - 1; i >= 0; i--) if (rows[i].act_number !== 1) rows.splice(i, 1);
       return out;
     });
-    ok("Acts II to IV: the built-in trivia card, then ten questions of the act's own, graded (Block 127)",
-       [2, 3, 4].every((n) => later[n].card && later[n].asked === 10 && later[n].first &&
+    ok("Acts II to IV: the three built-in trivia cards in order (Block 169), then ten questions of the act's own, graded (Block 127)",
+       [2, 3, 4].every((n) => later[n].card && later[n].cards === 3 && later[n].asked === 10 && later[n].first &&
          later[n].score === 10 && later[n].max === 10), later);
     const again = await page.evaluate(async () => {
       const p = Assessment.runTest(1, "pre");
@@ -6017,16 +6025,66 @@ const visible = (page, sel) => page.evaluate((s) => {
     await page.selectOption("#qe-type", "trivia");
     await page.waitForTimeout(300);
     const trivia = await page.evaluate(async () => {
-      const box = document.querySelector("#qe-list .qe-trivia");
-      const had = box.value;
-      box.value = "Bagong trivia.";
+      const boxes = () => [...document.querySelectorAll("#qe-list .qe-trivia")];
+      const had = boxes().map((b) => b.value);
+      const addLabel = document.getElementById("qe-add").textContent;
+      boxes()[0].value = "Bagong trivia.";
       document.getElementById("qe-save").click();
       await new Promise((r) => setTimeout(r, 300));
-      return { had, row: __DB.act_trivia.find((r) => r.act_number === 1) };
+      const saved = __DB.act_trivia.filter((r) => r.act_number === 1).sort((a, b) => a.position - b.position);
+      return { had, addLabel, saved: saved.map((r) => [r.position, r.fact]) };
     });
-    ok("the trivia card is edited the same way",
-       /Macario Sakay/.test(trivia.had) && trivia.row && trivia.row.fact === "Bagong trivia.", trivia);
+    ok("the trivia cards are edited the same way: the built-in three offered, each saved by its place (Block 169)",
+       trivia.had.length === 3 && trivia.had.every((f) => /Macario Sakay|Katipunan/.test(f)) &&
+       /card/.test(trivia.addLabel) && trivia.saved.length === 3 &&
+       trivia.saved[0][0] === 1 && trivia.saved[0][1] === "Bagong trivia." && trivia.saved[2][0] === 3, trivia);
+    const fewer = await page.evaluate(async () => {
+      // Two removed, one added: the saved list is the one on screen.
+      const del = () => [...document.querySelectorAll("#qe-list .qe-delete")];
+      del()[2].click();
+      del()[1].click();
+      document.getElementById("qe-add").click();
+      const boxes = [...document.querySelectorAll("#qe-list .qe-trivia")];
+      boxes[1].value = "Ikalawang kard.";
+      document.getElementById("qe-save").click();
+      await new Promise((r) => setTimeout(r, 300));
+      const rows = __DB.act_trivia.filter((r) => r.act_number === 1).sort((a, b) => a.position - b.position);
+      const empty = (() => {
+        document.getElementById("qe-add").click();
+        document.getElementById("qe-save").click();
+        return new Promise((r) => setTimeout(() => r(document.getElementById("qe-status").textContent), 200));
+      })();
+      return { rows: rows.map((r) => [r.position, r.fact]), empty: await empty,
+               after: __DB.act_trivia.filter((r) => r.act_number === 1).length };
+    });
+    ok("a card removed is deleted, a card added saved after the others, and an empty card refused",
+       fewer.rows.length === 2 && fewer.rows[0][1] === "Bagong trivia." && fewer.rows[1][0] === 2 &&
+       fewer.rows[1][1] === "Ikalawang kard." && /Card 3 is empty/.test(fewer.empty) && fewer.after === 2, fewer);
     await ctx.close();
+
+    // The game shows the teacher's cards, in their order, and only them.
+    const g = await newPage({ session: null, act_trivia: [
+      { act_number: 2, position: 2, fact: "Pangalawa." }, { act_number: 2, position: 1, fact: "Una." }] });
+    await g.page.waitForTimeout(500);
+    const shown = await g.page.evaluate(async () => {
+      const t = Assessment.runTrivia(2);
+      const seen = [];
+      let done = false;
+      t.then(() => { done = true; });
+      for (let i = 0; i < 30 && document.getElementById("quiz").classList.contains("hidden"); i++)
+        await new Promise((r) => setTimeout(r, 25));
+      for (let i = 0; i < 10 && !done; i++) {
+        seen.push([document.getElementById("quiz-eyebrow").textContent, document.getElementById("quiz-question").textContent]);
+        document.getElementById("quiz-btn").click();
+        await new Promise((r) => setTimeout(r, 30));
+      }
+      await t;
+      return seen;
+    });
+    ok("a student sees the teacher's trivia cards one after another, numbered, in their order",
+       shown.length === 2 && shown[0][1] === "Una." && shown[1][1] === "Pangalawa." &&
+       /1 \/ 2/.test(shown[0][0]) && /2 \/ 2/.test(shown[1][0]), shown);
+    await g.ctx.close();
   }
 
   // -------------------------------------------------------------

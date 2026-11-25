@@ -7345,6 +7345,34 @@ with the tool. The teacher's guide gained a section for the
 administrator, linked from admin.html, and two rows for Delete and the
 class list.
 
+## Block 169: several trivia cards an act, 25 Nov 2026
+
+The panel passed the defense with minor revisions; one was more trivia
+about Macario Sakay. The proponents chose to let a teacher give each act
+as many trivia cards as she wants, and to grow the game's own set from
+one card an act to three, so the game shows more trivia before any
+teacher writes a card. act_trivia was keyed by the act alone; schema
+v19 adds a position and keys it by both, and gives teachers a delete
+policy, as assessment_items has. The game reads the act's cards in
+order and shows each in turn ("Alam mo ba? (1 / 3)"); a database before
+v19 is read the old way, one card, so the game never depends on the
+migration having run, and the dashboard refuses to save more than one
+card there and says why.
+
+The teacher's cards replace the built-in list whole, never merged card
+by card: a teacher who keeps fewer cards must get fewer. Restore
+defaults on the dashboard brings back the game's three.
+
+The six new built-in facts are about Sakay himself (his birth and first
+work, his age when the revolution began, the 1993 film, his arrest in
+1902, his companions Carreón and Montalan, his first military circular
+of 1903, his coming down from the mountains in July 1906), from STORY.md's
+sourced beats and the paper's own references. Each was checked against
+every act's pre-test so that no card answers one: none names Tondo, his
+trades, the Katipunan of 1894, the Partido Nacionalista, the Republika
+ng Katagalugan, the amnesty, the Brigandage Act, Gómez's terms or the
+date of his death.
+
 ## Moved from CLAUDE.md (Block 110, Scan S36)
 
 History taken out of CLAUDE.md, word for word, so the file every

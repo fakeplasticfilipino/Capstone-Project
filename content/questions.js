@@ -1,7 +1,9 @@
 // =============================================================
 // MACARIO — content/questions.js (Block 68)
 //
-// The trivia card and the pre-test and post-test questions, with their
+// The trivia cards (since Block 169 a list, three an act, shown one
+// after another before the pre-test; the panel asked for more trivia
+// about Sakay) and the pre-test and post-test questions, with their
 // answers, inside the game itself. At the instructor's direction the
 // answer key is no longer kept secret in the database. Since Block 153
 // the database grades every test (submit_test, schema v15), so every
@@ -37,7 +39,11 @@
 window.QUESTIONS = {
   1: {
     passing: 0.75,
-    trivia: "Si Macario Sakay ay isa sa mga pinunong nagpatuloy ng laban para sa kalayaan kahit matapos ang panahon ng Espanya. Ngunit ang kanyang kuwento ay nagsimula sa isang ordinaryong araw sa Maynila, bilang isang karaniwang manggagawa.",
+    trivia: [
+      "Si Macario Sakay ay isa sa mga pinunong nagpatuloy ng laban para sa kalayaan kahit matapos ang panahon ng Espanya. Ngunit ang kanyang kuwento ay nagsimula sa isang ordinaryong araw sa Maynila, bilang isang karaniwang manggagawa.",
+      "Isinilang si Macario Sakay noong 1870. Mahirap ang kanyang pamilya, kaya bata pa lamang ay nagtrabaho na siya: naging aprendis siya sa isang pagawaan ng kalesa.",
+      "Noong 2008, mahigit isandaang taon matapos ang kanyang kamatayan, isang bantayog ang itinayo sa Maynila bilang parangal kay Macario Sakay.",
+    ],
     pre: [
       { question: "Saan sa Maynila nagmula si Macario Sakay?",
         choices: ["Tondo", "Binondo", "Intramuros", "Malate"],
@@ -111,7 +117,11 @@ window.QUESTIONS = {
   // test, so it hands no pre-test answer.
   2: {
     passing: 0.75,
-    trivia: "Itinatag ang Katipunan noong gabi ng Hulyo 7, 1892, sa Tondo, nang mabalitang ipatatapon si Jose Rizal sa Dapitan. Pagsapit ng 1896, libu-libo na ang kasapi nito, at hindi na nito maitatago ang sarili nang matagal.",
+    trivia: [
+      "Itinatag ang Katipunan noong gabi ng Hulyo 7, 1892, sa Tondo, nang mabalitang ipatatapon si Jose Rizal sa Dapitan. Pagsapit ng 1896, libu-libo na ang kasapi nito, at hindi na nito maitatago ang sarili nang matagal.",
+      "Dalawampu't anim na taong gulang si Macario Sakay nang sumiklab ang himagsikan laban sa Espanya noong Agosto 1896.",
+      "Noong 1993, ipinalabas ang pelikulang \"Sakay\" ng direktor na si Raymond Red, tungkol sa mga huling taon ng buhay ni Macario Sakay.",
+    ],
     pre: [
       { question: "Sino ang patnugot ng Kalayaan, ang pahayagan ng Katipunan?",
         choices: ["Andres Bonifacio", "Emilio Jacinto", "Jose Rizal", "Marcelo H. del Pilar"],
@@ -180,7 +190,11 @@ window.QUESTIONS = {
 
   3: {
     passing: 0.75,
-    trivia: "Noong Abril 16, 1899, namatay sa malaria si Emilio Jacinto sa Majayjay, Laguna. Dalawampu't tatlong taong gulang lamang siya. Tinawag siyang \"Utak ng Katipunan\".",
+    trivia: [
+      "Noong Abril 16, 1899, namatay sa malaria si Emilio Jacinto sa Majayjay, Laguna. Dalawampu't tatlong taong gulang lamang siya. Tinawag siyang \"Utak ng Katipunan\".",
+      "Noong unang bahagi ng 1902, dinakip si Macario Sakay at ikinulong sa Bilibid. Halos anim na buwan siyang nakapiit doon.",
+      "Kabilang sa pinakamalapit na kasama ni Macario Sakay sa kabundukan sina Francisco Carreón at Julian Montalan.",
+    ],
     pre: [
       { question: "Saan nagsimula ang Digmaang Pilipino-Amerikano noong gabi ng Pebrero 4, 1899?",
         choices: ["Sa Santa Mesa, Maynila", "Sa Kawit, Cavite", "Sa Malolos, Bulacan", "Sa Palanan, Isabela"],
@@ -249,7 +263,11 @@ window.QUESTIONS = {
 
   4: {
     passing: 0.75,
-    trivia: "Noong Marso 18, 1903, inilabas ni Macario Sakay ang Unang Kautusan bilang Pangulo ng Republika ng Katagalugan. Sa kabundukan, may sarili itong hukbo, sariling mga kautusan at sariling watawat, habang ang Maynila ay nasa kamay ng mga Amerikano.",
+    trivia: [
+      "Noong Marso 18, 1903, inilabas ni Macario Sakay ang Unang Kautusan bilang Pangulo ng Republika ng Katagalugan. Sa kabundukan, may sarili itong hukbo, sariling mga kautusan at sariling watawat, habang ang Maynila ay nasa kamay ng mga Amerikano.",
+      "Noong Mayo 5, 1903, inilabas ni Macario Sakay ang Unang Sirkular Militar, at isinaayos niya ang kanyang hukbo.",
+      "Noong Hulyo 14, 1906, bumaba si Macario Sakay mula sa bundok at pumasok sa Maynila.",
+    ],
     pre: [
       { question: "Ano ang ipinahayag ng manipesto ni Sakay noong Abril 5, 1904?",
         choices: ["Na susuko na siya sa mga Amerikano", "Na may buong karapatan ang mga Pilipino na ipaglaban ang kanilang kalayaan", "Na lilipat siya sa Hong Kong", "Na sasali siya sa Partido Federal"],
