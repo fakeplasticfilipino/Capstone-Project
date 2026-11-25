@@ -649,6 +649,16 @@ defense, Capstone_Project_Manuscript_Defense (.docx and .pdf, 98
 pages), without the source code and the sample output, its appendices
 lettered A to D (build2.sh ... defense). The full copy is 108 pages.
 Still marked in both: the three panelists. The
+panel's minor revisions, 25 Nov 2026, in the final (bookbound) copy
+only: the review of related literature starts a page (page 10); the
+implementation plan's Table 2.0 lists what running the system takes
+(a phone per student, a device for the teacher, a connection, a
+browser, the hosted game and database), the proponents' laptops out;
+the trivia described as one or more cards an act, and one sentence that
+it came after the evaluation (the stated objectives left as written).
+109 pages. The drafts went to the Recycle Bin at the proponent's word:
+the defense copy and Capstone_Project_Final.docx, the old-format paper
+migrate.py reads; it is needed from the bin to build again. The
 defense deck
 on Canva: its Scope slide gains sections, the class list, the student's
 progress and the administrator, and its Limitations slide loses the
